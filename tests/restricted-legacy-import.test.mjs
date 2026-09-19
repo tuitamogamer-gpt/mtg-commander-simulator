@@ -20,11 +20,11 @@ test('all eighteen cards and four legendary commander portraits use the recorded
   }
 });
 
-test('exactly the eighteen recorded native cards gain import eligibility without adding definitions or built-in decks', () => {
+test('the eighteen reviewed native cards retain their provenance and import eligibility', () => {
   M.initData(M.RAW_DATA);
   assert.equal(names.length, 18); assert.deepEqual(Object.keys(M.REVIEWED_LEGACY_IMPORTS).sort(), names);
-  assert.equal(Object.keys(M.DEFS).length, 22668); assert.equal(Object.keys(M.DECKS).length, 160);
-  assert.equal(M.DECKS['Blame Game'], undefined);
+  assert.equal(Object.keys(M.DEFS).length, 22749); assert.equal(Object.keys(M.DECKS).length, 169);
+  assert.ok(M.DECKS['Blame Game']);
   for (const row of source.cards) {
     const review = M.REVIEWED_LEGACY_IMPORTS[row.name], catalog = M.CARD_CATALOG[row.name];
     assert.equal(review.oracleId, row.oracle_id); assert.equal(review.sourceSha256, source.sourceSha256);
@@ -32,16 +32,18 @@ test('exactly the eighteen recorded native cards gain import eligibility without
     assert.deepEqual(JSON.parse(JSON.stringify(M.parseCost(catalog.manaCost))), JSON.parse(JSON.stringify(M.parseCost(row.mana_cost || ''))));
     assert.deepEqual(Array.from(catalog.colorIdentity).sort(), row.color_identity.slice().sort());
   }
-  assert.equal(Object.values(M.CARD_CATALOG).filter(c => c.deckImportEligible).length, 22668);
+  assert.equal(Object.values(M.CARD_CATALOG).filter(c => c.deckImportEligible).length, 22748);
 });
 
 test('unreviewed inactive native cards remain blocked by the general import gate', () => {
   const reviews = M.REVIEWED_LEGACY_IMPORTS;
+  const blameGame = M.DECKS['Blame Game'];
   try {
+    delete M.DECKS['Blame Game'];
     M.REVIEWED_LEGACY_IMPORTS = Object.freeze({}); M.buildCardCatalog(M.RAW_DATA, M.DEFS);
-    assert.deepEqual(Object.values(M.CARD_CATALOG).filter(c => !c.deckImportEligible).map(c => c.name).sort(), names.filter(name=>!Object.values(M.DECKS).some(d=>d.cards.some(c=>c.name===name))));
+    assert.deepEqual(Object.values(M.CARD_CATALOG).filter(c => !c.deckImportEligible).map(c => c.name).sort(), ['Brisela, Voice of Nightmares', ...names.filter(name=>!Object.values(M.DECKS).some(d=>d.cards.some(c=>c.name===name)))].sort());
     assert.equal(M.importCommanderDeck(list).ok, false);
-  } finally {M.REVIEWED_LEGACY_IMPORTS = reviews; M.buildCardCatalog(M.RAW_DATA, M.DEFS);}
+  } finally {M.DECKS['Blame Game'] = blameGame; M.REVIEWED_LEGACY_IMPORTS = reviews; M.buildCardCatalog(M.RAW_DATA, M.DEFS);}
 });
 
 test('all eighteen cards import together, persist, reload and build a canonical 100-card deck', () => {
@@ -60,11 +62,11 @@ test('all eighteen cards import together, persist, reload and build a canonical 
   M.removeGuestImportedDeck(record.id, {storage}); M.initData(M.RAW_DATA);
 });
 
-test('the original Blame Game list can be imported as a custom deck while remaining excluded from built-ins', () => {
+test('the original Blame Game list remains importable as a custom deck alongside the built-in', () => {
   const original = M.RAW_DATA.decks.find(d => d.name === 'Blame Game'); assert.ok(original);
   const text = ['Commander', '1 ' + original.commander + ' *CMDR*', '', 'Deck',
     ...original.cards.filter(c => c.name !== original.commander).map(c => c.n + ' ' + c.name)].join('\n');
   const imported = M.importCommanderDeck(text, {name: 'Reviewed Nelly Custom'});
   assert.equal(imported.ok, true, JSON.stringify(imported.errors));
-  assert.equal(M.DECKS['Blame Game'], undefined);
+  assert.equal(M.DECKS['Blame Game'], original);
 });

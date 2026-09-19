@@ -30,7 +30,11 @@ function unreadable(text) {
 
 function defaultAnswer(question, player) {
   switch (question.type) {
-    case 'chooseOption': return (question.options[0] || {}).key;
+    case 'chooseOption':
+      // Repetition is optional and has dedicated card tests. Always choosing
+      // the first option would repeat Trade Secrets forever inside resolveTop.
+      if (question.aiHint?.kind === 'tradeSecrets') return 'no';
+      return (question.options[0] || {}).key;
     case 'chooseMulti': return (question.options || []).slice(0, question.min || 1).map(option => option.key);
     case 'chooseTargets': return (question.candidates || [])
       .slice(0, Math.min(question.max ?? 1, Math.max(question.min || 0, 1)));
@@ -124,6 +128,7 @@ test('svaka karta koju igrač baci pita razumljiva pitanja i ne ruši partiju', 
   let questions = 0;
   for (const [name, def] of Object.entries(MTG.DEFS)) {
     if (def.types.includes('Land')) continue;
+    if (process.env.PLAYER_CARD_PROGRESS) console.error(JSON.stringify({phase: 'cast', card: name}));
     const inspect = inspector(problems, name);
     const { game, me, zoneCard } = fundedTable(question => { questions++; inspect(question); });
     const card = zoneCard(me, name, 'hand');
@@ -147,6 +152,7 @@ test('svaka aktivirana sposobnost koju igrač koristi pita razumljiva pitanja', 
   let activations = 0;
   for (const [name, def] of Object.entries(MTG.DEFS)) {
     if (!(def.abilities || []).length && !def.gyAbility && !def.handAbility) continue;
+    if (process.env.PLAYER_CARD_PROGRESS) console.error(JSON.stringify({phase: 'activate', card: name}));
     const inspect = inspector(problems, name);
     const { game, me, permanent, zoneCard } = fundedTable(inspect);
     const zone = def.gyAbility ? 'graveyard' : def.handAbility ? 'hand' : 'battlefield';

@@ -126,7 +126,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   policy: 'Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.',
   oracleBatches: sourceAudit.oracleBatches,
-  excludedDecks: [{ name: 'Blame Game', reason: 'Izbačen iz proizvoda zbog necertifikovane političke/goad i damage-redirection jezgre.' }],
+  excludedDecks: sourceAudit.excludedDeckRows.map(({ name }) => ({ name })),
   totals: {
     decks: decks.length,
     cardDeckChecks: decks.reduce((sum, deck) => sum + deck.uniqueCards, 0),
@@ -161,7 +161,7 @@ md.push(`Jedinstvene karte — PASS: **${report.totals.uniquePassed}** · FAIL: 
 md.push('');
 md.push(`Cijela raw baza — PASS: **${report.totals.rawPassed}/${report.totals.rawCards}** · FAIL: **${report.totals.rawFailed}**. Izvan aktivnih fiksnih deckova je **${report.totals.inactiveRawCards}** karata. Cijeli katalog sadrži **${report.totals.oracleBatchCards}** certifikovanih Oracle batch karata.`);
 md.push('');
-md.push('`Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.');
+md.push('Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.');
 for (const deck of decks) {
   md.push('');
   md.push(`## ${deck.name}`);

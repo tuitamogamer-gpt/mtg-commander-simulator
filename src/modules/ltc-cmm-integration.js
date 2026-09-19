@@ -30,7 +30,9 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  };
  const replacers=G.replacers;G.replacers=function(kind){const out=replacers.call(this,kind);if(kind==='damage')for(const p of this.players)for(const e of p.emblems)if(e.lcAjani)out.push({key:e,src:e.source,ctrl:p,prevent:true,applies:(g,d)=>d.target===p||d.target?.is?.('Planeswalker')&&d.target.ctrl===p,run:(g,d)=>Math.min(1,d.n)});return out;};
  const baseSliver=c=>(c.zone==='battlefield'?c.cur?.subtypes:c.def.subtypes)?.includes('Sliver')||!!c.def.changeling;
- C.extraTypes=(g,c)=>{if(!g||!c.is('Creature'))return [];return g.bf().filter(s=>C.live(s)&&s.def.lcRukarumel&&s.meta.lcType&&(c.zone==='battlefield'?c.ctrl===s.ctrl&&(!c.isToken||baseSliver(c)):c.zone==='stack'?c.ctrl===s.ctrl:c.owner===s.ctrl)).map(s=>s.meta.lcType);};
+ // Rukarumel never changes non-Sliver creature tokens on the battlefield.
+ // Exclude them before searching sources; large token boards query this often.
+ C.extraTypes=(g,c)=>{if(!g||!c.is('Creature')||c.zone==='battlefield'&&c.isToken&&!baseSliver(c))return [];return g.bf().filter(s=>s.def.lcRukarumel&&C.live(s)&&s.meta.lcType&&(c.zone==='battlefield'||c.zone==='stack'?c.ctrl===s.ctrl:c.owner===s.ctrl)).map(s=>s.meta.lcType);};
  const hasSub=M.CardInst.prototype.hasSub;M.CardInst.prototype.hasSub=function(t){return hasSub.call(this,t)||C.extraTypes(this.owner?.game,this).includes(t);};
  const castDefinition=G.castDefinition;G.castDefinition=function(c,o){const d=castDefinition.call(this,c,o),types=C.extraTypes(this,c);return types.length?{...d,subtypes:[...new Set(d.subtypes.concat(types))]}:d;};
  const encoreCache=new Map();M.SCRIPTS['Sliver Gravemother'].grantsGraveyardAbility={filter:(g,s,c,p)=>C.live(s)&&c.is('Creature')&&c.hasSub('Sliver'),make:(g,s,c)=>{const cost='{'+c.mv+'}';if(!encoreCache.has(cost)){const script={};M.OracleV8Encore.install(script,{kind:'mechanic-encore-v8',contract:'mechanic-encore-v8',cost});encoreCache.set(cost,script.gyAbility);}return encoreCache.get(cost);}};

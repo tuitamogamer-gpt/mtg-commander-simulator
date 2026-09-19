@@ -7,7 +7,7 @@ const indexPath = path.join(root, 'index.html');
 const appPath = path.join(root, 'src', 'app.js');
 const dataPath = path.join(root, 'src', 'data.js');
 const oracleImportDir = path.join(root, 'reports', 'oracle-import');
-export const EXCLUDED_DECKS = new Set(['Blame Game']);
+export const EXCLUDED_DECKS = new Set();
 
 function readOracleBatchReports() {
   if (!fs.existsSync(oracleImportDir)) return [];

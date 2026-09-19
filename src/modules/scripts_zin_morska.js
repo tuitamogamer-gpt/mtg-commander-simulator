@@ -571,18 +571,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of p.graveyard.filter(c => c.is('Creature')).slice()) {
         await E.reanimate(g, p, c);
         if (c.zone === 'battlefield') {
-          const iid = c.iid;
-          g.untilEffects.push({
-            expires: 'never', kind: 'spirit11',
-            apply: (g2, bf) => {
-              const x = bf.find(y => y.iid === iid);
-              if (!x) return;
-              x.cur.basePower = 1; x.cur.baseToughness = 1;
-              x.cur.power = 1 + (x.counters['+1/+1'] || 0); x.cur.toughness = 1 + (x.counters['+1/+1'] || 0);
-              x.cur.kw.add('flying');
-              if (!x.cur.subtypes.includes(MTG.c1719TextType(g2,'Spirit'))) x.cur.subtypes.push(MTG.c1719TextType(g2,'Spirit'));
-            },
-          });
+          c.meta.addedSubtypes = [...new Set([...(c.meta.addedSubtypes || []), MTG.c1719TextType(g, 'Spirit')])];
+          // Bind the change to this battlefield object and use the portable
+          // layer-7b effect, so a blink ends it and a saved game retains it.
+          g.addOracleBasePT(c, {power: 1, toughness: 1, keywords: ['flying']});
         }
       }
       g.recalc();

@@ -2148,6 +2148,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function genericAbilityAiScore(operation, cost) {
     return (game, source, player) => {
       if(MTG.OracleV8VariableCounterCosts?.emptyOutcome(operation,source))return -100;
+      // A self-untap with no other effect has no benefit on an untapped
+      // source. Basalt Monolith can otherwise fund its own {3} cost and
+      // return to the same state forever. Keep the ability legal for humans
+      // and continue valuing it when it actually readies a tapped source.
+      if (!source.tapped && !cost.tap && operation.effects?.length &&
+          operation.effects.every(effect => effect.action === 'untap' && effect.target === 'self')) return -100;
       const specs = genericTargetSpecs(operation.targets, operation.effects);
       for (const spec of specs) {
         const candidates = game.legalTargets(spec, source, player);

@@ -41,6 +41,23 @@ test('Dusk Mangler pays its additional cost and makes every opponent sacrifice, 
 test('Hierophant removes counters as a casting cost and reduces generic mana by two each',async()=>{const f=setup(),b=body(f);f.game.addCounters(b,'+1/+1',5);f.x=5;const h=card(f,'Hierophant Bio-Titan','hand');f.a.pool.G=2;assert.equal(await f.game.castSpell(f.a,h,{from:'hand'}),true);assert.equal(b.counters['+1/+1']||0,0);await settle(f.game);assert.equal(h.zone,'battlefield');assert.equal(f.a.pool.G,0);});
 test('Anrakyr pays life instead of mana for an artifact from the graveyard',async()=>{const f=setup(),a=card(f,'Anrakyr the Traveller'),s=card(f,'Sol Ring','graveyard');a.attacking=f.b;await event(f,'attacks',{card:a});assert.equal(s.zone,'battlefield');assert.equal(f.a.life,39);assert.equal(Object.values(f.a.pool).reduce((a,b)=>a+b),0);});
 test('Primeval Spawn rejects uncast entry, but a paid cast enters',async()=>{const f=setup(),c=card(f,'Primeval Spawn','graveyard');await f.game.putPermanentOntoBattlefield(c,f.a);assert.equal(c.zone,'exile');const paid=await play(f,'Primeval Spawn');assert.equal(paid.zone,'battlefield');});
+for(const role of ['human','ai'])test(role+': Primeval Spawn casts exiled spells free within a shared ten-mana-value budget',async()=>{
+ const f=setup(role),source=await play(f,'Primeval Spawn');f.a.library=[];
+ for(let n=0;n<7;n++)card(f,'Forest','library');
+ const four=card(f,'Solemn Simulacrum','library'),six=card(f,'Colossal Dreadmaw','library'),over=card(f,'Shivan Dragon','library');
+ const offers=[];f.decide=(p,q)=>{
+  if(p===f.a&&q.type==='chooseCards'&&q.from.length&&q.from.every(c=>c.zone==='exile')){
+   offers.push(q.from.slice());const choice=[four,six].find(c=>q.from.includes(c));return choice?[choice]:[];
+  }
+ };
+ const manaBefore=Object.values(f.a.pool).reduce((n,v)=>n+v,0);
+ await f.game.move(source,'graveyard');await settle(f.game);
+ assert.equal(offers.length,2);assert.ok(offers[0].includes(four)&&offers[1].includes(six));
+ assert.equal(four.zone,'battlefield');assert.equal(six.zone,'battlefield');assert.equal(over.zone,'exile');
+ assert.equal(four.castMeta.alt.free,true);assert.equal(six.castMeta.alt.free,true);
+ assert.equal(Object.values(f.a.pool).reduce((n,v)=>n+v,0),manaBefore);
+ assert.equal(f.a.exile.length,8);
+});
 test('Psionic Ritual taps a Horror as replicate cost and casts copies of exiled spells',async()=>{const f=setup(),h=card(f,'Nemesis of Reason'),d=card(f,'Divination','graveyard');targets(f,d);await play(f,'Psionic Ritual');assert.equal(h.tapped,true);assert.equal(d.zone,'exile');assert.equal(f.a.hand.length,2);});
 test('Tlincalli casts an exiled creature for zero with no available mana, once a turn',async()=>{const f=setup(),h=card(f,'Tlincalli Hunter'),b=card(f,'Grizzly Bears','exile'),other=card(f,'Wind Drake','exile');C.playGrant(ctx(f,h),b);C.playGrant(ctx(f,h),other);const e=f.game.castableList(f.a).find(e=>e.card===b&&e.alt?.cdkTlincalli);assert.ok(e);assert.equal(await f.game.castSpell(f.a,b,{from:'exile',alt:e.alt}),true);await settle(f.game);assert.equal(b.zone,'battlefield');assert.equal(f.game.castableList(f.a).some(e=>e.alt?.cdkTlincalli),false);});
 test('initiative enters Undercity, advances on upkeep, and transfers after combat damage',async()=>{const f=setup(),c=body(f);await f.game.takeInitiative(f.a,c);await settle(f.game);assert.equal(f.game.initiative,f.a);assert.equal(f.a.afcDungeon?.key,'undercity');await hit(f,body(f,f.b),f.a);assert.equal(f.game.initiative,f.b);});

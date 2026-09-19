@@ -24,6 +24,7 @@ test('a game snapshot restores to exactly the same board', { timeout: 300_000 },
   let blocked = 0;
   let identical = 0;
   const problems = [];
+  const blockReasons = {};
   for (let index = 0; index < 4; index++) {
     const setup = soloSetup(index, 1200 + index);
     const game = MTG.newGame(setup);
@@ -31,7 +32,12 @@ test('a game snapshot restores to exactly the same board', { timeout: 300_000 },
     game.onTurnCheckpoint = () => {
       const snapshot = MTG.captureGameState(game);
       if (snapshot) snapshots.push({ snapshot, fingerprint: MTG.gameStateFingerprint(game) });
-      else blocked++;
+      else {
+        blocked++;
+        for (const reason of MTG.gameStateSnapshotBlockers(game)) {
+          blockReasons[reason] = (blockReasons[reason] || 0) + 1;
+        }
+      }
     };
     await game.start();
     taken += snapshots.length;
@@ -40,8 +46,19 @@ test('a game snapshot restores to exactly the same board', { timeout: 300_000 },
       try {
         // through JSON, exactly as a stored save would travel
         MTG.restoreGameState(fresh, JSON.parse(JSON.stringify(snapshot)));
-        if (MTG.gameStateFingerprint(fresh) === fingerprint) identical++;
-        else problems.push(`turn ${snapshot.turnNo}: the restored board differs`);
+        const restored = MTG.gameStateFingerprint(fresh);
+        if (restored === fingerprint) identical++;
+        else {
+          const before = JSON.parse(fingerprint), after = JSON.parse(restored);
+          const changed = Object.keys(before).filter(key => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+          problems.push(`seed ${setup.seed}, turn ${snapshot.turnNo}: the restored board differs (${changed.join(', ')})`);
+          if (process.env.SNAPSHOT_DEBUG) console.error(JSON.stringify({seed: setup.seed, turn: snapshot.turnNo,
+            differences: Object.fromEntries(changed.map(key => [key, key === 'battlefield'
+              ? {before: before[key].filter(row => !after[key].includes(row)), after: after[key].filter(row => !before[key].includes(row))}
+              : {before: before[key], after: after[key]}])),
+            tokens: snapshot.cards.filter(card => card.isToken),
+          }));
+        }
       } catch (error) {
         problems.push(`turn ${snapshot.turnNo}: ${error.message}`);
       }
@@ -49,7 +66,7 @@ test('a game snapshot restores to exactly the same board', { timeout: 300_000 },
   }
   assert.ok(taken > 80, `too few snapshots to prove anything: ${taken}`);
   assert.ok(taken / (taken + blocked) > 0.9,
-    `a snapshot must be possible at almost every turn boundary (${taken} of ${taken + blocked})`);
+    `a snapshot must be possible at almost every turn boundary (${taken} of ${taken + blocked}; ${JSON.stringify(blockReasons)})`);
   assert.deepEqual(problems.slice(0, 10), [], problems.slice(0, 10).join('\n'));
   assert.equal(identical, taken, 'every restored board must match the one that was saved');
 });

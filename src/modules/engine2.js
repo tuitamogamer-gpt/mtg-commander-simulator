@@ -687,6 +687,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const pips = cost.pips.map(pip => pip.slice());
     const initialGeneric = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
+    // A fully funded, unrestricted fixed-color cost needs no source search.
+    // In particular, do not enumerate every unpaid subset of a large replicate
+    // cost when its exact payment is already floating in the pool.
+    if (!opts.onlyCards && !(p.poolMeta || []).some(entry => entry.n > 0) &&
+        !Object.values(p.coloredOnlyPool || {}).some(amount => amount > 0) &&
+        pips.every(pip => pip.length === 1 && COLORS.concat('C').includes(pip[0]))) {
+      const remaining = Object.assign({W: 0, U: 0, B: 0, R: 0, G: 0, C: 0}, p.pool);
+      const usedPool = {W: 0, U: 0, B: 0, R: 0, G: 0, C: 0};
+      let funded = true;
+      for (const [color] of pips) {
+        if (remaining[color] < 1) { funded = false; break; }
+        remaining[color]--; usedPool[color]++;
+      }
+      if (funded) {
+        let generic = initialGeneric;
+        for (const color of ['C', 'W', 'U', 'B', 'R', 'G']) {
+          const spend = Math.min(generic, remaining[color]);
+          usedPool[color] += spend; generic -= spend;
+        }
+        if (!generic) return {plan: [], usedPool};
+      }
+    }
     // First use floating mana, but keep every materially different pip
     // allocation. A greedy first-match pass rejects legal costs such as
     // {W/U}{W} with U+W floating (it spends W on the hybrid symbol) and
@@ -886,20 +908,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       remaining: [],
       meta: cloneMeta(legalFloating.meta),
     };
-    const poolBranches = pipBranches(initialState, pips)
-      .flatMap(state => spendGeneric(state, initialGeneric));
-    // Preserve the generic-first family for restricted colored sources: an
-    // unrestricted floating color may need to cover generic while a later
-    // source is allowed to pay only a colored pip.
-    const genericFirst = spendGeneric(initialState, initialGeneric);
-    const genericFirstBranches = genericFirst.flatMap(genericState =>
-      pipBranches(clonePoolState(genericState, { generic: undefined }), pips)
-        .map(state => Object.assign(state, { generic: genericState.generic })));
-    const uniquePoolBranches = new Map();
-    for (const branch of poolBranches.concat(genericFirstBranches)) {
-      const key = `${stateKey(branch)}|${branch.generic}`;
-      if (!uniquePoolBranches.has(key)) uniquePoolBranches.set(key, branch);
-    }
     // then sources
     const onlyCards = opts.onlyCards ? new Set(opts.onlyCards) : null;
     const sources = this.manaSources(p, forSpell, { includeRestricted: true }).filter(s =>
@@ -978,7 +986,45 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const sourceManaUpperBound = independentSourceOutput +
       [...tappedCardOutput.values()].reduce((total, amount) => total + amount, 0);
     if (floatingManaUpperBound + sourceManaUpperBound < minimumManaNeeded) return null;
+    // Plenty of total mana cannot pay an impossible number of fixed colored
+    // pips. Replicate probes can contain hundreds of those pips; reject them
+    // before trying every interchangeable source assignment. Ignore payment
+    // restrictions/activation costs here and overcount flexible mana so this
+    // bound can only rule out impossible payments.
+    for (const color of COLORS.concat('C')) {
+      const required = pips.filter(pip => pip.length === 1 && pip[0] === color).length;
+      if (!required) continue;
+      let possible = Math.max(0, Number(legalFloating.pool[color]) || 0);
+      const tapped = new Map();
+      for (const source of sources) {
+        const bonus = (source.c1719ManaBonuses || []).reduce((sum, card) => {
+          const rule = card.def.c1719LandMana || {};
+          return sum + (rule.any || rule.fixed && Object.values(rule.fixed).reduce((a, b) => a + b, 0) || 1);
+        }, 0);
+        const amount = Math.max(0, ...source.produce.map(option => option.ANY && color !== 'C'
+          ? Math.max(1, Number(option.n) || 1) : Math.max(0, Number(option[color]) || 0))) + bonus;
+        if (amount && source.repeatableFilter) { possible = Infinity; break; }
+        if (source.card && source.extraCost.tap) tapped.set(source.card, Math.max(tapped.get(source.card) || 0, amount));
+        else possible += amount;
+      }
+      possible += [...tapped.values()].reduce((sum, amount) => sum + amount, 0);
+      if (possible < required) return null;
+    }
     sources.sort((a, b) => sourcePriority(a) - sourcePriority(b) || flex(a) - flex(b));
+    const poolBranches = pipBranches(initialState, pips)
+      .flatMap(state => spendGeneric(state, initialGeneric));
+    // Preserve the generic-first family for restricted colored sources: an
+    // unrestricted floating color may need to cover generic while a later
+    // source is allowed to pay only a colored pip.
+    const genericFirst = spendGeneric(initialState, initialGeneric);
+    const genericFirstBranches = genericFirst.flatMap(genericState =>
+      pipBranches(clonePoolState(genericState, { generic: undefined }), pips)
+        .map(state => Object.assign(state, { generic: genericState.generic })));
+    const uniquePoolBranches = new Map();
+    for (const branch of poolBranches.concat(genericFirstBranches)) {
+      const key = `${stateKey(branch)}|${branch.generic}`;
+      if (!uniquePoolBranches.has(key)) uniquePoolBranches.set(key, branch);
+    }
     const converterReserveBudget = sources.reduce((total, source) => total + (source.rawConsume
       ? Math.max(0, source.rawConsume.generic) + source.rawConsume.pips.length : 0), 0);
     if (converterReserveBudget > 0 && initialGeneric > 0) {
@@ -1305,7 +1351,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const priorities = onlyCards || opts._manaFeasibilityOnly
       ? [Infinity] : [...new Set(sources.map(sourcePriority))];
     if (!priorities.length) priorities.push(0);
+    let bestScarcePayment = null;
     for (const priority of priorities) {
+      priorityLimits.clear();
       const eligible = sources.filter(source => sourcePriority(source) <= priority);
       const tappedOutput = new Map();
       let independentOutput = 0;
@@ -1368,9 +1416,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           priorityLimits.set(rank, count);
         }
       }
-      return solution;
+      const resources = planResourceScore(solution.plan);
+      if (onlyCards || opts._manaFeasibilityOnly || !resources.scarce) return solution;
+      // Preserving artifacts/creatures is useful, but not at the expense of
+      // life or sacrificed resources when a later source group pays for free.
+      // Retain the earlier group on equal costs so the normal tap preference
+      // still applies when every legal payment consumes scarce resources.
+      const prior = bestScarcePayment && planResourceScore(bestScarcePayment.plan);
+      if (!prior || resources.life < prior.life ||
+          resources.life === prior.life && resources.destructive < prior.destructive) bestScarcePayment = solution;
     }
-    return null;
+    return bestScarcePayment;
   };
 
   G.canPayMana = function (p, cost, forSpell, opts) {

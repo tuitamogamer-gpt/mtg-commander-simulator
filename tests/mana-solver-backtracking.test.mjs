@@ -68,6 +68,28 @@ function poolTotal(player) {
   return COLORS.reduce((total, color) => total + (Number(player.pool[color]) || 0), 0);
 }
 
+test('a large fixed-color replicate payment spends its exact already-floating mana', async () => {
+  const {game, player} = makeGame(840107);
+  player.pool.U = 300; player.pool.C = 70;
+  const printed = '{100}' + '{U}'.repeat(256), cost = MTG.parseCost(printed);
+  const payment = paymentFor(player, 'Large replicate payment', printed);
+  const solution = game.manaSolve(player, cost, payment);
+  assert.ok(solution); assert.equal(solution.plan.length, 0);
+  assert.equal(solution.usedPool.U, 286); assert.equal(solution.usedPool.C, 70);
+  assert.equal(await game.payMana(player, cost, payment, {isSpell: true}), true);
+  assert.equal(player.pool.U, 14); assert.equal(player.pool.C, 0);
+});
+
+test('a large replicate payment cannot replace missing colored pips with abundant colorless mana', () => {
+  const {game, player} = makeGame(840108);
+  player.pool.U = 10; player.pool.C = 1000;
+  const islands = Array.from({length: 5}, () => permanent(game, player, MTG.DEFS.Island));
+  const printed = '{U}'.repeat(256), cost = MTG.parseCost(printed);
+  assert.equal(game.manaSolve(player, cost, paymentFor(player, 'Impossible replicate payment', printed)), null);
+  assert.ok(islands.every(card => !card.tapped));
+  assert.equal(player.pool.U, 10); assert.equal(player.pool.C, 1000);
+});
+
 test('converter outputs cannot circularly finance both activation costs from an empty pool', async () => {
   const { game, player } = makeGame(840101);
   const converterA = converter(game, player, 'Circular converter A', '{C}', { R: 1, U: 1 });

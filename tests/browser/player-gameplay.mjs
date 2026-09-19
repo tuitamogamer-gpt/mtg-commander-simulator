@@ -39,7 +39,7 @@ try {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
   // The landing shell lazy-loads the complete local card catalog on first use.
-  await page.waitForSelector('.deckentry', { timeout: 30000 });
+  await page.waitForSelector('.deckentry:visible', { timeout: 60000 });
   await page.locator('.decksearch input').fill(process.env.PLAYER_HUMAN_DECK || 'Abzan Armor');
   await page.locator('.deckcard:visible').click();
   await page.locator('.deckspotlightcontinue').click();
@@ -119,6 +119,12 @@ try {
   assert.equal(await page.evaluate(() => _game.gameOver), true, 'the full game finishes');
   assert.ok(lands >= 3 && spells >= 2 && attacks >= 1, 'real land, spell and combat input paths were exercised');
   assert.deepEqual(errors, []);
+  for (let review = 0; review < 6; review++) {
+    const proceed = page.locator('.resolutionrecapproceed:visible');
+    if (!await proceed.count()) break;
+    await proceed.click();
+    await page.waitForTimeout(80);
+  }
   await page.screenshot({ path: `${out}/complete.png` });
   writeFileSync(`${out}/complete-state.json`, await page.evaluate(() => render_game_to_text()));
   console.log(JSON.stringify({ iterations, lands, spells, attacks, decisions: [...seen], state: await page.evaluate(() => ({ turn: _game.turnNo, winner: _game.winner?.name })) }));

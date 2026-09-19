@@ -93,6 +93,14 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     const specs = allTargetSpecs(script);
     // Brewing sizes its up-to target set from the actual number of opponents.
     if(canonicalName==='Communal Brewing')specs.push(...script.triggers[0].targets(game,card(controller,canonicalName)));
+    // Witch Hunt binds a random legal opponent when its end-step trigger is
+    // placed on the stack, instead of exposing a player-choice target array.
+    if(canonicalName==='Witch Hunt'){
+      const ctx={g:game,you:controller,src:card(controller,canonicalName)};
+      assert.equal(script.triggers[1].prepareTargets(ctx),true);
+      assert.ok(controller.opponents(game).includes(ctx.targets[0]));
+      specs.push(...ctx.boundTargetSpecs);
+    }
 
     if(canonicalName==='Passionate Archaeologist'){
       const background=card(controller,canonicalName),commander=card(controller,'Faldorn, Dread Wolf Herald');commander.commander=true;

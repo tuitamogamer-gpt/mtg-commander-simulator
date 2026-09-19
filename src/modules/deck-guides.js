@@ -3,6 +3,11 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+    blameGame: [
+      { label: 'Early game', title: 'Prepare your defense', text: 'Fix red and white mana with rocks, then establish blockers or attack taxes before committing Nelly.' },
+      { label: 'Midgame', title: 'Send the threats elsewhere', text: 'Attack safely with Nelly to suspect a creature and goad every suspected creature. Draw as opponents damage one another and keep protection ready.' },
+      { label: 'Endgame', title: 'Finish the last opponent', text: 'Goad cannot keep the final opponent away from you. Use your flying threats, double strike and damage payoffs to close the game.' },
+    ],
   "c13Derevi": [
     {
       "label": "Early game",
@@ -923,6 +928,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+    'Blame Game': {
+      route: 'blameGame', pace: 'GOAD AND DEFENSIVE POLITICS', complexity: 'Advanced',
+      theme: 'Nelly Borca suspects and goads creatures, rewarding combat between opponents with extra cards.',
+      plan: 'Develop mana and defensive permanents, then attack with Nelly when she can survive combat. Direct opposing threats at one another, hold up protective interaction, and finish with powerful flyers after the table is weakened.',
+      mulligan: 'Keep three lands with both colors, a mana rock, and an early blocker or defensive play. Avoid hands filled only with expensive finishers.',
+      tip: 'Suspected creatures have menace and cannot block. Goad lasts until your next turn and cannot force attacks away from you once only one opponent remains.',
+      keys: ['Disrupt Decorum', 'Comeuppance', 'Gisela, Blade of Goldnight'],
+    },
   "Evasive Maneuvers": {
     "route": "c13Derevi",
     "pace": "Build and attack",

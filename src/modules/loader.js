@@ -5,10 +5,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
-  // Blame Game je izbačen iz proizvoda: njegov identitet zavisi od velikog
-  // broja političkih/goad i damage-redirection interakcija koje ne možemo
-  // certifikovati bez kompromisa. Raw karte ostaju dostupne drugim deckovima.
-  MTG.EXCLUDED_DECKS = new Set(['Blame Game']);
+  // Blame Game's reviewed native rules now support its original built-in list.
+  MTG.EXCLUDED_DECKS = new Set();
 
   MTG.initData = function (rawDB) {
     if (MTG.applyOracleBatches) MTG.applyOracleBatches(rawDB);
@@ -84,7 +82,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       "W"
     ],
     "style": "Angels and lifegain",
-    "set": "Secret Lair Commander",
+    "set": "Secret Lair Commander (2023)",
     "blurb": "Build an Angel board and use life-gain payoffs to strengthen it."
   },
   "Enchantress Rubinia": {
@@ -117,7 +115,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       "R"
     ],
     "style": "Goblin spells and tokens",
-    "set": "Secret Lair Commander",
+    "set": "Secret Lair Commander (2026)",
     "blurb": "Target Zada with a cantrip or pump spell to copy it for every other eligible creature."
   },
   "Hatsune Miku": {
@@ -127,7 +125,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       "W"
     ],
     "style": "Tokens and lifegain",
-    "set": "Secret Lair Commander",
+    "set": "Secret Lair Commander (2026)",
     "blurb": "Use Trostani to gain life from creature entries and populate your strongest token."
   },
   "Counterpunch": {

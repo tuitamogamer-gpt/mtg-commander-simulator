@@ -17,6 +17,8 @@ function browserHarness() {
     createElement(tagName) {
       return {
         tagName, className: '', innerHTML: '', children: [],
+        attributes: {},
+        setAttribute(name, value) { this.attributes[name] = String(value); },
         appendChild(child) { this.children.push(child); return child; },
       };
     },

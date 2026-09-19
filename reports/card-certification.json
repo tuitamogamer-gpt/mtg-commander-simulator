@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T11:44:11.720Z",
+  "generatedAt": "2026-09-19T14:35:34.722Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
   "oracleBatches": [
     {
@@ -1136,25 +1136,20 @@
       "count": 58
     }
   ],
-  "excludedDecks": [
-    {
-      "name": "Blame Game",
-      "reason": "Izbačen iz proizvoda zbog necertifikovane političke/goad i damage-redirection jezgre."
-    }
-  ],
+  "excludedDecks": [],
   "totals": {
-    "decks": 168,
-    "cardDeckChecks": 14045,
-    "passedCardDeckChecks": 14045,
+    "decks": 169,
+    "cardDeckChecks": 14131,
+    "passedCardDeckChecks": 14131,
     "failedCardDeckChecks": 0,
-    "uniqueCards": 6337,
-    "uniquePassed": 6337,
+    "uniqueCards": 6352,
+    "uniquePassed": 6352,
     "uniqueFailed": 0,
     "rawCards": 22749,
     "rawPassed": 22749,
     "rawFailed": 0,
-    "inactiveRawCards": 16412,
-    "inactiveRawPassed": 16412,
+    "inactiveRawCards": 16397,
+    "inactiveRawPassed": 16397,
     "inactiveRawFailed": 0,
     "oracleBatchCards": 18858
   },
@@ -2719,6 +2714,532 @@
         },
         {
           "name": "Unclaimed Territory",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "Blame Game",
+      "commander": "Nelly Borca, Impulsive Accuser",
+      "cardCount": 100,
+      "uniqueCards": 86,
+      "passed": 86,
+      "failed": 0,
+      "cards": [
+        {
+          "name": "Nelly Borca, Impulsive Accuser",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Agitator Ant",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ancient Stone Idol",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Angel of the Ruins",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Anya, Merciless Angel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Boros Reckoner",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Brash Taunter",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Darien, King of Kjeldor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Etali, Primal Storm",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Feather, Radiant Arbiter",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fiendish Duo",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Frontier Warmonger",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Gisela, Blade of Goldnight",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Havoc Eater",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kazuul, Tyrant of the Cliffs",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Keeper of the Accord",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Loran of the Third Path",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Orzhov Advokist",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Otherworldly Escort",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Selfless Squire",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Solemn Simulacrum",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Stalking Leonin",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Steel Hellkite",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sun Titan",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Vengeful Ancestor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Wall of Omens",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Windborn Muse",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Elspeth, Sun's Champion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Comeuppance",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Deflecting Palm",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Gideon's Sacrifice",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Immortal Obligation",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Take the Bait",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Disrupt Decorum",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mob Verdict",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Prisoner's Dilemma",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Promise of Loyalty",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sevinne's Reclamation",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Spectacular Showdown",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Winds of Rath",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Signet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Bloodthirsty Blade",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fellwar Stone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mind Stone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ransom Note",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sol Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Talisman of Conviction",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thought Vessel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tome of Legends",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Curse of Opulence",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Duelist's Heritage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ghostly Prison",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Hot Pursuit",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Martial Impetus",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Redemption Arc",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rite of the Raging Storm",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Seal of Cleansing",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Shiny Impetus",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Smuggler's Share",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Soul Snare",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Trouble in Pairs",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Vow of Duty",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Vow of Lightning",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Access Tunnel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ash Barrens",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Boros Garrison",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Castle Ardenvale",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Command Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Escape Tunnel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Exotic Orchard",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Furycalm Snarl",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kher Keep",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Labyrinth of Skophos",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mountain",
+          "copies": 7,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Myriad Landscape",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Needle Spires",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Plains",
+          "copies": 9,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Reliquary Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rogue's Passage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Scavenger Grounds",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Slayers' Stronghold",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sunhome, Fortress of the Legion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Triumph",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of the False God",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Throne of the High City",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "War Room",
           "copies": 1,
           "status": "PASS",
           "issues": []
@@ -97000,12 +97521,6 @@
       "issues": []
     },
     {
-      "name": "Boros Reckoner",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Boros Recruit",
       "active": false,
       "status": "PASS",
@@ -105269,12 +105784,6 @@
     },
     {
       "name": "Daredevil's Billy Club",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Darien, King of Kjeldor",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -114868,12 +115377,6 @@
       "issues": []
     },
     {
-      "name": "Feather, Radiant Arbiter",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Featherbrained Filcher",
       "active": false,
       "status": "PASS",
@@ -115505,12 +116008,6 @@
     },
     {
       "name": "Fiend Binder",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Fiendish Duo",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -120143,12 +120640,6 @@
     },
     {
       "name": "Gideon's Resolve",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Gideon's Sacrifice",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -124972,12 +125463,6 @@
       "issues": []
     },
     {
-      "name": "Havoc Eater",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Havoc Festival",
       "active": false,
       "status": "PASS",
@@ -127174,12 +127659,6 @@
       "issues": []
     },
     {
-      "name": "Hot Pursuit",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Hot Soup",
       "active": false,
       "status": "PASS",
@@ -128363,12 +128842,6 @@
     },
     {
       "name": "Immolation Shaman",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Immortal Obligation",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -133751,12 +134224,6 @@
     },
     {
       "name": "Labyrinth Guardian",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Labyrinth of Skophos",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -140692,12 +141159,6 @@
       "issues": []
     },
     {
-      "name": "Mob Verdict",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Mobile Garrison",
       "active": false,
       "status": "PASS",
@@ -143081,12 +143542,6 @@
     },
     {
       "name": "Neko-Te",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Nelly Borca, Impulsive Accuser",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -146045,12 +146500,6 @@
     },
     {
       "name": "Otherworld Atlas",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Otherworldly Escort",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -149585,12 +150034,6 @@
     },
     {
       "name": "Prison Sentence",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Prisoner's Dilemma",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -171364,12 +171807,6 @@
       "issues": []
     },
     {
-      "name": "Take the Bait",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Take to the Streets",
       "active": false,
       "status": "PASS",
@@ -176393,12 +176830,6 @@
     },
     {
       "name": "Trostani, Three Whispers",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Trouble in Pairs",
       "active": false,
       "status": "PASS",
       "issues": []

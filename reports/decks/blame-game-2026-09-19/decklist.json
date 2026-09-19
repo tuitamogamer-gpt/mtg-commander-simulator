@@ -1,0 +1,360 @@
+{
+  "retrievedOn": "2026-09-19",
+  "name": "Blame Game",
+  "commander": "Nelly Borca, Impulsive Accuser",
+  "set": "MKC",
+  "cards": [
+    {
+      "name": "Nelly Borca, Impulsive Accuser",
+      "n": 1
+    },
+    {
+      "name": "Feather, Radiant Arbiter",
+      "n": 1
+    },
+    {
+      "name": "Immortal Obligation",
+      "n": 1
+    },
+    {
+      "name": "Otherworldly Escort",
+      "n": 1
+    },
+    {
+      "name": "Redemption Arc",
+      "n": 1
+    },
+    {
+      "name": "Trouble in Pairs",
+      "n": 1
+    },
+    {
+      "name": "Havoc Eater",
+      "n": 1
+    },
+    {
+      "name": "Hot Pursuit",
+      "n": 1
+    },
+    {
+      "name": "Mob Verdict",
+      "n": 1
+    },
+    {
+      "name": "Prisoner's Dilemma",
+      "n": 1
+    },
+    {
+      "name": "Take the Bait",
+      "n": 1
+    },
+    {
+      "name": "Ransom Note",
+      "n": 1
+    },
+    {
+      "name": "Angel of the Ruins",
+      "n": 1
+    },
+    {
+      "name": "Comeuppance",
+      "n": 1
+    },
+    {
+      "name": "Darien, King of Kjeldor",
+      "n": 1
+    },
+    {
+      "name": "Duelist's Heritage",
+      "n": 1
+    },
+    {
+      "name": "Elspeth, Sun's Champion",
+      "n": 1
+    },
+    {
+      "name": "Keeper of the Accord",
+      "n": 1
+    },
+    {
+      "name": "Loran of the Third Path",
+      "n": 1
+    },
+    {
+      "name": "Promise of Loyalty",
+      "n": 1
+    },
+    {
+      "name": "Selfless Squire",
+      "n": 1
+    },
+    {
+      "name": "Sevinne's Reclamation",
+      "n": 1
+    },
+    {
+      "name": "Smuggler's Share",
+      "n": 1
+    },
+    {
+      "name": "Stalking Leonin",
+      "n": 1
+    },
+    {
+      "name": "Sun Titan",
+      "n": 1
+    },
+    {
+      "name": "Windborn Muse",
+      "n": 1
+    },
+    {
+      "name": "Winds of Rath",
+      "n": 1
+    },
+    {
+      "name": "Agitator Ant",
+      "n": 1
+    },
+    {
+      "name": "Brash Taunter",
+      "n": 1
+    },
+    {
+      "name": "Disrupt Decorum",
+      "n": 1
+    },
+    {
+      "name": "Etali, Primal Storm",
+      "n": 1
+    },
+    {
+      "name": "Fiendish Duo",
+      "n": 1
+    },
+    {
+      "name": "Frontier Warmonger",
+      "n": 1
+    },
+    {
+      "name": "Kazuul, Tyrant of the Cliffs",
+      "n": 1
+    },
+    {
+      "name": "Spectacular Showdown",
+      "n": 1
+    },
+    {
+      "name": "Vengeful Ancestor",
+      "n": 1
+    },
+    {
+      "name": "Anya, Merciless Angel",
+      "n": 1
+    },
+    {
+      "name": "Boros Reckoner",
+      "n": 1
+    },
+    {
+      "name": "Deflecting Palm",
+      "n": 1
+    },
+    {
+      "name": "Gisela, Blade of Goldnight",
+      "n": 1
+    },
+    {
+      "name": "Ancient Stone Idol",
+      "n": 1
+    },
+    {
+      "name": "Solemn Simulacrum",
+      "n": 1
+    },
+    {
+      "name": "Steel Hellkite",
+      "n": 1
+    },
+    {
+      "name": "Tome of Legends",
+      "n": 1
+    },
+    {
+      "name": "Castle Ardenvale",
+      "n": 1
+    },
+    {
+      "name": "Exotic Orchard",
+      "n": 1
+    },
+    {
+      "name": "Furycalm Snarl",
+      "n": 1
+    },
+    {
+      "name": "Kher Keep",
+      "n": 1
+    },
+    {
+      "name": "Labyrinth of Skophos",
+      "n": 1
+    },
+    {
+      "name": "Needle Spires",
+      "n": 1
+    },
+    {
+      "name": "Scavenger Grounds",
+      "n": 1
+    },
+    {
+      "name": "Slayers' Stronghold",
+      "n": 1
+    },
+    {
+      "name": "Temple of Triumph",
+      "n": 1
+    },
+    {
+      "name": "Throne of the High City",
+      "n": 1
+    },
+    {
+      "name": "War Room",
+      "n": 1
+    },
+    {
+      "name": "Ghostly Prison",
+      "n": 1
+    },
+    {
+      "name": "Gideon's Sacrifice",
+      "n": 1
+    },
+    {
+      "name": "Martial Impetus",
+      "n": 1
+    },
+    {
+      "name": "Orzhov Advokist",
+      "n": 1
+    },
+    {
+      "name": "Seal of Cleansing",
+      "n": 1
+    },
+    {
+      "name": "Soul Snare",
+      "n": 1
+    },
+    {
+      "name": "Vow of Duty",
+      "n": 1
+    },
+    {
+      "name": "Wall of Omens",
+      "n": 1
+    },
+    {
+      "name": "Curse of Opulence",
+      "n": 1
+    },
+    {
+      "name": "Rite of the Raging Storm",
+      "n": 1
+    },
+    {
+      "name": "Shiny Impetus",
+      "n": 1
+    },
+    {
+      "name": "Vow of Lightning",
+      "n": 1
+    },
+    {
+      "name": "Arcane Signet",
+      "n": 1
+    },
+    {
+      "name": "Bloodthirsty Blade",
+      "n": 1
+    },
+    {
+      "name": "Fellwar Stone",
+      "n": 1
+    },
+    {
+      "name": "Mind Stone",
+      "n": 1
+    },
+    {
+      "name": "Sol Ring",
+      "n": 1
+    },
+    {
+      "name": "Talisman of Conviction",
+      "n": 1
+    },
+    {
+      "name": "Thought Vessel",
+      "n": 1
+    },
+    {
+      "name": "Access Tunnel",
+      "n": 1
+    },
+    {
+      "name": "Ash Barrens",
+      "n": 1
+    },
+    {
+      "name": "Boros Garrison",
+      "n": 1
+    },
+    {
+      "name": "Command Tower",
+      "n": 1
+    },
+    {
+      "name": "Escape Tunnel",
+      "n": 1
+    },
+    {
+      "name": "Myriad Landscape",
+      "n": 1
+    },
+    {
+      "name": "Reliquary Tower",
+      "n": 1
+    },
+    {
+      "name": "Rogue's Passage",
+      "n": 1
+    },
+    {
+      "name": "Sunhome, Fortress of the Legion",
+      "n": 1
+    },
+    {
+      "name": "Temple of the False God",
+      "n": 1
+    },
+    {
+      "name": "Plains",
+      "n": 9
+    },
+    {
+      "name": "Mountain",
+      "n": 7
+    }
+  ],
+  "source": {
+    "official": "https://magic.wizards.com/en/news/announcements/murders-at-karlov-manor-commander-decklists",
+    "officialSha256": "020ac6e33039e5f6533c357dc23c748cf482be2290b6a2c382039e9d19714729",
+    "mtgjson": "https://mtgjson.com/api/v5/decks/BlameGame_MKC.json",
+    "mtgjsonSha256": "72c0b8d07630e370c8b375abd89cda8826291712df15ac4e6167f6c4fe7de4bc",
+    "mtgjsonSnapshot": "2026-09-17",
+    "normalization": "The official Ransom Note (Accusations) label is the Ransom Note card identity."
+  }
+}

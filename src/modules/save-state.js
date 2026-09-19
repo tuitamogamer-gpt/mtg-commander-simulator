@@ -69,6 +69,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   }
 
+  const COPY_FACE_FIELDS = ['name', 'cost', 'types', 'subtypes', 'super', 'power', 'toughness', 'colorsOverride', 'kws', 'oracle'];
+  function copyOverrides(def, base) {
+    const out = {};
+    for (const key of COPY_FACE_FIELDS) if (def[key] !== undefined && JSON.stringify(def[key]) !== JSON.stringify(base[key])) {
+      out[key] = JSON.parse(JSON.stringify(def[key]));
+    }
+    if (base.cdaPower && !def.cdaPower) out.removeCdaPower = true;
+    if (base.cdaToughness && !def.cdaToughness) out.removeCdaToughness = true;
+    return out;
+  }
+  function copiedDefinition(entry) {
+    const def = Object.assign({}, MTG.DEFS[entry.copyOf]);
+    for (const [key, value] of Object.entries(entry.copyOverrides || {})) {
+      assert(COPY_FACE_FIELDS.includes(key) || ['removeCdaPower', 'removeCdaToughness'].includes(key), 'invalid copy exception.');
+      if (key.startsWith('removeCda')) {
+        assert(value === true, 'invalid copy ability exception.');
+        delete def[key === 'removeCdaPower' ? 'cdaPower' : 'cdaToughness'];
+        delete def.oracleCharacteristicPT;
+      } else {
+        assert(['types', 'subtypes', 'super', 'colorsOverride', 'kws'].includes(key)
+          ? Array.isArray(value) && value.length <= 256 && value.every(item => typeof item === 'string' && item.length <= 128)
+          : typeof value === 'string' && value.length <= 10000 || typeof value === 'number' && Number.isFinite(value), 'invalid copy face.');
+        def[key] = Array.isArray(value) ? value.slice() : value;
+      }
+    }
+    return def;
+  }
+
   // Every card is written as "what it is" plus "how it sits on the table".
   function captureCard(card) {
     const face=card.faceDown&&!card.isToken?card.meta.faceDownDef||card.def:card.def;
@@ -78,7 +106,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A token copy of a real card keeps that card's name; anything else that
       // is not a catalog token is not portable.
       identity.copyOf = !card.def.rulesNoName && card.isCopyOf && card.isCopyOf.name || null;
+      if (identity.copyOf && MTG.DEFS[identity.copyOf]) {
+        const overrides = copyOverrides(card.def, MTG.DEFS[identity.copyOf]);
+        if (Object.keys(overrides).length) identity.copyOverrides = overrides;
+      }
       if (!identity.token && !identity.copyOf && !MTG.DEFS[identity.name]) identity.face = tokenFace(card.def);
+    } else if (card.isCopySpell && card.meta?.preparedBy && MTG.E.preparedSpellDefinitions?.[identity.name]) {
+      identity.preparedSpell = true;
     } else {
       assert(MTG.DEFS[identity.name], `card ${identity.name || '?'} is not in this build.`);
     }
@@ -108,6 +142,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (card.timestamp) entry.timestamp = Number(card.timestamp) || 0;
     if (card.zoneVersion) entry.zoneVersion = Number(card.zoneVersion) || 0;
     if (card.phasedOut) entry.phasedOut = true;
+    if (card.phasedOut && card.cur) entry.phasedCharacteristics = {
+      types: card.cur.types.slice(), subtypes: card.cur.subtypes.slice(), super: card.cur.super.slice(),
+      colors: card.cur.colors.slice(), keywords: [...card.cur.kw],
+      power: card.power, toughness: card.toughness, basePower: card.cur.basePower, baseToughness: card.cur.baseToughness,
+    };
     if (card.oracleFace) entry.oracleFace = card.oracleFace;
     if (card.oracleTransformCount) entry.oracleTransformCount = Number(card.oracleTransformCount) || 0;
     const meta = plainMeta(card.meta);
@@ -299,9 +338,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function definitionFor(entry) {
+    if (entry.preparedSpell) {
+      const definitions = MTG.E.preparedSpellDefinitions || {};
+      const def = Object.hasOwn(definitions, entry.name) ? definitions[entry.name] : null;
+      assert(def && entry.zone === 'exile' && Number.isSafeInteger(entry.meta?.preparedBy), 'invalid prepared spell.');
+      return Object.assign({super: [], subtypes: [], kws: []}, def);
+    }
     if (entry.isToken) {
       if (entry.token && MTG.TOKENS && MTG.TOKENS[entry.token]) return MTG.TOKENS[entry.token];
-      if (entry.copyOf && MTG.DEFS[entry.copyOf]) return MTG.DEFS[entry.copyOf];
+      if (entry.copyOf && MTG.DEFS[entry.copyOf]) return copiedDefinition(entry);
       if (entry.face) return Object.assign({ cost: '', kws: [] }, entry.face);
     }
     const def = MTG.DEFS[entry.name];
@@ -384,12 +429,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.attachedTo = entry.attachedTo ?? null;
       card.attachments = (entry.attachments || []).slice();
       card.isToken = !!entry.isToken;
+      card.isCopySpell = !!entry.preparedSpell;
       card.faceDown = !!entry.faceDown;
       card.commander = !!entry.commander;
       card.cmdCasts = Number(entry.cmdCasts) || 0;
       card.timestamp = Number(entry.timestamp) || 0;
       card.zoneVersion = Number(entry.zoneVersion) || 0;
       card.phasedOut = !!entry.phasedOut;
+      if (entry.phasedCharacteristics && card.phasedOut) {
+        const face = entry.phasedCharacteristics;
+        assert(['types', 'subtypes', 'super', 'colors', 'keywords'].every(key => Array.isArray(face[key]) && face[key].length <= 256 &&
+          face[key].every(value => typeof value === 'string' && value.length <= 128)) &&
+          ['power', 'toughness', 'basePower', 'baseToughness'].every(key => Number.isFinite(face[key])), 'invalid phased characteristics.');
+        card.cur = {...face, kw: new Set(face.keywords)};
+      }
       if (entry.oracleFace) card.oracleFace = entry.oracleFace;
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
@@ -397,13 +450,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.meta.faceDownDef = MTG.DEFS[entry.name];
         card.def = game.faceDownCreatureDef(card.meta.faceDownKind || 'manifest');
       }
-      if (entry.isToken && entry.copyOf && MTG.DEFS[entry.copyOf]) card.isCopyOf = MTG.DEFS[entry.copyOf];
+      if (entry.isToken && entry.copyOf && MTG.DEFS[entry.copyOf]) card.isCopyOf = card.def;
       byIid.set(card.iid, card);
       if (entry.zone === 'battlefield') game.battlefield.push(card);
       else {
         assert(Array.isArray(owner[entry.zone]), `unknown zone ${entry.zone}.`);
         owner[entry.zone].push(card);
       }
+    }
+
+    for (const entry of snapshot.cards.filter(entry => entry.preparedSpell)) {
+      const card = byIid.get(entry.iid), source = byIid.get(card.meta.preparedBy);
+      assert(source?.zone === 'battlefield' && source.meta.prepared && source.meta.preparedCopy === card.iid,
+        'a prepared spell has no prepared source.');
+      card.meta.playableBy = source.ctrl;
+      card.meta.playableCondition = () => source.zone === 'battlefield' && source.meta.prepared && source.meta.preparedCopy === card.iid;
     }
 
     for(const effect of landTypeEffects){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push(captureLandTypes(effect));}

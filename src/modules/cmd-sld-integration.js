@@ -19,7 +19,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   P.spent = (g, p, action, unit) => {spent(g, p, action, unit); if (action && unit.cslHasteMana) action.cslHasteMana = (action.cslHasteMana || 0) + 1;};
   const emit = G.emit;
   G.emit = async function (on, d) {
-    if (on === 'cast' && d.so) {
+    if (on === 'cast' && d.so && d.card?.castMeta) {
       d.card.castMeta.cslChorusCounters = d.so.cslChorusCounters || 0;
       d.card.castMeta.cslHasteMana = d.so.cslHasteMana || 0;
     }

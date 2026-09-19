@@ -29,6 +29,11 @@ test('discard localization does not get corrupted by the cast translation', () =
   assert.equal(MTG.uiText('Baci spell'), 'Cast spell');
 });
 
+test('localization preserves hyphenated card names inside translated prompts', () => {
+  assert.equal(MTG.uiText('Yuan-Ti Fang-Blade'), 'Yuan-Ti Fang-Blade');
+  assert.equal(MTG.uiText('Ti biraš Yuan-Ti Fang-Blade'), 'You choose Yuan-Ti Fang-Blade');
+});
+
 test('browser text-state mirrors the English presentation used by the visible UI', () => {
   const mainSource = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   assert.match(mainSource, /prompt: pending\.prompt \? MTG\.uiText\(pending\.prompt\) : null/);

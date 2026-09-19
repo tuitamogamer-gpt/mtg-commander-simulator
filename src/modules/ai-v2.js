@@ -792,6 +792,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'Blight Curse': { archetype: 'Wither and -1/-1 counters', length: 'medium', tags: ['counters', 'death-triggers'], commanderImportance: 1.25 },
     'Counter Intelligence': { archetype: 'Charge-counter artifacts', length: 'long', tags: ['artifacts', 'counters'], commanderImportance: 1.35 },
     'Deep Clue Sea': { archetype: 'Clue value and card draw', length: 'long', tags: ['artifacts', 'tokens'], commanderImportance: 1.35 },
+    'Blame Game': { archetype: 'Goad, defensive politics and combat damage', length: 'long', tags: ['politics', 'combat', 'control'], commanderImportance: 1.5 },
     'Doom Prevails': { archetype: 'Villain connive control', length: 'long', tags: ['tribal', 'graveyard'], commanderImportance: 1.35 },
     'Elven Council': { archetype: 'Elf voting value', length: 'long', tags: ['tribal', 'tokens'], commanderImportance: 1.15 },
     'Endless Punishment': { archetype: 'Group slug attrition', length: 'medium', tags: ['death-triggers', 'lifegain'], commanderImportance: 1.45 },
@@ -2398,6 +2399,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const picks of combinations(candidates, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
       }
     } else if (q.type === 'chooseCards') {
+      if (q.max === 0) return [{kind: 'chooseCards', picks: []}];
       if (q.aiHint?.kind === 'stationTap' && q.aiHint.src?.def.stationCreatureAt) {
         const plan = MTG.stationPlan(game, q.aiHint.src, player, q.from);
         // Use the payment that made the activation worthwhile. Difficulty
@@ -4410,6 +4412,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   MTG.botModeSweepValue = modeSweepValue;
 
+  function manaColorsForDevelopment(card) {
+    const colors = new Set(card.def.producesColors || []);
+    const basics = { Plains: 'W', Island: 'U', Swamp: 'B', Mountain: 'R', Forest: 'G' };
+    for (const type of card.cur?.subtypes || card.def.subtypes || []) if (basics[type]) colors.add(basics[type]);
+    const abilities = Array.isArray(card.def.mana) ? card.def.mana : [card.def.mana];
+    for (const ability of abilities) for (const option of Array.isArray(ability?.produce) ? ability.produce : []) {
+      for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) if (option[color] > 0) colors.add(color);
+    }
+    return colors;
+  }
+
+  function landColorDevelopmentValue(game, player, land) {
+    // Basic lands used to tie regardless of the spells stranded in hand or
+    // the command zone. Count durable sources, including tapped ones, so a
+    // second required white pip beats a seventh Forest in a green/white deck.
+    const supplied = {};
+    for (const card of game.bf()) if (card.ctrl === player && !card.cur?.abilitiesDisabled) {
+      for (const color of manaColorsForDevelopment(card)) supplied[color] = (supplied[color] || 0) + 1;
+    }
+    const needed = Object.fromEntries((player.colorIdentity || []).map(color => [color, 1]));
+    for (const card of [...player.hand, ...player.command]) {
+      if (card.is('Land')) continue;
+      const pips = {};
+      for (const pip of U.parseCost(card.def.cost || '').pips || []) {
+        if (pip.length === 1) pips[pip[0]] = (pips[pip[0]] || 0) + 1;
+      }
+      for (const [color, count] of Object.entries(pips)) needed[color] = Math.max(needed[color] || 0, count);
+    }
+    return Math.max(0, ...[...manaColorsForDevelopment(land)].map(color =>
+      needed[color] > (supplied[color] || 0) ? 2.5 : 0));
+  }
+
   function quickScoreAction(view, action, profile, q) {
     const privateData = PRIVATE_VIEWS.get(view);
     const game = privateData.game, player = privateData.player;
@@ -4418,6 +4452,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (action.kind === 'land') {
       breakdown.base = 6.5;
       breakdown.resources = Math.max(0, 7 - game.lands(player).length) * 0.35;
+      breakdown.resources += landColorDevelopmentValue(game, player, action.card);
       if (action.card.def.entersTapped) breakdown.timing -= phase === 'main1' ? 0.4 : 0.1;
     } else if (action.kind === 'cast') {
       const card = action.card;

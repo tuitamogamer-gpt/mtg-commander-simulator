@@ -8,11 +8,11 @@ const tokens=(f,p,type)=>f.game.creatures(p).filter(c=>c.isToken&&c.hasSub(type)
 const aim=(f,...targets)=>{f.decide=(p,q)=>q.type==='chooseTargets'?targets.filter(c=>q.candidates.includes(c)).slice(0,q.max):q.type==='chooseOption'&&q.options.some(o=>o.key==='yes')?'yes':undefined;};
 const empty=p=>{p.poolMeta=[];for(const k of Object.keys(p.pool))p.pool[k]=0;};
 test('eight original lists, artwork, native cards, guides, AI profiles and repeatable intake',()=>{
- assert.equal(Object.keys(M.DECKS).length,168);assert.equal(Object.keys(M.DEFS).length,22749);
+ assert.equal(Object.keys(M.DECKS).length,169);assert.equal(Object.keys(M.DEFS).length,22749);
  assert.equal(buildIntake(M).newNames.length,0);const names=JSON.parse(fs.readFileSync(sourceDir+'/intake.json')).newNames;assert.equal(names.length,81);
  for(const d of precons){const deck=M.DECKS[d.name];assert.equal(deck.commander,d.commander);assert.equal(deck.cards.reduce((n,c)=>n+c.n,0),100);assert.ok(M.DECK_META[d.name]&&M.DECK_GUIDES[d.name]&&M.AI_DECK_PROFILE_HINTS[d.name]);assert.ok(fs.existsSync(M.CARD_ART_PATHS[d.commander]));for(const key of M.DECK_GUIDES[d.name].keys)assert.ok(deck.cards.some(c=>c.name===key),key);}
  for(const name of names){assert.ok(M.DEFS[name]&&!M.DEFS[name].autoScripted&&!M.DEFS[name].simplified,name);assert.ok(fs.existsSync(M.CARD_IMAGE_PATHS[name]),name);}
- assert.ok(!M.DECKS['Blame Game']);assert.equal(M.CARD_CATALOG['Brisela, Voice of Nightmares'].deckImportEligible,false);
+ assert.ok(M.DECKS['Blame Game']);assert.equal(M.CARD_CATALOG['Brisela, Voice of Nightmares'].deckImportEligible,false);
 });
 for(const role of ['human','ai']){
  test(role+': Derevi command ability pays four, uses the stack, and avoids commander tax',async()=>{
@@ -99,6 +99,11 @@ for(const role of ['human','ai']){
  });
  test(role+': Surveyor Scope counts opposing land advantage at resolution',async()=>{
   const f=setup(role),s=card(f,"Surveyor's Scope");card(f,'Forest','battlefield',f.b);card(f,'Island','battlefield',f.b);await activate(f,s);assert.equal(s.zone,'exile');assert.equal(f.game.lands(f.a).length,1);assert.equal(f.game.lands(f.a)[0].tapped,false);
+ });
+ test(role+': Surveyor Scope searches for zero basics when no opponent has the required land advantage',async()=>{
+  const f=setup(role),s=card(f,"Surveyor's Scope"),before=f.a.library.length;
+  await activate(f,s);
+  assert.equal(s.zone,'exile');assert.equal(f.game.lands(f.a).length,0);assert.equal(f.a.library.length,before);
  });
  test(role+': Widespread Panic follows a resolving search with a hand-to-library trigger',async()=>{
   const f=setup(role);card(f,'Widespread Panic');const b=card(f,'Grizzly Bears','hand');await play(f,'Rampant Growth');assert.equal(b.zone,'library');assert.equal(f.a.hand.length,0);

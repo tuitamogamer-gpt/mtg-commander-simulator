@@ -69,8 +69,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   P.validateAbility = ctx => validateAbility(ctx) && (!ctx.c13NightSoil || ctx.c13NightSoil.length === 2 && ctx.c13NightSoil.every(C.current) && ctx.c13NightSoil[0].card.owner === ctx.c13NightSoil[1].card.owner);
   P.commitAbility = async ctx => {await commitAbility(ctx); if (ctx.c13NightSoil) await ctx.g.moveGraveyardBatch(ctx.c13NightSoil.map(r => r.card), 'exile');};
   const activatable = G.activatableList;
-  G.activatableList = function (p) {
-    const out = activatable.call(this, p);
+  G.activatableList = function (p, ...args) {
+    const out = activatable.call(this, p, ...args);
     if (!this.hasSplitSecond()) for (const card of p.command) {
       const ability = card.def.c13CommandAbility;
       if (ability && card.owner === p && this.canPayMana(p, this.abilityManaCost(p, card, ability.cost.mana, {ability}), {card, isAbility: true})) out.push({card, ability, c13Command: true});
@@ -91,13 +91,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const emit = G.emit;
   G.emit = async function (on, d) {
-    if (on === 'cast') for (const key of ['c13KickWhite', 'c13KickBlack']) d.card.castMeta[key] = d.so[key];
+    if (on === 'cast' && d.so && d.card?.def.c13DualKicker) {
+      const meta = d.card.castMeta ||= {};
+      for (const key of ['c13KickWhite', 'c13KickBlack']) meta[key] = d.so[key];
+    }
     if (on === 'attacks') {
       d.c13Attacker = C.row(d.card);
       if (d.target instanceof M.Player) {const old = d.card.meta.c13Attacked; d.card.meta.c13Attacked = {turn: this.turnNo, players: [...new Set([...(old?.turn === this.turnNo ? old.players : []), d.target.idx])]};}
     }
     if (on === 'dies') for (const row of d.snap?.mutateComponents || [{card: d.card, zoneVersion: d.graveyardZoneVersion}]) {
-      if (row.card.zone === 'graveyard' && row.card.zoneVersion === row.zoneVersion) {row.card.meta.c13DiedTurn = this.turnNo; row.card.meta.c13DiedVersion = row.zoneVersion;}
+      if (row.card?.zone === 'graveyard' && row.card.zoneVersion === row.zoneVersion) {row.card.meta.c13DiedTurn = this.turnNo; row.card.meta.c13DiedVersion = row.zoneVersion;}
     }
     return emit.call(this, on, d);
   };

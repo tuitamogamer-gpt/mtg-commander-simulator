@@ -65,7 +65,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const damageBatch=G.damageBatch;G.damageBatch=async function(...a){if(this.wlmDamageBatch)return damageBatch.apply(this,a);this.wlmDamageBatch=[];try{return await damageBatch.apply(this,a);}finally{const hits=this.wlmDamageBatch;delete this.wlmDamageBatch;if(hits.length)await damageGroups(this,hits);}};
  const emit=G.emit;G.emit=async function(name,d){
   if(name==='damageToPlayer'){
-   d.wlmSnapshot||={ctrl:d.src?.ctrl,subtypes:[...(d.src?.cur?.subtypes||d.src?.def?.subtypes||[])],kw:[...(d.src?.cur?.kw||[])],creature:!!d.src?.is('Creature')};
+   d.wlmSnapshot||={ctrl:d.src?.ctrl,subtypes:[...(d.src?.cur?.subtypes||d.src?.def?.subtypes||[])],kw:[...(d.src?.cur?.kw||[])],creature:!!d.src?.is?.('Creature')};
    if(!this._damageEventQueue){const hit={player:d.player,n:d.n,combat:d.combat,...d.wlmSnapshot};if(this.wlmDamageBatch)this.wlmDamageBatch.push(hit);else await damageGroups(this,[hit]);}
   }
   if(name==='cast'&&d.card?.def.wlmNecromancy&&(this.turnPlayer!==d.player||!['main1','main2'].includes(this.phase)||this.stack.length>1))d.card.castMeta.wlmNecroCleanup=true;

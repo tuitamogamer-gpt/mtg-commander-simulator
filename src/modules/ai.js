@@ -1170,6 +1170,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseCards(g, q) {
+      if (q.max === 0) return [];
       if(q.aiHint?.kind==='amplify-v9')return q.from.slice(0,q.max);
       if(q.aiHint?.kind==='devour-v9'){
         const sorted=q.from.slice().sort((a,b)=>this.permThreat(g,a)-this.permThreat(g,b));

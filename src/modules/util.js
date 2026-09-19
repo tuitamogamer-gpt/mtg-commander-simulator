@@ -1184,7 +1184,8 @@ const UI_ENGLISH_RULES = [
   [/\bTEBE\b/g, 'YOU'], [/\bTVOJ\b/g, 'YOUR'], [/\bTI\b/g, 'YOU'],
 ];
 
-// Match complete Unicode words so e.g. countera cannot damage uncounterable,
+// Match complete Unicode words, including hyphenated names such as Yuan-Ti,
+// so e.g. countera cannot damage uncounterable,
 // and singular words cannot consume the beginning of plural/inflected words.
 // All full phrases must run before individual words, including legacy rules.
 const UI_ENGLISH_COMPILED_RULES = [
@@ -1194,8 +1195,8 @@ const UI_ENGLISH_COMPILED_RULES = [
   if (source === 'Nema') source = 'Nema(?! Siltlurker)';
   if (source === uiWord('Tri').source) source = uiWord('Tri(?!-Sentinel)').source;
   const whitespaceRule = source.startsWith('(\\s)');
-  const rightBoundary = source.includes('(?=\\d)') ? '' : '(?![\\p{L}\\p{N}_])';
-  const bounded = whitespaceRule ? source : `(?<![\\p{L}\\p{N}_])(?:${source})${rightBoundary}`;
+  const rightBoundary = source.includes('(?=\\d)') ? '' : '(?![\\p{L}\\p{N}_-])';
+  const bounded = whitespaceRule ? source : `(?<![\\p{L}\\p{N}_-])(?:${source})${rightBoundary}`;
   return [new RegExp(bounded, pattern.flags.includes('u') ? pattern.flags : pattern.flags + 'u'), replacement, source.includes(' '), source.replace(/\(\?[=!<].*?\)/g, '').length];
 }).sort((a, b) => Number(b[2]) - Number(a[2]) || b[3] - a[3]);
 

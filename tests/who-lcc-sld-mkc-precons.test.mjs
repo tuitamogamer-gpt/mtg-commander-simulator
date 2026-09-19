@@ -6,6 +6,20 @@ import {buildIntake,sourceDir} from '../scripts/import-who-lcc-sld-mkc-precons.m
 import {assertGameStateInvariants,assertRecalculationStable} from './helpers/game-state-invariants.mjs';
 const context=(f,c)=>({g:f.game,you:f.a,src:c,sourceMeta:c.meta,sourceZoneVersion:c.zoneVersion});
 
+for (const role of ['human', 'ai']) {
+ test(`${role}: Chandra's emblem deals upkeep damage after its planeswalker leaves`, async () => {
+  const f = setup(role), chandra = card(f, 'Chandra, Awakened Inferno');
+  await activate(f, chandra, 0);
+  assert.equal(f.b.emblems.length, 1);
+  await f.game.move(chandra, 'graveyard');
+  const before = f.b.life;
+  await event(f, 'upkeep', {player: f.b});
+  assert.equal(f.b.life, before - 1);
+  assert.equal(f.game.pendingTriggers.length, 0);
+  assert.equal(f.game.stack.length, 0);
+ });
+}
+
 test('ten original 100-card precons preserve source lists, native implementations, guides, images and default pairs',()=>{
  const i=buildIntake(M),intake=JSON.parse(fs.readFileSync(sourceDir+'/intake.json'));
  assert.equal(i.decks.length,10);assert.equal(i.names.length,681);assert.equal(i.newNames.length,0);assert.equal(intake.newCards,209);assert.equal(intake.reusedCards,472);
@@ -17,7 +31,7 @@ test('ten original 100-card precons preserve source lists, native implementation
   for(const name of pair)assert.ok(fs.existsSync(M.CARD_ART_PATHS[name]),name+' commander art');
  }
  for(const name of intake.newNames){assert.ok(M.SCRIPTS[name],name);assert.ok(!M.DEFS[name].autoScripted&&!M.DEFS[name].simplified,name);assert.ok(M.CARD_CATALOG[name].deckImportEligible,name);}
- assert.equal(Object.keys(M.DECKS).length,160);assert.equal(M.CATALOG_SUMMARY.importableCards,Object.values(M.CARD_CATALOG).filter(card=>card.deckImportEligible).length);
+ assert.equal(Object.keys(M.DECKS).length,169);assert.equal(M.CATALOG_SUMMARY.importableCards,Object.values(M.CARD_CATALOG).filter(card=>card.deckImportEligible).length);
 });
 
 for(const role of ['human','ai']){

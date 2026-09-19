@@ -22,6 +22,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return copy;
   };
   E.prepareSpell = prepareSpell;
+  // Prepared spell copies are runtime objects outside the printed catalog.
+  // A stable definition lets a saved game restore their actual rules.
+  E.preparedSpellDefinitions = {
+    Braingeyser: {
+      name: 'Braingeyser', cost: '{X}{U}{U}', types: ['Sorcery'],
+      oracle: 'Target player draws X cards.',
+      targets: [T.player({ prompt: 'Braingeyser: who draws?', aiHint: { goal: 'self' } })],
+      resolve: async ctx => { if (ctx.targets[0]) await ctx.g.draw(ctx.targets[0], ctx.x || 0); },
+    },
+    "Maestro's Gift": {
+      name: "Maestro's Gift", cost: '{3}{U}{R}', types: ['Sorcery'],
+      oracle: 'Create a token copy of target creature you control. It gains haste until end of turn.',
+      targets: [T.yourCreature({ prompt: 'Copy a creature', aiHint: { goal: 'copy' } })],
+      resolve: async ctx => { if (ctx.targets[0]) await ctx.g.copyPermanentToken(ctx.targets[0], ctx.you, { haste: true }); },
+    },
+  };
   const tok = (name, types, subtypes, p, t, kws, cols, extra) => Object.assign({
     name, cost: null, types, subtypes, super: [], power: String(p), toughness: String(t),
     oracle: '', kws: kws || [], isTokenDef: true, colorsOverride: cols || [],
@@ -149,12 +165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'castIS', desc: 'Prepare Braingeyser',
       filter: (g, self, d) => d.player === self.ctrl && d.mv >= 5 && d.fromHand,
       run: async ctx => {
-        prepareSpell(ctx.g, ctx.src, {
-          name: 'Braingeyser', cost: '{X}{U}{U}', types: ['Sorcery'],
-          oracle: 'Target player draws X cards.',
-          targets: [T.player({ prompt: 'Braingeyser: who draws?', aiHint: { goal: 'self' } })],
-          resolve: async c2 => { if (c2.targets[0]) await c2.g.draw(c2.targets[0], c2.x || 0); },
-        });
+        prepareSpell(ctx.g, ctx.src, E.preparedSpellDefinitions.Braingeyser);
       },
     }],
   };
@@ -205,24 +216,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'etb', desc: "Prepare Maestro's Gift", filter: etbSelf,
         run: async ctx => {
-          prepareSpell(ctx.g, ctx.src, {
-            name: "Maestro's Gift", cost: '{3}{U}{R}', types: ['Sorcery'],
-            oracle: 'Create a token copy of target creature you control. It gains haste until end of turn.',
-            targets: [T.yourCreature({ prompt: 'Copy a creature', aiHint: { goal: 'copy' } })],
-            resolve: async c2 => { if (c2.targets[0]) await c2.g.copyPermanentToken(c2.targets[0], c2.you, { haste: true }); },
-          });
+          prepareSpell(ctx.g, ctx.src, E.preparedSpellDefinitions["Maestro's Gift"]);
         },
       },
       {
         on: 'combatDamageGroupToPlayer', desc: "Prepare Maestro's Gift",
         filter: (g, self, d) => d.cards.some(card => card.ctrl === self.ctrl && card.isToken),
         run: async ctx => {
-          prepareSpell(ctx.g, ctx.src, {
-            name: "Maestro's Gift", cost: '{3}{U}{R}', types: ['Sorcery'],
-            oracle: 'Create a token copy of target creature you control. It gains haste until end of turn.',
-            targets: [T.yourCreature({ prompt: 'Copy a creature', aiHint: { goal: 'copy' } })],
-            resolve: async c2 => { if (c2.targets[0]) await c2.g.copyPermanentToken(c2.targets[0], c2.you, { haste: true }); },
-          });
+          prepareSpell(ctx.g, ctx.src, E.preparedSpellDefinitions["Maestro's Gift"]);
         },
       },
     ],

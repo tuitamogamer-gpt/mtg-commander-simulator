@@ -1827,7 +1827,7 @@ async function enterPermanentProof(MTG, context, entry, {holdLandTriggers=false}
     const expectedZone = Number(entry.raw.toughness) <= 0 && !card.def.etbCounters ? 'graveyard' : 'battlefield';
     // A permanent whose printed entry sacrifices it legitimately ends in the
     // graveyard instead of staying on the battlefield.
-    const selfSacrifice = JSON.stringify(entry.implementation || []).includes('"sacrifice-source"') || entry.implementation.some(op=>op.kind==='mechanic-champion-v9');
+    const selfSacrifice = JSON.stringify(entry.implementation || []).includes('"sacrifice-source"') || (entry.implementation || []).some(op=>op.kind==='mechanic-champion-v9');
     assert.ok(card.zone === expectedZone || (selfSacrifice && card.zone === 'graveyard'),
       `${card.name}: resolves and state-based actions are applied (library=${a.library.length}, lost=${a.lost}, log=${game.log.slice(-4).map(item => item.msg).join(' | ')})`);
   }
@@ -3729,7 +3729,18 @@ function assertSpellV4EffectEvidence(MTG, context, entry, effect, chosenById, be
       ((before.cards.get(subject).counters[effect.counterType]) || 0) + n), `${label}: counters are added`);
   } else if (effect.kind === 'mill') {
     assert.ok(player.library.length <= oldPlayer.library - n, `${label}: mill removes library cards`);
-    assert.ok(context.moveEvidence.slice(before.moveEvidenceIndex).filter(row=>row.card.owner===player&&row.from==='hand'&&row.to==='graveyard'&&row.after.zone==='graveyard').length>=n, `${label}: mill fills graveyard`);
+    const moved = new Set(context.moveEvidence.slice(before.moveEvidenceIndex)
+      .filter(row => row.card.owner === player && row.from === 'library' &&
+        row.to === 'graveyard' && row.after.zone === 'graveyard').map(row => row.card));
+    // Earlier effects in the same spell can draw cards first. Use the top
+    // cards captured when mill actually began, not the pre-spell library.
+    const witness = context.millEvidence.slice(before.millEvidenceIndex)
+      .find(row => row.player === player && row.n === n);
+    assert.ok(witness, `${label}: the real mill operation was executed`);
+    assert.equal(witness.cards.length, n, `${label}: exactly the requested top cards were milled`);
+    for (const card of witness.cards) {
+      assert.ok(moved.has(card), `${label}: each milled top card reaches the graveyard`);
+    }
   } else if (effect.kind === 'scry' || effect.kind === 'surveil') {
     const query = trace.find(item => item.query.type === 'scry')?.query;
     assert.ok(query, `${label}: library selection reaches controller`);
@@ -3811,6 +3822,7 @@ async function spellV4RuntimeOperationProof(MTG, entry, operation, role, nested=
       const context = gameFor(MTG, [controller, recordingDecision(opponentTrace)], { ai: role === 'ai' });
       const { game, a, b } = context;
       assertControllerRole(MTG, context, `${entry.raw.name}/${role}/spell-v4`);
+      if (operation.effects.some(effect => effect.kind === 'mill')) installEffectEvidence(context);
       fillLibrary(MTG, a, 80);
       fillLibrary(MTG, b, 80);
       for(const effect of operation.effects)if(['exileGraveyard','exileAllGraveyards'].includes(effect.kind)){zoneCard(MTG,a,'Forest','graveyard');zoneCard(MTG,b,'Forest','graveyard');}

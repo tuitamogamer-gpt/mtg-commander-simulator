@@ -29,8 +29,9 @@ for(const seed of [660047,660066])test(`Maja import completes a four-player loca
   const decisions=[],seen=new Set();const note=game.note;
   game.note=function(kind,data){if(kind==='aiDecision')decisions.push(data.decision);return note.call(this,kind,data);};
   const emit=game.emit;game.emit=async function(event,data){if(event==='cast'&&data.card)seen.add(data.card.name);return emit.call(this,event,data);};
-  await game.start();assert.equal(game.gameOver,true);assert.ok(game.winner);assert.ok(game.turnNo<game.maxTurns);
+  await game.start();
+  t.diagnostic(JSON.stringify({seed,turns:game.turnNo,winner:game.winner?.name,decisions:decisions.length,newCardsCast:[...seen].filter(name=>Number(MTG.CARD_CATALOG[name]?.engineBatch?.replace('oracle-',''))>=47)}));
+  assert.equal(game.gameOver,true);assert.ok(game.winner);assert.ok(game.turnNo<game.maxTurns);
   assert.equal(game.pendingTriggers.length,0);assert.equal(decisions.some(d=>d.fallback),false);
   assert.ok(seen.has('Maja, Bretagard Protector'),'commander was actually cast');
-  t.diagnostic(JSON.stringify({seed,turns:game.turnNo,winner:game.winner.name,decisions:decisions.length,newCardsCast:[...seen].filter(name=>Number(MTG.CARD_CATALOG[name]?.engineBatch?.replace('oracle-',''))>=47)}));
 });

@@ -9,6 +9,7 @@ const names = [
   'Krile Baldesion', 'Emet-Selch of the Third Seat', "Puca's Covenant", 'The Reaper, King No More',
   'Screeching Scorchbeast', "Tidus, Yuna's Guardian", 'Ondu Spiritdancer',
   'Donal, Herald of Wings', 'Deep Gnome Terramancer', 'Pantlaza, Sun-Favored',
+  'Ancient Cornucopia', 'Nykthos Paragon',
 ];
 const named = (cards, name) => cards.filter(card => card.name === name).length;
 
@@ -23,7 +24,14 @@ function fixture(name, role) {
     assert.equal(await game.castSpell(a, add(name, 'hand'), { from: 'hand' }), true);
   };
   let fire, result, alternate;
-  if (name.startsWith('Baron Strucker')) {
+  if (name === 'Ancient Cornucopia') {
+    fire = () => cast('Opt');
+    result = () => a.life - 40;
+  } else if (name === 'Nykthos Paragon') {
+    const witness = add('Grizzly Bears');
+    fire = () => game.gainLife(a, 1, source);
+    result = () => witness.counters['+1/+1'] || 0;
+  } else if (name.startsWith('Baron Strucker')) {
     fire = () => enter('Aerial Doombot');
     result = () => a.graveyard.length;
   } else if (name === 'Cosmic Crucible') {
