@@ -1,7 +1,7 @@
 /* A quiet result beside the table; a spotlight for events that reshape it. */
 #game .overlay.resolutionrecapoverlay { padding: 20px; z-index: 1500; }
 #game .resolutionrecapoverlay .modal.resolutionrecap {
-  display: flex; flex-direction: column; width: min(900px, 100%); max-width: 900px;
+  display: flex; flex-direction: column; width: min(720px, 100%); max-width: 720px;
   max-height: calc(100dvh - 40px); padding: 0; overflow: hidden;
   border: 1px solid #906347; border-radius: 16px;
   background: #131816; color: #ecebe2; box-shadow: 0 24px 100px #000b;
@@ -14,6 +14,12 @@
 .resolutionrecaptitle h2 { margin: 0; color: #fff4d9; font: 600 21px/1.2 Georgia, serif; overflow-wrap: anywhere; }
 .resolutionrecaptitle p { margin: 6px 0 0; color: #bbc5b9; font-size: 12px; }
 .resolutionrecapbody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 24px 20px; }
+.resolutionrecapsummary { margin: 16px 0 10px; color: #e0dfcd; font-size: 14px; line-height: 1.55; }
+.resolutionrecappending { margin: 12px 0 0; padding: 9px 12px; border-left: 2px solid #caa067; background: #caa0670b; color: #d8c5a4; font-size: 12px; line-height: 1.5; }
+.resolutionrecapbody > .resolutionrecapsection { margin-top: 8px; }
+.resolutionrecapbody > .resolutionrecapsection > h3 { display: none; }
+.resolutionrecapbody > .resolutionrecapsection .resolutionrecaprow { padding: 11px 12px; margin-top: 6px; border: 1px solid #b4c09d1c; border-radius: 8px; background: #93ab850b; }
+.resolutionrecapbody > .resolutionrecapsection .resolutionrecaprow > img { width: 44px; height: 62px; }
 .resolutionrecapsection { margin-top: 16px; }
 .resolutionrecap h3 { margin: 0 0 9px; color: #b5c2ab; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .resolutionrecaprow { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #ffffff0c; }
@@ -38,6 +44,8 @@
 .recapminor .resolutionrecaphead { padding: 14px 18px; background: #202820; }
 .recapminor .resolutionrecapkicker { margin-bottom: 9px; font-size: 9px; }
 .recapminor .resolutionrecaphero { gap: 12px; }
+.recapminor .resolutionrecaphero > img { width: 52px; height: 73px; }
+.recapminor .resolutionrecapsummary { margin-top: 12px; font-size: 12px; color: #bbc5b9; }
 .recapminor .resolutionrecapbody { padding: 0 18px 12px; }
 .recapminor .resolutionrecapbody > .resolutionrecapsection { margin-top: 10px; }
 .recapminor .resolutionrecapbody > .resolutionrecapsection > h3 { display: none; }
@@ -68,7 +76,7 @@
 .recapmajor .resolutionrecaphero > img { width: 96px; height: 134px; transform: rotate(-4deg); box-shadow: 0 10px 28px #0008, 0 0 28px #ffba5520; }
 .recapmajor .resolutionrecaptitle .resolutionrecapimpact {
   margin: 0 0 8px; font-family: var(--ds-font-display, 'Bricolage Grotesque', sans-serif);
-  font-size: clamp(28px, 4.5vw, 52px); font-weight: 800; line-height: .98;
+  font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.04;
   letter-spacing: -.035em; text-transform: uppercase; color: #ffdda0; text-wrap: balance;
 }
 .recapmajor .resolutionrecaptitle h2 { font-size: clamp(20px, 2.5vw, 27px); }

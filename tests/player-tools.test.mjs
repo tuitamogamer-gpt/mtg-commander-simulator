@@ -64,6 +64,22 @@ test('saved pods preserve seats and rules without storing a seed, game state, or
   assert.equal(U.savePod('Pod 0', state), true, 'an existing pod can be updated at the limit');
 });
 
+test('playmat preferences survive later setting changes and keep artwork strength within the readable range', () => {
+  const { U, values } = tools();
+  U.savePlayerPreferences({ playmat: 'grove', playmatStrength: 30 });
+  U.savePlayerPreferences({ handSize: 'large' });
+  assert.equal(U.playerPreferences().playmat, 'grove');
+  assert.equal(U.playerPreferences().playmatStrength, 30);
+  U.savePlayerPreferences({ playmatStrength: 100 });
+  assert.equal(U.playerPreferences().playmatStrength, 35);
+  U.savePlayerPreferences({ playmat: 'none', playmatStrength: -5 });
+  assert.equal(U.playerPreferences().playmat, 'none');
+  assert.equal(U.playerPreferences().playmatStrength, 0);
+  values.set('mtgPlayerPreferences', JSON.stringify({ playmat: 'https://untrusted.test/image', playmatStrength: '99' }));
+  assert.equal(U.playerPreferences().playmat, 'felt');
+  assert.equal(U.playerPreferences().playmatStrength, 20);
+});
+
 test('recent decks are unique and never expose an imported list on the shared landing page', () => {
   const { U } = tools();
   U.rememberDeck('Alpha'); U.rememberDeck('Beta'); U.rememberDeck('Alpha'); U.rememberDeck('Imported');

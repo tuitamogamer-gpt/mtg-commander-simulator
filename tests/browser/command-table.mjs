@@ -11,10 +11,10 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright')
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const output = process.env.COMMAND_TABLE_QA_OUTPUT || `${root}output/web-game/command-table`;
 mkdirSync(output, { recursive: true });
-const server = express().use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }))
+const server = process.env.GAME_URL ? null : express().use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }))
   .use(express.static(root)).listen(0, '127.0.0.1');
-await once(server, 'listening');
-const base = `http://127.0.0.1:${server.address().port}`;
+if (server) await once(server, 'listening');
+const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_EXECUTABLE ? { executablePath: process.env.BROWSER_EXECUTABLE } : {}) });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1024 }, reducedMotion: 'reduce', hasTouch: true });
 const errors = [], failedRequests = [], checks = [];
@@ -35,7 +35,7 @@ const shot = async name => {
 async function openSetup() {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry');
+  await page.waitForSelector('.deckentry:visible');
 }
 async function fixture() {
   await openSetup();
@@ -143,6 +143,40 @@ try {
     const player = _game.players.find(player => String(player.idx) === row.dataset.playerId);
     return row.querySelector('.ct-portrait').getAttribute('src') === MTG.cardImageURL(player.commanders[0].name, 'art');
   })), true, 'Portraits come from official card image resolver');
+  for (const [width, height] of [[1440, 1024], [390, 844]]) {
+    await page.setViewportSize({width, height});
+    await page.locator('.menubutton').click();
+    await page.locator('.playmatsopen').click();
+    await page.getByRole('button', {name: 'Moonlit grove playmat', exact: true}).click();
+    await page.locator('#playmat-strength').focus();
+    await page.locator('#playmat-strength').press('End');
+    assert.equal(await page.locator('#playmat-strength').inputValue(), '35');
+    assert.equal(await page.locator('#game').getAttribute('data-playmat'), 'grove');
+    assert.equal(await page.evaluate(() => MTG.playerPreferences().playmatStrength), 35);
+    assert.equal(await page.evaluate(() => MTG.playerPreferences().playmat), 'grove');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await shot(`playmats-${width}`);
+    await page.getByRole('button', {name: 'Done', exact: true}).click();
+    await page.locator('.opprow:visible .oppname').first().click();
+    const overview = page.locator('.playeroverview');
+    await overview.waitFor();
+    assert.equal(await overview.locator('.zone-hand').evaluate(node => node.tagName), 'SPAN');
+    assert.equal(await overview.locator('.zone-library').evaluate(node => node.tagName), 'SPAN');
+    assert.match(await overview.innerText(), /COMMANDER DAMAGE TO YOU/);
+    await shot(`player-overview-${width}`);
+    await overview.locator('.zone-graveyard').click();
+    await page.getByRole('button', {name: '← Back to player overview', exact: true}).click();
+    await overview.waitFor();
+    await overview.getByRole('button', {name: 'Focus battlefield', exact: true}).click();
+    assert.equal(await page.locator('#game').getAttribute('data-table-view'), 'focus');
+    assert.equal(await page.evaluate(() => _ui.pending === window.__ctMain && window.__ctAnswered === null), true);
+  }
+  await page.evaluate(() => document.body.classList.add('high-contrast'));
+  assert.equal(await page.locator('.myboard').evaluate(node => getComputedStyle(node).backgroundImage), 'none');
+  await page.evaluate(() => document.body.classList.remove('high-contrast'));
+  await page.setViewportSize({width: 1440, height: 1024});
+  await page.getByRole('button', {name: 'Table', exact: true}).click();
+  check('Playmats persist at a bounded strength; public zone navigation and opponent focus preserve decisions on desktop and phone');
   await page.getByRole('button', { name: 'Focus', exact: true }).click();
   await page.locator('[data-focus-player="2"]').click();
   assert.equal(await page.locator('.opprow:visible').count(), 1);
@@ -326,5 +360,5 @@ try {
 } finally {
   writeFileSync(`${output}/report.json`, JSON.stringify({ checks, errors, failedRequests }, null, 2));
   await browser.close();
-  await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); });
+  if (server) await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); });
 }

@@ -116,8 +116,8 @@ test('life, zone, and opponent-detail controls explain their click targets to ke
   assert.match(ui, /class="opplife" role="button" tabindex="0" aria-label=/);
   assert.match(ui, /aria-label="Open \$\{esc\(p\.name\)\} player details"/);
   assert.match(ui, /class="melife" role="button" tabindex="0" aria-label=/);
-  assert.match(ui, /data-z="graveyard" aria-label="Graveyard:/);
-  assert.match(ui, /data-z="exile" aria-label="Exile:/);
+  assert.match(ui, /control\.setAttribute\('aria-label', `\$\{player\.name\}: \$\{label\}, \$\{count\} card/);
+  assert.match(ui, /for \(const zone of \['graveyard', 'exile'\]\) zones\.appendChild\(this\.zoneCounter\(me, zone\)\)/);
   assert.match(ui, /e\.key !== 'Enter' && e\.key !== ' '/);
   assert.match(ui, /d\.setAttribute\('aria-label', `\$\{c\.name\}\. \$\{handAction\}`\)/);
   assert.match(ui, /d\.onkeydown = event =>/);

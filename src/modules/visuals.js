@@ -5,7 +5,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const ICONS = new Set([
     'crown', 'stack', 'log', 'deals', 'hold', 'mana', 'menu', 'attack',
     'shield', 'target', 'library', 'cards', 'graveyard', 'exile', 'effects', 'player',
-    'info', 'ring', 'counterspell', 'indestructible', 'hexproof', 'shroud',
+    'info', 'life', 'playmat', 'expand', 'ring', 'counterspell', 'indestructible', 'hexproof', 'shroud',
     'first-strike', 'double-strike', 'minus-counter', 'proliferate',
     'flying', 'deathtouch', 'lifelink', 'trample', 'haste', 'vigilance',
     'menace', 'reach', 'defender', 'flash', 'prowess', 'ward', 'wither',

@@ -27,6 +27,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   ].map(item => Object.freeze(item)));
   U.normalizeArenaDim = value => typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.min(75, Math.round(value / 5) * 5)) : 30;
+  U.PLAYMATS = Object.freeze([
+    { id: 'felt', label: 'Midnight felt', detail: 'A quiet woven surface with a soft blue glow' },
+    { id: 'grove', label: 'Moonlit grove', detail: 'Silver light and ancient woodland' },
+    { id: 'astral', label: 'Astral sanctum', detail: 'Distant stars and violet stone' },
+    { id: 'ember', label: 'Ember forge', detail: 'Warm embers beneath dark basalt' },
+    { id: 'none', label: 'No playmat', detail: 'A plain surface for maximum clarity' },
+  ].map(item => Object.freeze(item)));
+  U.normalizePlaymatStrength = value => typeof value === 'number' && Number.isFinite(value)
+    ? Math.max(0, Math.min(35, Math.round(value / 5) * 5)) : 20;
   U.playerPreferences = () => {
     const raw = U.readPreference('mtgPlayerPreferences', {}) || {};
     return {
@@ -38,6 +47,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       speed: choose(raw.speed, ['normal', 'slow', 'fast'], 'normal'),
       arenaBackground: choose(raw.arenaBackground, U.ARENA_BACKGROUNDS.map(item => item.id), 'table'),
       arenaDim: U.normalizeArenaDim(raw.arenaDim),
+      playmat: choose(raw.playmat, U.PLAYMATS.map(item => item.id), 'felt'),
+      playmatStrength: U.normalizePlaymatStrength(raw.playmatStrength),
     };
   };
   U.savePlayerPreferences = changes => U.writePreference('mtgPlayerPreferences', { ...U.playerPreferences(), ...changes });

@@ -25,7 +25,18 @@ test('mobile turn following selects the active opponent while manual inspection 
   game.turnPlayer = me;
   assert.equal(MTG.commandTableFocus(game, me, b.idx, 'main', true).focused, b, 'Viewer is never shown as an opponent');
   b.lost = true;
-  assert.equal(MTG.commandTableFocus(game, me, b.idx, 'main', true).focused, a);
+  assert.equal(MTG.commandTableFocus(game, me, b.idx, 'main', true).focused, c, 'Fallback starts clockwise from the viewer');
+});
+
+test('every viewer sees opponents in the same relative seating order, including after a seat is eliminated', () => {
+  const players = [0, 1, 2, 3].map(idx => ({ idx }));
+  const game = { players };
+  for (const viewer of players) {
+    const focus = MTG.commandTableFocus(game, viewer, undefined, 'main');
+    assert.deepEqual(focus.opponents.map(player => player.idx), [1, 2, 3].map(offset => (viewer.idx + offset) % 4));
+  }
+  players[3].lost = true;
+  assert.deepEqual(MTG.commandTableFocus(game, players[2], undefined, 'main').opponents, [players[0], players[1]]);
 });
 
 test('target/player selection and combat cannot hide a legal opponent behind Focus', () => {

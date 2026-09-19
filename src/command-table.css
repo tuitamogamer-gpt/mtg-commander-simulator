@@ -37,6 +37,31 @@ body.game-active #game.command-table .arenaheader {
 #game.command-table .ct-icon { display: inline-flex; align-items: center; }
 #game.command-table .ct-icon .gameicon { width: 18px; height: 18px; }
 
+/* Quiet playmats: artwork only belongs to battlefield backgrounds, never cards or controls. */
+[data-playmat='felt'] { --playmat-art: repeating-linear-gradient(0deg, #28364833 0 1px, transparent 1px 4px), radial-gradient(ellipse at 85% 15%, #638aa9, transparent 65%), linear-gradient(125deg, #233944, #111e2c); }
+[data-playmat='grove'] { --playmat-art: url('../assets/backgrounds/moonlit-grove.svg'); }
+[data-playmat='astral'] { --playmat-art: url('../assets/backgrounds/astral-sanctum.svg'); }
+[data-playmat='ember'] { --playmat-art: url('../assets/backgrounds/molten-forge.svg'); }
+[data-playmat='none'] { --playmat-art: none; }
+body.game-active #game.command-table[data-playmat] :is(.opprow, .opprow.activeai, .myboard),
+#game .playmatpreview {
+  background-color: var(--ds-panel) !important;
+  background-image: linear-gradient(rgba(var(--ds-panel-rgb), var(--playmat-cover, .8)), rgba(var(--ds-panel-rgb), var(--playmat-cover, .8))), var(--playmat-art) !important;
+  background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important;
+}
+body.game-active.high-contrast #game.command-table[data-playmat] :is(.opprow, .opprow.activeai, .myboard),
+body.high-contrast #game .playmatpreview { background-image: none !important; }
+#game .playmatart { background-image: var(--playmat-art); background-color: var(--ds-panel-raised); }
+#game .playmatpreview { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px; padding: 18px; border: 1px solid var(--ds-line); border-radius: 10px; }
+#game .playmatpreviewlabel { flex: 0 0 100%; color: var(--ds-muted); font: 600 10px var(--ds-font-body); letter-spacing: .12em; }
+#game .playmatpreviewcard { display: grid; gap: 6px; justify-items: center; padding: 20px; background: var(--ds-panel); border: 1px solid var(--ds-line); border-radius: 8px; }
+#game .playmatpreviewcard > .gameicon { width: 28px; height: 28px; color: var(--ds-accent-bright); }
+#game .playmatpreviewcard small, #game .playmathint { color: var(--ds-muted); font: 12px/1.6 var(--ds-font-body); }
+#game .playmatpreviewzones { display: flex; flex-direction: column; gap: 6px; }
+#game .playmatpreviewzones > span { display: flex; gap: 8px; align-items: center; padding: 7px 10px; background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: 5px; font-size: 11px; }
+#game .playmatpreviewzones b { margin-left: auto; }
+#game .playmatpreviewzones .gameicon { width: 18px; height: 18px; }
+
 /* The same public battlefield is shown in both layouts. */
 body.game-active #game.command-table .oppsouter { grid-area: opps; padding: 5px 10px 8px !important; min-height: 0; min-width: 0; }
 body.game-active #game.command-table .oppswrap,
@@ -73,7 +98,6 @@ body.game-active #game.command-table .opphead {
 #game.command-table .opphead .oppmeta > .zbtn { min-width: 0; max-width: 100% !important; }
 #game.command-table .opphead .oppcmd { font-size: 9px; margin: 0 0 0 auto; max-width: 100%; white-space: normal; }
 #game.command-table .opphead .tbtn.small { grid-area: info; width: 28px; height: 32px; min-height: 32px; padding: 4px; }
-#game.command-table .ct-zone-link { flex: 0 0 auto; padding: 2px; border: 0; background: transparent; color: var(--ds-copy); font: 500 10px var(--ds-font-body); white-space: nowrap; }
 #game.command-table .turntimeline { display: none; }
 body.game-active #game.command-table .oppstrip {
   display: flex !important; flex-direction: column; align-items: stretch; justify-content: flex-start;
@@ -89,9 +113,9 @@ body.game-active #game.command-table .boardlanecards {
 }
 body.game-active #game.command-table .boardlanelabel { position: static; flex: 0 0 auto; font: 600 10px/1.3 var(--ds-font-body); color: var(--ds-muted); letter-spacing: .06em; }
 body.game-active #game.command-table .mini { width: var(--ct-card) !important; height: calc(var(--ct-card) * 1.48) !important; flex: 0 0 auto; margin: 0 0 5px; border-radius: 6px; transform-origin: center; }
-body.game-active #game.command-table .mini.sm { width: var(--ct-opponent-card) !important; height: calc(var(--ct-opponent-card) * 1.48) !important; }
+body.game-active #game.command-table .mini.sm { width: calc(var(--ct-opponent-card) * var(--ct-opponent-scale, 1)) !important; height: calc(var(--ct-opponent-card) * var(--ct-opponent-scale, 1) * 1.48) !important; }
 body.game-active #game.command-table .permanentpile { width: var(--ct-card) !important; flex: 0 0 auto; }
-body.game-active #game.command-table .permanentpile.sm { width: var(--ct-opponent-card) !important; }
+body.game-active #game.command-table .permanentpile.sm { width: calc(var(--ct-opponent-card) * var(--ct-opponent-scale, 1)) !important; }
 body.game-active #game.command-table .mini > img { width: 100%; height: calc(100% - 12px) !important; object-fit: contain; object-position: top; border-radius: 6px; }
 body.game-active #game.command-table .mini .mname { bottom: 0; font: 600 10px/1.2 var(--ds-font-body); background: var(--ds-panel); padding: 3px; max-height: 29px; }
 body.game-active #game.command-table .oppswrap .mini.sm .mname { font-size: 10px; max-height: 29px; }
@@ -310,7 +334,6 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #game.command-table .opphead .ct-portrait, #game.command-table .opphead .ct-commander-name { display: none; }
   #game.command-table .opphead .opplife { font-size: 18px; }
   #game.command-table .opphead .oppmeta { font-size: 9px; }
-  #game.command-table .ct-zone-link { font-size: 9px; }
   body.game-active #game.command-table .oppstrip { padding: 4px 6px !important; }
   body.game-active #game.command-table .myboard { margin: 0 8px 4px !important; padding: 5px 7px !important; gap: 5px; }
   #game.command-table .ct-player-head { gap: 5px; flex-wrap: nowrap; }
@@ -430,6 +453,119 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #game.command-table[data-mobile-view='mine'] .handsortlabel { width: 90px; }
   body.game-active #game.command-table[data-mobile-view='mine'] .hand { width: 100%; flex: 1 1 0; }
   #game.command-table[data-mobile-view='mine'] .ct-decision-rail:not(.has-review) .ct-decision-heading { display: none; }
+}
+
+/* Public zone counters use the same symbols, labels and numerals at every seat. */
+#game.command-table .opprow { container-type: inline-size; }
+#game.command-table .ct-player-zones { display: flex; align-items: center; gap: 4px; padding: 5px 7px; background: var(--ds-panel); border-bottom: 1px solid var(--ds-line-soft); flex: 0 0 auto; }
+#game .zonecounter { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 34px; box-sizing: border-box; padding: 5px 7px; border: 1px solid var(--ds-line-soft); border-radius: 5px; background: var(--ds-panel); color: var(--ds-copy); font: 500 11px/1.2 var(--ds-font-body); white-space: nowrap; }
+#game .zonecounter .gameicon { display: block; flex: 0 0 18px; width: 18px; height: 18px; margin: 0; stroke-width: 1.8; }
+#game .zonecounter b { font: 650 14px/1 var(--ds-font-mono); color: var(--ds-text); font-variant-numeric: tabular-nums; }
+#game .zone-hand .gameicon { color: #b8d1e7; }
+#game .zone-library .gameicon { color: #d4cba7; }
+#game .zone-graveyard .gameicon { color: #c2becb; }
+#game .zone-exile .gameicon { color: #c3acf0; }
+#game .zone-command .gameicon { color: var(--ds-accent-bright); }
+#game button.zonecounter { cursor: pointer; }
+#game button.zonecounter:hover { background: var(--ds-panel-raised); border-color: var(--ds-accent); }
+#game .zonecounter.targetzone { padding-bottom: 16px !important; min-height: 46px !important; }
+#game .zonecounter > .targetzonebadge { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 7px; }
+#game :is(.zonecounter, .ct-focus-board, .playeroverviewclose):focus-visible { outline: 2px solid var(--ds-accent-bright); outline-offset: 2px; }
+#game .ct-player-zones > .zonecounter { flex: 1 1 0; padding-inline: 4px; gap: 4px; }
+#game .ct-player-zones .zonecounterlabel { font-size: 9px; }
+#game .ct-focus-board { display: grid; place-items: center; flex: 0 0 30px; min-height: 34px; padding: 4px; background: var(--ds-panel-raised); color: var(--ds-copy); border: 1px solid var(--ds-line-soft); border-radius: 5px; cursor: pointer; }
+#game .ct-focus-board:hover { color: var(--ds-accent-bright); border-color: var(--ds-accent); }
+body.game-active #game.command-table .opphead { background: var(--ds-panel) !important; }
+#game.command-table .opphead .oppmeta { gap: 4px; }
+#game.command-table .opphead .oppcmd { margin-left: 0; line-height: 1.4; }
+#game.command-table .opphead .oppcmd .gameicon { width: 13px; height: 13px; }
+#game.command-table .opplife { display: inline-flex; gap: 5px; align-items: center; }
+#game.command-table .opplife > .gameicon { width: 16px; height: 16px; margin: 0; color: #d49b9d; }
+#game.command-table .opplife > b { font: inherit; }
+#game.command-table .ct-player-head { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: 'portrait name life' 'zones zones zones'; gap: 7px 10px; }
+#game.command-table .ct-player-head > :is(.ct-inspect-commander, .ct-portrait) { grid-area: portrait; }
+#game.command-table .ct-player-head .ct-player-name { grid-area: name; }
+#game.command-table .ct-player-head .meinfo { display: contents !important; }
+#game.command-table .ct-player-head .meinfo > .playerlifetotals { grid-area: life; }
+#game.command-table .ct-player-head .zbtns { grid-area: zones; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; }
+#game.command-table .ct-player-head .zbtn { min-height: 34px; gap: 5px; }
+#game.command-table .handtoolstitle { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+#game.command-table .handtoolstitle .gameicon { width: 18px; height: 18px; }
+#game.command-table .handtoolstitle b { font-family: var(--ds-font-mono); color: var(--ds-text); }
+#game.command-table .exiletraytitle .gameicon { width: 15px; height: 15px; }
+@container (max-width: 345px) {
+  #game .ct-player-zones .zonecounterlabel { display: none; }
+}
+@media (min-width: 901px) {
+  body.game-active #game.command-table[data-table-view='focus'] { --ct-opponent-card: 104px; }
+  body.game-active #game.command-table[data-table-view='focus'] .opphead { grid-template-columns: 42px minmax(0, 1fr) auto auto 28px !important; grid-template-areas: 'portrait name meta life info' !important; min-height: 56px !important; }
+  #game.command-table[data-table-view='focus'] .opphead .oppmeta { max-width: 280px; }
+  #game.command-table[data-table-view='focus'] .ct-player-zones { justify-content: flex-start; }
+  #game.command-table[data-table-view='focus'] .ct-player-zones > .zonecounter { flex: 0 1 auto; padding-inline: 12px; }
+  #game.command-table[data-table-view='focus'] .ct-player-zones .zonecounterlabel { font-size: 11px; }
+  #game.command-table[data-table-view='focus'] .ct-focus-board { margin-left: auto; }
+}
+@media (min-width: 901px) and (max-height: 760px) {
+  body.game-active #game.command-table[data-table-view='focus'] { --ct-opponent-card: 86px; grid-template-rows: 54px 54px minmax(245px, 1.1fr) auto minmax(155px, 1fr) calc(var(--ct-hand) + var(--ct-hand-extra)) !important; }
+}
+@media (max-width: 900px) {
+  #game.command-table .ct-player-zones { padding: 3px 5px; gap: 3px; }
+  #game.command-table .ct-player-zones :is(.zonecounter, .ct-focus-board) { min-height: 38px; }
+  #game.command-table .ct-player-head { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 4px 6px; }
+  #game.command-table .ct-player-head .zbtns { gap: 3px; flex-wrap: nowrap; }
+  #game.command-table .ct-player-head .zonecounter { flex: 1 1 0; padding: 5px 3px; font-size: 9px; gap: 3px; }
+  #game.command-table .ct-player-head .zonecounter b { font-size: 12px; }
+  #game.command-table .ct-player-head .zonecounter .gameicon { width: 16px; height: 16px; flex-basis: 16px; }
+  #game.command-table .ct-focus-board { flex-basis: 38px; }
+  #game.command-table .opphead .ct-turn-badge { font-size: 9px; }
+  #game.command-table .opphead .oppmeta:has(.zbtn, .playereffectsbadge) { display: flex !important; grid-column: 1 / -1; grid-row: 2; padding-bottom: 4px; }
+}
+@media (max-width: 360px) {
+  #game.command-table .ct-player-head .zonecounterlabel { display: none; }
+}
+
+/* A player overview is a readable public board, with damage relative to your seat. */
+#game .sheet.playeroverview { display: flex; flex-direction: column; gap: 16px; width: min(980px, calc(100 * var(--vwu) - 32px)); padding: 22px; background: var(--ds-dialog); overflow-y: auto; }
+#game .playeroverviewhead { display: flex; align-items: center; gap: 16px; }
+#game .playeroverviewhead > div:first-child { flex: 1; min-width: 0; }
+#game .playeroverviewhead small { color: var(--ds-accent-bright); font: 650 10px/1.5 var(--ds-font-body); letter-spacing: .07em; }
+#game .playeroverviewhead .mtitle { margin: 3px 0; font: 650 26px/1.2 var(--ds-font-display); }
+#game .playeroverviewhead p { color: var(--ds-muted); margin: 4px 0 0; font-size: 13px; }
+#game .playeroverviewlife { display: flex; align-items: center; gap: 7px; }
+#game .playeroverviewlife .gameicon { width: 22px; height: 22px; color: #d49b9d; }
+#game .playeroverviewlife b { font: 650 32px var(--ds-font-mono); }
+#game .playeroverviewclose { display: grid; place-items: center; align-self: flex-start; width: 44px; height: 44px; border: 1px solid var(--ds-line); border-radius: 6px; background: var(--ds-panel); color: var(--ds-copy); font-size: 26px; flex: 0 0 44px; }
+#game .playeroverviewnav { display: flex; gap: 5px; overflow-x: auto; flex: 0 0 auto; }
+#game .playeroverviewnav .pbtn { flex: 1 0 auto; min-height: 38px; padding: 7px 12px; font-size: 11px; }
+#game .playeroverviewnav [aria-pressed='true'] { border-color: var(--ds-accent); color: var(--ds-accent-bright); }
+#game .playeroverviewzones { display: flex; flex-wrap: wrap; gap: 6px; }
+#game .playeroverviewzones > .zonecounter { flex: 1 1 auto; min-height: 42px; }
+#game .playeroverviewcounters { display: flex; gap: 6px; flex-wrap: wrap; }
+#game .playeroverviewfocus { align-self: flex-start; min-height: 42px; }
+#game .playeroverviewfocus .gameicon { width: 16px; height: 16px; }
+#game .playeroverviewdamage { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#game .playeroverviewdamage > div { padding: 12px; display: grid; gap: 6px; background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: 7px; font-size: 12px; }
+#game .playeroverviewdamage small { font: 600 9px var(--ds-font-body); color: var(--ds-muted); letter-spacing: .04em; }
+#game .playeroverviewdamage b { color: var(--ds-text); font-family: var(--ds-font-mono); white-space: nowrap; }
+#game .playeroverview :is(.cmdhint, .cmddmg) { margin: 0; flex: 0 0 auto; }
+#game .playeroverviewbattlefield { display: grid; gap: 16px; flex: 0 0 auto; }
+#game .playeroverviewbattlefield h3 { margin: 0; font: 600 16px var(--ds-font-display); }
+body.game-active #game.command-table .playeroverviewbattlefield .boardlanecards { flex-wrap: wrap; overflow: visible; }
+#game .playeroverviewbattlefield .boardlanelabel { margin-bottom: 5px; }
+#game .playeroverview .playerstatuspanel { flex: 0 0 auto; }
+@media (max-width: 600px) {
+  #game .sheet.playeroverview { width: calc(100 * var(--vwu) - 20px); padding: 14px; gap: 12px; }
+  #game .playeroverviewhead { gap: 8px; }
+  #game .playeroverviewhead .mtitle { font-size: 21px; }
+  #game .playeroverviewlife { gap: 4px; }
+  #game .playeroverviewlife b { font-size: 25px; }
+  #game .playeroverviewlife small { display: none; }
+  #game .playeroverviewzones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #game .playeroverviewzones > .zonecounter { gap: 4px; font-size: 9px; padding-inline: 5px; }
+  #game .playeroverviewdamage { grid-template-columns: 1fr; }
+}
+@media (max-width: 360px) {
+  #game .playeroverviewzones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Review celebrates the four seats while preserving the existing setup flow. */

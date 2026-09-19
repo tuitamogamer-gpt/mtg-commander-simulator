@@ -100,6 +100,85 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     update();
     return overlay;
   };
+  U.UI.prototype.applyPlaymat = function (root = document.querySelector('#game')) {
+    if (!root) return;
+    const preset = U.PLAYMATS.find(item => item.id === this.playmat) || U.PLAYMATS[0];
+    root.dataset.playmat = preset.id;
+    root.style.setProperty('--playmat-cover', String(1 - U.normalizePlaymatStrength(this.playmatStrength) / 100));
+  };
+  U.UI.prototype.renderPlaymats = function () {
+    const ui = this, overlay = node('div', 'quickmenuov playmatov');
+    const panel = node('section', 'quickmenu arenabackgroundpicker playmatpicker');
+    const head = node('header', 'quickmenuhead');
+    const heading = node('div', '');
+    heading.append(node('span', '', 'A little atmosphere. A clear battlefield.'), node('h2', '', 'Playmats'));
+    const dismiss = () => {
+      ui.quickMenuOpen = false; ui.render();
+      document.querySelector('.menubutton')?.focus({ preventScroll: true });
+    };
+    const close = node('button', 'quickmenuclose', '×');
+    close.type = 'button'; close.setAttribute('aria-label', 'Close playmats'); close.onclick = dismiss;
+    head.append(heading, close);
+    const body = node('div', 'arenabackgroundbody');
+    const preview = node('div', 'playmatpreview');
+    const previewLabel = node('span', 'playmatpreviewlabel', 'BATTLEFIELD PREVIEW');
+    const previewCard = node('div', 'playmatpreviewcard');
+    previewCard.innerHTML = `${U.icon('cards')}<b>Cards stay clear</b><small>Artwork sits beneath the board</small>`;
+    const previewZones = node('div', 'playmatpreviewzones');
+    for (const [key, label, count] of [['cards', 'Hand', 7], ['graveyard', 'Graveyard', 3], ['exile', 'Exile', 2]]) {
+      const stat = node('span', ''); stat.innerHTML = `${U.icon(key)}<span>${label}</span><b>${count}</b>`; previewZones.append(stat);
+    }
+    preview.append(previewLabel, previewCard, previewZones); body.append(preview);
+    body.append(node('p', 'playmathint', 'One motif across every battlefield. Cards, life totals and zone counters keep their own solid surfaces.'));
+    if (document.body.classList.contains('high-contrast')) body.append(node('p', 'playmathint', 'High contrast is on: battlefield artwork is hidden. Your playmat choice is kept.'));
+    const choices = node('div', 'arenabackgroundgrid scenes playmatchoices');
+    choices.setAttribute('role', 'group'); choices.setAttribute('aria-label', 'Playmat design');
+    const status = node('div', 'arenabackgroundstatus'); status.setAttribute('role', 'status');
+    const save = () => {
+      const saved = U.savePlayerPreferences({ playmat: ui.playmat, playmatStrength: ui.playmatStrength });
+      ui.applyPlaymat(); update();
+      status.textContent = saved ? 'Applied immediately · saved on this device' : 'Applied for this session · device storage is unavailable';
+    };
+    for (const preset of U.PLAYMATS) {
+      const choice = node('button', 'arenabackgroundchoice playmatchoice');
+      choice.type = 'button'; choice.dataset.playmat = preset.id;
+      choice.setAttribute('aria-label', preset.id === 'none' ? 'No playmat' : `${preset.label} playmat`); choice.title = preset.detail;
+      const art = node('span', 'arenabackgroundart playmatart'); art.setAttribute('aria-hidden', 'true');
+      const selected = node('span', 'arenabackgroundcheck', '✓'); selected.setAttribute('aria-hidden', 'true');
+      choice.append(art, node('span', 'arenabackgroundlabel', preset.label), selected);
+      choice.onclick = () => { ui.playmat = preset.id; save(); };
+      choices.append(choice);
+    }
+    body.append(choices);
+    const dimmer = node('div', 'arenabackgrounddimmer');
+    const label = node('label', '', 'Artwork strength'); label.htmlFor = 'playmat-strength';
+    const amount = node('output', ''); amount.htmlFor = 'playmat-strength';
+    const input = node('input', ''); input.id = 'playmat-strength'; input.type = 'range';
+    input.min = '0'; input.max = '35'; input.step = '5'; input.value = String(ui.playmatStrength);
+    input.oninput = () => { ui.playmatStrength = U.normalizePlaymatStrength(Number(input.value)); save(); };
+    dimmer.append(label, amount, input); body.append(dimmer, status);
+    const foot = node('footer', 'arenabackgroundfooter');
+    const back = node('button', 'pbtn', '← Arena controls'); back.type = 'button';
+    back.onclick = () => { ui.quickMenuOpen = true; ui.render(); document.querySelector('.playmatsopen')?.focus({ preventScroll: true }); };
+    const done = node('button', 'pbtn primary', 'Done'); done.type = 'button'; done.onclick = dismiss;
+    foot.append(back, done); panel.append(head, body, foot); overlay.append(panel);
+    overlay.onclick = event => { if (event.target === overlay) dismiss(); };
+    panel.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); dismiss(); }
+    });
+    function update() {
+      preview.dataset.playmat = ui.playmat;
+      preview.style.setProperty('--playmat-cover', String(1 - ui.playmatStrength / 100));
+      amount.textContent = `${ui.playmatStrength}%`;
+      input.disabled = ui.playmat === 'none';
+      input.setAttribute('aria-valuetext', `${ui.playmatStrength}% artwork strength`);
+      choices.querySelectorAll('.playmatchoice').forEach(choice => {
+        choice.setAttribute('aria-pressed', String(choice.dataset.playmat === ui.playmat));
+      });
+    }
+    update();
+    return overlay;
+  };
   U.UI.prototype.openCommandPalette = function () {
     if (this.commandPaletteOpen || this.fatalError) return;
     this.commandPaletteOpen = true;
@@ -210,7 +289,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   U.UI.prototype.renderHandTools = function () {
     const tools = node('div', 'handtools');
-    const title = node('span', 'handtoolstitle', `Your hand · ${this.me.hand.length}`);
+    const title = node('span', 'handtoolstitle');
+    title.innerHTML = `${U.icon('cards')}<span>Your hand</span><b>${this.me.hand.length}</b>`;
     const label = node('label', 'handsortlabel');
     label.appendChild(node('span', '', 'Sort'));
     const select = node('select', 'handsort');

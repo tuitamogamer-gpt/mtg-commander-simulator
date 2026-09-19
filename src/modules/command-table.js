@@ -5,7 +5,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const decisionsShowingTable = new Set(['chooseTargets', 'choosePlayer', 'attackers', 'blockers']);
   U.commandTableFocus = function (game, viewer, preferred, decision, followActive = false) {
-    const opponents = game.players.filter(player => player !== viewer && !player.lost);
+    const viewerIndex = game.players.indexOf(viewer);
+    const opponents = Array.from({ length: Math.max(0, game.players.length - 1) }, (_, index) =>
+      game.players[(viewerIndex + index + 1) % game.players.length]).filter(player => !player.lost);
     const active = opponents.find(player => player.idx === game.turnPlayer?.idx);
     const focused = (followActive && active) || opponents.find(player => player.idx === preferred) || active || opponents[0] || null;
     return { opponents, focused, showAll: decisionsShowingTable.has(decision) };
@@ -48,6 +50,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return element;
   };
 
+  P.focusOpponent = function (player) {
+    this.commandFocusPlayer = player.idx;
+    this.commandTableView = 'focus';
+    this.commandMobileBoard = 'opponent';
+    this.mobileView = 'mine';
+    this.utilityDrawerOpen = false;
+    this.playerSheet = null;
+    this.collapsed?.delete(player.idx);
+    try { localStorage.setItem('mtgCommandTableView', 'focus'); } catch { /* Session preference still applies. */ }
+    this.render();
+    document.querySelector(`.ct-seat[data-focus-player="${player.idx}"]`)?.focus({ preventScroll: true });
+  };
+
   P.renderCommandSeats = function (game, focus) {
     const ribbon = node('nav', 'ct-seat-ribbon');
     ribbon.setAttribute('aria-label', 'Players at the table');
@@ -81,6 +96,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.commandFocusPlayer = focus.focused?.idx ?? null;
     root.dataset.tableView = this.commandTableView;
     root.dataset.mobileBoard = this.commandMobileBoard || 'mine';
+    this.applyPlaymat(root);
+    root.style.setProperty('--ct-opponent-scale', String(this.oppScale || 1));
     root.classList.toggle('ct-show-all', focus.showAll);
     root.classList.toggle('ct-no-opponents', !focus.opponents.length);
     root.append(this.renderCommandSeats(game, focus));
@@ -113,9 +130,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!player) continue;
       row.classList.toggle('ct-focused', player === focus.focused);
       const head = row.querySelector('.opphead');
-      // On touch screens the header opens details. A hidden collapse control
-      // otherwise leaves the focused battlefield looking empty.
-      if (mobileLayout.matches && !this.isCandidate(player) && this.selectedTargetIndex(player) < 0) {
+      // A header always opens the public player overview; an explicit control
+      // enlarges the board. Neither action can collapse a battlefield by accident.
+      if (!this.isCandidate(player) && this.selectedTargetIndex(player) < 0) {
         head.title = `Open ${player.name} player details`;
         head.onclick = () => { this.playerSheet = player; this.render(); };
       }
@@ -123,17 +140,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (player === game.turnPlayer) head.querySelector('.oppname')?.append(node('span', 'ct-turn-badge', 'Active turn'));
       const shortName = commanders(player).map(card => card.name.split(',')[0]).join(' + ');
       head.querySelector('.oppname')?.append(node('small', 'ct-commander-name', shortName));
-      const details = button('ct-zone-link', `Graveyard ${player.graveyard.length}`, event => {
-        event.stopPropagation(); this.zoneBrowse = { player, zone: 'graveyard' }; this.render();
-      });
-      details.setAttribute('aria-label', `${player.name}: open graveyard, ${player.graveyard.length} cards`);
-      this.markTargetZone(details, player, 'graveyard');
       const metadata = head.querySelector('.oppmeta');
       const commanderState = head.querySelector('.oppcmd');
-      metadata?.append(details);
-      // Zone counts and commander state share a wrapping row, so long states
-      // such as "battlefield / battlefield" never paint over the graveyard link.
       if (metadata && commanderState) metadata.append(commanderState);
+      const enlarge = button('ct-focus-board', undefined, event => {
+        event.stopPropagation(); this.focusOpponent(player);
+      });
+      enlarge.append(icon('expand'));
+      enlarge.title = `Focus ${player.name}'s battlefield`;
+      enlarge.setAttribute('aria-label', enlarge.title);
+      row.querySelector('.ct-player-zones')?.append(enlarge);
       const landCount = row.querySelector('.oppLands');
       if (landCount) {
         const lands = game.lands(player).filter(card => !card.is('Creature'));
@@ -271,7 +287,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.commandFocusPlayer = focus.focused?.idx ?? null;
     this.commandFocusTurn = turn;
     this.commandWasMobile = mobile;
-    if (mobile || focus.showAll) this.collapsed?.clear();
+    this.collapsed?.clear();
     root.classList.add('command-table');
     originalRender.call(this);
   };

@@ -126,6 +126,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.handSize = preferences.handSize;
       this.speed = preferences.speed;
       this.arenaBackground = preferences.arenaBackground || 'table';
+      this.playmat = preferences.playmat || 'felt';
+      this.playmatStrength = preferences.playmatStrength ?? 20;
       this.arenaDim = preferences.arenaDim ?? 30;
       document.body?.classList?.toggle('high-contrast', !!preferences.contrast);
       this.sheet = null;     // card sheet data
@@ -2343,6 +2345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderQuickMenu(g) {
       if (!this.quickMenuOpen) return null;
       if (this.quickMenuOpen === 'backgrounds') return this.renderArenaBackgrounds();
+      if (this.quickMenuOpen === 'playmats') return this.renderPlaymats();
       if (this.quickMenuOpen === 'audio') return this.renderAudioSettings();
       const overlay = el('div', 'quickmenuov');
       const panel = el('div', 'quickmenu');
@@ -2383,6 +2386,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       action('Arena background', U.ARENA_BACKGROUNDS.find(item => item.id === this.arenaBackground)?.label || 'Commander table', () => {
         this.quickMenuOpen = 'backgrounds'; this.render();
       }).classList.add('arenabackgroundopen');
+      action('Playmats', U.PLAYMATS.find(item => item.id === this.playmat)?.label || 'Midnight felt', () => {
+        this.quickMenuOpen = 'playmats'; this.render();
+      }).classList.add('playmatsopen');
       action('Hand card size', this.handSize === 'large' ? 'Large' : 'Standard', () => {
         this.handSize = this.handSize === 'large' ? 'standard' : 'large';
         MTG.savePlayerPreferences({ handSize: this.handSize });
@@ -2557,12 +2563,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     visibleOpponentSeats(g) {
       const seats = [];
       let seatNo = 0;
-      for (const player of g.players) {
-        if (player === this.me) continue;
+      const viewerIndex = g.players.indexOf(this.me);
+      for (let offset = 1; offset < g.players.length; offset++) {
+        const player = g.players[(viewerIndex + offset) % g.players.length];
         seatNo++;
         if (!player.lost) seats.push({ player, seatNo });
       }
       return seats;
+    }
+
+    zoneCounter(player, zone, options = {}) {
+      const labels = { hand: 'Hand', library: 'Library', 'library-top': 'Library', graveyard: 'Graveyard', exile: 'Exile', command: 'Command' };
+      const key = zone === 'library-top' ? 'library' : zone;
+      const count = player[key]?.length || 0;
+      const label = labels[zone] || zone;
+      const publicZone = ['graveyard', 'exile', 'command'].includes(zone);
+      const interactive = publicZone || !!options.onClick;
+      const control = el(interactive ? 'button' : 'span', 'zonecounter zone-' + key + (interactive ? ' zbtn' : ''),
+        `${U.icon(key === 'hand' ? 'cards' : key === 'command' ? 'crown' : key)}<span class="zonecounterlabel">${label}</span><b>${count}</b>`);
+      control.dataset.z = zone;
+      control.title = `${player === this.me ? 'Your' : player.name + "'s"} ${label.toLowerCase()}: ${count} card${count === 1 ? '' : 's'}`;
+      control.setAttribute('aria-label', `${player.name}: ${label}, ${count} card${count === 1 ? '' : 's'}${interactive ? '. Open to inspect.' : ''}`);
+      if (interactive) {
+        control.type = 'button';
+        control.onclick = event => {
+          event.stopPropagation();
+          if (options.onClick) options.onClick();
+          else {
+            if (options.returnPlayer) this.playerSheet = null;
+            this.zoneBrowse = { player, zone, returnPlayer: options.returnPlayer }; this.render();
+          }
+        };
+        this.markTargetZone(control, player, zone);
+      }
+      return control;
     }
 
     libraryTopSources(g, player) {
@@ -2607,7 +2641,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.title = isCandidate ? `Choose ${p.name} ${proliferateChoice ? 'for proliferate' : 'as the target'}`
           : collapsed ? `Expand ${p.name}'s battlefield` : `Collapse ${p.name}'s battlefield`;
         const cmdList = (p.commanders && p.commanders.length) ? p.commanders : p.command;
-        const cmdState = cmdList.map(c => c.zone === 'battlefield' ? 'battlefield' : c.zone === 'command' ? 'CZ' : '🪦')
+        const cmdState = cmdList.map(c => ({ battlefield: 'Battlefield', command: 'CZ', graveyard: 'Graveyard', exile: 'Exile', hand: 'Hand', library: 'Library', stack: 'Stack' })[c.zone] || c.zone)
           .join(' / ') || '-';
         const cmdTitle = cmdList.map(c => `${c.name} (${c.zone})`).join(' · ');
         const styleMeta = p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle];
@@ -2617,8 +2651,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${escAttr(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}</span>
-          <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
+          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${U.icon('life')}<b>${p.life}</b></span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}</span>
+          <span class="oppmeta">${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
         head.querySelector('.tbtn.small').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
@@ -2657,6 +2691,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         if (isSelectedTarget) this.markSelectedTarget(head, p);
         row.appendChild(head);
+        const zones = el('div', 'ct-player-zones');
+        zones.setAttribute('aria-label', `${p.name}: card zones`);
+        for (const zone of ['hand', 'library', 'graveyard', 'exile']) zones.appendChild(this.zoneCounter(p, zone));
+        row.appendChild(zones);
         if (isActiveAi) row.appendChild(this.renderTurnTimeline(g, p));
         // board strip (always visible unless collapsed)
         if (!collapsed) {
@@ -3006,20 +3044,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>
-        <div class="zbtns">
-          <button class="zbtn" data-z="library-top" aria-label="Library: ${me.library.length} cards${libraryTop ? '. The top card is shown beside this control.' : ''}" title="Library: ${me.library.length} cards${libraryTop ? ' · top card visible beside this control' : ''}">${U.icon('library')}<b>${me.library.length}</b></button>
-          <button class="zbtn" data-z="graveyard" aria-label="Graveyard: ${me.graveyard.length} cards" title="Open graveyard">${U.icon('graveyard')}<b>${me.graveyard.length}</b></button>
-          <button class="zbtn" data-z="exile" aria-label="Exile: ${me.exile.length} cards" title="Open exile">${U.icon('exile')}<b>${me.exile.length}</b></button>
-        </div>`;
-      info.querySelectorAll('.zbtn[data-z]').forEach(b => {
-        this.markTargetZone(b, me, b.dataset.z);
-        b.onclick = () => {
-          if (b.dataset.z === 'library-top') {
-            if (libraryTop) this.sheet = { card: libraryTop };
-          } else this.zoneBrowse = { player: me, zone: b.dataset.z };
-          this.render();
-        };
-      });
+        <div class="zbtns"></div>`;
+      const zones = info.querySelector('.zbtns');
+      zones.appendChild(this.zoneCounter(me, 'hand'));
+      zones.appendChild(this.zoneCounter(me, 'library-top', libraryTop ? { onClick: () => {
+        this.sheet = { card: libraryTop }; this.render();
+      } } : {}));
+      for (const zone of ['graveyard', 'exile']) zones.appendChild(this.zoneCounter(me, zone));
       const effectsBadge = info.querySelector('.playereffectsbadge');
       const dungeonButton = this.dungeonButton(me);
       if (dungeonButton) info.appendChild(dungeonButton);
@@ -3405,7 +3436,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (exilePlayable.length) {
           const tray = el('div', 'exiletray');
-          tray.appendChild(el('div', 'exiletraytitle', '🌀 Exiled — you may play:'));
+          tray.appendChild(el('div', 'exiletraytitle', `${U.icon('exile')} Exiled — you may play:`));
           const list = el('div', 'exiletraylist');
           for (const c of exilePlayable) {
             const meta = c.meta || {};
@@ -4006,13 +4037,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           m.setAttribute('aria-modal', 'true');
           m.setAttribute('aria-labelledby', 'resolution-recap-title');
           const header = el('header', 'resolutionrecaphead');
-          header.appendChild(el('div', 'resolutionrecapkicker', major ? 'MAJOR EVENT · RESOLVED' :
-            recap.searches.length ? 'SEARCH COMPLETE' : 'RESOLVED'));
+          header.appendChild(el('div', 'resolutionrecapkicker', major ? 'TABLE HIGHLIGHT · RESOLVED' :
+            `${esc(recap.impact?.headline || 'The outcome').toUpperCase()} · RESOLVED`));
           const hero = el('div', 'resolutionrecaphero');
           if (recap.source) hero.insertAdjacentHTML('beforeend', cardArtHTML(recap.source));
           const title = el('div', 'resolutionrecaptitle');
           title.innerHTML = (major ? `<p class="resolutionrecapimpact">${esc(recap.impact.headline)}</p>` : '') +
-            `<h2 id="resolution-recap-title">${esc(recap.name)}</h2><p>${esc(recap.controllerName)}${recap.combat ? ' · Combat damage step' : ''}</p>`;
+            `<h2 id="resolution-recap-title">${esc(recap.source?.name || recap.name)}</h2><p>${esc(recap.controllerName)}${recap.combat ? ' · Combat damage step' : ''}</p>`;
           hero.appendChild(title);
           header.appendChild(hero);
           if (major && recap.impact.stats.length) {
@@ -4022,6 +4053,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           m.appendChild(header);
           const body = el('div', 'resolutionrecapbody');
+          if (recap.summary) body.appendChild(el('p', 'resolutionrecapsummary', esc(recap.summary)));
           const rows = (label, entries, container = body) => {
             if (!entries?.length) return;
             const section = el('section', 'resolutionrecapsection');
@@ -4051,20 +4083,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             [`Damage dealt${recap.totalDamage ? ' · ' + recap.totalDamage + ' total' : ''}`, recap.damage.map(row => ({text: row.text}))],
             ['Prevention', recap.prevented.map(row => ({text: row.text}))],
           ].filter(([, entries]) => entries?.length);
-          let detailBody = body;
-          if (!major) {
-            // The immediate result is always visible. Secondary accounting and
-            // stack explanation are available without filling the whole table.
-            if (groups.length) rows(...groups.shift());
-            const disclosure = el('details', 'resolutionrecapdetails');
-            disclosure.open = !!pd.recapDetailsOpen;
-            disclosure.ontoggle = () => {pd.recapDetailsOpen = disclosure.open;};
-            const remaining = recap.stack.length + recap.queued.length;
-            disclosure.appendChild(el('summary', '', `Details &amp; stack${remaining ? ` · ${remaining} pending` : ''}`));
-            detailBody = el('div', 'resolutionrecapdetailbody');
-            disclosure.appendChild(detailBody);
-            body.appendChild(disclosure);
-          }
+          // Every recap leads with a few concrete outcomes. Even a large
+          // effect keeps its card-by-card accounting behind one disclosure.
+          if (recap.highlights?.length) rows('What changed', recap.highlights.slice(0, 3));
+          else if (groups.length) rows(groups[0][0], groups[0][1].slice(0, 3));
+          const remaining = recap.stack.length + recap.queued.length;
+          if (recap.gameOver) body.appendChild(el('p', 'resolutionrecappending', 'The match has ended. Continue to the result.'));
+          else if (remaining) body.appendChild(el('p', 'resolutionrecappending',
+            `${remaining} effect${remaining === 1 ? '' : 's'} still on the way · this result is complete.`));
+          const disclosure = el('details', 'resolutionrecapdetails');
+          disclosure.open = !!pd.recapDetailsOpen;
+          disclosure.ontoggle = () => {pd.recapDetailsOpen = disclosure.open;};
+          disclosure.appendChild(el('summary', '', 'Full breakdown &amp; stack'));
+          const detailBody = el('div', 'resolutionrecapdetailbody');
+          disclosure.appendChild(detailBody);
+          body.appendChild(disclosure);
           for (const [label, entries] of groups) rows(label, entries, detailBody);
           const next = el('section', 'resolutionrecapnext');
           next.appendChild(el('h3', '', 'What happens next'));
@@ -4080,7 +4113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           detailBody.appendChild(next);
           m.appendChild(body);
           const footer = el('footer', 'resolutionrecapfoot');
-          footer.appendChild(el('span', '', major ? 'Take a breath. Review the aftermath.' : 'Paused · your pace'));
+          footer.appendChild(el('span', '', 'Caught up? Keep playing.'));
           footer.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), `${major ? 'primary ' : ''}resolutionrecapproceed`));
           m.appendChild(footer);
           return ov;
@@ -5419,9 +5452,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const p = this.playerSheet;
       const ov = el('div', 'overlay');
       ov.onclick = (e) => { if (e.target === ov) { this.playerSheet = null; this.render(); } };
-      const m = el('div', 'sheet tall');
+      const m = el('div', 'sheet tall playeroverview');
       ov.appendChild(m);
-      const meta = MTG.DECK_META[p.deckName] || {};
       const rows = MTG.cmdDamageRows(g, p);
       const summed = !!(g.houseRules && g.houseRules.sumPartnerDamage);
       const cmdDmg = rows.length ? rows.map(r => {
@@ -5430,12 +5462,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="cdbar"><span class="cdfill${r.n >= 15 ? ' hot' : ''}" style="width:${pct}%"></span></span>
           <b>${r.n}/21</b></div>`;
       }).join('') : '<div class="cdnone">None yet.</div>';
-      m.appendChild(el('div', 'mtitle', `${meta.icon || ''} ${esc(p.name)}: ${esc(p.deckName)} · ${p.life}❤${p.lost ? ' · ☠️ ELIMINATED' : ''}`));
+      const heading = el('header', 'playeroverviewhead');
+      heading.innerHTML = `<div><small>${p === this.me ? 'YOUR SEAT' : 'OPPONENT'}${g.turnPlayer === p ? ' · ACTIVE TURN' : ''}${p.lost ? ' · ELIMINATED' : ''}</small><h2 class="mtitle">${esc(p.name)}</h2><p>${esc(p.deckName)}</p></div>`;
+      heading.appendChild(el('div', 'playeroverviewlife', `${U.icon('life')}<b>${p.life}</b><small>life</small>`));
+      const dismiss = el('button', 'playeroverviewclose', '×');
+      dismiss.type = 'button'; dismiss.setAttribute('aria-label', 'Close player overview');
+      dismiss.onclick = () => { this.playerSheet = null; this.render(); };
+      heading.appendChild(dismiss); m.appendChild(heading);
+      const navigation = el('nav', 'playeroverviewnav');
+      navigation.setAttribute('aria-label', 'Inspect a player');
+      for (const player of [this.me, ...this.visibleOpponentSeats(g).map(seat => seat.player)]) {
+        const seat = el('button', 'pbtn', esc(player === this.me ? 'You' : player.name));
+        seat.type = 'button'; seat.setAttribute('aria-pressed', String(player === p));
+        seat.onclick = () => { this.playerSheet = player; this.render(); };
+        navigation.appendChild(seat);
+      }
+      m.appendChild(navigation);
+      const zones = el('div', 'playeroverviewzones');
+      for (const zone of ['hand', 'library', 'graveyard', 'exile', 'command']) zones.appendChild(this.zoneCounter(p, zone, { returnPlayer: p }));
+      m.appendChild(zones);
+      const counters = el('div', 'playeroverviewcounters', `${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}`);
+      if (counters.children.length) m.appendChild(counters);
+      if (p !== this.me && !p.lost) {
+        const focus = el('button', 'pbtn playeroverviewfocus', `${U.icon('expand')} Focus battlefield`);
+        focus.type = 'button'; focus.onclick = () => this.focusOpponent(p);
+        m.appendChild(focus);
+        const damageFrom = (receiver, owner) => {
+          const commanderDamage = Object.fromEntries(Object.entries(receiver.commanderDamage || {}).filter(([iid]) => g.byIid(Number(iid))?.owner === owner));
+          const damageRows = U.cmdDamageRows(g, { commanderDamage });
+          return damageRows.length ? damageRows.map(row => `${esc(row.label)} <b>${row.n}/21</b>`).join(' · ') : '<b>0/21</b>';
+        };
+        m.appendChild(el('div', 'playeroverviewdamage', `<div><small>COMMANDER DAMAGE TO YOU</small><span>${damageFrom(this.me, p)}</span></div><div><small>COMMANDER DAMAGE FROM YOU</small><span>${damageFrom(p, this.me)}</span></div>`));
+      }
       const own = (p.commanders && p.commanders.length) ? p.commanders : p.command;
       if (own.length) {
         const ZN = { battlefield: 'battlefield', command: 'CZ', graveyard: 'graveyard', exile: 'exile', hand: 'hand', library: 'library', stack: 'stack' };
         m.appendChild(el('div', 'cmdhint',
-          `👑 Commander${own.length > 1 ? 's (partners)' : ''}: ` +
+          `${U.icon('crown')} Commander${own.length > 1 ? 's (partners)' : ''}: ` +
           own.map(c => `<b>${esc(c.name)}</b> <span style="color:#8a95a8">(${ZN[c.zone] || c.zone}${c.cmdCasts ? `, tax +${2 * c.cmdCasts}` : ''})</span>`).join(' · ')));
       }
       m.appendChild(el('div', 'cmddmg',
@@ -5462,22 +5525,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         statusPanel.appendChild(list);
       }
       m.appendChild(statusPanel);
-      m.appendChild(this.dungeonButton(p, true));
-      const zrow = el('div', 'btnrow');
-      for (const z of ['graveyard', 'exile']) {
-        const b = el('button', 'pbtn', `${z === 'graveyard' ? '🪦' : '🌀'} ${p[z].length}`);
-        b.onclick = () => { this.playerSheet = null; this.zoneBrowse = { player: p, zone: z }; this.render(); };
-        zrow.appendChild(b);
+      const dungeon = this.dungeonButton(p, true);
+      if (dungeon) m.appendChild(dungeon);
+      const permanents = g.bf().filter(c => c.ctrl === p);
+      const battlefield = el('section', 'playeroverviewbattlefield');
+      battlefield.appendChild(el('h3', '', `Battlefield · ${permanents.length}`));
+      const groups = this.battlefieldGroups(g, p);
+      const lands = g.lands(p).filter(card => !card.is('Creature'));
+      for (const [label, cards] of [['CREATURES', groups.creatures], ['ENCHANTMENTS · SUPPORT', groups.support], ['LANDS · MANA', [...lands, ...groups.manaArtifacts]]]) {
+        const lane = this.permanentLane(g, label, cards);
+        if (lane) battlefield.appendChild(lane);
       }
-      m.appendChild(zrow);
-      m.appendChild(el('div', 'mtitle small', 'Battlefield'));
-      const grid = el('div', 'cardgrid');
-      for (const c of g.bf().filter(c => c.ctrl === p)) {
-        const cc = this.miniCard(g, c);
-        grid.appendChild(cc);
-      }
-      if (!g.bf().some(c => c.ctrl === p)) grid.appendChild(el('div', 'emptyrow', 'Empty'));
-      m.appendChild(grid);
+      if (!permanents.length) battlefield.appendChild(el('div', 'emptyrow', 'Empty battlefield'));
+      m.insertBefore(battlefield, m.querySelector('.cmddmg'));
       const close = el('button', 'pbtn wide', 'Close');
       close.onclick = () => { this.playerSheet = null; this.render(); };
       m.appendChild(close);
@@ -5561,10 +5621,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (hiddenCount) grid.appendChild(el('div', 'hiddenzonecards', `${hiddenCount} hidden card${hiddenCount === 1 ? '' : 's'} locked \u00B7 identity not shown`));
       if (!player[zone].length) grid.appendChild(el('div', 'emptyrow', 'Empty'));
       m.appendChild(grid);
-      const close = el('button', 'pbtn wide', lastResort ? '\u2190 Back to Last Resort' : 'Close');
+      const returnPlayer = this.zoneBrowse.returnPlayer;
+      const close = el('button', 'pbtn wide', lastResort ? '\u2190 Back to Last Resort' : returnPlayer ? '\u2190 Back to player overview' : 'Close');
       close.onclick = () => {
         this.zoneBrowse = null;
         if (lastResort) this.showJudge = true;
+        if (returnPlayer) this.playerSheet = returnPlayer;
         this.render();
       };
       m.appendChild(close);
@@ -5878,7 +5940,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 <b>⚙️ Abilities and tokens:</b> a permanent with a ⚙️ badge has an available activated ability. Click it, then choose an action such as creating Food, equipping, or crewing.<br><br>
 <b>⚔️ Attacking:</b> during combat, click one of your creatures, then choose the player or planeswalker it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
 <b>🎯 Targets:</b> legal targets <span style="color:#e8c05a">glow gold</span>. Click a card or an opponent panel to select it.<br><br>
-<b>Opponents:</b> their battlefields stay visible under their names. Click a header to collapse or expand it; ℹ️ opens graveyard and commander-damage details.<br><br>
+<b>Opponents:</b> click a name or the info button for a public overview. Use the expand button to focus a battlefield. Hand and library counts stay visible; graveyard, exile and command zones open for inspection.<br><br>
 <b>⚡ Instants and priority:</b> each opposing nonland card appears on the central action stage and waits for your <b>Proceed</b>. Legal combat responses open a reaction window automatically. The <b>STOP</b> button controls additional priority windows.<br>
 <b>🃏 Manifest and cloak:</b> a face-down permanent is a real hidden 2/2 card, not a token. You may inspect your own card and turn a creature face up when legal. Cloak also grants ward {2}.<br>
 <b>🖐️ HOLD (R key):</b> arm HOLD whenever you want the game to stop at your next priority window.<br>

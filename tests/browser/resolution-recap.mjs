@@ -10,6 +10,7 @@ const args = process.argv.slice(2);
 const value = (name, fallback) => args.includes(name) ? args[args.indexOf(name) + 1] : fallback;
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const out = value('--output', `${root}output/resolution-recap/browser`);
+const scenarios = value('--scenarios', 'chaos-land,chaos-creature,chaos-miss,fetch,fetch-land,private-tutor,wipe,army,combat,lethal').split(',');
 mkdirSync(out, {recursive: true});
 const server = express().use('/api/account', createAccountHandler({store: new MemoryAccountStore(), limiter: null}))
   .use(express.static(root)).listen(0, '127.0.0.1');
@@ -46,9 +47,9 @@ async function install(scenario) {
       return card;
     };
     const audit = window.__recapAudit = {scenario, done: false, error: null};
-    let actor = enemy, spell;
+    let actor = enemy, spell, ability;
     if (scenario.startsWith('chaos')) {
-      actor = scenario === 'chaos-land' ? human : enemy;
+      actor = enemy;
       const owner = actor === human ? enemy : human;
       audit.target = put('Sol Ring', owner);
       audit.revealed = put(scenario === 'chaos-land' ? 'Island' : scenario === 'chaos-creature' ? 'Llanowar Elves' : 'Arcane Denial', owner, 'library');
@@ -57,6 +58,11 @@ async function install(scenario) {
     } else if (scenario === 'fetch') {
       put('Forest', enemy, 'library'); put('Island', enemy, 'library');
       spell = put('Cultivate', enemy, 'hand'); enemy.pool.G = 3;
+    } else if (scenario === 'fetch-land') {
+      const fetch = put('Evolving Wilds', enemy);
+      put('Forest', enemy, 'library');
+      g.recalc();
+      ability = g.activatableList(enemy).find(entry => entry.card === fetch && !entry.manaAbility);
     } else if (scenario === 'private-tutor') {
       put('Sol Ring', enemy, 'library');
       spell = put('Demonic Tutor', enemy, 'hand'); enemy.pool.B = 2;
@@ -64,6 +70,14 @@ async function install(scenario) {
       put('Llanowar Elves', human); put('Solemn Simulacrum', human); put('Birds of Paradise', enemy);
       put('Darksteel Myr', enemy); put('Island', human, 'library');
       spell = put('Blasphemous Act', enemy, 'hand'); enemy.pool.R = 9;
+    } else if (scenario === 'routine') {
+      spell = put('Grizzly Bears', enemy, 'hand'); enemy.pool.G = 2;
+    } else if (scenario === 'army' || scenario === 'small-tokens' || scenario === 'small-drain') {
+      const source = put('Sol Ring', enemy);
+      g.stack.push({kind: 'ability', name: 'Test effect', ctrl: enemy, srcCard: source, targets: [],
+        ctx: {g, you: enemy, src: source}, run: () => scenario === 'small-drain' ? g.loseLifeOpponents(source, enemy, 2) :
+          g.makeTokens({name: 'Soldier', types: ['Creature'], super: [], subtypes: ['Soldier'],
+            power: 1, toughness: 1, cost: '', oracle: ''}, enemy, {n: scenario === 'army' ? 12 : 2})});
     } else {
       const attacker = put('Colossal Dreadmaw', enemy); attacker.counters['+1/+1'] = 4;
       attacker.attacking = human; attacker.blockedBy = []; attacker.wasBlocked = false;
@@ -72,7 +86,8 @@ async function install(scenario) {
     }
     g.turnPlayer = actor; g.recalc(); ui.render();
     audit.spell = spell;
-    const work = spell ? g.castSpell(actor, spell, {from: 'hand'}) : g.combatDamage(actor, 'normal');
+    const work = ability ? g.activateAbility(actor, ability) : spell ? g.castSpell(actor, spell, {from: 'hand'}) :
+      g.stack.length ? g.resolveTop() : g.combatDamage(actor, 'normal');
     void work.then(result => {audit.result = result; audit.done = true; ui.render();}).catch(error => {audit.error = error.stack; ui.render();});
   }, scenario);
 }
@@ -98,7 +113,7 @@ async function toRecap() {
 async function responsive(label) {
   for (const [width, height] of [[1440, 900], [1280, 620], [390, 844], [320, 568], [844, 390]]) {
     await page.setViewportSize({width, height});
-    const modal = page.getByRole('dialog', {name: /Chaos Warp|Blasphemous Act|Cultivate|Demonic Tutor|Combat damage/});
+    const modal = page.locator('[data-testid="resolution-recap"]');
     await modal.waitFor();
     // Resizing rebuilds the Arena; wait for its current footer, rather than
     // measuring a node in the middle of that responsive replacement.
@@ -122,17 +137,17 @@ async function responsive(label) {
 try {
   await page.goto(`${base}/?smokeDeck=Quick%20Draw&seed=14`);
   await page.waitForFunction(() => window._ui?.pending?.q.type === 'mulligan', null, {timeout: 120000});
-  for (const scenario of ['chaos-land', 'chaos-creature', 'chaos-miss', 'fetch', 'private-tutor', 'wipe', 'combat', 'lethal']) {
+  for (const scenario of scenarios) {
     await install(scenario); await toRecap();
     const recap = page.locator('[data-testid="resolution-recap"]');
     const text = await recap.innerText();
-    const major = ['wipe', 'combat', 'lethal'].includes(scenario);
+    const major = ['wipe', 'army', 'combat', 'lethal'].includes(scenario);
     assert.equal(await recap.getAttribute('data-impact'), major ? 'major' : 'minor');
     if (major) {
-      assert.match(text, /MAJOR EVENT.*RESOLVED/s);
+      assert.match(text, /TABLE HIGHLIGHT.*RESOLVED/s);
       assert.equal(await recap.locator('.resolutionrecapstats').isVisible(), true);
     } else {
-      assert.match(text, /Paused · your pace/);
+      assert.match(text, /Caught up\? Keep playing/);
       assert.equal(await recap.locator('.resolutionrecapdetails').getAttribute('open'), null);
       const appearance = await recap.evaluate(node => ({width: node.getBoundingClientRect().width,
         backdrop: getComputedStyle(node.parentElement).backdropFilter,
@@ -149,16 +164,20 @@ try {
       if (scenario === 'chaos-miss') assert.match(text, /stays on top.*not exiled/);
     }
     if (scenario === 'fetch') {assert.match(text, /Forest|Island/); assert.match(text, /→ hand/); assert.match(text, /→ battlefield, tapped/);}
+    if (scenario === 'fetch-land') {assert.match(text, /Evolving Wilds/); assert.match(text, /Forest → battlefield, tapped/);}
     if (scenario === 'private-tutor') {assert.match(text, /not revealed.*→ hand/); assert.doesNotMatch(text, /Sol Ring/);}
     if (scenario === 'wipe') {
       assert.match(text, /BOARD WIPE|Board wipe/);
       assert.match(await recap.locator('.resolutionrecapstats').innerText(), /3\s*permanents removed/i);
-      assert.match(text, /battlefield → graveyard/); assert.match(text, /Darksteel Myr/); assert.match(text, /Stack · next to resolve first/i);
+      assert.match(text, /2 permanents → graveyard/); assert.match(text, /Darksteel Myr/); assert.match(text, /still on the way/);
       assert.ok(await page.evaluate(() => _game.stack.length > 0));
     }
-    if (scenario === 'combat') assert.match(text, /life 40 → 30/);
+    assert.equal(await recap.locator('.resolutionrecapdetails').getAttribute('open'), null, 'all breakdowns start folded');
+    assert.ok(await recap.locator('.resolutionrecapbody > .resolutionrecapsection .resolutionrecaprow').count() <= 3);
+    if (scenario === 'army') assert.match(text, /Army assembled[\s\S]*12 permanents entered/i);
+    if (scenario === 'combat') assert.match(text, /40 → 30 life/);
     if (scenario === 'lethal') {assert.match(text, /eliminated/); assert.match(text, /match has ended/); assert.equal(await page.locator('.matchrecap').count(), 0);}
-    if (['chaos-land', 'fetch', 'wipe'].includes(scenario)) await responsive(scenario);
+    if (['chaos-land', 'fetch', 'fetch-land', 'wipe', 'army'].includes(scenario)) await responsive(scenario);
     if (scenario === 'fetch') {
       await recap.locator('summary').click();
       await page.waitForFunction(() => _ui.pending.recapDetailsOpen === true);
@@ -180,6 +199,21 @@ try {
     await recap.waitFor({state: 'detached'});
     if (scenario === 'lethal') await page.locator('.matchrecap').waitFor();
     check(`${scenario}: paid/actual effect, accurate outcome and explicit Proceed checkpoint`);
+  }
+  for (const scenario of ['routine', 'small-tokens', 'small-drain']) {
+    await install(scenario);
+    for (let attempt = 0; attempt < 65; attempt++) {
+      const status = await page.evaluate(() => ({done: __recapAudit.done, error: __recapAudit.error, type: _ui.pending?.q.type}));
+      assert.equal(status.error, null);
+      assert.notEqual(status.type, 'effectReview', 'routine effects never ask for an extra acknowledgment');
+      if (status.done) break;
+      const proceed = page.getByRole('button', {name: /^(Proceed|Pass|Continue|Let it|Let resolve|Got it)/}).filter({visible: true});
+      if (await proceed.count()) await proceed.last().click();
+      await page.waitForTimeout(80);
+    }
+    assert.equal(await page.evaluate(() => __recapAudit.done), true);
+    assert.equal(await page.locator('[data-testid="resolution-recap"]').count(), 0);
+    check(`${scenario}: no extra result interruption`);
   }
   // Reduced-motion preference must suppress the major entrance. Normal motion
   // has a short spotlight, with no delay on the review's controls.
