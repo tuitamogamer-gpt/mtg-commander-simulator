@@ -54,6 +54,14 @@ export async function auditNativeCard(MTG, name, role) {
   const game = new MTG.Game({ seed: 18484, paced: false, maxTurns: 30 });
   const players = ['Audit player', 'Opponent B', 'Opponent C'].map(label => game.addPlayer(label, { name: label }, choose(trace), false));
   const [player, opponent] = players;
+  // A fixed controller that always says yes would repeat this optional
+  // resolution forever. Choose a finite number, as a player must in a loop.
+  if (name === 'Trade Secrets') for (const opponent of players.slice(1)) {
+    const decide = opponent.controller.decide.bind(opponent.controller);
+    let repeats = 0;
+    opponent.controller.decide = (g, q) => /Repeat Trade Secrets/.test(q.prompt || '')
+      ? Promise.resolve(repeats++ < 1 ? 'yes' : 'no') : decide(g, q);
+  }
   if (role === 'ai') {
     player.isAI = true;
     player.controller = new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' });

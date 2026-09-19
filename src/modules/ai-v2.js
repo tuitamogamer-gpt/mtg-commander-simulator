@@ -199,6 +199,79 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   const DECK_PROFILE_HINTS = {
 
+  "Goblin Storm": {
+    "archetype": "Goblin spells and tokens",
+    "length": "short",
+    "tags": [
+      "tokens",
+      "spellslinger",
+      "aggro"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Hatsune Miku": {
+    "archetype": "Tokens and lifegain",
+    "length": "medium",
+    "tags": [
+      "tokens",
+      "lifegain",
+      "counters"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Counterpunch": {
+    "archetype": "Counters and sacrifice",
+    "length": "medium",
+    "tags": [
+      "tokens",
+      "counters",
+      "sacrifice"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Mirror Mastery": {
+    "archetype": "Creature and spell copies",
+    "length": "long",
+    "tags": [
+      "ramp",
+      "spellslinger",
+      "tokens"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Political Puppets": {
+    "archetype": "Donations and control",
+    "length": "long",
+    "tags": [
+      "control",
+      "politics",
+      "lifegain"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Heavenly Inferno": {
+    "archetype": "Angels, Demons and Dragons",
+    "length": "medium",
+    "tags": [
+      "aggro",
+      "reanimator",
+      "flying"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Devour for Power": {
+    "archetype": "Graveyard creatures",
+    "length": "long",
+    "tags": [
+      "graveyard",
+      "reanimator",
+      "ramp"
+    ],
+    "commanderImportance": 1.8
+  }
+,
+
+
   "Lorehold Spirit": {
     "archetype": "Spirits and graveyard recursion",
     "length": "long",
@@ -4846,7 +4919,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='recover-v9'){
+      if(hintKind==='tradeSecrets'){
+        breakdown.choice=action.value===(player.hand.length<7&&player.library.length>4?'yes':'no')?10:0;
+      } else if(hintKind==='recover-v9'){
         breakdown.choice=action.value===(game.canPayMana(player,MTG.parseCost(q.aiHint.cost))?'yes':'no')?10:0;
       } else if(hintKind==='mutateOrder'){
         const {definition,host}=q.aiHint,def=action.value==='over'?definition:MTG.C1920.snapshotCopy(host);

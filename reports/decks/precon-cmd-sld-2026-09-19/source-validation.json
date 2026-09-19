@@ -1,0 +1,98 @@
+{
+  "baseline": "4bffe16",
+  "passed": true,
+  "originalPhysicalCards": 700,
+  "uniqueNames": 452,
+  "sourceLists": [
+    {
+      "name": "Goblin Storm",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-goblin-storm-decklist",
+        "https://mtgjson.com/api/v5/decks/GoblinStorm_SLD.json"
+      ],
+      "exportSha256": "9c2031d8fcdf7c7e920f9dc4929e70c8e25111113a88510ee65627b46e15cdb6"
+    },
+    {
+      "name": "Hatsune Miku",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-hatsune-miku-decklist"
+      ],
+      "exportSha256": "3c52f7df0eb6f2ee65e1497ad4cf69fee4dda0c2754a988cd1a74a9d5a45b99f"
+    },
+    {
+      "name": "Counterpunch",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/magic-gathering-commander-decklists-2011-06-14",
+        "https://mtgjson.com/api/v5/decks/Counterpunch_CMD.json"
+      ],
+      "exportSha256": "fce7b7778e3de4681e84d44417547a485b0d750037571eaca4a40ecc027c1dbf"
+    },
+    {
+      "name": "Mirror Mastery",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/magic-gathering-commander-decklists-2011-06-14",
+        "https://mtgjson.com/api/v5/decks/MirrorMastery_CMD.json"
+      ],
+      "exportSha256": "02134b1c71c5846129fc1dcec4f375ab2b65a1de57a615a3061a4651eca1c167"
+    },
+    {
+      "name": "Political Puppets",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/magic-gathering-commander-decklists-2011-06-14",
+        "https://mtgjson.com/api/v5/decks/PoliticalPuppets_CMD.json"
+      ],
+      "exportSha256": "c2064e55788592011ffe5d0ba8f90e335889f53ad97aac406755f6d5859fac2e"
+    },
+    {
+      "name": "Heavenly Inferno",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/magic-gathering-commander-decklists-2011-06-14",
+        "https://mtgjson.com/api/v5/decks/HeavenlyInferno_CMD.json"
+      ],
+      "exportSha256": "f0bd101e62944d6188dd66a1e19ddddb9ae7d978c063aff1e04ca74e1765c3e4"
+    },
+    {
+      "name": "Devour for Power",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/magic-gathering-commander-decklists-2011-06-14",
+        "https://mtgjson.com/api/v5/decks/DevourForPower_CMD.json"
+      ],
+      "exportSha256": "0e04aadc04497f698a3fae5bec65c0178963ebe0ad2422ed839eedf6a480f3ef"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3731,
+  "existingRawDeckRecordsPreserved": 154,
+  "nativeRawDefinitions": 3810,
+  "existingImageMappingsPreserved": 6296,
+  "existingCommanderCropsPreserved": 162,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 227,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "0438682129b0acf6d371a83a37c6ba56e57b1d52b56ecb610707e26f7ae645c0",
+  "retainedOracleDifferences": [
+    {
+      "name": "Boros Garrison",
+      "existingOracle": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "pinnedOracle": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "preserved": true
+    },
+    {
+      "name": "Soul Snare",
+      "existingOracle": "{W}, Sacrifice Soul Snare: Exile target creature that's attacking you or a planeswalker you control.",
+      "pinnedOracle": "{W}, Sacrifice this enchantment: Exile target creature that's attacking you or a planeswalker you control.",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 160,
+    "definitions": 22668,
+    "eligible": 22668
+  }
+}

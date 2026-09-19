@@ -177,7 +177,7 @@ test('Vercel room enforces the host-selected count and the setup keeps solo play
   const main = await readFile(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   const multiplayer = await readFile(new URL('../src/modules/multiplayer.js', import.meta.url), 'utf8');
   const lobby = await readFile(new URL('../src/modules/multiplayer-ui.js', import.meta.url), 'utf8');
-  assert.match(main, /Solo table<\/strong><small>You \+ 1-3 AI V2 bots/);
+  assert.match(main, /Solo table<\/strong><small>You \+ 1–3 AI opponents/);
   assert.match(main, /2–4 seats · humans \+ bots/);
   assert.match(main, /livePlayers: 2/);
   assert.match(multiplayer, /players=\$\{playerCount\}/);

@@ -19,42 +19,42 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 22589,
+    "runtimeDefinitions": 22668,
     "genericOracleCards": 18800,
     "genericBatches": 188,
     "manualOracleCards": 58,
-    "legacyDefinitions": 3731,
+    "legacyDefinitions": 3810,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 22589,
+    "deckImportEligibleDefinitions": 22668,
     "deckImportRestrictedDefinitions": 0,
-    "representedUniverseOracleIds": 22560,
-    "remainingUniverseOracleIds": 8224,
+    "representedUniverseOracleIds": 22634,
+    "remainingUniverseOracleIds": 8150,
     "parserEligibleUnimported": 2,
-    "deferred": 8222,
+    "deferred": 8148,
     "runtimeEntriesWithoutSnapshotMatch": 17,
-    "runtimeEntriesOutsideComparisonUniverse": 10
+    "runtimeEntriesOutsideComparisonUniverse": 15
   },
   "remainingByReason": {
     "adventure-needs-complete-face-semantics": 36,
     "backup-grant-needs-semantics": 2,
     "backup-other-rules-unsupported": 1,
-    "complex-layout": 110,
+    "complex-layout": 108,
     "conflicting-hand-abilities": 1,
     "double-faced-card-needs-complete-back-semantics": 30,
     "double-faced-card-needs-complete-front-semantics": 230,
     "double-faced-card-needs-face-transition-semantics": 48,
     "dynamic-power-toughness": 27,
     "event-stat-condition-needs-binding": 1,
-    "land-needs-explicit-semantics": 109,
+    "land-needs-explicit-semantics": 106,
     "leveler-band-needs-complete-semantics": 2,
     "mana-ability-needs-explicit-semantics": 16,
-    "noncreature-needs-explicit-semantics": 1822,
-    "oracle-needs-explicit-semantics": 3495,
+    "noncreature-needs-explicit-semantics": 1814,
+    "oracle-needs-explicit-semantics": 3457,
     "overload-body-needs-complete-semantics": 7,
     "requires-import-and-executable-proof": 2,
-    "saga-chapter-needs-complete-semantics": 79,
+    "saga-chapter-needs-complete-semantics": 78,
     "saga-other-rules-unsupported": 2,
-    "spell-needs-explicit-semantics": 2020,
+    "spell-needs-explicit-semantics": 1999,
     "split-needs-complete-face-semantics": 25,
     "transform-land-face-transition-needs-proof": 4,
     "unbound-X": 1,
@@ -65,7 +65,7 @@
     "unbound-target-damage-source": 19,
     "unsupported-adventure-face-types": 16,
     "unsupported-mana-cost": 41,
-    "unsupported-split-faces": 22
+    "unsupported-split-faces": 21
   },
   "parserEligibleUnimportedNames": [
     "Zuo Ci, the Mocking Sage",
@@ -100,11 +100,27 @@
       ]
     },
     {
+      "name": "Crescendo of War",
+      "sourceName": "Crescendo of War",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
       "name": "Dockside Extortionist",
       "sourceName": "Dockside Extortionist",
       "sourceCommanderLegality": "banned",
       "sourceGames": [
         "paper",
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Goblin Lackey",
+      "sourceName": "Goblin Lackey",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
         "mtgo"
       ]
     },
@@ -154,6 +170,31 @@
       "sourceCommanderLegality": "legal",
       "sourceGames": [
         "arena"
+      ]
+    },
+    {
+      "name": "Spike Feeder",
+      "sourceName": "Spike Feeder",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Symbiotic Wurm",
+      "sourceName": "Symbiotic Wurm",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Trade Secrets",
+      "sourceName": "Trade Secrets",
+      "sourceCommanderLegality": "banned",
+      "sourceGames": [
+        "paper",
+        "mtgo"
       ]
     },
     {
@@ -213,11 +254,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 9,
-  "classifierFilesSha256": "332f2a866009b27b8496f11c4f3ff13147ba13e55b115d58b68ea5025530af7d",
-  "inputFilesSha256": "db98c1e55185d343e4fb50e2947fa98cbc35c1fe5d20dc192e22355340f4179c",
+  "classifierFilesSha256": "e1b9104a206cb5f48c41d3ed988d141eb3d5d629850ce8b73e7017a5fdc5b632",
+  "inputFilesSha256": "f234a1ba220005ee7fd927661f17ce236bcbec0dc0dd3490ba2bce6d565d1266",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "ad9d95f4bc10daee08379b4252bfeb23eb00e5b26cf89ebfa8f5d9e56382cb28",
-    "docs/catalog/remaining-cards.csv": "438d6ec42cf72a0455499de85fef76864a92e283dffbe8991d55ea0ec1116f29"
+    "docs/catalog/imported-cards.csv": "1654e7c8049b3354d7417fd0023ff0d84c6b71844ecdc4e880a785afd7c419f8",
+    "docs/catalog/remaining-cards.csv": "8abb46936145c269023ba486727df83a6979e403a9e6abe62da3d41418c6d6dd"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

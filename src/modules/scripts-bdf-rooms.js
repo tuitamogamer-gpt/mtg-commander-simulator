@@ -13,4 +13,5 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  SC['Secret Arcade // Dusty Parlor']=room([{key:'left',name:'Secret Arcade',cost:'{4}{W}'},{key:'right',name:'Dusty Parlor',cost:'{2}{W}'}],{bdfArcade:true,statics:[{phase:1,apply:(g,s,bf)=>{if(unlocked(s,'left'))for(const c of bf)if(c.ctrl===s.ctrl&&!c.is('Land')&&!c.cur.types.includes('Enchantment'))c.cur.types.push('Enchantment');}}],triggers:[C.trigger('cast','Put counters equal to the enchantment spell’s mana value',ctx=>ctx.targets[0]&&C.add(ctx,ctx.targets[0],'+1/+1',ctx.g.stackSpellManaValue(ctx.data.so)),{filter:(g,c,d)=>unlocked(c,'right')&&d.player===c.ctrl&&g.castHasType(d.card,d.so.castOpts||{},'Enchantment'),targets:[T.creature({count:1,min:0,upTo:true})]})]});
  SC['Fear of Sleep Paralysis']={bdfKeepStun:true,triggers:eerie('Tap a creature and put a stun counter on it',ctx=>{const c=ctx.targets[0];if(c){ctx.g.tap(c);C.add(ctx,c,'stun');}},{targets:[T.creature({count:1,min:0,upTo:true})]})};
  C.bdfUnlocked=unlocked;
+ C.bdfRoom=room;
 })();

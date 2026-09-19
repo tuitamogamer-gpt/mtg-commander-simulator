@@ -4,6 +4,128 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
 
+  "cslGoblins": [
+    {
+      "label": "Early game",
+      "title": "Gather the mob",
+      "text": "Play cheap Goblins and create a wide board before committing Zada."
+    },
+    {
+      "label": "Midgame",
+      "title": "Copy the spark",
+      "text": "Target Zada with a cantrip or pump spell to copy it for every other eligible creature."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish in one turn",
+      "text": "Chain draw spells and rituals into a large attack or a damage payoff."
+    }
+  ],
+  "cslMiku": [
+    {
+      "label": "Early game",
+      "title": "Set the stage",
+      "text": "Ramp, gain life, and establish repeatable token production."
+    },
+    {
+      "label": "Midgame",
+      "title": "Grow the chorus",
+      "text": "Use Trostani to gain life from creature entries and populate your strongest token."
+    },
+    {
+      "label": "Endgame",
+      "title": "Build a finale",
+      "text": "Convert life gains into counters and attack with a large, resilient army."
+    }
+  ],
+  "cmdCounters": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Fix all three colors and play mana creatures or token makers."
+    },
+    {
+      "label": "Midgame",
+      "title": "Feed the cycle",
+      "text": "Use Ghave to turn counters into Saprolings and sacrifice creatures to place counters."
+    },
+    {
+      "label": "Endgame",
+      "title": "Overwhelm with value",
+      "text": "Build a wide board, recover creatures, and finish with your largest threats."
+    }
+  ],
+  "cmdCopies": [
+    {
+      "label": "Early game",
+      "title": "Prepare the mana",
+      "text": "Ramp and fix colors before deploying your expensive value creatures."
+    },
+    {
+      "label": "Midgame",
+      "title": "Double the impact",
+      "text": "With Riku in play, save extra mana to copy an entering creature or a useful spell."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn copies into pressure",
+      "text": "Multiply powerful entry effects, then attack with the board you have built."
+    }
+  ],
+  "cmdPolitics": [
+    {
+      "label": "Early game",
+      "title": "Set up your defense",
+      "text": "Fix mana and discourage early attacks while preparing Zedruu."
+    },
+    {
+      "label": "Midgame",
+      "title": "Share the burden",
+      "text": "Donate suitable permanents and collect cards and life from the ones opponents control."
+    },
+    {
+      "label": "Endgame",
+      "title": "Win with the cards",
+      "text": "Use your extra cards and control effects to build a decisive board."
+    }
+  ],
+  "cmdKaalia": [
+    {
+      "label": "Early game",
+      "title": "Clear the runway",
+      "text": "Fix mana and remove blockers before casting Kaalia."
+    },
+    {
+      "label": "Midgame",
+      "title": "Launch the attack",
+      "text": "Attack an opponent with Kaalia and put a large Angel, Demon, or Dragon into combat."
+    },
+    {
+      "label": "Endgame",
+      "title": "Keep the pressure on",
+      "text": "Use successive attack triggers and evasive threats to close the game."
+    }
+  ],
+  "cmdGrave": [
+    {
+      "label": "Early game",
+      "title": "Fill the graveyards",
+      "text": "Ramp, draw, and mill to provide creatures for The Mimeoplasm."
+    },
+    {
+      "label": "Midgame",
+      "title": "Choose a new form",
+      "text": "Copy the creature with the best abilities and use another creature for extra counters."
+    },
+    {
+      "label": "Endgame",
+      "title": "Rebuild and devour",
+      "text": "Reuse graveyard resources and pressure opponents with large evasive creatures."
+    }
+  ]
+,
+
+
   "socLorehold": [
     {
       "label": "Early game",
@@ -664,6 +786,107 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+
+  "Goblin Storm": {
+    "route": "cslGoblins",
+    "pace": "Explosive turns",
+    "complexity": "Advanced",
+    "theme": "Goblin spells and tokens",
+    "plan": "Play cheap Goblins and create a wide board before committing Zada. Target Zada with a cantrip or pump spell to copy it for every other eligible creature. Chain draw spells and rituals into a large attack or a damage payoff.",
+    "mulligan": "Keep two or three Mountains, early Goblins, and a cheap draw spell.",
+    "tip": "A spell must target only Zada to trigger it. Creature removal can interrupt your chain.",
+    "keys": [
+      "Zada, Hedron Grinder",
+      "Krenko, Mob Boss",
+      "Glimpse the Impossible"
+    ]
+  },
+  "Hatsune Miku": {
+    "route": "cslMiku",
+    "pace": "Build and attack",
+    "complexity": "Intermediate",
+    "theme": "Tokens and lifegain",
+    "plan": "Ramp, gain life, and establish repeatable token production. Use Trostani to gain life from creature entries and populate your strongest token. Convert life gains into counters and attack with a large, resilient army.",
+    "mulligan": "Keep three lands, green fixing, ramp, and an early creature or token maker.",
+    "tip": "Populate copies one creature token you control. A large token gives much more value than a small one.",
+    "keys": [
+      "Trostani, Selesnya's Voice",
+      "Lathiel, the Bounteous Dawn",
+      "Gruff Triplets"
+    ]
+  },
+  "Counterpunch": {
+    "route": "cmdCounters",
+    "pace": "Build and attack",
+    "complexity": "Advanced",
+    "theme": "Counters and sacrifice",
+    "plan": "Fix all three colors and play mana creatures or token makers. Use Ghave to turn counters into Saprolings and sacrifice creatures to place counters. Build a wide board, recover creatures, and finish with your largest threats.",
+    "mulligan": "Keep three lands with color fixing, ramp, and a creature that adds counters or tokens.",
+    "tip": "Ghave needs mana for each activation. Leave mana open to respond to removal.",
+    "keys": [
+      "Ghave, Guru of Spores",
+      "Karador, Ghost Chieftain",
+      "Aquastrand Spider"
+    ]
+  },
+  "Mirror Mastery": {
+    "route": "cmdCopies",
+    "pace": "Accumulate value",
+    "complexity": "Advanced",
+    "theme": "Creature and spell copies",
+    "plan": "Ramp and fix colors before deploying your expensive value creatures. With Riku in play, save extra mana to copy an entering creature or a useful spell. Multiply powerful entry effects, then attack with the board you have built.",
+    "mulligan": "Keep three lands and ramp; avoid hands crowded with expensive creatures.",
+    "tip": "Riku uses different colors for creature and spell copies. Plan both the original cost and the copy payment.",
+    "keys": [
+      "Riku of Two Reflections",
+      "Animar, Soul of Elements",
+      "Garruk Wildspeaker"
+    ]
+  },
+  "Political Puppets": {
+    "route": "cmdPolitics",
+    "pace": "Accumulate value",
+    "complexity": "Advanced",
+    "theme": "Donations and control",
+    "plan": "Fix mana and discourage early attacks while preparing Zedruu. Donate suitable permanents and collect cards and life from the ones opponents control. Use your extra cards and control effects to build a decisive board.",
+    "mulligan": "Keep three lands, a mana rock, and an early defensive play.",
+    "tip": "Zedruu counts permanents you own that opponents control. Giving away your best threat is rarely necessary.",
+    "keys": [
+      "Zedruu the Greathearted",
+      "Ruhan of the Fomori",
+      "Dominus of Fealty"
+    ]
+  },
+  "Heavenly Inferno": {
+    "route": "cmdKaalia",
+    "pace": "Build and attack",
+    "complexity": "Intermediate",
+    "theme": "Angels, Demons and Dragons",
+    "plan": "Fix mana and remove blockers before casting Kaalia. Attack an opponent with Kaalia and put a large Angel, Demon, or Dragon into combat. Use successive attack triggers and evasive threats to close the game.",
+    "mulligan": "Keep three lands with all colors, ramp or protection, and one large creature.",
+    "tip": "A creature put onto the battlefield attacking does not trigger its own when-this-attacks ability.",
+    "keys": [
+      "Kaalia of the Vast",
+      "Tariel, Reckoner of Souls",
+      "Malfegor"
+    ]
+  },
+  "Devour for Power": {
+    "route": "cmdGrave",
+    "pace": "Accumulate value",
+    "complexity": "Advanced",
+    "theme": "Graveyard creatures",
+    "plan": "Ramp, draw, and mill to provide creatures for The Mimeoplasm. Copy the creature with the best abilities and use another creature for extra counters. Reuse graveyard resources and pressure opponents with large evasive creatures.",
+    "mulligan": "Keep three lands, ramp, and a way to draw or fill a graveyard.",
+    "tip": "The Mimeoplasm exiles two creature cards. Preserve useful targets until you can cast it.",
+    "keys": [
+      "The Mimeoplasm",
+      "Damia, Sage of Stone",
+      "Szadek, Lord of Secrets"
+    ]
+  }
+,
+
 
   "Lorehold Spirit": {
     "route": "socLorehold",

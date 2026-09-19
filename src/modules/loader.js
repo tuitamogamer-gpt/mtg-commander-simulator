@@ -24,6 +24,83 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
 
+  "Goblin Storm": {
+    "icon": "✦",
+    "colors": [
+      "R"
+    ],
+    "style": "Goblin spells and tokens",
+    "set": "Secret Lair Commander",
+    "blurb": "Target Zada with a cantrip or pump spell to copy it for every other eligible creature."
+  },
+  "Hatsune Miku": {
+    "icon": "✦",
+    "colors": [
+      "G",
+      "W"
+    ],
+    "style": "Tokens and lifegain",
+    "set": "Secret Lair Commander",
+    "blurb": "Use Trostani to gain life from creature entries and populate your strongest token."
+  },
+  "Counterpunch": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "B",
+      "G"
+    ],
+    "style": "Counters and sacrifice",
+    "set": "Commander (2011)",
+    "blurb": "Use Ghave to turn counters into Saprolings and sacrifice creatures to place counters."
+  },
+  "Mirror Mastery": {
+    "icon": "⚔",
+    "colors": [
+      "U",
+      "R",
+      "G"
+    ],
+    "style": "Creature and spell copies",
+    "set": "Commander (2011)",
+    "blurb": "With Riku in play, save extra mana to copy an entering creature or a useful spell."
+  },
+  "Political Puppets": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "U",
+      "R"
+    ],
+    "style": "Donations and control",
+    "set": "Commander (2011)",
+    "blurb": "Donate suitable permanents and collect cards and life from the ones opponents control."
+  },
+  "Heavenly Inferno": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "B",
+      "R"
+    ],
+    "style": "Angels, Demons and Dragons",
+    "set": "Commander (2011)",
+    "blurb": "Attack an opponent with Kaalia and put a large Angel, Demon, or Dragon into combat."
+  },
+  "Devour for Power": {
+    "icon": "⚔",
+    "colors": [
+      "U",
+      "B",
+      "G"
+    ],
+    "style": "Graveyard creatures",
+    "set": "Commander (2011)",
+    "blurb": "Copy the creature with the best abilities and use another creature for extra counters."
+  }
+,
+
+
   "Lorehold Spirit": {
     "icon": "🏺",
     "colors": [

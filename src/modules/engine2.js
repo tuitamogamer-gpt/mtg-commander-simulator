@@ -1680,12 +1680,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         actualProduced[col] = (actualProduced[col] || 0) + chosen[col];
       }
     }
-    if (s.m.restrict||s.m.pomCopyMana||c.hasSub('Desert')||c.hasSub('Treasure')) {
+    if (s.m.restrict||s.m.pomCopyMana||s.m.cslHasteMana||c.hasSub('Desert')||c.hasSub('Treasure')) {
       p.poolMeta = p.poolMeta || [];
       for (const [color, n] of Object.entries(actualProduced)) {
         if (!(Number(n) > 0)) continue;
         p.poolMeta.push({
-          color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
+          color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:!!s.m.cslHasteMana,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
           restrictAbilities: !!s.m.restrictAbilities,
           coloredOnly: !!s.m.coloredOnly, persist: !!s.m.persist,
         });
@@ -3389,7 +3389,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.convokedCards = (paySpell.convokedCards || []).slice();
     so.phyrexianLifePaid = paySpell.phyrexianLifePaid || 0;
     so.alternativeManaChoices = paySpell.alternativeManaChoices || { hybrid: [], phyrexian: [], twoBridge: [] };
-    so.pomDesertMana=paySpell.pomDesertMana||0;so.pomCopyMana=paySpell.pomCopyMana||0;
+    so.pomDesertMana=paySpell.pomDesertMana||0;so.pomCopyMana=paySpell.pomCopyMana||0;so.cslHasteMana=paySpell.cslHasteMana||0;
     so.manaSpent = paySpell.manaSpent || 0;
     so.paymentColorCounts={...(paySpell.paymentColorCounts||{})};
     so.grantedSunburstColors = 0;
@@ -7092,6 +7092,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const forcedPlayer = c.meta && c.meta.mustAttackPlayer;
     if (forcedPlayer && target !== forcedPlayer && legalWithoutSpecificAttack(forcedPlayer)) return false;
     const forcedByEffect = this.untilEffects.find(e => e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
+      (e.combat === undefined || e.combat === this.afcCombatId) &&
       (e.timestamp === undefined || e.timestamp === c.timestamp) && e.targetPlayer && !e.targetPlayer.lost);
     if (forcedByEffect && target !== forcedByEffect.targetPlayer && legalWithoutSpecificAttack(forcedByEffect.targetPlayer)) return false;
     return true;
@@ -7136,6 +7137,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const e of this.untilEffects) {
       if (e.kind === 'mustAttack' && e.who === c.ctrl) return true;
       if (e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
+        (e.combat === undefined || e.combat === this.afcCombatId) &&
         (e.timestamp === undefined || e.timestamp === c.timestamp) && e.targetPlayer &&
         this.canAttackTarget(c, e.targetPlayer)) return true;
       if (e.kind === 'goadCard' && e.iid === c.iid && (e.zoneVersion===undefined||e.zoneVersion===c.zoneVersion)) return true;

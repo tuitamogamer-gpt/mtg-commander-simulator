@@ -1,0 +1,291 @@
+{
+  "passed": 14,
+  "errors": [],
+  "results": [
+    {
+      "deck": "Goblin Storm",
+      "width": 1440,
+      "opponent": "Hatsune Miku",
+      "opening": {
+        "commander": [
+          "Zada, Hedron Grinder"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Hatsune Miku",
+      "width": 1440,
+      "opponent": "Counterpunch",
+      "opening": {
+        "commander": [
+          "Trostani, Selesnya's Voice"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Counterpunch",
+      "width": 1440,
+      "opponent": "Mirror Mastery",
+      "opening": {
+        "commander": [
+          "Ghave, Guru of Spores"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Mirror Mastery",
+      "width": 1440,
+      "opponent": "Political Puppets",
+      "opening": {
+        "commander": [
+          "Riku of Two Reflections"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Political Puppets",
+      "width": 1440,
+      "opponent": "Heavenly Inferno",
+      "opening": {
+        "commander": [
+          "Zedruu the Greathearted"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Heavenly Inferno",
+      "width": 1440,
+      "opponent": "Devour for Power",
+      "opening": {
+        "commander": [
+          "Kaalia of the Vast"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Devour for Power",
+      "width": 1440,
+      "opponent": "Goblin Storm",
+      "opening": {
+        "commander": [
+          "The Mimeoplasm"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Goblin Storm",
+      "width": 390,
+      "opponent": "Hatsune Miku",
+      "opening": {
+        "commander": [
+          "Zada, Hedron Grinder"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Hatsune Miku",
+      "width": 390,
+      "opponent": "Counterpunch",
+      "opening": {
+        "commander": [
+          "Trostani, Selesnya's Voice"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Counterpunch",
+      "width": 390,
+      "opponent": "Mirror Mastery",
+      "opening": {
+        "commander": [
+          "Ghave, Guru of Spores"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Mirror Mastery",
+      "width": 390,
+      "opponent": "Political Puppets",
+      "opening": {
+        "commander": [
+          "Riku of Two Reflections"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Political Puppets",
+      "width": 390,
+      "opponent": "Heavenly Inferno",
+      "opening": {
+        "commander": [
+          "Zedruu the Greathearted"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Heavenly Inferno",
+      "width": 390,
+      "opponent": "Devour for Power",
+      "opening": {
+        "commander": [
+          "Kaalia of the Vast"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Devour for Power",
+      "width": 390,
+      "opponent": "Goblin Storm",
+      "opening": {
+        "commander": [
+          "The Mimeoplasm"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    }
+  ],
+  "screenshotsVisuallyInspected": [
+    "goblin-storm-1440-select.png",
+    "heavenly-inferno-390-battlefield.png"
+  ],
+  "rawOutputDirectory": "output/precon-cmd-sld-2026-09-19/browser"
+}

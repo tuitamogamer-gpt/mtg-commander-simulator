@@ -986,7 +986,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // KASNIJE (flushTriggers), a mnogi čitaju baš meta izvora — Colfenor's Urn,
       // Skyclave Apparition, Grothama. Brisanjem ovdje su svi tiho otkazivali.
       // Umjesto toga se meta resetuje pri ULASKU na bojno polje (novi objekat).
-      if (toZone !== 'battlefield') { if(!(snap.def.wlmMe&&!snap.abilitiesDisabled&&!['hand','library'].includes(toZone)))card.counters = {}; card.sick = true; }
+      if (toZone !== 'battlefield') { if(!((snap.def.wlmMe||snap.def.cslSkullbriar)&&!snap.abilitiesDisabled&&!['hand','library'].includes(toZone)))card.counters = {}; card.sick = true; }
 
       if (card.isToken && toZone !== 'battlefield') {
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);

@@ -1,0 +1,88 @@
+{
+  "results": [
+    {
+      "deck": "Goblin Storm",
+      "opponents": [
+        "Hatsune Miku",
+        "Counterpunch",
+        "Mirror Mastery"
+      ],
+      "seed": 11234,
+      "turns": 45,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "deck": "Hatsune Miku",
+      "opponents": [
+        "Counterpunch",
+        "Mirror Mastery",
+        "Political Puppets"
+      ],
+      "seed": 11235,
+      "turns": 65,
+      "winner": "AI Raven",
+      "passed": true
+    },
+    {
+      "deck": "Counterpunch",
+      "opponents": [
+        "Mirror Mastery",
+        "Political Puppets",
+        "Heavenly Inferno"
+      ],
+      "seed": 11236,
+      "turns": 73,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "deck": "Mirror Mastery",
+      "opponents": [
+        "Political Puppets",
+        "Heavenly Inferno",
+        "Devour for Power"
+      ],
+      "seed": 11237,
+      "turns": 63,
+      "winner": "AI Raven",
+      "passed": true
+    },
+    {
+      "deck": "Political Puppets",
+      "opponents": [
+        "Heavenly Inferno",
+        "Devour for Power",
+        "Goblin Storm"
+      ],
+      "seed": 11238,
+      "turns": 42,
+      "winner": "AI Wolf",
+      "passed": true
+    },
+    {
+      "deck": "Heavenly Inferno",
+      "opponents": [
+        "Devour for Power",
+        "Goblin Storm",
+        "Hatsune Miku"
+      ],
+      "seed": 11239,
+      "turns": 61,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "deck": "Devour for Power",
+      "opponents": [
+        "Goblin Storm",
+        "Hatsune Miku",
+        "Counterpunch"
+      ],
+      "seed": 11240,
+      "turns": 43,
+      "winner": "AI Dragon",
+      "passed": true
+    }
+  ]
+}
