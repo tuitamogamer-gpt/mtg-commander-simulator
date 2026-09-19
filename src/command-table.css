@@ -167,6 +167,25 @@ body.game-active #game.command-table .hand > :first-child { margin-left: 0; }
 body.game-active #game.command-table .hand > :last-child { margin-right: 0; }
 #game.command-table .handwrap.is-empty .hand { min-height: 38px !important; height: 38px !important; }
 
+/* Preparation belongs to the permanent; each prepared copy has its own action. */
+#game .mini .preparedtag { position: absolute; top: 3px; left: 3px; right: 3px; z-index: 4; padding: 3px 2px; border: 1px solid #9b8bc4; border-radius: 3px; background: #272036f2; color: #eee5ff; font: 700 8px/1.2 var(--ds-font-body); text-align: center; pointer-events: none; }
+#game .mini .preparedtag.ready { border-color: #a6d6a1; background: #1b3425f2; color: #d8ffd3; }
+#game .mini.prepared-castable { outline: 2px solid #91c88c; outline-offset: 1px; }
+#game .preparedspell { min-width: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #8d7eaa; border-radius: 8px; background: #282237; }
+#game .preparedspellhead { display: grid; gap: 5px; }
+#game .preparedspellhead > b { color: #cdbde9; font-size: 10px; letter-spacing: .1em; }
+#game .preparedspellhead > strong { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 16px; }
+#game .preparedspellrules { font-size: 13px; line-height: 1.45; }
+#game .preparedspellhint { margin: 0; color: var(--ds-muted); font-size: 11px; line-height: 1.4; }
+#game .sheet.preparedsheet { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 10px; width: min(680px, calc(100 * var(--vwu) - 24px)); max-height: calc(100 * var(--dvhu) - 32px); overflow: hidden; }
+#game .preparedsheet > .sheetimg { width: 100%; max-height: min(220px, calc(30 * var(--dvhu))); object-fit: contain; align-self: start; }
+#game .preparedsheet .sheetinfo { min-width: 0; min-height: 0; max-height: calc(28 * var(--dvhu)); overflow-y: auto; }
+#game .preparedsheet .sheetacts { grid-column: 1 / -1; min-height: 0; max-height: calc(54 * var(--dvhu)); overflow-y: auto; gap: 8px; }
+#game .preparedsheet .sheetacts .pbtn { flex-shrink: 0; min-height: 44px; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  #game .sheet.preparedsheet { grid-template-columns: minmax(0, 88px) minmax(0, 1fr); }
+}
+
 /* Preserve hard reviews and their real callbacks while docking their presentation. */
 #game.command-table .ct-decision-rail { grid-area: decision; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--ds-panel); border-left: 1px solid var(--ds-line); overflow: hidden; }
 #game.command-table .ct-decision-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 9px; border-bottom: 1px solid var(--ds-line-soft); flex: 0 0 auto; }
@@ -348,8 +367,11 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #game.command-table .actionstagebuttons > .pbtn { flex: 1; min-height: 44px; padding: 8px; }
   #game.command-table .ct-decision-rail .utilityrail { display: none !important; }
   body.game-active #game.command-table .handwrap { padding: 5px 8px !important; gap: 4px; }
-  #game.command-table .handtools { flex-basis: 100px; width: 100px; font-size: 11px; }
-  #game.command-table .handtools select { min-height: 44px; font-size: 11px; }
+  #game.command-table .handtools { flex-basis: 72px; width: 72px; font-size: 10px; gap: 6px; }
+  #game.command-table .handtools select { min-height: 44px; font-size: 10px; padding-inline: 2px; }
+  #game.command-table .handzones { flex: 0 1 112px; width: 112px; max-width: 30%; }
+  #game.command-table .handzones .exiletraycard { padding-right: 3px; }
+  #game.command-table .handzones .exiletraycard .exgo { position: static; grid-column: 2; transform: none; }
   body.game-active #game.command-table .hand { justify-content: flex-start; gap: 6px !important; }
   #game.command-table .mobileviewtabs { grid-area: tabs; display: flex !important; position: static !important; width: 100%; margin: 0; padding: 3px 6px max(3px, env(safe-area-inset-bottom)); background: var(--ds-table); border-top: 1px solid var(--ds-line); }
   #game.command-table .mobileviewtab { display: inline-flex; align-items: center; justify-content: center; flex: 1; min-height: 44px; flex-direction: column; padding: 4px; gap: 3px; font: 650 10px/1 var(--ds-font-body); color: var(--ds-muted); background: transparent; border: 0; border-bottom: 2px solid transparent; }

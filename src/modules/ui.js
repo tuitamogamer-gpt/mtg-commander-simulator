@@ -2836,7 +2836,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const groups = new Map();
       const out = [];
       for (const c of perms) {
-        const key = c.commander || c.attachments.length || c.attacking || c.blocking
+        const key = c.commander || c.attachments.length || c.attacking || c.blocking || c.meta.prepared
           ? 'solo' + c.iid
           : `${c.name}|${c.tapped}|${c.sick}|${c.is('Creature') ? c.power + '/' + c.toughness : ''}|${JSON.stringify(c.counters)}|${c.damage || 0}|${!!c.deathtouched}|${c.isToken}`;
         if (groups.has(key)) groups.get(key).n++;
@@ -3190,6 +3190,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { amount, detail };
     }
 
+    preparedSpellFor(g, source) {
+      if (source.zone !== 'battlefield' || !source.meta?.prepared) return null;
+      const spell = g.byIid?.(source.meta.preparedCopy);
+      return spell?.zone === 'exile' && spell.meta?.preparedBy === source.iid ? spell : null;
+    }
+
+    preparedCastEntries(source, spell) {
+      const q = this.pending?.q;
+      return source.ctrl === this.me && spell && q && ['main', 'priority'].includes(q.type)
+        ? (q.casts || []).filter(entry => entry.card === spell) : [];
+    }
+
+    renderPreparedSpell(g, source, spell) {
+      const panel = el('section', 'preparedspell');
+      panel.setAttribute('aria-label', 'Prepared spell');
+      panel.innerHTML = `<div class="preparedspellhead"><b>PREPARED</b><strong>${esc(spell.name)} ${costHTML(spell.def.cost || '')}</strong></div>` +
+        `<div class="preparedspellrules">${esc(spell.def.oracle || '').replace(/\n/g, '<br>')}</div>` +
+        '<p class="preparedspellhint">Casting this spell uses this creature’s preparation. The creature stays on the battlefield.</p>';
+      if (source.ctrl !== this.me) return panel;
+      const entries = this.preparedCastEntries(source, spell);
+      for (const entry of entries) {
+        const cost = g.spellCost(this.me, spell, { ...entry.alt, from: entry.from });
+        const button = el('button', 'pbtn primary wide preparedcast',
+          `Cast prepared · ${esc(spell.name)} ${esc(U.costStr(cost))}${entry.alt?.label ? ' · ' + esc(entry.alt.label) : ''}`);
+        button.onclick = () => {
+          this.sheet = null;
+          this.resolvePending({ kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from });
+        };
+        panel.appendChild(button);
+      }
+      if (!entries.length) {
+        const button = el('button', 'pbtn wide disabled preparedcast', `Cast prepared · ${esc(spell.name)} — unavailable now`);
+        button.disabled = true;
+        panel.appendChild(button);
+        panel.appendChild(el('p', 'preparedspellhint', spell.is('Sorcery')
+          ? 'Requires priority, enough mana and legal targets. Sorceries normally need your main phase and an empty Stack.'
+          : 'Requires priority, enough mana and legal targets.'));
+      }
+      return panel;
+    }
+
     miniCard(g, c, opts = {}) {
       const threatened = this.threatTargets && this.threatTargets.has(c.iid);
       const shownFaceDownDef = this.visibleFaceDownDef(c);
@@ -3246,13 +3287,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const faceUpActions = c.faceDown && c.ctrl === this.me && pd && ['main', 'priority'].includes(pd.q.type)
         ? (pd.q.acts || []).filter(entry => entry.card === c && entry.turnFaceUp) : [];
       const faceUpTag = faceUpActions.length ? '<div class="faceupready">TURN FACE UP</div>' : '';
+      const prepared = this.preparedSpellFor(g, c);
+      const preparedCastable = this.preparedCastEntries(c, prepared).length > 0;
+      const preparedTag = prepared ? `<div class="preparedtag${preparedCastable ? ' ready' : ''}">PREPARED${preparedCastable ? ' · CAST' : ''}</div>` : '';
+      if (prepared) d.classList.add('prepared');
+      if (preparedCastable) d.classList.add('prepared-castable');
       const stackN = opts.stackN && opts.stackN > 1 ? `<div class="stackn">×${opts.stackN}</div>` : '';
       const keywordBadges = this.keywordBadgesHTML(c);
       if (opts.stackN > 1) d.classList.add('stacked');
       d.innerHTML = `
         ${cardArtHTML(c.faceDown && mayLookFaceDown ? shownFaceDownDef : c, '', c.faceDown && !mayLookFaceDown)}
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${faceUpTag}${stackN}${keywordBadges}${mutateTag}
+        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${faceUpTag}${stackN}${keywordBadges}${mutateTag}${preparedTag}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       let accessibleName = c.faceDown && !mayLookFaceDown
@@ -3260,6 +3306,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
       if (markedDamage) accessibleName += `. ${markedDamage.detail}`;
       if (faceUpActions.length) accessibleName += '. Turn face up available';
+      if (prepared) accessibleName += `. Prepared: ${prepared.name}.${preparedCastable ? ' Cast available.' : ''}`;
       if (this.deathReturnState(c)) accessibleName += `. ${this.deathReturnState(c)}`;
       // interactions
       if (this.markSelectedTarget(d, c)) {
@@ -3350,6 +3397,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const owner of g.players) {
           for (const c of owner.exile) {
             const meta = c.meta || {};
+            // Prepared copies are offered on their source permanent, not in the hand dock.
+            if (meta.preparedBy) continue;
             if ((meta.playableBy === me && g.hasExilePlayPermission(me, c)) ||
               (owner === me && (meta.plotted || meta.foretold))) exilePlayable.push(c);
           }
@@ -3548,7 +3597,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // ponude van ruke (groblje/egzil) — inače bi bile nevidljive
       const offZoneRow = () => {
-        const list = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts) : [];
+        const list = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts).filter(entry => !entry.card.meta?.preparedBy) : [];
         if (!list.length) return null;
         const row = el('div', 'btnrow offzone');
         const ZONE = { graveyard: '🪦', exile: '🌀', battlefield: '🎴' };
@@ -3592,6 +3641,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             : g.phase === 'main1' ? '🎴 Main phase 1: click a card for actions' : '🎴 Main phase 2';
           if (this.arenaDragEnabled) hint = hint.replace('click a card for actions', 'drag a playable card to act now, or click for actions');
           if (this.actable && this.actable.size) hint += ` · <span class="hintact">⚙️ = ability (${this.actable.size})</span>`;
+          if ((q.casts || []).some(entry => entry.card.meta?.preparedBy)) hint += ' · Click a prepared creature to cast its spell';
           bar.appendChild(el('div', 'ptext', hint));
           const oz = offZoneRow();
           if (oz) bar.appendChild(oz);
@@ -3638,7 +3688,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const ozc = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts) : [];
           const inHandN = (q.casts || []).length - ozc.length;
           const actN = (q.acts || []).length;
-          const where = [inHandN ? (this.arenaDragEnabled ? 'drag or click a card in your hand' : 'click a card in your hand') : '', actN ? 'or use an ability below' : '']
+          const where = [inHandN ? (this.arenaDragEnabled ? 'drag or click a card in your hand' : 'click a card in your hand') : '',
+            (q.casts || []).some(entry => entry.card.meta?.preparedBy) ? 'click a prepared creature to cast its spell' : '', actN ? 'or use an ability below' : '']
             .filter(Boolean).join(' ');
           const hint = nOpt
             ? ` <span class="hintact">${nOpt} option${nOpt === 1 ? '' : 's'}${where ? ': ' + where : ''}</span>`
@@ -5184,6 +5235,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const m = el('div', 'sheet');
       ov.appendChild(m);
+      const prepared = this.preparedSpellFor(g, card);
+      if (prepared) m.classList.add('preparedsheet');
       const visibleFaceDownDef = this.visibleFaceDownDef(card);
       const mayLookFaceDown = !!visibleFaceDownDef;
       if (card.faceDown && card.zone === 'battlefield' && card.ctrl === this.me && mayLookFaceDown) m.classList.add('faceupsheet');
@@ -5233,6 +5286,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(info);
       // actions
       const acts = el('div', 'sheetacts');
+      if (prepared) acts.appendChild(this.renderPreparedSpell(g, card, prepared));
       const pd = this.pending;
       let suspendActionOffered = false;
       if (pd && (pd.q.type === 'main' || pd.q.type === 'priority')) {
@@ -5247,6 +5301,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (e.from === 'exile') label = e.alt?.foretell
             ? `Play from exile · Foretell ${U.costStr(cost)}${e.alt.zkForetellGranted ? ' (Ethereal Valkyrie)' : ''}`
             : 'Play from exile' + (e.alt && e.alt.free ? ' (free)' : '');
+          if (card.meta?.preparedBy) label = `Cast prepared · ${card.name} ${U.costStr(cost)}`;
           const b = el('button', 'pbtn primary wide', esc(label));
           b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'cast', card, alt: e.alt, from: e.from }); };
           acts.appendChild(b);

@@ -26,6 +26,27 @@ function room() {
   return { L, state };
 }
 
+test('Live preserves the prepared source and spell link through a control change', () => {
+  const { game, host, guest, card } = table();
+  const source = card('Inspired Skypainter', host);
+  const spell = M.E.prepareSpell(game, source, M.E.preparedSpellDefinitions["Maestro's Gift"]);
+  source.ctrl = guest;
+  for (const name of ['Island', 'Mountain', 'Mountain', 'Mountain', 'Mountain']) card(name);
+  game.recalc();
+  const q = { type: 'main', player: guest, casts: game.castableList(guest), acts: [], lands: [] };
+  assert.ok(q.casts.some(entry => entry.card === spell));
+  const model = new M.OnlineArenaView();
+  model.update(plain(M.onlineGameViewFor(game, guest)), guest.onlineSeat);
+  const decision = model.decision(plain(M.onlineDecisionDescriptor(game, q, guest, 'prepared-cast')));
+  const viewedSource = model.byIid(source.iid), viewedSpell = model.byIid(spell.iid);
+  assert.equal(viewedSource.meta.prepared, true);
+  assert.equal(viewedSource.meta.preparedCopy, viewedSpell.iid);
+  assert.equal(viewedSpell.meta.preparedBy, viewedSource.iid);
+  assert.equal(viewedSource.ctrl, model.viewer);
+  assert.equal(viewedSpell.meta.playableBy, model.viewer);
+  assert.ok(decision.casts.some(entry => entry.card === viewedSpell));
+});
+
 test('sequential target instructions and previous choices survive the Live decision round trip', async () => {
   const { game, guest, card } = table();
   const source = card('Bright-Palm, Soul Awakener');

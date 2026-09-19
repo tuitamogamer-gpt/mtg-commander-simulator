@@ -31,7 +31,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return result;
   }
   const metaKeys = ['chosenType', 'chosenColor', 'oracleChosenColor', 'thrivingColor', 'siegeMode', 'level', 'unlocked',
-    'suspended', 'foretold', 'plotted', 'freePlay', 'playableBy', 'playableUntil', 'playableUntilOwnTurn', 'ringBearer', 'crewedTurn'];
+    'suspended', 'foretold', 'plotted', 'freePlay', 'playableBy', 'playableUntil', 'playableUntilOwnTurn', 'ringBearer', 'crewedTurn',
+    'prepared', 'preparedCopy', 'preparedBy'];
   U.onlineCardPresentation = function (card, viewer, mayInspect = false) {
     const meta = card.meta || {};
     const mayLook = card.ctrl === viewer && !!meta.faceDownDef || meta.revealedTo === 'all' ||

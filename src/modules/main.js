@@ -3939,7 +3939,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           type: 'main', player: ui.me,
           casts: g.castableList(ui.me), acts: g.activatableList(ui.me), lands: g.playableLands(ui.me), phase: g.phase,
         };
-        ui.toast('Prepared: klikni Braingeyser iz egzila, izaberi X i target playera.');
+        ui.toast('Prepared: open Dirgur Focusmage, choose Cast prepared, then choose X and a target player.');
         const action = await ui.me.controller.decide(g, q);
         await g.performAction(ui.me, action);
         g.lg(`Prepared UI: Braingeyser=${prepared.zone}; tvoja ruka=${ui.me.hand.length}; ${opponent.name} ruka=${opponent.hand.length}.`, 'ai');
