@@ -91,6 +91,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return ribbon;
   };
 
+  P.commandLandCards = function (game, player) {
+    // Lands are public permanents. Keep every copy individually inspectable
+    // and targetable; animated lands already belong to the creature lane.
+    return game.lands(player).filter(card => !card.is('Creature')).map(card => {
+      const item = this.permanentPile(game, card, { sm: true });
+      item.classList.add('ct-land-card');
+      if (card.tapped) {
+        const face = item.matches('.mini') ? item : item.querySelector('.mini');
+        face.append(node('span', 'ct-land-state', 'Tapped'));
+        face.setAttribute('aria-label', `${face.getAttribute('aria-label')} Tapped.`);
+      }
+      return item;
+    });
+  };
+
   P.renderCommandTable = function (game, root) {
     const focus = U.commandTableFocus(game, this.me, this.commandFocusPlayer, this.pending?.q.type);
     this.commandFocusPlayer = focus.focused?.idx ?? null;
@@ -99,6 +114,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.applyPlaymat(root);
     root.style.setProperty('--ct-opponent-scale', String(this.oppScale || 1));
     root.classList.toggle('ct-show-all', focus.showAll);
+    root.classList.toggle('ct-desktop-lands', !mobileLayout.matches);
+    root.classList.toggle('ct-grid-view', !mobileLayout.matches && (this.commandTableView !== 'focus' || focus.showAll));
     root.classList.toggle('ct-no-opponents', !focus.opponents.length);
     root.append(this.renderCommandSeats(game, focus));
     const mineTab = root.querySelector('.mobileviewtab');
@@ -153,8 +170,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const landCount = row.querySelector('.oppLands');
       if (landCount) {
         const lands = game.lands(player).filter(card => !card.is('Creature'));
-        landCount.replaceChildren(icon('mana'), node('span', '', `${lands.filter(card => !card.tapped).length}/${lands.length} lands`));
-        this.makeKeyboardButton(landCount, `${player.name}: inspect lands and player details`);
+        if (mobileLayout.matches) {
+          landCount.replaceChildren(icon('mana'), node('span', '', `${lands.filter(card => !card.tapped).length}/${lands.length} lands`));
+          this.makeKeyboardButton(landCount, `${player.name}: inspect lands and player details`);
+        } else landCount.replaceWith(...this.commandLandCards(game, player));
+      }
+      if (!mobileLayout.matches) {
+        const resources = row.querySelector('.oppresourcelane');
+        if (resources) {
+          resources.classList.add('ct-resource-dock');
+          row.append(resources);
+        }
       }
     }
 
@@ -186,6 +212,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       myBoard.prepend(heading);
+      if (!mobileLayout.matches) {
+        const resourceRow = myBoard.querySelector('.landrow');
+        const resources = resourceRow.querySelector('.resourcezone');
+        if (resources) {
+          const lands = resources.querySelector('.landstrip') || node('div', 'landstrip');
+          lands.replaceChildren(...this.commandLandCards(game, this.me));
+          const mana = resources.querySelector('.manaartifactstrip');
+          if (mana) { lands.append(...mana.children); mana.remove(); }
+          resources.append(lands);
+        }
+        const commandZone = myBoard.querySelector('.czrow');
+        if (commandZone) resourceRow.append(commandZone);
+        resourceRow.classList.add('ct-resource-dock');
+      }
     }
 
     const rail = node('aside', 'ct-decision-rail');
