@@ -1,5 +1,5 @@
 ((MTG)=>{
- const family=effect=>effect.action==='library-select-v8'||effect.action==='with-card-results-v8'?'selected-hand':['mill','discard','discard-hand'].includes(effect.action)?effect.action==='discard-hand'?'discard':effect.action:
+ const family=effect=>effect.captureDestroyedV16?'destroy-v16':effect.captureTapV16?'tap-v16':effect.action==='library-select-v8'||effect.action==='with-card-results-v8'?'selected-hand':['mill','discard','discard-hand'].includes(effect.action)?effect.action==='discard-hand'?'discard':effect.action:
   effect.action==='exile'||effect.action==='exile-top'||effect.action==='zone-select'&&effect.destination==='exile'||effect.action==='battlefield-group'&&effect.operation==='exile'?'exile':
   effect.action==='choose-permanents'&&effect.operation==='sacrifice'?'sacrifice':null;
  const players=(ctx,who,h)=>who==='each-player'?ctx.g.alivePlayers():who==='each-opponent'?ctx.g.alivePlayers().filter(p=>p!==ctx.you):who==='you'?[ctx.you]:h.subjects(ctx,who);
@@ -16,13 +16,13 @@
    }
    else if(event==='mill'||event==='discard')cards=players(ctx,effect.who,h).flatMap(player=>event==='mill'?(h.amount(effect.n,ctx)>0?player.library.slice(-h.amount(effect.n,ctx)):[]):player.hand);
    else if(effect.action==='exile-top')cards=players(ctx,effect.who,h).flatMap(player=>(h.amount(effect.n,ctx)>0?player.library.slice(-h.amount(effect.n,ctx)):[]));
-   else if(effect.action==='exile')cards=h.subjects(ctx,effect.target);
+   else if(effect.action==='exile'||effect.action==='destroy')cards=h.subjects(ctx,effect.target);
    else if(effect.action==='zone-select')cards=players(ctx,effect.who,h).flatMap(player=>matching(player[effect.zone],effect.filter));
    else if(effect.action==='battlefield-group')cards=ctx.g.bf().filter(card=>effect.filters.some(filter=>h.target(filter,[],0).filter(ctx.g,card,ctx.you,ctx.src)));
-   else if(effect.action==='choose-permanents')cards=players(ctx,effect.who,h).flatMap(player=>matching(ctx.g.bf().filter(card=>card.ctrl===player&&ctx.g.canSacrifice(card)),effect.filter));
-   const rows=[...new Set(cards)].map(card=>({card,version:card.zoneVersion,zone:card.zone,view:view(ctx.g,card)}));
+   else if(effect.action==='choose-permanents')cards=players(ctx,effect.who,h).flatMap(player=>matching(ctx.g.bf().filter(card=>card.ctrl===player&&(effect.operation!=='sacrifice'||ctx.g.canSacrifice(card))),effect.filter));
+   const rows=[...new Set(cards)].map(card=>({card,version:card.zoneVersion,zone:card.zone,tapped:card.tapped,view:view(ctx.g,card)}));
    await run();
-   for(const row of rows)if(row.card.zoneVersion!==row.version&&(event!=='selected-hand'||row.card.zone==='hand')&&(event!=='exile'||row.card.zone==='exile'||row.card.isToken&&row.zone==='battlefield'&&row.card.zone==='ceased')){
+   for(const row of rows)if(event==='tap-v16'?!row.tapped&&row.card.tapped&&row.card.zone==='battlefield'&&row.card.zoneVersion===row.version:row.card.zoneVersion!==row.version&&(event!=='selected-hand'||row.card.zone==='hand')&&(event!=='exile'||row.card.zone==='exile'||row.card.isToken&&row.zone==='battlefield'&&row.card.zone==='ceased')){
     ctx.oracleResolutionResults.cards.push({card:row.card,version:row.card.zoneVersion,view:row.zone==='battlefield'?row.view:view(ctx.g,row.card)});
    }
   },
@@ -35,6 +35,12 @@
     const satisfied=!clause.shared?matches.length>0:matches.some((a,i)=>matches.slice(i+1).some(b=>clause.shared==='a color'?a.view.colors.some(color=>b.view.colors.includes(color)):clause.shared==='a card type'?a.view.cur.types.some(type=>b.view.cur.types.includes(type)):clause.shared==='all their card types'?a.view.cur.types.length===b.view.cur.types.length&&a.view.cur.types.every(type=>b.view.cur.types.includes(type)):false));
     if(clause.action==='result-scaled-v8'){
      const child=clause.effects[0];if(matches.length)await h.run(ctx,[{...child,n:child.n*matches.length}]);
+    }else if(clause.action==='result-each-v16'){
+     await ctx.g.withBattlefieldEntryBatch(async()=>{for(const row of matches)await h.run({...ctx,oracleResultRowV16:row},clause.effects);});
+    }else if(clause.action==='result-bound-v16'){
+     // A quantity in the following instruction refers to this exact resolution's
+     // successful moves, including tokens and replacement destinations.
+     await h.run({...ctx,oracleResultCountV16:matches.length},clause.effects);
     }else if(clause.action==='result-select-v8'){
      // Follow a replacement destination, but never a later zone change. A card
      // shuffled into a hidden library cannot be identified by this instruction.

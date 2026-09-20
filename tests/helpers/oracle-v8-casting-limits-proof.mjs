@@ -21,6 +21,16 @@ export async function spellLimitProof(M,entry,op,role,h){
  h.fund(a,100);h.fund(b,100);h.fillLibrary(M,a,30);h.fillLibrary(M,b,30);
  const source=h.zoneCard(M,a,entry.raw.name,'hand');
  assert.equal(await game.castSpell(a,source,{from:'hand'}),true,source.name+': printed source is paid and cast');await h.resolveAll(game);
+ if(op.qualityV16){
+  const make=player=>h.zoneCard(M,player,'Lightning Bolt','hand');
+  for(const player of [a,b]){
+   const first=make(player);if(game.canCastTiming(player,first)){assert.equal(await game.castSpell(player,first,{from:'hand',quickTargets:[player===a?b:a]}),true);await h.resolveAll(game);}
+   const second=make(player);assert.equal(game.canCastTiming(player,second),false,source.name+': second qualifying spell is prohibited');assert.equal(await game.castSpell(player,second,{from:'hand',free:true}),false);
+   const creature=h.zoneCard(M,player,op.qualityV16==='nonartifact'?'Ornithopter':'Grizzly Bears','hand');if(op.qualityV16==='non-Phyrexian')creature.def={...creature.def,subtypes:['Phyrexian']};
+   game.turnPlayer=player;assert.equal(await game.castSpell(player,creature,{from:'hand'}),true,source.name+': exempt spell remains legal');await h.resolveAll(game);
+  }
+  await game.move(source,'exile');game.turnPlayer=a;assert.equal(game.canCastTiming(a,make(a)),true);return 12;
+ }
  const own=h.zoneCard(M,a,'Lightning Bolt','hand');
  assert.equal(a.turnState.spellsCast,1);assert.equal(game.canCastTiming(a,own),false);
  const before=Object.values(a.pool).reduce((a,b)=>a+b,0);

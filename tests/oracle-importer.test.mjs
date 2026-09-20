@@ -26,6 +26,21 @@ const SNAPSHOT_A = '2026-08-29T21:01:52.466+00:00';
 const SNAPSHOT_B = '2026-08-30T21:01:52.466+00:00';
 const GENERATED_AT = '2026-08-30T22:00:00.000Z';
 
+test('CLI keeps the historical default and enables v11 only with an explicit compiler version',async()=>{
+  const directory=importerWorkspace();
+  try{
+    let fetched=0;
+    const card=oracleCard('Compiler choice fixture','compiler-choice',{type_line:'Instant',mana_cost:'{U}',oracle_text:'Draw a card.\nSplice onto instant or sorcery {1}{U}'});
+    const dependencies={root:directory,fetchOracleCards:async()=>{fetched++;return {bulk:bulk(SNAPSHOT_A),cards:[card]};},console:{log(){}},now:()=>GENERATED_AT};
+    for(const version of ['0','20','11.5','NaN'])await assert.rejects(runOracleImport(['--limit=1','--compiler-version='+version],dependencies),/compiler version/);
+    assert.equal(fetched,0,'invalid versions fail before loading the source');
+    await assert.rejects(runOracleImport(['--limit=1'],dependencies),/Only 0 cards/);
+    const plan=await runOracleImport(['--limit=1','--compiler-version=11'],dependencies);
+    assert.equal(plan.report.selectionPolicy.compilerVersion,11);assert.equal(plan.nextState.compilerVersion,11);
+    assert.ok(plan.report.cards[0].implementation.some(op=>op.kind==='mechanic-splice-v11'));
+  }finally{fs.rmSync(directory,{recursive:true,force:true});}
+});
+
 function oracleCard(name, oracleId, overrides = {}) {
   return Object.assign({
     name,

@@ -24,7 +24,7 @@ export function stageOracleCastingCosts(MTG,ctx,entry,h) {
       if(!object.types||object.types.includes(type))types=[type];
     }
     const zone=['discard','exileHand'].includes(cost.kind)?'hand':cost.kind==='exileGraveyard'?'graveyard':'battlefield';
-    for(let i=0;i<cost.quantity.min;i++) {
+    for(let i=0;i<(cost.quantity.xV19?3:cost.quantity.min);i++) {
       const options={super:[...new Set(['Legendary',...(q.supertypes||[])])],
         subtypes:q.subtypes||[],colorsOverride:q.colors||[],power:'0',toughness:'20'};
       const definition=h.fixtureDefinition('Oracle casting cost '+cost.id+' '+fixtures.length,types,options);
@@ -101,7 +101,7 @@ export function assertOracleCastingCostRecord(source,stackObject,entry,fixtures)
       const key={sacrifice:'sacrifices',discard:'discards',exileGraveyard:'exiles',returnPermanent:'returns',exileHand:'handExiles'}[cost.kind];
       assert.ok(key,source.name+': proof knows the additional cost kind');
       assert.equal(cost.quantity.min,cost.quantity.max,source.name+': proof requires a fixed printed quantity');
-      expected[key]+=cost.quantity.min;
+      expected[key]+=cost.quantity.xV19?stackObject.x:cost.quantity.min;
     };
     for(const operation of entry.implementation||[])if(operation.kind==='mechanic-additional-costs')operation.costs.forEach(count);
     for(const key of ['sacrifices','discards','exiles','returns','handExiles'])

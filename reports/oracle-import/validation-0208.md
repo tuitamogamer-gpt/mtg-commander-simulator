@@ -1,0 +1,11 @@
+# Oracle batch 0208
+
+21 September 2026. Batch 0208 imports **100 new cards**, from **Abandon Hope** to **Wall of Vipers**, and completes the [requested 1,000-card expansion](validation-0199-0208.md). Compiler v19 examined all 38,627 rows of the pinned source, found 108 eligible unimported candidates, and selected the first 100 by the established English-name/Oracle-ID ordering.
+
+The exact production cohort passed its human/local-AI execution matrix before registration. After registration and the final engine correction, all ten new batches passed together: 1,000 cards and 3,775 state-invariant scenarios. Source provenance, strict certification, catalog integrity, syntax, audit and the local 16-check browser gate also passed. The final catalog contains 24,749 definitions and 24,748 import-eligible definitions.
+
+New rules include variable additional costs, sacrifice X, graveyard-entry restrictions, entry-trigger suppression, damage redirection, protection from everything, conditional and granted casting mechanics, blocking history, selective blocking requirements, and alternate wins. Entry-granted keywords retain object identity across copying and end on a zone change. Laccolith abilities suppress combat assignment only for their turn. Doctor Doom wins before a subsequent state-based loss check can run. Artifact mana abilities coexist with improvise payment choices.
+
+The 69 v19 boundary tests cover all seven additional source-selected compositions as well as the initial grammar families; seven general rules groups bring the final run to 76 passing tests. The source fixture includes 107 complete Oracle rows so seven supported but unselected cards retain grammar regression coverage. Those seven are not registered by this batch.
+
+Evidence: `.local/oracle-v19/production-proof1.json` with successful `production-proof2.log`, `refresh-production2.log`, `prepare-production2.log`, `install1.log`, and the final expansion evidence linked above. The descriptor refresh made Firestorm's any-target type explicit; it did not change candidate eligibility or selection. Failed exploratory proofs and superseded tests are not counted as successful runs. No commit, push or deployment was performed.

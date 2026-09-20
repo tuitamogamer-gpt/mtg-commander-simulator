@@ -134,7 +134,8 @@ async function openImporter() {
   assert.equal(await page.evaluate(() => !!window.MTGAccount?.user), false, 'QA uses a fresh signed-out guest context');
 }
 async function clickButton(pattern, scope = page.locator('#game')) {
-  const button = scope.getByRole('button', { name: pattern, disabled: false }).filter({ visible: true }).last();
+  const overlayButton = scope.locator('.overlay').filter({ visible: true }).getByRole('button', { name: pattern, disabled: false }).filter({ visible: true }).last();
+  const button = await overlayButton.count() ? overlayButton : scope.getByRole('button', { name: pattern, disabled: false }).filter({ visible: true }).last();
   if (!await button.count()) return false;
   await button.click({ timeout: 5000 });
   return true;

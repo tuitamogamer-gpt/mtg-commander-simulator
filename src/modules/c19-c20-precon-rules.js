@@ -8,7 +8,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const human=ctx=>C.token('Human Soldier',[type(ctx,'Human'),type(ctx,'Soldier')],1,1,['W']);
  const beast=ctx=>C.token('Beast',[type(ctx,'Beast')],3,3,['G']);
  const intrinsicCache=new WeakMap();
- function intrinsicKeywords(def){if(intrinsicCache.has(def))return intrinsicCache.get(def);const result=new Set(def.kws||[]),known=new Set([...keywords,'defender','flash','prowess','shroud','fear','intimidate','skulk','shadow','horsemanship','wither','infect','forestwalk','islandwalk','mountainwalk','plainswalk','swampwalk','nonbasic landwalk','legendary landwalk']);
+ function intrinsicKeywords(def){if(intrinsicCache.has(def))return intrinsicCache.get(def);const result=new Set(def.kws||[]),known=new Set([...keywords,'defender','flash','prowess','shroud','fear','intimidate','skulk','shadow','horsemanship','wither','infect','forestwalk','islandwalk','mountainwalk','plainswalk','swampwalk','nonbasic landwalk','legendary landwalk','snow landwalk','snow forestwalk','snow swampwalk','snow islandwalk','snow plainswalk','snow mountainwalk','desertwalk','artifact landwalk']);
   for(const line of (def.oracle||'').split('\n')){const parts=line.replace(/\s*\([^)]*\)/g,'').trim().toLowerCase().split(/\s*[,;]\s*/);if(parts.every(s=>known.has(s)||/^protection from /.test(s)||/^ward(?:\s|$)/.test(s)))for(const s of parts)if(known.has(s))result.add(s);}
   const values=[...result];intrinsicCache.set(def,values);return values;
  }

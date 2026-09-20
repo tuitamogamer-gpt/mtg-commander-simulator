@@ -4,7 +4,8 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const KINDS=new Set(['cost','mana','revealHand','beholdPermanent','tapPermanent','blight']);
  const mana=/^(?:\{(?:[0-9]+|[WUBRGC]|[WUBRG]\/[WUBRG])\})+$/;
  function compile(operation){
-  if(operation.kind!=='mechanic-casting-choice-v8'||operation.contract!=='mechanic-casting-choice-v8'||Object.keys(operation).some(key=>!['kind','contract','options'].includes(key))||!Array.isArray(operation.options)||operation.options.length<2)throw Error('Invalid casting cost choice');
+  const required=operation.requiredV18===true&&operation.options?.length===1&&operation.options[0].kind==='blight';
+  if(operation.kind!=='mechanic-casting-choice-v8'||operation.contract!=='mechanic-casting-choice-v8'||Object.keys(operation).some(key=>!['kind','contract','options','requiredV18'].includes(key))||operation.requiredV18!==undefined&&!required||!Array.isArray(operation.options)||operation.options.length<(required?1:2))throw Error('Invalid casting cost choice');
   const options=operation.options.map(option=>{
    if(!KINDS.has(option.kind))throw Error('Unsupported casting cost choice');
    const allowed={cost:['kind','costs'],mana:['kind','cost'],blight:['kind','n']}[option.kind]||['kind','object'];
@@ -22,7 +23,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
    }
    return{...option};
   });
-  if(options.filter(option=>option.kind==='mana').length!==1)throw Error('Casting choice needs exactly one mana alternative');
+  if(!required&&options.filter(option=>option.kind==='mana').length!==1)throw Error('Casting choice needs exactly one mana alternative');
   return{options};
  }
  function matches(card,object){
@@ -39,7 +40,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   const used=reserved(ctx);
   return cards.filter(card=>card!==src&&!used.includes(card)&&matches(card,cost?.object||option.object)&&
    (privateZone||card.ctrl===you)&&
-   (kind!=='sacrifice'||g.canSacrifice(card))&&(kind!=='tapPermanent'||!card.tapped));
+   (kind!=='sacrifice'||g.canSacrifice(card))&&(kind!=='tapPermanent'||!card.tapped)&&(kind!=='blight'||g.canPutCountersV18(card,'-1/-1')));
  }
  function combinedCost(base,option){
   const cost={...base,pips:(base.pips||[]).map(pip=>pip.slice())};
@@ -101,4 +102,52 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   return true;
  }
  MTG.OracleV8CastingChoices={compile,canPay:(ctx,compiled)=>viable(ctx,compiled).length>0,prepare,validate,commit};
+
+ // Additional costs are announced before targets and paid after all choices
+ // are checked. Teamwork taps creatures for their actual power (not crew power).
+ function optionalCompile(operation){
+  const payment=operation.payment;
+  if(operation.kind!=='mechanic-optional-cost-v14'||operation.contract!=='mechanic-optional-cost-v14'||Object.keys(operation).some(key=>!['kind','payment','contract'].includes(key))||!['teamwork','blight','behold','evidence'].includes(payment?.kind))throw Error('Invalid optional casting cost');
+  if(payment.kind==='behold'){if(Object.keys(payment).some(key=>!['kind','object'].includes(key)))throw Error('Invalid behold cost');MTG.compileOracleAdditionalCosts([{id:'behold-filter',kind:'discard',quantity:{min:1,max:1},object:payment.object}]);}
+  else if(!Number.isSafeInteger(payment.n)||payment.n<1||Object.keys(payment).some(key=>!['kind','n'].includes(key)))throw Error('Invalid optional casting quantity');
+  return {...payment};
+ }
+ function optionalPool(ctx){const payment=ctx.src.def.oracleOptionalCostV14;return (payment.kind==='evidence'?ctx.you.graveyard:payment.kind==='behold'?ctx.g.bf().filter(card=>card.ctrl===ctx.you).concat(ctx.you.hand):ctx.g.creatures(ctx.you)).filter(card=>card!==ctx.src&&(payment.kind!=='teamwork'||!card.tapped)&&!reserved(ctx).includes(card)&&(payment.kind!=='behold'||matches(card,payment.object)));}
+ function optionalPayable(ctx,cards){return ctx.g.canPayMana(ctx.you,ctx.manaCost||ctx.g.spellCost(ctx.you,ctx.src,ctx.castOpts||{}),{card:ctx.src,castOpts:ctx.castOpts||{},xVal:ctx.so?.x||0},{xVal:ctx.so?.x||0,excludeCards:ctx.src.def.oracleOptionalCostV14.kind==='teamwork'?cards:[],protectedSacrifices:reserved(ctx).concat(cards)});}
+ function optionalWitness(ctx,payment){
+  if(!['teamwork','evidence'].includes(payment.kind)){const card=optionalPool(ctx).find(card=>optionalPayable(ctx,[card]));return card?[card]:null;}
+  const weight=card=>payment.kind==='evidence'?card.mv:card.power,cards=optionalPool(ctx).filter(card=>weight(card)>0).sort((a,b)=>weight(b)-weight(a)),tail=Array(cards.length+1).fill(0);
+  for(let i=cards.length-1;i>=0;i--)tail[i]=tail[i+1]+weight(cards[i]);
+  const search=(i,power,picked)=>{
+   if(power>=payment.n)return optionalPayable(ctx,picked)?picked:null;
+   if(power+tail[i]<payment.n||!optionalPayable(ctx,picked))return null;
+   for(let j=i;j<cards.length;j++){const result=search(j+1,power+weight(cards[j]),picked.concat(cards[j]));if(result)return result;}
+   return null;
+  };
+  return search(0,0,[]);
+ }
+ function optionalValidate(ctx){
+  const plan=ctx.so.oracleOptionalPlanV14,payment=ctx.src.def.oracleOptionalCostV14;
+  if(!plan||!payment||ctx.src.zoneVersion!==plan.sourceVersion||ctx.src.zone!==plan.sourceZone)return false;
+  const pool=optionalPool(ctx);
+  return plan.cards.length>0&&plan.cards.every(row=>pool.includes(row.card)&&row.card.zoneVersion===row.version)&&(['teamwork','evidence'].includes(payment.kind)?plan.cards.reduce((n,row)=>n+(payment.kind==='evidence'?row.card.mv:row.card.power),0)>=payment.n:plan.cards.length===1);
+ }
+ async function optionalPrepare(ctx){
+  const payment=ctx.src.def.oracleOptionalCostV14,witness=payment&&optionalWitness(ctx,payment);if(!witness)return false;
+  const pool=optionalPool(ctx),locks=new Map(pool.map(card=>[card,card.zoneVersion]));
+  const group=['teamwork','evidence'].includes(payment.kind),selected=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',from:pool,min:1,max:group?pool.length:1,prompt:ctx.src.name+': '+(payment.kind==='teamwork'?'Teamwork '+payment.n+' — tap creatures with at least this total power':payment.kind==='evidence'?'Collect evidence '+payment.n+' — exile graveyard cards with at least this total mana value':payment.kind==='blight'?'Blight '+payment.n+' — put counters on your creature':'Behold — choose a matching permanent or reveal a card from your hand'),aiHint:group?{kind:'crew',card:ctx.src,need:payment.n,teamworkV14:payment.kind==='teamwork',evidenceV14:payment.kind==='evidence'}:{kind:payment.kind==='blight'?'blight':'oracleAdditionalReveal',card:ctx.src,n:payment.n}});
+  if(!Array.isArray(selected)||!selected.length||new Set(selected).size!==selected.length||selected.some(card=>!locks.has(card)||locks.get(card)!==card.zoneVersion))return false;
+  ctx.so.oracleOptionalPlanV14={sourceVersion:ctx.src.zoneVersion,sourceZone:ctx.src.zone,cards:selected.map(card=>({card,version:card.zoneVersion}))};
+  return optionalValidate(ctx)&&optionalPayable(ctx,selected);
+ }
+ async function optionalCommit(ctx){
+  if(!optionalValidate(ctx))throw Error('Optional casting cost changed before payment');
+  const cards=ctx.so.oracleOptionalPlanV14.cards.map(row=>row.card),payment=ctx.src.def.oracleOptionalCostV14;
+  if(payment.kind==='teamwork'){for(const card of cards)ctx.g.tap(card);for(const card of cards)await ctx.g.emit('teamworkPaidV14',{card,player:ctx.you,spell:ctx.src});}
+  else if(payment.kind==='blight')await ctx.g.addM1(cards[0],payment.n,ctx.you,true);
+  else if(payment.kind==='evidence')await ctx.g.moveGraveyardBatch(cards,'exile');
+  else if(cards[0].zone==='hand')await ctx.g.revealToHuman({cards,ctrl:ctx.you,source:ctx.src,kind:'additionalCost',includeLands:true});
+  ctx.so.oracleOptionalCostPaidV14=cards.map(card=>({iid:card.iid,zoneVersion:card.zoneVersion}));delete ctx.so.oracleOptionalPlanV14;
+ }
+ MTG.OracleV14CastingCosts={compile:optionalCompile,canPay:(ctx,payment)=>!!optionalWitness(ctx,payment),prepare:optionalPrepare,validate:optionalValidate,commit:optionalCommit};
 })();

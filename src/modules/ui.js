@@ -798,7 +798,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             duration: 'While this permanent remains on the battlefield',
           });
         };
-        addChoice('creature-type', 'Chosen creature type', meta.chosenType);
+        addChoice('creature-type', 'Chosen creature type', MTG.oracleChosenSubtypeV16?.(card) || meta.chosenType);
         const chosenColor = meta.oracleChosenColor || meta.chosenColor;
         addChoice('color', 'Chosen color', chosenColor, colorName[chosenColor] || words(chosenColor));
         addChoice('thriving-color', 'Chosen color', meta.thrivingColor, colorName[meta.thrivingColor] || words(meta.thrivingColor));
@@ -2601,8 +2601,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     libraryTopSources(g, player) {
       if (g.onlinePresentation) return (player.presentation.libraryTopSources || []).map(id => g.ref(id)).filter(Boolean);
-      return g.bf().filter(source => source.ctrl === player && !source.cur?.abilitiesDisabled &&
-        (source.def.revealAllTop || player === this.me && source.def.revealOwnTop));
+      return g.bf().filter(source => !source.cur?.abilitiesDisabled && (source.def.oracleRevealAllLibrariesV17 || source.ctrl === player &&
+        (source.def.revealAllTop || player === this.me && source.def.revealOwnTop)));
     }
 
     visibleLibraryTop(g, player) {
@@ -3203,7 +3203,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const counterN = c.counters && c.counters[keyword] || 0;
         const wards = visual.derived === 'ward' && c.cur
           ? [c.cur.wardCost, ...(c.cur.extraWards || [])].filter(Boolean) : [];
-        const wardDetail = wards.map(ward => ward.mana || (ward.life ? `pay ${ward.life} life` : ward.blight ? `Blight ${ward.blight}` : '')).filter(Boolean).join(', ');
+        const wardDetail = wards.map(ward => ward.labelV16 || ward.mana || (ward.life ? `pay ${ward.life} life` : ward.blight ? `Blight ${ward.blight}` : '')).filter(Boolean).join(', ');
         const title = `${visual.label}${wardDetail ? ` — ${wardDetail}` : ''}${counterN ? ` — ${counterN} ${keyword} counter${counterN === 1 ? '' : 's'}` : ''}`;
         badges.push(`<span class="keywordbadge tone-${visual.tone}" data-keyword="${esc(keyword)}" title="${esc(title)}" aria-label="${esc(title)}">${U.icon(visual.icon)}${counterN > 1 ? `<b>${counterN}</b>` : ''}</span>`);
       }
@@ -3407,15 +3407,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
       }
-      const miracleCards=g.miracleRevealedCards?.()||[],forecastCards=[...(g.forecastRevealedCards?.()||[]),...miracleCards];
+      const miracleCards=g.miracleRevealedCards?.()||[],publicHands=g.revealedHandCardsV17?.()||[],forecastCards=[...new Set([...(g.forecastRevealedCards?.()||[]),...miracleCards,...publicHands])];
       if(forecastCards.length){
         const tray=el('div','exiletray forecasttray');
-        tray.appendChild(el('div','exiletraytitle',miracleCards.length?'Revealed cards — Miracle / Forecast':'Forecast — revealed until upkeep ends'));
+        tray.appendChild(el('div','exiletraytitle',publicHands.length?'Revealed hands':miracleCards.length?'Revealed cards — Miracle / Forecast':'Forecast — revealed until upkeep ends'));
         const list=el('div','exiletraylist');
         for(const card of forecastCards){
           const item=el('button','exiletraycard');item.dataset.cname=card.name;item.dataset.iid=String(card.iid);
           item.title=`${card.name} — revealed in ${card.owner.name}'s hand`;
-          item.innerHTML=`${cardArtHTML(card)}<span><b>${esc(card.name)}</b><small>${esc(card.owner.name)} · ${miracleCards.includes(card)?'Miracle':'Forecast'}</small></span>`;
+          item.innerHTML=`${cardArtHTML(card)}<span><b>${esc(card.name)}</b><small>${esc(card.owner.name)} · ${publicHands.includes(card)?'Revealed hand':miracleCards.includes(card)?'Miracle':'Forecast'}</small></span>`;
           item.onclick=()=>{this.sheet={card};this.render();};list.appendChild(item);
         }
         tray.appendChild(list);zones.appendChild(tray);

@@ -1,5 +1,5 @@
 ((M)=>{
- const staticShapes={multiply:['n','exceptFirst'],redirect:['opponents','exceptFirst'],skip:['optional'],'win-empty':[],'empty-hand':['n','loseLife'],'look-three':['rest'],'reveal-creatures':[],impulse:['n'],study:['optional'],abundance:['optional']};
+ const staticShapes={multiply:['n','exceptFirst'],redirect:['opponents','exceptFirst'],skip:['optional'],'skip-all-v18':[],'win-empty':[],'empty-hand':['n','loseLife'],'look-three':['rest'],'reveal-creatures':[],impulse:['n'],study:['optional'],abundance:['optional']};
  function compile(operation){
   const allowed=Object.hasOwn(staticShapes,operation.mode)?staticShapes[operation.mode]:null;
   if(operation.kind!=='draw-replacement-v8'||operation.contract!=='ordered-draw-replacement'||!allowed||Object.keys(operation).some(key=>!['kind','mode','contract',...allowed].includes(key)))throw new Error('Invalid draw replacement descriptor');
@@ -15,7 +15,7 @@
    if(card.ctrl===p&&card.def.drawDouble&&!firstDraw(game,p))add('double:'+card.iid+':'+card.zoneVersion,card,{mode:'multiply',n:2});
    if(card.ctrl===p&&card.def.drawWhileEmptyExtra&&!p.hand.length)add('empty:'+card.iid+':'+card.zoneVersion,card,{mode:'empty-hand',n:2});
    for(const [index,operation]of(card.def.oracleDrawReplacements||[]).entries()){
-    if(operation.opponents?card.ctrl===p:card.ctrl!==p)continue;
+    if(operation.mode!=='skip-all-v18'&&(operation.opponents?card.ctrl===p:card.ctrl!==p))continue;
     if(operation.exceptFirst&&firstDraw(game,p)||operation.mode==='empty-hand'&&p.hand.length||operation.mode==='win-empty'&&p.library.length)continue;
     add('source:'+card.iid+':'+card.zoneVersion+':'+index,card,operation,{controller:card.ctrl});
    }
@@ -44,10 +44,14 @@
   for(const card of ordered)await game.move(card,'library',{toBottom:true});
  }
  async function unit(game,p,srcCard,opts,used,physicalDraw,root){
+  if(p.turnState.drewThisTurn>=1&&game.bf().some(card=>!card.cur?.abilitiesDisabled&&card.def.oracleRulesV18?.includes('draw-limit')))return 0;
   if(p.lost||game.gameOver)return 0;
-  const choices=candidates(game,p,used);if(!choices.length)return await physicalDraw(p,srcCard,opts)?Number(p===root):0;
+  const choices=candidates(game,p,used);if(!choices.length){const card=await physicalDraw(p,srcCard,opts);if(card&&opts.oracleUnreplacedDrawsV15)opts.oracleUnreplacedDrawsV15.push({card,version:card.zoneVersion,player:p});return card?Number(p===root):0;}
   const row=await game.chooseReplacement(p,choices,'draw',1),nextUsed=new Set(used);nextUsed.add(row.key);
   if(row.operation.optional&&!await optional(game,p,row))return unit(game,p,srcCard,opts,nextUsed,physicalDraw,root);
+  // CR 614.11b: actions referring to the drawn card do not follow a replaced
+  // draw, including one replaced by additional draws. Declining is unchanged.
+  if(opts.oracleUnreplacedDrawsV15)opts={...opts,oracleUnreplacedDrawsV15:undefined};
   const {operation:op,src,controller}=row;if(row.temporary&&!op.allTurn)row.temporary.consumed=true;
   if(op.mode==='multiply'||op.mode==='empty-hand'){
    const n=await group(game,p,op.n,srcCard,opts,nextUsed,physicalDraw,root);
@@ -55,7 +59,7 @@
   }
   if(op.mode==='redirect')return controller&&!controller.lost?unit(game,controller,srcCard,opts,nextUsed,physicalDraw,root):0;
   if(op.mode==='cdk-tombs'){const pool=p.graveyard.filter(c=>c.is('Creature'));if(pool.length){const[c]=await selectedCards(game,p,pool,'Out of the Tombs: return a creature');await game.putPermanentOntoBattlefield(c,p);}else await game.playerLoses(p,'Out of the Tombs');return 0;}
-  if(op.mode==='skip')return 0;
+  if(op.mode==='skip'||op.mode==='skip-all-v18')return 0;
   if(op.mode==='study'){if(src.zone==='battlefield'&&!src.phasedOut)game.addCounters(src,'study',1);return 0;}
   if(op.mode==='win-empty'){for(const opponent of game.players)if(opponent!==p&&!opponent.lost)await game.playerLoses(opponent,src.name);return 0;}
   if(op.mode==='dredge'){
@@ -96,7 +100,7 @@
   // CR 121.2a: replace a multi-card instruction before choosing any
   // single-card draw replacement. Carry used effects into every descendant.
   if(n>1){const choices=game.bf().filter(c=>c.ctrl!==p&&!c.cur.abilitiesDisabled&&c.def.c1719Alms).map(src=>({src,key:'alms:'+src.iid+':'+src.zoneVersion,label:src.name,operation:{mode:'alms'}})).filter(r=>!used.has(r.key));
-   if(choices.length){const row=await game.chooseReplacement(p,choices,'draw',n),next=new Set([...used,row.key]);let drawn=0;for(const who of game.apnapFrom(game.turnPlayer||p).filter(w=>w===p||w===row.src.ctrl))drawn+=await unit(game,who,source,opts,new Set(next),physicalDraw,root);return drawn;}
+   if(choices.length){const row=await game.chooseReplacement(p,choices,'draw',n),next=new Set([...used,row.key]),replacedOpts=opts.oracleUnreplacedDrawsV15?{...opts,oracleUnreplacedDrawsV15:undefined}:opts;let drawn=0;for(const who of game.apnapFrom(game.turnPlayer||p).filter(w=>w===p||w===row.src.ctrl))drawn+=await unit(game,who,source,replacedOpts,new Set(next),physicalDraw,root);return drawn;}
   }
   let drawn=0;for(let i=0;i<n&&!p.lost&&!game.gameOver;i++)drawn+=await unit(game,p,source,opts,new Set(used),physicalDraw,root);return drawn;
  }

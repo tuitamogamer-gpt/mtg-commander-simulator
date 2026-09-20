@@ -107,7 +107,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if(kind==='start-engines-v10'){script.oracleStartEnginesV10=true;return true;}
     if(kind==='enters-prepared-v10'){chainAsEnters(script,(game,card)=>MTG.oraclePrepareV10(game,card));return true;}
-    if(kind==='player-rule-v10'){(script.oraclePlayerRulesV10||=[]).push({rule:operation.rule,players:operation.players});return true;}
+    if(kind==='player-rule-v10'){(script.oraclePlayerRulesV10||=[]).push({rule:operation.rule,players:operation.players,...(operation.conditionV19?{conditionV19:operation.conditionV19}:{})});return true;}
     if(kind==='printed-keywords-v10'){for(const keyword of operation.keywords)(script.kws||=[]).push(keyword);return true;}
     if(kind==='deck-limit-v10'){if(operation.limit!=='all'&&(!Number.isSafeInteger(operation.limit)||operation.limit<1))return false;script.oracleDeckCopyLimitV10=operation.limit;return true;}
     if(kind==='leyline-v9'){script.cdkLeyline=true;return true;}
@@ -305,6 +305,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(operation.lifeX)script.additionalCostX=true;
       const previousCond=script.castCond,previousPrepare=script.prepareTargets;
       const fragment=MTG.compileOracleAdditionalCosts(operation.costs);
+      if(operation.costs.some(cost=>cost.quantity?.xV19)){
+        script.oracleVariableAdditionalXV19=true;
+        const priorMax=script.xMax;
+        script.xMax=(game,card,player,opts)=>Math.min(priorMax?priorMax(game,card,player,opts):Infinity,fragment.maximumAdditionalXV19(game,player,card));
+        if(operation.announcesXV19){script.additionalCostX=true;script.additionalCostXMax=(game,card,player)=>fragment.maximumAdditionalXV19(game,player,card);}
+      }
       script.castCond=(...args)=>(!previousCond||previousCond(...args))&&fragment.castCond(...args);
       script.prepareTargets=async ctx=>{
         if(previousPrepare&&await previousPrepare(ctx)===false)return false;

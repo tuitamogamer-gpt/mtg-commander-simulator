@@ -26,6 +26,8 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
    const back=M.tokenDefinitionForCreation({...C.token('Phyrexian',['Phyrexian'],0,0,[]),types:['Artifact','Creature'],bomTokenKey:'bomIncubator',tokenImageName:'MOC Phyrexian'});
    const faces={layout:'transform',canonicalName:'Incubator // Phyrexian',faces:[{key:'front',def:front},{key:'back',def:back}]};
    incubator=M.OracleV8Faces.faceDefinition(faces,'front');M.TOKENS.bomIncubator=incubator;
+   // All Incubator creation paths use the same real transforming token.
+   M.TOKENS.incubator=incubator;
  }
  const incubate=async(ctx,n,p=ctx.you)=>{
   return ctx.g.makeTokens(incubator,p,{additionalCounters:{'+1/+1':Math.max(0,n)},additionalCounterBy:ctx.you});

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {countValue, matchesTarget, stageCount} from './oracle-v5-proof.mjs';
+import {bindChosenType} from './oracle-v16-proof.mjs';
 
 const installed = new WeakSet(), worlds = new WeakMap(), libraryWorlds = new WeakMap(), wrappedControllers = new WeakSet();
 const key = value => JSON.stringify(value);
@@ -86,6 +87,7 @@ function expectedOwners(engine, effect) {
     : who === 'each-player' || who === 'each-opponent' ? engine.g.apnapFrom(engine.g.turnPlayer || engine.you).filter(player => who === 'each-player' || player !== engine.you)
     : who?.kind === 'target-controller' ? [...new Set((engine._oracleTargetControllers?.[who.index] || []).map(record => record.subject?.zoneVersion === record.zoneVersion ? record.subject.ctrl : record.controller))]
     : who === 'event-player' ? [engine.oracleSourceCapture?.eventPlayer]
+    : who === 'event-card-owner' ? [engine.oracleSourceCapture?.eventCard?.owner]
     : who === 'event-card-controller' ? [engine.oracleSourceCapture?.eventController] : [];
 }
 
@@ -262,14 +264,14 @@ export function stageLibraryEffect(MTG, context, effect, helpers) {
     return true;
   }
   if (effect.action === 'library-search-v8') {
-    assert.ok(effect.who === undefined || effect.who === 'you'||effect.ownerSearch===true, 'library search uses a declared closed owner scope');
+    assert.ok(effect.who === undefined || effect.who === 'you'||effect.ownerSearch===true||Number.isInteger(effect.who), 'library search uses a declared closed owner scope');
     assert.ok(Array.isArray(effect.placements) && effect.placements.length && effect.placements.every(placement =>
-      ['hand', 'graveyard', 'battlefield', 'top'].includes(placement.destination) &&
+      ['hand', 'graveyard', 'battlefield', 'top','exile'].includes(placement.destination) &&
       (typeof placement.n === 'number' || ['all', 'rest'].includes(placement.n)) &&
       (placement.destination !== 'top' || [0, 2].includes(placement.offset || 0))), 'library search uses only closed placements');
     assert.equal(Number(!!effect.unrestricted)+Number(!!effect.filter)+Number(Array.isArray(effect.names)&&effect.names.length>0),1, 'library search has exactly one closed candidate domain');
     if (effect.n !== 'all') stageCount(MTG, context, effect.n, helpers);
-    const owners=effect.ownerSearch?context.game.players:[context.a];
+    const owners=effect.ownerSearch||Number.isInteger(effect.who)?context.game.players:[context.a];
     if(effect.ownerSearch){
       for(const owner of owners)if(owner.isAI&&!(owner.controller instanceof MTG.AIController))owner.controller=new MTG.AIController(owner,{difficulty:'hard',style:'balanced'});
       installLibraryProof(MTG,context,helpers);
@@ -359,11 +361,12 @@ export function stageLibraryEffect(MTG, context, effect, helpers) {
 }
 
 export function assertLibraryEffect(MTG, context, entry, effect, label, helpers) {
+  if(JSON.stringify(effect).includes('"kind":"chosen-subtype-v16"'))effect=bindChosenType(effect,context.chosenSubtypeV16||'Elf');
   if (effect.action === 'library-zone-shuffle-v8') return assertZoneShuffle(context, effect, label);
   if (effect.action === 'library-search-v8') return assertLibrarySearch(context, effect, label);
   if (effect.action !== 'library-select-v8') return false;
   const row = context.libraryProof?.rows.findLast(candidate => key(candidate.effect) === key(effect));
-  assert.ok(row?.after, label + ': printed library action actually resolved');
+  assert.ok(row?.after, label + ': printed library action actually resolved'+(process.env.ORACLE_PROOF_DEBUG?' '+JSON.stringify({expected:effect,seen:context.libraryProof?.rows.map(row=>row.effect)}):''));
   const rows = context.libraryProof.rows.filter(candidate => candidate.execution === row.execution);
   assert.deepEqual(rows.map(item => item.owner), [...row.expectedOwners], label + ': exactly the printed library owner or owners are affected');
   if (effect.who === 'each-player' || effect.who === 'each-opponent') assert.equal(rows.length, context.game.players.filter(player => effect.who === 'each-player' || player !== row.you).length, label + ': every printed player scope executes');
@@ -509,13 +512,14 @@ function assertZoneShuffle(context, effect, label) {
   const movedGraveyard = [];
   for (const owner of row.owners) {
     const before = row.before.get(owner), after = row.after.get(owner);
-    const movedHand = effect.zones.includes('hand') ? before.hand : [];
-    const movedGrave = effect.zones.includes('graveyard') ? before.graveyard : [];
+    const matches=card=>!effect.filterV18||matchesTarget(card,{...effect.filterV18,controller:'any'},{...context,a:row.you},row.source);
+    const movedHand = effect.zones.includes('hand') ? before.hand.filter(matches) : [];
+    const movedGrave = effect.zones.includes('graveyard') ? before.graveyard.filter(matches) : [];
     movedGraveyard.push(...movedGrave);
     const moved = [...movedHand, ...movedGrave], expectedLibrary = [...before.library, ...moved];
     assert.deepEqual(new Set(after.library), new Set(expectedLibrary), label + ': affected library conserves its original and moved cards');
-    assert.deepEqual(ids(after.hand), ids(effect.zones.includes('hand') ? [] : before.hand), label + ': exact hand cohort is moved');
-    assert.deepEqual(ids(after.graveyard), ids(effect.zones.includes('graveyard') ? [] : before.graveyard), label + ': exact graveyard cohort is moved');
+    assert.deepEqual(ids(after.hand), ids(before.hand.filter(card=>!movedHand.includes(card))), label + ': exact hand cohort is moved');
+    assert.deepEqual(ids(after.graveyard), ids(before.graveyard.filter(card=>!movedGrave.includes(card))), label + ': exact graveyard cohort is moved');
     for (const card of moved) {
       const prior = before.states.get(card), current = after.states.get(card);
       assert.equal(current.zone, 'library', label + ': locked card reaches its owner library');

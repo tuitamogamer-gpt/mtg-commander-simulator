@@ -20,8 +20,12 @@ export function installPaymentProof(MTG, context, helpers) {
     const state = games.get(runCtx.g);
     if (!state || effect.action !== 'resolution-cost') return original.call(this, runCtx, effect, runtimeHelpers);
     const { context, helpers: h } = state;
+    // Tokens can cease to exist after paying a cost. Keep observing the same
+    // objects so their final zone and identity remain independently provable.
+    const tracked = new Set([runCtx.src, ...allCards(runCtx.g)]);
     const snapshot = child => {
-      const result = h.genericProofSnapshot(context, [runCtx.src, ...allCards(runCtx.g)]);
+      for (const card of allCards(runCtx.g)) tracked.add(card);
+      const result = h.genericProofSnapshot(context, [...tracked]);
       for (const [card, value] of result.cards) { value.mv = card.mv; value.super = (card.cur?.super || card.def?.super || []).slice(); }
       result.drawEvidenceIndex = context.drawEvidence?.length || 0;
       result.oracleX = child?.x ?? runCtx.x ?? 0; return result;
@@ -129,12 +133,15 @@ export async function assertPaymentEffect(MTG, context, entry, effect, source, s
       const spent = poolSize(old.pool) - poolSize(current.pool);
       assert.ok(spent >= nominal - phyLife / 2, label + ': the exact resolution mana was consumed');
       assert.equal(capture.count, 0); assert.equal(capture.cards.length, 0);
+      if(cost.lifeV14)assert.equal(old.life-current.life,cost.lifeV14,label+': joint mana and life payment consumes both resources');
       if (cost.chooseX) {
         const chosen = choices.find(choice => choice.query.type === 'chooseX' && choice.query.prompt === row.sourceName + ': choose X for the resolution payment');
         assert.ok(chosen, label + ': X chosen by the actual controller on resolution');
         assert.equal(x, chosen.result); assert.ok(Number.isInteger(x) && x >= chosen.query.min && x <= chosen.query.max);
         if (cost.xMax !== undefined) assert.ok(x <= paymentAmount(context, source, cost.xMax, row.before, row.targets));
       }
+    } else if(cost.kind==='damage-v14'){
+      assert.equal(capture.count,cost.n);assert.equal(capture.cards.length,0);assert.equal(old.life-current.life,cost.n,label+': chosen damage actually reaches the payer');
     } else if (cost.kind === 'life') {
       const n = paymentAmount(context, source, cost.n, row.before, row.targets);
       const loss = context.lifeEvidence?.slice(row.before.lifeEvidenceIndex, afterCost.lifeEvidenceIndex).find(item => item.player === row.player && item.n === n);
@@ -159,8 +166,8 @@ export async function assertPaymentEffect(MTG, context, entry, effect, source, s
     } else {
       const selection = choices.find(choice => choice.query.type === 'chooseCards' && choice.query.prompt === row.sourceName + ': choose cards to ' + cost.kind);
       const cards = cost.target === 'self' ? [source] : cost.target==='event-card'?[row.eventCard].filter(Boolean):typeof cost.target === 'number' ? [row.targets[cost.target]].flat().filter(Boolean)
-        : cost.n === 'all' ? old.handCards : selection?.result || [];
-      const need = cost.kind === 'remove-counter' ? 1 : cost.n === 'all' ? old.handCards.length : cost.n;
+        : cost.n === 'all' ? old[cost.zone+'Cards'] : selection?.result || [];
+      const need = cost.kind === 'remove-counter' ? 1 : cost.n === 'all' ? old[cost.zone+'Cards'].length : cost.n;
       assert.equal(cards.length, need, label + ': exact cost cardinality'); assert.equal(new Set(cards).size, cards.length, label + ': distinct payment objects');
       assert.equal(capture.count, cost.kind === 'remove-counter' ? cost.n : cards.length, label + ': capture has the paid quantity');
       assert.equal(capture.cards.length, cards.length, label + ': capture has every paid card exactly once');
@@ -180,9 +187,10 @@ export async function assertPaymentEffect(MTG, context, entry, effect, source, s
           assert.ok(matchesTarget(view, { ...cost.filter, excludeSelf: false }, { ...context, a: row.player }, source), label + ': the paid card satisfies every printed quality');
           if (cost.filter.excludeSelf) assert.ok(card !== source || start.zoneVersion !== row.sourceZoneVersion, label + ': another never sacrifices the same source incarnation');
         }
-        if (['sacrifice', 'tap', 'return'].includes(cost.kind)) assert.equal(start.ctrl, row.player, label + ': payer controls the paid permanent');
+        if (['sacrifice', 'tap', 'return'].includes(cost.kind)&&cost.zone==='battlefield') assert.equal(start.ctrl, row.player, label + ': payer controls the paid permanent');
         if (cost.kind === 'tap') { assert.equal(start.tapped, false); assert.equal(end.tapped, true); assert.equal(start.zoneVersion, end.zoneVersion); }
         else if (cost.kind === 'remove-counter') assert.equal(end.counters[cost.counter] || 0, (start.counters[cost.counter] || 0) - cost.n);
+        else if(cost.kind==='blight-v14'){assert.equal(end.counters['-1/-1']||0,(start.counters['-1/-1']||0)+cost.countersV14);assert.equal(start.ctrl,row.player);assert.equal(start.zoneVersion,end.zoneVersion);}
         else if (cost.kind === 'reveal') {
           assert.equal(end.zoneVersion, start.zoneVersion, label + ': reveal leaves the card in its original hand');
           assert.ok(games.get(context.game).reveals.slice(row.reveals, branch?.reveals ?? row.revealEnd).some(query => query.cards.includes(card)), label + ': a reveal discloses the selected card');

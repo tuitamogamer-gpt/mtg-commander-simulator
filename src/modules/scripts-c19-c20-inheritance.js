@@ -25,10 +25,10 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }protectionCache.set(def,tests);return tests;
  }
  function inherit(g,c,cards,keywords){for(const k of keywords)if(cards.some(x=>C.keyword(x,k)))c.cur.kw.add(k);for(const x of cards)c.cur.protectionFrom.push(...protections(x.def));}
- const walks=['forestwalk','islandwalk','swampwalk','mountainwalk','plainswalk','nonbasic landwalk','legendary landwalk'];
+ const walks=['forestwalk','islandwalk','swampwalk','mountainwalk','plainswalk','nonbasic landwalk','legendary landwalk','snow landwalk','snow forestwalk','snow swampwalk','snow islandwalk','snow plainswalk','snow mountainwalk','desertwalk','artifact landwalk'];
  SC['Cairn Wanderer']={changeling:true,statics:[{apply:(g,c)=>inherit(g,c,g.players.flatMap(p=>p.graveyard).filter(c=>c.is('Creature')),['flying','fear','first strike','double strike','deathtouch','haste','lifelink','reach','trample','shroud','vigilance',...walks])}]};
  SC['Rayami, First of the Fallen']={c1920Rayami:true,statics:[{apply:(g,c)=>inherit(g,c,g.players.flatMap(p=>p.exile).filter(c=>!c.faceDown&&c.is('Creature')&&c.counters.blood>0),C.keywords)}]};
- const canBlock=G.canBlock;G.canBlock=function(b,a){const defender=a.attacking instanceof M.Player?a.attacking:a.attacking?.ctrl;if(defender&&(a.kw('nonbasic landwalk')&&this.lands(defender).some(c=>!c.def.super.includes('Basic'))||a.kw('legendary landwalk')&&this.lands(defender).some(c=>c.def.super.includes('Legendary'))))return false;return canBlock.call(this,b,a);};
+ const canBlock=G.canBlock;G.canBlock=function(b,a){const defender=a.attacking instanceof M.Player?a.attacking:a.attacking?.ctrl,walk=keyword=>M.oracleLandwalkActiveV15?M.oracleLandwalkActiveV15(a,b,keyword):a.kw(keyword);if(defender&&(walk('nonbasic landwalk')&&this.lands(defender).some(c=>!(c.cur?.super||c.def.super).includes('Basic'))||walk('legendary landwalk')&&this.lands(defender).some(c=>(c.cur?.super||c.def.super).includes('Legendary'))))return false;return canBlock.call(this,b,a);};
  const copies=new WeakMap();
  function borrowed(a){if(!copies.has(a))copies.set(a,{...a,c1920Borrowed:true});return copies.get(a);}
  SC['Manascape Refractor']={entersTapped:true,c1920Manascape:true,statics:[{phase:5,apply:(g,c,bf)=>{

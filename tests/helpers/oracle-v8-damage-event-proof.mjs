@@ -23,13 +23,14 @@ export async function fireDamageEvent(M,ctx,source,operation,h){
  }
  const origin=await object(rule.source,'source'),recipient=await object(rule.recipient,'recipient');
  const card=rule.bind==='source'?origin:recipient;
- ctx.eventCard=card;ctx.eventController=card.ctrl;ctx.eventPlayer=recipient instanceof M.Player?recipient:recipient.ctrl;ctx.eventAmount=1;
+ const damage=rule.minDamageV13||1;
+ ctx.eventCard=card;ctx.eventController=card.ctrl;ctx.eventPlayer=recipient instanceof M.Player?recipient:recipient.ctrl;ctx.eventAmount=damage;
  ctx.eventCardBefore=h.cardState(card);ctx.eventCardStats={power:card.power,toughness:card.toughness,mv:card.mv};
  if(rule.source.spell){
   const player=rule.source.controller==='you'?a:b;await game.move(origin,'hand');origin.owner=player;origin.ctrl=player;
-  origin.def={...origin.def,resolve:async c=>c.g.damageAny(c.src,recipient,1,{combat:!!rule.combat})};
+  origin.def={...origin.def,resolve:async c=>c.g.damageAny(c.src,recipient,damage,{combat:!!rule.combat})};
   const turn=game.turnPlayer,phase=game.phase;game.turnPlayer=player;game.phase='main1';h.fund(player);
   try{assert.equal(await game.castSpell(player,origin,{from:'hand'}),true);const so=game.stack.find(row=>row.card===origin);assert.ok(so);while(game.stack.at(-1)!==so)await game.resolveTop();await game.resolveTop();}finally{game.turnPlayer=turn;game.phase=phase;}
- }else await game.damageAny(origin,recipient,1,{combat:!!rule.combat});
+ }else await game.damageAny(origin,recipient,damage,{combat:!!rule.combat});
  return true;
 }

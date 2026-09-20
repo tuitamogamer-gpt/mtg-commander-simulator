@@ -59,5 +59,5 @@
   const eventCard=rule.bind==='source'?hit.src:hit.target,snap=rule.bind==='source'?hit.sourceSnap:hit.targetSnap;
   return{eventCard,eventController:snap?.ctrl||eventCard.ctrl,eventPlayer:hit.target instanceof M.Player?hit.target:hit.targetSnap?.ctrl||hit.target.ctrl,eventAmount:rows.reduce((n,row)=>n+row.n,0),eventSnap:snap,eventVersion:rule.bind==='source'?hit.sourceVersion:hit.targetVersion};
  }
- M.OracleV8DamageEvents={capture,emit,bindings,batchSnapshots:game=>game._oracleDamageWatch?new Map(game.bf().map(card=>[card,snapshot(game,card)])):null,triggerFilter:(rule,h)=>rule?.kind==='damage-event-v8'?(game,self,data)=>selected(rule,game,self,data,h).length>0:null};
+ M.OracleV8DamageEvents={capture,emit,bindings,batchSnapshots:game=>game._oracleDamageWatch?new Map(game.bf().map(card=>[card,snapshot(game,card)])):null,triggerFilter:(rule,h)=>rule?.kind==='damage-event-v8'?(game,self,data)=>{const rows=selected(rule,game,self,data,h);return rows.length>0&&(!rule.minDamageV13||rows.reduce((sum,hit)=>sum+hit.n,0)>=rule.minDamageV13);}:null};
 })(globalThis.MTG||={});

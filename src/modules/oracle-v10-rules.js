@@ -42,7 +42,7 @@
     this.queueWardTriggers(object,ctx);return true;
   };
   const affects=(source,player,players)=>players==='all'||(players==='you'?source.ctrl===player:source.ctrl!==player);
-  const restricted=(game,player,rule)=>game.bf().some(source=>!source.cur?.abilitiesDisabled&&source.def.oraclePlayerRulesV10?.some(row=>row.rule===rule&&affects(source,player,row.players)))||game.untilEffects.some(row=>row.kind==='oraclePlayerRuleV10'&&row.rule===rule&&row.players.includes(player));
+  const restricted=(game,player,rule)=>game.bf().some(source=>!source.cur?.abilitiesDisabled&&source.def.oraclePlayerRulesV10?.some(row=>row.rule===rule&&affects(source,player,row.players)&&(!row.conditionV19||row.conditionV19.kind==='hand-count'&&source.ctrl.hand.length===row.conditionV19.n)))||game.untilEffects.some(row=>row.kind==='oraclePlayerRuleV10'&&row.rule===rule&&row.players.includes(player));
   M.oraclePlayerRestrictedV10=restricted;
   G.oracleShouldSkipV10=function(player,phase){
     if(restricted(this,player,'skip-'+phase))return true;

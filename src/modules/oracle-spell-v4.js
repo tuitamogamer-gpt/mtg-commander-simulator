@@ -75,16 +75,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function validateQuantity(quantity, label) {
+    invariant(quantity?.xV19===undefined||quantity.xV19===true&&quantity.min===0&&quantity.max===0,`${label} invalid variable quantity`);
     invariant(quantity && Number.isInteger(quantity.min) && quantity.min >= 0,
       `${label} quantity min must be a nonnegative integer`);
     invariant(quantity.max === null || Number.isInteger(quantity.max) && quantity.max >= quantity.min,
       `${label} quantity max must be null or at least min`);
   }
 
+  function costQuantity(cost,ctx){
+    if(!cost.quantity.xV19)return cost.quantity;
+    const n=ctx.x??ctx.so?.x??0;invariant(Number.isSafeInteger(n)&&n>=0,'Invalid announced additional-cost X');return {min:n,max:n};
+  }
+
   function validateCost(cost, seenIds) {
     invariant(cost && typeof cost === 'object' && COST_KIND_SET.has(cost.kind), 'unsupported additional cost');
     invariant(typeof cost.id === 'string' && cost.id && !seenIds.has(cost.id), 'additional cost ids must be unique');
     seenIds.add(cost.id);
+    invariant(cost.randomV18===undefined||cost.kind==='discard'&&cost.randomV18===true&&(cost.quantity?.min===1&&cost.quantity?.max===1||cost.quantity?.xV19===true),`${cost.id} invalid random discard cost`);
     if(cost.object?.qualifier) {
       const q=cost.object.qualifier;
       invariant(q && typeof q==='object' && !Array.isArray(q) && Object.keys(q).every(key=>['subtypes','colors','notTypes','supertypes','nontoken','tapped','unblockedAttacker','bargainV10'].includes(key)), `${cost.id} unsupported cost qualifier`);
@@ -645,8 +652,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const key=allocationKey(cost.kind);
     if(key) {
       const pool=costPool(game,player,source,cost,plan);
-      if(pool.length<cost.quantity.min)return false;
-      (plan[key]||=[]).push(...pool.slice(0,cost.quantity.min));
+      const {min}=costQuantity(cost,ctx);
+      if(pool.length<min)return false;
+      (plan[key]||=[]).push(...pool.slice(0,min));
       return true;
     }
     if (cost.kind === 'payLife') {
@@ -691,7 +699,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const { game, player, source, ctx } = env;
     const key=allocationKey(cost.kind);
     if(key) {
-      const {min,max}=cost.quantity;
+      const {min,max}=costQuantity(cost,ctx);
       let pool=costPool(game,player,source,cost,plan);
       if(ctx.oracleAdditionalManaCost&&cost.kind==='sacrifice'){
         if(min!==1||max!==1)return false;
@@ -708,7 +716,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (pool.length < min) return false;
       const versions=new Map(pool.map(card=>[card,card.zoneVersion]));
-      const picked = await player.controller.decide(game, {
+      const randomCards=cost.randomV18?pool.slice():null;
+      if(randomCards)for(let i=randomCards.length-1;i>0;i--){const j=Math.floor(game.rnd()*(i+1));[randomCards[i],randomCards[j]]=[randomCards[j],randomCards[i]];}
+      const picked = cost.randomV18 ? randomCards.slice(0,min) : await player.controller.decide(game, {
         type: 'chooseCards', from: pool, min, max,
         prompt: `${source.name}: ${costLabel(cost, ctx)}`,
         aiHint: { kind: ({sacrifice:'addlSac',discard:'addlDiscard',exileGraveyard:'delve',returnPermanent:'bounceCost',exileHand:'delve'}[cost.kind]), card: source,
@@ -812,13 +822,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seen=new Set(ctx.reservedCards||[]);let life=0;
     for(const plan of plans) {
       life+=plan.life;
-      for(const selection of plan.selections||[])for(const item of selection.cards) {
+      for(const selection of plan.selections||[]){
+        if(selection.cost.quantity?.xV19&&selection.cards.length!==costQuantity(selection.cost,ctx).min)return false;
+        for(const item of selection.cards) {
         const {card}=item,cost=selection.cost;
         if(seen.has(card)||card===ctx.src&&!(ctx.allowSourceReturn===true&&cost.kind==='returnPermanent'||ctx.allowSourceSacrifice===true&&cost.kind==='sacrifice')||card.zone!==item.zone||card.zoneVersion!==item.zoneVersion||!costObjectMatches(card,cost,ctx.g))return false;
         if(['sacrifice','returnPermanent'].includes(cost.kind)) {
           if(card.zone!=='battlefield'||card.ctrl!==ctx.you||!ctx.g.bf().includes(card)||cost.kind==='sacrifice'&&!ctx.g.canSacrifice(card))return false;
         } else if(!(['discard','exileHand'].includes(cost.kind)?ctx.you.hand:ctx.you.graveyard).includes(card))return false;
         seen.add(card);
+      }
       }
     }
     return ctx.you.life>=life;
@@ -840,6 +853,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.compileOracleAdditionalCosts = function(costs) {
     const ids=new Set();for(const cost of costs)validateCost(cost,ids);
     return {
+      maximumAdditionalXV19:(game,player,source)=>Math.min(...costs.filter(cost=>cost.quantity?.xV19).map(cost=>costPool(game,player,source,cost,{}).length)),
       canPayContext:ctx=>canPayCosts(ctx.g,ctx.you,ctx.src,costs,ctx),
       castCond:(game,player,card)=>canPayCosts(game,player,card,costs,{g:game,you:player,src:card,x:0,so:{x:0}}),
       prepareTargets:async ctx=>planAndCommitCosts(ctx,costs),

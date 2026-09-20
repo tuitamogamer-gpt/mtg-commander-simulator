@@ -702,10 +702,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return result;
       }};
     } else if (operation.event === 'lifegain') {
-      assertFields(operation, [...common, 'transform'], 'life replacement');
+      assertFields(operation, [...common, 'transform','playersV16','loseV16'], 'life replacement');
+      if(operation.playersV16!==undefined&&!['all','opponents'].includes(operation.playersV16)||operation.loseV16!==undefined&&(operation.loseV16!==true||!operation.playersV16||operation.transform?.set!==0))throw new Error('Invalid scoped life replacement');
       const transform = arithmetic(operation.transform);
-      const applies = (game, n, player, source) => n > 0 && player === source.ctrl;
-      replacement = {event: 'lifegain', applies, run: (game, n, player, source) => applies(game, n, player, source) ? transform(n) : n};
+      const applies = (game, n, player, source) => n > 0 && (operation.playersV16==='all'||operation.playersV16==='opponents'?operation.playersV16==='all'||player!==source.ctrl:player===source.ctrl);
+      replacement = {event: 'lifegain',...(operation.playersV16?{playersV16:operation.playersV16}:{}), applies, run: async (game, n, player, source) => {if(!applies(game,n,player,source))return n;if(operation.loseV16)await game.loseLife(player,n,source.name);return transform(n);}};
     } else if (operation.event === 'createToken') {
       assertFields(operation, [...common, 'factor', 'tokenType', 'token', 'tokenKey'], 'token replacement');
       if (operation.tokenType && !['Creature', 'Artifact'].includes(operation.tokenType)) throw new Error('Invalid v8 replacement token type');
@@ -728,6 +729,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // during a simultaneous batch. A co-entrant never supplies an extra effect.
   MTG.oracleV8ApplyEntryState = async function (game, card) {
     const candidates = game.replacers('etbTapped');
+    for(const effect of game.untilEffects)if(effect.kind==='entryTappedV18')candidates.push({key:'entry-tapped-v18:'+effect.timestamp,run:()=>{card.tapped=true;}});
     for (const source of game.bf()) {
       if (source.cur?.abilitiesDisabled) continue;
       if (source !== card && source.ctrl === card.ctrl && source.def.landsEnterUntapped && card.is('Land')) {

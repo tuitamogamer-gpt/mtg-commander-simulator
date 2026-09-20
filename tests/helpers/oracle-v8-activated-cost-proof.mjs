@@ -57,9 +57,9 @@ export function assertActivatedManaCost(operation, source, before, chosen, label
   if (operation.storageCounterMana) {
     const kind = operation.storageCounterMana.kind;
     const amount = Object.entries(chosen || {}).filter(([color]) => 'WUBRGC'.includes(color))
-      .reduce((sum, [, n]) => sum + Math.max(0, Number(n) || 0), 0);
+      .reduce((sum, [, n]) => sum + Math.max(0, Number(n) || 0), 0)-(operation.storageCounterMana.baseV18||0);
     const old = before.cards.get(source)?.counters[kind] || 0;
-    assert.ok(amount > 0 && amount <= old, `${label}: proof chooses a legal positive storage amount`);
+    assert.ok(amount >= 0 && amount <= old && (amount>0||operation.storageCounterMana.baseV18), `${label}: proof chooses a legal storage amount`);
     assert.equal(source.counters[kind] || 0, old - amount,
       `${label}: storage mana removes exactly one counter per produced mana`);
   }

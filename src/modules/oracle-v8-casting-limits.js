@@ -4,17 +4,21 @@
   M.OracleV8CastingLimits={
     apply(script,operation){
       if(operation.kind!=='spell-limit-v8')return false;
-      if(!['all','you'].includes(operation.players)||operation.max!==1||operation.contract!=='spell-limit-v8'||
-        Object.keys(operation).some(key=>!['kind','players','max','contract'].includes(key)))throw new Error('Invalid Oracle spell limit');
+      if(!['all','you','enchanted-v17'].includes(operation.players)||operation.max!==1||operation.contract!=='spell-limit-v8'||
+        operation.qualityV16!==undefined&&!['noncreature','non-Phyrexian','nonartifact'].includes(operation.qualityV16)||Object.keys(operation).some(key=>!['kind','players','max','contract','qualityV16'].includes(key)))throw new Error('Invalid Oracle spell limit');
       (script.oracleSpellLimits||(script.oracleSpellLimits=[])).push(operation);
       return true;
     },
     allowed(game,player,card,options={}){
       const creature=card&&game.castHasType(card,options||{},'Creature');
+      const qualifies=limit=>!limit.qualityV16||limit.qualityV16==='noncreature'?!limit.qualityV16||!creature:limit.qualityV16==='nonartifact'?!game.castHasType(card,options,'Artifact'):!game.castSubtypesV16(card,options).includes('Phyrexian')&&!game.castChangelingV16(card,options);
+      const count=limit=>!limit.qualityV16?player.turnState.spellsCast||0:limit.qualityV16==='noncreature'?player.turnState.nonCreatureSpells||0:(player.turnState.spellsCastList||[]).filter(row=>limit.qualityV16==='nonartifact'?!row.types?.includes('Artifact'):!row.subtypes?.includes('Phyrexian')&&!row.changeling).length;
       if(game.untilEffects.some(e=>e.kind==='oracleNoCastV9'&&e.players.includes(player)&&(e.quality==='all'||e.quality==='noncreature'&&!creature||e.quality==='creature'&&creature)))return false;
       return !game.bf().some(source=>!source.cur?.abilitiesDisabled&&(source.def.oracleSpellLimits?.some(limit=>
-        (limit.players==='all'||source.ctrl===player)&&(player.turnState.spellsCast||0)>=limit.max)||source.def.oracleCastingProhibitionsV9?.some(rule=>{
+        (limit.players==='all'||limit.players==='enchanted-v17'?limit.players==='all'||source.meta?.cursedPlayer===player:source.ctrl===player)&&qualifies(limit)&&count(limit)>=limit.max)||source.def.oracleCastingProhibitionsV9?.some(rule=>{
           if(rule.players==='you'&&source.ctrl!==player||rule.players==='opponents'&&source.ctrl===player)return false;
+          if(rule.fromV12&&!rule.fromV12.some(zone=>zone==='not-hand'?(options?.from||card.zone)!=='hand':zone===(options?.from||card.zone)))return false;
+          if(rule.matchesV12&&!rule.matchesV12(game,source,player,card,options))return false;
           if(rule.quality==='creature'&&!creature)return false;
           if(rule.window==='other-turn')return game.turnPlayer!==player;
           if(rule.window==='source-turn')return game.turnPlayer===source.ctrl;

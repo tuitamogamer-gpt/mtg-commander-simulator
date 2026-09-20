@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
-import { extractMainScript, readSource } from '../../scripts/source-audit.mjs';
+import { extractMainScript } from '../../scripts/source-audit.mjs';
 
 let cached;
 
@@ -17,7 +17,7 @@ export function loadEngine() {
   };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
-  new vm.Script(extractMainScript(readSource()), { filename: 'src/app.js' }).runInContext(sandbox);
+  new vm.Script(extractMainScript(), { filename: 'src/app.js' }).runInContext(sandbox);
   const dataUrl = new URL('../../src/data.js', import.meta.url);
   if (fs.existsSync(dataUrl)) {
     new vm.Script(fs.readFileSync(dataUrl, 'utf8'), { filename: 'src/data.js' }).runInContext(sandbox);

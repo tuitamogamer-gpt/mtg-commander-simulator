@@ -29,6 +29,7 @@ function install(MTG,context,h){
    else if(effect.action==='cast-from-hand-v8')cards=owner.hand.slice();
    else if(effect.until){cards=[];for(const card of owner.library.slice().reverse()){cards.push(card);if(matchesTarget(card,{...effect.until,controller:'any'},state.context,ctx.src))break;}}
    else cards=n?owner.library.slice(-n).reverse():[];
+   if(effect.filter?.stat==='mv'&&typeof effect.filter.threshold==='object')for(const card of cards)if(card.def._immediateCastProof)card.def={...card.def,cost:'{'+countValue(state.context,ctx.src,effect.filter.threshold)+'}'};
    const row={effect,source:ctx.src,player:ctx.you,cards:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion})),pool:pool(ctx.you),events:state.events.length,choices:[]};state.rows.push(row);
    const controller=ctx.you.controller,decide=controller.decide;controller.decide=async function(g,q){
     const donor=!ctx.you.isAI&&q.type==='chooseCards'&&q.prompt?.startsWith('You may cast one')&&q.from.find(card=>card.def._immediateCastProof);

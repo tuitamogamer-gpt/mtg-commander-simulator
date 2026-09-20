@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { stageCondition } from './oracle-v5-proof.mjs';
+import {bindChosenType} from './oracle-v16-proof.mjs';
 
 const asCard = value => Array.isArray(value) ? value[0] : value;
 const sameOperation = (left, right) => left === right || JSON.stringify(left) === JSON.stringify(right);
@@ -98,6 +99,7 @@ function assertTokenTransform(MTG, operation, row, label) {
 }
 
 export async function replacementProof(MTG, entry, operation, role, h) {
+  const printedOperation=operation;
   assert.equal(operation.kind, 'v8-replacement');
   const label = entry.raw.name + '/' + role + '/replacement';
   const ctx = h.gameFor(MTG, [h.decision(), h.decision()], {ai: role === 'ai'});
@@ -116,6 +118,7 @@ export async function replacementProof(MTG, entry, operation, role, h) {
   else assert.equal(await game.castSpell(a, source, {from: 'hand', xVal: 3}), true, label + ': actual paid cast');
   await h.resolveAll(game);
   assert.equal(source.zone, 'battlefield', label + ': original permanent resolves');
+  operation=bindChosenType(operation,source.meta.oracleChosenSubtypeV16);
   if ((operation.source?.subject === 'attached' || operation.recipient?.subject === 'attached') && !source.attachedTo) {
     h.stageGenericTarget(MTG, ctx, {what: 'creature', controller: 'you'}, 'replacement-equipment-host');
     const action = game.activatableList(a).find(row => row.card === source && row.equip);
@@ -123,10 +126,10 @@ export async function replacementProof(MTG, entry, operation, role, h) {
     assert.equal(await game.activateAbility(a, action), true, label + ': pay the real equip cost');
     await h.resolveAll(game);
   }
-  const replacement = game.replacers(operation.event).find(row => row.src === source && sameOperation(row.oracleOperation, operation));
+  const replacement = game.replacers(operation.event).find(row => row.src === source && sameOperation(row.oracleOperation, printedOperation));
   assert.ok(replacement?.applies, label + ': compiled pure applicability predicate');
   const journal = [];
-  observeReplacement(game, source, operation, journal);
+  observeReplacement(game, source, printedOperation, journal);
   let checks = 3;
 
   if (operation.event === 'etbTapped' || operation.event === 'etbCounters') {
@@ -171,6 +174,7 @@ export async function replacementProof(MTG, entry, operation, role, h) {
       : to.players ? to.players === 'opponent' ? b : a : asCard(h.stageGenericTarget(MTG, ctx, to.permanents, 'replacement-recipient'));
     assert.ok(origin && target, label + ': damage objects');
     if(from.filter?.blockingSourceV9){origin.blocking=source.iid;source.attacking=origin.ctrl;}
+    if(from.filter?.blockedBySourceV19){origin.blockedBy=[source];origin.attacking=source.ctrl;source.blocking=origin.iid;}
     const n = Math.max(1, Math.min(operation.maxAmount === undefined ? Infinity : Math.max(1, operation.maxAmount - 1), Math.max(5, operation.minAmount || 0, (operation.transform.set || 0) + 2, -(operation.transform.add || 0) + 2)));
     const exerciseDamage = async () => {
     const data = {src: origin, target, n, combat: operation.combat === true, noncombat: operation.combat !== true};
@@ -225,6 +229,17 @@ export async function replacementProof(MTG, entry, operation, role, h) {
       assert.equal(journal.length, 1, label + ': damaging spell resolved');
     } else await exerciseDamage();
   } else if (operation.event === 'lifegain') {
+    if(operation.playersV16){
+      for(const player of [a,b]){
+        const applies=operation.playersV16==='all'||player!==a,old=player.life,start=journal.length;
+        assert.equal(replacement.applies(game,3,player,source),applies,label+': scoped replacement');
+        const gained=await game.gainLife(player,3,source);
+        assert.equal(gained,applies?0:3,label+': exact life gained');
+        assert.equal(player.life-old,applies?operation.loseV16?-3:0:3,label+': exact net life');
+        assert.equal(journal.length-start,applies?1:0,label+': replacement selected once');
+      }
+      checks+=8;
+    }else{
     assert.equal(replacement.applies(game, 3, a, source), true, label + ': own gain applies');
     assert.equal(replacement.applies(game, 3, b, source), false, label + ': other player does not apply');
     assert.equal(replacement.applies(game, 0, a, source), false, label + ': zero gain does not apply');
@@ -237,6 +252,7 @@ export async function replacementProof(MTG, entry, operation, role, h) {
     assert.equal(a.life - before, amount, label + ': actual gain');
     assert.ok(choices.some(row => row.player === a && row.query.aiHint?.event === 'lifegain'), label + ': gaining player chooses');
     checks += 8;
+    }
   } else if (operation.event === 'createToken') {
     const key = operation.tokenType === 'Artifact' ? 'food' : 'beast33';
     assert.equal(replacement.applies(game, [key], a, source), true, label + ': qualifying token event');

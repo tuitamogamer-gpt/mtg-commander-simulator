@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import {context, put, settle} from './oracle-v8-fixtures.mjs';
+import {enterChosenTypeSource} from './oracle-v16-proof.mjs';
 
 export async function enterChosenColorSource(MTG,ctx,entry,source,h){
+  if(await enterChosenTypeSource(MTG,ctx,entry,source,h))return;
   if(!entry.implementation.some(row=>row.kind==='chosen-color-entry-v8'))return;
   if(source.zone==='battlefield')await ctx.game.move(source,'hand');
   h.fund(ctx.a,100);

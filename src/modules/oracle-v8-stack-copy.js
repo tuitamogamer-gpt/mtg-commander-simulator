@@ -15,7 +15,7 @@
    }};
   }
   if(target.what!=='stack-ability'||target.zone!=='stack')return null;
-  if(!Array.isArray(target.abilityKinds)||!target.abilityKinds.length||target.abilityKinds.some(kind=>!['ability','trigger'].includes(kind))||target.sourceQuality&&!['colorless','Creature','Enchantment'].includes(target.sourceQuality))throw new Error('Unsupported Stack ability target');
+  if(!Array.isArray(target.abilityKinds)||!target.abilityKinds.length||target.abilityKinds.some(kind=>!['ability','trigger'].includes(kind))||target.sourceQuality&&!['colorless','Creature','Enchantment','Artifact'].includes(target.sourceQuality))throw new Error('Unsupported Stack ability target');
   return {what:'ability',zone:'stack',min:target.min??1,count:1,prompt:'Choose an ability to copy',aiHint:{goal:effects.some(effect=>effect.action==='copy-stack-v8'&&effect.target===index)?'copy-stack':'counter'},filter:(game,object,controller)=>{
    if(!target.abilityKinds.includes(object?.kind)||!object.ctx||typeof object.run!=='function')return false;
    if(target.controller==='you'&&object.ctrl!==controller||target.controller==='opponent'&&object.ctrl===controller)return false;

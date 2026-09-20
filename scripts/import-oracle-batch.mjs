@@ -13,6 +13,15 @@ import * as v7 from './oracle-extensions-v7.mjs';
 import * as v8 from './oracle-extensions-v8.mjs';
 import * as v9 from './oracle-extensions-v9.mjs';
 import * as v10 from './oracle-extensions-v10.mjs';
+import * as v11 from './oracle-extensions-v11.mjs';
+import * as v12 from './oracle-extensions-v12.mjs';
+import * as v13 from './oracle-extensions-v13.mjs';
+import * as v14 from './oracle-extensions-v14.mjs';
+import * as v15 from './oracle-extensions-v15.mjs';
+import * as v16 from './oracle-extensions-v16.mjs';
+import * as v17 from './oracle-extensions-v17.mjs';
+import * as v18 from './oracle-extensions-v18.mjs';
+import * as v19 from './oracle-extensions-v19.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
 
@@ -45,6 +54,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
+// v11 remains opt-in while its next complete import cohort is prepared.
 const SEMANTIC_COMPILER_VERSION = 10;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
@@ -437,6 +447,10 @@ function closedGenericEffect(card, value) {
   return memoizedParse('effect',card,value,()=>closedGenericEffectCore(card,value));
 }
 function closedGenericEffectCore(card, value) {
+  if(extensionsActive===8&&v8.prefersExactEffectLines()){
+    const exact=extensionEffect(card,value,{keywordList,effect:closedGenericEffectSequence});
+    if(exact)return exact;
+  }
   if(v8.preservesPrintedParagraphs()&&(/\b(?:toxic|firebending|frenzy|poisonous) [0-9]+/.test(value)&&/\bgains?\b/.test(value)||/\. (?:Then )?[Ii]t deals damage equal to its /.test(value)||/sacrifices? [^,.]+, discards? [^,.]+, and loses? [^,.]+ life/.test(value)||/, where X is [^.]+\. If X /.test(value))){
     const extended=v8.additionalEffect(card,value,{keywordList,effect:closedGenericEffectSequence});
     if(extended)return extended;
@@ -848,6 +862,10 @@ function genericEventOperation(card, line) {
 }
 
 function expandedCreatureLine(card, line) {
+  if(extensionsActive===8&&v8.prefersExactCreatureLines()){
+    const exact=extensionLine(card,line,{keywordList,cost:genericActivatedCost,effect:closedGenericEffectSequence});
+    if(exact)return exact;
+  }
   if(extensionsActive===8&&/^(?:Other )?(?:[Aa]ttacking|[Bb]locking) creatures\b/.test(line))return extensionLine(card,line,{keywordList,effect:closedGenericEffectSequence});
   const mechanic = expandedMechanicOperation(line);
   if (mechanic) return mechanic;
@@ -1946,6 +1964,7 @@ function spellSemantics(card, rulesCore) {
       if (extensionsActive===8 && v8.preservesPrintedParagraphs() && bodyLines.length>1) {
         const paragraphs=bodyLines.map(line=>closedGenericEffectSequence(card,line));
         const independent=paragraphs.every((body,index)=>body&&!body.optional&&!body.v4Body&&
+          !(v8.allowsBindingScopesV15()&&/"(?:unbound-object-v10|event-card|event-player|event-card-controller|event-card-owner)"/.test(JSON.stringify(body)))&&
           !body.effects.some(effect=>effect.target==='self')&&
           !/^(?:It\b|Its\b|They\b|Those\b|That\b|Then\b)/.test(bodyLines[index]));
         if (independent) return {semanticClass:'spell-template',implementedKeywords:[],implementation:[...modifiers,...paragraphs.map(body=>({kind:'spell-generic',...body,contract:'spell-generic-effect'}))],oracleContracts:[...new Set([...modifiers.map(operation=>operation.contract),'spell-generic-effect'])],rulesCore};
@@ -2108,11 +2127,12 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
-  if (compilerVersion === 10) {
-    const frozen = semanticClass(card, {compilerVersion: 9, memoize});
+  if ([10,11,12,13,14,15,16,17,18,19].includes(compilerVersion)) {
+    const grammar = compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
+    const frozen = semanticClass(card, {compilerVersion: compilerVersion - 1, memoize});
     if (frozen.semanticClass) return frozen;
-    const normalized = v10.normalizeCard(card);
-    const result = v8.withAdditionalGrammar(v10, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
+    const normalized = grammar.normalizeCard(card);
+    const result = v8.withAdditionalGrammar(grammar, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
     // Normalization supplies executable grammar; the physical faces keep the
     // exact printed Oracle text used by deck import, card details, and copies.
     if(result.semanticClass&&card.card_faces?.length){
@@ -2121,6 +2141,8 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       preserve(result.implementation);
     }
     if(result.semanticClass&&/"(?:chosenColorV10)":true|"kind":"chosen-color-v10"/.test(JSON.stringify(result.implementation))&&!JSON.stringify(result.implementation).includes('"kind":"chosen-color-entry-v8"'))return {reason:'unbound-chosen-color-v10'};
+    if(compilerVersion>=16&&result.semanticClass&&JSON.stringify(result.implementation).includes('"kind":"chosen-subtype-v16"')&&!JSON.stringify(result.implementation).includes('"kind":"chosen-subtype-entry-v16"'))return {reason:'unbound-chosen-subtype-v16'};
+    if(compilerVersion>=14&&result.semanticClass&&/"flag":"oracleOptionalCostV14"/.test(JSON.stringify(result.implementation))&&!JSON.stringify(result.implementation).includes('"kind":"mechanic-optional-cost-v14"'))return {reason:'unbound-optional-cost-v14'};
     if (result.semanticClass && normalized !== card) result.rulesCore = v8.normalizeAbilityWords(card.card_faces?.length?card.card_faces.map(face=>face.name+': '+stripReminderText(face.oracle_text||'')).join('\n'):stripReminderText(card.oracle_text || ''));
     return result;
   }
@@ -2247,6 +2269,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     const bindingScopes=[];
     const addScope=op=>{
       const strip=value=>Array.isArray(value)?value.map(strip):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([key,child])=>{
+        if(extensionsActive===8&&v8.allowsBindingScopesV15()&&value.action==='create-emblem-v11'&&key==='operations'){child.forEach(addScope);return false;}
         if(value.action==='grant-operation'&&key==='operation'||extensionsActive===8&&value.action==='install-trigger-v8'&&key==='trigger'){addScope(child);return false;}return true;
       }).map(([key,child])=>[key,strip(child)])):value;
       bindingScopes.push(strip(op));
@@ -2256,9 +2279,9 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       if(operation.kind==='attachment-operation')return boundEvents(operation.operation);
       if(operation.grantedOperation)return boundEvents(operation.grantedOperation);
       const encoded=JSON.stringify(operation);
-      if(encoded.includes('"event-stack-v10"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['cast','castIS','castNonCreature','castCreature'].includes(event))))return false;
+      if(encoded.includes('"event-stack-v10"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['cast','castIS','castNonCreature','castCreature',...(extensionsActive===8&&v8.allowsTargetedStackV13()?['targeted']:[])].includes(event))))return false;
       if(/"event-(?:spell-mv|mana-spent)-v10"/.test(encoded)&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['cast','castIS','castNonCreature','castCreature'].includes(event))))return false;
-      if(encoded.includes('"combat-defender-v9"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['attacks','blocks','becomesBlocked','becomesBlockedByCreature','blockersDeclared'].includes(event))))return false;
+      if(encoded.includes('"combat-defender-v9"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['attacks','blocks','becomesBlocked','becomesBlockedByCreature','blockersDeclared'].includes(event)||extensionsActive===8&&v8.allowsBindingScopesV15()&&event==='attackersDeclared'&&operation.eventFilter?.kind==='v8-event'&&operation.eventFilter.totalMax===1)))return false;
       if(encoded.includes('"batch-amount-v9"')&&(operation.kind!=='generic-trigger'||!operation.oncePerBatch||!['batch-discard-v8','filtered-sacrifice','created-batch-v8','filtered-object'].includes(operation.eventFilter?.kind)))return false;
       if(operation.eventFilter?.kind==='observation-v9'){
         if(v8.preservesPrintedParagraphs()&&operation.event==='unlockDoor'&&operation.eventFilter.fullyUnlockedV10)return operation.kind==='generic-trigger'&&!/"event-(?:player|card|card-controller|card-owner|card-stat|card-counters)"/.test(encoded);
@@ -2268,8 +2291,8 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       }
       if(/"event-(?:player|card|card-controller|card-owner|card-stat|card-counters)"/.test(encoded)&&operation.kind!=='generic-trigger')return false;
       if(extensionsActive===8&&['v8-event','damage-event-v8','exploited-self-v8','exploited-controller-v8'].includes(operation.eventFilter?.kind))return (!['event-card-stat','event-card-counters','event-card-owner'].some(kind=>encoded.includes('"'+kind+'"'))||v8.eventReferenceAllowed(operation,'event-card'))&&['event-player','event-card','event-card-controller'].every(reference=>!encoded.includes('"'+reference+'"')||v8.eventReferenceAllowed(operation,reference));
-      if(encoded.includes('"event-player"')&&![operation.event].flat().every(event=>['cast','draw','upkeep','endStep','damageToPlayer','combatDamageToPlayer',...(extensionsActive===8?['drawStep','precombatMain','beginCombat']:[]),...(extensionsActive>=7&&operation.eventFilter==='self-unblocked'?['blockersDeclared']:[])].includes(event)))return false;
-      if(/"event-card(?:-controller)?"/.test(encoded)&&![operation.event].flat().every(event=>['etb','dies','lto','cast','castIS','castNonCreature','castCreature','attacks','blocks','becameTapped','becameUntapped','turnedFaceUp',...(extensionsActive>=7?['combatDamageToPlayer',...(operation.eventFilter?.kind==='self-creature-combat'?['becomesBlockedByCreature']:[])]:[])].includes(event)))return false;
+      if(encoded.includes('"event-player"')&&![operation.event].flat().every(event=>['cast','draw','upkeep','endStep','damageToPlayer','combatDamageToPlayer',...(extensionsActive===8?['drawStep','precombatMain','beginCombat',...(v8.allowsBindingScopesV15()&&operation.eventFilter?.kind==='targeted-object'?['targeted']:[])]:[]),...(extensionsActive>=7&&operation.eventFilter==='self-unblocked'?['blockersDeclared']:[])].includes(event)))return false;
+      if(/"event-card(?:-controller)?"/.test(encoded)&&![operation.event].flat().every(event=>['etb','dies','lto','cast','castIS','castNonCreature','castCreature','attacks','blocks','becameTapped','becameUntapped','turnedFaceUp',...(extensionsActive===8&&v8.allowsObjectEventsV13()?['c14EnteredGraveyard','oraclePlottedV13']:[]),...(extensionsActive===8&&v8.allowsTransformationEventsV12()?['transformed']:[]),...(extensionsActive>=7?['combatDamageToPlayer',...(operation.eventFilter?.kind==='self-creature-combat'?['becomesBlockedByCreature']:[])]:[])].includes(event)))return false;
       return true;
     };
     if(bindingScopes.some(operation=>!boundEvents(operation)))return {reason:'unbound-event-reference'};
@@ -2279,9 +2302,9 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       const xTargetsBound=operation=>{
         if(operation.kind==='attachment-operation')return xTargetsBound(operation.operation);
         if(operation.grantedOperation)return xTargetsBound(operation.grantedOperation);
-        const printedX=/\{X\}/.test(card.mana_cost||'');
+        const printedX=/\{X\}/.test(card.mana_cost||'')||v8.allowsBindingScopesV15()&&operations.some(op=>op.kind==='mechanic-additional-costs'&&(op.lifeX||op.costs?.some(cost=>cost.quantity?.xV19)));
         const allowed=['spell-generic','spell-modal-generic'].includes(operation.kind)?printedX:
-          operation.kind==='generic-ability'?((!operation.from||operation.from==='hand')&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&operation.cost?.oracleCounterPayment?.n==='X'):
+          operation.kind==='generic-ability'?((!operation.from||operation.from==='hand')&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&(operation.cost?.oracleCounterPayment?.n==='X'||operation.loyalty==='-X'||operation.cost?.sacN==='X')):
           operation.kind==='generic-trigger'&&operation.eventFilter==='self'&&(operation.event==='etb'&&printedX||v8.preservesPrintedParagraphs()&&operation.event==='cycled'&&operations.some(op=>op.kind==='cycling'&&/\{X\}/.test(op.cost))||operation.event==='monstrous'&&operations.some(upgrade=>upgrade.kind==='generic-ability'&&upgrade.effects?.some(effect=>effect.action==='monstrosity-v8'&&effect.n==='X')&&/\{X\}/.test(upgrade.cost?.mana||'')));
         const checkBody=body=>{
           const {targets=[],...other}=body;
@@ -2340,9 +2363,10 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     }
     // Event amounts only exist on damage events. Never accept an inert
     // "that much life" outside the closed antecedent that defines it.
-    const amountBound=op=>op.kind==='attachment-operation'?amountBound(op.operation):op.grantedOperation?amountBound(op.grantedOperation):!JSON.stringify(op).includes('"kind":"event-amount"')||op.kind==='generic-trigger'&&(extensionsActive===8&&['v8-event','damage-event-v8'].includes(op.eventFilter?.kind)?v8.eventReferenceAllowed(op,'event-amount'):[op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer','lifeGain'].includes(event)));
+    const amountBound=op=>op.kind==='attachment-operation'?amountBound(op.operation):op.grantedOperation?amountBound(op.grantedOperation):!JSON.stringify(op).includes('"kind":"event-amount"')||op.kind==='generic-trigger'&&(op.attackersAmountV19===true&&op.event==='attackersDeclared'&&op.eventFilter?.kind==='v8-event'&&op.eventFilter.target|| (extensionsActive===8&&['v8-event','damage-event-v8'].includes(op.eventFilter?.kind)?v8.eventReferenceAllowed(op,'event-amount'):[op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer','lifeGain'].includes(event))));
     if(bindingScopes.some(op=>!amountBound(op)))return {reason:'unbound-event-amount'};
-    if(extensionsActive>=6&&JSON.stringify(operations).includes('"X"')&&!/\{X\}|pay X life/i.test((card.mana_cost||'')+' '+(card.oracle_text||'')+(extensionsActive>=7?(card.card_faces||[]).map(face=>(face.mana_cost||'')+' '+(face.oracle_text||'')).join(' '):''))&&!bindingScopes.every(op=>!JSON.stringify(op).includes('"X"')||op.kind==='generic-ability'&&!op.from&&op.cost?.oracleCounterPayment?.n==='X'&&op.cost.oracleCounterPayment.self&&op.cost.oracleCounterPayment.kinds?.length===1))return {reason:'unbound-X'};
+    const additionalXV19=operations.some(op=>op.kind==='mechanic-additional-costs'&&op.costs?.some(cost=>cost.quantity?.xV19));
+    if(extensionsActive>=6&&JSON.stringify(operations).includes('"X"')&&!/\{X\}|pay X life/i.test((card.mana_cost||'')+' '+(card.oracle_text||'')+(extensionsActive>=7?(card.card_faces||[]).map(face=>(face.mana_cost||'')+' '+(face.oracle_text||'')).join(' '):''))&&!bindingScopes.every(op=>!JSON.stringify(op).includes('"X"')||additionalXV19&&['spell-generic','spell-modal-generic','spell-template-v4','spell-damage','spell-pump'].includes(op.kind)||op.kind==='generic-ability'&&!op.from&&(op.loyalty==='-X'||op.cost?.sacN==='X'||op.cost?.oracleCounterPayment?.n==='X'&&op.cost.oracleCounterPayment.self&&op.cost.oracleCounterPayment.kinds?.length===1)))return {reason:'unbound-X'};
     return result;
   } finally { extensionsActive = previous;compilerParseCache=previousCache; }
 }
@@ -2741,6 +2765,8 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
   const outputReportDir = path.join(workspaceRoot, 'reports', 'oracle-import');
   const outputStatePath = path.join(outputReportDir, 'state.json');
   const selectedLimit = validateLimit(argValue(args, 'limit', String(DEFAULT_LIMIT)));
+  const compilerVersion=Number(argValue(args,'compiler-version',String(SEMANTIC_COMPILER_VERSION)));
+  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>19)throw new Error('Oracle compiler version must be an integer from 1 to 19.');
   const state = readState(outputStatePath, io);
   const sequence = batchNumberFrom(state, args);
   const id = batchId(sequence);
@@ -2793,6 +2819,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
     acceptNewSnapshot: args.includes('--accept-new-snapshot'),
     expectedSnapshot: argValue(args, 'expected-snapshot', ''),
     generatedAt,
+    compilerVersion,
   });
   const logger = dependencies.console || console;
   logger.log(`Source: ${bulk.name} updated ${bulk.updated_at}`);

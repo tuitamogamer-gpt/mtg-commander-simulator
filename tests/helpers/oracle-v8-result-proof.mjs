@@ -20,8 +20,10 @@ function install(MTG,context,h){
   await capture.call(this,ctx,effect,run,helpers);
   const after=snap(state),event=MTG.OracleV8Results.family(effect),actual=ctx.oracleResolutionResults.cards.slice(start);
   const expected=[...before.cards].filter(([card,old])=>{
-   const now=after.cards.get(card);if(!now||old.zoneVersion===now.zoneVersion)return false;
-   return event==='selected-hand'?old.zone==='library'&&now.zone==='hand':event==='mill'?old.zone==='library':event==='discard'?old.zone==='hand':event==='sacrifice'?old.zone==='battlefield':old.zone!=='exile'&&(now.zone==='exile'||card.isToken&&old.zone==='battlefield'&&now.zone==='ceased');
+   const now=after.cards.get(card);if(!now)return false;
+   if(event==='tap-v16')return old.zone==='battlefield'&&now.zone==='battlefield'&&old.zoneVersion===now.zoneVersion&&!old.tapped&&now.tapped;
+   if(old.zoneVersion===now.zoneVersion)return false;
+   return event==='selected-hand'?old.zone==='library'&&now.zone==='hand':event==='mill'?old.zone==='library':event==='discard'?old.zone==='hand':['sacrifice','destroy-v16'].includes(event)?old.zone==='battlefield':old.zone!=='exile'&&(now.zone==='exile'||card.isToken&&old.zone==='battlefield'&&now.zone==='ceased');
   }).map(([card])=>card);
   assert.equal(actual.length,expected.length,ctx.src.name+': result cardinality equals actual zone events');
   assert.ok(actual.every(row=>expected.includes(row.card)),ctx.src.name+': no unrelated card enters the result');
@@ -42,7 +44,7 @@ function install(MTG,context,h){
     const result=await helpers.run(childCtx,children);child.after=snap(state);
     // Validate the real effect at its own resolution boundary, before a later
     // clause can draw more cards, change life again, or move the same object.
-    for(const printed of children)await state.h.assertGenericEffectEvidence(MTG,state.context,{raw:{name:ctx.src.name},implementation:[]},printed,ctx.src,childCtx.targets||[],state.context.b,before,state.trace,ctx.src.name+'/bound-result');
+    for(const printed of children)await state.h.assertGenericEffectEvidence(MTG,{...state.context,oracleResultCountV16:childCtx.oracleResultCountV16,oracleResultRowV16:childCtx.oracleResultRowV16,oracleResultControllerV16:childCtx.oracleResultRowV16?.view.ctrl},{raw:{name:ctx.src.name},implementation:[]},printed,ctx.src,childCtx.targets||[],state.context.b,before,state.trace,ctx.src.name+'/bound-result');
     return result;
    }});
    row.after=snap(state);return row.result;
@@ -55,7 +57,7 @@ export function stageCardResults(MTG,context,effect,h){
  for(const clause of effect.clauses){
   for(let i=0;i<2;i++){
    const card=h.stageGenericTarget(MTG,context,{...clause.filter,controller:'you',zone:'graveyard'},'result-card-'+i);
-   const zone=effect.event==='discard'?'hand':['mill','selected-hand'].includes(effect.event)||effect.effects.some(child=>child.action==='exile-top')?'library':effect.event==='sacrifice'?'battlefield':'graveyard';
+   const zone=effect.event==='discard'?'hand':['mill','selected-hand'].includes(effect.event)||effect.effects.some(child=>child.action==='exile-top')?'library':['sacrifice','tap-v16','destroy-v16'].includes(effect.event)?'battlefield':'graveyard';
    if(zone!=='graveyard'){context.a.graveyard.splice(context.a.graveyard.indexOf(card),1);card.zone=zone;(zone==='battlefield'?context.game.battlefield:context.a[zone]).push(card);}
   }
  }
@@ -71,6 +73,8 @@ export function assertCardResults(MTG,context,effect,source,label){
   const matching=row.captured.filter(({view})=>matchesTarget(view,{...clause.filter,controller:'any'},context,source)),n=matching.length;
   const satisfies=!clause.shared?n>0:matching.some(({view:a},i)=>matching.slice(i+1).some(({view:b})=>clause.shared==='a color'?a.colors.some(color=>b.colors.includes(color)):clause.shared==='a card type'?a.types.some(type=>b.types.includes(type)):a.types.length===b.types.length&&a.types.every(type=>b.types.includes(type))));
   if(clause.action==='result-scaled-v8'){if(n)expected.push([{...clause.effects[0],n:clause.effects[0].n*n}]);}
+  else if(clause.action==='result-each-v16'){for(const item of matching){assert.equal(row.children[expected.length+1].ctx.oracleResultRowV16.view.ctrl,item.view.ctrl);expected.push(clause.effects);}}
+  else if(clause.action==='result-bound-v16'){assert.equal(row.children[expected.length+1].ctx.oracleResultCountV16,n);expected.push(clause.effects);}
   else if(clause.action==='result-select-v8'){
    const moved=row.captured.filter(({card})=>row.after.cards.get(card)?.zone==='hand');
    assert.ok(moved.length<=clause.max,label+': result selection respects its printed limit');

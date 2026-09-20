@@ -1,5 +1,6 @@
 ((M)=>{
- const kinds=new Set(['+1/+1','-1/-1','divinity','indestructible','lifelink','deathtouch','menace','crystal','charge']);
+ const keywordKinds=new Set(['flying','first strike','double strike','deathtouch','lifelink','menace','reach','trample','vigilance','hexproof','indestructible']);
+ const kinds=new Set(['+1/+1','-1/-1','divinity','crystal','charge',...keywordKinds]);
  const cast=card=>card.castMeta?.wasCast?card.castMeta:null;
  function manaColors(card){return new Set((cast(card)?.paymentColors||[]).filter(color=>'WUBRG'.includes(color))).size;}
  function value(game,card,node){
@@ -75,7 +76,7 @@
   if(operation.counters&&(!Array.isArray(operation.counters)||!operation.counters.length||operation.counters.some(counter=>Object.keys(counter).some(key=>!['kind','n'].includes(key))||!kinds.has(counter.kind)||!(Number.isSafeInteger(counter.n)&&counter.n>=0||counter.n&&values.includes(counter.n.value)&&Object.keys(counter.n).every(key=>['value','add','multiply'].includes(key))&&['add','multiply'].every(key=>counter.n[key]===undefined||Number.isSafeInteger(counter.n[key])&&counter.n[key]>=0)))))throw new Error('Invalid entry counter amount');
   const prepared=operation.counters?.filter(counter=>counter.n?.value==='prepared-count')||[];
   if (operation.prepare ? operation.condition||operation.choice||operation.counters.length!==1||prepared.length!==1||Object.keys(prepared[0].n).length!==1||prepared[0].kind!==(operation.prepare==='choose-opponent'?'-1/-1':'+1/+1') : prepared.length) throw new Error('Invalid prepared entry counter descriptor');
-  const choice=operation.choice;if(choice&&(Object.keys(choice).some(key=>!['count','kinds'].includes(key))||!Number.isSafeInteger(choice.count)||choice.count<1||!Array.isArray(choice.kinds)||choice.count>choice.kinds.length||new Set(choice.kinds).size!==choice.kinds.length||choice.kinds.some(kind=>!['menace','deathtouch','lifelink'].includes(kind))))throw new Error('Invalid entry counter choice');
+  const choice=operation.choice;if(choice&&(Object.keys(choice).some(key=>!['count','kinds'].includes(key))||!Number.isSafeInteger(choice.count)||choice.count<1||!Array.isArray(choice.kinds)||choice.count>choice.kinds.length||new Set(choice.kinds).size!==choice.kinds.length||choice.kinds.some(kind=>!keywordKinds.has(kind))))throw new Error('Invalid entry counter choice');
   return operation;
  }
  function bonuses(game,card){

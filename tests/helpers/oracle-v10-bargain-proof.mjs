@@ -13,9 +13,9 @@ export async function bargainProofV10(M,entry,role,h){
     }
     const alt=bargain?{oracleBargainV10:true}:{};
     const expected=game.spellCost(a,source,alt),before=game.bf().slice();
-    assert.equal(await game.castSpell(a,source,{from:'hand',alt}),true,entry.raw.name+': actual '+(bargain?'bargained':'ordinary')+' cast');
+    assert.equal(await game.castSpell(a,source,{from:'hand',alt,xVal:3}),true,entry.raw.name+': actual '+(bargain?'bargained':'ordinary')+' cast');
     const object=game.stack.find(row=>row.card===source);assert.ok(object);
-    assert.equal(object.manaSpent,expected.generic+expected.pips.length,entry.raw.name+': chosen total mana cost paid');
+    assert.equal(object.manaSpent,expected.generic+expected.pips.length+(expected.x||0)*object.x,entry.raw.name+': chosen total mana cost paid');
     assert.equal(!!object.castOpts.oracleBargainV10,bargain);
     assert.equal(object.kicked,false,entry.raw.name+': bargain does not count as kicker');
     const paid=object.oracleV4AdditionalCost?.sacrifices||[];assert.equal(paid.length,bargain?1:0);

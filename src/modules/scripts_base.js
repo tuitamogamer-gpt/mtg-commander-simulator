@@ -211,7 +211,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // intentional: the player sees the complete split before it is locked.
       const raw = await player.controller.decide(g, {
         type: 'chooseX', min, max, card: source, src: source,
-        prompt: `${source.name}: damage for ${target.name} (${left} remaining)`,
+        prompt: `${source.name}: ${opts.resource||'damage'} for ${target.name} (${left} remaining)`,
         allocation,
         aiHint: {
           kind: opts.aiKind || 'dividedDamage', card: source, target, left,

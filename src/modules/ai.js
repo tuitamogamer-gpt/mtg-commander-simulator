@@ -956,6 +956,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseTargets(g, q) {
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
+      if(goal==='exchange-life-v18'){
+        const players=cands.filter(p=>p instanceof MTG.Player),hint=q.spec?.aiHint||q.aiHint||{};
+        if(hint.withYou)return players.filter(p=>p!==this.p).sort((a,b)=>b.life-a.life).slice(0,1);
+        return players.sort((a,b)=>a.life-b.life).filter((p,i,list)=>i===0||i===list.length-1).slice(0,2);
+      }
       if(goal==='donate-player-v9')return cands.filter(p=>p!==this.p).slice(0,1);
       if(goal==='donate-card-v9')return cands.sort((a,b)=>(a.ctrl===this.p?0:100)+this.permThreat(g,a)-(b.ctrl===this.p?0:100)-this.permThreat(g,b)).slice(0,1);
       if(goal==='exchange-control-v9'){
@@ -1225,6 +1230,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'optionalLoot': {
           const landCards = from.filter(card => card.is('Land'));
           const landsNeeded = Math.max(1, 3 - g.lands(this.p).length);
+          if(q.aiHint.redraw){
+            const lands=byValAsc.filter(card=>card.is('Land')).slice(0,Math.max(0,landCards.length-landsNeeded));
+            const spells=byValAsc.filter(card=>!card.commander&&!card.is('Land')&&this.cardValue(g,card)<2.25);
+            return [...lands,...spells].slice(0,max);
+          }
           const redundantLand = byValAsc.find(card => card.is('Land') && landCards.length > landsNeeded);
           if (redundantLand) return [redundantLand];
           const lowValue = byValAsc.find(card => !card.commander && !card.is('Land') && this.cardValue(g, card) < 2.25);
@@ -1307,7 +1317,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const sorted = byThreatAsc;
           const out = [];
           let pow = 0;
-          for (const c of sorted) { const contribution=q.aiHint.saddleV10?MTG.oracleSaddlePowerV10(c):game.vehicleCrewPower(c);if(contribution<=0)continue;out.push(c); pow += contribution; if (pow >= need) break; }
+          for (const c of sorted) { const contribution=q.aiHint.evidenceV14?c.mv:q.aiHint.teamworkV14?c.power:q.aiHint.saddleV10?MTG.oracleSaddlePowerV10(c):game.vehicleCrewPower(c);if(contribution<=0)continue;out.push(c); pow += contribution; if (pow >= need) break; }
           return pow >= need ? out : [];
         }
         case 'slaughterKeep': {
@@ -1408,6 +1418,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'splice-v11': return q.options.find(option=>option.card)?.key||'done';
         case 'recover-v9': return g.canPayMana(this.p,MTG.parseCost(q.aiHint.cost))?'yes':'no';
         case 'commanderZone': return q.aiHint.toZone === 'hand' ? 'stay' : 'cz';
         case 'exertAttack': return MTG.OracleV8Exert.choose(g,this.p,q);

@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import {stageCondition} from './oracle-v5-proof.mjs';
 import {enterChosenColorSource} from './oracle-chosen-color-proof.mjs';
+import {bindChosenType} from './oracle-v16-proof.mjs';
 
 export async function layeredStaticProof(MTG,entry,operation,role,h){
   const ctx=h.gameFor(MTG,[h.decision(),h.decision()],{ai:role==='ai'}),{game,a}=ctx,label=entry.raw.name+'/'+role;
   h.assertControllerRole(MTG,ctx,label);
-  const source=h.permanent(MTG,game,a,entry.raw.name),child=operation.operation;
+  let source=h.permanent(MTG,game,a,entry.raw.name);const child=operation.operation;
+  if(operation.own&&operation.condition?.kind==='source-quality'&&operation.condition.filter.token)source=(await game.copyPermanentToken(source,a,{n:1}))[0];
   await enterChosenColorSource(MTG,ctx,entry,source,h);
+  operation=bindChosenType(operation,source.meta.oracleChosenSubtypeV16);
   const aura=entry.implementation.find(op=>op.kind==='aura-target');
   const target=operation.own?source:h.stageGenericTarget(MTG,ctx,operation.attached&&operation.change.creatureV9?h.auraProofTarget(aura):operation.attached?{what:'creature',zone:'battlefield',controller:'you',min:1}:operation.filters[0],'layered-recipient');
   if(operation.attached)assert.equal(await game.attach(source,target),true,label+': actual attachment');

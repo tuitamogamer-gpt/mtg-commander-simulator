@@ -24,6 +24,8 @@ export async function stateTriggerProof(M,entry,operation,role,h){
  if(state.kind==='life')a.life=state.threshold+2;
  if(state.kind==='opponent-life')b.life=state.max+2;
  if(state.kind==='count-comparison'&&state.count.kind==='source-counters')for(let n=0;n<2;n++)h.permanent(M,game,b,'Grizzly Bears');
+ const transferTrigger=state.kind==='not'&&state.condition.kind==='source-quality'&&entry.implementation.find(op=>op.kind==='generic-trigger'&&op.event==='upkeep'&&op.eventFilter==='your-upkeep'&&op.effects?.some(effect=>effect.action==='move-counters-v8'&&effect.sourceTarget==='self'&&effect.counter===state.condition.filter.hasCounter&&effect.n===1));
+ if(transferTrigger)h.permanent(M,game,a,'Grizzly Bears');
  const cast=async(player,name,targets=[])=>{const card=h.zoneCard(M,player,name,'hand');fund(player);const before=total(player);assert.equal(await game.castSpell(player,card,{from:'hand',quickTargets:targets}),true,entry.raw.name+': paid cast '+name);assert.ok(total(player)<before);return card;};
  const source=h.zoneCard(M,a,entry.raw.name,'hand');
  if(source.is('Land')){const before=a.landsPlayed;assert.equal(await game.playLand(a,source),true,entry.raw.name+': legal land play');assert.equal(a.landsPlayed,before+1);}
@@ -36,7 +38,13 @@ export async function stateTriggerProof(M,entry,operation,role,h){
   for(let n=0;n<state.min;n++){const action=game.activatableList(a).find(row=>row.card===source&&row.ability);assert.ok(action);const before=total(a);assert.equal(await game.activateAbility(a,action),true);assert.ok(total(a)<before);await game.resolveTop();assert.equal(source.counters[state.count.counter],n+1);}
  }else if(state.kind==='not'&&state.condition.kind==='source-quality'&&state.condition.filter.hasCounter){
   const kind=state.condition.filter.hasCounter,initial=source.counters[kind];assert.ok(Number.isSafeInteger(initial)&&initial>0);fund(a);
-  for(let n=initial;n>0;n--){const action=game.activatableList(a).find(row=>row.card===source&&row.ability);assert.ok(action);const before=total(a);assert.equal(await game.activateAbility(a,action),true);assert.ok(total(a)<before);await game.resolveTop();assert.equal(source.counters[kind]||0,n-1);}
+  for(let n=initial;n>0;n--){
+   if(transferTrigger){
+    await game.emit('upkeep',{player:a});await game.flushTriggers();
+    const trigger=game.stack.at(-1);assert.equal(trigger?.srcCard,source);assert.equal(trigger.kind,'trigger');assert.ok(!trigger.oracleStateTrigger);
+   }else{const action=game.activatableList(a).find(row=>row.card===source&&row.ability);assert.ok(action);const before=total(a);assert.equal(await game.activateAbility(a,action),true);assert.ok(total(a)<before);}
+   await game.resolveTop();assert.equal(source.counters[kind]||0,n-1);
+  }
  }else{
   const witness=state.kind==='state-chosen-color-absence-v8'?support.find(card=>card.colors.includes(source.meta.oracleChosenColor)):support[0];assert.ok(witness);
   await cast(b,'Wipe Away',[witness]);await game.resolveTop();assert.equal(witness.zone,'hand');

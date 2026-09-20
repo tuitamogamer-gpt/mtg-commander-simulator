@@ -9,7 +9,7 @@
   const payment={...operation,...(operation.costs?{compiled:MTG.compileOracleAdditionalCosts(operation.costs)}:{})};
   script.morph='{0}';script.oracleMorphPayment=payment;
  }
- const frame=(g,you,src)=>({g,you,src,so:{x:0},allowSourceReturn:true,strictCostChoices:true});
+ const frame=(g,you,src)=>({g,you,src,so:{x:0},allowSourceReturn:true,allowSourceSacrifice:true,strictCostChoices:true});
  const cards=(you,payment)=>you.hand.filter(card=>card.colors.includes(payment.revealColor));
  function canPay(g,you,src,payment){
   return payment.revealColor?cards(you,payment).length>0:payment.compiled.canPayContext(frame(g,you,src));

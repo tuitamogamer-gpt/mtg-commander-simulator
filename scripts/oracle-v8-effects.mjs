@@ -112,7 +112,7 @@ function resolutionValue(text, helpers) {
   return (helpers.count || v7Count)(text.replace(/^the number of /i, ''));
 }
 
-function resolutionPayment(card, text, helpers) {
+export function resolutionPayment(card, text, helpers) {
   const target = helpers.target || v7Target;
   const alternatives = text.split(/ or (?=(?:pay|sacrifice|discard|exile|return|tap|put|remove|reveal)\b)/i);
   if (alternatives.length > 1) {
@@ -267,10 +267,10 @@ function paymentBody(card, text, payment, helpers) {
   return body;
 }
 
-export function resolutionCostEffect(card, line, helpers) {
+export function resolutionCostEffect(card, line, helpers, paymentParser=resolutionPayment) {
   const m = /^(You may )?(.+?)\. If you (do|don't|do not), (.+)\.$/i.exec(line);
   if (!m) return null;
-  const cost = resolutionPayment(card, m[2], helpers);
+  const cost = paymentParser(card, m[2], helpers);
   if (!cost) return null;
   const limit = /^(.+)\. X can't be greater than (.+)$/i.exec(m[4]);
   if (limit) {

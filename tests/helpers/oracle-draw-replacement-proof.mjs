@@ -11,6 +11,7 @@ export async function drawReplacementProof(M,entry,operation,role,h){
  const emit=game.emit.bind(game);game.emit=async(event,data)=>{if(event==='draw')events.push(data);return emit(event,data);};await game.draw(player,1,source);
  const mode=temporary?.mode||operation.mode;
  if(mode==='multiply'){assert.equal(a.hand.length-hand,2);assert.equal(events.length,2);}
+ else if(mode==='skip-all-v18'){assert.equal(a.hand.length,hand);assert.equal(events.length,0);await game.draw(b,2);assert.equal(b.hand.length,enemyHand);assert.equal(events.length,0);await game.move(source,'exile');await game.draw(b,1);assert.equal(b.hand.length,enemyHand+1);}
  else if(mode==='redirect'){assert.equal(a.hand.length-hand,1);assert.equal(b.hand.length,enemyHand);assert.equal(events[0]?.player,a);}
  else if(mode==='empty-hand'){assert.equal(a.hand.length-hand,2);assert.equal(a.life,life-1);assert.equal(events.length,2);}
  else if(mode==='look-three'){assert.equal(a.hand.length-hand,1);assert.equal(a.graveyard.length-grave,operation.rest==='graveyard'?2:0);assert.equal(events.length,0);}

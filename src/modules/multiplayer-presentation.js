@@ -30,7 +30,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     seen.delete(value);
     return result;
   }
-  const metaKeys = ['chosenType', 'chosenColor', 'oracleChosenColor', 'thrivingColor', 'siegeMode', 'level', 'unlocked',
+  const metaKeys = ['chosenType', 'chosenColor', 'oracleChosenColor', 'oracleChosenSubtypeV16', 'oracleChosenSubtypeBindingV16', 'thrivingColor', 'siegeMode', 'level', 'unlocked',
     'suspended', 'foretold', 'plotted', 'freePlay', 'playableBy', 'playableUntil', 'playableUntilOwnTurn', 'ringBearer', 'crewedTurn',
     'prepared', 'preparedCopy', 'preparedBy'];
   U.onlineCardPresentation = function (card, viewer, mayInspect = false) {
@@ -119,8 +119,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const enc = encoder(game, viewer);
     const card = object => { enc.encode(object); return enc.objects.get(token(object)); };
     const players = game.players.map(player => {
-      const topSources = game.bf().filter(source => source.ctrl === player && !source.cur?.abilitiesDisabled &&
-        (source.def.revealAllTop || player === viewer && source.def.revealOwnTop));
+      const topSources = game.bf().filter(source => !source.cur?.abilitiesDisabled && (source.def.oracleRevealAllLibrariesV17 || source.ctrl === player &&
+        (source.def.revealAllTop || player === viewer && source.def.revealOwnTop)));
       const top = topSources.length ? player.library.at(-1) : null;
       const visibleTop = top ? U.onlineCardPresentation(top, viewer, true) : null;
       if (visibleTop) enc.objects.set(token(top), visibleTop);
@@ -155,7 +155,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kind: effect.kind, who: effect.who, srcIid: effect.srcIid, expires: effect.expires, label: effect.label,
     }));
     const revealedCards = {};
-    for (const kind of ['forecast', 'miracle']) revealedCards[kind] = (game[`${kind}RevealedCards`]?.() || []).map(object => {
+    for (const kind of ['forecast', 'miracle', 'handV17']) revealedCards[kind] = (kind==='handV17'?game.revealedHandCardsV17?.()||[]:game[`${kind}RevealedCards`]?.() || []).map(object => {
       enc.objects.set(token(object), U.onlineCardPresentation(object, viewer, true));
       return token(object);
     });
@@ -429,6 +429,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     creatures(player) { return this.bf().filter(card => card.ctrl === player && card.is('Creature')); }
     lands(player) { return this.bf().filter(card => card.ctrl === player && card.is('Land')); }
     nextPlayer(player) { const start = this.players.indexOf(player); for (let n = 1; n <= this.players.length; n++) { const next = this.players[(start + n) % this.players.length]; if (!next.lost) return next; } return player; }
+    revealedHandCardsV17() { return (this.snapshot.revealedCards?.handV17 || []).map(id => this.ref(id)).filter(Boolean); }
     forecastRevealedCards() { return (this.snapshot.revealedCards?.forecast || []).map(id => this.ref(id)).filter(Boolean); }
     miracleRevealedCards() { return (this.snapshot.revealedCards?.miracle || []).map(id => this.ref(id)).filter(Boolean); }
     landPlayLimit(player) { return player.presentation.landPlayLimit ?? 1; }

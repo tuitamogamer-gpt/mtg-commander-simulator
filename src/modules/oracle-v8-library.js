@@ -137,8 +137,8 @@
         new Set(effect.zones).size !== effect.zones.length) throw new Error('Unknown library shuffle zone');
     const locked = owners.map(owner => ({
       owner,
-      hand: effect.zones.includes('hand') ? owner.hand.map(card => ({card, version: card.zoneVersion})) : [],
-      graveyard: effect.zones.includes('graveyard') ? owner.graveyard.map(card => ({card, version: card.zoneVersion})) : [],
+      hand: effect.zones.includes('hand') ? owner.hand.filter(card=>!effect.filterV18||helpers.target({...effect.filterV18,controller:'any'},[],0).filter(ctx.g,card,ctx.you,ctx.src)).map(card => ({card, version: card.zoneVersion})) : [],
+      graveyard: effect.zones.includes('graveyard') ? owner.graveyard.filter(card=>!effect.filterV18||helpers.target({...effect.filterV18,controller:'any'},[],0).filter(ctx.g,card,ctx.you,ctx.src)).map(card => ({card, version: card.zoneVersion})) : [],
     }));
     const present = (entry, zone) => entry.card.zone === zone && entry.card.zoneVersion === entry.version && entry.card.owner[zone].includes(entry.card);
     const graveyard = locked.flatMap(group => group.graveyard).filter(entry => present(entry, 'graveyard')).map(entry => entry.card);
@@ -149,7 +149,7 @@
 
   async function search(ctx, effect, helpers, owner, chooser, execution) {
     if (!Array.isArray(effect.placements) || !effect.placements.length ||
-        effect.placements.some(item => !['hand', 'graveyard', 'battlefield', 'top'].includes(item.destination) ||
+        effect.placements.some(item => !['hand', 'graveyard', 'battlefield', 'top', 'exile'].includes(item.destination) ||
           !['number', 'string'].includes(typeof item.n) || typeof item.n === 'string' && !['all', 'rest'].includes(item.n) ||
           item.destination === 'top' && ![0, 2].includes(item.offset || 0))) throw new Error('Unknown library search placement');
     const named=Array.isArray(effect.names)&&effect.names.length>0&&effect.names.every(name=>typeof name==='string'&&name.trim()===name&&name.length>0);
@@ -201,6 +201,7 @@
     await ctx.g.withGraveyardEntryBatch(async () => {
       for (const item of assignments.filter(item => item.placement.destination === 'graveyard')) for (const entry of item.entries) if (present(entry)) await ctx.g.move(entry.card, 'graveyard');
     });
+    for (const item of assignments.filter(item => item.placement.destination === 'exile')) for (const entry of item.entries) if (present(entry)) await ctx.g.move(entry.card, 'exile');
     await ctx.g.withBattlefieldEntryBatch(async () => {
       for (const item of assignments.filter(item => item.placement.destination === 'battlefield')) for (const entry of item.entries) if (present(entry)) {
         await ctx.g.putPermanentOntoBattlefield(entry.card, effect.ownerSearch?owner:ctx.you, {tapped: !!item.placement.tapped});

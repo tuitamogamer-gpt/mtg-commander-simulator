@@ -1437,12 +1437,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // creatures must never be added merely because the useful pilot appears
   // late in stable order. Dynamic programming keeps the best tap-cost row for
   // each exact power total and stops extending a row once Crew is satisfied.
-  function minimalCrewPayment(game, player, cards, need, saddleV10=false) {
+  function minimalCrewPayment(game, player, cards, need, saddleV10=false,teamworkV14=false,evidenceV14=false) {
     const required = Math.max(0, Number(need) || 0);
     if (required === 0) return [];
     let states = new Map([[0, { power: 0, cost: 0, picks: [] }]]);
     for (const card of cards) {
-      const contribution = saddleV10?MTG.oracleSaddlePowerV10(card):game.vehicleCrewPower(card);
+      const contribution = evidenceV14?card.mv:teamworkV14?card.power:saddleV10?MTG.oracleSaddlePowerV10(card):game.vehicleCrewPower(card);
       if (contribution <= 0) continue;
       const tapCost = permanentGameValue(game, card, player) + 0.4;
       const next = new Map(states);
@@ -2420,7 +2420,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         actions.push({ kind: 'chooseCards', picks });
       }
       if (q.aiHint && q.aiHint.kind === 'crew' && Number.isFinite(q.aiHint.need)) {
-        const picks = minimalCrewPayment(game, player, ranked, q.aiHint.need,q.aiHint.saddleV10);
+        const picks = minimalCrewPayment(game, player, ranked, q.aiHint.need,q.aiHint.saddleV10,q.aiHint.teamworkV14,q.aiHint.evidenceV14);
         if (picks && picks.length >= (q.min || 0) && picks.length <= (q.max ?? ranked.length)) actions.push({ kind: 'chooseCards', picks });
       }
       for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) {
@@ -3104,6 +3104,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const hint = q.aiHint && q.aiHint.goal || '';
     if (q.aiHint?.deathReturn && target instanceof U.CardInst) return MTG.deathReturnTargetValue(game, player, target);
     if (target instanceof U.Player) {
+      if(hint==='exchange-life-v18'){
+        if(target===player)return 0;
+        const delta=target.life-player.life;
+        if(q.aiHint.maximumDifference!==undefined&&Math.abs(delta)>q.aiHint.maximumDifference)return 0;
+        return delta+(q.aiHint.drawLost?Math.max(0,-delta)*2:0);
+      }
       if (hint === 'proliferate') {const poison=target.poison||0,benefit=(target.counters?.energy||0)+(target.counters?.experience||0);return target===player?(poison?(-12-poison*3):(benefit?8:-100)):(poison?8+poison*2:0)-(benefit?8:0);}
       if (hint === 'drawSelf') return target === player ? 100 : -100;
       if (hint === 'discard') {
@@ -5176,7 +5182,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else if(q?.aiHint?.kind==='champion-v9')breakdown.choice=action.picks.length?20-permanentGameValue(game,action.picks[0],player):-20;
       else if (action.kind === 'chooseCards' && q && q.aiHint && q.aiHint.kind === 'crew') {
         const need = Math.max(0, Number(q.aiHint.need) || 0);
-        const power = action.picks.reduce((sum, card) => sum + (q.aiHint.saddleV10?MTG.oracleSaddlePowerV10(card):game.vehicleCrewPower(card)), 0);
+        const power = action.picks.reduce((sum, card) => sum + (q.aiHint.evidenceV14?card.mv:q.aiHint.teamworkV14?card.power:q.aiHint.saddleV10?MTG.oracleSaddlePowerV10(card):game.vehicleCrewPower(card)), 0);
         if (power < need) breakdown.choice = -1000;
         else {
           const tapCost = action.picks.reduce((sum, card) => sum + permanentGameValue(game, card, player), 0);
@@ -5188,7 +5194,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='c13Vault'){
+      if(hintKind==='splice-v11'){
+        const extra=action.option?.card;
+        breakdown.choice=extra?6-MTG.mv(extra.def.oracleSpliceV11.cost)*0.4:0;
+        for(const spec of extra?.def.targets||[]){
+          const best=Math.max(-20,...game.legalTargets(spec,q.aiHint.card,player).map(target=>targetValue(game,player,target,{src:q.aiHint.card,spec,aiHint:spec.aiHint})));
+          breakdown.choice+=best;
+        }
+      } else if(hintKind==='c13Vault'){
         breakdown.choice=action.value==='no'?10:0;
       } else if(hintKind==='tradeSecrets'){
         breakdown.choice=action.value===(player.hand.length<7&&player.library.length>4?'yes':'no')?10:0;

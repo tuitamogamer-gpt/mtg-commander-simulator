@@ -1,23 +1,26 @@
 // Closed v8 effect descriptors. Oracle text is parsed only by the importer.
 ((MTG) => {
   const actions = new Set(['resolution-cost', 'player-counter', 'group-sequence', 'delayed-object', 'remove-from-combat', 'return-died-source-v8', 'change-characteristics-v8', 'sacrifice-target-v8']);
-  const cardKinds = new Set(['discard', 'sacrifice', 'return', 'tap', 'exile', 'library', 'reveal', 'remove-counter', 'process-exile']);
-  const amountKinds = new Set(['count', 'source-stat', 'explicit-source-stat', 'target-stat', 'target-count', 'affected-player-count', 'event-card-stat', 'event-amount', 'turn-count', 'source-counters', 'sum', 'max-stat', 'devotion', 'party', 'died-count', 'source-attachments', 'creature-total-power', 'opponent-count', 'opponent-poison-total']);
+  const cardKinds = new Set(['blight-v14','discard', 'sacrifice', 'return', 'tap', 'exile', 'library', 'reveal', 'remove-counter', 'process-exile']);
+  const amountKinds = new Set(['cast-x-v14', 'count', 'source-stat', 'explicit-source-stat', 'target-stat', 'target-count', 'affected-player-count', 'event-card-stat', 'event-amount', 'turn-count', 'source-counters', 'sum', 'max-stat', 'devotion', 'party', 'died-count', 'source-attachments', 'creature-total-power', 'opponent-count', 'opponent-poison-total']);
   const amountValid = value => Number.isInteger(value) && value >= 0 || value && amountKinds.has(value.kind) &&
     (value.kind !== 'sum' || Array.isArray(value.values) && value.values.every(amountValid));
 
   function validate(cost) {
     if (!cost || typeof cost !== 'object') throw new Error('Missing resolution payment');
+    if(cost.randomV16!==undefined&&(cost.randomV16!==true||cost.kind!=='discard'||cost.zone!=='hand'||cost.n!==1))throw new Error('Invalid random discard payment');
+    if(cost.kind==='blight-v14'&&(cost.zone!=='battlefield'||cost.n!==1||!Number.isSafeInteger(cost.countersV14)||cost.countersV14<1))throw Error('Invalid blight payment');
     if (cost.kind === 'alternatives') {
       if (!Array.isArray(cost.choices) || cost.choices.length < 2 || cost.choices.some(row => row.kind === 'alternatives')) throw new Error('Invalid payment alternatives');
       cost.choices.forEach(validate); return;
     }
     if (cost.kind === 'mana') {
+      if(cost.lifeV14!==undefined&&(!Number.isSafeInteger(cost.lifeV14)||cost.lifeV14<0||!/^\{[0-9WUBRGC]+\}(?:\{[0-9WUBRGC]+\})*$/.test(cost.mana)))throw new Error('Invalid joint mana and life payment');
       if (typeof cost.mana !== 'string' || !/^(?:\{(?:\d+|[WUBRGCX]|[WUBRG]\/[WUBRG]|2\/[WUBRG]|[WUBRG]\/P)\})+$/.test(cost.mana) ||
           /\{X\}/.test(cost.mana) && !(cost.chooseX === true || amountValid(cost.xValue)) || cost.xMax !== undefined && !amountValid(cost.xMax)) throw new Error('Unsupported resolution mana');
       return;
     }
-    if (cost.kind === 'draw') {
+    if (cost.kind === 'draw'||cost.kind==='damage-v14') {
       if (!amountValid(cost.n)) throw new Error('Invalid draw payment');
       return;
     }
@@ -27,7 +30,7 @@
     }
     if (!cardKinds.has(cost.kind) || !['battlefield', 'hand', 'graveyard', 'exile'].includes(cost.zone) ||
         cost.sameOwner !== undefined && cost.kind !== 'process-exile' ||
-        !(Number.isInteger(cost.n) && cost.n >= 0 || cost.n === 'all' && cost.kind === 'discard' && cost.zone === 'hand')) throw new Error('Unsupported resolution card payment');
+        !(Number.isInteger(cost.n) && cost.n >= 0 || cost.n === 'all' && (cost.kind === 'discard' && cost.zone === 'hand'||cost.kind==='exile'&&cost.zone==='graveyard'))) throw new Error('Unsupported resolution card payment');
     if (cost.kind === 'sacrifice' && cost.zone !== 'battlefield' || cost.kind === 'tap' && cost.zone !== 'battlefield' ||
         cost.kind === 'discard' && cost.zone !== 'hand' || cost.kind === 'remove-counter' && (cost.zone !== 'battlefield' || typeof cost.counter !== 'string') ||
         cost.kind === 'reveal' && cost.zone !== 'hand' || cost.kind === 'library' && !['hand', 'graveyard'].includes(cost.zone) ||
@@ -39,11 +42,11 @@
 
   function plan(ctx, cost, helpers) {
     if (cost.kind === 'mana') return { cost, x: cost.xValue !== undefined ? helpers.amount(cost.xValue, ctx) : 0,
-      payable: ctx.g.canPayMana(ctx.you, MTG.parseCost(cost.mana), null, { xVal: cost.xValue !== undefined ? helpers.amount(cost.xValue, ctx) : 0 }) };
+      payable: (!cost.lifeV14||ctx.g.canPayLife(ctx.you,cost.lifeV14))&&ctx.g.canPayMana(ctx.you, MTG.parseCost(cost.mana), null, { reservedLife:cost.lifeV14||0,xVal: cost.xValue !== undefined ? helpers.amount(cost.xValue, ctx) : 0 }) };
     if (cost.kind === 'life') {
-      const n = helpers.amount(cost.n, ctx); return { cost, n, payable: n === 0 || ctx.you.life >= n };
+      const n = helpers.amount(cost.n, ctx); return { cost, n, payable: ctx.g.canPayLife?ctx.g.canPayLife(ctx.you,n):n === 0 || ctx.you.life >= n };
     }
-    if (cost.kind === 'draw') return { cost, n: helpers.amount(cost.n, ctx), payable: true };
+    if (cost.kind === 'draw'||cost.kind==='damage-v14') return { cost, n: helpers.amount(cost.n, ctx), payable: true };
     const self = cost.target === 'self';
     let cards = self ? (cost.zone === 'battlefield' ? helpers.sameSource(ctx) : ctx.src.zone === cost.zone && ctx.src.zoneVersion === ctx.sourceZoneVersion) ? [ctx.src] : []
       : cost.target !== undefined ? helpers.subjects(ctx, cost.target) : cost.kind === 'process-exile' ? ctx.g.players.filter(player => player !== ctx.you && !player.lost).flatMap(player => player.exile)
@@ -57,6 +60,7 @@
       (cost.kind !== 'sacrifice' || ctx.g.canSacrifice(card)) && (cost.kind !== 'tap' || !card.tapped) &&
       (cost.kind !== 'remove-counter' || (card.counters[cost.counter] || 0) >= cost.n) &&
       (!filter || filter(ctx.g, card, ctx.you, ctx.src)));
+    if(cost.topmostV14)cards=cards.slice(-1);
     const n = cost.n === 'all' ? cards.length : cost.kind === 'remove-counter' ? 1 : cost.n;
     const ownerGroups = cost.kind === 'process-exile' && cost.sameOwner
       ? [...new Set(cards.map(card => card.owner))].map(owner => ({ owner, cards: cards.filter(card => card.owner === owner) })).filter(group => group.cards.length >= n)
@@ -117,7 +121,8 @@
         if (!Number.isInteger(xVal) || xVal < 0 || xVal > max) return false;
       }
       const options = await manaOptions(ctx, cost, xVal);
-      const paid = options !== null && await ctx.g.payMana(ctx.you, MTG.parseCost(cost.mana), null, options);
+      const paid = options !== null && await ctx.g.payMana(ctx.you, MTG.parseCost(cost.mana), null, {...options,reservedLife:cost.lifeV14||0});
+      if(paid&&cost.lifeV14)await ctx.g.loseLife(ctx.you,cost.lifeV14,'Oracle resolution payment');
       if (paid) ctx.oraclePaymentCapture = { kind: cost.kind, count: 0, cards: [] };
       if (paid && /\{X\}/.test(cost.mana)) ctx.x = xVal;
       return paid;
@@ -125,6 +130,9 @@
     if (cost.kind === 'life') {
       ctx.oraclePaymentCapture = { kind: cost.kind, count: current.n, cards: [] };
       await ctx.g.loseLife(ctx.you, current.n, 'Oracle resolution payment'); return true;
+    }
+    if(cost.kind==='damage-v14'){
+      ctx.oraclePaymentCapture={kind:cost.kind,count:current.n,cards:[]};await helpers.damage(ctx,current.n);return true;
     }
     if (cost.kind === 'draw') {
       // CR 121.3 permits this choice even with an empty library; the failure
@@ -146,7 +154,8 @@
       available = group.cards;
     }
     let chosen = available;
-    if (cost.n !== 'all' && cost.target === undefined && current.n > 0) {
+    if(cost.randomV16)chosen=MTG.shuffle(available.slice(),ctx.g.rnd).slice(0,current.n);
+    else if (cost.n !== 'all' && cost.target === undefined && current.n > 0) {
       chosen = await ctx.you.controller.decide(ctx.g, {
         type: 'chooseCards', player: ctx.you, from: available, min: current.n, max: current.n,
         prompt: ctx.src.name + ': choose cards to ' + cost.kind,
@@ -167,7 +176,8 @@
     // checked. Replacement effects still count as paying it (CR 118.11-12).
     const capture = { kind: cost.kind, count: cost.kind === 'remove-counter' ? cost.n : chosen.length,
       cards: chosen.map(card => ({ card, before: ctx.g.snapshot(card), zoneVersionBefore: card.zoneVersion })) };
-    if (cost.kind === 'sacrifice') {
+    if(cost.kind==='blight-v14')await ctx.g.addM1(chosen[0],cost.countersV14,ctx.you,true);
+    else if (cost.kind === 'sacrifice') {
       ctx.sacd = chosen.map(card => ctx.g.snapshot(card));
       await ctx.g.sacrificeMany(ctx.you, chosen);
     } else if (cost.kind === 'discard') await ctx.g.discard(ctx.you, chosen);

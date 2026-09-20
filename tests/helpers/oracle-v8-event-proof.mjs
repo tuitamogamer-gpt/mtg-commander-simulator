@@ -178,7 +178,7 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     const separateSource=f.selfAttacking&&f.subject==='another'?1:0;
     const count=f.totalMax===1?1:Math.max(f.totalMin||1,(f.minMatching||1)+separateSource,f.minOtherThanAttached?f.minOtherThanAttached+1:1),attackers=[];
     if(f.selfAttacking||f.subject==='self')attackers.push(source);
-    if(f.attachedAttacking)attackers.push(game.byIid(source.attachedTo));
+    if(f.attachedAttacking||f.subject==='attached')attackers.push(game.byIid(source.attachedTo));
     while(attackers.length<count)attackers.push(h.stageGenericTarget(MTG,ctx,{what:'creature',controller:player===a?'you':'opponent',...f.target},'v8-attack-'+attackers.length));
     for(const attacker of attackers){
       attacker.attacking=f.defendingYou||f.declaredDefender==='you'?a:player===a?b:a;

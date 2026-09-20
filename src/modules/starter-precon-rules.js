@@ -92,10 +92,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // A targeting surcharge is a cost increase, not a Ward trigger.
   G.starterTargetTax = function (player, spell, opts = {}) {
-    const sources = this.bf().filter(c => c.ctrl !== player && c.def.starterFlyingTargetTax && !c.cur?.abilitiesDisabled);
+    const sources = this.bf().filter(c => c.ctrl !== player && (c.def.starterFlyingTargetTax||c.def.oracleTargetTaxV16) && !c.cur?.abilitiesDisabled);
     if (!sources.length) return 0;
-    const tax = targets => sources.reduce((sum, source) => sum + [...new Set(targets.flat(Infinity))].filter(c =>
-      c instanceof M.CardInst && c.zone === 'battlefield' && c.ctrl === source.ctrl && c.is('Creature') && c.kw('flying')).length * 2, 0);
+    const tax = targets => sources.reduce((sum, source) => sum+(source.def.oracleTargetTaxV16?source.def.oracleTargetTaxV16(this,source,player,targets.flat(Infinity)):0)+(source.def.starterFlyingTargetTax?[...new Set(targets.flat(Infinity))].filter(c =>
+      c instanceof M.CardInst && c.zone === 'battlefield' && c.ctrl === source.ctrl && c.is('Creature') && c.kw('flying')).length * 2:0), 0);
     if (opts.targets !== undefined) return tax(opts.targets);
     const targets = (this.spellTargetSpecs(spell, opts, player) || []).flatMap(spec => this.legalTargets(spec, spell, player));
     return targets.length ? Math.min(...targets.map(c => tax([c]))) : 0;

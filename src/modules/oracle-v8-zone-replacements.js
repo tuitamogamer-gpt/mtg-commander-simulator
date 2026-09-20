@@ -17,6 +17,7 @@
     if(operation.scope==='opponent-creature')return creature&&snap.ctrl!==ctrl;
     if(operation.scope==='instant-or-sorcery')return !card.isToken&&types(card,snap).some(type=>type==='Instant'||type==='Sorcery');
     if(operation.scope==='opponent-owned-creature-card')return !card.isToken&&creature&&card.owner!==ctrl;
+    if(operation.scope==='opponent-owned-card-v19')return !card.isToken&&card.owner!==ctrl;
     if(operation.scope==='damaged-by-source')return creature&&M.OracleV8DamageHistory.damaged(game,source,{zoneVersion:sourceVersion},card,snap,'self');
     return operation.scope==='all';
   }
@@ -73,7 +74,7 @@
     const allowed=['kind','scope','from','to','placement','reveal','creatureOnly','contract'];
     if(operation.kind!=='zone-replacement-v8'||operation.contract!=='ordered-zone-replacement'||Object.keys(operation).some(key=>!allowed.includes(key)))throw new Error('Unknown zone replacement descriptor');
     const common=operation.to==='exile'&&!operation.placement&&!operation.reveal;
-    const global=common&&(['all','instant-or-sorcery','opponent-owned-creature-card'].includes(operation.scope)&&operation.from==='any'||['all','opponent-creature','damaged-by-source'].includes(operation.scope)&&operation.from==='battlefield')&&!operation.creatureOnly;
+    const global=common&&(['all','instant-or-sorcery','opponent-owned-creature-card','opponent-owned-card-v19'].includes(operation.scope)&&operation.from==='any'||['all','opponent-creature','damaged-by-source'].includes(operation.scope)&&operation.from==='battlefield')&&!operation.creatureOnly;
     const self=operation.scope==='self'&&(operation.from==='any'&&operation.to==='library'&&operation.placement==='shuffle'&&operation.reveal===true&&!operation.creatureOnly||operation.from==='battlefield'&&operation.creatureOnly===true&&(common||operation.to==='library'&&['top','bottom'].includes(operation.placement)&&!operation.reveal));
     if(!global&&!self)throw new Error('Unsupported zone replacement semantics');
     return operation;

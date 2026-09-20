@@ -12,22 +12,22 @@ CSV files are UTF-8, sorted by card name without locale-specific collation, and 
 
 ## Current inventory
 
-Generic Oracle import state: **2026-09-20T00:16:55.906Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
+Generic Oracle import state: **2026-09-20T21:53:30.369Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 23,749 |
-| Generic Oracle imports (198 batches of 100) | 19,800 |
+| Runtime card definitions | 24,749 |
+| Generic Oracle imports (208 batches of 100) | 20,800 |
 | Dedicated/manual Oracle imports | 58 |
 | Legacy definitions | 3,891 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 23,748 |
+| Definitions allowed in arbitrary deck imports | 24,748 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 23,704 |
-| Source Oracle IDs still absent from the runtime | 7,080 |
-| Of those: parser-eligible but not imported | 1 |
-| Of those: deferred by the current semantic compiler | 7,079 |
+| Source Oracle IDs represented by a runtime name or face alias | 24,704 |
+| Source Oracle IDs still absent from the runtime | 6,080 |
+| Of those: parser-eligible but not imported | 8 |
+| Of those: deferred by the current semantic compiler | 6,072 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -39,40 +39,39 @@ The comparison universe is exactly `games.includes('paper') && legalities.comman
 
 Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 26 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
-Current parser-eligible, unimported names: `Zurgo's Vanguard`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
+Current parser-eligible, unimported names: `Warbringer`, `Weathered Runestone`, `Wild Swing`, `Wilt in the Heat`, `With Great Power . . .`, `Witherbloom, the Balancer`, `Wolverine, Claws Out`, `You Cannot Pass!`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 3,024 |
-| `spell-needs-explicit-semantics` | 1,748 |
-| `noncreature-needs-explicit-semantics` | 1,564 |
-| `double-faced-card-needs-complete-front-semantics` | 223 |
-| `land-needs-explicit-semantics` | 84 |
-| `saga-chapter-needs-complete-semantics` | 73 |
+| `oracle-needs-explicit-semantics` | 2,611 |
+| `spell-needs-explicit-semantics` | 1,399 |
+| `noncreature-needs-explicit-semantics` | 1,363 |
+| `double-faced-card-needs-complete-front-semantics` | 219 |
+| `land-needs-explicit-semantics` | 78 |
 | `complex-layout` | 70 |
+| `saga-chapter-needs-complete-semantics` | 69 |
 | `double-faced-card-needs-face-transition-semantics` | 48 |
-| `adventure-needs-complete-face-semantics` | 37 |
-| `unbound-event-reference` | 34 |
-| `double-faced-card-needs-complete-back-semantics` | 30 |
-| `split-needs-complete-face-semantics` | 24 |
+| `adventure-needs-complete-face-semantics` | 33 |
+| `unbound-event-reference` | 29 |
+| `double-faced-card-needs-complete-back-semantics` | 28 |
+| `split-needs-complete-face-semantics` | 22 |
 | `unsupported-split-faces` | 21 |
-| `dynamic-power-toughness` | 20 |
-| `unbound-object-reference-v10` | 18 |
-| `mana-ability-needs-explicit-semantics` | 12 |
-| `unbound-target-damage-source` | 11 |
-| `unbound-event-amount` | 9 |
+| `dynamic-power-toughness` | 19 |
+| `unbound-object-reference-v10` | 11 |
+| `mana-ability-needs-explicit-semantics` | 9 |
+| `unbound-target-damage-source` | 9 |
+| `requires-import-and-executable-proof` | 8 |
+| `unbound-event-amount` | 8 |
 | `overload-body-needs-complete-semantics` | 5 |
-| `transform-land-face-transition-needs-proof` | 4 |
+| `transform-land-face-transition-needs-proof` | 5 |
 | `unsupported-mana-cost` | 4 |
-| `prepare-needs-complete-face-semantics` | 3 |
 | `saga-other-rules-unsupported` | 3 |
 | `backup-grant-needs-semantics` | 2 |
-| `leveler-band-needs-complete-semantics` | 2 |
+| `prepare-needs-complete-face-semantics` | 2 |
 | `unbound-sacrificed-stat` | 2 |
-| `unbound-target-X` | 2 |
 | `backup-other-rules-unsupported` | 1 |
 | `conflicting-hand-abilities` | 1 |
-| `requires-import-and-executable-proof` | 1 |
+| `unbound-target-X` | 1 |
 
 These are compiler queue reasons, not a claim that each card is impossible to implement. The complete per-card list is in [remaining-cards.csv](catalog/remaining-cards.csv).
 
@@ -82,7 +81,7 @@ These are compiler queue reasons, not a claim that each card is impossible to im
 - Bulk ID: `27bf3214-1271-490b-bdfe-c0be6c23d02e`.
 - Pinned update: **2026-08-30T09:01:56.964+00:00**.
 - Compressed source SHA-256: `a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528`.
-- Current semantic compiler: **v10**.
+- Current semantic compiler: **v19**.
 
 The original compressed snapshot is intentionally not committed. Use the same archived `.jsonl.gz` file and hash. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests.
 

@@ -24,7 +24,24 @@ function readAppModules() {
   const entry = fs.readFileSync(appPath, 'utf8');
   const imports = [...entry.matchAll(/import ['"](.+?)['"];?/g)].map(match => match[1]);
   if (!imports.length) return entry;
-  return imports.map(specifier => fs.readFileSync(path.resolve(path.dirname(appPath), specifier), 'utf8')).join('\n');
+  // Keep named-import helpers scoped just as they are in the browser modules.
+  // The headless VM consumes one script, so bind their actual exported code
+  // inside a closure rather than dropping the dependency or its behavior.
+  const readModule = (file, ancestors = []) => {
+    if (ancestors.includes(file)) throw new Error('Circular audit module: ' + file);
+    const code = fs.readFileSync(file, 'utf8');
+    return code.replace(/^import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"];?\s*$/gm, (_, names, specifier) => {
+      const bindings = names.split(',').map(name => name.trim()).filter(Boolean).map(name => {
+        const match = /^(\w+)(?:\s+as\s+(\w+))?$/.exec(name);
+        if (!match) throw new Error('Unsupported audit import: ' + name);
+        return { exported: match[1], local: match[2] || match[1] };
+      });
+      const dependency = readModule(path.resolve(path.dirname(file), specifier), [...ancestors, file])
+        .replace(/^export\s+(?=(?:async\s+)?function\s|(?:const|let|class)\s)/gm, '');
+      return `const {${bindings.map(row => row.exported + ':' + row.local).join(',')}} = (() => {\n${dependency}\nreturn {${bindings.map(row => row.exported).join(',')}};\n})();`;
+    });
+  };
+  return imports.map(specifier => readModule(path.resolve(path.dirname(appPath), specifier))).join('\n');
 }
 
 export function readSource() {

@@ -94,6 +94,12 @@ let additionalGrammar = null;
 export const allowsDayNight = () => additionalGrammar?.dayNight === true;
 export const preservesPrintedParagraphs = () => additionalGrammar?.printedParagraphs === true;
 export const allowsSnow = () => additionalGrammar?.snowMana === true;
+export const prefersExactCreatureLines = () => additionalGrammar?.exactCreatureLines === true;
+export const prefersExactEffectLines = () => additionalGrammar?.exactEffectLines === true;
+export const allowsTransformationEventsV12 = () => additionalGrammar?.transformationEventsV12 === true;
+export const allowsTargetedStackV13 = () => additionalGrammar?.targetedStackV13 === true;
+export const allowsObjectEventsV13 = () => additionalGrammar?.objectEventsV13 === true;
+export const allowsBindingScopesV15 = () => additionalGrammar?.bindingScopesV15 === true;
 export const additionalKeywords = () => additionalGrammar?.grantableKeywords || [];
 export function withAdditionalGrammar(grammar, compile) {
   const previous = additionalGrammar;
