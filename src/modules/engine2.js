@@ -3657,7 +3657,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     this.stack.push(so);
     if (this.diplomacyRecordRemovalAttempt) this.diplomacyRecordRemovalAttempt(p, card, so.targets);
-    this.note('cardPlayed', { card, player: p, kind: 'spell' });
+    this.note('cardPlayed', { card, player: p, kind: 'spell',
+      spellTypes: ['Instant', 'Sorcery'].filter(type => this.castHasType(card, castOpts, type)) });
     this.note('stack', {});
     this.lg(`${U.playerVerb(p, 'cast', 'casts')} ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
     await this.pace(p.isAI ? 1000 : 150);

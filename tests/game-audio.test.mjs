@@ -42,17 +42,33 @@ test('audio preferences validate corrupt storage and clamp independent levels', 
   assert.equal(p.track, 'moonlit-grove'); assert.equal(p.music, 0); assert.equal(p.effects, 38); assert.equal(p.muted, false);
   assert.equal(U.normalizeAudioPreferences({ music: 500 }).music, 100);
 });
-test('only public milestones produce effects; routine cards and outcomes stay silent', () => {
+test('public actions produce distinct cues without inspecting hidden identities', () => {
   const effect = props => cues({ type: 'gameEffect', ...props });
   assert.deepEqual(cues({ type: 'cardPlayed', kind: 'land' }), []);
   assert.deepEqual(cues({ type: 'cardPlayed', kind: 'spell' }), []);
-  assert.deepEqual(cues({ type: 'combat', kind: 'attackersDeclared', count: 10 }), []);
-  assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy' }), []);
+  assert.deepEqual(cues({ type: 'combat', kind: 'attackersDeclared', count: 10 }), ['combat']);
+  assert.deepEqual(cues({ type: 'combat', kind: 'attackersDeclared', count: 0 }), []);
+  assert.deepEqual(cues({ type: 'combat' }), []);
+  assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy' }), ['instant']);
+  assert.deepEqual(cues({ type: 'dungeon', dungeon: 'Undercity', room: 'Secret Entrance' }), ['venture']);
+  for (const type of ['Instant', 'Sorcery']) {
+    assert.deepEqual(cues({ type: 'cardPlayed', kind: 'spell', spellTypes: [type] }), ['instant']);
+  }
   assert.deepEqual(effect({ kind: 'damage', amount: 0 }), []);
   assert.deepEqual(effect({ kind: 'damage', amount: 9, combat: true }), []);
   assert.deepEqual(effect({ kind: 'damage', amount: 10, combat: true }), ['heavy-impact']);
   assert.deepEqual(effect({ kind: 'damage', amount: 5, source: { colors: ['R'] } }), []);
   const hidden = { faceDown: true, get colors() { throw new Error('Hidden identity read'); }, get cur() { throw new Error('Hidden identity read'); } };
+  assert.deepEqual(cues({ type: 'cardPlayed', kind: 'spell', card: hidden, get spellTypes() { throw new Error('Hidden types read'); } }), []);
+  assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy', card: hidden }), []);
+  assert.deepEqual(effect({ kind: 'counterChange', card: Object.assign(Object.create(hidden), { zone: 'battlefield' }), amount: 2 }), ['counters']);
+  assert.deepEqual(effect({ kind: 'counterChange', card: { zone: 'hand' }, amount: 2 }), []);
+  assert.deepEqual(effect({ kind: 'counterChange', card: { zone: 'battlefield' }, amount: 0 }), []);
+  assert.deepEqual(effect({ kind: 'playerCounter', player: { idx: 0 }, amount: 1 }), ['counters']);
+  assert.deepEqual(effect({ kind: 'playerCounter', player: { idx: 0 }, amount: -1 }), []);
+  assert.deepEqual(effect({ kind: 'proliferate', count: 2 }), ['counters']);
+  assert.deepEqual(effect({ kind: 'proliferate', count: 0 }), []);
+  assert.deepEqual(cues({ type: 'effectNotice', kind: 'counter', card: { zone: 'battlefield' }, n: 3 }), ['counters']);
   assert.deepEqual(effect({ kind: 'damage', amount: 5, source: hidden }), []);
   assert.deepEqual(effect({ kind: 'damage', amount: 10, source: hidden }), ['explosion']);
   assert.deepEqual(cues({ type: 'battlefieldArrival', kind: 'powerhouse', card: hidden }), []);
@@ -62,7 +78,7 @@ test('only public milestones produce effects; routine cards and outcomes stay si
   assert.deepEqual(effect({ kind: 'boardWipe', count: 3 }), ['explosion']);
   assert.deepEqual(cues({ type: 'gameover' }), ['victory']);
   assert.deepEqual(effect({ kind: 'damagePrevented', amount: 15 }), []);
-  assert.deepEqual(effect({ kind: 'counterspell' }), []);
+  assert.deepEqual(effect({ kind: 'counterspell' }), ['counterspell']);
   assert.deepEqual(effect({ kind: 'zoneMove', fromZone: 'battlefield', toZone: 'graveyard' }), []);
   assert.deepEqual(effect({ kind: 'zoneMove', fromZone: 'battlefield', toZone: 'exile' }), []);
 });
@@ -126,6 +142,103 @@ test('a major effect retires a quieter tail when the voice limit is full', async
   assert.equal(f.audio.voices.size, 5);
   assert.equal(f.audio.history.at(-1).id, 'explosion');
   f.audio.dispose();
+});
+
+test('counter batches coalesce, counterspells take priority and previews can be repeated', async () => {
+  const f = audioFixture(); await f.audio.unlock(); await flush();
+  for (let n = 0; n < 20; n++) f.audio.handle({ type: 'gameEffect', kind: 'counterChange', card: { zone: 'battlefield' }, amount: 1 }, f.game);
+  await flush();
+  assert.deepEqual(Array.from(f.audio.history, item => item.id), ['counters']);
+  f.audio.handle({ type: 'gameEffect', kind: 'proliferate', count: 20 }, f.game);
+  await flush(); assert.equal(f.audio.history.length, 1);
+  f.audio.handle({ type: 'cardPlayed', kind: 'spell', spellTypes: ['Instant'] }, f.game);
+  f.audio.handle({ type: 'gameEffect', kind: 'counterspell' }, f.game);
+  await flush(); assert.equal(f.audio.history.at(-1).id, 'counterspell');
+  await f.audio.preview('venture'); await f.audio.preview('venture');
+  assert.deepEqual(Array.from(f.audio.history.slice(-2), item => item.id), ['venture', 'venture']);
+  await f.audio.preview('../unknown'); assert.equal(f.audio.history.length, 4);
+  f.audio.configure({ muted: true }); await f.audio.preview('combat');
+  assert.equal(f.audio.history.length, 4);
+  f.audio.dispose();
+});
+
+test('paid instants, Adventures, successful counters, dungeon rooms and proliferate emit usable cues', async () => {
+  const M = loadEngine(), events = [];
+  const game = new M.Game({ seed: 9078, paced: false, onEvent: event => events.push(event) });
+  let opponent;
+  const controller = { decide: async (_g, q) => q.type === 'priority' ? { kind: 'pass' }
+    : q.type === 'chooseOption' ? q.options[0].key
+      : q.type === 'chooseTargets' ? (q.spec?.what === 'proliferate' ? q.candidates : [opponent]) : [] };
+  const player = game.addPlayer('Caster', { name: 'Quick Draw' }, controller, false);
+  opponent = game.addPlayer('Opponent', { name: 'Elven Council' }, controller, false);
+  game.turnPlayer = player; game.turnNo = 5; game.phase = 'main1'; game.step = 'main';
+  // Keep paid spells on the Stack so this fixture can counter them explicitly.
+  game.priorityRound = async () => {};
+  const put = (name, zone = 'hand') => {
+    const card = new M.CardInst(M.DEFS[name], player); card.zone = zone;
+    (zone === 'battlefield' ? game.battlefield : player[zone]).push(card); return card;
+  };
+  const opt = put('Opt');
+  assert.equal(await game.castSpell(player, opt, { from: 'hand' }), false);
+  assert.equal(events.some(event => cues(event).includes('instant')), false);
+  player.pool.U = 1;
+  assert.equal(await game.castSpell(player, opt, { from: 'hand' }), true);
+  assert.ok(events.some(event => event.type === 'cardPlayed' && cues(event).includes('instant')));
+  const spell = game.stack.at(-1); events.length = 0;
+  assert.equal(await game.counterStackObject(spell), true);
+  assert.ok(events.some(event => cues(event).includes('counterspell')));
+  events.length = 0;
+  assert.equal(await game.counterStackObject(spell), false);
+  assert.equal(events.some(event => cues(event).includes('counterspell')), false);
+  const giant = put('Bonecrusher Giant'); player.pool.R = 2;
+  assert.equal(await game.castSpell(player, giant, { from: 'hand', alt: { adventure: true, ...giant.def.adventure } }), true);
+  const adventure = events.find(event => event.type === 'cardPlayed');
+  assert.equal(giant.def.types.includes('Creature'), true);
+  assert.deepEqual(Array.from(adventure.spellTypes), ['Instant']);
+  assert.deepEqual(cues(adventure), ['instant']);
+  events.length = 0;
+  await game.venture(player);
+  assert.ok(events.some(event => cues(event).includes('venture')));
+  const permanent = put('Colossal Dreadmaw', 'battlefield'); game.recalc();
+  events.length = 0; game.addCounters(permanent, '+1/+1', 1);
+  assert.ok(events.some(event => cues(event).includes('counters')));
+  events.length = 0; await M.E.proliferate(game, player);
+  assert.equal(permanent.counters['+1/+1'], 2);
+  assert.ok(events.some(event => event.kind === 'proliferate' && cues(event).includes('counters')));
+});
+
+test('Live forwards action cues to both seats once and keeps face-down spells silent', () => {
+  const M = loadEngine(), heard = [[], []];
+  const game = new M.Game({ seed: 9079, paced: false });
+  const host = game.addPlayer('Host', { name: 'Host deck' }, null, false);
+  const guest = game.addPlayer('Guest', { name: 'Guest deck' }, null, false);
+  host.onlineSeat = 0; guest.onlineSeat = 1; game.turnPlayer = host;
+  class UI {
+    render() {} resolvePending() {} resolvePendingEntry() {} skipReactWindow() {} queueRender() {}
+  }
+  const live = { ...M, UI, audio: { attach() {}, unlock() {},
+    handle(event, view) { heard[view.viewer.onlineSeat].push(...cues(event)); } } };
+  const env = { MTG: live, window: {}, location: { href: 'http://localhost/' },
+    document: { querySelector: () => ({ style: {} }), body: { classList: { add() {} } } } };
+  vm.runInNewContext(readFileSync(new URL('../src/modules/multiplayer-arena.js', import.meta.url), 'utf8'), env);
+  const session = (seat, authority) => live.createOnlineArena({ authority, ui: new UI(),
+    client: { current: () => ({ you: seat }), subscribe: () => () => {} } });
+  const local = session(0, game), remote = session(1, null);
+  const snapshot = () => JSON.parse(JSON.stringify(M.onlineGameViewFor(game, guest)));
+  local.updateLocal(); remote.updateSnapshot(snapshot());
+  game.onEvent = event => local.publishEvent(event);
+  game.note('combat', { kind: 'attackersDeclared', count: 2 });
+  game.note('dungeon', { player: host, dungeon: 'Undercity', room: 'Secret Entrance' });
+  const spell = new M.CardInst(M.DEFS.Opt, host); spell.zone = 'graveyard'; host.graveyard.push(spell);
+  game.note('cardPlayed', { kind: 'spell', player: host, card: spell, spellTypes: ['Instant'] });
+  const hidden = new M.CardInst(M.DEFS.Opt, host); hidden.zone = 'exile'; hidden.faceDown = true; host.exile.push(hidden);
+  game.note('cardPlayed', { kind: 'spell', player: host, card: hidden, spellTypes: [] });
+  remote.updateSnapshot(snapshot());
+  assert.deepEqual(heard, [['combat', 'venture', 'instant'], ['combat', 'venture', 'instant']]);
+  assert.equal(remote.game.byIid(hidden.iid).name, 'Hidden card');
+  local.updateLocal(); remote.updateSnapshot(snapshot());
+  remote.eventCursor = null; remote.updateSnapshot(snapshot());
+  assert.deepEqual(heard, [['combat', 'venture', 'instant'], ['combat', 'venture', 'instant']]);
 });
 
 test('paid human and local-AI actions keep routine plays and prevented damage silent', async () => {

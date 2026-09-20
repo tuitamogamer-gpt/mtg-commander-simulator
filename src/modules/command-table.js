@@ -177,6 +177,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const pool = info.querySelector('.manapool');
         if (pool) label.append(pool);
         heading.append(info);
+        // Keep optional badges out of the portrait-sized grid column.
+        const badges = info.querySelectorAll('.memonarch, .playereffectsbadge, .dungeonbadge');
+        if (badges.length) {
+          const status = node('div', 'ct-player-status');
+          status.append(...badges);
+          heading.append(status);
+        }
       }
       myBoard.prepend(heading);
     }

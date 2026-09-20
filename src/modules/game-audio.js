@@ -8,7 +8,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     { id: 'astral-library', name: 'Astral Library', detail: 'Dusty keys · glass chimes · 68 BPM', tone: 'astral' },
     { id: 'ember-sanctum', name: 'Ember Sanctum', detail: 'Nylon guitar · warm embers · 74 BPM', tone: 'ember' },
   ].map(Object.freeze));
-  const EFFECTS = new Set(['summon', 'heavy-impact', 'explosion', 'victory']);
+  U.SOUND_EFFECTS = Object.freeze([
+    { id: 'combat', name: 'Combat', cooldown: 1200 },
+    { id: 'venture', name: 'Venture', cooldown: 1000 },
+    { id: 'counters', name: 'Counters & proliferate', cooldown: 900 },
+    { id: 'counterspell', name: 'Counterspell', cooldown: 900 },
+    { id: 'instant', name: 'Instant & sorcery', cooldown: 800 },
+    { id: 'summon', name: 'Major arrival', cooldown: 2500 },
+    { id: 'heavy-impact', name: 'Heavy impact', cooldown: 2500 },
+    { id: 'explosion', name: 'Explosion', cooldown: 2500 },
+    { id: 'victory', name: 'Game end', cooldown: 2500 },
+  ].map(Object.freeze));
+  const EFFECTS = new Map(U.SOUND_EFFECTS.map(effect => [effect.id, effect]));
   const level = (value, fallback) => typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.min(100, Math.round(value))) : fallback;
   U.normalizeAudioPreferences = raw => ({
@@ -19,12 +30,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // must not influence a sound, even on the controller's own device.
   U.audioCuesForEvent = event => {
     if (!event) return [];
-    // Routine card plays, attacks, removal and small effects are silent.
+    if (event.type === 'combat') return event.kind === 'attackersDeclared' && event.count > 0
+      ? [{ id: 'combat', priority: 2, volume: .7 }] : [];
+    if (event.type === 'dungeon') return [{ id: 'venture', priority: 3, volume: .8 }];
+    if (event.type === 'cardPlayed') {
+      if (event.kind !== 'spell' || event.card?.faceDown) return [];
+      // The engine supplies the public types of the chosen spell face. Reading
+      // the printed card would misclassify Adventures, split and face-down spells.
+      if (event.spellTypes?.includes('Instant')) return [{ id: 'instant', priority: 2, volume: .65 }];
+      if (event.spellTypes?.includes('Sorcery')) return [{ id: 'instant', priority: 1, volume: .55, rate: .85 }];
+      return [];
+    }
+    if (event.type === 'effectNotice') {
+      if (event.kind === 'spellCopy' && !event.card?.faceDown) return [{ id: 'instant', priority: 2, volume: .55, rate: 1.1 }];
+      if (event.kind === 'counter' && event.n > 0 && event.card?.zone === 'battlefield') {
+        return [{ id: 'counters', priority: 1, volume: .6 }];
+      }
+      return [];
+    }
     if (event.type === 'battlefieldArrival') return !event.card || event.card.faceDown ||
       !['commander', 'powerhouse'].includes(event.kind) ? [] : [{ id: 'summon', priority: 3 }];
     if (event.type === 'gameover') return [{ id: 'victory', priority: 4 }];
     if (event.type !== 'gameEffect') return [];
     const amount = Number(event.amount) || 0;
+    if (event.kind === 'counterspell') return [{ id: 'counterspell', priority: 4, volume: .8 }];
+    if (event.kind === 'proliferate' && event.count > 0) return [{ id: 'counters', priority: 2, volume: .6 }];
+    if (['counterChange', 'playerCounter'].includes(event.kind) && amount > 0) {
+      const target = event.card || event.target || event.player;
+      if (target?.zone === 'battlefield' || (!target?.zone && Number.isInteger(target?.idx))) {
+        return [{ id: 'counters', priority: 1, volume: .6 }];
+      }
+    }
     if (event.kind === 'damage' && amount >= 10) {
       return [{ id: event.combat ? 'heavy-impact' : 'explosion', priority: 3 }];
     }
@@ -88,7 +124,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!this.preferences.muted && this.preferences.effects > 0 && !this.preloaded) {
           this.preloaded = true;
           // Decode short effects once; music remains lazy and bounded.
-          void Promise.all([...EFFECTS].map(id => this.load('sfx/' + id).catch(() => null)));
+          void Promise.all([...EFFECTS.keys()].map(id => this.load('sfx/' + id).catch(() => null)));
         }
         void this.syncMusic(); if (!wasRunning) this.notify(); return true;
       } catch {
@@ -170,8 +206,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     enqueue(cue) {
       if (!EFFECTS.has(cue.id) || !this.canPlay()) return;
       const now = this.env.performance.now();
-      // Even milestone effects remain sparse during copies and large combats.
-      const gap = 2500;
+      // Coalesce counter batches and copies; retain longer gaps for big impacts.
+      const gap = EFFECTS.get(cue.id).cooldown;
       if (now - (this.recent.get(cue.id) ?? -Infinity) < gap) return;
       this.pending.set(cue.id, cue);
       if (this.batchTimer) return;
@@ -215,8 +251,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.env.clearTimeout(this.batchTimer); this.batchTimer = null; this.pending.clear();
       for (const source of this.voices) { try { source.stop(); } catch { /* Already ended. */ } }
     }
-    async preview() {
-      await this.unlock(); this.error = ''; this.enqueue({ id: 'summon', priority: 3 });
+    async preview(id = 'combat') {
+      if (!EFFECTS.has(id)) return;
+      await this.unlock(); this.error = '';
+      await this.play({ id, priority: 3, volume: .7 });
     }
     dispose() {
       this.attach(null); this.listeners.clear();

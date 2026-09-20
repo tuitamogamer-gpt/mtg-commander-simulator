@@ -2,12 +2,19 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { once } from 'node:events';
+import express from 'express';
+import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 const pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const out = `${root}output/game-audio/${process.env.BROWSER || 'chromium'}`; mkdirSync(out, { recursive: true });
 const browser = await pw[process.env.BROWSER || 'chromium'].launch({ headless: true });
+const server = process.env.GAME_URL ? null : express()
+  .use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }))
+  .use(express.static(root)).listen(0, '127.0.0.1');
+if (server) await once(server, 'listening');
 const checks = [], errors = [];
-const base = process.env.GAME_URL || 'http://127.0.0.1:65441';
+const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
 const manifest = JSON.parse(readFileSync(`${root}assets/audio/manifest.json`));
 const check = label => { checks.push(label); console.log('PASS ' + label); };
 let activePage;
@@ -21,7 +28,7 @@ try {
     const page = await context.newPage();
     activePage = page;
     page.on('pageerror', error => errors.push(error.message));
-    page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+    page.on('console', message => { if (message.type() === 'error') errors.push(`${message.text()} (${message.location().url})`); });
     page.on('response', response => { if (response.status() >= 400 && response.url().includes('/assets/audio/')) errors.push(response.url()); });
     const click = async locator => width === 390 ? locator.tap() : locator.click();
     await page.goto(base + '/?smokeDeck=Quick%20Draw&seed=9077&smokeScenario=audioFixture');
@@ -46,7 +53,12 @@ try {
     }
     await page.locator('#audio-music').fill('16'); await page.locator('#audio-effects').fill('35');
     await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
-    assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), 'summon');
+    assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), 'combat');
+    for (const id of ['venture', 'counters', 'counterspell', 'instant']) {
+      await page.locator('#audio-effect').selectOption(id);
+      await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
+      assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), id);
+    }
     await click(page.locator('.audiomute'));
     await page.waitForFunction(() => MTG.audio.preferences.muted, null, { timeout: 5000 });
     assert.equal(await page.locator('.audiopreview').isDisabled(), true);
@@ -87,11 +99,11 @@ try {
       MTG.audio.musicBus.disconnect(analyser);
       return { result, outputRms };
     }, manifest.tracks);
-    assert.equal(media.result.length, 7);
+    assert.equal(media.result.length, manifest.tracks.length);
     for (const item of media.result) { assert.ok(item.duration > .1 && item.peak > .015 && item.peak < .99, JSON.stringify(item)); }
     assert.ok(media.outputRms > .0001, 'The browser audio graph produces sound');
     writeFileSync(`${out}/${width}-media.json`, JSON.stringify(media, null, 2));
-    check(`${width}: all 7 MP3s decode, non-silent output, conservative peaks`);
+    check(`${width}: all ${manifest.tracks.length} MP3s decode, non-silent output, conservative peaks`);
     // Exercise the production onEvent callback through a normal human land play.
     const land = await page.evaluate(() => _ui.pending.q.lands[0].iid);
     const beforeLand = await page.evaluate(() => MTG.audio.history.length);
@@ -175,8 +187,8 @@ try {
     assert.equal(final.done, true); assert.equal(final.paid, 6); assert.equal(final.aiPaid, 6); assert.equal(final.aiZone, 'battlefield');
     assert.equal(final.combatLife, 34); assert.equal(final.preventedLife, 34);
     assert.equal(stackSeen, true); assert.equal(reviewSeen, true); assert.equal(final.fallback, false);
-    for (const id of ['summon', 'explosion']) assert.ok(final.cues.some(cue => cue.id === id), id);
-    assert.ok(final.cues.every(cue => ['summon', 'explosion'].includes(cue.id)), 'Routine combat, prevention and exile stay silent');
+    for (const id of ['summon', 'combat', 'explosion']) assert.ok(final.cues.some(cue => cue.id === id), id);
+    assert.ok(final.cues.every(cue => ['summon', 'combat', 'explosion'].includes(cue.id)), 'Small damage, prevention and ordinary exile stay silent');
     await page.screenshot({ path: `${out}/${width}-gameplay.png` });
     writeFileSync(`${out}/${width}-gameplay.json`, JSON.stringify(final, null, 2));
     writeFileSync(`${out}/${width}-state.json`, await page.evaluate(() => render_game_to_text()));
@@ -193,4 +205,5 @@ try {
 } finally {
   writeFileSync(`${out}/results.json`, JSON.stringify({ checks, errors }, null, 2));
   await browser.close();
+  if (server) await new Promise(resolve => server.close(resolve));
 }

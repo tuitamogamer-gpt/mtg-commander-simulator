@@ -487,6 +487,11 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
 #game.command-table .ct-player-head .ct-player-name { grid-area: name; }
 #game.command-table .ct-player-head .meinfo { display: contents !important; }
 #game.command-table .ct-player-head .meinfo > .playerlifetotals { grid-area: life; }
+#game.command-table .ct-player-status { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+#game.command-table .ct-player-status > * { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+#game.command-table .ct-player-status .memonarch { flex-shrink: 0; gap: 6px; padding: 6px 8px; white-space: nowrap; }
+#game.command-table .ct-player-status .memonarch > span { display: flex; flex: 0 0 auto; }
+#game.command-table .ct-player-status .memonarch b { font: 700 11px/1.2 var(--ds-font-body); letter-spacing: .06em; }
 #game.command-table .ct-player-head .zbtns { grid-area: zones; display: flex; gap: 5px; flex-wrap: wrap; margin: 0; }
 #game.command-table .ct-player-head .zbtn { min-height: 34px; gap: 5px; }
 #game.command-table .handtoolstitle { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }

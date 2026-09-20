@@ -94,6 +94,71 @@
       "seconds": 3.552653,
       "bytes": 42989,
       "sha256": "788d898bdd30a40cac6b2b49ccd3e384123ff5c525917e5c51ba069b0ec0a036"
+    },
+    {
+      "id": "combat",
+      "model": "mirelo_text_to_audio",
+      "duration": 1.3,
+      "kind": "sfx",
+      "prompt": "A single swift sword swing meeting a steel shield: a brief airy swish, one compact rounded metallic clash, and a short low resonant tail. Restrained fantasy tabletop combat cue, crisp immediate attack, no ringing high frequencies. Isolated sound effect on silence. Exactly one event, not a sequence. No music, no speech, no ambience. Game-ready audio.",
+      "jobId": "61104319-b932-408e-a8d8-2efa714ed330",
+      "generatedAt": "2026-09-20T10:56:35.887251Z",
+      "file": "assets/audio/sfx/combat.mp3",
+      "seconds": 1.277891,
+      "bytes": 16030,
+      "sha256": "aa37d100d30c33482df01f11bdc11a24c53c2257b979d07a1e6ffe1062a7e6ea"
+    },
+    {
+      "id": "venture",
+      "model": "mirelo_text_to_audio",
+      "duration": 2.0,
+      "kind": "sfx",
+      "prompt": "A single ancient stone dungeon doorway unlocking with a soft stone shift and a tiny ascending magical shimmer revealing a new room. Intimate mysterious fantasy discovery cue with a gentle low pulse, immediate onset and a short fading tail. Isolated sound effect on silence. Exactly one event, not a sequence. No music, no speech, no ambience. Game-ready audio.",
+      "jobId": "070ca59e-aaa0-4d6d-a9fe-c643384c791f",
+      "generatedAt": "2026-09-20T10:57:29.158993Z",
+      "file": "assets/audio/sfx/venture.mp3",
+      "seconds": 2.012494,
+      "bytes": 25121,
+      "sha256": "6c4f6a9406f49e00e5f7bc5c4ac5e67612c52751e3264982788a3eddf2e7233a"
+    },
+    {
+      "id": "counters",
+      "model": "mirelo_text_to_audio",
+      "duration": 1.1,
+      "kind": "sfx",
+      "prompt": "A single enchanted glass token clicking into place, a soft tactile tick blooming into a tiny bright crystalline sparkle. Subtle satisfying fantasy game upgrade cue, compact immediate attack, warm and delicate rather than piercing. Isolated sound effect on silence. Exactly one event, not a sequence. No music, no speech, no ambience. Game-ready audio.",
+      "jobId": "f025e8ef-d26f-45ab-a033-a38c673607ad",
+      "generatedAt": "2026-09-20T10:57:39.087168Z",
+      "file": "assets/audio/sfx/counters.mp3",
+      "seconds": 0.234127,
+      "bytes": 3492,
+      "sha256": "054f9e55c3e7aa2f5a2d518866f8abd979ea72d1915392ee64b7860b194321fe"
+    },
+    {
+      "id": "counterspell",
+      "model": "mirelo_text_to_audio",
+      "duration": 1.6,
+      "kind": "sfx",
+      "prompt": "A single magical spell being abruptly nullified: a fast inward suction whoosh meeting a rounded arcane snap, followed by a delicate descending crystalline dissolve into silence. Clear decisive fantasy cancellation cue, short and controlled without a loud explosion. Isolated sound effect on silence. Exactly one event, not a sequence. No music, no speech, no ambience. Game-ready audio.",
+      "jobId": "2f597c45-b905-4201-b72f-ff396b4fde03",
+      "generatedAt": "2026-09-20T10:57:46.016583Z",
+      "file": "assets/audio/sfx/counterspell.mp3",
+      "seconds": 1.53,
+      "bytes": 19165,
+      "sha256": "a5666abe6ead0dd73286d158aa3b149f96bf546a6fc3956a1bd5edc46c86859f"
+    },
+    {
+      "id": "instant",
+      "model": "mirelo_text_to_audio",
+      "duration": 1.0,
+      "kind": "sfx",
+      "prompt": "A single quick arcane spell cast: immediate soft finger-snap-like magical spark, a nimble airy energy swoosh, and a tiny luminous chime tail. Fast precise fantasy card-game cue, warm clean transient and no piercing treble. Isolated sound effect on silence. Exactly one event, not a sequence. No music, no speech, no ambience. Game-ready audio.",
+      "jobId": "86409fba-5302-402b-9aa7-1d52df1449be",
+      "generatedAt": "2026-09-20T10:57:55.924292Z",
+      "file": "assets/audio/sfx/instant.mp3",
+      "seconds": 1.021678,
+      "bytes": 13209,
+      "sha256": "11c2a4b59a43a38da3383b8d80ef614a9e4b4d4c6bd113e372d67dc125b1dfd4"
     }
   ]
 }
