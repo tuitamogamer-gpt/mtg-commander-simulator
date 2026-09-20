@@ -111,7 +111,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (Object.keys(overrides).length) identity.copyOverrides = overrides;
       }
       if (!identity.token && !identity.copyOf && !MTG.DEFS[identity.name]) identity.face = tokenFace(card.def);
-    } else if (card.isCopySpell && card.meta?.preparedBy && MTG.E.preparedSpellDefinitions?.[identity.name]) {
+    } else if (card.isCopySpell && card.meta?.preparedBy && MTG.E.preparedSpellDefinitions?.[card.meta.oraclePreparedDefinitionV10||identity.name]) {
       identity.preparedSpell = true;
     } else {
       assert(MTG.DEFS[identity.name], `card ${identity.name || '?'} is not in this build.`);
@@ -148,6 +148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       power: card.power, toughness: card.toughness, basePower: card.cur.basePower, baseToughness: card.cur.baseToughness,
     };
     if (card.oracleFace) entry.oracleFace = card.oracleFace;
+    if(card.oraclePrototypeV10)entry.oraclePrototypeV10=true;
     if (card.oracleTransformCount) entry.oracleTransformCount = Number(card.oracleTransformCount) || 0;
     const meta = plainMeta(card.meta);
     if (Object.keys(meta).length) entry.meta = meta;
@@ -245,15 +246,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const captureLandTypes=effect=>MTG.OracleV8LandTypes.portableRecord(effect);
   function currentLandTypeEffects(game){const versions=new Map(game.battlefield.map(card=>[card.iid,card.zoneVersion]));return game.untilEffects.filter(effect=>isPlainLandTypes(effect)&&versions.get(effect.iid)===effect.zoneVersion);}
 
+  // Enduring's return changes only types. Preserve this closed, plain-data
+  // animation without admitting other animations or executable closures.
+  const ENCHANTMENT_RETURN_FIELDS=new Set(['kind','iid','zoneVersion','timestamp','expires','types','subtypes','keywords','retainTypes','retainAllSubtypes','temporary']);
+  function isPlainEnchantmentReturn(effect){return effect&&effect.kind==='oracleAnimation'&&Object.keys(effect).every(key=>ENCHANTMENT_RETURN_FIELDS.has(key))&&
+    Number.isSafeInteger(effect.iid)&&effect.iid>0&&Number.isSafeInteger(effect.zoneVersion)&&effect.zoneVersion>=0&&
+    Number.isSafeInteger(effect.timestamp)&&effect.timestamp>0&&effect.timestamp<=MTG.MAX_RESTORED_TIMESTAMP&&effect.expires==='object'&&effect.temporary===false&&effect.retainTypes===false&&effect.retainAllSubtypes===false&&
+    Array.isArray(effect.types)&&effect.types.length===1&&effect.types[0]==='Enchantment'&&Array.isArray(effect.subtypes)&&effect.subtypes.length===0&&Array.isArray(effect.keywords)&&effect.keywords.length===0;}
+  const captureEnchantmentReturn=effect=>({...effect,types:['Enchantment'],subtypes:[],keywords:[]});
+  function currentEnchantmentReturns(game){const versions=new Map(game.battlefield.map(card=>[card.iid,card.zoneVersion]));return game.untilEffects.filter(effect=>isPlainEnchantmentReturn(effect)&&versions.get(effect.iid)===effect.zoneVersion);}
+
   MTG.gameStateSnapshotBlockers = function (game) {
     const blockers = [];
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
-    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect) && !isPlainLandTypes(effect));
+    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect) && !isPlainLandTypes(effect) && !isPlainEnchantmentReturn(effect));
     if (lasting.length) blockers.push(`${lasting.length} lasting effect(s)`);
     if (currentBasePTEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many base power/toughness effects');
     if (currentLandTypeEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many land type effects');
+    if (currentEnchantmentReturns(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many enchantment return effects');
     if (game.delayed.length) blockers.push(`${game.delayed.length} delayed trigger(s)`);
     const emblems = game.players.reduce((sum, player) => sum + (player.emblems || []).length, 0);
     if (emblems) blockers.push(`${emblems} emblem(s)`);
@@ -333,6 +345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       goads: game.untilEffects.filter(isPlainGoad).map(captureGoad),
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),
       landTypeEffects: currentLandTypeEffects(game).map(captureLandTypes),
+      enchantmentReturns: currentEnchantmentReturns(game).map(captureEnchantmentReturn),
       cards,
     };
   }
@@ -340,7 +353,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function definitionFor(entry) {
     if (entry.preparedSpell) {
       const definitions = MTG.E.preparedSpellDefinitions || {};
-      const def = Object.hasOwn(definitions, entry.name) ? definitions[entry.name] : null;
+      const key=entry.meta?.oraclePreparedDefinitionV10||entry.name;
+      const def = Object.hasOwn(definitions, key) ? definitions[key] : null;
       assert(def && entry.zone === 'exile' && Number.isSafeInteger(entry.meta?.preparedBy), 'invalid prepared spell.');
       return Object.assign({super: [], subtypes: [], kws: []}, def);
     }
@@ -374,6 +388,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
     const landTypeEffects=snapshot.landTypeEffects??[];
+    const enchantmentReturns=snapshot.enchantmentReturns??[];
+    assert(Array.isArray(enchantmentReturns)&&enchantmentReturns.length<=MAX_BASE_PT_EFFECTS&&enchantmentReturns.every(isPlainEnchantmentReturn),'invalid enchantment return effects.');
     assert(Array.isArray(landTypeEffects)&&landTypeEffects.length<=MAX_BASE_PT_EFFECTS&&landTypeEffects.every(isPlainLandTypes),'invalid land type effects.');
     const basePTEffects = snapshot.basePTEffects === undefined ? [] : snapshot.basePTEffects;
     assert(Array.isArray(basePTEffects) && basePTEffects.length <= MAX_BASE_PT_EFFECTS && basePTEffects.every(isPlainBasePT),
@@ -444,6 +460,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.cur = {...face, kw: new Set(face.keywords)};
       }
       if (entry.oracleFace) card.oracleFace = entry.oracleFace;
+      if(entry.oraclePrototypeV10){assert(card.def.oraclePrototypeV10&&['battlefield','stack'].includes(card.zone),'invalid prototype state');card.def=MTG.oraclePrototypeDefinitionV10(card.def);card.oraclePrototypeV10=true;}
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
       if (card.faceDown && card.zone === 'battlefield' && !card.isToken) {
@@ -464,10 +481,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       assert(source?.zone === 'battlefield' && source.meta.prepared && source.meta.preparedCopy === card.iid,
         'a prepared spell has no prepared source.');
       card.meta.playableBy = source.ctrl;
-      card.meta.playableCondition = () => source.zone === 'battlefield' && source.meta.prepared && source.meta.preparedCopy === card.iid;
+      const version=source.zoneVersion;
+      card.meta.playableCondition = (g,p) => source.zone === 'battlefield' && source.zoneVersion===version && !source.phasedOut && source.ctrl===p && source.meta.prepared && source.meta.preparedCopy === card.iid;
     }
 
     for(const effect of landTypeEffects){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push(captureLandTypes(effect));}
+    for(const effect of enchantmentReturns){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push(captureEnchantmentReturn(effect));}
 
     for (const effect of basePTEffects) {
       const card = byIid.get(effect.iid);
@@ -565,6 +584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       landTypeEffects: currentLandTypeEffects(game).map(captureLandTypes),
       agreements: (game.diplomacy && game.diplomacy.contracts || []).map(contract =>
         [contract.id, contract.status, contract.clauses.map(clause => `${clause.type}:${clause.state}`).join(',')].join('|')).sort(),
+      enchantmentReturns: currentEnchantmentReturns(game).map(captureEnchantmentReturn),
     });
   };
 })();

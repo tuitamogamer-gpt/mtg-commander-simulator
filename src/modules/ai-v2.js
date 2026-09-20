@@ -1082,7 +1082,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       damage: card.zone === 'battlefield' ? card.damage || 0 : 0,
       counters: card.zone === 'battlefield' ? Object.freeze(Object.assign({}, card.counters || {})) : Object.freeze({}),
       keywords: Object.freeze(known ? kw.slice().sort() : []),
-      toxic: known && !(card.cur && card.cur.abilitiesDisabled) ? Math.max(0, Number(def && def.toxic) || 0) : 0,
+      toxic: known ? (MTG.oracleToxicValueV10?.(card)??(!(card.cur&&card.cur.abilitiesDisabled)?Math.max(0,Number(def&&def.toxic)||0):0)) : 0,
       roles: sem.roles,
       synergyTags: sem.synergyTags,
       attachedTo: card.attachedTo || null,
@@ -1437,12 +1437,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // creatures must never be added merely because the useful pilot appears
   // late in stable order. Dynamic programming keeps the best tap-cost row for
   // each exact power total and stops extending a row once Crew is satisfied.
-  function minimalCrewPayment(game, player, cards, need) {
+  function minimalCrewPayment(game, player, cards, need, saddleV10=false) {
     const required = Math.max(0, Number(need) || 0);
     if (required === 0) return [];
     let states = new Map([[0, { power: 0, cost: 0, picks: [] }]]);
     for (const card of cards) {
-      const contribution = Math.max(0, Number(card.power) || 0);
+      const contribution = saddleV10?MTG.oracleSaddlePowerV10(card):game.vehicleCrewPower(card);
       if (contribution <= 0) continue;
       const tapCost = permanentGameValue(game, card, player) + 0.4;
       const next = new Map(states);
@@ -1490,7 +1490,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function projectedPlayerDamage(card, damage, damageEvents = 1) {
     const infect = card.kw('infect');
-    const toxic = !(card.cur && card.cur.abilitiesDisabled) ? Math.max(0, Number(card.def.toxic) || 0) : 0;
+    const toxic = MTG.oracleToxicValueV10?.(card)??(!(card.cur&&card.cur.abilitiesDisabled)?Math.max(0,Number(card.def.toxic)||0):0);
     return {
       life: infect ? 0 : damage,
       poison: (infect ? damage : 0) + (damage > 0 ? toxic * damageEvents : 0),
@@ -2415,7 +2415,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         actions.push({ kind: 'chooseCards', picks });
       }
       if (q.aiHint && q.aiHint.kind === 'crew' && Number.isFinite(q.aiHint.need)) {
-        const picks = minimalCrewPayment(game, player, ranked, q.aiHint.need);
+        const picks = minimalCrewPayment(game, player, ranked, q.aiHint.need,q.aiHint.saddleV10);
         if (picks && picks.length >= (q.min || 0) && picks.length <= (q.max ?? ranked.length)) actions.push({ kind: 'chooseCards', picks });
       }
       for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) {
@@ -5023,7 +5023,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else if(q?.aiHint?.kind==='champion-v9')breakdown.choice=action.picks.length?20-permanentGameValue(game,action.picks[0],player):-20;
       else if (action.kind === 'chooseCards' && q && q.aiHint && q.aiHint.kind === 'crew') {
         const need = Math.max(0, Number(q.aiHint.need) || 0);
-        const power = action.picks.reduce((sum, card) => sum + Math.max(0, Number(card.power) || 0), 0);
+        const power = action.picks.reduce((sum, card) => sum + (q.aiHint.saddleV10?MTG.oracleSaddlePowerV10(card):game.vehicleCrewPower(card)), 0);
         if (power < need) breakdown.choice = -1000;
         else {
           const tapCost = action.picks.reduce((sum, card) => sum + permanentGameValue(game, card, player), 0);

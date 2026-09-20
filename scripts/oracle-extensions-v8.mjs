@@ -92,6 +92,8 @@ import { ORACLE_SUBTYPES } from './oracle-subtypes.mjs';
 // historical v8 compilation never enables it.
 let additionalGrammar = null;
 export const allowsDayNight = () => additionalGrammar?.dayNight === true;
+export const preservesPrintedParagraphs = () => additionalGrammar?.printedParagraphs === true;
+export const allowsSnow = () => additionalGrammar?.snowMana === true;
 export const additionalKeywords = () => additionalGrammar?.grantableKeywords || [];
 export function withAdditionalGrammar(grammar, compile) {
   const previous = additionalGrammar;
@@ -120,6 +122,7 @@ export function normalizeManaOperations(operations) {
   const libraryMove=node=>!!node&&typeof node==='object'&&(node.mill>0||['draw','mill','loot','wheel','search','look-select','library-select-v8','library-zone-shuffle-v8','library-search-v8','search-own-zones-v8','exile-top','move-to-library','shuffle-graveyard','hand-to-library','cast-card-v8','cast-from-hand-v8','cast-from-graveyard-v8','cast-inspected-v8'].includes(node.action)||Object.values(node).some(value=>Array.isArray(value)?value.some(libraryMove):libraryMove(value)));
   return operations.map(operation=>{
     operation=variableCounterCosts.normalizeOperation(operation);
+    const extraMana=additionalGrammar?.normalizeManaOperation?.(operation);if(extraMana)return extraMana;
     // CR 605.1a: a loyalty ability or any targeted ability always uses the
     // Stack, even when its fully parsed instructions add mana.
     if(operation.kind==='generic-ability'&&(operation.loyalty!==undefined||operation.targets?.length)&&operation.effects?.some(effect=>effect.action==='add-mana'))return {...operation,stackMana:true};
@@ -201,7 +204,7 @@ export function normalizeManaOperations(operations) {
 }
 
 export function extensionTarget(text) {
-  const additional = additionalGrammar?.extensionTarget?.(text, {target: extensionTarget, count: extensionCount});
+  const additional = additionalGrammar?.extensionTarget?.(text, {target: extensionTarget, count: extensionCount, value: helpersFor({}).value});
   if (additional) return additional;
   // CR 205.3m: Time Lord is one subtype. Tokenize that exact multiword
   // noun before the legacy single-word parser can overwrite Time with Lord.
@@ -426,10 +429,14 @@ export function characteristicOperation(card, line, helpers = {}) {
 }
 export function modalOperation(card, text, parseEffect) {
   const parseModal = (source, body, parser) => core.baseModal(source, body, parser) || v6.modalOperation(source, body, parser) || effects.modalOperation(source, body, parser) || null;
-  return entwine.modalOperation(card, text, parseEffect, parseModal) || parseModal(card, text, parseEffect);
+  return additionalGrammar?.modalOperation?.(card,text,parseEffect,parseModal) || entwine.modalOperation(card, text, parseEffect, parseModal) || parseModal(card, text, parseEffect);
 }
 function helpersFor(helpers, card = null) {
-  return { ...helpers, target: extensionTarget, count: extensionCount, value:core.extensionValue, condition: extensionCondition, cost: text => extensionCost(text, card), normalizeOperations:normalizeManaOperations, line: (card,line)=>extensionLine(card,line,helpers) };
+  const value=text=>additionalGrammar?.extensionValue?.(text,{value,count:extensionCount})??core.extensionValue(text);
+  return { ...helpers, target: extensionTarget, count: extensionCount, value, condition: extensionCondition, cost: text => extensionCost(text, card), normalizeOperations:normalizeManaOperations, line: (card,line)=>extensionLine(card,line,helpers) };
+}
+export function additionalEffect(card,line,helpers){
+  return additionalGrammar?.extensionEffect?.(card,line,helpersFor(helpers,card))||null;
 }
 export function extensionEffect(card, line, helpers) {
   const additional = additionalGrammar?.extensionEffect?.(card, line, helpersFor(helpers, card));

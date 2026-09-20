@@ -955,7 +955,7 @@ function extendedLine(card,line,helpers) {
   if(conditionalStatic){const conditionText=conditionalStatic[1]||conditionalStatic[4],condition=extensionCondition(conditionText),body=(conditionalStatic[2]||conditionalStatic[3]).replace(/^it (gets|has)/i,'this creature $1');const parsed=condition&&extensionLine(card,body[0].toUpperCase()+body.slice(1)+'.',helpers);if(parsed&&['generic-static','cost-modifier'].includes(parsed.kind))return {...parsed,condition,...(parsed.scope&&parsed.scope!=='self'&&/^(?:it |it's |that creature )/.test(conditionText)?{conditionSubject:'affected'}:{})};}
   const defender=new RegExp('^'+self+" can attack as though it didn't have defender\\.$",'i').exec(line);
   if(defender)return {...base,scope:'self',defenderCanAttack:true};
-  const modifier=modifierOperation(card,line);if(modifier)return modifier;
+  const modifier=modifierOperation(card,line,helpers);if(modifier)return modifier;
   const grant=/^(?:Enchanted|Equipped) (?:creature|permanent|artifact|land) gets ([+-]\d+)\/([+-]\d+) for each (.+?)(?: and has (.+))?\.$/.exec(line);
   if(grant){const multiplier=grant[3]==='of its colors'?{kind:'host-colors'}:extensionCount(grant[3]),keywords=grant[4]?helpers.keywordList(grant[4]):[];if(multiplier&&keywords)return {kind:'attachment-grant',power:Number(grant[1]),toughness:Number(grant[2]),multiplier,keywords,...(multiplier.kind==='v8-permanent-count'&&(multiplier.relative||multiplier.other)?{multiplierSubject:'affected'}:{}),contract:'attachment-continuous-effect'};}
   const quoted=/^(?:Enchanted|Equipped) (?:creature|permanent|artifact|land) has "(.+)"\.?$/.exec(line);

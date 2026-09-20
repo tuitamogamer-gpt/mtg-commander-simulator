@@ -8,7 +8,7 @@ const tokens=(f,p,type)=>f.game.creatures(p).filter(c=>c.isToken&&c.hasSub(type)
 const aim=(f,...targets)=>{f.decide=(p,q)=>q.type==='chooseTargets'?targets.filter(c=>q.candidates.includes(c)).slice(0,q.max):q.type==='chooseOption'&&q.options.some(o=>o.key==='yes')?'yes':undefined;};
 const empty=p=>{p.poolMeta=[];for(const k of Object.keys(p.pool))p.pool[k]=0;};
 test('eight original lists, artwork, native cards, guides, AI profiles and repeatable intake',()=>{
- assert.equal(Object.keys(M.DECKS).length,169);assert.equal(Object.keys(M.DEFS).length,22749);
+ assert.equal(Object.keys(M.DECKS).length,169);assert.equal(Object.keys(M.DEFS).length,3949+M.ORACLE_BATCHES.filter(batch=>/^oracle-\d{4}$/.test(batch.id)).reduce((n,batch)=>n+batch.cards.length,0));
  assert.equal(buildIntake(M).newNames.length,0);const names=JSON.parse(fs.readFileSync(sourceDir+'/intake.json')).newNames;assert.equal(names.length,81);
  for(const d of precons){const deck=M.DECKS[d.name];assert.equal(deck.commander,d.commander);assert.equal(deck.cards.reduce((n,c)=>n+c.n,0),100);assert.ok(M.DECK_META[d.name]&&M.DECK_GUIDES[d.name]&&M.AI_DECK_PROFILE_HINTS[d.name]);assert.ok(fs.existsSync(M.CARD_ART_PATHS[d.commander]));for(const key of M.DECK_GUIDES[d.name].keys)assert.ok(deck.cards.some(c=>c.name===key),key);}
  for(const name of names){assert.ok(M.DEFS[name]&&!M.DEFS[name].autoScripted&&!M.DEFS[name].simplified,name);assert.ok(fs.existsSync(M.CARD_IMAGE_PATHS[name]),name);}

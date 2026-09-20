@@ -30,7 +30,7 @@ for(const role of ['human','ai']){
   const cadet=card(f,'Goblin Cadets'),blocker=body(f,f.b);cadet.attacking=f.b;cadet.blockedBy=[blocker];aim(f,f.b);await event(f,'becomesBlocked',{attacker:cadet,blockers:[blocker]});assert.equal(cadet.ctrl,f.b);assert.equal(cadet.attacking,null);
  });
  test(role+': Howlsquad starts speed, advances once per turn and creates an attacking requirement',async()=>{
-  const f=setup(role),s=await play(f,'Howlsquad Heavy');assert.equal(f.a.counters.speed,1);await f.game.loseLife(f.b,1);await f.game.loseLife(f.b,1);assert.equal(f.a.counters.speed,2);
+  const f=setup(role),s=await play(f,'Howlsquad Heavy');assert.equal(f.a.counters.speed,1);await f.game.loseLife(f.b,1);await f.game.loseLife(f.b,1);assert.equal(f.a.counters.speed,1);await settle(f.game);assert.equal(f.a.counters.speed,2);
   await event(f,'beginCombat',{player:f.a});const token=tokens(f,f.a,'Goblin')[0];assert.ok(token.kw('haste'));f.game.recalc();assert.ok(f.game.isForcedToAttack(token));f.game.afcCombatId++;f.game.recalc();assert.equal(f.game.isForcedToAttack(token),false);
   f.a.counters.speed=4;s.sick=false;assert.ok(f.game.manaSources(f.a).some(m=>m.card===s&&m.produce[0].R===2));
  });

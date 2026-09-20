@@ -1,11 +1,22 @@
 import assert from 'node:assert/strict';
 import {context, put, settle} from './oracle-v8-fixtures.mjs';
 
+export async function enterChosenColorSource(MTG,ctx,entry,source,h){
+  if(!entry.implementation.some(row=>row.kind==='chosen-color-entry-v8'))return;
+  if(source.zone==='battlefield')await ctx.game.move(source,'hand');
+  h.fund(ctx.a,100);
+  assert.equal(await ctx.game.castSpell(ctx.a,source,{from:'hand'}),true,source.name+': paid entry establishes the chosen color');
+  await h.resolveAll(ctx.game);
+  assert.ok(['W','U','B','R','G'].includes(source.meta.oracleChosenColor));
+  ctx.chosenColorV10=source.meta.oracleChosenColor;
+}
+
 export async function chosenColorProof(MTG, entry, operation, role) {
   const ctx=context(MTG,role),{game,a}=ctx;
   const choiceRule=entry.implementation.find(row=>row.kind==='chosen-color-entry-v8');
   assert.ok(choiceRule,entry.raw.name+': chosen-color reference is bound');
   const source=put(MTG,game,a,entry.raw.name,'hand');
+  if(entry.implementation.some(row=>row.kind==='aura-target'))put(MTG,game,a,'Runeclaw Bear');
   for(const color of ['W','U','B','R','G','C'])a.pool[color]=20;
   const decide=a.controller.decide.bind(a.controller);
   a.controller.decide=async(g,q)=>{

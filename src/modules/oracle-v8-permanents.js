@@ -186,9 +186,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.oracleV8ApplyStaticCharacteristics=function(card,change){
-    if(Object.keys(change).some(key=>!['addCreatureTypes','allCreatureTypes','colors','creatureV9'].includes(key)))throw new Error('Unsupported static characteristic change');
+    if(Object.keys(change).some(key=>!['addCreatureTypes','replaceCreatureTypesV10','allCreatureTypes','colors','addColorsV10','creatureV9','addTypesV10','addSuperV10','removeSuperV10'].includes(key)))throw new Error('Unsupported static characteristic change');
+    if(change.addTypesV10){if(!change.addTypesV10.length||change.addTypesV10.some(type=>!['Artifact','Enchantment'].includes(type)))throw new Error('Invalid added card type');card.cur.types=[...new Set(card.cur.types.concat(change.addTypesV10))];}
+    for(const field of ['addSuperV10','removeSuperV10'])if(change[field]){if(change[field].length!==1||!['Snow','Legendary','Basic'].includes(change[field][0]))throw new Error('Invalid changed supertype');card.cur.super=field==='addSuperV10'?[...new Set(card.cur.super.concat(change[field]))]:card.cur.super.filter(type=>!change[field].includes(type));}
     if(change.creatureV9){if(change.creatureV9!==true)throw new Error('Invalid static animation');card.cur.types=[...new Set(card.cur.types.concat('Creature'))];}
     if(change.colors){if(change.colors.some(color=>!['W','U','B','R','G'].includes(color)))throw new Error('Invalid static color');card.cur.colors=change.colors.slice();}
+    if(change.addColorsV10){if(change.addColorsV10.some(color=>!['W','U','B','R','G'].includes(color)))throw new Error('Invalid static color');card.cur.colors=[...new Set(card.cur.colors.concat(change.addColorsV10))];}
+    if(change.replaceCreatureTypesV10){
+      if(!change.replaceCreatureTypesV10.length||change.replaceCreatureTypesV10.some(type=>!MTG.CREATURE_SUBTYPES.has(type)))throw new Error('Invalid replacement creature subtype');
+      if(card.cur.types.includes('Creature')||card.cur.types.includes('Kindred')){card.cur.subtypes=card.cur.subtypes.filter(type=>!MTG.CREATURE_SUBTYPES.has(type)).concat(change.replaceCreatureTypesV10);card.cur.allCreatureTypes=false;card.cur.allCreatureTypesFromOtherEffects=false;card.cur.suppressPrintedChangeling=true;}
+    }
     if(change.addCreatureTypes||change.allCreatureTypes){
       if((change.addCreatureTypes||[]).some(type=>!MTG.CREATURE_SUBTYPES.has(type)))throw new Error('Invalid static creature subtype');
       if(card.cur.types.includes('Creature')||card.cur.types.includes('Kindred')){

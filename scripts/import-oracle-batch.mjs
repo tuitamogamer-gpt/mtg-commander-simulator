@@ -12,6 +12,7 @@ import { extensionEffect as v6Effect, extensionLine as v6Line, characteristicOpe
 import * as v7 from './oracle-extensions-v7.mjs';
 import * as v8 from './oracle-extensions-v8.mjs';
 import * as v9 from './oracle-extensions-v9.mjs';
+import * as v10 from './oracle-extensions-v10.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
 
@@ -44,7 +45,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
-const SEMANTIC_COMPILER_VERSION = 9;
+const SEMANTIC_COMPILER_VERSION = 10;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
 const SUPERTYPES = new Set(['Legendary', 'Basic', 'Snow', 'World', 'Ongoing']);
@@ -63,7 +64,7 @@ const GRANTABLE_KEYWORDS = new Set([
   'haste', 'vigilance', 'menace', 'reach', 'indestructible', 'hexproof', 'shroud',
   'wither', 'phasing',
 ]);
-const MANA_SEQUENCE = '(?:\\{(?:\\d+|X|[WUBRGC]|[WUBRG]\\/P|[WUBRG]\\/[WUBRG]|2\\/[WUBRG])\\})+';
+const MANA_SEQUENCE = '(?:\\{(?:\\d+|X|[WUBRGCS]|[WUBRG]\\/P|[WUBRG]\\/[WUBRG]|2\\/[WUBRG])\\})+';
 
 function argValue(args, name, fallback) {
   const prefix = `--${name}=`;
@@ -436,6 +437,10 @@ function closedGenericEffect(card, value) {
   return memoizedParse('effect',card,value,()=>closedGenericEffectCore(card,value));
 }
 function closedGenericEffectCore(card, value) {
+  if(v8.preservesPrintedParagraphs()&&(/\b(?:toxic|firebending|frenzy|poisonous) [0-9]+/.test(value)&&/\bgains?\b/.test(value)||/\. (?:Then )?[Ii]t deals damage equal to its /.test(value)||/sacrifices? [^,.]+, discards? [^,.]+, and loses? [^,.]+ life/.test(value)||/, where X is [^.]+\. If X /.test(value))){
+    const extended=v8.additionalEffect(card,value,{keywordList,effect:closedGenericEffectSequence});
+    if(extended)return extended;
+  }
   if(extensionsActive>=7&&String(value||'').trim().endsWith('"'))value=String(value).trim()+'.';
   if(extensionsActive===8){const priority=v8.resolutionCostEffect(card,value,{keywordList,effect:closedGenericEffectSequence})||v8.linkedEffect(card,value,{keywordList,effect:closedGenericEffectSequence});if(priority)return priority;}
   let text = String(value || '').trim();
@@ -661,7 +666,7 @@ function closedGenericEffectSequence(card, value) {
 function closedGenericEffectSequenceCore(card, value) {
   if(extensionsActive>=7&&/your choice of/.test(value)){const choice=extensionEffect(card,value,{keywordList,effect:closedGenericEffectSequence});if(choice)return choice;}
   const direct = closedGenericEffect(card, value);
-  const unboundContinuation=(parsed,text)=>extensionsActive===8&&parsed?.targets?.length&&/"event-(?:card|player|card-controller|card-owner)"/.test(JSON.stringify(parsed))&&/\.\s+(?:That (?:card|creature|artifact|enchantment|land|permanent|player)\b|It\b|Its\b)/.test(text);
+  const unboundContinuation=(parsed,text)=>extensionsActive===8&&parsed?.targets?.length&&(/"event-(?:card|player|card-controller|card-owner)"/.test(JSON.stringify(parsed))&&(/\.\s+(?:That (?:card|creature|artifact|enchantment|land|permanent|player)\b|It\b|Its\b)/.test(text)||v8.preservesPrintedParagraphs()&&/\.\s+[^.]+?\bthat (?:creature|permanent|planeswalker)\b/.test(text))||JSON.stringify(parsed).includes('unbound-object-v10'));
   if (direct&&!unboundContinuation(direct,value)) return direct;
   let clauses = String(value || '').trim().split(/(?<=\.)\s+(?=[A-Z])/);
   if (clauses.length < 2) return null;
@@ -685,7 +690,8 @@ function closedGenericEffectSequenceCore(card, value) {
   }
   const merged = { effects: [], targets: [], optional: false };
   for (const rawClause of clauses) {
-    const previousTarget=merged.effects.at(-1)?.target??merged.effects.at(-1)?.who;
+    const previousReference=merged.effects.at(-1)?.target??merged.effects.at(-1)?.who;
+    const previousTarget=v8.preservesPrintedParagraphs()&&['target-controller','target-owner'].includes(previousReference?.kind)?previousReference.index:previousReference;
     const previousSpec=typeof previousTarget==='number'?merged.targets[previousTarget]:null;
     // A bounded target descriptor stores its chosen objects as one locked
     // group. Printed plural continuations apply to that same group and do not
@@ -715,12 +721,17 @@ function closedGenericEffectSequenceCore(card, value) {
       const previousSpec=merged.targets[previousTarget],playerTarget=['player','opponent'].includes(previousSpec?.what);
       const map=value=>extensionsActive===8&&value?.action==='install-trigger-v8'?value:Array.isArray(value)?value.map(map):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,
         ['target','who'].includes(key)&&item==='event-player'&&playerTarget?{kind:'locked-player',index:previousTarget}:
+        v8.preservesPrintedParagraphs()&&['target','who'].includes(key)&&item==='event-player'&&previousSpec?.zone==='stack'?{kind:'target-controller',index:previousTarget}:
         ['target','who'].includes(key)&&['event-card-controller','event-card-owner'].includes(item)&&!playerTarget?{kind:item==='event-card-owner'?'target-owner':'target-controller',index:previousTarget}:map(item)])):value;
       parsed.effects=parsed.effects.map(map);
     }
     const previousEffect = merged.effects.at(-1);
     const followsTokenCreation = previousEffect &&
       ['token-key', 'token-inline'].includes(previousEffect.action);
+    if(v8.preservesPrintedParagraphs()&&followsTokenCreation&&/\bdestroy all other creatures\b/i.test(rawClause)){
+      const preserveCreated=effect=>({...effect,...(effect.action==='battlefield-group'&&effect.operation==='destroy'&&effect.filters?.every(filter=>filter.what==='creature'&&filter.excludeSelf)?{excludeCreatedV10:true,filters:effect.filters.map(filter=>({...filter,excludeSelf:false}))}:{}),...(effect.effects?{effects:effect.effects.map(preserveCreated)}:{})});
+      parsed.effects=parsed.effects.map(preserveCreated);
+    }
     const tokenCounterReference = followsTokenCreation && new RegExp(
       '^put (' + GENERIC_NUMBER + ') (\\+1\\/\\+1|-1\\/-1) counters? on it\\.$', 'i').test(clause);
     // A pronoun after creating a token refers to that created object, not the
@@ -745,19 +756,21 @@ function closedGenericEffectSequenceCore(card, value) {
       if(extensionsActive===8&&refersToTarget&&adjusted.action==='become-copy-v8'&&effect.target==='self'&&typeof effect.otherTarget==='number'&&/copy of (?:another|other) target\b/i.test(rawClause)){
         delete parsed.targets[effect.otherTarget].excludeSelf;parsed.targets[effect.otherTarget].differentFromPrevious=true;
       }
+      if(refersToTarget && adjusted.target==='unbound-object-v10') adjusted.target=previousTarget;
+      if(v8.preservesPrintedParagraphs()&&refersToTarget&&adjusted.target==='event-card')adjusted.target=previousTarget;
       if(refersToTarget && adjusted.target==='self') adjusted.target=previousTarget;
       if(extensionsActive===8&&refersToTarget&&adjusted.n?.kind==='source-stat')adjusted.n={...adjusted.n,kind:'target-stat',target:previousTarget};
-      if(extensionsActive>=7&&refersToTarget&&adjusted.action==='conditional'&&adjusted.conditionTarget===undefined&&JSON.stringify(adjusted.condition).includes('"source-'))adjusted.conditionTarget=previousTarget;
+      if(extensionsActive>=7&&refersToTarget&&adjusted.action==='conditional'&&adjusted.conditionTarget===undefined&&(JSON.stringify(adjusted.condition).includes('"source-')||v8.preservesPrintedParagraphs()&&/^If (?:it\b|it's\b|its\b|that (?:creature|permanent)\b)/i.test(rawClause)))adjusted.conditionTarget=previousTarget;
       if (tokenCounterReference && adjusted.action === 'counter' && adjusted.target === 'self') {
         adjusted.target = 'created-tokens';
       }
-      if (typeof adjusted.target === 'number' && !(refersToTarget && (effect.target==='self'||adjusted.action==='bite'&&effect.action==='damage'))) adjusted.target += offset;
+      if (typeof adjusted.target === 'number' && !(refersToTarget && (['self','unbound-object-v10',...(v8.preservesPrintedParagraphs()?['event-card']:[])].includes(effect.target)||adjusted.action==='bite'&&effect.action==='damage'))) adjusted.target += offset;
       if (typeof adjusted.who === 'number') adjusted.who += offset;
       if(extensionsActive>=6){
         if(typeof adjusted.otherTarget==='number')adjusted.otherTarget+=offset;
         const remap=effect=>{
           const result={...effect};
-          if(refersToTarget&&result.target==='self')result.target=previousTarget;
+          if(refersToTarget&&['self','unbound-object-v10'].includes(result.target))result.target=previousTarget;
           else if(typeof result.target==='number')result.target+=offset;
           if(typeof result.otherTarget==='number')result.otherTarget+=offset;
           if(typeof result.conditionTarget==='number')result.conditionTarget+=offset;
@@ -1098,6 +1111,10 @@ function expandedCreatureLine(card, line) {
 }
 
 function expandedPermanentLine(card, line) {
+  if(extensionsActive===8&&v8.preservesPrintedParagraphs()){
+    const exact=extensionLine(card,line,{keywordList,cost:genericActivatedCost,effect:closedGenericEffectSequence});
+    if(exact)return exact;
+  }
   const normalized = String(line || '').replace(
     /\bthis (?:artifact|enchantment|land|Aura|Equipment|Vehicle)\b/gi,
     match => match[0] === 'T' ? 'This creature' : 'this creature'
@@ -1923,6 +1940,16 @@ function spellSemantics(card, rulesCore) {
       if(!extensionsActive)return {reason:'spell-needs-explicit-semantics'};
       const modal=extensionsActive>=6&&(extensionsActive>=7?currentExtensions().modalOperation:v6Modal)(card,bodyLines.join('\n'),closedGenericEffectSequence);
       if(modal)return {semanticClass:'spell-template',implementedKeywords:[],implementation:[...modifiers,modal],oracleContracts:[...new Set([...modifiers.map(operation=>operation.contract),modal.contract])],rulesCore};
+      // Independent printed spell abilities resolve in printed order. Retain
+      // their paragraph boundaries so an earlier conditional cannot swallow
+      // a later draw, token creation, or other independent instruction.
+      if (extensionsActive===8 && v8.preservesPrintedParagraphs() && bodyLines.length>1) {
+        const paragraphs=bodyLines.map(line=>closedGenericEffectSequence(card,line));
+        const independent=paragraphs.every((body,index)=>body&&!body.optional&&!body.v4Body&&
+          !body.effects.some(effect=>effect.target==='self')&&
+          !/^(?:It\b|Its\b|They\b|Those\b|That\b|Then\b)/.test(bodyLines[index]));
+        if (independent) return {semanticClass:'spell-template',implementedKeywords:[],implementation:[...modifiers,...paragraphs.map(body=>({kind:'spell-generic',...body,contract:'spell-generic-effect'}))],oracleContracts:[...new Set([...modifiers.map(operation=>operation.contract),'spell-generic-effect'])],rulesCore};
+      }
       // A printed paragraph after an optional payment is independent of that
       // payment. Preserve the boundary for the new predefined Role grammar;
       // otherwise joining paragraphs lets "If you do" swallow the Role.
@@ -1977,12 +2004,23 @@ export function validateManaCost(manaCost) {
   const symbols = [...source.matchAll(/\{([^}]+)\}/g)].map(match => match[1]);
   if (!symbols.length || symbols.map(symbol => `{${symbol}}`).join('') !== source) return false;
   return symbols.every(symbol =>
-    /^\d+$/.test(symbol) || symbol === 'X' || /^[WUBRGC]$/.test(symbol) ||
+    /^\d+$/.test(symbol) || symbol === 'X' || /^[WUBRGC]$/.test(symbol) || symbol === 'S' && extensionsActive === 8 && v8.allowsSnow() ||
     /^[WUBRG]\/P$/.test(symbol) || /^[WUBRG]\/[WUBRG]$/.test(symbol) ||
     /^[WUBRG]{2}$/.test(symbol) || /^2\/[WUBRG]$/.test(symbol));
 }
 
 function semanticClassCore(card) {
+  if(extensionsActive===8&&v8.preservesPrintedParagraphs()&&card.layout==='prepare'){
+    if(card.card_faces?.length!==2)return {reason:'invalid-prepare-faces'};
+    const [front,back]=card.card_faces;
+    if(!/\bCreature\b/.test(front.type_line)||!['Instant','Sorcery'].includes(back.type_line))return {reason:'unsupported-prepare-face-types'};
+    const primary=semanticClass({...card,...front,layout:'normal',card_faces:undefined,oraclePrepareV10:true},{compilerVersion:8});
+    const backCard={...card,power:undefined,toughness:undefined,loyalty:undefined,defense:undefined,...back,layout:'normal',card_faces:undefined};
+    const secondary=validateManaCost(back.mana_cost)&&closedGenericEffectSequence(backCard,stripReminderText(back.oracle_text));
+    if(!primary.semanticClass||!secondary||secondary.optional||secondary.v4Body)return {reason:'prepare-needs-complete-face-semantics'};
+    const operation={kind:'prepare-face-v10',raw:rawCard(backCard),...secondary,contract:'prepare-casting-v10'};
+    return {...primary,implementation:[...primary.implementation,operation],oracleContracts:[...primary.oracleContracts,operation.contract],rulesCore:stripReminderText(front.oracle_text)+'\nPrepare — '+back.name+': '+stripReminderText(back.oracle_text)};
+  }
   if(extensionsActive===8&&['modal_dfc','transform'].includes(card.layout))return compileFaces(card,{compile:face=>semanticClass(face,{compilerVersion:8}),raw:rawCard,dayNight:v8.allowsDayNight()});
   if(extensionsActive===8&&card.layout==='leveler')return compileLeveler(card,{compile:band=>semanticClass(band,{compilerVersion:8})});
   if(extensionsActive>=7&&/^Backup \d+/m.test(stripReminderText(card.oracle_text||''))){
@@ -2036,13 +2074,14 @@ function semanticClassCore(card) {
   if(extensionsActive>=7&&card.layout==='adventure'){
     if(card.card_faces?.length!==2)return {reason:'invalid-adventure-faces'};
     const [front,back]=card.card_faces;
-    if(!/Creature|Artifact|Enchantment/.test(front.type_line)||/Land|Instant|Sorcery/.test(front.type_line)||!/^(Instant|Sorcery) — Adventure$/.test(back.type_line))return {reason:'unsupported-adventure-face-types'};
+    const newFaces=v8.preservesPrintedParagraphs(),omen=newFaces&&/ — Omen$/.test(back.type_line);
+    if(!(newFaces?/Creature|Artifact|Enchantment|Land/:/Creature|Artifact|Enchantment/).test(front.type_line)||(newFaces?/Instant|Sorcery/:/Land|Instant|Sorcery/).test(front.type_line)||!(newFaces?/^(Instant|Sorcery) — (Adventure|Omen)$/:/^(Instant|Sorcery) — Adventure$/).test(back.type_line))return {reason:'unsupported-adventure-face-types'};
     const frontCard={...card,...front,layout:'normal',card_faces:undefined},backCard={...card,...back,layout:'normal',card_faces:undefined};
     const primary=semanticClass(frontCard,{compilerVersion:extensionsActive});
     const body=validateManaCost(back.mana_cost)&&closedGenericEffectSequence(backCard,stripReminderText(back.oracle_text));
     if(!primary.semanticClass||!body||body.optional||body.effects.some(effect=>effect.target==='self'))return {reason:'adventure-needs-complete-face-semantics'};
-    const operation={kind:'adventure-face',name:back.name,cost:back.mana_cost,types:[back.type_line.split(' — ')[0]],...body,contract:'adventure-casting'};
-    return {...primary,semanticClass:front.type_line.includes('Creature')?'creature-template':'permanent-template',implementation:[...primary.implementation,operation],oracleContracts:[...primary.oracleContracts,operation.contract],rulesCore:stripReminderText(front.oracle_text)+'\nAdventure — '+back.name+': '+stripReminderText(back.oracle_text)};
+    const operation={kind:'adventure-face',name:back.name,cost:back.mana_cost,types:[back.type_line.split(' — ')[0]],...(omen?{omen:true}:{}),...body,contract:'adventure-casting'};
+    return {...primary,semanticClass:front.type_line.includes('Land')?primary.semanticClass:front.type_line.includes('Creature')?'creature-template':'permanent-template',implementation:[...primary.implementation,operation],oracleContracts:[...primary.oracleContracts,operation.contract],rulesCore:stripReminderText(front.oracle_text)+'\n'+(omen?'Omen':'Adventure')+' — '+back.name+': '+stripReminderText(back.oracle_text)};
   }
   if (!validateManaCost(card.mana_cost)) return { reason: 'unsupported-mana-cost' };
   if (card.layout !== 'normal') return { reason: 'complex-layout' };
@@ -2069,6 +2108,22 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
+  if (compilerVersion === 10) {
+    const frozen = semanticClass(card, {compilerVersion: 9, memoize});
+    if (frozen.semanticClass) return frozen;
+    const normalized = v10.normalizeCard(card);
+    const result = v8.withAdditionalGrammar(v10, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
+    // Normalization supplies executable grammar; the physical faces keep the
+    // exact printed Oracle text used by deck import, card details, and copies.
+    if(result.semanticClass&&card.card_faces?.length){
+      const printed=new Map(card.card_faces.map(face=>[face.name,face.oracle_text||'']));
+      const preserve=node=>{if(!node||typeof node!=='object')return;if(node.raw&&printed.has(node.raw.name))node.raw.oracle=printed.get(node.raw.name);for(const [key,value] of Object.entries(node))if(key!=='raw')preserve(value);};
+      preserve(result.implementation);
+    }
+    if(result.semanticClass&&/"(?:chosenColorV10)":true|"kind":"chosen-color-v10"/.test(JSON.stringify(result.implementation))&&!JSON.stringify(result.implementation).includes('"kind":"chosen-color-entry-v8"'))return {reason:'unbound-chosen-color-v10'};
+    if (result.semanticClass && normalized !== card) result.rulesCore = v8.normalizeAbilityWords(card.card_faces?.length?card.card_faces.map(face=>face.name+': '+stripReminderText(face.oracle_text||'')).join('\n'):stripReminderText(card.oracle_text || ''));
+    return result;
+  }
   if (compilerVersion === 9) {
     const frozen = semanticClass(card, {compilerVersion: 8, memoize});
     if (frozen.semanticClass) return frozen;
@@ -2116,6 +2171,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     if(extensionsActive>=7&&result.implementation){result.implementation=currentExtensions().normalizeManaOperations(result.implementation);result.oracleContracts=[...new Set(result.implementation.map(operation=>operation.contract))];}
     if(compilerVersion>=7&&result.implementation)result.implementation=currentExtensions().normalizeTokenOperations(result.implementation);
     const operations=result.implementation||[];
+    if(JSON.stringify(operations).includes('unbound-object-v10'))return {reason:'unbound-object-reference-v10'};
     if(extensionsActive===8&&v8.handXUnbound(card,result))return {reason:'unbound-X'};
     if(extensionsActive===8&&v8.unsupportedPresence(result))return {reason:'unsupported-permanent-condition'};
     // A revealed/selected card is not the source of its revealing ability.
@@ -2200,9 +2256,12 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       if(operation.kind==='attachment-operation')return boundEvents(operation.operation);
       if(operation.grantedOperation)return boundEvents(operation.grantedOperation);
       const encoded=JSON.stringify(operation);
+      if(encoded.includes('"event-stack-v10"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['cast','castIS','castNonCreature','castCreature'].includes(event))))return false;
+      if(/"event-(?:spell-mv|mana-spent)-v10"/.test(encoded)&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['cast','castIS','castNonCreature','castCreature'].includes(event))))return false;
       if(encoded.includes('"combat-defender-v9"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['attacks','blocks','becomesBlocked','becomesBlockedByCreature','blockersDeclared'].includes(event))))return false;
       if(encoded.includes('"batch-amount-v9"')&&(operation.kind!=='generic-trigger'||!operation.oncePerBatch||!['batch-discard-v8','filtered-sacrifice','created-batch-v8','filtered-object'].includes(operation.eventFilter?.kind)))return false;
       if(operation.eventFilter?.kind==='observation-v9'){
+        if(v8.preservesPrintedParagraphs()&&operation.event==='unlockDoor'&&operation.eventFilter.fullyUnlockedV10)return operation.kind==='generic-trigger'&&!/"event-(?:player|card|card-controller|card-owner|card-stat|card-counters)"/.test(encoded);
         if(operation.kind!=='generic-trigger'||!['diceRolled','searchedLibrary','mutated','renowned','tappedForMana','lto','upkeep','proliferatedV9','dungeonCompleted','abilityActivated','attached','landPlayed'].includes(operation.event))return false;
         if(/"event-card(?:-controller|-owner|-stat|-counters)?"/.test(encoded)&&!['mutated','renowned','tappedForMana','lto'].includes(operation.event))return false;
         return !encoded.includes('"event-player"')||['diceRolled','searchedLibrary','mutated','tappedForMana','upkeep','abilityActivated','landPlayed'].includes(operation.event)||operation.event==='lto'&&!!operation.eventFilter.graveOwner;
@@ -2223,7 +2282,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
         const printedX=/\{X\}/.test(card.mana_cost||'');
         const allowed=['spell-generic','spell-modal-generic'].includes(operation.kind)?printedX:
           operation.kind==='generic-ability'?((!operation.from||operation.from==='hand')&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&operation.cost?.oracleCounterPayment?.n==='X'):
-          operation.kind==='generic-trigger'&&operation.eventFilter==='self'&&(operation.event==='etb'&&printedX||operation.event==='monstrous'&&operations.some(upgrade=>upgrade.kind==='generic-ability'&&upgrade.effects?.some(effect=>effect.action==='monstrosity-v8'&&effect.n==='X')&&/\{X\}/.test(upgrade.cost?.mana||'')));
+          operation.kind==='generic-trigger'&&operation.eventFilter==='self'&&(operation.event==='etb'&&printedX||v8.preservesPrintedParagraphs()&&operation.event==='cycled'&&operations.some(op=>op.kind==='cycling'&&/\{X\}/.test(op.cost))||operation.event==='monstrous'&&operations.some(upgrade=>upgrade.kind==='generic-ability'&&upgrade.effects?.some(effect=>effect.action==='monstrosity-v8'&&effect.n==='X')&&/\{X\}/.test(upgrade.cost?.mana||'')));
         const checkBody=body=>{
           const {targets=[],...other}=body;
           // These nontargeted filters run through genericResolutionTargetSpec
@@ -2238,6 +2297,8 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
             ...(node.action==='zone-select'&&node.zone==='graveyard'&&['battlefield','hand','exile'].includes(node.destination)?{filter:boundFilter(node.filter)}:{}),
             ...(['search-library','library-search-v8'].includes(node.action)?{filter:boundFilter(node.filter)}:{}),
             ...(node.action==='battlefield-group'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
+            ...(v8.preservesPrintedParagraphs()&&node.action==='combat-restriction'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
+            ...(v8.preservesPrintedParagraphs()&&node.action==='library-select-v8'&&Array.isArray(node.selections)?{selections:node.selections.map(selection=>({...selection,filter:boundFilter(selection.filter)}))}:{}),
           }:node;
           if(/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(boundEffects(other))))return false;
           return !/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(targets))||allowed;
@@ -2288,7 +2349,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
 
 function rawCard(card) {
   if(card.layout==='split'&&card.card_faces?.length===2)card={...card,mana_cost:card.card_faces.map(face=>face.mana_cost).join(''),type_line:[...new Set(card.card_faces.map(face=>face.type_line))].join(' '),oracle_text:card.card_faces.map(face=>face.name+': '+face.oracle_text).join('\n')};
-  if(['adventure','modal_dfc','transform'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
+  if(['adventure','modal_dfc','transform','prepare'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
   const parsed = parseTypeLine(card.type_line);
   const raw = {
     name: card.name,
@@ -2316,7 +2377,7 @@ function rawCard(card) {
 function catalogCard(card) {
   return {
     typeLine: card.type_line,
-    ...(['adventure','split','modal_dfc','transform'].includes(card.layout)?{aliases:card.card_faces.map(face=>face.name)}:{}),
+    ...(['adventure','split','modal_dfc','transform','prepare'].includes(card.layout)?{aliases:card.card_faces.map(face=>face.name)}:{}),
     colorIdentity: card.color_identity || [],
     colors: card.colors || [],
     keywords: card.keywords || [],
@@ -2524,7 +2585,7 @@ export function createImportPlan({
     }
     sourceNames.add(card.name);
     sourceOracleIds.add(card.oracle_id);
-    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
+    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=10&&card.layout==='prepare'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
       addReason(deferredByReason, deferredExamples, 'already-in-legacy-engine', card);
       continue;
     }

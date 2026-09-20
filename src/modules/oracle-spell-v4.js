@@ -87,7 +87,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     seenIds.add(cost.id);
     if(cost.object?.qualifier) {
       const q=cost.object.qualifier;
-      invariant(q && typeof q==='object' && !Array.isArray(q) && Object.keys(q).every(key=>['subtypes','colors','notTypes','supertypes','nontoken','tapped','unblockedAttacker'].includes(key)), `${cost.id} unsupported cost qualifier`);
+      invariant(q && typeof q==='object' && !Array.isArray(q) && Object.keys(q).every(key=>['subtypes','colors','notTypes','supertypes','nontoken','tapped','unblockedAttacker','bargainV10'].includes(key)), `${cost.id} unsupported cost qualifier`);
+      invariant(q.bargainV10===undefined||q.bargainV10===true&&cost.kind==='sacrifice',`${cost.id} invalid bargain qualifier`);
       for(const key of ['subtypes','colors','notTypes','supertypes'])if(q[key]!==undefined)
         invariant(Array.isArray(q[key]) && q[key].length>0 && q[key].every(value=>typeof value==='string'&&value.length) && new Set(q[key]).size===q[key].length, `${cost.id} invalid ${key}`);
       invariant(!q.colors || q.colors.every(color=>['W','U','B','R','G'].includes(color)), `${cost.id} invalid color`);
@@ -602,6 +603,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (object.filters?.legendary && !(card.def?.super || []).includes('Legendary')) return false;
     const q=object.qualifier;
     if(q) {
+      if(q.bargainV10&&!card.isToken&&!card.is('Artifact')&&!card.is('Enchantment'))return false;
       if(q.subtypes && !q.subtypes.every(type=>card.hasSub(type)))return false;
       if(q.colors && !q.colors.every(color=>card.colors.includes(color)))return false;
       if(q.notTypes?.some(type=>card.is(type)))return false;

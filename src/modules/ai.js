@@ -1296,7 +1296,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const sorted = byThreatAsc;
           const out = [];
           let pow = 0;
-          for (const c of sorted) { out.push(c); pow += Math.max(0, c.power); if (pow >= need) break; }
+          for (const c of sorted) { const contribution=q.aiHint.saddleV10?MTG.oracleSaddlePowerV10(c):game.vehicleCrewPower(c);if(contribution<=0)continue;out.push(c); pow += contribution; if (pow >= need) break; }
           return pow >= need ? out : [];
         }
         case 'slaughterKeep': {

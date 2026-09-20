@@ -25,6 +25,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Prepared spell copies are runtime objects outside the printed catalog.
   // A stable definition lets a saved game restore their actual rules.
   E.preparedSpellDefinitions = {
+    ...(E.preparedSpellDefinitions || {}),
     Braingeyser: {
       name: 'Braingeyser', cost: '{X}{U}{U}', types: ['Sorcery'],
       oracle: 'Target player draws X cards.',

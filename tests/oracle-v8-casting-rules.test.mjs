@@ -132,8 +132,11 @@ for(const role of ['human','ai'])test(`casting count values ${role}: shared effe
 
 test('casting grammar fails closed on unknown history, bound values, malformed verbs and hybrid costs',()=>{
  assert.equal(extensionCondition('an opponent drew three or more spells this turn',{}),null);
+ const attacks={name:'Attack History Cast Rule',layout:'normal',type_line:'Instant',mana_cost:'{2}{U}',oracle_text:'This spell costs {1} less to cast for each creature that attacked this turn.\nDraw a card.'};
+ assert.equal(semanticClass(attacks,{compilerVersion:9}).semanticClass,undefined,'the frozen parser retains its prior rejection');
+ assert.deepEqual(semanticClass(attacks).implementation[0].multiplier,{kind:'attacked-creature-count-v10'},'v10 uses turn history rather than counting surviving permanents');
  for(const text of [
-  'This spell costs {1} less to cast for each creature that attacked this turn.',
+  'This spell costs {1} less to cast for each creature that attacked twice this turn.',
   'This spell costs {1} less to cast for each permanent you sacrificed this turn.',
   'Cast this spell only if a creature left your graveyard this turn.',
   'This spell costs {U} less to cast if it targets a tapped creature.',

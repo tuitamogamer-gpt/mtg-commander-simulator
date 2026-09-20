@@ -2,7 +2,7 @@ import test from'node:test';import assert from'node:assert/strict';
 import{semanticClass}from'../scripts/import-oracle-batch.mjs';
 import{fixtureEngine,context,put,settle,paidCast}from'./helpers/oracle-v8-fixtures.mjs';
 const M=fixtureEngine([
- ['Death Watch','Whenever a creature dies this turn, you gain 2 life.','Instant'],
+ ['V8 Delayed Death Watch','Whenever a creature dies this turn, you gain 2 life.','Instant'],
  ['Cast Watch','Until end of turn, whenever you cast a creature spell, draw a card.','Instant'],
  ['Entry Watch','Whenever a creature you control enters this turn, put a +1/+1 counter on it and it gains haste until end of turn.','Instant'],
  ['Next Watch','When you next cast a creature spell this turn, you gain 2 life.','Instant'],
@@ -13,7 +13,7 @@ const M=fixtureEngine([
 ]);
 for(const role of ['human','ai']){
  test(`${role}: a resolved spell leaves a repeatable future trigger with real Stack and expiry`,async()=>{
-  const ctx=context(M,role),{game,a,b}=ctx,source=await paidCast(M,ctx,'Death Watch'),life=a.life;assert.equal(source.zone,'graveyard');
+  const ctx=context(M,role),{game,a,b}=ctx,source=await paidCast(M,ctx,'V8 Delayed Death Watch'),life=a.life;assert.equal(source.zone,'graveyard');
   for(let n=0;n<2;n++){const creature=put(M,game,b,'Watch Body');await game.destroy(creature);assert.equal(game.pendingTriggers.length,1);assert.equal(a.life,life+2*n);await game.flushTriggers();assert.equal(game.stack.at(-1).kind,'trigger');await settle(game);assert.equal(a.life,life+2*(n+1));}
   game.mainPhase=async()=>{};game.combatPhase=async()=>{};await game.runTurn();assert.equal(game.delayed.length,0);await game.destroy(put(M,game,b,'Watch Body'));await settle(game);assert.equal(a.life,life+4);
  });

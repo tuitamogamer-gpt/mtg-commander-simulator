@@ -152,6 +152,8 @@ const FIXTURES = [
     "At the beginning of your upkeep, return this creature to its owner's hand."),
   sourceCard('V4 Stun Visitor',
     'When this creature enters, tap target creature an opponent controls and put a stun counter on it.'),
+  sourceCard('V4 Token Pronoun Adept',
+    'When this creature enters, create a 1/1 white Soldier creature token. It gets +1/+1 until end of turn.'),
 ];
 
 let ready = false;
@@ -1398,9 +1400,34 @@ test('Recon Craft Theta counters the created Alien, including every token-doubli
   }
 });
 
-test('unsupported token-pronoun continuations remain fail-closed instead of modifying the source', () => {
+test('supported token-pronoun buffs modify every created token, leave the source alone, and expire at cleanup', async () => {
+  const fixture = FIXTURES.find(card => card.name === 'V4 Token Pronoun Adept');
+  const parsed = semanticClass(fixture);
+  assert.equal(parsed.semanticClass, 'creature-template');
+  assert.equal(parsed.implementation[0].effects[1].target, 'created-tokens');
+  for (const role of ['human', 'ai']) for (const doubled of [false, true]) {
+    const context = gameContext({}, role);
+    const existing = permanent(context.game, context.player,
+      synthetic('Existing Soldier', ['Creature'], { power: '1', toughness: '1', subtypes: ['Soldier'] }));
+    if (doubled) context.game.untilEffects.push({ kind: 'tokenDouble', who: context.player, expires: 'eot' });
+    const source = await castFree(context, fixture.name);
+    const tokens = context.game.bf().filter(card => card.ctrl === context.player && card.isToken && card.hasSub('Soldier'));
+    assert.equal(tokens.length, doubled ? 2 : 1);
+    for (const token of tokens) assert.deepEqual([token.power, token.toughness], [2, 2]);
+    assert.deepEqual([source.power, source.toughness], [2, 2], 'the source does not receive the token buff');
+    assert.deepEqual([existing.power, existing.toughness], [1, 1], 'an existing Soldier does not receive the buff');
+    context.game.runBeginningPhase = async () => {};
+    context.game.mainPhase = async () => {};
+    context.game.combatPhase = async () => {};
+    await context.game.runTurn();
+    await settle(context.game);
+    for (const token of tokens) assert.deepEqual([token.power, token.toughness], [1, 1]);
+  }
+});
+
+test('ambiguous singular token-pronoun continuations remain fail-closed instead of modifying the source', () => {
   const parsed = semanticClass(sourceCard('Token Pronoun Guard',
-    'When this creature enters, create a 1/1 white Soldier creature token. It gets +1/+1 until end of turn.'));
+    'When this creature enters, create two 1/1 white Soldier creature tokens. It gets +1/+1 until end of turn.'));
   assert.equal(parsed.semanticClass, undefined);
   assert.equal(parsed.reason, 'oracle-needs-explicit-semantics');
 });

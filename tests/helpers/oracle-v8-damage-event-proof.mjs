@@ -16,7 +16,7 @@ export async function fireDamageEvent(M,ctx,source,operation,h){
   if(selector.kind==='you')return a;
   if(['a player','an opponent','a player or battle','a creature or opponent','any'].includes(selector.kind))return b;
   if(selector.kind==='filtered'){
-   const obj=h.stageGenericTarget(M,ctx,{...selector.target,...(selector.spell?{zone:'battlefield',controller:selector.controller}:{}),controller:selector.target.controller==='any'?'you':selector.target.controller},'damage-'+label);
+   const obj=h.stageGenericTarget(M,ctx,{...selector.target,...(selector.spell?{zone:'battlefield',controller:selector.controller}:{})},'damage-'+label);
    if(obj.def&&!obj.def.oracleImplementation&&obj.is('Creature')){obj.def={...obj.def,power:'3',toughness:'20'};game.recalc();}return obj;
   }
   return h.permanent(M,game,selector.controller==='you'?a:b,h.fixtureDefinition('Damage event source',['Artifact'],{colorsOverride:selector.color?[selector.color]:[]}));

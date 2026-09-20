@@ -144,6 +144,7 @@
         if (mine && meta.foretold && meta.foretoldTurn < game.turnNo && meta.foretoldZoneVersion === card.zoneVersion && card.faceDown) {
           for (const foretell of game.foretellChoices(card, {oracleFace: face.key})) offer({foretell: true, foretoldZoneVersion: card.zoneVersion, ...(foretell.zkForetellGranted ? {zkForetellGranted: true} : {}), altCostStr: foretell.cost, ...(foretell.speed ? {speed: foretell.speed} : {})});
         }
+        if(game.oracleAirbendAvailable(player,card))offer({oracleAirbendV10:true,altCostStr:'{2}'});
         if (game.hasExilePlayPermission(player, card)) offer({consumeExilePermission: true, ...(meta.freePlay ? {free: true} : {}), ...(meta.anyColor ? {asThoughAnyColor: true} : {}), ...(meta.exileAfterPlay ? {exileAfter: true} : {})});
       } else if (from === 'library' && mine && player.library.at(-1) === card && game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && source.def.playTop?.(game, source, candidate, player))) offer({fromTop: true});
     }
@@ -178,7 +179,7 @@
     if (card.isCopySpell && card.zone === 'nowhere' && castOptions.free) return true;
     const alternatives = castCandidates(game, player, card, from).filter(option => option.oracleFace === key);
     if (!alternatives.length) return false;
-    const permissionKeys = ['flashback', 'jumpstart', 'retrace', 'harmonize', 'escape', 'emry', 'muldrotha', 'mayhem', 'foretell', 'plotPlay', 'fromTop'];
+    const permissionKeys = ['flashback', 'jumpstart', 'retrace', 'harmonize', 'escape', 'emry', 'muldrotha', 'mayhem', 'foretell', 'plotPlay', 'fromTop','oracleAirbendV10'];
     return alternatives.some(option => permissionKeys.every(field => !!option[field] === !!castOptions[field]) && (option.altCostStr === castOptions.altCostStr || castOptions.free));
   }
 

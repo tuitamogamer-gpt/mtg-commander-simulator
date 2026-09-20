@@ -38,7 +38,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     if(!force&&!records.length&&!statics.length&&!bf.some(card=>(card.def.statics||[]).some(row=>row.oracleLegacyAbilityLoss)))return null;
     let timestamp=0,applied=false;
     const states=new Map();
-    const arrayKeys=['extraAbilities','extraTriggers','extraMana','extraWards','protectionFrom'];
+    const arrayKeys=['extraAbilities','extraTriggers','extraMana','extraWards','protectionFrom','oracleNumericKeywordsV10','oracleHexproofV10'];
     for(const card of bf){
       const cur=card.cur,kw=cur.kw,stamps=new Map([...kw].map(key=>[key,-Infinity])),removed=new Map(),grants=new Map();
       const add=kw.add,del=kw.delete,clear=kw.clear;

@@ -96,6 +96,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'mechanic-persist': { mechanics: ['persist'], path: 'dies event → return with -1/-1 counter' },
     'mechanic-undying': { mechanics: ['undying'], path: 'dies event → return with +1/+1 counter' },
     'mechanic-changeling': { mechanics: ['changeling'], path: 'continuous subtype identity → all creature types' },
+    'mechanic-deck-limit-v10': { mechanics: ['deck construction'], path: 'printed named-card exception → exact copy limit during Commander deck validation' },
     'mechanic-convoke': { mechanics: ['convoke'], path: 'spell payment → tap creatures for generic or matching colored mana' },
     'mechanic-cascade': { mechanics: ['cascade'], path: 'cast trigger → exile until lower mana value → optional free cast' },
     'mechanic-storm': { mechanics: ['storm'], path: 'cast history → Stack copies with target choice' },
@@ -179,6 +180,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'double-faced-card': { mechanics: ['modal double-faced card'], path: 'choose a legal printed face → use that face on Stack or battlefield → reset to front after other zone changes' },
     'day-night-v9': {mechanics:['daybound','nightbound'],path:'cast the front → enter according to day/night → transform through the turn-based day/night action'},
     'mechanic-amplify-v9': {mechanics:['amplify'],path:'reveal matching hand cards on entry → enter with counters'},
+    'mechanic-mutate-v10': {mechanics:['mutate'],path:'pay mutate cost → target an owned non-Human creature → merge over or under → trigger mutate abilities'},
+    'mechanic-start-engines-v10': {mechanics:['start your engines'],path:'initialize speed → once-per-turn inherent trigger → max speed'},
+    'mechanic-saddle-v10': {mechanics:['saddle'],path:'sorcery-speed activation → tap other creatures with enough total power → resolve saddled designation until cleanup'},
+    'mechanic-prototype-v10': {mechanics:['prototype'],path:'choose printed characteristics → pay chosen cost → preserve prototype on Stack and battlefield → reset on zone departure'},
+    'mechanic-bargain-v10': {mechanics:['bargain'],path:'optional artifact, enchantment or token sacrifice → reserve complete costs → pay and remember bargain'},
+    'mana-bonus-v10': {mechanics:['additional mana'],path:'qualifying tap for mana → include the additional mana in affordability and actual payment'},
+    'damage-prevention-rule-v10': {mechanics:['damage prevention prohibition'],path:'live source and printed damage scope → ignore prevention while applying other damage replacements'},
+    'mechanic-saddle-crew-power-v10': {mechanics:['crew','saddle'],path:'printed power contribution → legal creature selection → actual crew or saddle tap payment'},
+    'mechanic-prowess-v10': {mechanics:['prowess'],path:'noncreature cast → trigger → pump the same source object until cleanup'},
+    'mechanic-player-rule-v10': {mechanics:['player restrictions'],path:'live permanent → authoritative land, search, or win/loss restriction'},
+    'prepare-entry-v10': {mechanics:['prepare'],path:'entry replacement → one prepared copy in exile'},
+    'prepare-casting-v10': {mechanics:['prepare','spell'],path:'prepared permanent → paid copy cast from exile → unprepare'},
+    'mechanic-printed-keywords-v10': {mechanics:['wither'],path:'printed spell keyword → actual damage counters'},
+    'characteristic-subtypes-v10': {mechanics:['characteristic defining types'],path:'additional printed creature types apply in every zone'},
     'mechanic-increment-v9': {mechanics:['increment'],path:'actual spell mana spent → intervening power or toughness comparison → counter'},
     'mechanic-player-shroud-v9': {mechanics:['shroud'],path:'active permanent prevents every player from targeting its controller'},
     'uncounterable-spells-v9': {mechanics:['uncounterable'],path:'live provider filters the actual spell on the Stack'},
@@ -405,6 +420,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function allowedCopies(def) {
     if (!def) return 0;
+    if(def.oracleDeckCopyLimitV10!==undefined)return def.oracleDeckCopyLimitV10==='all'?Infinity:def.oracleDeckCopyLimitV10;
     if ((def.super || []).includes('Basic') || BASIC_NAMES.has(def.name)) return Infinity;
     const oracle = String(def.oracle || '');
     if (/A deck can have any number of cards named/i.test(oracle)) return Infinity;

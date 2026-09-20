@@ -14,7 +14,7 @@ const MTG=fixtureEngine([
   ['Green Bear','','Creature — Bear','{G}'],
   ['Blue Bear','','Creature — Bear','{U}'],
   ['Green Sliver','','Creature — Sliver','{G}'],
-  ['Green Dragon','','Creature — Dragon','{G}'],
+  ['V8 Timing Green Dragon','','Creature — Dragon','{G}'],
   ['Simple Artifact','','Artifact','{1}'],
   ['Simple Sorcery','You gain 1 life.','Sorcery','{G}'],
 ]);
@@ -73,7 +73,7 @@ for(const role of ['human','ai']){
     assert.equal(game.canCastTiming(a,own),true);assert.equal(game.canCastTiming(b,enemy),true);
     assert.equal(game.canCastTiming(b,wrong),false);
     await game.move(source,'graveyard');put(MTG,game,b,'Flash Union');
-    assert.equal(game.canCastTiming(b,put(MTG,game,b,'Green Dragon','hand')),true);
+    assert.equal(game.canCastTiming(b,put(MTG,game,b,'V8 Timing Green Dragon','hand')),true);
     assert.equal(game.canCastTiming(b,put(MTG,game,b,'Simple Artifact','hand')),true);
     assert.equal(game.canCastTiming(b,wrong),false);
   });

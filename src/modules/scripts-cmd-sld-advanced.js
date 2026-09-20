@@ -13,7 +13,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }, 'Cleric Class: return a creature and gain life');
   };
   S['Dazzling Theater // Prop Room'] = C.bdfRoom([{key: 'left', name: 'Dazzling Theater', cost: '{3}{W}'}, {key: 'right', name: 'Prop Room', cost: '{2}{W}'}], {cslTheater: true});
-  S['Howlsquad Heavy'] = {asEnters: (g, c) => {c.ctrl.counters.speed = Math.max(1, c.ctrl.counters.speed || 0);}, statics: [C.subtype('Goblin', true, 0, 0, ['haste'])], triggers: [C.combat('Create a Goblin that attacks this combat if able', async ctx => {
+  S['Howlsquad Heavy'] = {oracleStartEnginesV10:true, statics: [C.subtype('Goblin', true, 0, 0, ['haste'])], triggers: [C.combat('Create a Goblin that attacks this combat if able', async ctx => {
     const cs = await C.make(ctx, M.TOKENS.goblin); for (const c of cs) ctx.g.untilEffects.push({kind: 'cslMustAttack', iid: c.iid, version: c.zoneVersion, combat: ctx.g.afcCombatId, expires: 'eot'});
   })], mana: {cost: {tap: true}, cond: (g, c, p) => (p.counters.speed || 0) >= 4, produce: (g, c, p) => [{R: g.creatures(p).filter(c => c.hasSub('Goblin')).length}]}};
   S['Invigorate'] = {cslInvigorate: true, targets: [T.creature()], resolve: ctx => C.buff(ctx, ctx.targets[0], 4, 4)};

@@ -78,11 +78,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     oracle: 'Flying', isTokenDef: true,
   };
 
+  // CR 702.171: saddle is a sorcery-speed activated ability; summoning
+  // sickness does not prevent another creature paying its tap cost.
+  MTG.oracleSaddlePowerV10 = card => (Number(card.power)||0)+(card.cur?.abilitiesDisabled?0:Number(card.def.oracleSaddleBonusV10)||0);
+  MTG.oracleIsSaddledV10 = (game,card) => card?.zone==='battlefield'&&game.bf().includes(card)&&game.untilEffects.some(effect=>effect.kind==='oracleSaddledV10'&&effect.iid===card.iid&&effect.zoneVersion===card.zoneVersion);
   MTG.applyOracleMechanic = function (script, operation) {
     if (!script || !operation || typeof operation.kind !== 'string') return false;
     const kind = operation.kind.startsWith('mechanic-')
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
+    if(kind==='saddle-crew-power-v10'){
+      if(operation.toughness){script.oracleCrewToughnessV10=true;return true;}
+      if(!Number.isSafeInteger(operation.bonus)||operation.bonus<0)return false;
+      script.oracleCrewBonusV10=operation.bonus;if(operation.saddle)script.oracleSaddleBonusV10=operation.bonus;return true;
+    }
+    if(kind==='saddle-v10'){
+      if(!Number.isSafeInteger(operation.n)||operation.n<0)return false;
+      push(script,'abilities',{label:'Saddle '+operation.n,oracleSaddleV10:true,sorcery:true,
+        cost:{tapPermanents:{n:operation.n?1:0,totalPower:operation.n,saddleV10:true,filter:(game,card,source)=>card!==source&&card.is('Creature')}},
+        cond:(game,source,player)=>game.creatures(player).filter(card=>card!==source&&!card.tapped).reduce((sum,card)=>sum+Math.max(0,MTG.oracleSaddlePowerV10(card)),0)>=operation.n,
+        run:async ctx=>{if(aliveSource(ctx))ctx.g.untilEffects.push({kind:'oracleSaddledV10',iid:ctx.src.iid,zoneVersion:ctx.sourceZoneVersion,expires:'eot'});},
+        aiScore:(game,card)=>MTG.oracleIsSaddledV10(game,card)?-20:card.tapped?-5:5});
+      return true;
+    }
+    if(kind==='mutate-v10'){
+      if(!/^(?:\{(?:[0-9]+|[WUBRGC]|[WUBRG]\/[WUBRG])\})+$/.test(operation.cost))return false;
+      script.mutate=operation.cost;push(script,'altCosts',{mutate:true,altCostStr:operation.cost,label:'Mutate '+operation.cost});return true;
+    }
+    if(kind==='start-engines-v10'){script.oracleStartEnginesV10=true;return true;}
+    if(kind==='enters-prepared-v10'){chainAsEnters(script,(game,card)=>MTG.oraclePrepareV10(game,card));return true;}
+    if(kind==='player-rule-v10'){(script.oraclePlayerRulesV10||=[]).push({rule:operation.rule,players:operation.players});return true;}
+    if(kind==='printed-keywords-v10'){for(const keyword of operation.keywords)(script.kws||=[]).push(keyword);return true;}
+    if(kind==='deck-limit-v10'){if(operation.limit!=='all'&&(!Number.isSafeInteger(operation.limit)||operation.limit<1))return false;script.oracleDeckCopyLimitV10=operation.limit;return true;}
     if(kind==='leyline-v9'){script.cdkLeyline=true;return true;}
     if(kind==='umbra-armor-v9'){script.umbraArmor=true;return true;}
     if(kind==='skip-draw-v9'){script.c1719SkipDraw=true;return true;}
@@ -447,6 +474,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       return true;
     }
+    if (kind === 'prowess-v10') {
+      keyword(script,'prowess');
+      push(script,'triggers',captureTriggerObjects({on:'castNonCreature',desc:'Prowess-v10',filter:(game,self,data)=>data.player===self.ctrl,
+        run:async(ctx,capture)=>{if(sameBattlefieldObject(ctx.g,ctx.src,capture.source))MTG.E.pumpUntilEOT(ctx.g,ctx.src,1,1);}},()=>({})));
+      return true;
+    }
     if (kind === 'mentor') {
       push(script, 'triggers', {
         on: 'attacks', desc: 'Mentor',
@@ -611,13 +644,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const subtype = String(operation.subtype || '').trim();
       const cost = String(operation.cost || '').trim();
       if (!subtype || !cost) return false;
-      script.cycling = {
-        cost, noDraw: true,
+      const cycling = {
+        cost, noDraw: true,oracleTypecyclingV10:subtype,
         effect: async ctx => {
           const basicLand = /^basic land$/i.test(subtype);
           const available = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library)).filter(card => basicLand
             ? card.is('Land') && (card.def.super || []).includes('Basic')
-            : card.hasSub(subtype));
+            : subtype==='artifact land'?card.is('Artifact')&&card.is('Land'):card.hasSub(subtype));
           let chosen = [];
           if (available.length) chosen = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseCards', from: available, min: 0, max: 1, search: true,
@@ -632,6 +665,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           MTG.shuffle(ctx.you.library, ctx.g.rnd);
         },
       };
+      if(script.cycling)(script.oracleExtraCyclingV10||=[]).push(cycling);else script.cycling=cycling;
       return true;
     }
     return false;

@@ -1,8 +1,12 @@
 import {rippleProof}from'./helpers/oracle-ripple-proof.mjs';
+import {fundSnow} from './helpers/oracle-snow-proof.mjs';
 import {isNamedCountOperation,namedCountProof} from './helpers/oracle-named-count-proof.mjs';
 import {soulbondProof}from'./helpers/oracle-soulbond-proof.mjs';
 import {installNameSearchProof,assertNameSearch} from './helpers/oracle-name-search-proof.mjs';
 import {creatureUpgradeProof,activateUpgrade}from'./helpers/oracle-creature-upgrade-proof.mjs';
+import {skipEffectProofV10} from './helpers/oracle-v10-turn-proof.mjs';
+import {prototypeProofV10} from './helpers/oracle-v10-prototype-proof.mjs';
+import {bargainProofV10} from './helpers/oracle-v10-bargain-proof.mjs';
 import {recordSourceDuration,finishSourceDurations} from './helpers/oracle-source-duration-proof.mjs';
 import {declareExertProof}from'./helpers/oracle-exert-proof.mjs';
 import {assertRoleToken}from'./helpers/oracle-v8-predefined-token-proof.mjs';
@@ -13,6 +17,7 @@ import {printedTokenName} from './helpers/oracle-token-name.mjs';
 import {installTokenFormsProof,assertTemptingOffer} from './helpers/oracle-token-forms-proof.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {manaBonusProofV10,damagePreventionRuleProofV10} from './helpers/oracle-v10-mana-proof.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -51,9 +56,9 @@ import { stageRevealed, assertRevealed } from './helpers/oracle-v8-revealed-proo
 import { installStackCopyProof, stageStackCopyTarget, assertStackCopyEffect, prepareStackCopySource, finishStackCopyProof, fireStackCopyEvent } from './helpers/oracle-v8-stack-copy-proof.mjs';
 import { castingRulesProof, stageEntryCastingRules } from './helpers/oracle-v8-casting-rule-proof.mjs';
 import { spellLimitProof } from './helpers/oracle-v8-casting-limits-proof.mjs';
-import { chosenColorProof } from './helpers/oracle-chosen-color-proof.mjs';
+import { chosenColorProof, enterChosenColorSource } from './helpers/oracle-chosen-color-proof.mjs';
 import { assertDelayedObjects } from './helpers/oracle-delayed-objects-proof.mjs';
-import { stageCondition, stageFalseCondition, stageCount, countValue, matches as v5Matches, matchesTarget, characteristicProof, combatRestrictionProof, grantedMechanicProof, staticProof as v5StaticProof, mechanicKinds, mechanicProof as v5MechanicProof } from './helpers/oracle-v5-proof.mjs';
+import { stageCondition, stageFalseCondition, stageCount, countValue, matches as v5Matches, matchesTarget, characteristicProof, combatRestrictionProof, grantedMechanicProof, staticProof as v5StaticProof, mechanicKinds, mechanicProof as v5MechanicProof, proveSaddleCrewPowerV10 } from './helpers/oracle-v5-proof.mjs';
 
 const v5Helpers=()=>({gameFor,decision,fund,constrainSquadMana,fillLibrary,zoneCard,permanent,fixtureDefinition,resolveAll,stageGenericTarget,auraProofTarget,stageGenericStackTarget,stageSpellV4Target,spellV4TargetVariants,semanticSubtypeFixture});
 
@@ -64,6 +69,10 @@ function prepareGenericCountSource(context,operation,source){
   if(operation.cost?.untapSelf&&source.zone==='battlefield')source.tapped=true;
   if(context.conditionalSourceTapped!==undefined)source.tapped=context.conditionalSourceTapped;
   for(const prepare of context.prepareSourceConditions||[])prepare(source);
+  if(flattenProofEffects(operation.effects).some(effect=>effect.action==='draw'&&JSON.stringify(effect.n).includes('max-stat'))){
+    for(const card of context.game.bf())if(!card.def.oracleImplementation){for(const stat of ['power','toughness'])if(Number(card.def[stat])>10)card.def[stat]='10';}
+    context.game.recalc();
+  }
   if(source.zone!=='battlefield')return;
   for(const target of context.blockingSourceTargetsV9||[]){target.blocking=source.iid;source.attacking=target.ctrl;source.wasBlocked=true;source.blockedBy=[target];}
   const visit=node=>{
@@ -81,6 +90,8 @@ function prepareGenericCountSource(context,operation,source){
     for(const [key,child]of Object.entries(node))if(!['condition','activationCondition'].includes(key)&&child&&typeof child==='object')Array.isArray(child)?child.forEach(visit):visit(child);
   };
   visit(operation.effects);
+  visit(operation.targets);
+  for(const prepare of context.prepareThresholdV10||[])prepare(source);
 }
 
 function stageCounterThreshold(context,operation,source){
@@ -115,6 +126,8 @@ function stageCounterEffectCard(context,card,effect){
 function installEffectEvidence(context){
   if(context.moveEvidence)return;
   const {game}=context;
+  context.untapEvidence=[];const originalUntap=game.untap;
+  game.untap=function(card,...args){context.untapEvidence.push(card);return originalUntap.call(this,card,...args);};
   context.discoverEvidence=[];const originalDiscover=game.oracleDiscoverV9;
   game.oracleDiscoverV9=async function(ctx,n){
     const row={source:ctx.src,player:ctx.you,n,library:ctx.you.library.slice(),moveIndex:context.moveEvidence.length};
@@ -136,6 +149,8 @@ function installEffectEvidence(context){
   if(originalCoin)game.flipCoin=async function(player,...args){const row={player,before:genericProofSnapshot(context,[])};context.coinEvidence.push(row);row.result=await originalCoin.call(this,player,...args);return row.result;};
   context.exploreEvidence=[];context.dredgeEvidence=[];context.exploitEvidence=[];const originalEmit=game.emit;game.emit=async function(name,data,...args){if(name==='explored')context.exploreEvidence.push({...data});if(name==='dredged')context.dredgeEvidence.push({...data});if(name==='exploited')context.exploitEvidence.push({...data});return originalEmit.call(this,name,data,...args);};
   context.counterChangeEvidence=[];context.usedCounterChanges=new Set();
+  context.animationEvidence=[];context.usedAnimationEvidence=new Set();const addAnimation=game.addOracleAnimation;
+  game.addOracleAnimation=function(card,effect){context.animationEvidence.push({card,effect,before:genericProofSnapshot(context,[card])});return addAnimation.call(this,card,effect);};
   for(const [method,action]of [['addCounters','counter'],['removeCounters','remove-counter']]){
     const original=game[method];game[method]=function(card,kind,n,...args){
       const row={card,kind,n,action,zoneVersion:card.zoneVersion,before:card.counters[kind]||0,snapshot:genericProofSnapshot(context,[card])};
@@ -153,7 +168,7 @@ function installEffectEvidence(context){
   const originalSacrifice=game.sacrifice;game.sacrifice=async function(player,card,...args){const row={player,card,from:card?.zone,...sacrificedStats(card)};const result=await originalSacrifice.call(this,player,card,...args);row.to=card?.zone;context.sacrificeEvidence.push(row);return result;};
   const originalSacrificeMany=game.sacrificeMany;game.sacrificeMany=async function(player,cards,...args){const rows=cards.map(card=>({player,card,from:card.zone,...sacrificedStats(card)})),result=await originalSacrificeMany.call(this,player,cards,...args);for(const row of rows){row.to=row.card.zone;context.sacrificeEvidence.push(row);}return result;};
   context.destroyEvidence=[];const originalDestroy=game.destroyMany;game.destroyMany=async function(cards,...args){const row={cards:cards.slice(),before:genericProofSnapshot(context,cards)};row.actual=await originalDestroy.call(this,cards,...args);context.destroyEvidence.push(row);return row.actual;};
-  context.lifeEvidence=[];const originalLoseLife=game.loseLife;game.loseLife=async function(player,n,...args){const row={player,n,before:player.life};row.actual=await originalLoseLife.call(this,player,n,...args);row.after=player.life;context.lifeEvidence.push(row);return row.actual;};
+  context.lifeEvidence=[];const originalLoseLife=game.loseLife;game.loseLife=async function(player,n,...args){const row={player,n,before:player.life,stateBefore:genericProofSnapshot(context,[])};row.actual=await originalLoseLife.call(this,player,n,...args);row.after=player.life;context.lifeEvidence.push(row);return row.actual;};
   context.gainLifeEvidence=[];const originalGainLife=game.gainLife;game.gainLife=async function(player,n,source,...args){const row={player,n,source,before:player.life};const result=await originalGainLife.call(this,player,n,source,...args);row.after=player.life;context.gainLifeEvidence.push(row);return result;};
   context.drawEvidence=[];const originalDraw=game.draw;game.draw=async function(player,n,source,...args){const row={player,n,source,library:player.library.length},beforeDraw=player.turnState.drewThisTurn||0;const result=await originalDraw.call(this,player,n,source,...args);row.drawn=(player.turnState.drewThisTurn||0)-beforeDraw;context.drawEvidence.push(row);return result;};
 }
@@ -190,6 +205,17 @@ function stageCardCosts(MTG,ctx,entry){
 
 async function stageGenericStackTarget(MTG,ctx,target,index,from=target.castFrom||'hand'){
   if(target.alternatives?.every(part=>part.zone==='stack'))return stageGenericStackTarget(MTG,ctx,{...target,...target.alternatives[0],alternatives:undefined},index,from);
+  if(target.singleTargetV10){
+    const {game,a,b}=ctx,player=target.controller==='you'?a:b;
+    const original=permanent(MTG,game,a,fixtureDefinition('Original redirect target',['Creature'],{power:'2',toughness:'20'}));
+    const replacement=permanent(MTG,game,a,fixtureDefinition('New redirect target',['Creature'],{power:'2',toughness:'20'}));
+    const ability=target.what==='stack-ability';
+    const spell=ability?permanent(MTG,game,player,fixtureDefinition('Single target ability witness',['Artifact'],{abilities:[{label:'Redirect witness',cost:{mana:'{0}'},targets:[MTG.T.creature()],run:async c=>c.g.damageAny(c.src,c.targets[0],1)}]})):new MTG.CardInst(fixtureDefinition('Single target spell witness',['Instant'],{cost:'{0}',targets:[MTG.T.creature()],resolve:async c=>c.g.damageAny(c.src,c.targets[0],1)}),player);
+    if(!ability){spell.zone='hand';player.hand.push(spell);}fund(player,100);
+    const decide=player.controller.decide.bind(player.controller);player.controller.decide=(g,q)=>q.type==='chooseTargets'&&q.candidates.includes(original)?[original]:decide(g,q);
+    try{assert.equal(ability?await game.activateAbility(player,game.activatableList(player).find(row=>row.card===spell)):await game.castSpell(player,spell,{from:'hand'}),true);}finally{player.controller.decide=decide;}
+    const object=game.stack.find(row=>(row.card||row.srcCard)===spell);(ctx.retargetFixturesV10||=new Map()).set(object,{original,replacement,damage:original.damage});return object;
+  }
   const copyTarget=await stageStackCopyTarget(MTG,ctx,target,index,v8Helpers());if(copyTarget)return copyTarget;
   if(target.threshold==='X')return stageGenericStackTarget(MTG,ctx,{...target,threshold:3},index,from);
   if(typeof target.threshold==='object'){
@@ -197,14 +223,16 @@ async function stageGenericStackTarget(MTG,ctx,target,index,from=target.castFrom
     return stageGenericStackTarget(MTG,ctx,{...target,threshold:Math.max(0,countValue(ctx,null,target.threshold))},index,from);
   }
   const {game,b}=ctx,q=target.spellQuality||'any',colors={white:'W',blue:'U',black:'B',red:'R',green:'G'};
+  if(target.controllerConditionV10)stageCondition(MTG,{...ctx,a:b},target.controllerConditionV10,null,v5Helpers());
   const f=target.spellFilter?.alternatives?.[0]||target.spellFilter;
   const rawType=f?.what==='permanent'?'creature':f?.what?.split(' or ')[0]||q;
   const type=['creature','artifact','enchantment','planeswalker','battle','instant','sorcery'].includes(rawType)?rawType[0].toUpperCase()+rawType.slice(1):'Instant';
-  const card=new MTG.CardInst(fixtureDefinition('V6 stack target '+index,[type],{cost:target.stat==='mv'?'{'+target.threshold+'}':ctx.needsStackManaValue?'{3}':'{0}',subtypes:f?.subtype?[f.subtype]:[],super:target.legendary||f?.legendary?['Legendary']:[],kws:ctx.preserveCastTurn?['flash']:[],colorsOverride:(target.colorsAny||f?.colorsAny)?.slice(0,1)||(colors[f?.color||q]?[colors[f?.color||q]]:q==='multicolored'||f?.color==='multicolored'?['G','W']:[]),power:'2',toughness:'20'}),b);
+  const card=new MTG.CardInst(fixtureDefinition('V6 stack target '+index,[type],{cost:target.stat==='mv'?'{'+target.threshold+'}':ctx.needsStackManaValue?'{3}':'{0}',subtypes:(f?.subtype||target.subtype)?[f?.subtype||target.subtype]:[],super:target.legendary||f?.legendary?['Legendary']:[],kws:ctx.preserveCastTurn?['flash']:[],colorsOverride:(target.colorsAny||f?.colorsAny)?.slice(0,1)||(colors[f?.color||q]?[colors[f?.color||q]]:q==='multicolored'||f?.color==='multicolored'?['G','W']:[]),power:'2',toughness:'20'}),b);
   if(target.targetsObject){
     const ref=target.targetsObject,subject=ref.what==='player'||ref.what==='any'?ctx.a:stageGenericTarget(MTG,ctx,ref,'spell-subject-'+index);
     card.def.targets=[{what:subject instanceof MTG.Player?'player':'permanent',zone:subject instanceof MTG.Player?'player':'battlefield',min:1,count:1,filter:(_g,candidate)=>candidate===subject}];
   }
+  if(target.targetsSourceV10){assert.ok(ctx.earlyOracleSourceV10);card.def.targets=[{what:'creature',min:1,count:1,filter:(g,c)=>c===ctx.earlyOracleSourceV10}];}
   fund(b);
   card.zone=from;b[from].push(card);const phase=game.phase,active=game.turnPlayer;game.phase='main1';if(!ctx.preserveCastTurn)game.turnPlayer=b;
   if(from==='exile'){card.meta.playableBy=b;card.meta.playableUntil=game.turnNo;}
@@ -392,6 +420,7 @@ function fundPaidColorEntry(MTG,player,entry,x=3){
   }
 }
 function prepareConditionPayment(MTG,context,entry){
+  if(context.bargainProofV10)return {oracleBargainV10:true};
   if(context.kickerProof===false){
     // Make the unpaid branch a legal real choice for both controllers. Exact
     // printed mana and tapped mana sources cannot also pay a positive kicker.
@@ -539,6 +568,19 @@ function auraProofTarget(operation,controller='you'){
   return operation?.targetV9?{...operation.targetV9,controller:operation.targetV9.controller==='any'?controller:operation.targetV9.controller}:{what:(operation?.what||'creature').replace(/ you control$/,''),zone:'battlefield',controller};
 }
 function stageGenericTarget(MTG, context, target, index, effect = null) {
+  if(target.threshold?.kind==='paid-colors')return stageGenericTarget(MTG,context,{...target,threshold:0},index,effect);
+  if(typeof target.threshold==='object'&&/"(?:explicit-source-stat|source-stat|source-counters|sacrificed-stat)"/.test(JSON.stringify(target.threshold))){
+    const result=stageGenericTarget(MTG,context,{...target,threshold:2},index,effect);
+    const sacrificial=JSON.stringify(target.threshold).includes('sacrificed-stat');
+    if(!sacrificial)(context.prepareThresholdV10||=[]).push(source=>{
+      if(/"(?:explicit-source-stat|source-stat)"/.test(JSON.stringify(target.threshold))&&source.power<=1)context.game.addCounters(source,'+1/+1',3);
+      const threshold=countValue(context,source,target.threshold);
+      for(const card of [result].flat())if(target.stat==='mv')card.def.cost='{'+Math.max(0,threshold)+'}';else card.def[target.stat]=String(threshold);
+      context.game.recalc();
+    });
+    return result;
+  }
+  if(target.chosenColorV10&&context.chosenColorV10)return stageGenericTarget(MTG,context,{...target,chosenColorV10:false,colorsAny:[context.chosenColorV10]},index,effect);
   if(target.chosenGroupV9)return stageGenericTarget(MTG,context,{...target,chosenGroupV9:false,...(target.chosenGroupV9==='color'?{color:'white'}:{subtype:[...MTG.CREATURE_SUBTYPES].sort()[0]})},index,effect);
   if(target.targetCountX)return stageGenericTarget(MTG,context,{...target,targetCountX:false,min:3,max:3},index,effect);
   if(target.threshold==='X')return stageGenericTarget(MTG,context,{...target,threshold:3},index,effect);
@@ -565,7 +607,9 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   if(target.name&&MTG.DEFS[target.name])return zoneCard(MTG,controller,target.name,target.zone==='graveyard'?'graveyard':target.zone==='hand'?'hand':'battlefield',game);
   const what = String(target.what || 'creature').toLowerCase();
   if (what === 'player' || what === 'opponent' || what === 'any' || what === 'player or planeswalker') {
-    return what === 'player' && target.controller === 'you' ? a : b;
+    const player=what === 'player' && target.controller === 'you' ? a : b;
+    if(target.lostLifeThisTurnV10)player.turnState.lifeLost=1;
+    return player;
   }
   let types = ['Creature'];
   if (what === 'artifact') types = ['Artifact'];
@@ -579,6 +623,7 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   else if (what === 'instant or sorcery' || what === 'instant') types = ['Instant'];
   else if (what === 'sorcery') types = ['Sorcery'];
   else if (what === 'card') types = ['Creature'];
+  if(what==='permanent'&&MTG.CREATURE_SUBTYPES.has(target.subtype))types=['Creature'];
   if(target.notType==='Creature'&&types.includes('Creature'))types=['Enchantment'];
   if(target.excludedTypes?.some(type=>types.includes(type)))types=[['Instant','Enchantment','Artifact','Creature','Land'].find(type=>!target.excludedTypes.includes(type))];
   const definition = fixtureDefinition(`Oracle Generic Target ${index}`, types, {
@@ -588,6 +633,7 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   if(target.withKeyword)definition.kws=[target.withKeyword];
   if(target.alsoType&&!definition.types.includes(target.alsoType))definition.types.push(target.alsoType);
   if(target.colorsAny)definition.colorsOverride=[target.colorsAny[0]];
+  if(target.chosenColorV10)definition.colorsOverride=['W','U','B','R','G'];
   if(target.subtype)definition.subtypes=[target.subtype];
   if(target.subtype==='Aura')definition.auraTarget=[{what:'creature',filter:(game,card)=>card.is?.('Creature')}];
   if(types.includes('Planeswalker'))definition.loyalty='20000';
@@ -613,12 +659,14 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   if(target.commander)card.commander=true;
   if(target.anyCounter)card.counters.charge=1;
   if(target.damagedThisTurn)card.meta._lastDamageVisual={turn:game.turnNo,sourceId:0};
+  if(target.hasToxicV10!==undefined){card.def={...card.def,toxic:target.hasToxicV10?1:0};game.recalc();}
   if(target.dealtDamageV9)card.meta.dealtDamageV9={turn:game.turnNo,players:target.dealtDamageV9==='you'?[context.a.idx]:[]};
   if(target.faceDownV9)card.faceDown=true;
   if(target.faceUpV9)card.faceDown=false;
   if(target.modifiedV9)card.counters['+1/+1']=1;
   if(target.blockingSourceV9)(context.blockingSourceTargetsV9||=[]).push(card);
   if(target.equalStatsV9){card.def.power='2';card.def.toughness='2';game.recalc();}
+  if(target.excludedFiltersV10?.some(filter=>filter.equalStatsV9)){card.def.power='2';card.def.toughness='3';game.recalc();}
   if(target.enteredThisTurn)card.meta._enteredTurn=game.turnNo;
   if(target.attackedThisTurn)card.meta._attackedTurn=game.turnNo;
   if (effect?.action==='untap')card.tapped=true;
@@ -636,6 +684,7 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   }
   if (target.attacking || target.attackingOrBlocking || target.controller === 'defending-player') card.attacking = a;
   if(target.attackingYouV9)card.attacking=a;
+  if(target.unblockedV10){card.attacking=card.ctrl===a?b:a;card.wasBlocked=false;game.combat={...(game.combat||{}),blockersDeclared:true};}
   if(target.exactStatsV9){card.def.power=String(target.exactStatsV9.power);card.def.toughness=String(target.exactStatsV9.toughness);}
   if(target.totalStatsV9){card.def.power=String(Math.max(0,target.totalStatsV9.n-1));card.def.toughness='1';}
   if(target.commanderV9)card.commander=true;
@@ -654,6 +703,7 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
 }
 
 function genericEffectTarget(effect, selectedTargets, source, context = {}) {
+  if(effect.target==='event-stack-v10')return context.eventStackV10;
   if(effect.target==='combat-defender-v9')return context.defendingPlayer;
   if(effect.target==='attached-host')return context.game.byIid(source.attachedTo)||context.attachmentHosts?.get(source);
   if(effect.target?.kind==='locked-player')return selectedTargets[effect.target.index];
@@ -699,7 +749,7 @@ function genericProofSnapshot(context, trackedCards) {
   return {
     stackManaValues:new Map(context.game.stack.filter(object=>object.kind==='spell').map(object=>[object,context.game.stackSpellManaValue(object)])),
     players: new Map(context.game.players.map(player => [player, playerState(player)])),
-    cards: new Map([...new Set([...trackedCards,...context.game.battlefield])].filter(Boolean).map(card => [card, cardState(card)])),
+    cards: new Map([...new Set([...trackedCards,...context.game.battlefield,...context.game.stack.filter(row=>row.kind==='spell').map(row=>row.card)])].filter(Boolean).map(card => [card, cardState(card)])),
     battlefield: context.game.battlefield.slice(),
     tokenCount: context.game.battlefield.filter(card => card.isToken).length,
     monarch: context.game.monarch || null,
@@ -727,9 +777,48 @@ function genericProofSnapshot(context, trackedCards) {
 async function assertGenericEffectEvidence(MTG, context, entry, effect, source, selectedTargets,
   damagedPlayer, before, trace, label) {
   const { game, a, b } = context;
+  if(effect.action==='skip-v10')return skipEffectProofV10(game,genericEffectPlayer(effect,selectedTargets,source,a,damagedPlayer,context),effect,label);
+  if(effect.action==='prepare-v10'){
+    assert.equal(source.meta.prepared,true,label+': actual effect prepares its source');
+    const copy=game.byIid(source.meta.preparedCopy);assert.ok(copy);assert.equal(copy.zone,'exile');assert.equal(copy.isCopySpell,true);assert.equal(copy.meta.preparedBy,source.iid);return 5;
+  }
+  if(effect.toxicV10){
+    const subjects=effect.filters?(context.groupFixtures.get(effect)||[]):[genericEffectTarget(effect,selectedTargets,source,context)].flat().filter(Boolean);
+    assert.ok(subjects.length,label+': numeric keyword recipients');
+    for(const card of subjects)if(card.zone==='battlefield')await combatRestrictionProof(MTG,context,card,effect,v5Helpers(),label+'/toxic');
+  }
+  if(effect.action==='retarget-single-v10'){
+    const object=selectedTargets[effect.target],fixture=context.retargetFixturesV10.get(object),next=object.targets.flat().find(Boolean);
+    assert.notEqual(next,fixture.original,label+': target actually changed');assert.equal(object.targets.flat().filter(Boolean).length,1);
+    assert.equal(object.targetIdentities.flat()[0].zoneVersion,next.zoneVersion,label+': new target identity captured');
+    assert.equal(fixture.original.damage,fixture.damage,label+': original recipient is unaffected');
+    assert.ok(context.damageEvidence.some(row=>row.source===(object.card||object.srcCard)&&row.target===next&&row.actual===1),label+': the redirected object resolves on its new target');return 5;
+  }
+  if(effect.action==='return-dead-source-v10'){assert.equal(source.zone,effect.destination,label+': the actual dying card returns');return 1;}
+  if(effect.action==='additional-land-v10'){
+    const base=a.maxLands,old=a.landsPlayed;game.turnPlayer=a;game.phase='main1';
+    const n=game.landPlayLimit(a);assert.ok(n>=base+effect.n,label+': additional land allowance');
+    a.landsPlayed=n-effect.n;
+    for(let i=0;i<effect.n;i++){const land=zoneCard(MTG,a,'Forest','hand');assert.equal(await game.playLand(a,land),true);}
+    const excess=zoneCard(MTG,a,'Forest','hand');assert.equal(await game.playLand(a,excess),false,label+': printed allowance is finite');a.landsPlayed=old;return effect.n+2;
+  }
+  if(effect.action==='player-rule-v10'){
+    const players=effect.who==='each-player'?game.players:effect.who==='each-opponent'?a.opponents(game):[genericEffectPlayer(effect,selectedTargets,source,a,damagedPlayer,context)];
+    for(const player of players){
+      if(effect.rule==='no-search')assert.equal(game.canSearchLibrary(player),false,label+': actual search prohibited');
+      else {const land=zoneCard(MTG,player,'Forest','hand');game.turnPlayer=player;game.phase='main1';assert.equal(game.playableLands(player).includes(land),false);assert.equal(await game.playLand(player,land),false,label+': direct land play prohibited');}
+    }return players.length*2;
+  }
   if(effect.action==='no-life-gain-v9'){
     const old=[a.life,b.life];await game.gainLife(a,3,source);await game.gainLife(b,3,source);
     assert.deepEqual([a.life,b.life],[old[0]+(effect.who==='opponents'?3:0),old[1]],label+': actual life gain obeys prohibition');return 2;
+  }
+  if(effect.action==='hand-library-v10'){
+    const choice=trace.findLast(row=>row.query.prompt==='Choose cards from your hand for your library');assert.ok(choice,label+': actual hand selection');
+    const cards=choice.result;assert.equal(cards.length,Math.min(effect.n,choice.query.from.length),label+': printed quantity');
+    assert.equal(new Set(cards).size,cards.length);for(const card of cards){assert.equal(card.zone,'library');assert.ok(a.library.includes(card));assert.equal(a.hand.includes(card),false);}
+    if(effect.placement!=='shuffle')assert.ok(cards.every(card=>(effect.placement==='top'?a.library.slice(-cards.length):a.library.slice(0,cards.length)).includes(card)),label+': cards occupy the specified library end');
+    return cards.length+2;
   }
   if(effect.action==='no-damage-prevention-v9'){
     const old=b.life;game.untilEffects.push({kind:'oraclePreventNextAmount',target:b,remaining:3,direction:'to',expires:'eot'});
@@ -741,7 +830,7 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     else {const token=game.creatures(a).find(card=>card.isToken&&card.hasSub('Spirit')&&!before.battlefield.includes(card));assert.ok(token,label+': Endure created the Spirit');assert.equal(token.power,effect.n);assert.equal(token.toughness,effect.n);assert.deepEqual(Array.from(token.colors),['W']);}
     return 4;
   }
-  if(effect.action==='attach-source'&&effect.chooseOneV9){const host=game.byIid(source.attachedTo);assert.ok(host&&!before.battlefield.includes(host)&&host.isToken&&host.hasSub('Hero'),label+': equipment attached to an actual newly created Hero');return 1;}
+  if(effect.action==='attach-source'&&effect.chooseOneV9){const host=game.byIid(source.attachedTo);assert.ok(host&&!before.battlefield.includes(host)&&host.isToken,label+': equipment attached to an actual newly created token');if(JSON.stringify(entry.implementation).includes('"tokenKey":"hero11"'))assert.equal(host.hasSub('Hero'),true,label+': Job select created a Hero');return 1;}
   if(typeof effect.who==='number'&&Array.isArray(selectedTargets[effect.who])&&['gain-life','lose-life','draw','mill','discard'].includes(effect.action)){
     for(const player of selectedTargets[effect.who]){const targets=selectedTargets.slice();targets[effect.who]=player;await assertGenericEffectEvidence(MTG,context,entry,effect,source,targets,damagedPlayer,before,trace,label+'/player');}return selectedTargets[effect.who].length;
   }
@@ -809,7 +898,7 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   if(effect.action==='no-cast-v9'){
     const players=effect.who==='each-opponent'?game.players.filter(p=>p!==a):[genericEffectTarget({target:effect.who},selectedTargets,source,context)];
     const record=game.untilEffects.find(e=>e.kind==='oracleNoCastV9'&&e.quality===effect.quality&&players.every(p=>e.players.includes(p)));assert.ok(record,label+': actual player restriction installed');
-    for(const player of players){fund(player,30);const probe=zoneCard(MTG,player,'Lightning Bolt','hand'),mana=Object.values(player.pool).reduce((s,n)=>s+n,0);assert.equal(await game.castSpell(player,probe,{from:'hand'}),false,label+': prohibited spell cannot be announced');assert.equal(probe.zone,'hand');assert.equal(Object.values(player.pool).reduce((s,n)=>s+n,0),mana);}
+    for(const player of players){fund(player,30);const probe=zoneCard(MTG,player,effect.quality==='creature'?'Grizzly Bears':'Lightning Bolt','hand'),mana=Object.values(player.pool).reduce((s,n)=>s+n,0);assert.equal(await game.castSpell(player,probe,{from:'hand'}),false,label+': prohibited spell cannot be announced');assert.equal(probe.zone,'hand');assert.equal(Object.values(player.pool).reduce((s,n)=>s+n,0),mana);}
     return players.length*3;
   }
   if(effect.action==='graveyard-v9'){for(const card of [selectedTargets[effect.target]].flat()){assert.equal(card.zone,'graveyard');assert.ok(card.owner.graveyard.includes(card));}return 2;}
@@ -828,6 +917,15 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
       context.groupFixtures.set(adjusted,context.groupFixtures.get(child)||[]);
       await assertGenericEffectEvidence(MTG,context,entry,adjusted,source,selectedTargets,damagedPlayer,before,trace,label+'/chosen-group');
     }return 1;
+  }
+  if(effect.action==='choose-subtype-v10'){
+    const choice=trace.findLast(row=>row.query.type==='chooseOption'&&row.query.prompt===source.name+': choose a creature type');
+    assert.ok(choice,label+': actual creature type decision');assert.ok(MTG.CREATURE_SUBTYPES.has(choice.result));assert.equal(effect.exclude.includes(choice.result),false);
+    const bind=value=>value?.kind==='chosen-subtype-v10'?choice.result:Array.isArray(value)?value.map(bind):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,child])=>[key,bind(child)])):value;
+    const adjusted=bind(effect.effects),staged=context.chosenSubtypeProof.get(effect);
+    const copyMaps=(old,next)=>{for(const value of Object.values(context))if(value instanceof Map&&value.has(old))value.set(next,value.get(old));for(const key of ['effects','elseEffects'])for(let i=0;i<(old[key]||[]).length;i++)copyMaps(old[key][i],next[key][i]);};
+    for(let i=0;i<adjusted.length;i++){copyMaps(staged[i],adjusted[i]);await assertGenericEffectEvidence(MTG,context,entry,adjusted[i],source,selectedTargets,damagedPlayer,before,trace,label+'/chosen-type');}
+    return 3;
   }
   if(effect.action==='player-sequence-v9'){
     const players=effect.who==='each-player'?game.players:effect.who==='each-opponent'?game.players.filter(player=>player!==a):[effect.who==='you'?a:context.eventPlayer||damagedPlayer];
@@ -934,7 +1032,7 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   }
   if(effect.action==='give-control-v9'){
     const player=genericEffectPlayer(effect,selectedTargets,source,a,damagedPlayer,context);
-    for(const card of [selectedTargets[effect.target]].flat()){assert.notEqual(before.cards.get(card).ctrl,player,label+': a transfer was staged');assert.equal(card.ctrl,player,label+': announced player gains control');}return;
+    for(const card of [genericEffectTarget(effect,selectedTargets,source,context)].flat()){assert.notEqual(before.cards.get(card).ctrl,player,label+': a transfer was staged');assert.equal(card.ctrl,player,label+': announced player gains control');}return;
   }
   if(effect.action==='exchange-control-v9'){
     const resolve=ref=>ref==='self'?source:selectedTargets[ref],cards=effect.group?[resolve(effect.target)].flat():[resolve(effect.target),resolve(effect.otherTarget)];
@@ -1015,7 +1113,14 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     if(value.kind==='sacrificed-stat')return Math.max(0,context.sacrificeEvidence.at(-1)?.[value.stat]||0);
     if(value.kind==='grave-source-power')return Math.max(0,(snapshot.cards.get(source)?.power??Number(entry.raw.power))||0);
     if(value.kind==='v8-target-permanent-count'){const target=genericEffectTarget({target:value.target},selectedTargets,source,context);return countValue(context,target,value.count,snapshot)*(value.multiply??1);}
-    if(value.kind==='target-stat'){const target=[selectedTargets[value.target]].flat()[0];if(target?.kind==='spell'&&value.stat==='mv'){assert.ok(snapshot.stackManaValues.has(target),label+': prior spell mana value captured');return snapshot.stackManaValues.get(target);}return Math.max(0,snapshot.cards.get(target)?.[value.stat]||0);}
+    if(value.kind==='target-stat'){
+      const target=[selectedTargets[value.target]].flat()[0];
+      if(target?.kind==='spell'&&value.stat==='mv'){const values=snapshot.stackManaValues.has(target)?snapshot.stackManaValues:before.stackManaValues;assert.ok(values.has(target),label+': prior spell mana value captured');return values.get(target);}
+      const initial=before.cards.get(target),current=snapshot.cards.get(target);
+      const departed=context.moveEvidence.findLast(row=>row.card===target&&row.before.zoneVersion===initial?.zoneVersion);
+      const captured=current&&(!initial||current.zoneVersion===initial.zoneVersion)?current:departed?.before||initial;
+      return Math.max(0,captured?.[value.stat]||0);
+    }
     if(value.kind==='target-count'){const target=genericEffectTarget({target:value.target},selectedTargets,source,context);return countValue({...context,a:target},source,value.count,snapshot)*(value.multiply??1);}
     if(value.kind==='affected-player-count'){
       const n=countValue({...context,a:player},source,value.count,snapshot)*(value.multiply??1);
@@ -1028,11 +1133,15 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     if(value.kind==='sum')return value.values.reduce((sum,v)=>sum+amount(v,snapshot),0)*(value.multiply??1);
     if(value.kind==='event-card-counters')return (context.eventCardBefore?.counters?.[value.counter]||0)*(value.multiply??1);
     if(value.kind==='event-card-stat')return Math.max(0,context.eventCardStats?.[value.stat]??context.eventCardBefore?.[value.stat]??0);
+    if(value.kind==='event-spell-mv-v10')return context.eventSpellMvV10??context.eventCardBefore?.mv??0;
+    if(value.kind==='event-mana-spent-v10')return context.eventManaSpentV10??0;
+    if(value.kind==='cast-mana-spent-v10')return source.castMeta?.manaSpent||0;
+    if(value.kind==='difference-v10')return Math.max(0,amount(value.left,snapshot)-amount(value.right,snapshot));
     if(value.kind==='source-counters'){
       const recorded=snapshot.cards.get(source),left=recorded?.zone!=='battlefield'&&context.moveEvidence.findLast(row=>row.card===source&&row.from==='battlefield');
       return ((left?left.before:recorded)?.counters?.[value.counter]||0)*(value.multiply??1);
     }
-    if(['v8-permanent-count','count','max-stat','source-counters','died-count','devotion','party','turn-count','source-attachments','opponent-poison-total','opponent-count','creature-total-power','casting-live-count-v8','casting-turn-count-v8'].includes(value.kind))return countValue(context,source,value,snapshot)*(value.multiply??1);
+    if(['v8-permanent-count','count','max-stat','source-counters','died-count','devotion','party','turn-count','attacked-creature-count-v10','source-attachments','opponent-poison-total','opponent-count','creature-total-power','casting-live-count-v8','casting-turn-count-v8'].includes(value.kind))return countValue(context,source,value,snapshot)*(value.multiply??1);
     if(['source-stat','explicit-source-stat'].includes(value.kind))return Math.max(0,snapshot.cards.get(source)?.[value.stat]??Number(entry.raw[value.stat]));
     if(value.kind==='event-amount')return context.eventAmount??2;
     if(value.kind==='fraction-v9')return (value.round==='up'?Math.ceil:Math.floor)(amount(value.value)/value.denominator);
@@ -1048,6 +1157,58 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   const oldPlayer = player && before.players.get(player);
   const queryKinds = trace.map(item => item.query.type);
   const action = effect.action;
+  if(action==='lose-game-v10'){assert.equal(a.lost,true,label+': affected player loses through the rules engine');return;}
+  if(action==='delay-v10'){
+    const delayed=game.delayed.find(row=>row.src===source&&JSON.stringify(row.oracleDelayV10)===JSON.stringify(effect));assert.ok(delayed,label+': future instruction is installed');
+    const eventPlayer=effect.your?a:b;
+    if(effect.your){await game.emit(effect.on,{player:b});await resolveAll(game);assert.ok(game.delayed.includes(delayed),label+': opponents event does not consume your next step');}
+    const snapshot=genericProofSnapshot(context,[source]);
+    await game.emit(effect.on,{player:eventPlayer});await game.flushTriggers();assert.ok(game.stack.some(row=>row.srcCard===source),label+': delayed instruction uses the Stack');
+    await resolveAll(game);assert.equal(game.delayed.includes(delayed),false,label+': delayed instruction fires once');
+    for(const child of effect.effects)await assertGenericEffectEvidence(MTG,context,entry,child,source,[],b,snapshot,trace,label+'/delayed');return;
+  }
+  if(action==='uncounterable-spell-v10'){const object=selectedTargets[effect.target];assert.equal(object.oracleCantCounterV10,true,label+': the chosen spell gains the prohibition');assert.equal(MTG.isUncounterable(game,object),true);return;}
+  if(action==='next-uncounterable-v10'){
+    assert.ok(game.untilEffects.some(row=>row.kind==='nextUncounterableV10'&&row.who===a&&row.quality===effect.quality),label+': pending cast permission');
+    fund(a,100);const spell=zoneCard(MTG,a,effect.quality==='instant-sorcery'?'Dark Ritual':'Grizzly Bears','hand');assert.equal(await game.castSpell(a,spell,{from:'hand'}),true);
+    const object=game.stack.find(row=>row.card===spell);assert.equal(await game.counterStackObject(object),false,label+': the next matching spell cannot be countered');assert.equal(game.untilEffects.some(row=>row.kind==='nextUncounterableV10'&&row.who===a&&row.quality===effect.quality),false);await resolveAll(game);return;
+  }
+  if(action==='no-prevention-v10'){assert.ok(game.untilEffects.some(row=>row.kind==='noDamagePrevention'&&row.expires==='eot'),label+': prevention prohibition lasts this turn');return;}
+  if(action==='with-x-v10'){
+    const value=amount(effect.value),bind=node=>{if(node?.kind==='bound-x-v10')return value;if(Array.isArray(node))return node.map(bind);if(!node||typeof node!=='object')return node;const copy=Object.fromEntries(Object.entries(node).map(([key,child])=>[key,bind(child)]));for(const fixtures of [context.groupFixtures,context.zoneFixtures])if(fixtures?.has(node))fixtures.set(copy,fixtures.get(node));return copy;};
+    for(const child of bind(effect.effects))await assertGenericEffectEvidence(MTG,context,entry,child,source,selectedTargets,damagedPlayer,before,trace,label+'/bound-X');
+    return;
+  }
+  if(action==='kinship-v10'){
+    const top=context.kinshipTopV10;assert.ok(top,label+': matching top card was staged');
+    assert.ok(context.revealEvidence.some(row=>row.kind==='look'&&row.ctrl===a&&row.cards.includes(top)),label+': private look');
+    assert.ok(context.revealEvidence.some(row=>row.kind==='reveal'&&row.cards.includes(top)),label+': matching card is actually revealed');
+    for(const child of effect.effects)await assertGenericEffectEvidence(MTG,context,entry,child,source,selectedTargets,damagedPlayer,before,trace,label+'/kinship');return;
+  }
+  if(action==='radiance-v10'){
+    const target=selectedTargets[effect.target],colors=before.cards.get(target).colors,matching=before.battlefield.filter(card=>card===target||before.cards.get(card).types.includes(effect.what[0].toUpperCase()+effect.what.slice(1))&&before.cards.get(card).colors.some(color=>colors.includes(color)));
+    if(colors.length)assert.ok(matching.length>=2,label+': primary and nontargeted secondary share a color');else assert.equal(matching.length,1,label+': a colorless primary affects only itself');
+    for(const card of matching)for(const child of effect.effects)await assertGenericEffectEvidence(MTG,{...context,proofEffects:effect.effects},entry,child,source,[card],damagedPlayer,before,trace,label+'/radiance');return;
+  }
+  if(action==='airbend-v10'){
+    for(const card of [subject].flat().filter(Boolean)){
+      assert.equal(card.zone,card.isToken?'ceased':'exile',label+': airbend exiles the selected permanent');
+      if(!card.isToken){assert.equal(game.oracleAirbendAvailable(card.owner,card),true);for(const other of game.players.filter(player=>player!==card.owner))assert.equal(game.oracleAirbendAvailable(other,card),false);}
+    }return;
+  }
+  if(action==='earthbend-v10'){
+    const animation=context.animationEvidence.find(row=>row.card===subject&&row.effect.power===0&&row.effect.toughness===0&&row.effect.keywords?.includes('haste')&&!context.usedAnimationEvidence.has(row));
+    assert.ok(animation,label+': earthbend animates the actual chosen land');context.usedAnimationEvidence.add(animation);
+    const snap=animation.before,views=new Map(snap.battlefield.map(card=>{const old=snap.cards.get(card);return [card,{...card,...old,is:type=>old.types.includes(type),hasSub:type=>old.subtypes.includes(type),kw:keyword=>old.keywords.includes(keyword)}];}));
+    const stable={...snap,battlefield:snap.battlefield.map(card=>views.get(card)),cards:new Map([...snap.cards].map(([card,state])=>[views.get(card)||card,state]))};
+    const expected=typeof effect.n==='object'&&['count','sum','max-stat','creature-total-power'].includes(effect.n.kind)?countValue(context,views.get(source)||source,effect.n,stable):amount(effect.n,snap);
+    const row=context.counterChangeEvidence.slice(before.counterChangeEvidenceIndex).find(row=>row.card===subject&&row.action==='counter'&&row.kind==='+1/+1'&&row.n===expected&&!context.usedCounterChanges.has(row));
+    assert.ok(row,label+': earthbend puts exactly the computed number of counters on its land');context.usedCounterChanges.add(row);
+    assert.equal(row.after-row.before,expected,label+': earthbend counter increase');
+    if(subject.zone==='battlefield'&&subject.zoneVersion===row.zoneVersion){assert.equal(subject.is('Land'),true);assert.equal(subject.is('Creature'),true);assert.equal(subject.kw('haste'),true);assert.ok(subject.cur.extraTriggers.length,label+': lasting return ability granted');}
+    else assert.ok(context.moveEvidence.some(move=>move.card===subject&&move.from==='battlefield'),label+': zero-toughness earthbent land used state-based actions');
+    return;
+  }
   if(action==='pump-group'&&effect.filters){
     for(const [card,old]of before.cards)if(old.zone==='battlefield'&&card.is('Creature')){
       const view={...card,...old,is:t=>old.types.includes(t),hasSub:t=>old.subtypes.includes(t),kw:k=>old.keywords.includes(k)};
@@ -1117,7 +1278,8 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   if(action==='counter-spells'){const objects=context.counterGroupFixtures.get(effect);assert.ok(objects?.length,label+': actual spell group staged');for(const object of objects){assert.ok(context.counterEvidence.some(row=>row.object===object&&row.result===true),label+': actual group spell was countered');assert.equal(game.stack.includes(object),false);}return;}
   if(action==='combat-mana'){assert.equal(a.pool.R,before.players.get(a).pool.R+n,label+': firebending adds exact red mana');assert.ok(a.poolMeta.some(row=>row.color==='R'&&row.persist==='combat'&&row.n===n),label+': mana retention is attached to the produced units');return;}
   if(action==='combat-restriction'){
-    const cards=effect.filters?before.battlefield.filter(card=>effect.filters.some(filter=>matchesTarget(card,filter,context,source))):[subject].flat().filter(Boolean);
+    const bindX=filter=>({...filter,...(filter.threshold==='X'?{threshold:before.oracleX}:{}),...(filter.alternatives?{alternatives:filter.alternatives.map(bindX)}:{})});
+    const cards=effect.filters?before.battlefield.filter(card=>effect.filters.some(filter=>matchesTarget(card,bindX(filter),context,source))):[subject].flat().filter(Boolean);
     if(!cards.length&&typeof effect.target==='number'){
       // "Those creatures" follows an up-to-N group: an empty legal group
       // leaves nothing to restrict, so the printed rule is already satisfied.
@@ -1209,7 +1371,8 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     const declined = trace.find(item => item.query.type === 'chooseTargets' && item.query.min === 0 &&
       Array.isArray(item.result) && item.result.length === 0);
     assert.ok(declined, `${label}: controller explicitly chooses the legal zero-target branch`);
-    for (const candidate of declined.query.candidates) {
+    if(action==='untap'&&(ownerOperation.effects||[]).filter(item=>item.action==='untap').length===1)assert.equal(context.untapEvidence.length,0,label+': the omitted untap instruction untaps no object');
+    for (const candidate of ownerOperation.modal?[]:declined.query.candidates) {
       const prior = before.cards.get(candidate);
       if (prior && prior.zone === 'battlefield') assert.equal(candidate.zone, prior.zone,
         `${label}: omitted optional effect leaves available permanent ${candidate.name} untouched`);
@@ -1217,13 +1380,13 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     return;
   }
   if(action==='zone-select'){
-    const actors=effect.who==='each-player'?game.players:effect.who==='each-opponent'?[b]:effect.who==='you'?[a]:[selectedTargets[effect.who]];
+    const actors=effect.who==='each-player'?game.players:effect.who==='each-opponent'?[b]:effect.who==='you'?[a]:[selectedTargets[effect.who]].flat().filter(Boolean);
     for(const actor of actors){
       const fixtures=(context.zoneFixtures.get(effect)||[]).filter(card=>card.owner===actor);
       assert.ok(fixtures.length,label+': positive zone candidates');
       const choices=trace.filter(row=>row.query.type==='chooseCards'&&row.query.prompt==='Choose cards from your '+effect.zone&&row.query.from.some(card=>card.owner===actor));
-      const selected=effect.n==='all'?fixtures:choices.flatMap(row=>row.result);
-      if(effect.n!=='all'){assert.ok(choices.length,label+': real controller zone selection');for(const row of choices)assert.ok(row.result.length>=row.query.min&&row.result.length<=row.query.max);}
+      const selected=effect.n==='all'&&!effect.upTo?fixtures:choices.flatMap(row=>row.result);
+      if(effect.n!=='all'||effect.upTo){assert.ok(choices.length,label+': real controller zone selection');for(const row of choices)assert.ok(row.result.length>=row.query.min&&row.result.length<=row.query.max);}
       for(const card of selected){assert.equal(card.zone,effect.destination,label+': chosen destination');if(effect.destination==='battlefield'){assert.equal(card.ctrl,actor);if(effect.tapped)assert.equal(card.tapped,true);}}
     }
     return;
@@ -1233,8 +1396,12 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     const choices=trace.filter(item=>item.query.type==='chooseCards'&&item.query.prompt==='Choose permanents to '+effect.operation);
     assert.ok(choices.length,label+': real nontargeted choice');
     for(const choice of choices){assert.ok(choice.result.length>=choice.query.min&&choice.result.length<=choice.query.max);for(const card of choice.result){
-      if(['tap','untap'].includes(effect.operation)){assert.equal(card.zone,'battlefield');assert.equal(card.tapped,effect.operation==='tap',label+': selected permanent changes tapped state');}
-      else assert.ok([effect.operation==='sacrifice'?'graveyard':'hand','ceased'].includes(card.zone),label+': chosen permanent moved');
+      if(effect.operation==='counter-v10'){
+        const placement=context.counterChangeEvidence.slice(before.counterChangeEvidenceIndex).find(row=>row.card===card&&row.kind===effect.counter&&row.action==='counter'&&row.n===amount(effect.counterN)&&row.after-row.before===amount(effect.counterN)&&!context.usedCounterChanges.has(row));
+        assert.ok(placement,label+': chosen permanent receives the exact counter quantity before later effects');context.usedCounterChanges.add(placement);
+      }
+      else if(['tap','untap'].includes(effect.operation)){assert.equal(card.zone,'battlefield');assert.equal(card.tapped,effect.operation==='tap',label+': selected permanent changes tapped state');}
+      else assert.ok(context.moveEvidence.some(row=>row.card===card&&row.from==='battlefield'&&row.to===(effect.operation==='sacrifice'?'graveyard':effect.operation==='exile'?'exile':'hand')),label+': chosen permanent moved through the instructed zone');
     }}
     return;
   }
@@ -1332,9 +1499,14 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   }
   if(action==='face-down'){
     const made=game.bf().filter(card=>card.faceDown&&!before.battlefield.includes(card));assert.equal(made.length,n,label+': exact face-down count');
-    for(const card of made){assert.equal(card.power,2);assert.equal(card.toughness,2);assert.equal(card.mv,0);assert.equal(card.faceDown,true);assert.equal(card.meta.faceDownKind,effect.kind==='cloak'?'cloak':'manifest');assert.ok(card.meta.faceDownDef);}
-    const top=before.players.get(a).libraryCards.slice(-(effect.kind==='manifest-dread'?2:n));
-    if(effect.kind==='manifest-dread')assert.equal(top.filter(card=>card.zone==='graveyard').length,1,label+': unchosen dread card goes to graveyard');
+    for(const card of made){assert.equal(card.cur.basePower,2);assert.equal(card.cur.baseToughness,2);assert.equal(card.mv,0);assert.equal(card.faceDown,true);assert.equal(card.meta.faceDownKind,effect.kind==='cloak'?'cloak':'manifest');assert.ok(card.meta.faceDownDef);if(effect.attachSourceV10)assert.equal(source.attachedTo,card.iid,label+': equipment attaches to the newly manifested card');}
+    const player=effect.who?genericEffectPlayer(effect,selectedTargets,source,a,damagedPlayer,context):a;
+    assert.ok(made.every(card=>card.ctrl===player),label+': specified player controls the manifested card');
+    const top=before.players.get(player).libraryCards.slice(-(effect.kind==='manifest-dread'?2:n));
+    if(effect.kind==='manifest-dread'){
+      const choices=trace.filter(row=>row.query.aiHint?.kind==='manifestDread');assert.equal(choices.length,n,label+': actual private dread choices');
+      for(const choice of choices){const picked=choice.result[0];assert.ok(made.includes(picked),label+': chosen card is manifested');for(const card of choice.query.from)if(card!==picked)assert.ok(context.moveEvidence.slice(before.moveEvidenceIndex).some(row=>row.card===card&&row.from==='library'&&row.to==='graveyard'),label+': actual unchosen card moves from library to graveyard');}
+    }
     else assert.ok(top.every(card=>made.includes(card)),label+': actual top library cards manifested');return;
   }
   if(action==='bolster'){
@@ -1382,8 +1554,9 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
       else if(effect.operation==='bounce')assert.equal(card.zone,card.isToken?'ceased':'hand',`${label}: matching permanent returned`);
       else if(effect.operation==='pump'){
         const multiplier=effect.multiplier?amount(effect.multiplier):1,power=amount(effect.power)*multiplier,toughness=amount(effect.toughness)*multiplier;
-        if(power)assert.ok(power>0?card.power>=before.cards.get(card).power+power:card.power<=before.cards.get(card).power+power,`${label}: filtered power change`);
-        if(toughness)assert.ok(toughness>0?card.toughness>=before.cards.get(card).toughness+toughness:card.toughness<=before.cards.get(card).toughness+toughness,`${label}: filtered toughness change`);
+        const counterDelta=index=>[...new Set([...Object.keys(card.counters),...Object.keys(before.cards.get(card).counters)])].reduce((sum,kind)=>{const stats=/^([+-]\d+)\/([+-]\d+)$/.exec(kind);return sum+(stats?Number(stats[index])*((card.counters[kind]||0)-(before.cards.get(card).counters[kind]||0)):0);},0);
+        if(power)assert.ok(power>0?card.power>=before.cards.get(card).power+power+counterDelta(1):card.power<=before.cards.get(card).power+power+counterDelta(1),`${label}: filtered power change`);
+        if(toughness)assert.ok(toughness>0?card.toughness>=before.cards.get(card).toughness+toughness+counterDelta(2):card.toughness<=before.cards.get(card).toughness+toughness+counterDelta(2),`${label}: filtered toughness change`);
         for(const kw of effect.keywords)assert.equal(card.kw(kw),true,`${label}: filtered ${kw} grant`);
       }else if(effect.operation==='counter')assert.ok(card.counters[effect.counter]>=(before.cards.get(card).counters[effect.counter]||0)+n,label+': filtered counters');
       else if(effect.operation==='regenerate')assert.ok(card.regenShield>(before.cards.get(card).regenShield||0),label+': matching creature receives regeneration shield');
@@ -1424,8 +1597,9 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   }
   if (action === 'add-mana') {
     const multiple=effect.multiplier?amount(effect.multiplier):1;
-    if(effect.choices||effect.produce?.ANY){const produced=poolTotal(a)-Object.values(before.players.get(a).pool).reduce((n,v)=>n+v,0),option=effect.choices?.[0]||effect.produce,n=option.ANY?option.n:Object.values(option).reduce((n,v)=>n+v,0);assert.ok(produced>=n*multiple,label+': chosen mana quantity produced');return;}
-    for (const [color,amount] of Object.entries(effect.produce)) assert.ok(a.pool[color]>=before.players.get(a).pool[color]+amount*multiple,`${label}: ${color} produced`);
+    const recipient=effect.who?player:a;assert.ok(recipient instanceof MTG.Player,label+': actual mana recipient');
+    if(effect.choices||effect.produce?.ANY){const produced=poolTotal(recipient)-Object.values(before.players.get(recipient).pool).reduce((n,v)=>n+v,0),option=effect.choices?.[0]||effect.produce,n=option.ANY?option.n:Object.values(option).reduce((n,v)=>n+v,0);assert.ok(produced>=n*multiple,label+': chosen mana quantity produced');return;}
+    for (const [color,amount] of Object.entries(effect.produce)) assert.ok(recipient.pool[color]>=before.players.get(recipient).pool[color]+amount*multiple,`${label}: ${color} produced`);
     return;
   }
   if (action === 'discard-hand') {
@@ -1498,23 +1672,25 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     if(effect.condition.kind==='not'&&effect.condition.condition?.kind==='count-comparison'&&effect.condition.condition.count?.zone==='battlefield'&&effect.effects.every(child=>child.action==='token-inline')){
       const positive=effect.condition.condition,value=countValue(context,source,positive.count,before);
       const holds=(positive.min===undefined||value>=positive.min)&&(positive.max===undefined||value<=positive.max);
-      if(holds){for(const child of effect.effects){const created=game.bf().filter(card=>card.isToken&&!before.battlefield.includes(card)&&(child.token.subtypes||[]).every(type=>card.hasSub(type)));assert.equal(created.length,0,label+': an unmet negative condition creates no matching tokens');}return;}
+      if(holds){for(const child of effect.effects){const created=game.bf().filter(card=>card.isToken&&!before.battlefield.includes(card)&&(child.token.subtypes||[]).every(type=>card.hasSub(type)));assert.equal(created.length,0,label+': an unmet negative condition creates no matching tokens');}
+        for(const child of effect.elseEffects||[])await assertGenericEffectEvidence(MTG,context,entry,child,source,selectedTargets,damagedPlayer,before,trace,label+'/otherwise');return;}
     }
     // A condition bound to a chosen target only holds for some choices. When
     // the controller picked a target it does not hold for, the printed branch
     // is proved absent instead of being asserted as if it had run.
-    if(effect.conditionTarget!==undefined&&['source-controlled','source-stat-comparison','source-quality','source-turn-v9'].includes(effect.condition.kind)){
+    if(effect.conditionTarget!==undefined&&['source-controlled','source-controller-v10','source-stat-comparison','source-quality','source-turn-v9'].includes(effect.condition.kind)){
       const target=effect.conditionTarget==='attached-host'?genericEffectTarget({target:'attached-host'},selectedTargets,source,context):[selectedTargets[effect.conditionTarget]].flat()[0];
-      const state=target instanceof MTG.CardInst?before.cards.get(target):null;
+      const state=target instanceof MTG.CardInst?before.cards.get(target):effect.targetSnapshotV10&&target?.kind==='spell'?{...before.cards.get(target.card),mv:game.stackSpellManaValue(target),ctrl:target.ctrl}:null;
       const holds=(()=>{
-        if(!(target instanceof MTG.CardInst))return false;
+        if(!(target instanceof MTG.CardInst)&&!(effect.targetSnapshotV10&&target?.kind==='spell'))return false;
         if(effect.condition.kind==='source-turn-v9')return (state?.sourceTurnsV9?.[effect.condition.field]===game.turnNo)===effect.condition.present;
-        if(effect.condition.kind==='source-controlled')return (state?state.ctrl:target.ctrl)===a;
+        if(['source-controlled','source-controller-v10'].includes(effect.condition.kind))return (state?state.ctrl:target.ctrl)===a;
         if(effect.condition.kind==='source-stat-comparison'){
           const value=Number(state?.[effect.condition.stat]??target[effect.condition.stat])||0;
           return effect.condition.comparison==='greater'?value>=effect.condition.threshold:value<=effect.condition.threshold;
         }
-        return matchesTarget(target,effect.condition.filter,context,target);
+        const view=effect.targetSnapshotV10&&state?{...(target.card||target),...state,zone:'battlefield',cur:{super:state.super||target.card?.def.super||target.def?.super||[]},is:type=>state.types.includes(type),hasSub:type=>state.subtypes.includes(type),kw:keyword=>state.keywords.includes(keyword)}:target;
+        return matchesTarget(view,effect.condition.filter,context,target);
       })();
       if(!holds){
         // Only the draw is provably absent: another effect in the same
@@ -1554,9 +1730,14 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     assert.ok(query,`${label}: legal selection reaches controller`);
     assert.ok(query.query.from.length,`${label}: positive branch has candidates`);
     const selected=Array.isArray(query.result)?query.result:[];
-    for(const card of selected){assert.equal(v5Matches(card,effect.what),true,`${label}: selected type`);assert.equal(card.zone,effect.destination==='library-top'?'library':effect.destination||'battlefield',`${label}: selected card destination`);}
+    for(const card of selected){
+      assert.equal(v5Matches(card,effect.what),true,`${label}: selected type`);
+      if(effect.destination==='library-top')assert.equal(card.zone,'library',`${label}: reordering a searched card retains its library zone`);
+      else {const destination=effect.destination||'battlefield';assert.ok(context.moveEvidence.some(row=>row.card===card&&row.from===(action==='search-library'?'library':'hand')&&row.to===destination),`${label}: selected card ${card.name} moves to ${destination}`);}
+    }
     if(effect.destination==='library-top')for(const card of selected)assert.ok(a.library.slice(-selected.length).includes(card),label+': selected card is above shuffled cards');
     if(effect.name)for(const card of selected)assert.equal(card.name,effect.name,label+': exact named search');
+    if(effect.attachSourceV10)for(const card of selected)assert.equal(source.attachedTo,card.iid,label+': attaches to the card actually put from hand');
     if(action==='search-library'&&effect.what==='card'&&!effect.name&&!effect.filter)assert.equal(selected.length,n,`${label}: unqualified search cannot fail to find`);
   }else if(action==='look-select'||action==='order-top'){
     const top=before.players.get(a).libraryCards.slice(-n);
@@ -1624,7 +1805,10 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     } else if (effect.who === 'each-player') {
       assert.ok(game.players.every(current => current.life <= before.players.get(current).life - n),
         `${label}: every player loses life`);
-    } else assert.ok(player.life <= oldPlayer.life - n, `${label}: selected player loses life`);
+    } else {
+      const loss=context.lifeEvidence.slice(before.lifeEvidenceIndex).find(row=>row.player===player&&row.n===amount(effect.n,row.stateBefore)&&row.after===row.before-row.n);
+      assert.ok(n===0||loss, `${label}: selected player loses the printed amount before later life changes`);
+    }
   } else if (action === 'damage') {
     if (effect.target === 'each-opponent') {
       assert.ok(a.opponents(game).every(opponent => opponent.life <= before.players.get(opponent).life - n),
@@ -1647,6 +1831,11 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
         `${label}: permanent damage is visible (expected ${expected}, actual ${subject.damage}, power ${subject.power})`);
     } else assert.ok(subject && ['graveyard', 'exile'].includes(subject.zone), `${label}: lethal damage changed zone`);
   } else if (action === 'pump') {
+    if(effect.target==='created-tokens'){
+      const created=game.bf().filter(card=>card.isToken&&!before.battlefield.includes(card));assert.ok(created.length,label+': created token pump has recipients');
+      for(const card of created){for(const keyword of effect.keywords||[])assert.equal(card.kw(keyword),true,label+': created token receives '+keyword);assert.ok(card.power>=Number(card.def.power)+amount(effect.power||0));assert.ok(card.toughness>=Number(card.def.toughness)+amount(effect.toughness||0));}
+      assert.ok(game.untilEffects.some(row=>row.kind==='pump'&&row.expires==='eot'),label+': created token grant expires this turn');return;
+    }
     assert.ok(subject, `${label}: pump has a selected subject`);
     const pumped=subject.zone==='battlefield'?subject:(subject.battlefieldLKI?.get(oldSubject.zoneVersion)||subject);
     const multiple=effect.multiplier?effect.multiplier.kind==='v8-target-permanent-count'?amount(effect.multiplier):countValue(context,source,effect.multiplier,before):1;
@@ -1721,12 +1910,16 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   } else if (action === 'bounce' || action === 'move-to-hand' || action === 'return-source-to-hand') {
     const moved = action === 'return-source-to-hand' ? source : subject;
     if(moved.kind==='spell'){assert.equal(game.stack.includes(moved),false,label+': spell leaves Stack without being countered');if(!moved.isCopy)assert.equal(moved.card.zone,'hand',label+': underlying spell card returns');}
-    else assert.ok(moved.zone==='hand'||context.moveEvidence.slice(before.moveEvidenceIndex).some(row=>row.card===moved&&row.to==='hand'&&row.after.zone==='hand'), `${label}: return-to-hand changes the card zone`);
+    else assert.ok(moved.zone==='hand'||context.moveEvidence.slice(before.moveEvidenceIndex).some(row=>row.card===moved&&row.to==='hand'&&(row.after.zone==='hand'||row.card.isToken&&row.after.zone==='ceased')), `${label}: return-to-hand changes the card zone`);
   } else if (action === 'sacrifice-source') {
     assert.equal(source.zone, source.isToken?'ceased':'graveyard', `${label}: source sacrifice is paid`);
     if(source.isToken)assert.ok(context.moveEvidence.some(row=>row.card===source&&row.to==='graveyard'&&row.from==='battlefield'),label+': sacrificed token actually entered the graveyard');
   } else if (action === 'tap' || action === 'untap') {
-    assert.equal(subject.tapped, action === 'tap', `${label}: ${action} changes tapped state`);
+    const departed=context.moveEvidence.slice(before.moveEvidenceIndex).find(row=>row.card===subject&&row.from==='battlefield');
+    if(action==='untap'&&oldSubject.tapped&&oldSubject.counters.stun>0){
+      assert.equal(subject.tapped,true,label+': stun replaces the untap');
+      assert.equal(subject.counters.stun||0,oldSubject.counters.stun-1,label+': untap removes one stun counter');
+    }else assert.equal(departed?departed.before.tapped:subject.tapped, action === 'tap', `${label}: ${action} changes tapped state before any later zone change`);
   } else if (action === 'mill') {
     const milled=Math.min(n,oldPlayer.library);
     assert.ok(player.library.length <= oldPlayer.library - milled, `${label}: mill removes available cards from library`);
@@ -1805,7 +1998,7 @@ function baseContract(entry) {
   return null;
 }
 
-async function enterPermanentProof(MTG, context, entry, {holdLandTriggers=false}={}) {
+async function enterPermanentProof(MTG, context, entry, {holdLandTriggers=false,bestow=false}={}) {
   const { game, a } = context;
   stageCardCosts(MTG,context,entry);
   for(const op of entry.implementation||[])if(op.kind==='mechanic-champion-v9')stageGenericTarget(MTG,context,op.filters[0],'champion-entry');
@@ -1819,9 +2012,10 @@ async function enterPermanentProof(MTG, context, entry, {holdLandTriggers=false}
     assert.equal(card.zone, 'battlefield', `${card.name}: land enters battlefield`);
   } else {
     for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) a.pool[color] = 30;
+    await fundSnow(MTG,game,a,entry);
     constrainSquadMana(MTG,a,entry);
     if(!card.def.cost&&card.def.suspend)await castThroughSuspend(MTG,game,a,card);
-    else assert.equal(await game.castSpell(a, card, { from: 'hand', xVal: 3 }), true, `${card.name}: paid cast enters the real stack`);
+    else assert.equal(await game.castSpell(a, card, { from: 'hand', xVal: 3,...(bestow?{alt:{bestow:true,altCostStr:card.def.bestowCost}}:{}) }), true, `${card.name}: paid cast enters the real stack`);
     assert.equal(card.zone, 'stack', `${card.name}: stack zone`);
     await resolveAll(game);
     const expectedZone = Number(entry.raw.toughness) <= 0 && !card.def.etbCounters ? 'graveyard' : 'battlefield';
@@ -1856,7 +2050,7 @@ async function genericStaticProof(MTG, entry, operation, role) {
   if(operation.attackRequiresKeywords)return attackKeywordsProof(MTG,entry,operation,role,v8Helpers());
   if(['attackerFilters','relativeAttackerPower','defenderRule','blockOnlyFlying','cantAttack','cantBlock','unblockable','blockerFilters'].some(key=>operation[key]))return v5StaticProof(MTG,entry,operation,role,v5Helpers());
   if(operation.scope==='filtered-permanents')return v5StaticProof(MTG,entry,operation,role,v5Helpers());
-  if(operation.grantedMechanicV9)return v5StaticProof(MTG,entry,operation,role,v5Helpers());
+  if(operation.grantedMechanicV9||operation.hexproofFiltersV10||operation.otherUntapV10)return v5StaticProof(MTG,entry,operation,role,v5Helpers());
   if(operation.protectionQualities)return v5StaticProof(MTG,entry,operation,role,v5Helpers());
   if(entry.implementation.filter(op=>op.kind==='generic-static').length>1||entry.implementation.some(op=>op.kind==='characteristic-pt'))return v5StaticProof(MTG,entry,operation,role,v5Helpers());
   if(operation.condition||operation.multiplier||operation.evasionMinBlockerPower!==undefined||operation.evasionLessThanOwnPower||operation.excludedBlockers||operation.blockedOnlyByFlyingOrReach||['all-creatures','all-other-creatures','opponent-creatures'].includes(operation.scope))return v5StaticProof(MTG,entry,operation,role,v5Helpers());
@@ -2030,6 +2224,34 @@ function stageClashLibraries(MTG,context,win){
 }
 
 async function fireGenericEvent(MTG,context,source,operation){
+  if(operation.eventFilter?.kind==='saddled-v10'){
+    const {game,a}=context;await resolveAll(game);game.turnPlayer=a;game.phase='main1';
+    const n=source.def.oracleImplementation.find(op=>op.kind==='mechanic-saddle-v10')?.n;assert.ok(Number.isInteger(n));
+    permanent(MTG,game,a,fixtureDefinition('Saddle trigger payment witness',['Creature'],{power:String(Math.max(1,n)),toughness:'20'}));
+    const row=game.activatableList(a).find(row=>row.card===source&&row.ability.oracleSaddleV10);assert.ok(row);
+    assert.equal(await game.activateAbility(a,row),true);await resolveAll(game);assert.equal(MTG.oracleIsSaddledV10(game,source),true);
+    return fireGenericEvent(MTG,context,source,{...operation,eventFilter:operation.eventFilter.base});
+  }
+  if(operation.eventFilter?.chosenColorV10){
+    const {game,a,b}=context,player=operation.eventFilter.controller==='opponent'?b:a;
+    const card=zoneCard(MTG,player,fixtureDefinition('Chosen color paid event witness',['Instant'],{cost:'{'+source.meta.oracleChosenColor+'}',resolve:async()=>{}}),'hand');fund(player,100);
+    context.eventCard=card;context.eventPlayer=player;context.eventController=player;context.eventCardBefore=cardState(card);
+    assert.equal(await game.castSpell(player,card,{from:'hand'}),true,'chosen-color trigger observes an actual spell cast');return;
+  }
+  if(operation.event==='mutated'){
+    const {game,a}=context,incoming=zoneCard(MTG,a,'Sea-Dasher Octopus','hand');fund(a,100);
+    const prior=a.controller.decide.bind(a.controller);a.controller.decide=async(g,q)=>q.type==='chooseTargets'&&q.so?.castOpts?.mutate?[source]:q.type==='chooseOption'&&q.aiHint?.kind==='mutateOrder'?'under':prior(g,q);
+    try{assert.equal(await game.castSpell(a,incoming,{from:'hand',alt:incoming.def.altCosts.find(cost=>cost.mutate)}),true);await game.resolveTop();assert.equal(incoming.zone,'merged');assert.equal(source.meta.c1920Mutations,1);}finally{a.controller.decide=prior;}
+    return;
+  }
+  if(operation.condition?.kind==='event-cast-v10'){
+    const {game,a}=context;
+    const card=stageGenericTarget(MTG,context,{...operation.eventFilter.target,controller:'you'},'paid-entry-v10');
+    await game.move(card,'hand');fund(a,100);
+    assert.equal(await game.castSpell(a,card,{from:'hand'}),true,'event condition: an entering permanent was actually cast');
+    context.eventCard=card;context.eventPlayer=a;context.eventController=a;context.eventCardBefore=cardState(card);
+    await game.resolveTop();return;
+  }
   if(JSON.stringify(operation.effects||[]).includes('\"action\":\"linked-untap-v8\",\"mode\":\"tapped\"'))context.game.tap(source);
   if(await fireStackCopyEvent(MTG,context,source,operation,v8Helpers()))return;
   if(await fireCastEvent(MTG,context,source,operation,v8Helpers()))return;
@@ -2037,6 +2259,16 @@ async function fireGenericEvent(MTG,context,source,operation){
   const {game,a,b}=context,event=operation.event,filter=operation.eventFilter;
   if(filter?.kind==='observation-v9'){
     const player=filter.controller==='opponent'?b:a;context.eventPlayer=player;
+
+    if(event==='unlockDoor'){
+      await resolveAll(game);fund(a,100);game.turnPlayer=a;game.phase='main1';
+      const room=zoneCard(MTG,a,'Bottomless Pool // Locker Room','hand');
+      const alt=room.def.altCosts.find(row=>row.bdfDoor==='left');assert.ok(alt);
+      assert.equal(await game.castSpell(a,room,{from:'hand',alt}),true);await resolveAll(game);
+      context.unlockDrawBaselineV10=a.hand.length;
+      const action=game.activatableList(a).find(row=>row.card===room&&row.ability.label==='Unlock Locker Room');assert.ok(action);
+      assert.equal(await game.activateAbility(a,action),true);await game.resolveTop();assert.equal(room.meta.bdfUnlocked.length,2);return;
+    }
 
     if(event==='landPlayed'){const land=zoneCard(MTG,player,'Forest','hand');assert.equal(await game.playLand(player,land),true);return;}
     if(event==='attached'){const aura=permanent(MTG,game,player,fixtureDefinition('Oracle Observed Aura',['Enchantment'],{subtypes:['Aura'],enchant:'creature'}));assert.equal(await game.attach(aura,source),true);return;}
@@ -2062,7 +2294,7 @@ async function fireGenericEvent(MTG,context,source,operation){
       assert.equal(await game.activateManaSource(player,action,action.produce[0],null,[]),true);return;
     }
     if(event==='lto'){
-      const object=stageGenericTarget(MTG,context,{...filter.target,controller:filter.graveOwner==='opponent'?'opponent':'you'},'grave-owner');
+      const object=filter.self?source:stageGenericTarget(MTG,context,{...filter.target,controller:filter.graveOwner==='opponent'?'opponent':'you'},'grave-owner');
       context.eventCard=object;context.eventCardBefore=cardState(object);context.eventPlayer=object.owner;context.eventController=object.ctrl;
       await game.move(object,'graveyard');return;
     }
@@ -2202,10 +2434,11 @@ async function fireGenericEvent(MTG,context,source,operation){
     }
   }else if(['cast','castIS','castNonCreature','castCreature'].includes(event)){
     const what=filter?.what||'';
-    const caster=filter?.controller==='opponent'?b:a;
+    const gift=operation.effects?.some(effect=>effect.action==='give-control-v9'&&effect.target==='self'&&effect.who==='event-player');
+    const caster=filter?.controller==='opponent'||gift&&filter?.controller!=='you'?b:a;
     const type=event==='castCreature'||what==='creature'?'Creature':what==='historic'?'Artifact':['artifact','enchantment'].includes(what)?what[0].toUpperCase()+what.slice(1):'Instant';
     const colors={white:'W',blue:'U',black:'B',red:'R',green:'G'};
-    const def=fixtureDefinition('V5 cast event probe',[type],{cost:'{0}',subtypes:filter?.subtypes||[what],colorsOverride:colors[what]?[colors[what]]:what==='multicolored'?['G','W']:[],
+    const def=fixtureDefinition('V5 cast event probe',[type],{cost:/event-(?:mana-spent|spell-mv)-v10/.test(JSON.stringify(operation))?'{'+(context.eventManaProofV10??5)+'}':'{0}',subtypes:filter?.subtypes||[what],colorsOverride:colors[what]?[colors[what]]:what==='multicolored'?['G','W']:[],
       ...(filter==='your-spell-targets-self'?{targets:[{what:'creature',filter:(g,c)=>c===source}],resolve:async()=>{}}:{})});
     const requiredTurn=operation.condition?.kind==='event-player-condition-v9'?game.turnPlayer:operation.condition?.kind==='your-turn'?a:
       filter?.opponentsTurn||operation.condition?.kind==='not-your-turn'?b:null;
@@ -2263,7 +2496,19 @@ async function printedTokenProof(MTG,context,entry,effect,before,trace,label){
   context={...context,a,b};
   for(const operation of effect.token.operations){
     const token=tokens.find(card=>card.zone==='battlefield');assert.ok(token,label+': source token remains available');
-    if(operation.kind==='mana-source'){
+    if(operation.kind==='mechanic-toxic'){
+      const poison=b.poison||0,life=b.life;
+      assert.equal(await game.damagePlayer(token,b,1,{combat:true}),1,label+': toxic token deals actual combat damage');
+      assert.equal(b.poison,poison+operation.n,label+': exact printed toxic value');assert.equal(b.life,life-1,label+': toxic keeps combat life loss');
+    }else if(operation.kind==='mechanic-saddle-crew-power-v10'){
+      await proveSaddleCrewPowerV10(MTG,context,token,operation,v5Helpers());
+    }else if(operation.kind==='mechanic-prowess-v10'){
+      await grantedMechanicProof(MTG,context,token,operation,v5Helpers());
+    }else if(operation.kind==='mana-source'){
+      if(token.tapped){
+        assert.equal(game.manaSources(a).some(row=>row.card===token),false,label+': a tapped token cannot pay its tap cost');
+        game.untap(token);
+      }
       if(operation.activationCost?.tap&&token.sick&&token.is('Creature')&&!token.kw('haste')){
         assert.equal(game.manaSources(a).some(row=>row.card===token&&row.extraCost?.tap),false,label+': new creature token cannot tap for mana without haste');
         token.sick=false;
@@ -2290,11 +2535,12 @@ async function printedTokenProof(MTG,context,entry,effect,before,trace,label){
     }else if(operation.kind==='generic-static'){
       await combatRestrictionProof(MTG,context,token,operation,v5Helpers(),label);
     }else if(operation.kind==='generic-trigger'){
-      const snapshot=genericProofSnapshot(context,[token]);
+      const targets=[];for(const [index,filter]of(operation.targets||[]).entries())targets.push(filter.zone==='stack'?await stageGenericStackTarget(MTG,context,filter,'token-trigger-'+index):stageGenericTarget(MTG,context,filter,'token-trigger-'+index,operation.effects.find(effect=>effect.target===index)));
+      const snapshot=genericProofSnapshot(context,[token,...targets]);
       await fireGenericEvent(MTG,context,token,operation);await game.flushTriggers();
-      assert.ok(game.stack.some(row=>row.srcCard===token&&row.kind==='trigger'),label+': printed token trigger reaches Stack');
+      const trigger=game.stack.find(row=>row.srcCard===token&&row.kind==='trigger');assert.ok(trigger,label+': printed token trigger reaches Stack');
       await resolveAll(game);
-      for(const child of operation.effects)await assertGenericEffectEvidence(MTG,context,entry,child,token,[],b,snapshot,trace,label+'/token-rule');
+      for(const child of operation.effects)await assertGenericEffectEvidence(MTG,context,entry,child,token,trigger.targets||[],b,snapshot,trace,label+'/token-rule');
     }else assert.fail(label+': missing printed-token rule proof '+operation.kind);
   }
 }
@@ -2372,6 +2618,12 @@ async function prepareAttachedEffectSource(MTG,context,source,operation){
 }
 
 async function genericRuntimeOperationProof(MTG, entry, operation, role) {
+  if(operation.kind==='spell-generic'&&!operation.paragraphProof){
+    const paragraphs=entry.implementation.filter(row=>row.kind==='spell-generic');
+    if(paragraphs.length>1){const targets=[],effects=[];for(const paragraph of paragraphs){effects.push(...paragraph.effects.map(effect=>offsetProofEffect(effect,targets.length)));targets.push(...paragraph.targets);}
+      return genericRuntimeOperationProof(MTG,entry,{...operation,targets,effects,paragraphProof:true},role);
+    }
+  }
   if(operation.condition?.kind==='creature-upgrade-state-v8'&&operation.condition.state==='tribute-unpaid')return creatureUpgradeProof(MTG,entry,operation,role,v8Helpers());
   if(operation.anyPlayer&&!operation.publicActivatorProof){
     let checks=0;
@@ -2405,6 +2657,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     return checks;
   }
   if(operation.overloadedBody&&!operation.overloadChecked){let checks=await genericRuntimeOperationProof(MTG,entry,{...operation,overloadChecked:true},role);checks+=await genericRuntimeOperationProof(MTG,entry,{...operation,...operation.overloadedBody,overloadChecked:true,overloadVariant:true},role);return checks;}
+  if(operation.cleaveBodyV10&&!operation.cleaveCheckedV10){let checks=await genericRuntimeOperationProof(MTG,entry,{...operation,cleaveCheckedV10:true},role);checks+=await genericRuntimeOperationProof(MTG,entry,{...operation,...operation.cleaveBodyV10,cleaveCheckedV10:true,cleaveVariantV10:true},role);return checks;}
   if(operation.proofBranch===undefined&&(hasConditionalBranches(operation.effects)||drawOrTokenBranches(operation.effects))){
     let checks=0;for(const proofBranch of [true,false])checks+=await genericRuntimeOperationProof(MTG,entry,{...operation,proofBranch,originalOperation:operation.originalOperation||operation},role);return checks;
   }
@@ -2471,6 +2724,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     },
     chooseMulti:(game,query)=>operation.modePlan&&query.prompt.startsWith(entry.raw.name+':')?operation.modePlan.map(String):query.options.slice(0,query.min||1).map(option=>option.key),
     chooseOption: (game, query) => {
+      if(query.aiHint?.kind==='chooseType'&&JSON.stringify(operation.effects||[]).includes('choose-subtype-v10'))return 'Elf';
       if(query.aiHint?.kind==='entwine')return operation.entwineProof?'yes':'no';
       if(operation.modalTrigger&&query.aiHint?.kind==='mode'&&query.aiHint.src?.name===entry.raw.name&&operation.modalTriggerMode!==null){
         const key=String(operation.modalTriggerMode);
@@ -2486,6 +2740,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   const context = gameFor(MTG, [controller, decision()], { ai: role === 'ai' });
   const { game, a, b } = context;
   installStackCopyProof(MTG,context,operation,v8Helpers());
+  if(operation.targets?.some(target=>target.targetsSourceV10))context.earlyOracleSourceV10=permanent(MTG,game,a,entry.raw.name);
   context.conditionPlayerV9=operation.eventFilter==='opponent-player'||['combatDamageToPlayer','damageToPlayer'].includes(operation.event)?b:a;
   context.proofBranch=operation.proofBranch;
   installPaymentProof(MTG,context,{...v8Helpers(),trace:role==='ai'?context.aiDecisions:humanTrace});
@@ -2502,6 +2757,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   }
   fund(a, 100);
   fund(b, 100);
+  await fundSnow(MTG,game,a,entry);
   if(operation.entwineProof?.cost?.kind==='sacrifice')for(let index=0;index<operation.entwineProof.cost.n+5;index++)permanent(MTG,game,a,'Forest');
   constrainSquadMana(MTG,a,entry);
   if(JSON.stringify(operation.effects||[]).includes('"kind":"not","condition":{"kind":"kicked"}')){
@@ -2550,7 +2806,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   wantedTargets = stagedTargets.flat();
   for(const effect of operation.effects||[]){
     if(effect.action==='exchange-control-v9'&&effect.group){const pair=[stagedTargets[effect.target]].flat();pair[0].ctrl=a;pair[1].ctrl=b;game.recalc();}
-    if(effect.action==='give-control-v9'&&typeof effect.who==='number'){
+    if(effect.action==='give-control-v9'&&typeof effect.who==='number'&&typeof effect.target==='number'){
       const player=stagedTargets[effect.who],target=stagedTargets[effect.target];if(operation.targets[effect.target].controller==='any'){target.ctrl=player===a?b:a;game.recalc();}
     }
   }
@@ -2559,6 +2815,26 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   context.zoneFixtures=new Map();
   const complementary=drawOrTokenBranches(operation.effects);
   const stageEffect=effect=>{
+    if(effect.action==='kinship-v10'){
+      const subtype=entry.raw.subtypes.find(type=>MTG.CREATURE_SUBTYPES.has(type));assert.ok(subtype,entry.raw.name+': printed creature type');
+      context.kinshipTopV10=zoneCard(MTG,a,fixtureDefinition('Kinship top',['Creature'],{subtypes:[subtype],power:'2',toughness:'2'}),'library');
+      for(const child of effect.effects)stageEffect(child);return;
+    }
+    if(effect.action==='radiance-v10'){
+      const target=stagedTargets[effect.target];target.def={...target.def,colorsOverride:['R']};
+      const secondary=stageGenericTarget(MTG,context,{what:effect.what,zone:'battlefield',controller:'opponent',color:'red'},'radiance-secondary',effect.effects[0]);secondary.def.colorsOverride=['W','U','B','R','G'];secondary.def.kws=[...(secondary.def.kws||[]),'shroud'];game.recalc();context.groupFixtures.set(effect,[secondary]);
+      for(const child of effect.effects)stageEffect(child);return;
+    }
+    if(effect.action==='with-x-v10'){stageCount(MTG,context,effect.value,v5Helpers());for(const child of effect.effects)stageEffect(child);return;}
+    if(effect.action==='choose-subtype-v10'){
+      const bind=value=>value?.kind==='chosen-subtype-v10'?'Elf':Array.isArray(value)?value.map(bind):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,child])=>[key,bind(child)])):value;
+      const adjusted=bind(effect.effects);(context.chosenSubtypeProof||=new Map()).set(effect,adjusted);
+      for(const child of adjusted)stageEffect(child);
+      const harmful=adjusted.some(child=>child.action==='battlefield-group'&&(['destroy','exile','bounce','tap'].includes(child.operation)||child.power<0||child.toughness<0));
+      const grave=adjusted.some(child=>child.action==='zone-select'&&child.zone==='graveyard');
+      for(let i=0;i<6;i++)stageGenericTarget(MTG,context,{what:'creature',zone:grave?'graveyard':'battlefield',controller:harmful?'opponent':'you',subtype:'Elf'},'chosen-subtype-'+i);
+      return;
+    }
     if(effect.action==='set-life-v9'){for(const player of game.players)player.life=13;stageCount(MTG,context,effect.n,v5Helpers());}
     if(effect.action==='blight-v9'){
       const players=effect.who==='each-player'?game.players:effect.who==='each-opponent'?game.players.filter(p=>p!==a):effect.who==='you'?[a]:[stagedTargets[effect.who]];
@@ -2589,7 +2865,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     if(effect.action==='move-to-library'&&effect.filters)for(const filter of effect.filters)for(const controller of ['you','opponent'])stageGenericTarget(MTG,context,{...filter,controller},'library-group');
     if(complementary&&effect===complementary[operation.proofBranch===false?0:1])return;
     if(effect.action==='conditional'&&effect.condition.kind==='not'&&effect.condition.condition?.kind==='count-comparison'&&effect.condition.condition.count.zone==='battlefield')
-      (context.prepareSourceConditions||=[]).push(source=>stageFalseCondition(MTG,context,effect.condition.condition,source,v5Helpers()));
+      (context.prepareSourceConditions||=[]).push(source=>(effect.elseEffects&&operation.proofBranch===false?stageCondition:stageFalseCondition)(MTG,context,effect.condition.condition,source,v5Helpers()));
     if(effect.action==='clash-v8')stageClashLibraries(MTG,context,operation.proofBranch!==false);
     if(effect.action==='move-counters-v8'&&typeof effect.sourceTarget==='number')for(const card of [stagedTargets[effect.sourceTarget]].flat().filter(Boolean))stageCounterTransferCard(context,card,effect);
     if(effect.action==='remove-counters-v8'){
@@ -2631,6 +2907,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       // fixture is printed at a value that satisfies the printed comparison.
       const subject=[stagedTargets[effect.conditionTarget]].flat().filter(Boolean)[0];
       const condition=effect.condition;
+      if(subject instanceof MTG.CardInst&&condition.stat==='mv'){subject.def.cost='{'+condition.threshold+'}';game.recalc();}
       if(subject instanceof MTG.CardInst&&['power','toughness'].includes(condition.stat)&&typeof condition.threshold==='number'){
         const value=condition.comparison==='less'?Math.max(0,condition.threshold-1)
           :condition.comparison==='greater'?condition.threshold+1:condition.threshold;
@@ -2640,7 +2917,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       }
     }
     if(effect.action==='conditional'&&effect.condition.kind!=='source-stat-comparison'&&effect.condition.kind!=='kicked'&&!(effect.elseEffects&&operation.proofBranch===false))stageCondition(MTG,context,effect.condition,stagedTargets[effect.conditionTarget]||{castMeta:{}},v5Helpers());
-    if(['count','sum','party','devotion','turn-count','source-attachments','opponent-poison-total','opponent-count','casting-live-count-v8','casting-turn-count-v8'].includes(effect.n?.kind))stageCount(MTG,context,effect.n,v5Helpers());
+    if(['count','sum','party','devotion','turn-count','attacked-creature-count-v10','source-attachments','opponent-poison-total','opponent-count','casting-live-count-v8','casting-turn-count-v8'].includes(effect.n?.kind))stageCount(MTG,context,effect.n,v5Helpers());
     if(effect.n?.kind==='target-count'){
       const player=typeof effect.n.target==='number'?stagedTargets[effect.n.target]:b;
       if(player instanceof MTG.Player)stageCount(MTG,{...context,a:player,b:player===a?b:a},effect.n.count,v5Helpers());
@@ -2682,7 +2959,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     if(['base-pt','animate'].includes(effect.action))for(const value of [effect.power,effect.toughness])if(typeof value==='object')stageCount(MTG,context,value,v5Helpers());
     if(effect.action==='reveal-hand-discard'&&effect.filter){const card=stageGenericTarget(MTG,context,{...effect.filter,controller:'opponent',zone:'graveyard'},'revealed-hand');b.graveyard.splice(b.graveyard.indexOf(card),1);card.zone='hand';b.hand.push(card);}
     if(['search-library','put-from-hand','look-select'].includes(effect.action)){
-      if(effect.filter){for(let i=0;i<Math.max(3,Number(effect.n)||1);i++){const card=stageGenericTarget(MTG,context,{...effect.filter,controller:'you',zone:'graveyard'},'filtered-search-'+i);a.graveyard.splice(a.graveyard.indexOf(card),1);card.zone='library';a.library.push(card);}}
+      if(effect.filter){for(let i=0;i<Math.max(3,Number(effect.n)||1);i++){const card=stageGenericTarget(MTG,context,{...effect.filter,controller:'you',zone:'graveyard'},'filtered-search-'+i);if(effect.filter.stat==='mv'&&JSON.stringify(effect.filter.threshold).includes('sacrificed-stat'))card.def.cost='{'+i+'}';a.graveyard.splice(a.graveyard.indexOf(card),1);card.zone='library';a.library.push(card);}}
       const what=effect.what;
       const type=what==='basic land'?'Land':what.split(' or ')[0];
       const cardType=['creature','artifact','land','enchantment','planeswalker','instant','sorcery','permanent','card','nonland permanent'].includes(type.toLowerCase())?(type==='card'||type.includes('permanent')?'Creature':type[0].toUpperCase()+type.slice(1).toLowerCase()):'Creature';
@@ -2761,7 +3038,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   }
   // Control-transfer proofs need an actual transfer, with no irrelevant
   // same-controller alternatives introduced by generic count fixtures.
-  if(operation.kind==='spell-generic'&&operation.effects?.length===1&&['give-control-v9','exchange-control-v9'].includes(operation.effects[0].action)){
+  if(operation.kind==='spell-generic'&&operation.effects?.length&&operation.effects.every(effect=>['give-control-v9','exchange-control-v9'].includes(effect.action))){
     for(const fixture of [groupCreature,secondGroupCreature,hostileGroupCreature].filter(Boolean))await game.move(fixture,'exile');
   }
   const trackedCards = [...stagedTargets.flat().filter(target => target instanceof MTG.CardInst), groupCreature,secondGroupCreature,hostileGroupCreature,
@@ -2792,6 +3069,11 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     if (expectedKind && !witnessedObject && object && object.kind === expectedKind && object.srcCard === source &&
         (!operationRun || object.run === operationRun) && Array.isArray(object.targets)) {
       witnessedObject=object;
+      const sourceVersion=object.ctx?.sourceZoneVersion;
+      if(sourceVersion!==undefined&&sourceVersion!==source.zoneVersion){
+        const snapshot=source.battlefieldLKI?.get(sourceVersion);
+        if(snapshot)context.sourceLkiEvidenceV10={source,snapshot};
+      }
       if(operation.modalTrigger){
         const mode=object.mode,body=operation.modalTrigger.modalBody.modes[mode]?.body;
         assert.ok(Number.isInteger(mode)&&body,entry.raw.name+': actual Stack contains one printed trigger mode');
@@ -2815,6 +3097,9 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       context.eventPlayer=object.ctx?.oracleSourceCapture?.eventPlayer||object.ctx?.data?.player;context.eventAmount=object.ctx?.data?.n;
       context.defendingPlayer=object.ctx?.oracleSourceCapture?.defendingPlayer;
       context.eventCard=object.ctx?.oracleSourceCapture?.eventCard||(operation.event==='blocks'?object.ctx?.data?.blocker:object.ctx?.data?.card);
+      context.eventStackV10=object.ctx?.oracleSourceCapture?.eventStackV10;
+      context.eventManaSpentV10=object.ctx?.oracleSourceCapture?.eventManaSpentV10;
+      context.eventSpellMvV10=object.ctx?.oracleSourceCapture?.eventSpellMvV10;
       context.eventController=object.ctx?.oracleSourceCapture?.eventController||object.ctx?.data?.snap?.ctrl||context.eventCard?.ctrl;
       if(context.eventCard&&!before.cards.has(context.eventCard))before.cards.set(context.eventCard,context.eventCardBefore||cardState(context.eventCard));
     }
@@ -2831,14 +3116,20 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
         for(const child of Object.values(node))Array.isArray(child)?child.forEach(visit):visit(child);};
       visit(operation);return found;})();
     const graveyardCast=operation.proofBranch!==false&&castOrigin&&(entry.implementation||[]).find(candidate=>candidate.kind==='mechanic-flashback');
-    const from=graveyardCast?'graveyard':operation.splitFace?.aftermath?'graveyard':'hand';
-    source=zoneCard(MTG,a,entry.raw.name,from);trackedCards.push(source);
+    const from=operation.preparedSpellV10?'exile':graveyardCast?'graveyard':operation.splitFace?.aftermath?'graveyard':'hand';
+    let preparer;
+    if(operation.preparedSpellV10){
+      preparer=permanent(MTG,game,a,operation.preparedSpellV10);source=MTG.oraclePrepareV10(game,preparer);
+      assert.ok(source,entry.raw.name+': prepared face creates its own spell copy in exile');
+      assert.equal(source.def.cost,entry.raw.cost);assert.equal(source.is('Creature'),false);
+    }else source=zoneCard(MTG,a,entry.raw.name,from);
+    trackedCards.push(source);
     await prepareAttachedEffectSource(MTG,context,source,operation);
     preparePaymentSource(MTG,context,source);
     prepareGenericCountSource(context,operation,source);
     await prepareCopyLinkedSource(MTG,context,entry,operation,source,v8Helpers());
     before=genericProofSnapshot(context,trackedCards);
-    const splitAlt=operation.overloadVariant?source.def.altCosts.find(option=>option.overloaded):operation.splitFace?{splitHalf:operation.splitFace.key}:operation.splitFuse?{splitFuse:'right'}:null;
+    const splitAlt=operation.cleaveVariantV10?source.def.altCosts.find(option=>option.oracleCleaveV10):operation.overloadVariant?source.def.altCosts.find(option=>option.overloaded):operation.splitFace?{splitHalf:operation.splitFace.key}:operation.splitFuse?{splitFuse:'right'}:null;
     if(source.def.replicate){for(const color of Object.keys(a.pool))a.pool[color]=0;const cost=MTG.parseCost(entry.raw.cost);a.pool.C=cost.generic+(cost.x||0)*3;for(const pip of cost.pips)a.pool[pip.find(c=>'WUBRGC'.includes(c))]++;}
     const entwineMarker=(entry.implementation||[]).find(candidate=>candidate.kind==='mechanic-entwine');
     if(entwineMarker&&!operation.entwineProof&&entwineMarker.cost.kind==='mana'){
@@ -2853,6 +3144,12 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     else assert.equal(await game.castSpell(a,source,{from,xVal:proofXValue(operation),...(graveyardAlt?{alt:graveyardAlt}:{}),...(operation.adventure?{alt:{...source.def.adventure,adventure:true}}:splitAlt?{alt:splitAlt}:conditionAlt?{alt:conditionAlt}:{})}),true,`${entry.raw.name}/${role}: paid generic spell cast`);
     before.players.set(a,playerState(a));
     const object=game.stack.find(row=>row.kind==='spell'&&row.card===source);assert.ok(object,`${entry.raw.name}/${role}: actual spell Stack`);
+    if(preparer){assert.equal(preparer.meta.prepared,false);assert.equal(preparer.zone,'battlefield');assert.equal(object.from,'exile');assert.equal(object.card.isCopySpell,true);assert.equal(object.manaSpent,MTG.mv(entry.raw.cost,object.x));}
+    if(operation.modal&&(operation.modal.escalateCostV10||operation.modal.modes.some(mode=>mode.tierCostV10))){
+      const tiers=Array.from(object.mode).reduce((sum,index)=>sum+MTG.mv(operation.modal.modes[index].tierCostV10||'{0}'),0);
+      const escalate=(object.mode.length-1)*MTG.mv(operation.modal.escalateCostV10||'{0}');
+      assert.equal(object.manaSpent,MTG.mv(entry.raw.cost,object.x)+tiers+escalate,entry.raw.name+': each selected additional modal cost is paid');
+    }
     if(entry.implementation.some(operation=>operation.kind==='mechanic-additional-costs'))assertOracleCastingCostRecord(source,object,entry);
     if(operation.entwineProof){
       assert.equal(object.castOpts.entwined,true,entry.raw.name+': exact Entwine announcement');
@@ -2864,8 +3161,10 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       }else assert.equal(object.sacdN,operation.entwineProof.cost.n,entry.raw.name+': exact Entwine lands sacrificed');
     }
     if(operation.overloadVariant){assert.equal(object.targets.length,0,entry.raw.name+': paid overload has no targets');assert.equal(object.castOpts.overloaded,true);}
+    if(operation.cleaveCostV10){assert.equal(!!object.castOpts.oracleCleaveV10,!!operation.cleaveVariantV10);assert.equal(object.manaSpent,MTG.mv(operation.cleaveVariantV10?operation.cleaveCostV10:entry.raw.cost,object.x),entry.raw.name+': exact chosen Cleave or ordinary cost paid');}
     if(splitAlt){const cost=operation.splitFace?.cost||entry.raw.cost;assert.equal(game.stackSpellManaValue(object),MTG.mv(cost,object.x),entry.raw.name+': printed spell mana value');assert.equal(source.mv,MTG.mv(cost,object.x));}
     selectedTargets=object.targets.slice();before.oracleX=object.x??0;await settleWithStackWitness(game,stackTargets);selectedTargets=object.targets.map((target,index)=>Array.isArray(selectedTargets[index])?target:selectedTargets[index]);
+    if(preparer)assert.equal(source.zone,'ceased',entry.raw.name+': resolved prepare copy ceases to exist');
     if(operation.modal){
       const selected=Array.from(object.mode),plan=Array.from(operation.modePlan);if(role==='human')assert.deepEqual(selected,plan,entry.raw.name+': every requested mode combination');
       if(operation.entwineProof)assert.deepEqual(selected,plan,entry.raw.name+': Entwine keeps every printed mode for both controllers');
@@ -2927,7 +3226,8 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       for(const effect of operation.effects||[])if(effect.action==='conditional'&&effect.condition?.kind==='source-quality')for(const child of effect.effects||[]){
         if(child.action==='battlefield-group'&&(child.filters||[]).some(filter=>filter.enchanted))context.groupFixtures.set(child,[host]);
       }
-    } else source = operation.from?zoneCard(MTG,a,entry.raw.name,operation.from):permanent(MTG, game, a, entry.raw.name);
+    } else source = context.earlyOracleSourceV10||(operation.from?zoneCard(MTG,a,entry.raw.name,operation.from):permanent(MTG, game, a, entry.raw.name));
+    if(!source.meta.oracleChosenColor)await enterChosenColorSource(MTG,context,entry,source,v5Helpers());
     const aura=(entry.implementation||[]).find(candidate=>candidate.kind==='aura-target');
     if(aura&&source.zone==='battlefield'&&!source.attachedTo){
       const host=stageGenericTarget(MTG,context,auraProofTarget(aura,'you'),'ability-aura-host');
@@ -2940,11 +3240,16 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     await prepareSourceProgression(MTG,context,source,entry,operation);
     await prepareStackCopySource(MTG,context,operation,v8Helpers());
     if(operation.loyalty!==undefined)source.counters.loyalty=Math.max(Number(entry.raw.loyalty),-operation.loyalty+1);
+    if(operation.activationCondition?.kind==='source-quality'&&operation.activationCondition.filter.what==='creature'&&!source.is('Creature')){
+      const animation=game.activatableList(a).find(row=>row.card===source&&row.ability?.oracleOperation?.effects?.some(effect=>effect.action==='animate'&&effect.target==='self'));
+      assert.ok(animation,entry.raw.name+': printed animation satisfies the activation condition');fund(a,100);assert.equal(await game.activateAbility(a,animation),true);await resolveAll(game);assert.equal(source.is('Creature'),true);
+    }
     stageCondition(MTG,context,operation.activationCondition,source,v5Helpers());
     stageActivationRuleCost(MTG,context,cost,source,v5Helpers());
     trackedCards.push(...stageOracleCounterCost(MTG,context,cost,source,v5Helpers()));
     if(operation.publicActivatorProof==='opponent'){source.ctrl=b;game.recalc();}
     source.sick=false;
+    if(cost.tap)game.untap(source);
     if(operation.forecast){game.turnPlayer=a;game.phase='upkeep';}
     if(cost.rmCounter && (source.counters[cost.rmCounter.kind]||0)<cost.rmCounter.n)game.addCounters(source,cost.rmCounter.kind,cost.rmCounter.n,false,a);
     if(operation.effects?.some(effect=>effect.action==='double-counters'&&effect.target==='self')){source.counters['+1/+1']=2;game.recalc();}
@@ -3049,6 +3354,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
         assert.ok(poolTotal(a)<paid,entry.raw.name+': printed mana cost is paid');await resolveAll(game);
         assert.equal(source.zone,'battlefield');source.sick=false;
       }else source = ['graveyard','cycling-source'].includes(operation.zone)?zoneCard(MTG,a,entry.raw.name,operation.zone==='cycling-source'?'hand':'graveyard'):permanent(MTG, game, a, entry.raw.name);
+      if(!source.meta.oracleChosenColor)await enterChosenColorSource(MTG,context,entry,source,v5Helpers());
       const aura=entry.implementation.find(row=>row.kind==='aura-target');
       if(aura&&source.zone==='battlefield'&&!source.attachedTo){const host=stageGenericTarget(MTG,context,auraProofTarget(aura,'you'),'trigger-aura-host');await game.attach(source,host);}
       await prepareAttachedEffectSource(MTG,context,source,operation);
@@ -3056,6 +3362,11 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     prepareGenericCountSource(context,operation,source);
       await prepareCopyLinkedSource(MTG,context,entry,operation,source,v8Helpers());
       stageCondition(MTG,context,operation.activationCondition,source,v5Helpers());
+      if(operation.condition?.kind==='source-quality'&&operation.condition.filter.what==='creature'&&!source.is('Creature')){
+        const animation=game.activatableList(a).find(row=>row.card===source&&row.ability?.oracleOperation?.effects?.some(effect=>effect.action==='animate'&&effect.target==='self'));
+        assert.ok(animation,entry.raw.name+': real animation can satisfy its creature condition');
+        fund(a,100);assert.equal(await game.activateAbility(a,animation),true);await resolveAll(game);assert.equal(source.is('Creature'),true);
+      }
       if(operation.condition?.kind==='creature-upgrade-state-v8'&&operation.condition.state==='monstrous')await activateUpgrade(MTG,context,source);
       else stageCondition(MTG,context,operation.condition,source,v5Helpers());
       for(const effect of operation.effects||[])if(effect.action==='conditional'&&effect.condition.kind==='source-stat-comparison'&&effect.conditionTarget===undefined)stageCondition(MTG,context,effect.condition,source,v5Helpers());
@@ -3071,7 +3382,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       stageCounterThreshold(context,operation,source);
       before = genericProofSnapshot(context, trackedCards);
       if(operation.chapterIndex!==undefined){source.counters.lore=operation.chapterIndex;game.addCounters(source,'lore',1,false,a);}
-      else if (JSON.stringify(operation.effects||[]).includes('copy-stack-v8')&&['cast','castIS','castNonCreature'].includes(event)||typeof operation.eventFilter==='object'||['any-creature','another-creature','your-creature','your-spell-targets-self','your-second-draw','self-combat','self-unblocked'].includes(operation.eventFilter)||['expend4','expend8','exerted','attackersDeclared','cycled','scry','drawStep','targeted','discarded','dealtDamage','castCreature','becameUntapped','becameTapped','lto','turnedFaceUp','energyGained'].includes(event)) {
+      else if (JSON.stringify(operation.effects||[]).includes('copy-stack-v8')&&['cast','castIS','castNonCreature'].includes(event)||typeof operation.eventFilter==='object'||['any-creature','another-creature','your-creature','your-spell-targets-self','your-second-draw','self-combat','self-unblocked'].includes(operation.eventFilter)||['expend4','expend8','exerted','attackersDeclared','cycled','scry','drawStep','targeted','discarded','dealtDamage','castCreature','becameUntapped','becameTapped','lto','turnedFaceUp','energyGained','mutated'].includes(event)) {
         await fireGenericEvent(MTG,context,source,operation);
       }else if (operation.eventFilter === 'another-your-creature') {
         const visitor = new MTG.CardInst(fixtureDefinition('Oracle Friendly Visitor', ['Creature']), a);
@@ -3117,10 +3428,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
         land.zone = 'nowhere';
         await game.move(land, 'battlefield', { ctrl: a });
       } else if (event === 'castIS' || event === 'castNonCreature' || event === 'cast') {
-        const spell = new MTG.CardInst(fixtureDefinition('Oracle Generic Cast Probe', ['Instant'], { cost: '{0}' }), a);
-        spell.zone = 'hand';
-        a.hand.push(spell);
-        assert.equal(await game.castSpell(a, spell, { from: 'hand', alt: { free: true } }), true);
+        await fireGenericEvent(MTG,context,source,operation);
       } else if (event === 'draw') {
         await game.draw(operation.eventFilter==='opponent-player'?b:a, 1, source);
       } else if (event === 'becameTapped') {
@@ -3161,7 +3469,14 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   await finishV8EffectProof(MTG,context,entry,v8Helpers());
   await finishStackCopyProof(MTG,context,v8Helpers());
   finishSourceDurations(context);
-  if(operation.adventure){assert.equal(source.zone,'exile',entry.raw.name+': Adventure exiles after resolution');game.turnPlayer=a;game.phase='main1';fund(a,100);assert.ok(game.castableList(a).some(row=>row.card===source&&row.from==='exile'&&!row.alt?.adventure),entry.raw.name+': normal half offered from exile');assert.equal(await game.castSpell(a,source,{from:'exile'}),true,entry.raw.name+': paid cast of normal half');await resolveAll(game);assert.equal(source.zone,'battlefield',entry.raw.name+': normal half enters battlefield');}
+  if(operation.adventure){
+    if(source.def.adventure.omen){assert.equal(source.zone,'library',entry.raw.name+': Omen shuffles the actual card into its owner library');assert.equal(source.owner.library.includes(source),true);assert.equal(source.meta.adventureExiled,undefined);}
+    else {assert.equal(source.zone,'exile',entry.raw.name+': Adventure exiles after resolution');game.turnPlayer=a;game.phase='main1';fund(a,100);
+      if(source.is('Land')){assert.ok(game.playableLands(a).includes(source),entry.raw.name+': land half offered from exile');assert.equal(await game.playLand(a,source),true);}
+      else {assert.ok(game.castableList(a).some(row=>row.card===source&&row.from==='exile'&&!row.alt?.adventure),entry.raw.name+': normal half offered from exile');assert.equal(await game.castSpell(a,source,{from:'exile'}),true,entry.raw.name+': paid cast of normal half');}
+      await resolveAll(game);assert.equal(source.zone,'battlefield',entry.raw.name+': normal half enters battlefield');
+    }
+  }
   if(operation.splitFace||operation.splitFuse)assert.equal(source.zone,operation.splitFace?.aftermath?'exile':'graveyard',entry.raw.name+': split destination');
   if (role === 'ai' && (operation.targets || []).length) {
     assert.ok(context.aiTrace.some(query => query.type === 'chooseTargets'),
@@ -3439,11 +3754,11 @@ async function mechanicRuntimeOperationProof(MTG, entry, operation, role) {
     const basic = /^basic land$/i.test(operation.subtype);
     const foundDef = basic
       ? fixtureDefinition('Oracle Basic Cycling Target', ['Land'], { super: ['Basic'], subtypes: ['Forest'] })
-      : fixtureDefinition(`Oracle ${operation.subtype} Cycling Target`, ['Land'], { subtypes: [operation.subtype] });
+      : fixtureDefinition(`Oracle ${operation.subtype} Cycling Target`, operation.subtype==='artifact land'?['Artifact','Land']:['Land'], { subtypes: operation.subtype==='artifact land'?[]:[operation.subtype] });
     const found = new MTG.CardInst(foundDef, a);
     found.zone = 'library';
     a.library.push(found);
-    const action = game.activatableList(a).find(candidate => candidate.card === source && candidate.cycling);
+    const action = game.activatableList(a).find(candidate => candidate.card === source && candidate.cycling&&game.cyclingDefinition(a,source,candidate)?.oracleTypecyclingV10===operation.subtype);
     assert.ok(action, `${entry.raw.name}/${role}: typecycling action offered`);
     assert.equal(await game.activateAbility(a, action), true, `${entry.raw.name}/${role}: typecycling activates`);
     await resolveAll(game);
@@ -4034,6 +4349,7 @@ async function costModifierProof(MTG,entry,op,role){
   let card=source,player=a;
   if(!op.self){card=stageGenericTarget(MTG,ctx,{...op.target,controller:op.controller==='opponents'?'opponent':'you'},0);player=card.ctrl;await game.move(card,'hand');card.def={...card.def,cost:'{20}{G}'};}
   const castOpts=op.from?{from:op.from==='not-hand'?'exile':op.from}:{};
+  if(op.condition?.flag==='oracleBargainV10')castOpts.oracleBargainV10=true;
   if(op.target?.faceDownV9)Object.assign(castOpts,{faceDownCast:'morph',altCostStr:'{3}'});
   if(op.from)await game.move(card,castOpts.from);
   const modifierField=op.targetCondition?'selfTargetCostAdjust':'selfCostAdjust';
@@ -4066,6 +4382,7 @@ async function attachmentOperationProof(MTG,entry,op,role){
   ctx.proofBranch=op.proofBranch;
   ctx.groupFixtures=new Map();
   fund(a,100);fillLibrary(MTG,a,40);fillLibrary(MTG,ctx.b,40);for(let i=0;i<10;i++){zoneCard(MTG,a,'Forest','hand');zoneCard(MTG,ctx.b,'Forest','hand');}
+  await fundSnow(MTG,game,a,entry);
   ctx.b.controller=recordingDecision(role==='ai'?ctx.aiDecisions:trace);
   for(const effect of flattenProofEffects(child.effects||[])){
     if(effect.action==='battlefield-group'){
@@ -4087,7 +4404,14 @@ async function attachmentOperationProof(MTG,entry,op,role){
   }
   if(op.conditionSubject==='affected')stageCondition(MTG,ctx,op.condition,host,v5Helpers());
   costHost=host;
-  if(!global)assert.equal(await game.attach(parent,host),true,entry.raw.name+': real attachment');host.sick=false;
+  if(!global){
+    if(parent.def.bestowCost){
+      await game.move(parent,'hand');const decide=a.controller.decide.bind(a.controller);
+      a.controller.decide=async(g,q)=>q.type==='chooseTargets'&&q.candidates.includes(host)?[host]:decide(g,q);
+      assert.equal(await game.castSpell(a,parent,{from:'hand',alt:{bestow:true,altCostStr:parent.def.bestowCost}}),true,entry.raw.name+': paid bestow cast');
+      await resolveAll(game);a.controller.decide=decide;assert.equal(parent.attachedTo,host.iid);
+    }else assert.equal(await game.attach(parent,host),true,entry.raw.name+': real attachment');
+  }host.sick=false;
   if(child.kind==='mana-source'){
     await grantedManaProof(MTG,ctx,entry,child,host,entry.raw.name+'/'+role);
     if(parent.zone==='battlefield')await game.move(parent,'exile');game.recalc();if(host.zone==='battlefield')assert.equal(host.cur.extraMana.length,0,entry.raw.name+': granted mana leaves with its source');else assert.equal(game.manaSources(a).some(row=>row.card===host),false,entry.raw.name+': an exiled source cannot activate its former grant');return 1;
@@ -4242,6 +4566,13 @@ async function operationProof(MTG, entry, operation, role = 'human') {
     return 7;
   }
   if(operation.kind==='v8-land-types')return landTypesProof(MTG,entry,operation,role,v8Helpers());
+  if(operation.kind==='characteristic-subtypes-v10'){
+    const ctx=gameFor(MTG,[decision(),decision()],{ai:role==='ai'}),{game,a}=ctx,card=zoneCard(MTG,a,entry.raw.name,'hand');fund(a);fillLibrary(MTG,a,30);
+    for(const type of operation.types)assert.equal(card.hasSub(type),true,'characteristic subtype in hand');
+    assert.equal(await game.castSpell(a,card,{from:'hand'}),true);for(const type of operation.types)assert.equal(card.hasSub(type),true,'characteristic subtype on Stack');await resolveAll(game);
+    for(const type of operation.types)assert.equal(card.hasSub(type),true,'characteristic subtype on battlefield');await game.move(card,'graveyard');
+    for(const type of operation.types)assert.equal(card.hasSub(type),true,'characteristic subtype in graveyard');return operation.types.length*4;
+  }
   if(operation.kind==='v8-layered-static'||operation.kind==='v8-type-static'){
     let checks=await layeredStaticProof(MTG,entry,operation,role,v8Helpers());
     if(operation.operation?.grantedOperation)checks+=await attachmentOperationProof(MTG,entry,{...operation.operation,condition:operation.condition},role);
@@ -4285,7 +4616,7 @@ async function operationProof(MTG, entry, operation, role = 'human') {
     if(operation.attached&&!source.attachedTo){const action=game.activatableList(a).find(row=>row.card===source&&(row.equip||row.ability?.oracleEquip));assert.ok(action);assert.equal(await game.activateAbility(a,action),true);await resolveAll(game);}
     const target=operation.own?source:operation.attached?game.byIid(source.attachedTo):probe;
     if(operation.kind==='protection-static'){
-      for(const quality of operation.qualities){const origin=quality.kind==='filters'?stageGenericTarget(MTG,context,quality.filters[0],'protection-origin'):permanent(MTG,game,b,fixtureDefinition('Static protection source',[quality.kind==='type'?quality.value:'Creature'],{power:'2',toughness:'20',colorsOverride:quality.kind==='color'?[quality.value]:quality.kind==='colored'||quality.kind==='monocolored'?['R']:quality.kind==='multicolored'?['R','G']:[],subtypes:quality.kind==='subtype'?[quality.value]:[]}));assert.equal(game.isProtectedFrom(target,origin),true);if(target.is('Creature'))assert.equal(await game.damageCreature(origin,target,1),0);}
+      for(const quality of operation.qualities){const origin=quality.kind==='filters'?stageGenericTarget(MTG,context,quality.filters[0],'protection-origin'):permanent(MTG,game,b,fixtureDefinition('Static protection source',[quality.kind==='type'?quality.value:'Creature'],{power:'2',toughness:'20',colorsOverride:quality.kind==='chosen-color-v10'?[source.meta.oracleChosenColor]:quality.kind==='color'?[quality.value]:quality.kind==='colored'||quality.kind==='monocolored'?['R']:quality.kind==='multicolored'?['R','G']:[],subtypes:quality.kind==='subtype'?[quality.value]:[]}));assert.equal(game.isProtectedFrom(target,origin),true);if(target.is('Creature'))assert.equal(await game.damageCreature(origin,target,1),0);}
       return operation.qualities.length*2;
     }
     const value=n=>typeof n==='number'?n:n.kind==='life-total'?a.life:countValue(context,source,n,genericProofSnapshot(context,[source,target]));
@@ -4337,6 +4668,11 @@ async function operationProof(MTG, entry, operation, role = 'human') {
     return checks;
   }
   if(operation.kind==='saga-chapters'){let checks=0;for(const [chapterIndex,chapter]of operation.chapters.entries())checks+=await genericRuntimeOperationProof(MTG,entry,{kind:'generic-trigger',event:'saga-chapter',eventFilter:'self',chapterIndex,...chapter},role);return checks;}
+  if(operation.kind==='prepare-face-v10')return genericRuntimeOperationProof(MTG,{...entry,raw:operation.raw,implementation:[]},{kind:'spell-generic',preparedSpellV10:entry.raw.name,targets:operation.targets,effects:operation.effects},role);
+  if(operation.kind==='damage-prevention-rule-v10')return damagePreventionRuleProofV10(MTG,entry,operation,role);
+  if(operation.kind==='mana-bonus-v10')return manaBonusProofV10(MTG,entry,operation,role);
+  if(operation.kind==='mechanic-prototype-v10')return prototypeProofV10(MTG,entry,operation,role,v5Helpers());
+  if(operation.kind==='mechanic-bargain-v10')return bargainProofV10(MTG,entry,role,v5Helpers());
   if(operation.kind==='adventure-face')return genericRuntimeOperationProof(MTG,entry,{kind:'spell-generic',adventure:true,targets:operation.targets,effects:operation.effects},role);
   if(operation.kind==='spell-limit-v8')return spellLimitProof(MTG,entry,operation,role,v8Helpers());
   if(['casting-restriction-v8','casting-cost-modifiers-v8'].includes(operation.kind)||operation.kind==='cost-modifier'&&(operation.coloredReduction||operation.reductionCap!==undefined))return castingRulesProof(MTG,entry,operation,role,v8Helpers());
@@ -4702,6 +5038,7 @@ async function operationProof(MTG, entry, operation, role = 'human') {
       wantedTargets = [attachmentHost];
     } else if (operations.some(candidate => candidate.kind === 'attachment-grant' || candidate.kind === 'equipment-equip')) {
       attachmentHost = targetPermanent(MTG, game, a, 'creature');
+      if(operations.some(candidate=>candidate.kind==='mechanic-bestow'))wantedTargets=[attachmentHost];
     }
     if (!auraOperation) {
       const entryTargets = operations.filter(candidate => candidate.kind === 'generic-trigger' && candidate.event === 'etb')
@@ -4727,7 +5064,7 @@ async function operationProof(MTG, entry, operation, role = 'human') {
     const libraryBefore = a.library.length;
     const handBBefore = b.hand.length;
     const tokenBefore = game.battlefield.filter(card => card.isToken && card.ctrl === a).length;
-    const source = await enterPermanentProof(MTG, context, entry, {holdLandTriggers:['enters-tapped','mana-source'].includes(operation.kind)});
+    const source = await enterPermanentProof(MTG, context, entry, {holdLandTriggers:['enters-tapped','mana-source'].includes(operation.kind),bestow:operation.kind==='attachment-grant'&&operations.some(candidate=>candidate.kind==='mechanic-bestow')});
 
     if (operation.kind === 'enters-tapped') {
       assert.equal(source.tapped, true, `${name}: enters-tapped replacement`);
@@ -4859,7 +5196,9 @@ async function operationProof(MTG, entry, operation, role = 'human') {
       return 1;
     }
     if (operation.kind === 'mana-source') {
+      if(operation.produceFromLandsV10)for(const name of ['Plains','Island','Swamp','Mountain','Forest','Wastes'])permanent(MTG,game,a,name);
       stageCondition(MTG,context,operation.condition,source,v5Helpers());
+      for(const effect of operation.afterEffects||[])if(effect.action==='conditional'&&effect.effects.every(child=>['gain-life','lose-life'].includes(child.action)))stageCondition(MTG,context,effect.condition,source,v5Helpers());
       for(const effect of operation.effects||[])if(effect.action==='conditional'&&effect.condition.kind==='source-stat-comparison'&&effect.conditionTarget===undefined)stageCondition(MTG,context,effect.condition,source,v5Helpers());
       if(source.hasSub('Vehicle')&&JSON.stringify(operation.condition||{}).includes('"what":"creature"')){
         permanent(MTG,game,a,fixtureDefinition('Oracle mana crew',['Creature'],{power:'20',toughness:'20'}));

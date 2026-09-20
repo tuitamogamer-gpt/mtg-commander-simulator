@@ -4,7 +4,7 @@ export async function fireCastEvent(M,context,source,operation,h){
  const {game,a,b}=context,player=rule.controller==='opponent'?b:a;
  const f=rule.target.spellFilter?.alternatives?.[0]||rule.target.spellFilter||{},quality=f.what||rule.target.spellQuality;
  const type=['creature','artifact','enchantment','instant','sorcery','planeswalker'].includes(quality)?quality[0].toUpperCase()+quality.slice(1):'Instant';
- const cost=(rule.manaX?'{X}':'')+(rule.colors?.map(c=>'{'+c+'}').join('')||'{0}');
+ const cost=(rule.manaX?'{X}':'')+(rule.colors?.map(c=>'{'+c+'}').join('')||(/event-(?:mana-spent|spell-mv)-v10/.test(JSON.stringify(operation))?'{'+(context.eventManaProofV10??5)+'}':'{0}'));
  const def=h.fixtureDefinition('V8 cast-event witness',[type],{cost,power:'2',toughness:'20',kws:rule.target.withKeyword?[rule.target.withKeyword]:[],subtypes:f.subtype?[f.subtype]:[],
   ...(rule.targetsYouOrCreature?{targets:[{what:'player',filter:(g,p)=>p===a}]}:{})});
  const from=rule.from==='not-hand'?'exile':rule.from||'hand',owner=rule.zoneOwner==='source'?a:player;

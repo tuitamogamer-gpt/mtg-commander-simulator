@@ -18,7 +18,10 @@ async function enter(M, ctx, name) {
 }
 export async function landTypesProof(M, entry, operation, role, h) {
   const ctx = context(M, role, h), { game, a, b } = ctx, label = entry.raw.name + '/' + role;
-  const host = put(M, game, a, "Mishra's Factory"), source = await enter(M, ctx, entry.raw.name);
+  const host = put(M, game, a, "Mishra's Factory");
+  const originalSubtype=operation.filters?.[0]?.subtype;
+  if(originalSubtype){host.def={...host.def,subtypes:[originalSubtype]};game.recalc();}
+  const source = await enter(M, ctx, entry.raw.name);
   if (operation.attached) assert.equal(source.attachedTo, host.iid, label + ': actual Aura cast chose the land');
   assert.equal(host.cur.super.includes('Basic'), false, label + ': subtype change does not make a basic land');
   for (const type of operation.types) {
@@ -32,10 +35,11 @@ export async function landTypesProof(M, entry, operation, role, h) {
   host.tapped = false; a.pool.C = 1;
   assert.equal(game.activatableList(a).some(row => row.card === host && row.ability?.label.includes('2/2')), operation.retain, label + ': printed animation is retained only by additive typing');
   const enemy = put(M, game, b, operation.retain?'Wastes':"Mishra's Factory");
+  if(originalSubtype){enemy.def={...enemy.def,subtypes:[originalSubtype]};game.recalc();}
   for (const type of operation.types) assert.equal(enemy.hasSub(type), !operation.attached && operation.filters[0].controller === 'any', label + ': exact controller scope');
   await game.move(source, 'exile');
   for (const type of operation.types) assert.equal(host.hasSub(type), false, label + ': source removal restores old types');
-  assert.equal(game.manaSources(a).some(row => row.card === host && row.produce.some(output => Object.keys(output).some(color => color !== 'C'))), false, label + ': intrinsic colors expire with source');
+  assert.equal(game.manaSources(a).some(row => row.card === host && row.produce.some(output => Object.keys(output).some(color => color !== 'C'&&color!==colors[originalSubtype]))), false, label + ': intrinsic colors expire with source');
   return operation.types.length * 6 + 6;
 }
 export async function attackKeywordsProof(M, entry, operation, role, h) {

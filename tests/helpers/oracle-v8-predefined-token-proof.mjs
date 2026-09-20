@@ -2,8 +2,15 @@ import assert from 'node:assert/strict';
 export function assertRoleToken(context,effect,source,subject,before,label){
  if(effect.action!=='role-token-v8')return false;
  const {game,a}=context;
- const hosts=effect.filters?before.battlefield.filter(card=>effect.filters.some(filter=>card.is('Creature')&&(filter.controller==='you'?card.ctrl===a:filter.controller==='opponent'?card.ctrl!==a:true)&&(!filter.subtype||card.hasSub(filter.subtype)))):[subject].flat().filter(Boolean);
- const entered=context.moveEvidence.slice(before.moveEvidenceIndex).filter(row=>row.from==='nowhere'&&row.to==='battlefield'&&row.card.isToken&&row.card.name===effect.role);
+ const moves=context.moveEvidence.slice(before.moveEvidenceIndex);
+ const isRole=row=>row.from==='nowhere'&&row.to==='battlefield'&&row.card.isToken&&row.card.name===effect.role;
+ const firstRole=moves.findIndex(isRole);
+ // An earlier instruction may create a creature that the following Role
+ // instruction must include. Only arrivals preceding the first Role count.
+ const priorArrivals=firstRole<0?[]:moves.slice(0,firstRole).filter(row=>row.from==='nowhere'&&row.to==='battlefield').map(row=>row.card);
+ const battlefield=[...new Set([...before.battlefield,...priorArrivals])];
+ const hosts=effect.filters?battlefield.filter(card=>effect.filters.some(filter=>card.is('Creature')&&(filter.controller==='you'?card.ctrl===a:filter.controller==='opponent'?card.ctrl!==a:true)&&(!filter.subtype||card.hasSub(filter.subtype)))):[subject].flat().filter(Boolean);
+ const entered=moves.filter(isRole);
  // Optional target counts can be zero; when a target was actually selected,
  // witness the attachment established on its entry, before any later SBA.
  const legal=hosts.filter(host=>host.zone==='battlefield'&&!host.phasedOut&&host.is('Creature'));

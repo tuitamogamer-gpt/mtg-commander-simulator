@@ -1268,6 +1268,7 @@ MTG.parseCost = function (str) {
     else if (t === 'X') cost.x++;
     else if (t.length === 1 && COLORS.includes(t)) cost.pips.push([t]);
     else if (t === 'C') cost.pips.push(['C']);
+    else if (t === 'S') cost.pips.push(['S']);
     else if (t.length === 2 && t[1] === 'P') cost.pips.push([t[0], 'PHY']); // phyrexian
     else if (t.length === 2 && COLORS.includes(t[0]) && COLORS.includes(t[1])) cost.pips.push([t[0], t[1]]); // hybrid
     else if (/^2\/[WUBRG]$/.test(t)) cost.pips.push([t[2], 'TWO']);

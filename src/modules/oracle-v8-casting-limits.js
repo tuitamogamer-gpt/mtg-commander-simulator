@@ -11,7 +11,7 @@
     },
     allowed(game,player,card,options={}){
       const creature=card&&game.castHasType(card,options||{},'Creature');
-      if(game.untilEffects.some(e=>e.kind==='oracleNoCastV9'&&e.players.includes(player)&&(e.quality==='all'||e.quality==='noncreature'&&!creature)))return false;
+      if(game.untilEffects.some(e=>e.kind==='oracleNoCastV9'&&e.players.includes(player)&&(e.quality==='all'||e.quality==='noncreature'&&!creature||e.quality==='creature'&&creature)))return false;
       return !game.bf().some(source=>!source.cur?.abilitiesDisabled&&(source.def.oracleSpellLimits?.some(limit=>
         (limit.players==='all'||source.ctrl===player)&&(player.turnState.spellsCast||0)>=limit.max)||source.def.oracleCastingProhibitionsV9?.some(rule=>{
           if(rule.players==='you'&&source.ctrl!==player||rule.players==='opponents'&&source.ctrl===player)return false;

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {fundSnow} from './oracle-snow-proof.mjs';
 export async function activateUpgrade(M,ctx,source,{resolve=true}={}){
  const {game,a}=ctx;const action=game.activatableList(a).find(row=>row.card===source&&row.ability.oracleOperation?.effects?.some(effect=>effect.action==='monstrosity-v8'))||game.activatableList(a).find(row=>row.card===source&&row.ability.oracleCompiled);assert.ok(action,source.name+': live Monstrosity action');const before=Object.values(a.pool).reduce((n,v)=>n+v,0);assert.equal(await game.activateAbility(a,action),true);assert.ok(Object.values(a.pool).reduce((n,v)=>n+v,0)<before,source.name+': real Monstrosity payment');if(resolve)await game.resolveTop();return source.meta.oracleMonstrosityX;
 }
@@ -7,6 +8,7 @@ export async function creatureUpgradeProof(M,entry,operation,role,h){
  let result=0;for(const paid of tribute?(isEntry?[true,false]:[false]):[false]){
  const ctx=h.gameFor(M,[h.decision({chooseCards:(game,q)=>q.prompt?.startsWith('You may cast one of these cards')?q.from.slice(0,1):q.from.slice(0,q.min||0),chooseTargets:(game,q)=>q.candidates.filter(card=>card!==game.players[0]&&card.ctrl!==game.players[0]).slice(0,q.max||q.min||1)}),h.decision({chooseOption:(game,q)=>q.aiHint?.kind==='tribute'?(paid?'yes':'no'):q.options.find(row=>row.key==='yes')?.key||q.options[0]?.key})],{ai:role==='ai'}),{game,a,b}=ctx;
  h.assertControllerRole(M,ctx,entry.raw.name+'/'+role);for(const p of [a,b]){h.fund(p,100);h.fillLibrary(M,p,30);}const enemy=h.permanent(M,game,b,'Grizzly Bears'),ring=h.permanent(M,game,b,'Sol Ring');
+ await fundSnow(M,game,a,entry);
  if(entry.raw.name==='Oracle of Bones')h.zoneCard(M,a,'Lightning Bolt','hand');
  const source=h.zoneCard(M,a,entry.raw.name,'hand'),before=Object.values(a.pool).reduce((n,v)=>n+v,0),life=a.life,enemyLife=b.life;
  assert.equal(await game.castSpell(a,source,{from:'hand'}),true);await h.resolveAll(game);assert.ok(Object.values(a.pool).reduce((n,v)=>n+v,0)<before);

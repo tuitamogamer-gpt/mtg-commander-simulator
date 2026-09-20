@@ -30,7 +30,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (on === 'lifeLost' && d.n > 0 && this.turnPlayer !== d.player) {
       const p = this.turnPlayer;
       if (p && (p.counters.speed || 0) >= 1 && p.counters.speed < 4 && !p.turnState.cslSpedUp) {
-        p.counters.speed++; p.turnState.cslSpedUp = true; this.note('counter', {p, kind: 'speed'});
+        p.turnState.cslSpedUp = true;
+        // CR 702.179d: the source-free inherent ability uses the Stack and
+        // retains its intervening-if check after opponents can respond.
+        this.queueTrigger({src:null,ctrl:p,name:'Increase speed',run:ctx=>{
+          if((ctx.you.counters.speed||0)<4){ctx.you.counters.speed++;ctx.g.note('speed',{player:ctx.you,value:ctx.you.counters.speed});ctx.g.recalc();}
+        }});
       }
     }
     return emit.call(this, on, d);

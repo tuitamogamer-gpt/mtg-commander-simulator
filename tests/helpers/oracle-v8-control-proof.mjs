@@ -9,7 +9,7 @@ export async function auraControlProof(MTG, entry, operation, role, helpers) {
   const context = helpers.gameFor(MTG, [helpers.decision({chooseTargets: (game, query) => query.candidates.includes(host) ? [host] : query.candidates.slice(0, query.min || 1)}),
     helpers.decision({chooseTargets: (game, query) => query.candidates.includes(source) ? [source] : query.candidates.slice(0, query.min || 1)})], {ai: role === 'ai'});
   helpers.assertControllerRole?.(MTG, context, entry.raw.name + '/' + role);
-  const {game, a, b} = context, target = entry.implementation.find(op => op.kind === 'aura-target');
+  const {game, a, b} = context, bestow=entry.implementation.find(op=>op.kind==='mechanic-bestow'),target = entry.implementation.find(op => op.kind === 'aura-target')||(bestow?{what:'creature'}:null);
   assert.ok(target, entry.raw.name + ': Aura has its printed enchant restriction');
   host = helpers.stageGenericTarget(MTG, context, helpers.auraProofTarget(target, 'opponent'), 'control-host');
   const originalController = host.ctrl, originalOwner = host.owner;
@@ -18,7 +18,8 @@ export async function auraControlProof(MTG, entry, operation, role, helpers) {
   source = helpers.zoneCard(MTG, a, entry.raw.name, 'hand');
   const pool = player => Object.values(player.pool).reduce((sum, n) => sum + Number(n), 0);
   const beforeMana = pool(a);
-  assert.equal(await game.castSpell(a, source, {from: 'hand'}), true, entry.raw.name + ': actual Aura cast');
+  const alternative=bestow?{bestow:true,altCostStr:source.def.bestowCost}:undefined;
+  assert.equal(await game.castSpell(a, source, {from: 'hand',...(alternative?{alt:alternative}:{})}), true, entry.raw.name + ': actual Aura cast');
   await helpers.resolveAll(game);
   assert.ok(pool(a) < beforeMana, entry.raw.name + ': printed mana paid');
   assert.equal(source.zone, 'battlefield'); assert.equal(source.attachedTo, host.iid);

@@ -21,7 +21,7 @@
   }
  }
  function available(game){return !game.bf().some(card=>card.def.oracleCyclingProhibited&&!card.cur.abilitiesDisabled);}
- M.Game.prototype.cyclingOptions=function(player,card){return card.def.cycling?[{cyclingId:'printed',definition:card.def.cycling}]:[];};
+ M.Game.prototype.cyclingOptions=function(player,card){return [...(card.def.cycling?[{cyclingId:'printed',definition:card.def.cycling}]:[]),...(card.def.oracleExtraCyclingV10||[]).map((definition,index)=>({cyclingId:'printed-extra-v10:'+index,definition,label:definition.oracleTypecyclingV10+'cycling '+definition.cost}))];};
  M.Game.prototype.cyclingDefinition=function(player,card,entry={}){return this.cyclingOptions(player,card).find(row=>row.cyclingId===(entry.cyclingId||'printed'))?.definition;};
  M.Game.prototype.cyclingManaCost=function(player,card,entry={}){
   const d=this.cyclingDefinition(player,card,entry);if(!d)return null;

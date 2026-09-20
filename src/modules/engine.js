@@ -126,7 +126,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Printed Changeling is a CDA and applies in every zone. Battlefield-only
       // grants (Maskwood Nexus and similar effects) still require a creature.
       const allCreatureTypes = battlefieldDerived
-        ? this.cur.types.includes('Creature') && (
+        ? (this.cur.types.includes('Creature') || this.cur.types.includes('Kindred')) && (
           (this.def.changeling && !this.cur.abilitiesDisabled && !this.cur.suppressPrintedChangeling) ||
           this.cur.allCreatureTypesFromOtherEffects ||
           (!this.def.changeling && this.cur.allCreatureTypes)
@@ -795,6 +795,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         sourceMeta: card.meta,
         oracleFaces: card.oracleFaces, oracleFace: card.oracleFace,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
+        toxic: MTG.oracleToxicValueV10?.(card)??Math.max(0,Number(card.def.toxic)||0),
         tapped: !!card.tapped, blocking: card.blocking,
         enchanted: activeAttachments.some(source=>source.hasSub('Aura')),
         equipped: activeAttachments.some(source=>source.hasSub('Equipment')),
@@ -804,7 +805,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         types: derived ? card.cur.types.slice() : card.def.types.slice(),
         super: derived ? (card.cur.super||card.def.super||[]).slice() : (card.def.super||[]).slice(),
         subtypes: derived ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
-        changeling: derived ? !!card.cur.types.includes('Creature')&&!!(card.def.changeling&&!card.cur.abilitiesDisabled&&!card.cur.suppressPrintedChangeling||card.cur.allCreatureTypesFromOtherEffects||!card.def.changeling&&card.cur.allCreatureTypes) : !!card.def.changeling,
+        changeling: derived ? !!(card.cur.types.includes('Creature')||card.cur.types.includes('Kindred'))&&!!(card.def.changeling&&!card.cur.abilitiesDisabled&&!card.cur.suppressPrintedChangeling||card.cur.allCreatureTypesFromOtherEffects||!card.def.changeling&&card.cur.allCreatureTypes) : !!card.def.changeling,
         attachments: card.attachments.slice(), attachedTo:card.attachedTo, attachedHostVersion:this.byIid(card.attachedTo)?.zoneVersion, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
         enteredTurn:card.meta._enteredTurn,attackedTurn:card.meta._attackedTurn,damagedTurnV9:card.meta._lastDamageVisual?.turn,renowned:!!card.meta.renowned,
         // Keywordi u trenutku odlaska. Bez ovoga je snap.flying bio undefined,
@@ -973,6 +974,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.isCopyOf = null;
         delete card.meta.characteristicOriginalDef;
       }
+      if(card.oraclePrototypeV10&&!['battlefield','stack'].includes(toZone)){card.def=MTG.DEFS[card.def.name]||card.def;delete card.oraclePrototypeV10;}
       // Keep departure LKI above; the new object uses the selected entry face,
       // or the front face in every zone other than the Stack/battlefield.
       if (oracleFace) {
@@ -2075,7 +2077,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(!hit.target||!(hit.n>0))continue;
         const existing=grouped.find(row=>row.src===hit.src&&row.target===hit.target);
         if(existing)existing.n+=hit.n;else grouped.push({...hit});
-        if(hit.src&&!batch.traits.has(hit.src))batch.traits.set(hit.src,{controller:hit.src.ctrl,keywords:new Set(['lifelink','deathtouch','wither','infect'].filter(keyword=>hit.src.kw?.(keyword)))});
+        if(hit.src&&!batch.traits.has(hit.src))batch.traits.set(hit.src,{controller:hit.src.ctrl,toxic:MTG.oracleToxicValueV10?.(hit.src)??0,keywords:new Set(['lifelink','deathtouch','wither','infect'].filter(keyword=>hit.src.kw?.(keyword)))});
         if(hit.src instanceof CardInst&&!batch.snapshots.has(hit.src))batch.snapshots.set(hit.src,hit.src._oracleDamageSnapshot||this.snapshot(hit.src,false));
       }
       const previous=this._damageEventQueue,events=[];this._damageEventQueue=events;
@@ -2111,8 +2113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;
       const infect = this.damageSourceTrait(src,'infect',opts);
-      const toxic = opts.combat && src && !(src.cur && src.cur.abilitiesDisabled)
-        ? Math.max(0, Number(src.def && src.def.toxic) || 0) : 0;
+      const toxic = opts.combat && src ? (opts._damageBatch?.traits.get(src)?.toxic ?? MTG.oracleToxicValueV10?.(src) ?? (!(src.cur&&src.cur.abilitiesDisabled)?Math.max(0,Number(src.def?.toxic)||0):0)) : 0;
       if (infect) {
         const actual = MTG.POM?.playerCounterBonus(this,p,n)||n;
         p.poison = (p.poison || 0) + actual;
@@ -2259,7 +2260,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.damageAny(reflectionSource, recipient, amount, {combat: false, deferSBA: true});
       };
       while (data.n > 0) {
-        const preventionAllowed = !opts.cantBePrevented && !this.untilEffects.some(e=>e.kind==='noDamagePrevention') && !this.bf().some(card => !card.cur?.abilitiesDisabled && card.def.damageCantBePrevented);
+        const preventionAllowed = !opts.cantBePrevented && !this.untilEffects.some(e=>e.kind==='noDamagePrevention') && !this.bf().some(card => !card.cur?.abilitiesDisabled && (typeof card.def.damageCantBePrevented==='function'?card.def.damageCantBePrevented(this,card,data):card.def.damageCantBePrevented));
         data.preventionAllowed=preventionAllowed;
         const candidates = [];
         const add = entry => { if (!used.has(entry.key)) candidates.push(entry); };
@@ -2880,7 +2881,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cantSacrifice: false, mustAttack: false, mustBeBlocked: false, lure: false,
           assignByToughness: false, allCreatureTypes: !!d.changeling,
           allCreatureTypesFromOtherEffects: false, suppressPrintedChangeling: false,
-          extraAbilities: [], extraTriggers: [], wardCost: d.ward || null, extraWards: [], extraMana: [],
+          extraAbilities: [], extraTriggers: [], wardCost: d.ward || null, extraWards: [], extraMana: [], oracleNumericKeywordsV10: [], oracleHexproofV10: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
           protectionFrom: [],
           abilitiesDisabled: false, activationDisabled: false,
@@ -3512,6 +3513,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (zone === 'battlefield' && c.zone === 'battlefield' && c.ctrl !== ctrl) {
           if (c.cur.hexproof || c.kw('hexproof')) return false;
+          if(c.cur.oracleHexproofV10?.some(test=>test(this,src)))return false;
         }
         if (c.zone === 'battlefield' && (c.cur.shroud || c.kw('shroud'))) return false;
         if (c.zone === 'battlefield' && this.isProtectedFrom(c, src)) return false;
@@ -3845,6 +3847,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         while (any && guard++ < 30) {
           any = false;
           this.recalc();
+          // CR 704.5z: start your engines initializes the designation as an
+          // SBA, including when control changes or the ability is restored.
+          for(const card of this.bf())if(card.def.oracleStartEnginesV10&&!card.cur.abilitiesDisabled&&card.ctrl.counters.speed===undefined){
+            card.ctrl.counters.speed=1;this.note('speed',{player:card.ctrl,value:1});any=true;
+          }
           // players lose
           for (const p of this.players) {
             if (p.lost) continue;
