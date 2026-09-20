@@ -1,5 +1,6 @@
 // Command Table is presentation only. Every decision retains its engine callback.
 'use strict';
+import { renderCombatTable } from './combat-table.js';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const U = MTG;
@@ -155,8 +156,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       head.prepend(portrait(player));
       if (player === game.turnPlayer) head.querySelector('.oppname')?.append(node('span', 'ct-turn-badge', 'Active turn'));
+      const partnerNames = !mobileLayout.matches && commanders(player).length > 1;
       const shortName = commanders(player).map(card => card.name.split(',')[0]).join(' + ');
-      head.querySelector('.oppname')?.append(node('small', 'ct-commander-name', shortName));
+      const identity = node('small', 'ct-commander-name' + (partnerNames ? ' ct-partner-name' : ''));
+      if (partnerNames) {
+        for (const card of commanders(player)) {
+          const name = node('span', 'ct-commander-label', card.name.split(',')[0]);
+          name.title = `${card.name} · ${card.zone}`;
+          identity.append(name);
+        }
+      } else identity.textContent = shortName;
+      head.querySelector('.oppname')?.append(identity);
       const metadata = head.querySelector('.oppmeta');
       const commanderState = head.querySelector('.oppcmd');
       if (metadata && commanderState) metadata.append(commanderState);
@@ -172,7 +182,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Share one compact header so public counters do not take a board row.
         if (zones) head.append(zones);
         head.append(enlarge);
-        if (commanderState) head.querySelector('.ct-commander-name')?.append(commanderState);
+        if (partnerNames) commanderState?.remove();
+        else if (commanderState) identity.append(commanderState);
         if (metadata) head.querySelector('.oppname')?.append(metadata);
       }
       const landCount = row.querySelector('.oppLands');
@@ -197,6 +208,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const heading = node('div', 'ct-player-head');
       const label = node('div', 'ct-player-name');
       label.append(node('small', '', 'Your battlefield'), node('b', '', commanders(this.me).map(card => card.name.split(',')[0]).join(' + ') || this.me.name));
+      if (!mobileLayout.matches && commanders(this.me).length > 1) {
+        const names = label.querySelector('b');
+        names.classList.add('ct-partner-name');
+        names.replaceChildren(...commanders(this.me).map(card => {
+          const name = node('span', 'ct-commander-label', card.name.split(',')[0]);
+          name.title = `${card.name} · ${card.zone}`;
+          return name;
+        }));
+      }
       const commander = commanders(this.me)[0];
       if (commander) {
         const inspect = button('ct-inspect-commander', undefined, () => { this.sheet = { card: commander }; this.render(); });
@@ -238,12 +258,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const commandZone = myBoard?.querySelector('.czrow');
     const dockCommander = !mobileLayout.matches && !!hand && !!commandZone;
     root.classList.toggle('ct-hand-command', dockCommander);
+    root.classList.toggle('ct-partner-command', dockCommander && this.me.command.length > 1);
     if (dockCommander) {
       // Move the original controls, preserving commander actions and Ring UI.
       let tools = hand.querySelector('.handtools');
       if (!tools) { tools = this.renderHandTools(); hand.prepend(tools); }
       commandZone.classList.add('ct-hand-command-zone');
-      tools.after(commandZone);
+      tools.querySelector('.handtoolstitle')?.after(commandZone);
+      commandZone.setAttribute('aria-label', 'Your command zone');
+    }
+
+    if (!mobileLayout.matches) for (const region of root.querySelectorAll('.mybattlefieldmain, .oppstrip')) {
+      const player = region.closest('.opprow');
+      const name = player ? game.players.find(item => String(item.idx) === player.dataset.playerId)?.name : 'Your';
+      region.tabIndex = 0;
+      region.setAttribute('role', 'region');
+      region.setAttribute('aria-label', `${name || 'Player'} battlefield — scroll for more cards`);
     }
 
     const rail = node('aside', 'ct-decision-rail');
@@ -310,7 +340,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     root.append(rail);
     const center = root.querySelector(':scope > .center');
     root.classList.toggle('ct-has-combat', !!center?.querySelector('.combatmap'));
-    // The decision rail owns Stack presentation on desktop; combat remains on the table.
+    renderCombatTable(this, game, root);
+    // The rail holds the stack and combat summary without taking card space.
     center?.querySelector('.stack')?.classList.add('ct-inline-stack');
     const targetGroups = game.stack.at(-1)?.targets || game.stack.at(-1)?.ctx?.targets || [];
     for (const target of targetGroups.flat().filter(Boolean)) {
