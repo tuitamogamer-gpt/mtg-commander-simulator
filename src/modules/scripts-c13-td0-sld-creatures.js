@@ -68,7 +68,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }, {zone: 'stack', filter: (g, c, d) => d.card === c})]};
   S['Spellbreaker Behemoth'] = {uncounterable: true, uncounterableSpells: (g, c, so) => C.live(c) && c.ctrl === so.ctrl && g.castHasType(so.card, so.castOpts || {}, 'Creature') && so.card.power >= 5};
   S['Prossh, Skyraider of Kher'] = {kws: ['flying'], triggers: [C.trigger('cast', 'Create Kobolds for the mana spent', ctx => C.make(ctx, C.kobold, ctx.data.so.manaSpent || 0), {zone: 'stack', filter: (g, c, d) => d.card === c})],
-    abilities: [{label: 'Sacrifice another creature: +1/+0', cost: {sac: (g, c, source) => c !== source && c.is('Creature')}, run: ctx => C.same(ctx) && C.buff(ctx, ctx.src, 1, 0)}]};
+    abilities: [{label: 'Sacrifice another creature: +1/+0', cost: {sac: (g, c, source) => c !== source && c.is('Creature')}, aiSelfPump: {power: 1, toughness: 0}, run: ctx => C.same(ctx) && C.buff(ctx, ctx.src, 1, 0)}]};
   S['Brooding Saurian'] = {triggers: [C.end('Each player regains their nontoken permanents', ctx => {
     for (const c of ctx.g.bf().filter(c => !c.isToken)) M.OracleV8Control.gain(ctx.g, c, c.owner); ctx.g.recalc();
   }, {filter: () => true})]};

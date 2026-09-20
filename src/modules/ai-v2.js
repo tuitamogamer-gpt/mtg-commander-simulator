@@ -1836,11 +1836,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       return value;
     };
-    for (const step of ['first', 'normal']) {
+    for (const step of initial.firstStrikeDone ? ['normal'] : ['first', 'normal']) {
       const hits = [], blockedAttackers = new Map();
       const amount = card => {
         const first = card.kw('first strike'), double = card.kw('double strike');
-        if (step === 'first' ? !(first || double) : first && !double) return 0;
+        if (initial.firstStrikeDone ? card.meta._dealtFirstStrike && !double
+          : step === 'first' ? !(first || double) : first && !double) return 0;
         const row = state.get(card);
         return Math.max(0, printedDamage(card) - (row ? row.counterReduction : 0));
       };
@@ -1851,7 +1852,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const attacker of modeled.filter(active)) {
         const assigned = blockersByAttacker.get(attacker) || [];
         const bounds = game.blockerBounds(attacker);
-        const legalBlock = assigned.length >= bounds.min && assigned.length <= bounds.max;
+        const legalBlock = initial.declared ? assigned.length > 0
+          : assigned.length >= bounds.min && assigned.length <= bounds.max;
         const blockers = legalBlock ? assigned.filter(active).sort((a, b) =>
           state.get(a).toughness - state.get(a).damage - state.get(b).toughness + state.get(b).damage || a.iid - b.iid) : [];
         for (const blocker of blockers) {if (!blockedAttackers.has(blocker)) blockedAttackers.set(blocker, []); blockedAttackers.get(blocker).push(attacker);}
@@ -1863,7 +1865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (dealt > 0) hits.push({ source: attacker, target: blocker, n: dealt });
           remaining -= dealt;
         }
-        if (remaining > 0 && (!legalBlock || attacker.kw('trample'))) hits.push({ source: attacker, target: defender, n: remaining });
+        if (remaining > 0 && ((!legalBlock && !(initial.declared && attacker.wasBlocked)) || attacker.kw('trample'))) hits.push({ source: attacker, target: defender, n: remaining });
       }
       for (const [blocker, attacking] of blockedAttackers) for (const {attacker, n} of game.assignBlockerDamage(blocker, attacking, amount(blocker), card => state.get(card))) hits.push({source: blocker, target: attacker, n});
       for (const { source, target, n } of hits) {
@@ -2360,6 +2362,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (entry.crew && vehicleAttackValue(game, player, entry.card) <= 0) continue;
         if (isStationAbility(entry) && MTG.stationPlan(game, entry.card, player).score <= 0) continue;
         if (entry.ability?.aiSacrificeKind === 'scry' && MTG.sacrificeScryPlan(game, player).score <= 0) continue;
+        // A legal sacrifice is not automatically a useful play. Filtering here
+        // also prevents beam search from rewarding unusable temporary stats.
+        if (MTG.sacrificePumpPlan(game, player, entry)?.score <= 0) continue;
         actions.push({ kind: 'activate', entry });
       }
       if (q.type === 'main') {
@@ -2604,6 +2609,150 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       .map(card => ({card, score: MTG.sacrificeScryValue(game, player, card)}))
       .sort((a, b) => b.score - a.score || a.card.iid - b.card.iid);
     return ranked[0] || {card: null, score: -30};
+  };
+
+  function sacrificePumpEffect(ability) {
+    const cost = ability?.cost;
+    if (!cost || !(cost.sac || cost.sacCreature) || cost.sacSelf || (cost.sacN || 1) !== 1) return null;
+    if (ability.aiSelfPump) return ability.aiSelfPump;
+    const effects = ability.oracleOperation?.effects;
+    // Permanent counters and mixed value abilities keep their own evaluation.
+    if (!effects?.length || !effects.every(effect => effect.action === 'pump' && effect.target === 'self' &&
+      Number.isFinite(effect.power || 0) && Number.isFinite(effect.toughness || 0) &&
+      (effect.power || 0) >= 0 && (effect.toughness || 0) >= 0)) return null;
+    return {power: effects.reduce((n, effect) => n + (effect.power || 0), 0),
+      toughness: effects.reduce((n, effect) => n + (effect.toughness || 0), 0),
+      keywords: [...new Set(effects.flatMap(effect => effect.keywords || []))]};
+  }
+
+  function pumpDeathPayoff(game, player, card) {
+    if (!card.is('Creature') || card.counters.finality > 0) return 0;
+    const data = {card, snap: game.snapshot(card)}, opponents = player.opponents(game);
+    let value = 0;
+    for (const source of game.bf()) {
+      if (source.ctrl !== player || source.cur?.abilitiesDisabled) continue;
+      for (const trigger of source.def.triggers || []) {
+        if (trigger.on !== 'dies' || trigger.filter && !trigger.filter(game, source, data)) continue;
+        const text = (String(source.def.oracle || '').split('\n').filter(line => /\b(?:when|whenever)\b.*\bdies\b/i.test(line)).join(' ') + ' ' + trigger.desc).toLowerCase();
+        if (/each opponent sacrifices a creature/.test(text)) {
+          // Butcher/Grave Pact stops producing value when the opposing boards
+          // are empty. A generic "death payoff" bonus would still eat tokens.
+          for (const opponent of opponents) {
+            const victims = game.creatures(opponent).filter(victim => game.canSacrifice(victim));
+            if (victims.length) value += Math.min(...victims.map(victim => permanentGameValue(game, victim, player))) + 0.5;
+          }
+        } else if (/drain 1|(?:target player|each opponent) loses 1 life/.test(text)) {
+          const victims = /each opponent/.test(text) ? opponents : opponents.slice().sort((a, b) => a.life - b.life).slice(0, 1);
+          value += victims.reduce((n, victim) => n + (victim.life > 0 && victim.life <= 1 &&
+            (!game.canLoseGame || game.canLoseGame(victim)) ? 150 : 0.8), 0) + 0.4;
+        } else if (/draw (?:a|one|1) card/.test(text)) {
+          if (player.library.length > 1) value += 2.5;
+        } else value += 1.2;
+      }
+    }
+    return value;
+  }
+
+  function pumpedCreature(source, pump, count) {
+    // A shallow read-only projection preserves identity/prototype for the
+    // combat evaluator without changing the live card, counters or effects.
+    return Object.assign(Object.create(Object.getPrototypeOf(source)), source, {cur: {...source.cur,
+      power: source.power + pump.power * count, toughness: source.toughness + pump.toughness * count,
+      kw: new Set([...source.cur.kw, ...(pump.keywords || [])])}});
+  }
+
+  function pumpCombatValue(game, player, source, pump, count, ability) {
+    const projected = pumpedCreature(source, pump, count);
+    let benefit = 0;
+    // A toughness/protection increase may rescue a creature outside combat.
+    for (const object of game.stack) {
+      if (object.ctrl === player || !(object.targets || []).flat().includes(source)) continue;
+      const text = String(object.card?.def.oracle || '').toLowerCase();
+      const damage = /deals? (\d+) damage/.exec(text);
+      if ((damage && Number(damage[1]) >= source.toughness - source.damage &&
+        Number(damage[1]) < projected.toughness - source.damage) ||
+        (/destroy target|deals? \d+ damage/.test(text) && !source.kw('indestructible') && projected.kw('indestructible'))) {
+        benefit = permanentGameValue(game, source, player) + 3;
+      }
+    }
+    if (pendingCreatureRemoval(game, source) && !benefit) return 0;
+    if (game.untilEffects.some(effect => effect.kind === 'preventAllCombat')) return benefit;
+    if (game.phase === 'combat' && game.combat?.blockersDeclared && ['blockers', 'firstStrike'].includes(game.step)) {
+      const all = game.combat.attackers.filter(card => card.zone === 'battlefield');
+      const attacked = source.attacking || all.find(card => (card.blockedBy || []).includes(source))?.attacking;
+      if (!(attacked instanceof U.Player)) return benefit;
+      const attackers = all.filter(card => card.attacking === attacked);
+      if (!attackers.includes(source) && !attackers.some(card => (card.blockedBy || []).includes(source))) return benefit;
+      const assignments = attackers.flatMap(attacker => (attacker.blockedBy || [])
+        .filter(blocker => blocker.zone === 'battlefield').map(blocker => ({attacker, blocker})));
+      const initial = {declared: true, firstStrikeDone: game.step === 'firstStrike'};
+      const before = forecastCombat(game, attacked, attackers, assignments, initial);
+      const replace = card => card === source ? projected : card;
+      const after = forecastCombat(game, attacked, attackers.map(replace),
+        assignments.map(pair => ({attacker: replace(pair.attacker), blocker: replace(pair.blocker)})), initial);
+      const value = outcome => {
+        const canLose = !game.canLoseGame || game.canLoseGame(attacked);
+        let score = (outcome.lethal && canLose ? 150 : 0) * (attacked === player ? -1 : 1);
+        score += (attacked.life - outcome.life) * (attacked === player ? -1.5 : 0.7);
+        score += (outcome.poison - attacked.poison) * (attacked === player ? -5 : 2);
+        if (attacked !== player) score += (outcome.lifeGain.get(player) || 0) * 0.6;
+        for (const card of outcome.dead) score += permanentGameValue(game, game.byIid(card.iid) || card, player) * (card.ctrl === player ? -1 : 1);
+        return score;
+      };
+      return benefit + value(after) - value(before);
+    }
+    // Instant-speed power can wait for declared blocks. Haste/evasion and
+    // sorcery-only pumps may need to be paid before the attack instead.
+    const enablesAttack = (pump.keywords || []).some(keyword => !source.kw(keyword) &&
+      ['haste', 'flying', 'menace', 'fear', 'trample'].includes(keyword));
+    if (!(ability.sorcery || enablesAttack) || game.turnPlayer !== player || source.tapped ||
+      projected.sick && !projected.kw('haste') || !game.canAttackAtAll(projected) ||
+      !(game.phase === 'main1' || game.phase === 'combat' && game.step === 'begin')) return benefit;
+    for (const opponent of player.opponents(game)) {
+      if (!game.canAttackTarget(projected, opponent)) continue;
+      const before = source.sick && !source.kw('haste') ? null : attackAssignmentAssessment(game, player, source, opponent);
+      const after = attackAssignmentAssessment(game, player, projected, opponent);
+      const value = result => !result ? 0 : (result.lethal || result.commanderLethal ? 150 : 0) +
+        result.expectedDamage * 0.7 - result.bestTradeLoss;
+      benefit = Math.max(benefit, value(after) - value(before));
+    }
+    return benefit;
+  }
+
+  MTG.sacrificePumpPlan = function (game, player, entry, candidates = null) {
+    const ability = entry?.ability, source = entry?.card, pump = sacrificePumpEffect(ability);
+    if (!pump || !source) return null;
+    const cost = ability.cost;
+    const pool = (candidates || game.bf()).filter(card => card !== source && card.ctrl === player &&
+      card.zone === 'battlefield' && game.canSacrifice(card) && !card.attacking && !card.blocking &&
+      (cost.sacCreature ? card.is('Creature') : cost.sac(game, card, source)))
+      .map(card => ({card, cost: pendingCreatureRemoval(game, card) ? 0.25 : 2 + permanentGameValue(game, card, player),
+        payoff: pumpDeathPayoff(game, player, card)}))
+      .sort((a, b) => (a.cost - a.payoff) - (b.cost - b.payoff) || a.card.iid - b.card.iid);
+    const best = {score: -100, cards: pool.slice(0, 1).map(row => row.card), count: 0};
+    if (!pool.length || game.stack.some(object => object.ctrl === player && object.kind === 'ability' &&
+      object.srcCard === source)) return best;
+    const mana = U.parseCost(cost.mana || '');
+    const limit = Math.min(pool.length, cost.tap || ability.oncePerTurn ? 1 : 24);
+    let price = 0, payoff = 0;
+    for (let count = 1; count <= limit; count++) {
+      const cards = pool.slice(0, count).map(row => row.card);
+      const cumulativeMana = {...mana, generic: (mana.generic || 0) * count,
+        pips: Array.from({length: count}, () => mana.pips || []).flat()};
+      if (!game.canPayMana(player, cumulativeMana, {card: source, isAbility: true}, {protectedSacrifices: cards})) break;
+      price += pool[count - 1].cost + U.mv(cost.mana || '') * 0.5;
+      payoff += pool[count - 1].payoff;
+      const score = pumpCombatValue(game, player, source, pump, count, ability) + payoff - price;
+      if (score > best.score) Object.assign(best, {score, cards, count});
+    }
+    return best;
+  };
+  const SACRIFICE_PUMP_CHOICES = new WeakMap();
+  MTG.sacrificePumpChoice = function (game, player, q) {
+    if (!q.aiHint?.ability) return null;
+    if (!SACRIFICE_PUMP_CHOICES.has(q)) SACRIFICE_PUMP_CHOICES.set(q,
+      MTG.sacrificePumpPlan(game, player, {card: q.aiHint.src, ability: q.aiHint.ability}, q.from));
+    return SACRIFICE_PUMP_CHOICES.get(q);
   };
 
   function affordableStriveTargets(game, player, q, maximum) {
@@ -3258,6 +3407,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if((q.aiHint?.keepTargets||[]).includes(card))return -10000-value;
       if (q.aiHint?.sacrificeKind === 'scry') return MTG.sacrificeScryValue(game, player, card);
+      const pumpPlan = MTG.sacrificePumpChoice(game, player, q);
+      if (pumpPlan) return pumpPlan.cards[0] === card ? 100 : -1000 - value;
       const release = persecutorExitValue(game,card,player);
       if (release && /sac|bounce/i.test(hint + ' ' + (q.prompt || ''))) return release;
       let discardScore = -value;
@@ -4883,6 +5034,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = entry.card;
       const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
+      const pumpPlan = MTG.sacrificePumpPlan(game, player, entry);
+      if (pumpPlan) breakdown.base = pumpPlan.score > 0 ? pumpPlan.score : -100;
       if (entry.turnFaceUp && card.ctrl === player) {
         // The controller knows the underlying card. Value what turning it up
         // actually unlocks, rather than giving every hidden 2/2 the same score.

@@ -572,10 +572,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         try {
           const prioritySessionKey = q.type === 'priority'
             ? `${g._prioritySessionId || 0}|${this.p.idx}` : null;
-          if (prioritySessionKey && this._v2PrioritySessionUsed === prioritySessionKey) return { kind: 'pass' };
+          // After a useful pump resolves, reassess whether another sacrifice
+          // is still needed (e.g. two Kobolds for lethal). Never pile them onto
+          // our own unresolved stack object or bypass the budget for no gain.
+          const usefulPump = q.type === 'priority' && !g.stack.length &&
+            (q.acts || []).some(entry => MTG.sacrificePumpPlan(g, this.p, entry)?.score > 0);
+          if (prioritySessionKey && this._v2PrioritySessionUsed === prioritySessionKey && !usefulPump) return { kind: 'pass' };
           const emptyPriorityKey = q.type === 'priority' && !g.stack.length
             ? `${g.turnNo}|${g.phase}|${g.step}|${this.p.idx}` : null;
-          if (emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey) return { kind: 'pass' };
+          if (emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey && !usefulPump) return { kind: 'pass' };
           this.lastV2Decision = await MTG.chooseBotAction({
             gameState: g,
             botPlayerId: this.p.idx,
@@ -749,6 +754,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const a = e.ability;
       if (!a) return 0;
+      const pumpPlan = MTG.sacrificePumpPlan(g, this.p, e);
+      if (pumpPlan) return pumpPlan.score;
       if (a.aiScore) return a.aiScore(g, c, this.p);
       if (a.loyalty !== undefined) return 3;
       const label = (a.label || '').toLowerCase();
@@ -803,6 +810,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // uključujući Stella Lee (kopiraj svoj spell), što je gasilo cijeli deck.
       for (const e of (q.acts || [])) {
         const a = e.ability;
+        if (MTG.sacrificePumpPlan(g, p, e)?.score > 0) return {kind: 'activate', entry: e};
         if (!a || !a.targets) continue;
         const targetSpecs=typeof a.targets==='function'?a.targets(g,e.card,{player:p}):a.targets;
         const wantsSpell = targetSpecs.some(s => s.what === 'spell' || s.zone === 'stack');
@@ -1231,7 +1239,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return byValAsc.slice(0, Math.max(min, max || 0));
         }
         case 'sacCost': case 'addlSac': case 'eliminateSacrifice': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
-          const sorted = q.aiHint?.sacrificeKind === 'scry'
+          const pumpPlan = MTG.sacrificePumpChoice(g, this.p, q);
+          const sorted = pumpPlan ? from.slice().sort((a, b) =>
+            Number(b === pumpPlan.cards[0]) - Number(a === pumpPlan.cards[0]) || this.permThreat(g, a) - this.permThreat(g, b))
+            : q.aiHint?.sacrificeKind === 'scry'
             ? from.slice().sort((a, b) => MTG.sacrificeScryValue(g, this.p, b) - MTG.sacrificeScryValue(g, this.p, a))
             : byThreatAsc;
           if (typeof q.aiHint?.canPayRemaining === 'function') {
