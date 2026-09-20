@@ -166,7 +166,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       enlarge.append(icon('expand'));
       enlarge.title = `Focus ${player.name}'s battlefield`;
       enlarge.setAttribute('aria-label', enlarge.title);
-      row.querySelector('.ct-player-zones')?.append(enlarge);
+      const zones = row.querySelector('.ct-player-zones');
+      if (mobileLayout.matches) zones?.append(enlarge);
+      else {
+        // Share one compact header so public counters do not take a board row.
+        if (zones) head.append(zones);
+        head.append(enlarge);
+        if (commanderState) head.querySelector('.ct-commander-name')?.append(commanderState);
+        if (metadata) head.querySelector('.oppname')?.append(metadata);
+      }
       const landCount = row.querySelector('.oppLands');
       if (landCount) {
         const lands = game.lands(player).filter(card => !card.is('Creature'));
@@ -222,10 +230,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (mana) { lands.append(...mana.children); mana.remove(); }
           resources.append(lands);
         }
-        const commandZone = myBoard.querySelector('.czrow');
-        if (commandZone) resourceRow.append(commandZone);
         resourceRow.classList.add('ct-resource-dock');
       }
+    }
+
+    const hand = root.querySelector('.handwrap');
+    const commandZone = myBoard?.querySelector('.czrow');
+    const dockCommander = !mobileLayout.matches && !!hand && !!commandZone;
+    root.classList.toggle('ct-hand-command', dockCommander);
+    if (dockCommander) {
+      // Move the original controls, preserving commander actions and Ring UI.
+      let tools = hand.querySelector('.handtools');
+      if (!tools) { tools = this.renderHandTools(); hand.prepend(tools); }
+      commandZone.classList.add('ct-hand-command-zone');
+      tools.after(commandZone);
     }
 
     const rail = node('aside', 'ct-decision-rail');
