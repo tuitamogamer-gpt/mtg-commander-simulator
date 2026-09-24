@@ -21,8 +21,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
     </section>
 
-    <section class="mainmenu-collection" aria-labelledby="collection-title">
-      <header class="mainmenu-collection-head"><div><h2 id="collection-title">Find your kind<br>of powerful.</h2><p>A commander for every way you play.</p></div><button type="button" data-menu-action="solo">Explore all <span data-catalog-decks>${Number(deckCount)}</span> decks <span aria-hidden="true">↗</span></button></header>
+    <section id="featured-decks" class="mainmenu-collection" aria-labelledby="collection-title">
+      <header class="mainmenu-collection-head"><div><h2 id="collection-title">Find your next deck</h2><p>Try a featured commander, or explore the full collection.</p></div><button type="button" data-menu-action="solo">All <span data-catalog-decks>${Number(deckCount)}</span> decks <span aria-hidden="true">↗</span></button></header>
       <div class="mainmenu-deck-grid">
         <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="Elven Council" aria-label="Choose Elven Council, led by Galadriel, Elven-Queen">
           <span class="mainmenu-deck-art"><img src="./assets/cards/art/galadriel-elven-queen-efb29b8818.webp" width="626" height="457" loading="lazy" decoding="async" alt="Galadriel, Elven-Queen"><span aria-hidden="true">↗</span></span>
@@ -39,10 +39,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       </div>
     </section>
 
-    <section id="the-table" class="mainmenu-preview" aria-labelledby="table-preview-title">
+    <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
+      <div class="mainmenu-path-copy"><span>FIRST TIME HERE?</span><h2 id="first-pod-title">From deck to table</h2><p>Three steps to your first game.</p><button type="button" data-menu-action="tour">Open the first-game guide <span aria-hidden="true">↗</span></button></div>
+      <ol class="mainmenu-path-steps">
+        <li><span aria-hidden="true">01</span><div><b>Choose your deck</b><p>Browse precons or open My Library to use an imported deck.</p></div></li>
+        <li><span aria-hidden="true">02</span><div><b>Set up your table</b><p>Pick opponents, their decks, and the difficulty.</p></div></li>
+        <li><span aria-hidden="true">03</span><div><b>Play at your pace</b><p>Review your opening hand. Follow clear prompts for each decision.</p></div></li>
+      </ol>
+    </section>
+
+    <details id="the-table" class="mainmenu-preview-disclosure">
+      <summary><span><b>Take a look at the table</b><small>See the game interface before you play.</small></span><i aria-hidden="true">+</i></summary>
+      <section class="mainmenu-preview" aria-labelledby="table-preview-title">
       <header class="mainmenu-section-head">
-        <div><span class="mainmenu-eyebrow">THE TABLE IS YOURS</span><h2 id="table-preview-title">Big plays. The whole picture.</h2></div>
-        <p>Every opponent. Every response. A real Commander table, with room to think.</p>
+        <div><h2 id="table-preview-title">Your battlefield, at a glance</h2></div>
+        <p>See every opponent, follow the stack, and take your next action.</p>
       </header>
       <figure class="mainmenu-preview-frame">
         <div class="mainmenu-preview-bar"><span><i aria-hidden="true"></i>COMMAND TABLE <small>Interface preview</small></span><div class="mainmenu-preview-controls" role="group" aria-label="Choose an interface preview"><button type="button" data-table-preview="table" aria-pressed="true" aria-controls="table-preview-image">Table</button><button type="button" data-table-preview="focus" aria-pressed="false" aria-controls="table-preview-image">Focus</button></div><span class="mainmenu-preview-phone-label">MOBILE VIEW</span></div>
@@ -53,23 +64,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <figcaption><span class="mainmenu-preview-caption" aria-live="polite">Table view keeps all three opponents beside your battlefield and decision panel.</span><span class="mainmenu-preview-mobile-caption">A focused battlefield, seat switcher, and reachable actions on your phone.</span><span>Captured in the game · Scryfall card images</span></figcaption>
       </figure>
       <div class="mainmenu-preview-notes"><p><b>The whole pod</b><span>Life totals, commanders, and public zones in one place.</span></p><p><b>A clear next step</b><span>Priority, targets, and combat stay beside the action.</span></p><p><b>Your screen, your view</b><span>A full table on desktop. Focused controls on mobile.</span></p></div>
-    </section>
-
-    <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
-      <div class="mainmenu-path-copy"><span>THE FULL GAME, MADE READABLE</span><h2 id="first-pod-title">Three steps.<br>One unforgettable game.</h2><p>Set up your pod in three steps. The first-game guide walks you through the decisions when you are ready.</p><button type="button" data-menu-action="tour">Open the first-game guide <span aria-hidden="true">↗</span></button></div>
-      <ol class="mainmenu-path-steps">
-        <li><span aria-hidden="true">01</span><div><b>Find your commander</b><p>Browse colors and playstyles. Read the deck guide and see its signature cards.</p></div></li>
-        <li><span aria-hidden="true">02</span><div><b>Build your pod</b><p>Choose opponents, decks, and difficulty. Review all four seats before you start.</p></div></li>
-        <li><span aria-hidden="true">03</span><div><b>Make your next move</b><p>Keep or mulligan your opening hand, then play with visible priority, stack, and combat choices.</p></div></li>
-      </ol>
-    </section>
-
-    <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
-      <article class="mainmenu-mode solo"><span class="mainmenu-mode-symbol" aria-hidden="true"><svg class="gameicon"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg></span><div><small>PLAY AT YOUR PACE</small><h2>Sharpen your game.</h2><p>Learn a new deck or try a different line against a full pod of local AI opponents.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div><button type="button" data-menu-action="solo">Start a solo table <span aria-hidden="true">↗</span></button></article>
-      <article class="mainmenu-mode live"><span class="mainmenu-mode-symbol" aria-hidden="true"><svg class="gameicon"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg></span><div><small>BRING YOUR PLAYGROUP</small><h2>Bring the rivalry.</h2><p>Open a private room, share the invite link, and play with two to four human players.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div><button type="button" data-menu-action="live">Create a Live table <span aria-hidden="true">↗</span></button></article>
-    </section>
-
-    <section class="mainmenu-final-cta" aria-labelledby="final-cta-title"><div><span>TAKE YOUR SEAT</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Play instantly. Save when you sign in.</p></div><div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start a solo table <span aria-hidden="true">↗</span></button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create a Live table</button></div></section>
+      </section>
+    </details>
 
     <footer class="mainmenu-footer"><div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span><a href="#landing-top">Back to top ↑</a></div><p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p></footer>`;
 

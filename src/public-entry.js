@@ -235,7 +235,7 @@ if (localStaticHost) {
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
   deckCount: MTG.landingCounts().decks,
-  actions: ['Play solo', 'Play with friends', 'Import your decklist here', 'Guide'],
+  actions: ['Play solo', 'My Library', 'Play with friends', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
   account: globalThis.MTGAccount?.user ? {
     signedIn: true,

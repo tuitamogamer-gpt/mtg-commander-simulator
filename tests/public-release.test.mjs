@@ -49,7 +49,7 @@ test('public home is the default entry and exposes clear Solo, Live, import, gui
 });
 
 test('main menu decklist import is a persistent fail-closed library gateway with an external Moxfield builder link', () => {
-  assert.match(index, /Import your decklist here/);
+  assert.match(index, /<b>My Library<\/b><small>Import &amp; saved decks<\/small>/);
   assert.match(main, /<h2 id="deckimport-title">Import your decklist here<\/h2>/);
   assert.match(main, /class="mainmenu-deckimport-text"/);
   assert.match(main, /class="mainmenu-deckimport-check">Check decklist/);
@@ -130,12 +130,10 @@ test('cold and warm landing menus share public sections and the same accessibili
   assert.match(main, /U\.landingDetailsMarkup\(nDecks\)/);
   assert.match(publicEntry, /MTG\.bindLandingPreview\(page\)/);
   assert.match(main, /U\.bindLandingPreview\(page\)/);
-  assert.match(landing, /THE FULL GAME, MADE READABLE/);
-  assert.match(landing, /Three local AI opponents/);
-  assert.match(landing, /Account optional; no public lobby/);
-  assert.match(landing, /Pick a deck\. We will set the table\./);
+  assert.match(landing, /From deck to table/);
+  assert.match(landing, /id="featured-decks"/);
+  assert.match(landing, /<details id="the-table" class="mainmenu-preview-disclosure">/);
   assert.match(landing, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
-  assert.match(landing, /id="ways-to-play"/);
   for (const source of [index, main]) {
     assert.match(source, /Your deck\.<br><em>Your legend\.<\/em>/);
     assert.match(source, /class="mainmenu-trust"/);

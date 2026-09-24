@@ -69,8 +69,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     shelf.className = 'returningplayer';
     shelf.setAttribute('aria-label', 'Recently played decks');
     const label = document.createElement('div');
-    const title = document.createElement('b'); title.textContent = 'Another round?';
-    const hint = document.createElement('span'); hint.textContent = 'Pick up a deck you know.';
+    const title = document.createElement('b'); title.textContent = 'Recently played';
+    const hint = document.createElement('span'); hint.textContent = 'Start a new game with a familiar deck.';
     label.append(title, hint); shelf.appendChild(label);
     for (const name of names) {
       const button = document.createElement('button');

@@ -234,9 +234,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <span><b>COMMANDER</b><small>SIMULATOR</small></span>
       </a>
       <nav class="mainmenu-navlinks" aria-label="Explore Commander Simulator">
-        <a href="#the-table">The table</a>
+        <a href="#primary-actions">Play</a>
+        <a href="#featured-decks">Browse decks</a>
         <a href="#how-it-works">How to play</a>
-        <a href="#your-library">My Library</a>
       </nav>
       <div class="mainmenu-navtools">
         <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="Open first-game guide"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-info"></use></svg><span>Guide</span></button>
@@ -244,12 +244,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     </header>
     <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
       <div class="mainmenu-hero-copy">
-        <span class="mainmenu-kicker">YOUR NEXT GREAT GAME STARTS HERE</span>
+        <span class="mainmenu-kicker">YOUR COMMANDER TABLE</span>
         <h1 id="mainmenu-title">Your deck.<br><em>Your legend.</em></h1>
-        <p>Epic plays. Unlikely alliances. Take on the whole pod, solo or with friends. Your seat is waiting.</p>
+        <p>Choose a ready-to-play deck, bring your own, or invite your friends.</p>
         <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
-          <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Play solo</b><small>You + three AI opponents</small></span></button>
-          <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Play with friends</b><small>Your own private table</small></span></button>
+          <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Play solo</b><small>You + 1 to 3 AI opponents</small></span><i class="mainmenu-action-arrow" aria-hidden="true">→</i></button>
+          <button type="button" id="your-library" class="mainmenu-import-action" data-menu-action="import"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-cards"></use></svg><span><b>My Library</b><small>Import &amp; saved decks</small></span></button>
+          <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Play with friends</b><small><em class="mainmenu-beta">Beta</em> 2 to 4 players</small></span></button>
         </div>
         <ul class="mainmenu-trust" aria-label="What you need to play">
           <li><span aria-hidden="true">✓</span>Account optional</li>
@@ -258,21 +259,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </ul>
       </div>
       <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
-        <div class="mainmenu-visual-head"><span>A HUNDRED CARDS. ALL YOU.</span><div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana"><img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt=""></div></div>
+        <div class="mainmenu-visual-head"><span>FIND YOUR NEXT COMMANDER</span><div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana"><img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt=""></div></div>
         <div class="mainmenu-cardfan">${featuredCards}</div>
-        <div class="mainmenu-visual-foot"><div><b><span data-catalog-decks>${nDecks}</span> decks. Endless possibilities.</b><small>Find your kind of powerful.</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Explore decks <span aria-hidden="true">↗</span></button></div>
+        <div class="mainmenu-visual-foot"><div><b><span data-catalog-decks>${nDecks}</span> ready-to-play decks</b><small>Decklists, guides &amp; strategies</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Browse decks <span aria-hidden="true">↗</span></button></div>
       </div>
-    </section>
-    <section id="your-library" class="mainmenu-library-entry" aria-labelledby="library-entry-title">
-      <div class="mainmenu-library-copy">
-        <span>MY LIBRARY</span>
-        <h2 id="library-entry-title">Your deck deserves a table.</h2>
-        <p>Bring your own brew. Paste a decklist and see which cards are ready to play.</p>
-      </div>
-      <ol class="mainmenu-library-steps" aria-label="Deck import steps">
-        <li><span>01</span>Paste</li><li><span>02</span>Check</li><li><span>03</span>Play</li>
-      </ol>
-      <button type="button" class="mainmenu-import-action" data-menu-action="import"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-cards"></use></svg><span><b>Import your decklist here</b><small>Open My Library</small></span><span aria-hidden="true">↗</span></button>
     </section>`;
     if (bootPage) {
       page.classList.remove('mainmenu-boot');
