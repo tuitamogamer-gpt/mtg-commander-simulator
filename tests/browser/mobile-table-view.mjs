@@ -97,7 +97,8 @@ async function startGame() {
   await page.evaluate(() => { _game.speedFactor = 0; });
   for (let i = 0; i < 150; i++) {
     if (await page.evaluate(() => _ui.pending?.q.type === 'main')) return;
-    const proceed = page.locator('.actionstage .pbtn.primary:visible, .reveal .pbtn.primary:visible, .modal .pbtn.primary:visible');
+    // Review checkpoints also appear in the prompt bar and resolution recap.
+    const proceed = page.locator('button.pbtn:visible').filter({ hasText: /^(Proceed|Continue to my turn)(?:\s|$)/ });
     if (await proceed.count()) await proceed.first().click();
     else await page.waitForTimeout(100);
   }

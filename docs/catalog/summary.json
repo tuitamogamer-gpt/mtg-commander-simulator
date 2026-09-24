@@ -19,20 +19,20 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 24749,
+    "runtimeDefinitions": 24775,
     "genericOracleCards": 20800,
     "genericBatches": 208,
     "manualOracleCards": 58,
-    "legacyDefinitions": 3891,
+    "legacyDefinitions": 3917,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 24748,
+    "deckImportEligibleDefinitions": 24774,
     "deckImportRestrictedDefinitions": 1,
-    "representedUniverseOracleIds": 24704,
-    "remainingUniverseOracleIds": 6080,
+    "representedUniverseOracleIds": 24710,
+    "remainingUniverseOracleIds": 6074,
     "parserEligibleUnimported": 8,
-    "deferred": 6072,
-    "runtimeEntriesWithoutSnapshotMatch": 17,
-    "runtimeEntriesOutsideComparisonUniverse": 26
+    "deferred": 6066,
+    "runtimeEntriesWithoutSnapshotMatch": 36,
+    "runtimeEntriesOutsideComparisonUniverse": 27
   },
   "remainingByReason": {
     "adventure-needs-complete-face-semantics": 33,
@@ -46,14 +46,14 @@
     "dynamic-power-toughness": 19,
     "land-needs-explicit-semantics": 78,
     "mana-ability-needs-explicit-semantics": 9,
-    "noncreature-needs-explicit-semantics": 1363,
-    "oracle-needs-explicit-semantics": 2611,
+    "noncreature-needs-explicit-semantics": 1362,
+    "oracle-needs-explicit-semantics": 2608,
     "overload-body-needs-complete-semantics": 5,
     "prepare-needs-complete-face-semantics": 2,
     "requires-import-and-executable-proof": 8,
     "saga-chapter-needs-complete-semantics": 69,
     "saga-other-rules-unsupported": 3,
-    "spell-needs-explicit-semantics": 1399,
+    "spell-needs-explicit-semantics": 1397,
     "split-needs-complete-face-semantics": 22,
     "transform-land-face-transition-needs-proof": 5,
     "unbound-event-amount": 8,
@@ -77,20 +77,39 @@
   ],
   "runtimeNamesWithoutSnapshotMatch": [
     "Aggro Amalgam",
+    "Avacyn, Angel of Horror",
     "Awesome Android",
     "Black Panther's Claws",
+    "Dack Fayden, Helping Hand",
+    "Fatehold Charm",
     "Franklin's Finality",
+    "Ginger, Queen of Sweets",
     "Heralds of the Shredder",
     "Humongous Fungus",
+    "Jace, Multiverse Architect",
+    "Jhoira, Weatherlight Corsair",
     "Lady Loki's Manifestation",
     "Loki's Double",
     "Marauding Mutagen",
+    "Memnarch, the Warden",
+    "Nissa, Leyline Tamer",
+    "Niv-Mizzet, Ghost Counsel",
+    "Ob Nixilis, the Ascended",
+    "Omnath, Locus of the Void",
     "Orbital Vibranium Bomb",
     "Panther Idol",
+    "Plan for All Outcomes",
     "Skybreaker, Sword of Bashenga",
     "Slash Clone",
+    "Tamiyo, Upriser Crowned",
+    "Teferi's Reproach",
     "The Five Arrive",
+    "The Ur-Sphinx",
     "The Watcher's Warning",
+    "Turbulent Crater",
+    "Turbulent Shore",
+    "Turbulent Wetlands",
+    "Venser, Fervent Forger",
     "Vibranium Dynamo",
     "Wakandan War Panther"
   ],
@@ -148,6 +167,15 @@
       "sourceName": "Crescendo of War",
       "sourceCommanderLegality": "legal",
       "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Darksteel Angel",
+      "sourceName": "Darksteel Angel",
+      "sourceCommanderLegality": "not_legal",
+      "sourceGames": [
+        "paper",
         "mtgo"
       ]
     },
@@ -348,11 +376,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 19,
-  "classifierFilesSha256": "44f9138537133c93579315acc1f900dde54c798cfb341537c3c867304fa70c58",
-  "inputFilesSha256": "aecd407525e3dc3ecd68226a0a9f7e15918df85dbf7cc022ebe6141e6dd45aa9",
+  "classifierFilesSha256": "b877f24b6a6af490cd38ce6b0a8d94d410e5ae2be8cf0383b8e05e759b6209aa",
+  "inputFilesSha256": "1caf9d9e0ad9a3846ef8a6644349e9f8f495c2cc10333dc1769122380222dcbc",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "eac702392b2ba4c8a7f37905dedb6fa9767920e70f37645f7ea992ad0575dc6f",
-    "docs/catalog/remaining-cards.csv": "874661ea61d3d4c8c6d2548c82e417c685e3e6c36d45b149514e1177b0e1fa7f"
+    "docs/catalog/imported-cards.csv": "b1057995ba9bb38047a6da36f732c317b0ad5f5ef6f7d8723f4b3ccb957965fb",
+    "docs/catalog/remaining-cards.csv": "b10464a252dfc5ad3066b9f1cf27b16abc894b1952eb1778e214f04cc655f098"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

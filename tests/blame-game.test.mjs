@@ -13,8 +13,8 @@ test('Blame Game exposes the complete original 100-card list with local art and 
   assert.equal(deck.commander, source.commander);
   assert.deepEqual(entries(deck.cards), entries(source.cards));
   assert.equal(deck.cards.reduce((n, c) => n + c.n, 0), 100);
-  assert.equal(Object.keys(M.DECKS).length, 169);
-  assert.equal(M.CATALOG_SUMMARY.decks, 169);
+  assert.equal(Object.keys(M.DECKS).length, 170);
+  assert.equal(M.CATALOG_SUMMARY.decks, 170);
   assert.equal(M.EXCLUDED_DECKS.size, 0);
   for (const {name} of deck.cards) {
     assert.ok(M.DEFS[name] && !M.DEFS[name].autoScripted && !M.DEFS[name].simplified, name);

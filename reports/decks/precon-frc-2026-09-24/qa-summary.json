@@ -1,0 +1,210 @@
+{
+  "date": "2026-09-24",
+  "baseline": "bd1bba00aa0db32ad8cd429ff4765197fbddf6af",
+  "scope": "Complete Reality Fracture Multiverse Reforged precon; local implementation and validation",
+  "current": {
+    "decks": 170,
+    "definitions": 24775,
+    "eligible": 24774
+  },
+  "import": {
+    "physicalCards": 100,
+    "distinctIdentities": 93,
+    "reusedIdentities": 67,
+    "newNativeIdentities": 26,
+    "newWebPFiles": 39
+  },
+  "tests": {
+    "command": "node --test --test-concurrency=2 tests/frc-precon.test.mjs tests/ai-v2.test.mjs tests/baseline.test.mjs tests/blame-game.test.mjs tests/bom-precons.test.mjs tests/c13-td0-sld-precons.test.mjs tests/clb-dmc-40k-precons.test.mjs tests/cmm-woc-who-precons.test.mjs tests/commander-visuals.test.mjs tests/ltc-cmm-precons.test.mjs tests/pip-otc-m3c-advanced.test.mjs tests/restricted-legacy-import.test.mjs tests/voc-ncc-precons.test.mjs tests/who-lcc-sld-mkc-precons.test.mjs tests/c19-c20-planeswalkers.test.mjs tests/free-cast-copy-decisions.test.mjs tests/monarch-visibility.test.mjs tests/oracle-v8-damage-events.test.mjs tests/oracle-v8-damage-death.test.mjs tests/oracle-v8-copy-next.test.mjs tests/permanent-spell-copy-token-creation.test.mjs tests/oracle-v8-stack-copy.test.mjs tests/planeswalker-decisions.test.mjs tests/planeswalker-combat.test.mjs tests/save-state.test.mjs tests/tree-save-state.test.mjs tests/oracle-predefined-token-source.test.mjs tests/oracle-token-forms-source.test.mjs tests/subtle-damage-keywords.test.mjs tests/catalog-source-match.test.mjs tests/oracle-catalog-integrity.test.mjs tests/legacy-card-catalog-integrity.test.mjs",
+    "testFiles": [
+      "tests/frc-precon.test.mjs",
+      "tests/ai-v2.test.mjs",
+      "tests/baseline.test.mjs",
+      "tests/blame-game.test.mjs",
+      "tests/bom-precons.test.mjs",
+      "tests/c13-td0-sld-precons.test.mjs",
+      "tests/clb-dmc-40k-precons.test.mjs",
+      "tests/cmm-woc-who-precons.test.mjs",
+      "tests/commander-visuals.test.mjs",
+      "tests/ltc-cmm-precons.test.mjs",
+      "tests/pip-otc-m3c-advanced.test.mjs",
+      "tests/restricted-legacy-import.test.mjs",
+      "tests/voc-ncc-precons.test.mjs",
+      "tests/who-lcc-sld-mkc-precons.test.mjs",
+      "tests/c19-c20-planeswalkers.test.mjs",
+      "tests/free-cast-copy-decisions.test.mjs",
+      "tests/monarch-visibility.test.mjs",
+      "tests/oracle-v8-damage-events.test.mjs",
+      "tests/oracle-v8-damage-death.test.mjs",
+      "tests/oracle-v8-copy-next.test.mjs",
+      "tests/permanent-spell-copy-token-creation.test.mjs",
+      "tests/oracle-v8-stack-copy.test.mjs",
+      "tests/planeswalker-decisions.test.mjs",
+      "tests/planeswalker-combat.test.mjs",
+      "tests/save-state.test.mjs",
+      "tests/tree-save-state.test.mjs",
+      "tests/oracle-predefined-token-source.test.mjs",
+      "tests/oracle-token-forms-source.test.mjs",
+      "tests/subtle-damage-keywords.test.mjs",
+      "tests/catalog-source-match.test.mjs",
+      "tests/oracle-catalog-integrity.test.mjs",
+      "tests/legacy-card-catalog-integrity.test.mjs"
+    ],
+    "tests": 1160,
+    "passed": 1160,
+    "failed": 0,
+    "newFrcScenarios": 84,
+    "fullSuiteRun": false
+  },
+  "browser": {
+    "passed": 2,
+    "errors": [],
+    "flows": [
+      {
+        "deck": "Multiverse Reforged",
+        "width": 1440,
+        "opening": {
+          "commander": [
+            "Jace, Multiverse Architect"
+          ],
+          "count": 100
+        },
+        "paidCommanderResolved": true,
+        "manaSpent": 5,
+        "stackSeen": true,
+        "aiFallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Multiverse Reforged",
+        "width": 390,
+        "opening": {
+          "commander": [
+            "Jace, Multiverse Architect"
+          ],
+          "count": 100
+        },
+        "paidCommanderResolved": true,
+        "manaSpent": 5,
+        "stackSeen": true,
+        "aiFallback": false,
+        "overflow": false
+      }
+    ],
+    "visuallyInspected": [
+      "multiverse-reforged-1440-select.png",
+      "multiverse-reforged-390-battlefield.png"
+    ]
+  },
+  "headlessGames": [
+    {
+      "deck": "Multiverse Reforged",
+      "opponents": [
+        "Elven Empire",
+        "Draconic Domination",
+        "Food and Fellowship"
+      ],
+      "seed": 11234,
+      "turns": 57,
+      "winner": "You",
+      "passed": true
+    }
+  ],
+  "gates": {
+    "syntax": true,
+    "deckAudit": true,
+    "strictCertification": true,
+    "sourcePreservation": true,
+    "idempotentImport": true,
+    "pinnedCatalogExport": true,
+    "pinnedCatalogCheck": true,
+    "diffCheck": true
+  },
+  "catalog": {
+    "sourceSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "classifierFilesSha256": "b877f24b6a6af490cd38ce6b0a8d94d410e5ae2be8cf0383b8e05e759b6209aa",
+    "inputFilesSha256": "1caf9d9e0ad9a3846ef8a6644349e9f8f495c2cc10333dc1769122380222dcbc",
+    "counts": {
+      "runtimeDefinitions": 24775,
+      "genericOracleCards": 20800,
+      "genericBatches": 208,
+      "manualOracleCards": 58,
+      "legacyDefinitions": 3917,
+      "individuallyReviewedLegacyDefinitions": 18,
+      "deckImportEligibleDefinitions": 24774,
+      "deckImportRestrictedDefinitions": 1,
+      "representedUniverseOracleIds": 24710,
+      "remainingUniverseOracleIds": 6074,
+      "parserEligibleUnimported": 8,
+      "deferred": 6066,
+      "runtimeEntriesWithoutSnapshotMatch": 36,
+      "runtimeEntriesOutsideComparisonUniverse": 27
+    },
+    "classificationReuse": "catalog-cache-reuse.json"
+  },
+  "evidenceSha256": {
+    "output/precon-frc-2026-09-24/regressions-final.log": "97b37fd95b74d7e4501948c99400fca7e6110e4825e378c788a3279381b2efe9",
+    "output/precon-frc-2026-09-24/catalog-export-final.log": "413dfd977cdcdea627e99320369ad40b7b35dde9e28fe1b13830ae993708f952",
+    "output/precon-frc-2026-09-24/catalog-check.log": "6935c24c9d80e85b01b8a8789eb3699e23405d77da52d844071c42872a7cc164",
+    "output/precon-frc-2026-09-24/source-validation.log": "5c7d6ecd0986edae0b2303e34521f736b0ca84a987f5c23d5730306a03bd9f8b",
+    "output/precon-frc-2026-09-24/check.log": "a70c787b94c2aaf1044d465392333f546cc8ab84cbc20d7f94dae07e04def41a",
+    "output/precon-frc-2026-09-24/audit.log": "2d2f6959d582bee2d36793cd0756587e9906cd5357403835490c706f473f94ea",
+    "output/precon-frc-2026-09-24/certify.log": "9011a0d9aee31a4183667ee5a0109c9175ce1136fbba10775dff8b4449a9751c",
+    "output/precon-frc-2026-09-24/browser.log": "b0ecc149281eea1dd394cdf1b0fcea325f4cf37bfe5f370b17ef0b7e8d98bb4d",
+    "output/precon-frc-2026-09-24/headless.log": "25ceb09579d7960625999aa1058d7466adbc755349a2ae5982bf59bb0bb98eef",
+    "output/precon-frc-2026-09-24/browser/result.json": "a32ff5a5cad0ae23d9405c9f25e5005ed5a569afde1302d29ed347a40c731069",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-1440-battlefield.png": "7100997a01b62dcc9e86a741847f04a98bee913ae62c54e04564f67a8a4fdc5c",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-1440-opening.png": "2e994d2cddf53e7dffe76b3d61c6efb8616920175bd6446001ac7913bee53be4",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-1440-select.png": "64fec028b20c86746352d1243e934e28ff96fc298d5283ca9abbd7a778478d2c",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-1440-stack.png": "5b7b1a15be666f1337c0e93968f3571007589dcf4a767952e0c27ad0d67a8a08",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-390-battlefield.png": "d5d0a2188e387eaba04138b7a8cd8c7201999561f5635e96fe69562d43c1ca1c",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-390-opening.png": "eeac325da6dc7cdd20d97230c46635023e684e4b745c65f313df5d484780e144",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-390-select.png": "aa9b0732111d2eea3018eba0100e514e5635f06533eaf631b3fef7c5691c8071",
+    "output/precon-frc-2026-09-24/browser/multiverse-reforged-390-stack.png": "0ab091425056fea77e4b0ce18db68b8607cc505bcee95df1d52dd67fe587e039",
+    "output/precon-frc-2026-09-24/release-catalog-export.log": "413dfd977cdcdea627e99320369ad40b7b35dde9e28fe1b13830ae993708f952",
+    "output/precon-frc-2026-09-24/release-catalog-check.log": "6935c24c9d80e85b01b8a8789eb3699e23405d77da52d844071c42872a7cc164"
+  },
+  "validatedCodeSha256": {
+    "index.html": "ba8c956b01fee4a59da8c6ce414081803e26707e678a7cf5856cf35fc1fd7cfe",
+    "scripts/catalog-source-match.mjs": "eb8e391f9a1c46a4ff6614950f2e5bc106bcade29756bb82ecd511836eb84baa",
+    "scripts/export-card-catalog.mjs": "b7268300a0cebf438d1006abac94a3f15f6384f7ae26945cfef9da81645e69c7",
+    "scripts/import-frc-precon.mjs": "b667df035d56ded8d70e78be708e62ed55024b9ba8950f8f6ac0df46c64d951a",
+    "scripts/smoke-frc-game.mjs": "1a40e9c2968777db91432db8b7e4e6567cd6a70b738fcffce9e81664d71ca6c3",
+    "scripts/sync-frc-images.mjs": "460794ed3a06caceffa3d5c012bc5843328a9613d53f48767857b1238e97f4b7",
+    "scripts/verify-frc-import.mjs": "ccb3b5fc571e7e673ed9f7f168b66b12a5a92fa22ba33998c1e2bc3419182d94",
+    "src/app.js": "210bd36c046b60c2d87839befc34e2c18f087d5227557d26c3e2b13e5cd24d35",
+    "src/card-images.js": "3690edd8d7e59df59ad2fb618ec4989b83f5203c3345d28921ddda7648775ab1",
+    "src/catalog-summary.js": "43d60f2178875d7512b75d28829c344ca949db62c544599ef3a49f50ab6de0d4",
+    "src/data.js": "fccb10bead8eff89645e1feddf9923f4cf1533af637e1070ec4a2dc6803f4fb1",
+    "src/modules/ai-v2.js": "d4beea1cb9b7273d52c9996aeb3297dc07b2a0008db16e17fe2a031bf0d446ae",
+    "src/modules/deck-guides.js": "2893068dcc94575f2657687763a38606c24bd94efa4f9c2db09da5cc0145c447",
+    "src/modules/engine.js": "aff5c8582f76520b5fd803c739a4fc22d774fde43f4955428720608ad9c7cd22",
+    "src/modules/frc-impending.js": "a167d2973b280886d259adb75dec92d32674198d7ca9d3cb59d666c21a37a59b",
+    "src/modules/frc-rules.js": "63ff7a05ab5efcf32138bf28ac7d4083c0642800aa82bb02885c8ecfb3ac3991",
+    "src/modules/loader.js": "1495ecf73354f4af5db2d96a8883c320da4e2afef518866280dc598c8cc1f52a",
+    "src/modules/oracle-v8-damage-events.js": "df7aa3b5a170350d8fa3eff42c7d859f4a7e20cc45fd79179d2f75c27d9f72c9",
+    "src/modules/scripts-frc-creatures.js": "f3bcb92ed88c2c9bccbdc6bee38ecfad32ff7bc64909611de163b9f6c55efbd9",
+    "src/modules/scripts-frc-spells.js": "23b712753c02822af2ca3a6a9c6e9e305629b2896200903edc1820cb38609374"
+  },
+  "deployment": "Local preview at http://127.0.0.1:8000/; no commit, push or deployment in this task",
+  "releaseLineEndingNormalization": [
+    {
+      "file": "scripts/smoke-frc-game.mjs",
+      "beforeSha256": "3627e64ea474d16a8d60ca1ea5a27d906dba6a7ca4b3d98a2553577d8b3cd385",
+      "afterSha256": "1a40e9c2968777db91432db8b7e4e6567cd6a70b738fcffce9e81664d71ca6c3",
+      "change": "CRLF to LF only"
+    },
+    {
+      "file": "scripts/sync-frc-images.mjs",
+      "beforeSha256": "3437a3f7c89ef27362be3a51d72a43c32f300d3d7127f18fe5f6e4030e59a8f0",
+      "afterSha256": "460794ed3a06caceffa3d5c012bc5843328a9613d53f48767857b1238e97f4b7",
+      "change": "CRLF to LF only"
+    },
+    {
+      "file": "tests/browser/frc-precon.mjs",
+      "beforeSha256": "4d9098a75e6ad96e3919c9abb8f55450b3f6350d3ef80acf91f5ceb5cfa3000f",
+      "afterSha256": "01ba869b361b529fd81beb8b8000d4078d6e956b68d3fc9ef2753bd3e88245fd",
+      "change": "CRLF to LF only"
+    }
+  ]
+}

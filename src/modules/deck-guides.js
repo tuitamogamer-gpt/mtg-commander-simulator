@@ -3,6 +3,11 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+    multiverseReforged: [
+      {label: 'Early game', title: 'Fix four colors', text: 'Keep lands and mana rocks that produce your missing colors. Create inexpensive tokens to block and protect Jace.'},
+      {label: 'Midgame', title: 'Reshape your tokens', text: 'Use Jace to exchange a small token for a creature or planeswalker from your library. Draw and bottom expensive cards to keep your hand moving.'},
+      {label: 'Endgame', title: 'Overwhelm the table', text: 'Turn a token army into multiple threats with Mass Polymorph. Use Avacyn for resilience and your flying finishers to end the game.'},
+    ],
     blameGame: [
       { label: 'Early game', title: 'Prepare your defense', text: 'Fix red and white mana with rocks, then establish blockers or attack taxes before committing Nelly.' },
       { label: 'Midgame', title: 'Send the threats elsewhere', text: 'Attack safely with Nelly to suspect a creature and goad every suspected creature. Draw as opponents damage one another and keep protection ready.' },
@@ -928,6 +933,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+    'Multiverse Reforged': {
+      route: 'multiverseReforged', pace: 'TOKENS INTO LEGENDARY THREATS', complexity: 'Advanced',
+      theme: 'Jace shapes small tokens into enormous creatures and planeswalkers while Echoverse legends generate cards, mana and resilient threats.',
+      plan: 'Fix white, blue, black and red mana, build a token defense and cast Jace. Use his minus ability on an expendable token, keep interaction ready, and turn a wide board into finishers with Mass Polymorph.',
+      mulligan: 'Keep three lands, access to several colors, and a mana rock or early token maker. Ship hands full of expensive creatures without mana development.',
+      tip: 'Jace can exile another planeswalker or creature you control. Empower Jace creates or grows a Jace token; it does not add loyalty to your nontoken commander. Nissa is an alternative commander, not a partner.',
+      keys: ['Mass Polymorph', 'Nissa, Leyline Tamer', 'Avacyn, Angel of Horror'],
+    },
     'Blame Game': {
       route: 'blameGame', pace: 'GOAD AND DEFENSIVE POLITICS', complexity: 'Advanced',
       theme: 'Nelly Borca suspects and goads creatures, rewarding combat between opponents with extra cards.',

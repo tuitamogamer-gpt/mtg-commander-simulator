@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-09-20T22:22:22.081Z
+Generisano: 2026-09-24T13:51:18.054Z
 
-Aktivni deckovi: **169** · stvarno jedinstvenih karata: **6352** · card/deck provjere: **14131**
+Aktivni deckovi: **170** · stvarno jedinstvenih karata: **6384** · card/deck provjere: **14224**
 
-Jedinstvene karte — PASS: **6352** · FAIL: **0** · card/deck pojave — PASS: **14131** · FAIL: **0**
+Jedinstvene karte — PASS: **6384** · FAIL: **0** · card/deck pojave — PASS: **14224** · FAIL: **0**
 
-Cijela raw baza — PASS: **24749/24749** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **18397** karata. Cijeli katalog sadrži **20858** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **24775/24775** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **18391** karata. Cijeli katalog sadrži **20858** certifikovanih Oracle batch karata.
 
 Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.
 
@@ -15324,6 +15324,106 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | Terminate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
 | PASS | Terror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
 
+## Multiverse Reforged
+
+Commander: **Jace, Multiverse Architect** · 100 karata · 93 jedinstvenih · PASS 93 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Jace, Multiverse Architect | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nissa, Leyline Tamer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Omnath, Locus of the Void | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dack Fayden, Helping Hand | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ob Nixilis, the Ascended | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Teferi's Reproach | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Avacyn, Angel of Horror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Jhoira, Weatherlight Corsair | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Venser, Fervent Forger | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Niv-Mizzet, Ghost Counsel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tamiyo, Upriser Crowned | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Ur-Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Darksteel Angel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ginger, Queen of Sweets | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Memnarch, the Warden | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Turbulent Crater | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Turbulent Shore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Turbulent Wetlands | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Akroma, Angel of Fury | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reflecting Pool | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Elspeth, Sun's Champion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Flawless Maneuver | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grand Crescendo | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Martial Coup | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Overlord of the Mistmoors | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Secure the Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Serra's Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skrelv's Hive | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Staff of the Storyteller | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunfall | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | White Sun's Twilight | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mass Polymorph | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Occult Epiphany | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shark Typhoon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Synthetic Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Archfiend of Despair | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Archon of Cruelty | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dreadhorde Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cursed Mirror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Whirlwind of Thought | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Windcrag Siege | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chromatic Lantern | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Currency Converter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Proteus Staff | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Battlefield Forge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Caves of Koilos | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Clifftop Retreat | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drowned Catacomb | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fabled Passage | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fetid Heath | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Glacial Fortress | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Isolated Chapel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kher Keep | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mystic Gate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prairie Stream | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Radiant Summit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Restless Anchorage | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Restless Spire | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shivan Reef | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sulfur Falls | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sulfurous Springs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Ruins | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Underground River | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plan for All Outcomes | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fatehold Charm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lingering Souls | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path to Exile | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Stroke of Midnight | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swords to Plowshares | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Brainstorm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Brainsurge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fact or Fiction | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Despark | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Azorius Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dimir Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fellwar Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Izzet Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rakdos Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Creativity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Indulgence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Progress | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Contaminated Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Perilous Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
 ## Raw karte izvan aktivnih fiksnih deckova
 
 | Status | Karta | Nalaz |
@@ -17209,7 +17309,6 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | Brain in a Jar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brainbite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brainspoil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Brainsurge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bramble Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bramble Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bramble Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18298,7 +18397,6 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | Containment Protocol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Contaminated Bond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Contaminated Ground | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Contaminated Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Contemplation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Contentious Plan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Contingency Plan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27109,7 +27207,6 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | Protective Response | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Protector of Gondor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Protector of the Crown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Proteus Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Protocol Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Protomatter Powder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Proud Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27880,7 +27977,6 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | Rest for the Weary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rest in Peace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Restart Sequence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Restless Anchorage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Restless Apparition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Restless Bivouac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Restless Bloodseeker // Bloodsoaked Reveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29581,7 +29677,6 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | Skophos Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skophos Warleader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skred | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Skrelv's Hive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skulduggery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skulking Fugitive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skulking Ghost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33233,7 +33328,6 @@ Commander: **Xira Arien** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
 | PASS | White Plume Adventurer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Shield Crusader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | White Sun's Twilight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Tiger, Amulet Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Widow, Free Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |

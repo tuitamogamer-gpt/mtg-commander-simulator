@@ -12,7 +12,7 @@
  function capture(game,src,target,n,opts){
   if(!game._oracleDamageWatch&&!game.delayed.some(row=>[].concat(row.on).some(event=>/^oracleDamage/.test(event))))return null;
   const sourceSnap=src?._oracleDamageSnapshot||game._oracleDamageBatch?.snapshots?.get(src)||snapshot(game,src),targetSnap=game._oracleDamageBatch?.snapshots?.get(target)||snapshot(game,target);
-  return{src,target,n,combat:!!opts.combat,sourceSnap,targetSnap,spell:src?.zone==='stack',sourceVersion:sourceSnap?.zoneVersion??src?.zoneVersion,targetVersion:target?.zoneVersion};
+  return{src,target,n,combat:!!opts.combat,monarchAtDamage:opts._damageBatch?opts._damageBatch.monarch:game.monarch,sourceSnap,targetSnap,spell:src?.zone==='stack',sourceVersion:sourceSnap?.zoneVersion??src?.zoneVersion,targetVersion:target?.zoneVersion};
  }
  async function emit(game,hits){
   if(!hits.length)return;

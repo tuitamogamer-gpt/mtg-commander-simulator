@@ -1,0 +1,396 @@
+{
+  "retrievedOn": "2026-09-24",
+  "decks": [
+    {
+      "name": "Multiverse Reforged",
+      "commander": "Jace, Multiverse Architect",
+      "set": "FRC",
+      "slug": "multiverse-reforged",
+      "cards": [
+        {
+          "n": 1,
+          "name": "Jace, Multiverse Architect"
+        },
+        {
+          "n": 1,
+          "name": "Nissa, Leyline Tamer"
+        },
+        {
+          "n": 1,
+          "name": "Omnath, Locus of the Void"
+        },
+        {
+          "n": 1,
+          "name": "Dack Fayden, Helping Hand"
+        },
+        {
+          "n": 1,
+          "name": "Ob Nixilis, the Ascended"
+        },
+        {
+          "n": 1,
+          "name": "Teferi's Reproach"
+        },
+        {
+          "n": 1,
+          "name": "Avacyn, Angel of Horror"
+        },
+        {
+          "n": 1,
+          "name": "Jhoira, Weatherlight Corsair"
+        },
+        {
+          "n": 1,
+          "name": "Venser, Fervent Forger"
+        },
+        {
+          "n": 1,
+          "name": "Niv-Mizzet, Ghost Counsel"
+        },
+        {
+          "n": 1,
+          "name": "Tamiyo, Upriser Crowned"
+        },
+        {
+          "n": 1,
+          "name": "The Ur-Sphinx"
+        },
+        {
+          "n": 1,
+          "name": "Darksteel Angel"
+        },
+        {
+          "n": 1,
+          "name": "Ginger, Queen of Sweets"
+        },
+        {
+          "n": 1,
+          "name": "Memnarch, the Warden"
+        },
+        {
+          "n": 1,
+          "name": "Turbulent Crater"
+        },
+        {
+          "n": 1,
+          "name": "Turbulent Shore"
+        },
+        {
+          "n": 1,
+          "name": "Turbulent Wetlands"
+        },
+        {
+          "n": 1,
+          "name": "Akroma, Angel of Fury"
+        },
+        {
+          "n": 1,
+          "name": "Reflecting Pool"
+        },
+        {
+          "n": 1,
+          "name": "Elspeth, Sun's Champion"
+        },
+        {
+          "n": 1,
+          "name": "Flawless Maneuver"
+        },
+        {
+          "n": 1,
+          "name": "Grand Crescendo"
+        },
+        {
+          "n": 1,
+          "name": "Martial Coup"
+        },
+        {
+          "n": 1,
+          "name": "Overlord of the Mistmoors"
+        },
+        {
+          "n": 1,
+          "name": "Secure the Wastes"
+        },
+        {
+          "n": 1,
+          "name": "Serra's Emissary"
+        },
+        {
+          "n": 1,
+          "name": "Skrelv's Hive"
+        },
+        {
+          "n": 1,
+          "name": "Staff of the Storyteller"
+        },
+        {
+          "n": 1,
+          "name": "Sunfall"
+        },
+        {
+          "n": 1,
+          "name": "White Sun's Twilight"
+        },
+        {
+          "n": 1,
+          "name": "Mass Polymorph"
+        },
+        {
+          "n": 1,
+          "name": "Occult Epiphany"
+        },
+        {
+          "n": 1,
+          "name": "Shark Typhoon"
+        },
+        {
+          "n": 1,
+          "name": "Synthetic Destiny"
+        },
+        {
+          "n": 1,
+          "name": "Archfiend of Despair"
+        },
+        {
+          "n": 1,
+          "name": "Archon of Cruelty"
+        },
+        {
+          "n": 1,
+          "name": "Dreadhorde Invasion"
+        },
+        {
+          "n": 1,
+          "name": "Cursed Mirror"
+        },
+        {
+          "n": 1,
+          "name": "Whirlwind of Thought"
+        },
+        {
+          "n": 1,
+          "name": "Windcrag Siege"
+        },
+        {
+          "n": 1,
+          "name": "Chromatic Lantern"
+        },
+        {
+          "n": 1,
+          "name": "Currency Converter"
+        },
+        {
+          "n": 1,
+          "name": "Proteus Staff"
+        },
+        {
+          "n": 1,
+          "name": "Battlefield Forge"
+        },
+        {
+          "n": 1,
+          "name": "Caves of Koilos"
+        },
+        {
+          "n": 1,
+          "name": "Clifftop Retreat"
+        },
+        {
+          "n": 1,
+          "name": "Drowned Catacomb"
+        },
+        {
+          "n": 1,
+          "name": "Exotic Orchard"
+        },
+        {
+          "n": 1,
+          "name": "Fabled Passage"
+        },
+        {
+          "n": 1,
+          "name": "Fetid Heath"
+        },
+        {
+          "n": 1,
+          "name": "Glacial Fortress"
+        },
+        {
+          "n": 1,
+          "name": "Isolated Chapel"
+        },
+        {
+          "n": 1,
+          "name": "Kher Keep"
+        },
+        {
+          "n": 1,
+          "name": "Mystic Gate"
+        },
+        {
+          "n": 1,
+          "name": "Prairie Stream"
+        },
+        {
+          "n": 1,
+          "name": "Radiant Summit"
+        },
+        {
+          "n": 1,
+          "name": "Restless Anchorage"
+        },
+        {
+          "n": 1,
+          "name": "Restless Spire"
+        },
+        {
+          "n": 1,
+          "name": "Shivan Reef"
+        },
+        {
+          "n": 1,
+          "name": "Sulfur Falls"
+        },
+        {
+          "n": 1,
+          "name": "Sulfurous Springs"
+        },
+        {
+          "n": 1,
+          "name": "Sunken Ruins"
+        },
+        {
+          "n": 1,
+          "name": "Underground River"
+        },
+        {
+          "n": 1,
+          "name": "Plan for All Outcomes"
+        },
+        {
+          "n": 1,
+          "name": "Fatehold Charm"
+        },
+        {
+          "n": 1,
+          "name": "Arcane Signet"
+        },
+        {
+          "n": 1,
+          "name": "Sol Ring"
+        },
+        {
+          "n": 1,
+          "name": "Command Tower"
+        },
+        {
+          "n": 1,
+          "name": "Lingering Souls"
+        },
+        {
+          "n": 1,
+          "name": "Path to Exile"
+        },
+        {
+          "n": 1,
+          "name": "Stroke of Midnight"
+        },
+        {
+          "n": 1,
+          "name": "Swords to Plowshares"
+        },
+        {
+          "n": 1,
+          "name": "Brainstorm"
+        },
+        {
+          "n": 1,
+          "name": "Brainsurge"
+        },
+        {
+          "n": 1,
+          "name": "Fact or Fiction"
+        },
+        {
+          "n": 1,
+          "name": "Despark"
+        },
+        {
+          "n": 1,
+          "name": "Azorius Signet"
+        },
+        {
+          "n": 1,
+          "name": "Dimir Signet"
+        },
+        {
+          "n": 1,
+          "name": "Fellwar Stone"
+        },
+        {
+          "n": 1,
+          "name": "Izzet Signet"
+        },
+        {
+          "n": 1,
+          "name": "Rakdos Signet"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Creativity"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Dominance"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Indulgence"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Progress"
+        },
+        {
+          "n": 1,
+          "name": "Contaminated Landscape"
+        },
+        {
+          "n": 1,
+          "name": "Path of Ancestry"
+        },
+        {
+          "n": 1,
+          "name": "Perilous Landscape"
+        },
+        {
+          "n": 4,
+          "name": "Plains"
+        },
+        {
+          "n": 3,
+          "name": "Island"
+        },
+        {
+          "n": 2,
+          "name": "Swamp"
+        },
+        {
+          "n": 2,
+          "name": "Mountain"
+        }
+      ],
+      "source": {
+        "provider": "Wizards, independently compared with MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/reality-fracture-multiverse-reforged-commander-decklist",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/MultiverseReforged_FRC.json",
+        "releaseDate": "2026-10-02",
+        "mtgjsonSnapshot": "2026-09-23",
+        "officialHtmlSha256": "c72953d70ec6b0dcecaaa0f9ca9782521e44c8a2d16aea5749fe4a55c06c58e2",
+        "mtgjsonSha256": "b3c40d71151356558a6a9d97f36e1434a3aabd3fc9b29723c78d08b76bbaad12",
+        "export": "multiverse-reforged.txt",
+        "sha256": "55ddd7e2b9b21e509fa26385a24e0fd00a1dbbdc3d26a5823e716bb583eb8fd6"
+      }
+    }
+  ]
+}

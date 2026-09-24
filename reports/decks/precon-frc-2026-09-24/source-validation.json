@@ -1,0 +1,32 @@
+{
+  "baseline": "bd1bba00aa0db32ad8cd429ff4765197fbddf6af",
+  "passed": true,
+  "originalPhysicalCards": 100,
+  "uniqueNames": 93,
+  "sourceLists": [
+    {
+      "name": "Multiverse Reforged",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/reality-fracture-multiverse-reforged-commander-decklist",
+        "https://mtgjson.com/api/v5/decks/MultiverseReforged_FRC.json"
+      ],
+      "exportSha256": "55ddd7e2b9b21e509fa26385a24e0fd00a1dbbdc3d26a5823e716bb583eb8fd6"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3891,
+  "existingRawDeckRecordsPreserved": 169,
+  "nativeRawDefinitions": 3917,
+  "existingImageMappingsPreserved": 6758,
+  "existingCommanderCropsPreserved": 177,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 39,
+  "allNewImageDigestsMatch": true,
+  "allNewOracleDefinitionsMatch": true,
+  "idempotentDataSha256": "fccb10bead8eff89645e1feddf9923f4cf1533af637e1070ec4a2dc6803f4fb1",
+  "current": {
+    "decks": 170,
+    "definitions": 24775,
+    "eligible": 24774
+  }
+}

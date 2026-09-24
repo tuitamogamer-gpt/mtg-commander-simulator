@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "deck": "Multiverse Reforged",
+      "opponents": [
+        "Elven Empire",
+        "Draconic Domination",
+        "Food and Fellowship"
+      ],
+      "seed": 11234,
+      "turns": 57,
+      "winner": "You",
+      "passed": true
+    }
+  ]
+}

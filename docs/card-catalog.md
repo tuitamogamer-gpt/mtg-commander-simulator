@@ -16,18 +16,18 @@ Generic Oracle import state: **2026-09-20T21:53:30.369Z**. The counts below incl
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 24,749 |
+| Runtime card definitions | 24,775 |
 | Generic Oracle imports (208 batches of 100) | 20,800 |
 | Dedicated/manual Oracle imports | 58 |
-| Legacy definitions | 3,891 |
+| Legacy definitions | 3,917 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 24,748 |
+| Definitions allowed in arbitrary deck imports | 24,774 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 24,704 |
-| Source Oracle IDs still absent from the runtime | 6,080 |
+| Source Oracle IDs represented by a runtime name or face alias | 24,710 |
+| Source Oracle IDs still absent from the runtime | 6,074 |
 | Of those: parser-eligible but not imported | 8 |
-| Of those: deferred by the current semantic compiler | 6,072 |
+| Of those: deferred by the current semantic compiler | 6,066 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -37,15 +37,15 @@ Generic Oracle import state: **2026-09-20T21:53:30.369Z**. The counts below incl
 
 The comparison universe is exactly `games.includes('paper') && legalities.commander === 'legal'` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has 38,627 source rows and 36,495 rows marked for paper.
 
-Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 26 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Recorded Oracle IDs take precedence. An Oracle batch identity missing from its pinned source is an error; native precon cards released after the snapshot retain their recorded IDs and are explicitly marked as unmatched. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 36 runtime names without a pinned-source match, and 27 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
 Current parser-eligible, unimported names: `Warbringer`, `Weathered Runestone`, `Wild Swing`, `Wilt in the Heat`, `With Great Power . . .`, `Witherbloom, the Balancer`, `Wolverine, Claws Out`, `You Cannot Pass!`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 2,611 |
-| `spell-needs-explicit-semantics` | 1,399 |
-| `noncreature-needs-explicit-semantics` | 1,363 |
+| `oracle-needs-explicit-semantics` | 2,608 |
+| `spell-needs-explicit-semantics` | 1,397 |
+| `noncreature-needs-explicit-semantics` | 1,362 |
 | `double-faced-card-needs-complete-front-semantics` | 219 |
 | `land-needs-explicit-semantics` | 78 |
 | `complex-layout` | 70 |

@@ -151,7 +151,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return this.zone === 'battlefield' ? (this.cur ? this.cur.toughness : 0) : (Number(this.def.toughness) || 0);
     }
     get mv() {
-      if (this.zone === 'battlefield' && this.isToken && !this.isCopyOf) return 0;
+      // Tokens normally have no mana cost, but a specified cost (for example
+      // Gingerbrute tokens) is a characteristic and contributes to mana value.
       // CR 202.3e: X has the chosen value only while the spell is on the
       // stack. Everywhere else (including after an X permanent resolves), X
       // is 0. Keeping the old cast value on battlefield made effects such as
@@ -2090,7 +2091,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async _dealDamageBatch(hits,opts={}){
       // A single instruction damages each recipient once per source. Snapshot
       // amounts and source keywords before wither/counters change the board.
-      const grouped=[],batch={traits:new Map(),lifelink:new Map(),snapshots:new Map(),lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
+      const grouped=[],batch={traits:new Map(),lifelink:new Map(),snapshots:new Map(),monarch:this.monarch,lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
       for(const hit of hits){
         if(!hit.target||!(hit.n>0))continue;
         const existing=grouped.find(row=>row.src===hit.src&&row.target===hit.target);

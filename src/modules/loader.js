@@ -21,6 +21,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      'Multiverse Reforged': {icon: '🌀', colors: ['W', 'U', 'B', 'R'], style: 'Tokens, polymorph and legendary finishers',
+        set: 'Reality Fracture Commander (2026)', blurb: 'Protect Jace with tokens, then reshape them into enormous creatures and planeswalkers.'},
   "Evasive Maneuvers": {
     "icon": "⚔",
     "colors": [

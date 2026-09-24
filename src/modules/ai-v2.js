@@ -793,6 +793,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'Counter Intelligence': { archetype: 'Charge-counter artifacts', length: 'long', tags: ['artifacts', 'counters'], commanderImportance: 1.35 },
     'Deep Clue Sea': { archetype: 'Clue value and card draw', length: 'long', tags: ['artifacts', 'tokens'], commanderImportance: 1.35 },
     'Blame Game': { archetype: 'Goad, defensive politics and combat damage', length: 'long', tags: ['politics', 'combat', 'control'], commanderImportance: 1.5 },
+    'Multiverse Reforged': {archetype: 'Tokens, polymorph and legendary finishers', length: 'long', tags: ['tokens', 'ramp', 'control'], commanderImportance: 1.7},
     'Doom Prevails': { archetype: 'Villain connive control', length: 'long', tags: ['tribal', 'graveyard'], commanderImportance: 1.35 },
     'Elven Council': { archetype: 'Elf voting value', length: 'long', tags: ['tribal', 'tokens'], commanderImportance: 1.15 },
     'Endless Punishment': { archetype: 'Group slug attrition', length: 'medium', tags: ['death-triggers', 'lifegain'], commanderImportance: 1.45 },
@@ -3166,6 +3167,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    if(q.aiHint?.goal==='frc-polymorph')return target instanceof U.CardInst&&target.ctrl===player
+      ?20-permanentGameValue(game,target,player)+(target.isToken?6:0):-1000;
     if(q.aiHint?.goal==='donate-player-v9')return target instanceof U.Player?(target===player?-20:10):-1000;
     if(q.aiHint?.goal==='donate-card-v9')return target instanceof U.CardInst?(target.ctrl===player?20:0)-permanentGameValue(game,target,player):-1000;
     if(q.aiHint?.goal==='exchange-control-v9')return target instanceof U.CardInst?permanentGameValue(game,target,player):-1000;

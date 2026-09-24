@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fetchOracleCardsFromGzip, semanticClass } from './import-oracle-batch.mjs';
 import { loadEngine } from '../tests/helpers/load-engine.mjs';
+import { matchCatalogSource } from './catalog-source-match.mjs';
 
 // A read-only runtime inventory and a reproducible comparison with the pinned
 // Oracle feed. This script never imports cards or grants support certification.
@@ -51,23 +52,7 @@ function index(values, key) {
 const universeNames = index(universe, card => [card.name]);
 const universeFaces = index(universe, card => (card.card_faces || []).map(face => face.name));
 const allNames = index(cards, card => [card.name]);
-function sourceMatch(entry) {
-  if (entry.oracleId) {
-    const card = byId.get(entry.oracleId);
-    assert.ok(card, `Imported Oracle ID absent from pinned source: ${entry.name}`);
-    return { card, match: 'oracle-id' };
-  }
-  for (const [entries, match] of [
-    [universeNames.get(entry.name), 'canonical-name'],
-    [universeFaces.get(entry.name), 'face-name'],
-    [allNames.get(entry.name), 'canonical-name-outside-universe'],
-  ]) {
-    if (!entries?.length) continue;
-    assert.equal(entries.length, 1, `Ambiguous ${match} in pinned source: ${entry.name}`);
-    return { card: entries[0], match };
-  }
-  return { card: null, match: 'not-found-in-pinned-source' };
-}
+const sourceMatch = entry => matchCatalogSource(entry, {byId, universeNames, universeFaces, allNames});
 
 const MTG = loadEngine();
 const names = sorted(Object.keys(MTG.CARD_CATALOG));
@@ -95,7 +80,7 @@ const imported = names.map(name => {
     mana_cost: entry.manaCost,
     type_line: entry.typeLine,
     color_identity: entry.colorIdentity.join(''),
-    oracle_id: card?.oracle_id || '',
+    oracle_id: card?.oracle_id || entry.oracleId || '',
     source_name: card?.name || '',
     source_match: match,
     in_comparison_universe: !!card && !!inUniverse(card),
@@ -265,7 +250,7 @@ Generic Oracle import state: **${state.updatedAt}**. The counts below include al
 
 The comparison universe is exactly \`games.includes('paper') && legalities.commander === 'legal'\` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has ${number(cards.length)} source rows and ${number(summary.comparisonUniverse.paperRows)} rows marked for paper.
 
-Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists ${aliases.length} such groups, ${unmatched.length} runtime names without a pinned-source match, and ${outside.length} matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Recorded Oracle IDs take precedence. An Oracle batch identity missing from its pinned source is an error; native precon cards released after the snapshot retain their recorded IDs and are explicitly marked as unmatched. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists ${aliases.length} such groups, ${unmatched.length} runtime names without a pinned-source match, and ${outside.length} matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
 Current parser-eligible, unimported names: ${ready.length ? ready.map(entry => '\`' + entry.name + '\`').join(', ') : 'none'}. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 

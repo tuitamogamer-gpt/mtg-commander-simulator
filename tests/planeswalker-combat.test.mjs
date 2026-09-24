@@ -89,7 +89,7 @@ async function resolveAll(game) {
   assert.ok(guard < 240, 'stack/trigger petlja se nije smirila');
 }
 
-test('svih 93 deck/planeswalker parova ima svih 259 loyalty putanja', () => {
+test('svih 95 deck/planeswalker parova ima svih 264 loyalty putanja', () => {
   const inventory = [];
   for (const [deckName, deck] of Object.entries(MTG.DECKS)) {
     for (const entry of deck.cards) {
@@ -191,8 +191,10 @@ test('svih 93 deck/planeswalker parova ima svih 259 loyalty putanja', () => {
     ["Lorehold Spirit","Quintorius, History Chaser"],
     ["Mirror Mastery","Garruk Wildspeaker"],
     ["Angels: They're Just Like Us but Cooler and with Wings","Ajani, Strength of the Pride"],
+    ["Multiverse Reforged","Jace, Multiverse Architect"],
+    ["Multiverse Reforged","Elspeth, Sun's Champion"],
   ]);
-  assert.equal(inventory.reduce((sum, [, name]) => sum + MTG.DEFS[name].abilities.filter(a => a.loyalty !== undefined).length, 0), 259);
+  assert.equal(inventory.reduce((sum, [, name]) => sum + MTG.DEFS[name].abilities.filter(a => a.loyalty !== undefined).length, 0), 264);
   for (const [, name] of inventory) {
     assert.ok(MTG.DEFS[name].abilities.every(ability => ability.loyalty !== undefined && ability.sorcery), `${name}: neispravna loyalty putanja`);
   }

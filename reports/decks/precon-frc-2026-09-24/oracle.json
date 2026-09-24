@@ -1,0 +1,2795 @@
+{
+  "generatedAt": "2026-09-24T13:17:42.678Z",
+  "source": "https://api.scryfall.com/cards/collection",
+  "requested": 93,
+  "found": 93,
+  "notFound": [],
+  "cards": [
+    {
+      "requestedName": "Jace, Multiverse Architect",
+      "oracleId": "3321c134-bf5b-4f63-8035-fca0bbdfa86b",
+      "scryfallId": "55cd03d9-2535-4cf3-a8b2-1418e1190f4a",
+      "canonicalName": "Jace, Multiverse Architect",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Jace, Multiverse Architect",
+        "cost": "{1}{W}{U}{B}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Planeswalker"
+        ],
+        "subtypes": [
+          "Jace"
+        ],
+        "oracle": "At the beginning of combat on each opponent's turn, they may pay {2}. If they don't, creatures they control can't attack Jaces you control this turn.\n+1: Draw two cards, then put a card from your hand on the bottom of your library.\n−3: Exile another target planeswalker or creature you control. Reveal cards from the top of your library until you reveal a creature or planeswalker card. Put that card onto the battlefield and the rest on the bottom of your library in a random order.\nJace, Multiverse Architect can be your commander.",
+        "_ci": [
+          "B",
+          "R",
+          "U",
+          "W"
+        ],
+        "loyalty": "4"
+      }
+    },
+    {
+      "requestedName": "Nissa, Leyline Tamer",
+      "oracleId": "6067b8d0-5b00-402c-967d-e35a1304fafc",
+      "scryfallId": "e969d1f3-9595-498b-81cb-6cf4df2cad5d",
+      "canonicalName": "Nissa, Leyline Tamer",
+      "layout": "normal",
+      "keywords": [
+        "Vigilance",
+        "Deathtouch",
+        "Landfall"
+      ],
+      "colorIdentity": [
+        "B",
+        "R",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Nissa, Leyline Tamer",
+        "cost": "{3}{W}{U}{B}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Wizard"
+        ],
+        "oracle": "Deathtouch, vigilance\nLandfall — Whenever a land you control enters, draw a card. Then if this is the first time this ability has resolved this turn, reveal cards from the top of your library until you reveal a creature card. Put that card onto the battlefield and the rest on the bottom of your library in a random order.",
+        "_ci": [
+          "B",
+          "R",
+          "U",
+          "W"
+        ],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Omnath, Locus of the Void",
+      "oracleId": "579225b5-50e2-4891-8871-0bf6dbc07e33",
+      "scryfallId": "727511d8-be1a-4c2e-92f6-5cc9d67a2b0c",
+      "canonicalName": "Omnath, Locus of the Void",
+      "layout": "normal",
+      "keywords": [
+        "Landfall"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Omnath, Locus of the Void",
+        "cost": "{7}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental"
+        ],
+        "oracle": "Omnath gets +1/+1 for each unspent mana you have.\nIf you would lose unspent mana, that mana becomes colorless instead.\nLandfall — Whenever a land you control enters, add {C}{C}.",
+        "_ci": [],
+        "power": "6",
+        "toughness": "6",
+        "_produced": [
+          "C"
+        ]
+      }
+    },
+    {
+      "requestedName": "Dack Fayden, Helping Hand",
+      "oracleId": "3b21abb0-9a58-4e62-9650-4b04ce2bfb12",
+      "scryfallId": "b0db02cb-d029-46d5-9df2-dee980047758",
+      "canonicalName": "Dack Fayden, Helping Hand",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Dack Fayden, Helping Hand",
+        "cost": "{4}{W}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Advisor"
+        ],
+        "oracle": "When Dack Fayden enters, reveal cards from the top of your library until you reveal X creature cards, where X is the number of opponents you have. Put those creature cards onto the battlefield, then shuffle. They're goaded for the rest of the game. For each of those permanents, choose a different opponent. Each opponent gains control of the permanent for which they were chosen.",
+        "_ci": [
+          "W"
+        ],
+        "power": "4",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Ob Nixilis, the Ascended",
+      "oracleId": "3a49b518-61c8-4dea-8008-c5edf8384581",
+      "scryfallId": "a022d35a-9d24-4818-9ff3-a522cfcb178e",
+      "canonicalName": "Ob Nixilis, the Ascended",
+      "layout": "normal",
+      "keywords": [
+        "Flying"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Ob Nixilis, the Ascended",
+        "cost": "{5}{W}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "oracle": "Flying\nWhen Ob Nixilis enters, destroy all tapped creatures your opponents control. You gain 1 life for each creature destroyed this way.\nAt the beginning of each end step, if you gained life this turn, create a 4/4 white Angel creature token with flying.",
+        "_ci": [
+          "W"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Teferi's Reproach",
+      "oracleId": "9381b4a5-a8e0-412d-bc7f-ae15afa0f135",
+      "scryfallId": "fb4a1f07-4c1f-4d08-af5d-17f1bb77f9e5",
+      "canonicalName": "Teferi's Reproach",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Teferi's Reproach",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Choose target opponent. Until that player's next turn, they gain protection from everything and their life total can't change. All nonland permanents they control phase out. (While they're phased out, they're treated as though they don't exist. They phase in before that player untaps during their next untap step.)\nExile Teferi's Reproach.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Avacyn, Angel of Horror",
+      "oracleId": "4af61d45-7114-4eb4-a905-9e03caf87454",
+      "scryfallId": "ff65f46b-0f82-49b8-93b9-7ac0243ce941",
+      "canonicalName": "Avacyn, Angel of Horror",
+      "layout": "normal",
+      "keywords": [
+        "Deathtouch",
+        "Flying"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Avacyn, Angel of Horror",
+        "cost": "{5}{B}{B}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "oracle": "Flying, deathtouch\nWhenever Avacyn or another nontoken creature you control dies, return that card to the battlefield under your control at the beginning of the next end step.",
+        "_ci": [
+          "B"
+        ],
+        "power": "8",
+        "toughness": "8"
+      }
+    },
+    {
+      "requestedName": "Jhoira, Weatherlight Corsair",
+      "oracleId": "cf9b0bb5-d545-4efd-9255-39b10c2be0ee",
+      "scryfallId": "1874c58d-00ce-4973-a318-50ce21d1a675",
+      "canonicalName": "Jhoira, Weatherlight Corsair",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Jhoira, Weatherlight Corsair",
+        "cost": "{4}{B}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Pirate"
+        ],
+        "oracle": "Whenever Jhoira enters or attacks, target opponent reveals cards from the top of their library until they reveal a historic permanent card. You put that card onto the battlefield under your control and lose life equal to that permanent's mana value. That player puts the rest of the revealed cards on the bottom of their library in a random order. (Artifacts, legendaries, and Sagas are historic.)",
+        "_ci": [
+          "B"
+        ],
+        "power": "4",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Venser, Fervent Forger",
+      "oracleId": "9b1ae6d8-0cf3-4a67-9241-37f4bc5ddbdd",
+      "scryfallId": "0de6353b-5c19-40f7-951a-2b600db21846",
+      "canonicalName": "Venser, Fervent Forger",
+      "layout": "normal",
+      "keywords": [
+        "Flash"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Venser, Fervent Forger",
+        "cost": "{4}{R}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Sorcerer"
+        ],
+        "oracle": "Flash\n When Venser enters, choose one —\n• Copy target instant or sorcery spell an opponent controls twice. You may choose new targets for the copies.\n• Create two tokens that are copies of target permanent an opponent controls. They gain haste. At the beginning of the next end step, sacrifice them.",
+        "_ci": [
+          "R"
+        ],
+        "power": "5",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Niv-Mizzet, Ghost Counsel",
+      "oracleId": "a5350327-e84c-44b6-8359-87882e521048",
+      "scryfallId": "0ad0e168-ac5c-4e1b-83f2-0488067a58d7",
+      "canonicalName": "Niv-Mizzet, Ghost Counsel",
+      "layout": "normal",
+      "keywords": [
+        "Flying"
+      ],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Niv-Mizzet, Ghost Counsel",
+        "cost": "{2}{W}{W}{B}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit",
+          "Dragon"
+        ],
+        "oracle": "Flying\nWhenever you gain life, you may pay that much life. If you do, draw that many cards.\n{T}: Each opponent loses 1 life and you gain 1 life.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Tamiyo, Upriser Crowned",
+      "oracleId": "8e0f2e26-1e14-422a-aafe-e1da38ab10a3",
+      "scryfallId": "0d52b0fd-60a4-4e90-bc4a-3200493779d3",
+      "canonicalName": "Tamiyo, Upriser Crowned",
+      "layout": "normal",
+      "keywords": [
+        "Flying",
+        "Haste",
+        "Double strike"
+      ],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Tamiyo, Upriser Crowned",
+        "cost": "{4}{R}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Moonfolk",
+          "Warrior"
+        ],
+        "oracle": "Flying, double strike, haste\nWhen Tamiyo enters, you become the monarch.\nWhenever one or more creatures deal combat damage to you while you're the monarch, tap those creatures and put a stun counter on each of them.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "The Ur-Sphinx",
+      "oracleId": "4a3fdb8e-4699-4bd9-84e6-3cc7fea0e1ef",
+      "scryfallId": "d9e9d9a8-86c2-4e58-b818-466247725259",
+      "canonicalName": "The Ur-Sphinx",
+      "layout": "normal",
+      "keywords": [
+        "Flying",
+        "Eminence",
+        "Mill"
+      ],
+      "colorIdentity": [
+        "B",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "The Ur-Sphinx",
+        "cost": "{6}{W}{U}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Sphinx",
+          "Avatar"
+        ],
+        "oracle": "Eminence — As long as The Ur-Sphinx is in the command zone or on the battlefield, other Sphinx spells you cast cost {1} less to cast.\nFlying\nWhenever one or more Sphinxes you control attack, each player mills that many cards. For each player, you may cast a card that player milled this way without paying its mana cost.",
+        "_ci": [
+          "B",
+          "U",
+          "W"
+        ],
+        "power": "10",
+        "toughness": "10"
+      }
+    },
+    {
+      "requestedName": "Darksteel Angel",
+      "oracleId": "d0259f7d-9bd7-4722-8fb9-439768308516",
+      "scryfallId": "0c33024e-9473-4d5b-8433-9898380282c4",
+      "canonicalName": "Darksteel Angel",
+      "layout": "normal",
+      "keywords": [
+        "Flying",
+        "Indestructible"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Darksteel Angel",
+        "cost": "{9}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "oracle": "Flying, indestructible\nYou can't lose the game and your opponents can't win the game.\nCreatures you control can't have -1/-1 counters put on them.",
+        "_ci": [],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Ginger, Queen of Sweets",
+      "oracleId": "5ea93956-085d-409b-bd95-dd669fa69eeb",
+      "scryfallId": "f4ff6bf9-89a9-4c2a-84a2-d4ceb7168adf",
+      "canonicalName": "Ginger, Queen of Sweets",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Ginger, Queen of Sweets",
+        "cost": "{6}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Food",
+          "Noble"
+        ],
+        "oracle": "When Ginger enters, you become the monarch.\n{2}, {T}, Sacrifice Ginger: You gain 6 life.\nAt the beginning of each upkeep, if you're the monarch, create a Gingerbrute token. (It's a {1} 1/1 Food Golem artifact creature with haste, \"{1}: This token can't be blocked this turn except by creatures with haste,\" and \"{2}, {T}, Sacrifice this token: You gain 3 life.\")",
+        "_ci": [],
+        "power": "6",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Memnarch, the Warden",
+      "oracleId": "f2630b02-fb48-4167-8a47-8284f7d4c484",
+      "scryfallId": "60d05210-c2b1-4248-a470-e0f8123d33f8",
+      "canonicalName": "Memnarch, the Warden",
+      "layout": "normal",
+      "keywords": [
+        "Indestructible"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Memnarch, the Warden",
+        "cost": "{10}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Wizard"
+        ],
+        "oracle": "Indestructible\nWhen Memnarch enters, create two 1/1 colorless Myr artifact creature tokens.\nWhenever Memnarch attacks, draw a card for each artifact you control.",
+        "_ci": [],
+        "power": "8",
+        "toughness": "9"
+      }
+    },
+    {
+      "requestedName": "Turbulent Crater",
+      "oracleId": "e86a0b64-fe4a-4ea8-99e8-35860dbac765",
+      "scryfallId": "0cb04417-063e-45f7-86d3-7648111d04d7",
+      "canonicalName": "Turbulent Crater",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Turbulent Crater",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Swamp",
+          "Mountain"
+        ],
+        "oracle": "({T}: Add {B} or {R}.)\nThis land enters tapped unless your opponents control eight or more lands.",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_produced": [
+          "B",
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Turbulent Shore",
+      "oracleId": "c13c5f07-dac5-47d0-a088-e24b9fbec3c5",
+      "scryfallId": "92039341-152a-4797-a3df-e89e8d5145d3",
+      "canonicalName": "Turbulent Shore",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Turbulent Shore",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Plains",
+          "Island"
+        ],
+        "oracle": "({T}: Add {W} or {U}.)\nThis land enters tapped unless your opponents control eight or more lands.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Turbulent Wetlands",
+      "oracleId": "b51c8659-ec4f-4213-beb1-49a7acd7366c",
+      "scryfallId": "8d86f7f8-492d-4e19-8b61-39084c6299ac",
+      "canonicalName": "Turbulent Wetlands",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Turbulent Wetlands",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Island",
+          "Swamp"
+        ],
+        "oracle": "({T}: Add {U} or {B}.)\nThis land enters tapped unless your opponents control eight or more lands.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_produced": [
+          "B",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Akroma, Angel of Fury",
+      "oracleId": "2b80faaf-92fd-4fa0-a3f6-8bb263e7ff1d",
+      "scryfallId": "2b5ac7bd-3788-4c8b-b945-c1105986807a",
+      "canonicalName": "Akroma, Angel of Fury",
+      "layout": "normal",
+      "keywords": [
+        "Flying",
+        "Morph",
+        "Protection",
+        "Trample"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Akroma, Angel of Fury",
+        "cost": "{5}{R}{R}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "oracle": "This spell can't be countered.\nFlying, trample, protection from white and from blue\n{R}: Akroma gets +1/+0 until end of turn.\nMorph {3}{R}{R}{R} (You may cast this card face down as a 2/2 creature for {3}. Turn her face up any time for her morph cost.)",
+        "_ci": [
+          "R"
+        ],
+        "power": "6",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Reflecting Pool",
+      "oracleId": "67f43ac6-2a58-4b53-b5d7-0330e2a252e2",
+      "scryfallId": "cbc4281a-b70d-4f96-b309-38e986484829",
+      "canonicalName": "Reflecting Pool",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Reflecting Pool",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add one mana of any type that a land you control could produce.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Elspeth, Sun's Champion",
+      "oracleId": "05e6b243-48a6-4a42-bc5f-413441de9c33",
+      "scryfallId": "a91d9163-c1f2-4eae-acab-5dabbc71d7d4",
+      "canonicalName": "Elspeth, Sun's Champion",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Elspeth, Sun's Champion",
+        "cost": "{4}{W}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Planeswalker"
+        ],
+        "subtypes": [
+          "Elspeth"
+        ],
+        "oracle": "+1: Create three 1/1 white Soldier creature tokens.\n−3: Destroy all creatures with power 4 or greater.\n−7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\"",
+        "_ci": [
+          "W"
+        ],
+        "loyalty": "4"
+      }
+    },
+    {
+      "requestedName": "Flawless Maneuver",
+      "oracleId": "4e183439-17d2-47ff-9d99-5e22821d91e3",
+      "scryfallId": "3ffe82a4-584e-4ebd-9551-a745bed01e26",
+      "canonicalName": "Flawless Maneuver",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Flawless Maneuver",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "If you control a commander, you may cast this spell without paying its mana cost.\nCreatures you control gain indestructible until end of turn.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Grand Crescendo",
+      "oracleId": "dc600c06-8239-409e-b53d-20f813a3f5e7",
+      "scryfallId": "a60834b0-38ab-40c9-9fd9-db3a23b13076",
+      "canonicalName": "Grand Crescendo",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Grand Crescendo",
+        "cost": "{X}{W}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Create X 1/1 green and white Citizen creature tokens. Creatures you control gain indestructible until end of turn.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Martial Coup",
+      "oracleId": "2b7c4dab-e432-4b34-b058-3cec5c0d72df",
+      "scryfallId": "5c4d0ad9-4d57-4e5c-b478-059220f5b1dd",
+      "canonicalName": "Martial Coup",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Martial Coup",
+        "cost": "{X}{W}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Create X 1/1 white Soldier creature tokens. If X is 5 or more, destroy all other creatures.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Overlord of the Mistmoors",
+      "oracleId": "7e64b1dc-a238-4bff-98ff-2bea44340568",
+      "scryfallId": "152d9e61-40f4-489a-b94d-af17a3674441",
+      "canonicalName": "Overlord of the Mistmoors",
+      "layout": "normal",
+      "keywords": [
+        "Impending"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Overlord of the Mistmoors",
+        "cost": "{5}{W}{W}",
+        "super": [],
+        "types": [
+          "Enchantment",
+          "Creature"
+        ],
+        "subtypes": [
+          "Avatar",
+          "Horror"
+        ],
+        "oracle": "Impending 4—{2}{W}{W} (If you cast this spell for its impending cost, it enters with four time counters and isn't a creature until the last is removed. At the beginning of your end step, remove a time counter from it.)\nWhenever this permanent enters or attacks, create two 2/1 white Insect creature tokens with flying.",
+        "_ci": [
+          "W"
+        ],
+        "power": "6",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Secure the Wastes",
+      "oracleId": "b2347910-d6c6-4681-8316-7ef27056485c",
+      "scryfallId": "83a01121-e5cd-45ba-97c2-7bd7d50158e6",
+      "canonicalName": "Secure the Wastes",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Secure the Wastes",
+        "cost": "{X}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Create X 1/1 white Warrior creature tokens.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Serra's Emissary",
+      "oracleId": "7a56c6e1-0509-4783-9b29-cf3163977166",
+      "scryfallId": "0a69b668-7b7c-4da9-af49-e8cbc13797cc",
+      "canonicalName": "Serra's Emissary",
+      "layout": "normal",
+      "keywords": [
+        "Flying"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Serra's Emissary",
+        "cost": "{4}{W}{W}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "oracle": "Flying\nAs this creature enters, choose a card type.\nYou and creatures you control have protection from the chosen card type.",
+        "_ci": [
+          "W"
+        ],
+        "power": "7",
+        "toughness": "7"
+      }
+    },
+    {
+      "requestedName": "Skrelv's Hive",
+      "oracleId": "06d219ff-0083-4c2a-b5b3-2b84bb58f57e",
+      "scryfallId": "e2652c4d-38a7-4014-94bb-7efd277de992",
+      "canonicalName": "Skrelv's Hive",
+      "layout": "normal",
+      "keywords": [
+        "Corrupted"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Skrelv's Hive",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "At the beginning of your upkeep, you lose 1 life and create a 1/1 colorless Phyrexian Mite artifact creature token with toxic 1 and \"This token can't block.\"\nCorrupted — As long as an opponent has three or more poison counters, creatures you control with toxic have lifelink.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Staff of the Storyteller",
+      "oracleId": "0c4e2c90-c17b-42cc-b4d7-cf75970fbe90",
+      "scryfallId": "f9321060-c1bf-4190-aaf6-253d6df64237",
+      "canonicalName": "Staff of the Storyteller",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Staff of the Storyteller",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "When this artifact enters, create a 1/1 white Spirit creature token with flying.\nWhenever you create one or more creature tokens, put a story counter on this artifact.\n{W}, {T}, Remove a story counter from this artifact: Draw a card.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Sunfall",
+      "oracleId": "fb3f5097-0da0-458c-8508-60823567e2da",
+      "scryfallId": "a560b9a7-4c00-4c0c-b63d-774d3f6b9aa9",
+      "canonicalName": "Sunfall",
+      "layout": "normal",
+      "keywords": [
+        "Incubate",
+        "Transform"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Sunfall",
+        "cost": "{3}{W}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Exile all creatures. Incubate X, where X is the number of creatures exiled this way. (Create an Incubator token with X +1/+1 counters on it and \"{2}: Transform this token.\" It transforms into a 0/0 Phyrexian artifact creature.)",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "White Sun's Twilight",
+      "oracleId": "a38828be-781e-4340-9c6f-f40b1d34773f",
+      "scryfallId": "ae7a778c-f4a7-447f-90f0-146997e03398",
+      "canonicalName": "White Sun's Twilight",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "White Sun's Twilight",
+        "cost": "{X}{W}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "You gain X life. Create X 1/1 colorless Phyrexian Mite artifact creature tokens with toxic 1 and \"This token can't block.\" If X is 5 or more, destroy all other creatures. (Players dealt combat damage by a creature with toxic 1 also get a poison counter.)",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Mass Polymorph",
+      "oracleId": "b133129d-1ffb-4b78-9f5b-852d163cc9b7",
+      "scryfallId": "b29db023-28d0-411d-864a-8f1e22ae1f74",
+      "canonicalName": "Mass Polymorph",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Mass Polymorph",
+        "cost": "{5}{U}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Exile all creatures you control, then reveal cards from the top of your library until you reveal that many creature cards. Put all creature cards revealed this way onto the battlefield, then shuffle the rest of the revealed cards into your library.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Occult Epiphany",
+      "oracleId": "6df1c314-b97b-4bbc-8b7e-a07785347a49",
+      "scryfallId": "e5fcfaff-2fd0-46d8-b863-ad25558c9e95",
+      "canonicalName": "Occult Epiphany",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Occult Epiphany",
+        "cost": "{X}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Draw X cards, then discard X cards. Create a 1/1 white Spirit creature token with flying for each card type among cards discarded this way.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Shark Typhoon",
+      "oracleId": "8c0520fa-276b-4d21-b4a9-dce1fce59f6b",
+      "scryfallId": "605ca3c0-7c9a-4bc1-9795-82aeb6f552ee",
+      "canonicalName": "Shark Typhoon",
+      "layout": "normal",
+      "keywords": [
+        "Cycling"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Shark Typhoon",
+        "cost": "{5}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Whenever you cast a noncreature spell, create an X/X blue Shark creature token with flying, where X is that spell's mana value.\nCycling {X}{1}{U} ({X}{1}{U}, Discard this card: Draw a card.)\nWhen you cycle this card, create an X/X blue Shark creature token with flying.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Synthetic Destiny",
+      "oracleId": "640a7d2c-42c4-4ea7-bd5b-72f12a65785e",
+      "scryfallId": "78ab1d69-da01-424b-9d09-ef985aef4cbd",
+      "canonicalName": "Synthetic Destiny",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Synthetic Destiny",
+        "cost": "{4}{U}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile all creatures you control. At the beginning of the next end step, reveal cards from the top of your library until you reveal that many creature cards, put all creature cards revealed this way onto the battlefield, then shuffle the rest of the revealed cards into your library.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Archfiend of Despair",
+      "oracleId": "9c36760b-57c5-488b-afc9-ef141942c6ab",
+      "scryfallId": "137b69ad-3296-49f1-bddf-24818a03830f",
+      "canonicalName": "Archfiend of Despair",
+      "layout": "normal",
+      "keywords": [
+        "Flying"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Archfiend of Despair",
+        "cost": "{6}{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Demon"
+        ],
+        "oracle": "Flying\nYour opponents can't gain life.\nAt the beginning of each end step, each opponent loses life equal to the life that player lost this turn. (Damage causes loss of life.)",
+        "_ci": [
+          "B"
+        ],
+        "power": "6",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Archon of Cruelty",
+      "oracleId": "aa1a6646-c1e6-4bff-9092-43ee3e137914",
+      "scryfallId": "95ff951b-a098-409c-86c8-373b6c9f8331",
+      "canonicalName": "Archon of Cruelty",
+      "layout": "normal",
+      "keywords": [
+        "Flying"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Archon of Cruelty",
+        "cost": "{6}{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Archon"
+        ],
+        "oracle": "Flying\nWhenever this creature enters or attacks, target opponent sacrifices a creature or planeswalker of their choice, discards a card, and loses 3 life. You draw a card and gain 3 life.",
+        "_ci": [
+          "B"
+        ],
+        "power": "6",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Dreadhorde Invasion",
+      "oracleId": "01deabbb-af6a-4998-99a7-35b7cfa9ef77",
+      "scryfallId": "9bbfad2d-a3b5-4119-aea4-0793b7a9da88",
+      "canonicalName": "Dreadhorde Invasion",
+      "layout": "normal",
+      "keywords": [
+        "Amass"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Dreadhorde Invasion",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "At the beginning of your upkeep, you lose 1 life and amass Zombies 1. (Put a +1/+1 counter on an Army you control. It's also a Zombie. If you don't control an Army, create a 0/0 black Zombie Army creature token first.)\nWhenever a Zombie token you control with power 6 or greater attacks, it gains lifelink until end of turn.",
+        "_ci": [
+          "B"
+        ]
+      }
+    },
+    {
+      "requestedName": "Cursed Mirror",
+      "oracleId": "4d67e2a7-4aa7-44cc-853b-500d7aac046d",
+      "scryfallId": "1e82aa17-1eac-49e8-8a63-50357e564997",
+      "canonicalName": "Cursed Mirror",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Cursed Mirror",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {R}.\nAs this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste.",
+        "_ci": [
+          "R"
+        ],
+        "_produced": [
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Whirlwind of Thought",
+      "oracleId": "6467cbb7-1e4e-482d-a20f-6cb9fc0f1ad1",
+      "scryfallId": "e1de5fb8-7206-44a6-b827-5c6a21c25296",
+      "canonicalName": "Whirlwind of Thought",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Whirlwind of Thought",
+        "cost": "{1}{U}{R}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Whenever you cast a noncreature spell, draw a card.",
+        "_ci": [
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Windcrag Siege",
+      "oracleId": "64df560a-905f-45d1-bc70-14d99e3112d3",
+      "scryfallId": "235f5564-0928-411f-ade8-53838890f720",
+      "canonicalName": "Windcrag Siege",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Windcrag Siege",
+        "cost": "{1}{R}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "As this enchantment enters, choose Mardu or Jeskai.\n• Mardu — If a creature attacking causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.\n• Jeskai — At the beginning of your upkeep, create a 1/1 red Goblin creature token. It gains lifelink and haste until end of turn.",
+        "_ci": [
+          "R",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Chromatic Lantern",
+      "oracleId": "539f5396-d99a-417d-a84c-dff7930b5900",
+      "scryfallId": "9b29492a-8bdd-4806-8d1b-3058ed277cc1",
+      "canonicalName": "Chromatic Lantern",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Chromatic Lantern",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "Lands you control have \"{T}: Add one mana of any color.\"\n{T}: Add one mana of any color.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Currency Converter",
+      "oracleId": "981298e6-ddee-49c0-9377-f47f019b4138",
+      "scryfallId": "f91b18ef-ac8a-4d4c-9586-b101681d33e2",
+      "canonicalName": "Currency Converter",
+      "layout": "normal",
+      "keywords": [
+        "Treasure"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Currency Converter",
+        "cost": "{1}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "Whenever you discard a card, you may exile that card from your graveyard.\n{2}, {T}: Draw a card, then discard a card.\n{T}: Put a card exiled with this artifact into its owner's graveyard. If it's a land card, create a Treasure token. If it's a nonland card, create a 2/2 black Rogue creature token.",
+        "_ci": []
+      }
+    },
+    {
+      "requestedName": "Proteus Staff",
+      "oracleId": "97024e8e-dfde-4769-bc27-c3d6fad19e7c",
+      "scryfallId": "e6fcedb4-4152-47c3-a97e-34f4483ff94d",
+      "canonicalName": "Proteus Staff",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Proteus Staff",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{2}{U}, {T}: Put target creature on the bottom of its owner's library. That creature's controller reveals cards from the top of their library until they reveal a creature card. The player puts that card onto the battlefield and the rest on the bottom of their library in any order. Activate only as a sorcery.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Battlefield Forge",
+      "oracleId": "6b75b94e-83b7-457e-ac41-7ca90b5a59aa",
+      "scryfallId": "ef7d3676-b1db-4329-9201-18f8a6c54ea6",
+      "canonicalName": "Battlefield Forge",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Battlefield Forge",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {R} or {W}. This land deals 1 damage to you.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_produced": [
+          "C",
+          "R",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Caves of Koilos",
+      "oracleId": "33de01e9-ce5a-42d4-afcb-343cd54a6d80",
+      "scryfallId": "ca814c7c-9908-4727-b556-3f85bfd653ca",
+      "canonicalName": "Caves of Koilos",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Caves of Koilos",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {W} or {B}. This land deals 1 damage to you.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Clifftop Retreat",
+      "oracleId": "d7faa3c8-46cf-46b2-bfa4-89000307cf18",
+      "scryfallId": "cd112d5c-102f-45a6-b26c-f80cc97d4df2",
+      "canonicalName": "Clifftop Retreat",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Clifftop Retreat",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped unless you control a Mountain or a Plains.\n{T}: Add {R} or {W}.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_produced": [
+          "R",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Drowned Catacomb",
+      "oracleId": "819fc966-434e-470f-91e9-a38df974ad17",
+      "scryfallId": "4acb0f92-74be-40e8-b70e-61c4aaaeb47b",
+      "canonicalName": "Drowned Catacomb",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Drowned Catacomb",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped unless you control an Island or a Swamp.\n{T}: Add {U} or {B}.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_produced": [
+          "B",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Exotic Orchard",
+      "oracleId": "27b047e3-0d41-45e2-98e9-9391d7923a1e",
+      "scryfallId": "d11c5fe0-1528-4c94-a8cc-42bcab9d7487",
+      "canonicalName": "Exotic Orchard",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Exotic Orchard",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add one mana of any color that a land an opponent controls could produce.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Fabled Passage",
+      "oracleId": "0c85b8f7-0bd0-4680-9ec5-d4b110460a54",
+      "scryfallId": "76edd22f-808e-4a7c-b941-13c0f5e30418",
+      "canonicalName": "Fabled Passage",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Fabled Passage",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. Then if you control four or more lands, untap that land.",
+        "_ci": []
+      }
+    },
+    {
+      "requestedName": "Fetid Heath",
+      "oracleId": "42bf259d-4bb9-49c3-b4ec-223dca62f4d6",
+      "scryfallId": "ae07ff9f-d5a8-4220-b08f-fe8fad5adcb7",
+      "canonicalName": "Fetid Heath",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Fetid Heath",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{W/B}, {T}: Add {W}{W}, {W}{B}, or {B}{B}.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Glacial Fortress",
+      "oracleId": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+      "scryfallId": "3c726a60-8de7-4d5e-8ad5-8405e6ac36b5",
+      "canonicalName": "Glacial Fortress",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Glacial Fortress",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped unless you control a Plains or an Island.\n{T}: Add {W} or {U}.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Isolated Chapel",
+      "oracleId": "7e5d9efe-48a9-434b-bb09-056e0e09cc9a",
+      "scryfallId": "b3169b9a-f5e3-402e-883a-08274d0c7b12",
+      "canonicalName": "Isolated Chapel",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Isolated Chapel",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped unless you control a Plains or a Swamp.\n{T}: Add {W} or {B}.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "_produced": [
+          "B",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Kher Keep",
+      "oracleId": "79638767-fbc7-451a-b29f-d93f2ac6f102",
+      "scryfallId": "15ca0b68-33a1-4d25-b622-d3f5ba05b0a5",
+      "canonicalName": "Kher Keep",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Kher Keep",
+        "cost": null,
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{1}{R}, {T}: Create a 0/1 red Kobold creature token named Kobolds of Kher Keep.",
+        "_ci": [
+          "R"
+        ],
+        "_produced": [
+          "C"
+        ]
+      }
+    },
+    {
+      "requestedName": "Mystic Gate",
+      "oracleId": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+      "scryfallId": "fa32d90e-1153-42ab-b8ff-0eb82698692c",
+      "canonicalName": "Mystic Gate",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Mystic Gate",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "C",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Prairie Stream",
+      "oracleId": "5330e24a-8568-446e-840a-594cd08bd1bc",
+      "scryfallId": "a93c2e0b-3fca-476e-ae5b-a331ccacae19",
+      "canonicalName": "Prairie Stream",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Prairie Stream",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Plains",
+          "Island"
+        ],
+        "oracle": "({T}: Add {W} or {U}.)\nThis land enters tapped unless you control two or more basic lands.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Radiant Summit",
+      "oracleId": "5dd0cc44-4647-4857-ad3b-22494099d08a",
+      "scryfallId": "f8cd6aae-a1cb-43b1-aca9-09fe2778969f",
+      "canonicalName": "Radiant Summit",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Radiant Summit",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Mountain",
+          "Plains"
+        ],
+        "oracle": "({T}: Add {R} or {W}.)\nThis land enters tapped unless you control two or more basic lands.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_produced": [
+          "R",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Restless Anchorage",
+      "oracleId": "91320daf-f69c-4350-b0fc-4bb37a6904b1",
+      "scryfallId": "109900a9-6dcb-4f89-b84c-0ce0a0175e8f",
+      "canonicalName": "Restless Anchorage",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Restless Anchorage",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped.\n{T}: Add {W} or {U}.\n{1}{W}{U}: Until end of turn, this land becomes a 2/3 white and blue Bird creature with flying. It's still a land.\nWhenever this land attacks, create a Map token.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Restless Spire",
+      "oracleId": "0ca4e80e-c19c-4b74-b531-c5a4dc5a8ba9",
+      "scryfallId": "30ecfd44-8dd4-4ae3-9076-14799f8a9a14",
+      "canonicalName": "Restless Spire",
+      "layout": "normal",
+      "keywords": [
+        "Scry"
+      ],
+      "colorIdentity": [
+        "R",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Restless Spire",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped.\n{T}: Add {U} or {R}.\n{U}{R}: Until end of turn, this land becomes a 2/1 blue and red Elemental creature with \"During your turn, this creature has first strike.\" It's still a land.\nWhenever this land attacks, scry 1.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_produced": [
+          "R",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Shivan Reef",
+      "oracleId": "0fe16212-66c3-4e45-a641-7391e9b2e304",
+      "scryfallId": "9fb3938c-9ecf-46cc-865a-0091455419f9",
+      "canonicalName": "Shivan Reef",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Shivan Reef",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {U} or {R}. This land deals 1 damage to you.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_produced": [
+          "C",
+          "R",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Sulfur Falls",
+      "oracleId": "6a6c5e17-6465-4a1f-9d63-8a3ce2edc522",
+      "scryfallId": "2b20fa73-c6de-49c1-b3d0-6ebd543a00d0",
+      "canonicalName": "Sulfur Falls",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Sulfur Falls",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped unless you control an Island or a Mountain.\n{T}: Add {U} or {R}.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_produced": [
+          "R",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Sulfurous Springs",
+      "oracleId": "f5c38c01-4a40-469f-91a0-7479daf4e8e7",
+      "scryfallId": "be340a1c-f1e7-446e-ae91-86ecb884479c",
+      "canonicalName": "Sulfurous Springs",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Sulfurous Springs",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {B} or {R}. This land deals 1 damage to you.",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Sunken Ruins",
+      "oracleId": "e6415ffb-8b7a-41c3-bedf-0d4112b7b795",
+      "scryfallId": "b8652a52-d9f6-42ad-9746-6827845b540e",
+      "canonicalName": "Sunken Ruins",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Sunken Ruins",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{U/B}, {T}: Add {U}{U}, {U}{B}, or {B}{B}.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Underground River",
+      "oracleId": "857febd9-cdd7-4f8e-a852-d88084b0cfbc",
+      "scryfallId": "e8b05f37-815f-4854-bf82-ca544ca67532",
+      "canonicalName": "Underground River",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Underground River",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {U} or {B}. This land deals 1 damage to you.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Plan for All Outcomes",
+      "oracleId": "7fd2cac5-cd29-4a47-9e89-9c6be39a0b67",
+      "scryfallId": "c4effc17-0d0e-423a-b5f2-597ea6c71f67",
+      "canonicalName": "Plan for All Outcomes",
+      "layout": "normal",
+      "keywords": [
+        "Surveil"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Plan for All Outcomes",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "When this enchantment enters, the owner of up to one other target nonland permanent puts it on their choice of the top or bottom of their library.\nWhenever you cast your first noncreature spell each turn, empower Jace 1. (Put a loyalty counter on a Jace token you control. If you don't control one, first create a blue Jace planeswalker token with \"[−1]: Surveil 1\" and \"[−3]: Draw a card.\")",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Fatehold Charm",
+      "oracleId": "313aee0e-4090-4589-b323-a4edbda21c68",
+      "scryfallId": "cfc54011-647e-4428-bcdb-59400e1da49d",
+      "canonicalName": "Fatehold Charm",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "raw": {
+        "name": "Fatehold Charm",
+        "cost": "{W}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Choose one —\n• Draw a card. Empower Jace 2.\n• Return target spell or creature to its owner's hand.\n• Creatures you control get +1/+2 until end of turn.",
+        "_ci": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Arcane Signet",
+      "oracleId": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+      "scryfallId": "c6b6117c-faab-4bbb-b851-07bd8061ef03",
+      "canonicalName": "Arcane Signet",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Arcane Signet",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add one mana of any color in your commander's color identity.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Sol Ring",
+      "oracleId": "6ad8011d-3471-4369-9d68-b264cc027487",
+      "scryfallId": "8ee443cc-e17a-493b-9c93-1f9e141a30e4",
+      "canonicalName": "Sol Ring",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Sol Ring",
+        "cost": "{1}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}{C}.",
+        "_ci": [],
+        "_produced": [
+          "C"
+        ]
+      }
+    },
+    {
+      "requestedName": "Command Tower",
+      "oracleId": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+      "scryfallId": "1ac6cb62-45da-4e9a-84c6-09e6eacf0664",
+      "canonicalName": "Command Tower",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Command Tower",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add one mana of any color in your commander's color identity.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Lingering Souls",
+      "oracleId": "0b8c3337-04dd-4798-8203-6d8b8cfb936b",
+      "scryfallId": "e5b16141-d185-4be2-97c1-5b0ef5483728",
+      "canonicalName": "Lingering Souls",
+      "layout": "normal",
+      "keywords": [
+        "Flashback"
+      ],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Lingering Souls",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Create two 1/1 white Spirit creature tokens with flying.\nFlashback {1}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "B",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Path to Exile",
+      "oracleId": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
+      "scryfallId": "22e08a78-55b7-46b0-bd1a-a51548fc1861",
+      "canonicalName": "Path to Exile",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Path to Exile",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target creature. Its controller may search their library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Stroke of Midnight",
+      "oracleId": "9a107e48-3d50-4941-95b1-10f2b29a4245",
+      "scryfallId": "d42b9f9e-2df2-491e-b6ac-3b2bac8a8d8e",
+      "canonicalName": "Stroke of Midnight",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Stroke of Midnight",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target nonland permanent. Its controller creates a 1/1 white Human creature token.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Swords to Plowshares",
+      "oracleId": "b1544f21-7e98-461b-aed5-e748b0168c52",
+      "scryfallId": "f7e12477-d59f-442b-a678-1be746d0b7be",
+      "canonicalName": "Swords to Plowshares",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Swords to Plowshares",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target creature. Its controller gains life equal to its power.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Brainstorm",
+      "oracleId": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
+      "scryfallId": "ec7d6864-7b6b-4f74-8474-9b9ec96b1d33",
+      "canonicalName": "Brainstorm",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Brainstorm",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Draw three cards, then put two cards from your hand on top of your library in any order.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Brainsurge",
+      "oracleId": "46c727cb-1f47-4775-8af4-0230ef53966b",
+      "scryfallId": "2dc20172-4cf0-4ada-a4f3-4ef951cb8207",
+      "canonicalName": "Brainsurge",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Brainsurge",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Draw four cards, then put two cards from your hand on top of your library in any order.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Fact or Fiction",
+      "oracleId": "437b2dab-15e0-4b9a-a204-58622d37a3b3",
+      "scryfallId": "eb1a25c5-1918-40f3-b54f-5d31cf6b4eb2",
+      "canonicalName": "Fact or Fiction",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Fact or Fiction",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Reveal the top five cards of your library. An opponent separates those cards into two piles. Put one pile into your hand and the other into your graveyard.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Despark",
+      "oracleId": "bd16434d-55ea-4c5a-a9ef-752971a4af16",
+      "scryfallId": "2c09f45f-54a5-47b5-afd7-9ac7c05438e7",
+      "canonicalName": "Despark",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Despark",
+        "cost": "{W}{B}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target permanent with mana value 4 or greater.",
+        "_ci": [
+          "B",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Azorius Signet",
+      "oracleId": "e018773f-95b3-49a3-9674-6f04ddef2092",
+      "scryfallId": "af690536-b0bc-4d85-8bb8-f6856b9f927b",
+      "canonicalName": "Azorius Signet",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Azorius Signet",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{1}, {T}: Add {W}{U}.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Dimir Signet",
+      "oracleId": "7d881c57-0bd9-4c57-aa4a-b10808b86143",
+      "scryfallId": "0862060d-3198-4eeb-af8c-efeb27f42a99",
+      "canonicalName": "Dimir Signet",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Dimir Signet",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{1}, {T}: Add {U}{B}.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_produced": [
+          "B",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Fellwar Stone",
+      "oracleId": "95560508-7ac9-4be9-8a3f-3c7d5b52807b",
+      "scryfallId": "3ef87948-0ad9-4757-a692-2262c8e24367",
+      "canonicalName": "Fellwar Stone",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Fellwar Stone",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add one mana of any color that a land an opponent controls could produce.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Izzet Signet",
+      "oracleId": "2fda4fe7-8b0c-489c-a000-6d358e614e34",
+      "scryfallId": "d5e141ad-5cb8-416b-9acf-bce1baeb6b6b",
+      "canonicalName": "Izzet Signet",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Izzet Signet",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{1}, {T}: Add {U}{R}.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_produced": [
+          "R",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Rakdos Signet",
+      "oracleId": "3adb7681-977f-4a32-9ec8-51481b958268",
+      "scryfallId": "a263e71d-953f-4648-b326-33133cfa7e00",
+      "canonicalName": "Rakdos Signet",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Rakdos Signet",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{1}, {T}: Add {B}{R}.",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_produced": [
+          "B",
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Talisman of Creativity",
+      "oracleId": "14d2979d-5728-42d7-a027-0eb1f754655d",
+      "scryfallId": "d4ba86c8-8052-4c9e-a0d0-ac6ad0b2679c",
+      "canonicalName": "Talisman of Creativity",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Talisman of Creativity",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {U} or {R}. This artifact deals 1 damage to you.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_produced": [
+          "C",
+          "R",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Talisman of Dominance",
+      "oracleId": "4c0a0448-b9d6-43a0-8549-64066dac63f0",
+      "scryfallId": "78d5366f-eb6d-4ec1-880b-111872863766",
+      "canonicalName": "Talisman of Dominance",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Talisman of Dominance",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {U} or {B}. This artifact deals 1 damage to you.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Talisman of Indulgence",
+      "oracleId": "1d9aeaaa-66f6-41cb-9bac-162d6fd8662c",
+      "scryfallId": "36bd614f-ab3b-4ad1-ab5c-a7ca0a641f32",
+      "canonicalName": "Talisman of Indulgence",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Talisman of Indulgence",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {B} or {R}. This artifact deals 1 damage to you.",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_produced": [
+          "B",
+          "C",
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Talisman of Progress",
+      "oracleId": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
+      "scryfallId": "454ed9c8-3ec1-4b65-bf3f-29a186742aed",
+      "canonicalName": "Talisman of Progress",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Talisman of Progress",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}: Add {W} or {U}. This artifact deals 1 damage to you.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "C",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Contaminated Landscape",
+      "oracleId": "28196fd9-00c9-4cd0-b603-0eec8511ec79",
+      "scryfallId": "f9274fad-3f30-454a-8d61-d487165090d7",
+      "canonicalName": "Contaminated Landscape",
+      "layout": "normal",
+      "keywords": [
+        "Cycling"
+      ],
+      "colorIdentity": [
+        "B",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Contaminated Landscape",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}, Sacrifice this land: Search your library for a basic Plains, Island, or Swamp card, put it onto the battlefield tapped, then shuffle.\nCycling {W}{U}{B} ({W}{U}{B}, Discard this card: Draw a card.)",
+        "_ci": [
+          "B",
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "C"
+        ]
+      }
+    },
+    {
+      "requestedName": "Path of Ancestry",
+      "oracleId": "b473e293-59e3-4e04-acf2-622604aeb25f",
+      "scryfallId": "b1aaa7b0-1cac-4a92-b880-7ef1ac00618f",
+      "canonicalName": "Path of Ancestry",
+      "layout": "normal",
+      "keywords": [
+        "Scry"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Path of Ancestry",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped.\n{T}: Add one mana of any color in your commander's color identity. When that mana is spent to cast a creature spell that shares a creature type with your commander, scry 1. (Look at the top card of your library. You may put that card on the bottom.)",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Perilous Landscape",
+      "oracleId": "e2b472dd-047d-47eb-9ebb-df6aa4b52dd4",
+      "scryfallId": "fec4ca25-ef4c-4500-9bec-60d29c060b83",
+      "canonicalName": "Perilous Landscape",
+      "layout": "normal",
+      "keywords": [
+        "Cycling"
+      ],
+      "colorIdentity": [
+        "R",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Perilous Landscape",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{T}, Sacrifice this land: Search your library for a basic Island, Mountain, or Plains card, put it onto the battlefield tapped, then shuffle.\nCycling {U}{R}{W} ({U}{R}{W}, Discard this card: Draw a card.)",
+        "_ci": [
+          "R",
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "C"
+        ]
+      }
+    },
+    {
+      "requestedName": "Plains",
+      "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+      "scryfallId": "8ab0f4c0-b331-4c57-b68f-2e24bb5ba06c",
+      "canonicalName": "Plains",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Plains",
+        "cost": null,
+        "super": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Plains"
+        ],
+        "oracle": "({T}: Add {W}.)",
+        "_ci": [
+          "W"
+        ],
+        "_produced": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Island",
+      "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+      "scryfallId": "f3cc07cd-cc79-4745-b0b7-eade60175cc3",
+      "canonicalName": "Island",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Island",
+        "cost": null,
+        "super": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Island"
+        ],
+        "oracle": "({T}: Add {U}.)",
+        "_ci": [
+          "U"
+        ],
+        "_produced": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Swamp",
+      "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+      "scryfallId": "b7387103-1df1-4fd0-9e91-1544509792c7",
+      "canonicalName": "Swamp",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Swamp",
+        "cost": null,
+        "super": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Swamp"
+        ],
+        "oracle": "({T}: Add {B}.)",
+        "_ci": [
+          "B"
+        ],
+        "_produced": [
+          "B"
+        ]
+      }
+    },
+    {
+      "requestedName": "Mountain",
+      "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+      "scryfallId": "2a844b96-6616-4c39-8f4f-5d14a3b2bd55",
+      "canonicalName": "Mountain",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "legal",
+      "raw": {
+        "name": "Mountain",
+        "cost": null,
+        "super": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Mountain"
+        ],
+        "oracle": "({T}: Add {R}.)",
+        "_ci": [
+          "R"
+        ],
+        "_produced": [
+          "R"
+        ]
+      }
+    }
+  ]
+}
