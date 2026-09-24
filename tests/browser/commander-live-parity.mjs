@@ -203,24 +203,25 @@ try {
   mark('guest responds to the host on Stack, chooses the exact spell, pays UU and counters it');
 
   await until(async () => { if (await question(host) === 'attackers') return true; await advance(); return false; }, 'host attack controls');
-  await host.locator(`.attackpoolcard[data-attacker="${combat.attack}"]`).click();
-  await host.locator('.attackalloclane.player').click();
-  await click(host, /^Confirm attack/);
+  await host.locator(`.mini[data-iid="${combat.attack}"]`).click();
+  await host.locator('.ct-defender-choice[data-combat-defender^="player-"]').click();
+  await host.locator('[data-testid="confirm-combat-battlefield"]').click();
   await until(async () => { if (await question(guest) === 'blockers') return true; await advance(); return false; }, 'guest block controls');
-  await guest.locator('.blockcand').filter({ hasText: 'Wall of Omens' }).click();
-  await until(() => guest.locator('.blockmodal').getByRole('button', { name: /^Confirm blocks/ }).isEnabled(), 'authoritative block preview');
+  await guest.locator(`.mini[data-iid="${combat.block}"]`).click();
+  await guest.locator(`[data-combat-attacker="${combat.attack}"]`).click();
+  await until(() => guest.locator('[data-testid="confirm-combat-battlefield"]').isEnabled(), 'authoritative block preview');
   const blockDecision = await guest.evaluate(() => _ui.pending.q.onlineDecision.id);
   await guest.reload();
   await until(async () => {
     await click(host, /^Resume live game$/, 'body');
     return await guest.evaluate(id => window._ui?.pending?.q.onlineDecision.id === id && _ui.liveSession.room.phase === 'running', blockDecision);
   }, 'reload preserves the pending blocker decision');
-  assert.equal(await guest.locator('.blockcand.assigned').count(), 1);
+  assert.equal(await guest.locator('.myboard .mini.ct-combat-selected').count(), 1);
   mark('guest reload restores the same decision and selected blocker, then host resumes');
-  await until(() => guest.locator('.blockmodal').getByRole('button', { name: /^Confirm blocks/ }).isEnabled(), 'restored block preview');
+  await until(() => guest.locator('[data-testid="confirm-combat-battlefield"]').isEnabled(), 'restored block preview');
   await guest.screenshot({ path: `${out}/06-guest-blocking.png` });
   const combatTurn = await host.evaluate(() => _game.turnNo);
-  await guest.locator('.blockmodal').getByRole('button', { name: /^Confirm blocks/ }).click();
+  await guest.locator('[data-testid="confirm-combat-battlefield"]').click();
   await until(async () => {
     if (await host.evaluate(turn => _game.turnNo === turn && _game.phase === 'main2' && _ui.pending?.q.type === 'main', combatTurn)) return true;
     // Review only: a broad advance can click a newly rendered End turn

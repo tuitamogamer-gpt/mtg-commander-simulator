@@ -1,3 +1,4 @@
+import { openCombatOverview } from './combat-test-controls.mjs';
 // A complete human UI game: all answers are clicks or keyboard actions.
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -89,6 +90,7 @@ try {
     // It never repeats a knowingly impossible additional-target announcement.
     if(s.type==='chooseOption'&&s.hint==='kicker'){await page.getByRole('button',{name:'No',exact:true}).filter({visible:true}).click();continue;}
     if (s.type === 'attackers') {
+      await openCombatOverview(page);
       // The interface requires an explicit defender before assigning a group.
       if (!await page.locator('.attackalloclane.focused').count()) {
         const players = page.locator('.attackalloclane.player');

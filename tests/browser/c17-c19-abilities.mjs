@@ -1,3 +1,4 @@
+import { openCombatOverview } from './combat-test-controls.mjs';
 // Controlled boards retain the real human UI, paid actions, priority and combat.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -50,6 +51,7 @@ try{for(const width of [1440,390])for(const deck of precons){
    continue;
   }
   if(s.type==='attackers'){
+   await openCombatOverview(page);
    if(!await page.locator('.attackalloclane.focused').count()){if(await click('.attackalloclane.player'))continue;}
    if(await click('.attackpoolcard:not(.assigned):not(.cantfocus)'))continue;
    if(await click('.attackallocmodal .pbtn.primary:not(:disabled):visible'))continue;

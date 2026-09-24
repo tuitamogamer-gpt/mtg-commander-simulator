@@ -1,3 +1,4 @@
+import { openCombatOverview } from './combat-test-controls.mjs';
 // Natural guest import and gameplay gate. No account, game-state fixture, or remote writes.
 // PLAYWRIGHT_MODULE may point to an installed Playwright index.mjs.
 // Examples:
@@ -291,6 +292,7 @@ try {
     } else if (observed.pending === 'chooseTargets' && observed.selected < observed.min) {
       await page.locator('#game .targetable').filter({ visible: true }).first().click(); clicked = true;
     } else if (observed.pending === 'attackers' && observed.forcedAttackers.some(card => card.targets.length)) {
+      await openCombatOverview(page);
       const attacker = observed.forcedAttackers.find(card => card.targets.length);
       await page.locator(`.attackalloclane[data-target=${JSON.stringify(attacker.targets[0])}]`).click();
       await page.locator(`.attackpoolcard[data-attacker=${JSON.stringify(String(attacker.iid))}]`).click(); clicked = true;

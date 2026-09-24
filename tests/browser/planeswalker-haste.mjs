@@ -1,13 +1,15 @@
+import { openCombatOverview } from './combat-test-controls.mjs';
 // Real local UI decisions, paid casts/equip, loyalty Stack and combat damage.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {once} from 'node:events';
+import {fileURLToPath} from 'node:url';
 import express from 'express';
 import {createAccountHandler, MemoryAccountStore} from '../../api/account.js';
 
 const {chromium, webkit} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const engine = process.env.BROWSER_ENGINE || 'chromium';
-const root = new URL('../../', import.meta.url).pathname;
+const root = fileURLToPath(new URL('../../', import.meta.url));
 const out = process.env.PW_QA_OUTPUT || `${root}output/planeswalker-2026-09-06/browser/${engine}`;
 fs.mkdirSync(out, {recursive: true});
 const server = express().use('/api/account', createAccountHandler({store: new MemoryAccountStore(), limiter: null}))
@@ -145,6 +147,7 @@ async function drive(mode, label) {
       if (mode === 'damage') await shot(`${label}-targeted`);
       await click(page.getByRole('button', {name: /Lock.*1 target/}));
     } else if (s.type === 'attackers') {
+      await openCombatOverview(page);
       assert.equal(assigned, false, 'attack confirmation did not settle');
       if (mode === 'haste') {
         assert.equal(s.atarka.spent, 7); assert.equal(s.atarka.haste, true);
@@ -183,8 +186,9 @@ async function drive(mode, label) {
       await click(page.getByRole('button', {name: /^Confirm attack/})); assigned = true;
     } else {
       if (s.type === 'combatReview' && !review) {
-        assert.match(await page.locator('.combatreviewhead').innerText(), /You attack with/);
-        assert.match(await page.locator('.combatreviewhead').innerText(), /YOU ARE ATTACKING/);
+        await openCombatOverview(page);
+        assert.match(await page.locator('.ct-combat-review .ct-combat-heading').innerText(), /Your attack is declared/);
+        assert.ok(await page.locator('.ct-combat-review-arrow').count(), 'Review displays declared attack routes');
         if (mode !== 'haste') assert.ok(await page.locator('.combatreviewtarget').filter({hasText: 'Ajani, Caller of the Pride'}).count());
         await shot(`${label}-review`); review = true;
       }

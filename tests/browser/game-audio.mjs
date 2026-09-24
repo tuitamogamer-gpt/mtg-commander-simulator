@@ -1,3 +1,4 @@
+import { openCombatOverview } from './combat-test-controls.mjs';
 // Real Chromium/WebKit audio decoding plus paid UI/Stack/local-AI combat paths.
 import assert from 'node:assert/strict';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -171,6 +172,7 @@ try {
         await click(page.locator(`.hand [data-iid="${state.cast}"]`).first());
         await click(page.locator('.sheetacts button').filter({ hasText: /^Cast/ }).first());
       } else if (state.pending === 'attackers') {
+      await openCombatOverview(page);
         await click(page.locator('.attackalloclane.player'));
         await click(page.locator(`[data-attacker="${state.attacker}"]`));
         await click(page.getByRole('button', { name: /^Confirm attack/ }));
