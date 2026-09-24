@@ -286,7 +286,7 @@ try {
   await page.mouse.move(1380, 950);
   await page.waitForTimeout(80);
   await page.screenshot({ path: `${output}/06-block-assigned-before-confirm.png` });
-  await page.getByRole('button', { name: /Confirm blocks/ }).click();
+  await page.locator('[data-testid="confirm-combat-battlefield"]').click();
   await page.waitForFunction(() => Array.isArray(window.__arenaOutcome?.answer));
   assert.equal(await page.evaluate(() => window.__arenaOutcome.answer.length), 1);
   results.push({ scenario: 'battlefield-block', assigned: true, finalConfirmRetained: true });

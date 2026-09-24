@@ -1,6 +1,7 @@
 // Command Table is presentation only. Every decision retains its engine callback.
 'use strict';
 import { renderCombatTable } from './combat-table.js';
+import { prepareBattlefieldCombat, renderBattlefieldCombat, queueCombatConnections } from './battlefield-combat.js';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const U = MTG;
@@ -339,6 +340,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const center = root.querySelector(':scope > .center');
     root.classList.toggle('ct-has-combat', !!center?.querySelector('.combatmap'));
     renderCombatTable(this, game, root);
+    renderBattlefieldCombat(this, game, root);
+    rail.classList.toggle('has-stack', !!stage || !!popup || !!game.stack.length);
+    root.classList.toggle('ct-expanded-decision', !!stage || !!popup || !!game.stack.length || targeting);
     // The rail holds the stack and combat summary without taking card space.
     center?.querySelector('.stack')?.classList.add('ct-inline-stack');
     const targetGroups = game.stack.at(-1)?.targets || game.stack.at(-1)?.ctx?.targets || [];
@@ -377,12 +381,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const turn = `${this.game.turnNo}:${this.game.turnPlayer?.idx}`;
     const followActive = mobile && (!this.commandWasMobile || this.commandFocusTurn !== turn);
     if (followActive) this.commandMobileBoard = this.game.turnPlayer && this.game.turnPlayer !== this.me && !this.game.turnPlayer.lost ? 'opponent' : 'mine';
+    const pd = this.pending;
+    if (mobile && pd && ['chooseTargets', 'choosePlayer'].includes(pd.q.type) && !pd.commandTargetViewPrepared) {
+      pd.commandTargetViewPrepared = true;
+      const candidate = (pd.q.candidates || []).find(item => item instanceof U.Player || item.zone === 'battlefield');
+      const owner = candidate instanceof U.Player ? candidate : candidate?.ctrl;
+      if (owner) {
+        this.commandMobileBoard = owner === this.me ? 'mine' : 'opponent';
+        if (owner !== this.me) this.commandFocusPlayer = owner.idx;
+      }
+    }
     const focus = U.commandTableFocus(this.game, this.me, this.commandFocusPlayer, this.pending?.q.type, followActive);
     this.commandFocusPlayer = focus.focused?.idx ?? null;
     this.commandFocusTurn = turn;
     this.commandWasMobile = mobile;
     this.collapsed?.clear();
+    prepareBattlefieldCombat(this);
     root.classList.add('command-table');
     originalRender.call(this);
+    queueCombatConnections(this);
   };
 })();

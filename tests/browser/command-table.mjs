@@ -93,7 +93,7 @@ async function assertPrimaryVisible(selector) {
     return { x: r.x, y: r.y, right: r.right, bottom: r.bottom, width: r.width, height: r.height,
       parentBottom: parent.bottom, viewportWidth: innerWidth, viewportHeight: innerHeight, clickable: hit === button || button.contains(hit) };
   });
-  assert.ok(metrics.width >= 44 && metrics.height >= 42 && metrics.x >= 0 && metrics.right <= metrics.viewportWidth + 1 && metrics.bottom <= metrics.viewportHeight && metrics.bottom <= metrics.parentBottom + 1 && metrics.clickable,
+  assert.ok(metrics.width >= 44 && metrics.height >= (metrics.viewportWidth <= 900 ? 42 : 34) && metrics.x >= 0 && metrics.right <= metrics.viewportWidth + 1 && metrics.bottom <= metrics.viewportHeight && metrics.bottom <= metrics.parentBottom + 1 && metrics.clickable,
     `Primary action must remain visible and reachable: ${JSON.stringify(metrics)}`);
 }
 

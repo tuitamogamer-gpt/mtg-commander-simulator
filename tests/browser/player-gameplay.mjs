@@ -86,16 +86,16 @@ try {
       continue;
     }
     if (s.type === 'attackers') {
-      // The interface requires an explicit defender before assigning a group.
-      if (!await page.locator('.attackalloclane.focused').count()) {
-        const players = page.locator('.attackalloclane.player');
-        const defender = await players.count() ? players.first() : page.locator('.attackalloclane').first();
-        if (await defender.count()) { await defender.click(); continue; }
-      }
-      const available = page.locator('.attackpoolcard:not(.assigned):not(.cantfocus)');
-      if (await available.count()) { await available.first().click(); continue; }
-      if (await clickIf('.attackallocmodal .pbtn.primary:not(:disabled):visible')) { attacks++; continue; }
-      await page.getByRole('button', { name: /No attacks/ }).click();
+      // Declare through the compact battlefield controls, with an explicit
+      // defender and confirmation. Restricted creatures can use another target.
+      const defenders = page.locator('.ct-defender-choice');
+      if (await defenders.count()) await defenders.first().click();
+      await clickIf('[data-testid="combat-all-attack"]:not(:disabled):visible');
+      const confirm = page.locator('[data-testid="confirm-combat-battlefield"]');
+      for (let i = 0; i < await defenders.count() && await confirm.isDisabled(); i++) await defenders.nth(i).click();
+      assert.equal(await confirm.isEnabled(), true, 'selected attackers have legal defenders');
+      if (await page.evaluate(() => _ui.pending.sel.length > 0)) attacks++;
+      await confirm.click();
       continue;
     }
     if (s.type === 'chooseTargets' || s.type === 'choosePlayer') {

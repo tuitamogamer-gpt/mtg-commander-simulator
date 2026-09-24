@@ -75,7 +75,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             attributes(old, next);
             old.onerror = next.onerror; old.onload = next.onload;
             result = old;
-          } else if (options.retain && next.closest(stableAreas) && same(old, next)) result = old;
+          } else if ((options.retain || options.retainSurfaces) && next.closest(stableAreas) && same(old, next)) result = old;
           // A pending recap is stable in Solo too: keep its open details,
           // reading position and one-time entrance through incidental renders.
           else if (options.retain && (options.live || old.matches('.resolutionrecapoverlay')) && old.matches('.overlay, .quickmenuov') && sameDialog(old, next)) result = old;

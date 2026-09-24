@@ -235,7 +235,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     registerArenaDropTarget(node, target) {
-      if (!this.arenaDragEnabled || !node || !target) return node;
+      if (!(this.arenaDragEnabled || this.pending?.battlefieldCombat && this.pending.boardPeek) || !node || !target) return node;
       node._arenaDropTarget = target;
       node.dataset.arenaDrop = '';
       node.dataset.arenaDropKind = target.kind;
@@ -307,7 +307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const assigned = this.blockTargets(source.card, pd);
         if (assigned.includes(attacker)) return true;
         if (!this.game.canBlock(source.card, attacker)) return false;
-        if (assigned.length >= this.game.blockerCapacity(source.card)) return false;
+        if (this.game.blockerCapacity(source.card) > 1 && assigned.length >= this.game.blockerCapacity(source.card)) return false;
         return this.blockAssignments(pd).filter(pair => pair.attacker === attacker).length < this.game.blockerBounds(attacker).max;
       }
       return false;
@@ -337,11 +337,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     enableArenaDrag(node, source) {
-      if (!this.arenaDragEnabled || !node || !source || !source.card) return node;
+      const combatDrag = this.pending?.battlefieldCombat && this.pending.boardPeek && ['attacker', 'blocker'].includes(source?.kind);
+      if (!(this.arenaDragEnabled || combatDrag) || !node || !source || !source.card) return node;
       node.classList.add('arena-draggable');
       node.dataset.arenaSource = source.kind;
       node.addEventListener('click', event => {
         if (!this._arenaSuppressClickUntil || Date.now() > this._arenaSuppressClickUntil) return;
+        const point = this._arenaSuppressClickPoint;
+        if (!event.detail || !point || Math.hypot(event.clientX - point.x, event.clientY - point.y) > 16) return;
         event.preventDefault();
         event.stopImmediatePropagation();
       }, true);
@@ -409,11 +412,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const hit = active ? this.arenaDropAt(event.clientX, event.clientY, source) : null;
           if (active) {
             this._arenaSuppressClickUntil = Date.now() + 350;
+            this._arenaSuppressClickPoint = { x: event.clientX, y: event.clientY };
             this._arenaSuppressHoverUntil = Date.now() + 650;
             const suppressCompatibilityClick = click => {
+              document.removeEventListener('click', suppressCompatibilityClick, true);
+              // Only the synthetic click at the drop point belongs to this
+              // gesture. A quick click on Clear/Confirm must still work.
+              if (!click.detail || Math.hypot(click.clientX - event.clientX, click.clientY - event.clientY) > 16) return;
               click.preventDefault();
               click.stopImmediatePropagation();
-              document.removeEventListener('click', suppressCompatibilityClick, true);
             };
             document.addEventListener('click', suppressCompatibilityClick, true);
             setTimeout(() => document.removeEventListener('click', suppressCompatibilityClick, true), 350);
@@ -1022,14 +1029,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!this._arenaRenderContext) root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
       const context = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort, this.sheet?.card, this.playerSheet, this.zoneBrowse, this.showJudge, this.lastResortPlayerSeat];
       const previous = this._arenaRenderContext;
+      const surfaces = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort, this.showJudge, this.lastResortPlayerSeat];
       U.commitArenaRender(liveRoot, root, {
         sameGame: !!previous && previous[0] === g && previous[1] === this.me,
         retain: !!previous && context.every((value, index) => previous[index] === value),
+        retainSurfaces: !!this._arenaSurfaceContext && surfaces.every((value, index) => this._arenaSurfaceContext[index] === value),
         live: !!this.liveSession,
         captureImages: node => this.captureRenderedImages(node),
         reuseImages: (node, images) => this.reuseRenderedImages(node, images),
       });
       this._arenaRenderContext = context;
+      this._arenaSurfaceContext = surfaces;
       liveRoot.querySelectorAll('.overlay, .quickmenuov').forEach(overlay => {
         const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
         if (dialog) U.enhanceDialog(overlay, dialog);
@@ -5231,15 +5241,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return [...pd.assigns.entries()].flatMap(([blocker, targets]) => [].concat(targets).map(attacker => ({blocker, attacker})));
     }
     assignBlocker(b, selectedAttacker) {
-      const pd = this.pending, a = selectedAttacker || pd.mode || pd.q.attackers[0];
-      if (!a) return;
+      const pd = this.pending;
+      if (!pd || pd.q.type !== 'blockers' || !pd.q.potential.includes(b)) return;
+      const a = selectedAttacker || pd.mode || pd.q.attackers[0];
+      if (!a || !pd.q.attackers.includes(a)) return;
       const assigned = this.blockTargets(b, pd), capacity = this.game.blockerCapacity(b);
-      if (assigned.includes(a) || capacity === 1 && assigned.length) {
-        const remaining = capacity === 1 ? [] : assigned.filter(card => card !== a);
+      if (assigned.includes(a)) {
+        const remaining = assigned.filter(card => card !== a);
         if (remaining.length) pd.assigns.set(b, remaining); else pd.assigns.delete(b);
         this.render(); return;
       }
-      if (assigned.length >= capacity) { this.toast(`${b.name} cannot block another creature this combat.`); return; }
+      if (capacity > 1 && assigned.length >= capacity) { this.toast(`${b.name} cannot block another creature this combat.`); return; }
       if (!this.game.canBlock(b, a)) {
         this.toast(a.cur.unblockable ? `${a.name} can’t be blocked.` : 'Cannot block because of flying or another restriction.');
         return;

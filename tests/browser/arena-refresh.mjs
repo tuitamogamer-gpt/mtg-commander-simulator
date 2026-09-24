@@ -201,9 +201,11 @@ try {
     for (let i = 0; i < 3; i++) _game.lg(`AI Dragon ability ${i + 1}: ${'A public battlefield ability finishes resolving and the table receives priority. '.repeat(20)}`, 'ability');
     _ui.render();
   });
-  await stableRender('1440x620 overflowing activity rail');
-  assert.ok(scrollChecks.at(-1).positions.some(position => position.className === 'ct-decision-content' && position.y > 0),
-    'Long activity text must exercise the decision rail with actual overflow');
+  await stableRender('1440x620 compact activity dock');
+  assert.equal(await page.locator('.ct-decision-content').isVisible(), false,
+    'Routine activity stays in the ticker and log instead of reopening a permanent sidebar');
+  assert.ok(await page.locator('.ct-decision-rail').evaluate(el => el.getBoundingClientRect().height <= 80),
+    'Long activity must not expand the compact dock');
   await page.evaluate(() => { _ui.pendings = window.__refreshSavedPendings; _ui.render(); });
 
   await page.setViewportSize({ width: 390, height: 844 });
