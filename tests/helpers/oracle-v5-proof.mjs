@@ -713,9 +713,23 @@ export async function staticProof(MTG,entry,op,role,h){
  if(op.scope==='self'&&(op.attackerFilters||op.relativeAttackerPower||op.defenderRule||op.blockOnlyFlying))return combatRestrictionProof(MTG,ctx,source,op,h,entry.raw.name);
  if(op.scope==='filtered-permanents'&&op.blockerFilters){
   const target=h.stageGenericTarget(MTG,ctx,{...op.filters[0],what:'creature',controller:'you'},'evasion-recipient');target.attacking=b;
-  const blocker=h.permanent(MTG,game,b,h.fixtureDefinition('V19 defender blocker',['Creature'],{power:'2',toughness:'20',kws:['defender']})),normal=h.permanent(MTG,game,b,'Grizzly Bears');game.recalc();
-  assert.equal(game.canBlock(blocker,target),false);assert.equal(game.canBlock(normal,target),true);assert.equal(target.power,Number(target.def.power)+(op.power||0));
-  await game.move(source,'exile');assert.equal(game.canBlock(blocker,target),true);assert.equal(target.power,Number(target.def.power));return 5;
+  const blockers=op.blockerFilters.map((filter,index)=>h.stageGenericTarget(MTG,ctx,{...filter,controller:'opponent'},'evasion-blocker-'+index));
+  blockers.push(h.permanent(MTG,game,b,'Grizzly Bears'));game.recalc();
+  let allowed=0,forbidden=0;
+  for(const blocker of blockers){
+   const match=op.blockerFilters.some(filter=>matchesTarget(blocker,filter,ctx,target));
+   const expected=op.blockOnly?match:!match;
+   if(expected)allowed++;else forbidden++;
+   assert.equal(game.canBlock(blocker,target),expected,entry.raw.name+': printed blocker restriction');
+  }
+  assert.ok(allowed&&forbidden,entry.raw.name+': both legal and forbidden blockers are exercised');
+  const original=source.def.statics,selected=original.find(layer=>layer.oracleOperation===printedOperationV16),power=target.power;
+  assert.ok(selected,entry.raw.name+': continuous blocker descriptor');
+  try{source.def.statics=original.filter(layer=>layer!==selected);game.recalc();
+   for(const blocker of blockers)assert.equal(game.canBlock(blocker,target),true,entry.raw.name+': removing this layer restores blocking');
+   assert.equal(power-target.power,op.power||0,entry.raw.name+': selected layer power contribution');
+  }finally{source.def.statics=original;game.recalc();}
+  return blockers.length*2+2;
  }
  if(op.blockerFilters||op.relativeBlockerPower){
    const blockers=[];
@@ -812,7 +826,7 @@ export async function staticProof(MTG,entry,op,role,h){
  if(['enchanted','equipped'].includes(op.subtype?.toLowerCase()))for(const card of [target,opposite]){const equipped=op.subtype.toLowerCase()==='equipped',attachment=h.permanent(MTG,game,card.ctrl,h.fixtureDefinition('V6 actual attachment',[equipped?'Artifact':'Enchantment'],{subtypes:[equipped?'Equipment':'Aura']}));attachment.attachedTo=card.iid;card.attachments.push(attachment.iid);}
  game.recalc();
  const prior={power:target.power,toughness:target.toughness,opposite:opposite.power,source:source.power};
- const statics=source.def.statics,selected=statics.find(s=>s.oracleOperation===op);assert.ok(selected);
+ const statics=source.def.statics,selected=statics.find(s=>s.oracleOperation===printedOperationV16);assert.ok(selected);
  try{source.def.statics=statics.filter(s=>s!==selected);game.recalc();
    assert.equal(prior.power-target.power,op.power||0,entry.raw.name+': selected controller receives power');
    assert.equal(prior.toughness-target.toughness,op.toughness||0,entry.raw.name+': selected controller receives toughness');

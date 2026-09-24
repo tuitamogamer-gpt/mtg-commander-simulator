@@ -153,8 +153,11 @@ test('across real games the biggest threat takes most of the damage', { timeout:
         // something: the biggest board is also the best defended, and feeding
         // a creature to a free block is not "pressuring the leader".
         const context = MTG.botAttackPlanContext(current, player);
-        const viable = answer.some(item => current.canAttackTarget(item.card, ranked[0].other) &&
-          !MTG.assessAttackAssignment(current, player, item.card, ranked[0].other, 0, context).freeBlock);
+        const viable = answer.some(item => {
+          if (!current.canAttackTarget(item.card, ranked[0].other)) return false;
+          const assessment = MTG.assessAttackAssignment(current, player, item.card, ranked[0].other, 0, context);
+          return !assessment.freeBlock && assessment.dealsDamage;
+        });
         if (ranked[0].score - ranked[ranked.length - 1].score >= 12 && viable) {
           attackable++;
           if (!hit.has(ranked[0].other)) ignored++;

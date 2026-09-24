@@ -1498,7 +1498,17 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   }
   if(action==='exile-top'){
     const players=effect.who==='each-player'?game.players:effect.who==='each-opponent'?game.players.filter(player=>player!==a):[genericEffectPlayer(effect,selectedTargets,source,a,damagedPlayer,context)];
-    for(const player of players){const moves=context.moveEvidence.slice(before.moveEvidenceIndex).filter(row=>row.card.owner===player&&row.from==='library'&&row.to==='exile');const cards=moves.map(row=>row.card);assert.equal(moves.length,Math.min(n,moves[0]?.priorLibrarySize??before.players.get(player).libraryCards.length),label+': exact top exile count');for(const row of moves)assert.equal(row.card===row.priorLibraryTop,true,label+': top card at the time of exile');for(const card of cards){assert.equal(card.zone,'exile',label+': top card exiled');if(effect.permission){assert.equal(card.meta.playableBy,a);assert.equal(card.meta.spellsOnly,!!effect.permission.spellsOnly);assert.equal(card.meta.anyColor,!!effect.permission.anyColor);}else assert.equal(card.meta.playableBy,undefined);}}return;
+    // Copies such as Casualty resolve separately. Check each actual Stack
+    // resolution rather than comparing their combined moves with one spell.
+    const resolutions=(context.spellResolutionWitnesses||[]).filter(row=>row.object.card===source&&row.moveIndex>=before.moveEvidenceIndex);
+    const ranges=resolutions.length>1?resolutions.map((row,index)=>({start:row.moveIndex,end:resolutions[index+1]?.moveIndex,librarySizes:row.librarySizes})):[{start:before.moveEvidenceIndex}];
+    for(const range of ranges)for(const player of players){
+      const moves=context.moveEvidence.slice(range.start,range.end).filter(row=>row.card.owner===player&&row.from==='library'&&row.to==='exile');
+      const cards=moves.map(row=>row.card),available=range.librarySizes?.get(player)??before.players.get(player).libraryCards.length;
+      assert.equal(moves.length,Math.min(n,moves[0]?.priorLibrarySize??available),label+': exact top exile count per resolution');
+      for(const row of moves)assert.equal(row.card===row.priorLibraryTop,true,label+': top card at the time of exile');
+      for(const card of cards){assert.equal(card.zone,'exile',label+': top card exiled');if(effect.permission){assert.equal(card.meta.playableBy,a);assert.equal(card.meta.spellsOnly,!!effect.permission.spellsOnly);assert.equal(card.meta.anyColor,!!effect.permission.anyColor);}else assert.equal(card.meta.playableBy,undefined);}
+    }return;
   }
   if(action==='owner-library-choice'){
     const decision=trace.find(row=>row.query.aiHint?.kind==='oracleLibraryChoice');assert.ok(decision,label+': owner chooses placement');assert.equal(subject.zone,subject.isToken?'ceased':'library');if(!subject.isToken)assert.equal((decision.result==='bottom'?subject.owner.library[0]:subject.owner.library.at(-1)).iid,subject.iid);return;
@@ -3491,6 +3501,9 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   let operationRun = null;
   let witnessedObject=null;
   const stackTargets = object => {
+    if(operation.kind==='spell-generic'&&object?.kind==='spell'&&object.card===source){
+      (context.spellResolutionWitnesses||=[]).push({object,moveIndex:context.moveEvidence.length,librarySizes:new Map(game.players.map(player=>[player,player.library.length]))});
+    }
     if(object?.oracleReflexive&&object.srcCard===source){
       const witnesses=context.reflexiveWitnesses||(context.reflexiveWitnesses=[]);
       if(!witnesses.some(row=>row.object===object))witnesses.push({object,before:genericProofSnapshot(context,[source,...object.targets.flat().filter(card=>card instanceof MTG.CardInst)])});

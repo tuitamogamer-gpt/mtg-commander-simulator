@@ -264,6 +264,19 @@ function stageV4Scenario(game, player, opponent, card, operation, staged) {
   }
   staged.targets.push(...[...staged.v4Targets.values()].flat().filter(value =>
     value && !(value instanceof MTG.Player) && !staged.v4Baits.includes(value)));
+  for (const effect of operation.effects || []) {
+    if (effect.kind !== 'modifyPowerToughnessAll' || !(Number(effect.toughness) < 0) ||
+        !effect.scope?.types?.includes('Creature') || effect.scope.controller === 'you') continue;
+    // A shrink sweeper needs a real casualty. The usual 20,000-toughness
+    // fixture makes passing the correct tactical decision for the local AI.
+    const victim = permanent(game, opponent, fixtureDefinition('Deep global-shrink victim', ['Creature'], {
+      power: '8', toughness: String(Math.abs(Number(effect.toughness))),
+    }));
+    staged.targets.push(victim);
+    if (operation.operations.every(step => step.kind === 'sequence')) {
+      (staged.v4ShrinkVictims ||= []).push(victim);
+    }
+  }
   if (!staged.target) staged.target = staged.targets[0] || null;
 }
 
@@ -932,6 +945,10 @@ async function runCard(entry, role) {
   };
 
   await executeScenario(context, entry);
+
+  for (const victim of staged.v4ShrinkVictims || []) {
+    assert.equal(victim.zone, 'graveyard', `${entry.raw.name}: global shrink removes its staged threat`);
+  }
 
   if (role === 'human') {
     assert.equal(humanState.submitted, true, `${entry.raw.name}: engine offered and accepted the human action`);

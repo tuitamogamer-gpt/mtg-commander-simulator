@@ -1384,6 +1384,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const additionalEntryCounters = {...opts.additionalCounters};
       const pomEntryBonus=MTG.POM?.entryCounters(this,card)||0;if(pomEntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+pomEntryBonus;
       if(card.castMeta?.cdkBiophagus&&card.is('Creature'))additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.castMeta.cdkBiophagus;
+      if (card.castMeta?.opalPalaceMana && card.commander) {
+        additionalEntryCounters['+1/+1'] = (additionalEntryCounters['+1/+1'] || 0) + card.castMeta.opalPalaceMana * (card.cmdCasts || 0);
+      }
       if(card.meta.vnAdditionalPlus){additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.meta.vnAdditionalPlus;delete card.meta.vnAdditionalPlus;}
       if(card.is('Creature'))for(const source of this.bf())if(source!==card&&source.ctrl===card.ctrl&&!source.cur?.abilitiesDisabled&&source.def.c1920Tayam)additionalEntryCounters.vigilance=(additionalEntryCounters.vigilance||0)+1;
       const bloodthirst=MTG.C1719?.bloodthirstCounters(this,card)||0;
@@ -2121,7 +2124,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for(const iid of src.mutateState?src.mutateState.components.filter(r=>r.commander).map(r=>r.card.iid):[src.iid])p.commanderDamage[iid] = (p.commanderDamage[iid] || 0) + n;
       }
       if (opts.combat && src && src.ctrl && src.ctrl.turnState) {
-        src.ctrl.turnState.combatDamageHits.push({ card: src, ctrl: src.ctrl, player: p, n });
+        // Turn history must retain the source's identity and creature types at
+        // damage time, even if it later changes type, leaves or returns.
+        const snap = oracleHit?.sourceSnap || src._oracleDamageSnapshot || opts._damageBatch?.snapshots?.get(src) ||
+          this._oracleDamageBatch?.snapshots?.get(src) || this.snapshot(src, false);
+        src.ctrl.turnState.combatDamageHits.push({
+          card: src, ctrl: src.ctrl, player: p, n,
+          sourceVersion: snap.zoneVersion, subtypes: snap.subtypes.slice(), changeling: snap.changeling,
+        });
       }
       if (opts.combat && this.monarch === p && src && src.ctrl && src.ctrl !== p) {
         await this.becomeMonarch(src.ctrl, { reason: 'combat damage', source: src });

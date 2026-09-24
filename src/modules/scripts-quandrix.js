@@ -277,7 +277,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["Elementalist's Palette"] = { triggers: [{ on: 'cast', desc: 'Two charge counters', filter: (g, self, d) => d.player === self.ctrl && isXSpell(d.card, d.so),
     run: async ctx => { ctx.g.addCounters(ctx.src, 'charge', 2, false, ctx.you); } }], mana: [
       { cost: { tap: true }, produce: [{ ANY: true, n: 1 }] },
-      { cost: { tap: true }, produce: (g, c) => (c.counters.charge || 0) ? [{ C: c.counters.charge }] : [], restrict: (g, forSpell) => !!forSpell?.card && isXSpell(forSpell.card, { castOpts: forSpell.castOpts || {} }) },
+      { cost: { tap: true }, produce: (g, c) => (c.counters.charge || 0) ? [{ C: c.counters.charge }] : [],
+        restrictAbilities: true, restrictLabel: 'only for costs containing X',
+        restrict: (g, action) => !!action?.card && (action.isAbility ? !!action.cdkCostHasX : isXSpell(action.card, { castOpts: action.castOpts || {} })) },
     ] };
   SC['Fractal Harness'] = { xCost: true, equip: '{2}', triggers: [
     { on: 'etb', desc: 'Fractal and attach', filter: etbSelf, run: async ctx => { const c = await fractal(ctx.g, ctx.you, ctx.src.castMeta?.x || 0); if (c) await ctx.g.attach(ctx.src, c); } },

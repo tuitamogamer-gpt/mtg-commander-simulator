@@ -1518,7 +1518,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // A defender can reserve a profitable single OR joint block for this
     // attacker. Earlier fodder must not make that trade disappear.
     const punishers = allBlockers.filter(blocker => trades.punishers.has(blocker));
-    const ordinary = allBlockers.filter(blocker => !trades.punishers.has(blocker));
+    const stoppers = new Set(trades.stops.flatMap(row => row.blockers));
+    const ordinary = allBlockers.filter(blocker => !trades.punishers.has(blocker))
+      .sort((a, b) => Number(stoppers.has(b)) - Number(stoppers.has(a)));
     // menace: jedan bloker nije dovoljan; swarm: raniji napadači vežu OBIČNE
     // blokere. Punisheri ostaju dostupni bez obzira na broj napadača.
     const capacity = Math.max(0, ordinary.length - Math.max(0, priorAttackers - punishers.length));
@@ -1527,6 +1529,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const blockable = available.length >= bounds.min && bounds.min <= bounds.max;
     const blockers = blockable ? available : [];
     const { freeBlock, bestTradeLoss } = trades;
+    // A wall need not kill the attacker to make blocking free. Unlike a
+    // profitable kill, it still consumes a blocker that a swarm can overload.
+    const stop = trades.stops.find(row => row.blockers.every(blocker => blockers.includes(blocker)));
     const minBlockerTough = blockers.reduce((minimum, blocker) => Math.min(minimum,
       card.kw('deathtouch') ? 1 : Math.max(1, blocker.toughness - blocker.damage)), Infinity);
     // očekivana šteta koja stvarno prolazi do mete
@@ -1546,6 +1551,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // the old 25% chip estimate awarded false life/commander lethals through a
     // deathtouch chump. Trample uses the damage that survives the actual block.
     expDamage = Math.min(expDamage, trades.damage);
+    if (stop) expDamage = 0;
     if (expDamage <= 0) damageEvents = 0;
     const projected = projectedPlayerDamage(card, expDamage, damageEvents);
     const poisonLethal = target instanceof U.Player && projected.poison > 0 &&
@@ -1611,17 +1617,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     else if (bestTradeLoss > 0) risk += (bestTradeLoss * 0.8 + 1) * attractiveness; // nepovoljan trade
     else if (blockers.length) risk += 0.8;                    // chump im poklanja tempo, mala cijena
     const vigilance = card.kw('vigilance');
+    let combatBenefit = 0;
+    if (stop) {
+      combatBenefit += stop.lifeGain * (player.life <= 12 ? 1 : 0.6);
+      if (card.kw('wither') || card.kw('infect')) combatBenefit += baseHit * 0.6;
+      // Attack triggers do not require connecting with the defending player.
+      // Collect the real, currently enabled triggers without emitting events.
+      const attackTriggers = game.collectTriggers('attacks', { card, player, defender: target, firstThisTurn: true })
+        .concat(game.collectTriggers('attackersDeclared', { player, attackers: [card] }))
+        .filter(row => row.card.ctrl === player);
+      combatBenefit += Math.min(6, attackTriggers.length * 3);
+      risk += stop.defenderLifeGain * 0.6;
+      if (!combatBenefit) {
+        if (vigilance && !freeBlock && !bestTradeLoss && !stop.defenderLifeGain) combatBenefit = 1.2;
+        else risk += 8; // tapping into a wall creates no pressure or useful trade
+      }
+    }
     // Tijelo koje ne treba za pobjedu je vrjednije kod kuće nego tapnuto.
     if (alreadyLethal && !vigilance) risk += 1.2;
-    if (!dealsDamage) risk += 2.5;                            // dobrovoljni napad bez štete nema combat korist
+    if (!dealsDamage && !combatBenefit) risk += 2.5;          // dobrovoljni napad bez štete nema combat korist
     const tapsForMana = !vigilance && !!(card.def.mana && (!card.def.mana.cost || card.def.mana.cost.tap));
     if (tapsForMana) risk += game.turnNo <= 12 ? 3.5 : 1.75; // čuvaj rani mana razvoj za main 2/reakcije
     const crackback = vigilance ? 0 : defenderCreatures.filter(creature => !creature.tapped)
       .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
     const poisonPressure = target instanceof U.Player ? projected.poison * 2.5 : 0;
-    const score = damageValue * 1.15 + poisonPressure + lethal + commander + threat - risk - crackback;
+    const score = damageValue * 1.15 + poisonPressure + lethal + commander + threat + combatBenefit - risk - crackback;
     return {
       score, freeBlock, expectedDamage: expDamage, bestTradeLoss,
+      stalled: !!stop, combatBenefit,
       blockable: blockers.length > 0, blockerCount: blockers.length,
       dealsDamage, lethal: lethal > 0, poisonLethal, commanderLethal: commander >= 120,
     };
@@ -1757,7 +1780,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function attackBlockTrades(game, player, attacker, defender, blockers) {
-    const result = { freeBlock: false, bestTradeLoss: 0, damage: Infinity, punishers: new Set() };
+    const result = { freeBlock: false, bestTradeLoss: 0, damage: Infinity, punishers: new Set(), stops: [] };
     const minimum = game.blockerBounds(attacker).min;
     if (blockers.length < minimum) return result;
     const candidates = blockers.length > WIDE_BOARD_SHIELDS
@@ -1766,6 +1789,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const values = new Map(candidates.map(card => [card, permanentGameValue(game, card, player)]));
     for (const group of blockGroups(game, attacker, candidates)) {
       const outcome = forecastCombat(game, defender, [attacker], group.map(blocker => ({ blocker, attacker })));
+      if (outcome.damage === 0 && !outcome.dead.has(attacker) && !outcome.removed.has(attacker) &&
+        group.every(blocker => !outcome.dead.has(blocker) && !outcome.removed.has(blocker))) {
+        result.stops.push({ blockers: group, lifeGain: outcome.lifeGain.get(player) || 0,
+          defenderLifeGain: outcome.lifeGain.get(defender) || 0 });
+      }
       if (!outcome.dead.has(attacker)) continue;
       const paid = group.reduce((sum, card) => sum + (outcome.dead.has(card) ? values.get(card) : 0), 0);
       const loss = myValue - paid;
@@ -2440,6 +2468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const picks of pickSets) actions.push({ kind: 'chooseMulti', value: picks.map(option => option.key ?? option), options: picks });
     } else if (q.type === 'chooseX') {
       const min = Number(q.min || 0), max = Number(q.max || min);
+      const copyValues = MTG.valkiCopyXValues(game, player, q.card, q.aiHint?.ability, max);
       const legalValues = Array.isArray(q.values) && q.values.length
         ? [...new Set(q.values.map(Number))].filter(value => value >= min && value <= max).sort((a, b) => a - b)
         : null;
@@ -2466,7 +2495,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
       }
-      const strategic = legalValues || preferredValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5),
+      const strategic = copyValues || legalValues || preferredValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5),
         ...((q.thresholds || []).map(Number)), ...inferredThresholds])]
         .filter(value => value >= min && value <= max).sort((a, b) => a - b);
       for (const value of strategic) actions.push({ kind: 'chooseX', value });
@@ -2910,6 +2939,83 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card.is('Creature') && (card.kw('indestructible') || Number(card.regenShield || 0) > 0);
   }
 
+  // Only model sweeps whose affected set is unambiguous. Restricted or
+  // conditional sweep text must not be mistaken for "all creatures" when
+  // deciding whether a new permanent would survive our next spell.
+  function boardWipeImpact(game, player, action) {
+    const source = action.card;
+    if (!source || !(source.is('Instant') || source.is('Sorcery'))) return null;
+    // Required combinations with restricted modes (e.g. Austere Command)
+    // need the existing mode evaluator; a partial text match would miss the
+    // creature modes and incorrectly label a useful wipe as empty.
+    if (source.def.modes && source.def.modes.pick !== 'any') return null;
+    const oracle = textOf(source.def);
+    const effects = [];
+    const noRegen = /can(?:not|'t) be regenerated/.test(oracle);
+    for (const match of oracle.matchAll(/\b(destroy|exile) all (creatures|artifacts|enchantments|nonland permanents|permanents)( you (?:don't|do not) control)?\./g)) {
+      const [, kind, what, opponentsOnly] = match;
+      const type = what.charAt(0).toUpperCase() + what.slice(1, -1);
+      effects.push(card => {
+        if (opponentsOnly && card.ctrl === player) return false;
+        if (what === 'nonland permanents' ? card.is('Land') : what !== 'permanents' && !card.is(type)) return false;
+        if (kind === 'exile') return true;
+        return !card.kw('indestructible') && !(card.counters?.shield > 0) && (noRegen || !(card.regenShield > 0));
+      });
+    }
+    const damage = /\bdeals (\d+) damage to each creature\./.exec(oracle) ||
+      /\bdeals (x) damage to each creature, where x is the number of creatures on the battlefield\./.exec(oracle);
+    if (damage) {
+      const amount = damage[1] === 'x' ? game.bf().filter(card => card.is('Creature')).length : Number(damage[1]);
+      effects.push(card => card.is('Creature') && !damageProtectionSaves(card) &&
+        !game.isProtectedFrom(card, source) && card.toughness - (card.damage || 0) <= amount);
+    }
+    const shrink = /\ball creatures get -([0-9]+)\/-([0-9]+) until end of turn\./.exec(oracle);
+    if (shrink) effects.push(card => card.is('Creature') && diesAfterGlobalPump(card, card.toughness - Number(shrink[2])));
+    if (!effects.length) return null;
+    // Optional modes are only planned when their current board swing is
+    // useful. An artifact-only Farewell must not delay unrelated creatures.
+    const relevant = source.def.modes ? effects.filter(effect => {
+      let net = 0;
+      for (const card of game.bf().filter(effect)) net += permanentGameValue(game, card, player) * (card.ctrl === player ? -1.35 : 1);
+      return net > 3;
+    }) : effects;
+    const removes = card => relevant.some(effect => effect(card));
+    let mineLoss = 0, theirsLoss = 0;
+    for (const card of game.bf().filter(removes)) {
+      const value = permanentGameValue(game, card, player);
+      if (card.ctrl === player) mineLoss += value; else theirsLoss += value;
+    }
+    return { removes, mineLoss, theirsLoss };
+  }
+  MTG.botBoardWipeImpact = boardWipeImpact;
+
+  function wipeSequencingPenalty(game, player, action, score, plans) {
+    if (action.kind !== 'cast' || !action.card.is('Creature')) return 0;
+    const exposed = plans.some(plan => plan.action.card !== action.card && plan.impact.removes(action.card));
+    // Reassessed after every resolution: once the wipe is gone, the held body
+    // regains its full score and can rebuild with the remaining mana.
+    return exposed ? Math.max(score + 3, 12 + cardDefinitionValue(action.card.def)) : 0;
+  }
+  MTG.botWipeSequencingPenalty = wipeSequencingPenalty;
+
+  const WIPE_PLANS = new WeakMap();
+  function plannedBoardWipes(view, profile, q) {
+    if (WIPE_PLANS.has(view)) return WIPE_PLANS.get(view);
+    const plans = [];
+    WIPE_PLANS.set(view, plans);
+    const { game, player } = PRIVATE_VIEWS.get(view);
+    if (q?.type !== 'main' || game.turnPlayer !== player || game.stack.length) return plans;
+    const hold = quickScoreAction(view, { kind: 'done' }, profile, q).total;
+    for (const entry of q.casts || []) {
+      const action = { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from };
+      const impact = boardWipeImpact(game, player, action);
+      if (!impact || impact.theirsLoss < 4 || impact.theirsLoss < impact.mineLoss + 3) continue;
+      const score = quickScoreAction(view, action, profile, q).total;
+      if (score > hold + 2) plans.push({ action, impact, score });
+    }
+    return plans;
+  }
+
   function diesAfterGlobalPump(card, toughness) {
     if (toughness <= 0) return true;
     const lethalMarked = Number(card.damage || 0) >= toughness ||
@@ -3148,6 +3254,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return threat * 0.45 + lethal + friendly;
     }
     if (target instanceof U.CardInst) {
+      if (q.aiHint?.kind === 'scionsGraveTarget') {
+        return MTG.scionsGraveCastOptions(game, player, target, q.aiHint.free).length
+          ? 20 + cardDefinitionValue(target.def) : -1000;
+      }
       if (hint === 'counterTransferDonor'||hint === 'counterTransferRecipient')return MTG.OracleV8CounterTransfers.targetValue(player,target,q);
       if (hint === 'oracleBasePT') return oracleBasePTTargetValue(game, player, target, q);
       const value = permanentGameValue(game, target, player);
@@ -4976,6 +5086,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const affectedType = destroyAll && destroyAll.what
           ? destroyAll.what.charAt(0).toUpperCase() + destroyAll.what.slice(1).replace(/s$/, '')
           : 'Creature';
+        const impact = boardWipeImpact(game, player, action);
         const affected = game.bf().filter(permanent => permanent.is(affectedType));
         const wouldDie = permanent => {
           if (permanent.kw('indestructible') ||
@@ -4987,8 +5098,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return true;
         };
-        let mineLoss = 0, theirsLoss = 0;
-        for (const permanent of affected) {
+        let mineLoss = impact?.mineLoss || 0, theirsLoss = impact?.theirsLoss || 0;
+        for (const permanent of impact ? [] : affected) {
           if (!wouldDie(permanent)) continue;
           const value = permanentGameValue(game, permanent, player);
           if (permanent.ctrl === player) mineLoss += value; else theirsLoss += value;
@@ -5042,6 +5153,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
       const pumpPlan = MTG.sacrificePumpPlan(game, player, entry);
       if (pumpPlan) breakdown.base = pumpPlan.score > 0 ? pumpPlan.score : -100;
+      const copyValues = MTG.valkiCopyXValues(game, player, card, ability);
+      if (copyValues) breakdown.base = copyValues.length ? 6 : -100;
       if (entry.turnFaceUp && card.ctrl === player) {
         // The controller knows the underlying card. Value what turning it up
         // actually unlocks, rather than giving every hidden 2/2 the same score.
@@ -5552,12 +5665,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const value = card ? cardDefinitionValue(card.def) : 0;
         breakdown.choice = action.value === 'yes' ? 2.5 + value * 0.3 : 0;
       } else if (hintKind === 'scionsGraveCast') {
-        const candidates = player.graveyard.filter(card => card.is('Instant') || card.is('Sorcery'));
+        const candidates = (q.aiHint.targets || []).flat().filter(card => card &&
+          MTG.scionsGraveCastOptions(game, player, card, q.aiHint.free).length);
         const best = candidates.map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0] || 0;
-        const affordable = q.aiHint.free || candidates.some(card => {
-          const cost = game.spellCost(player, card, { from: 'graveyard' });
-          return game.canPayMana(player, cost, { card });
-        });
+        const affordable = candidates.length > 0;
         breakdown.choice = action.value === 'yes' ? (affordable ? best + 2 : -30) : 0;
       } else if (hintKind === 'scionsWipe') {
         // Isti model kao svaki drugi masovni mod: broji se šta zaista nestaje
@@ -5920,7 +6031,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else breakdown.timing -= 45;
     }
     applyStyleSkillScore(view, action, profile, q, breakdown);
-    const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+    let total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+    if (q?.type === 'main' && action.kind === 'cast' && action.card.is('Creature')) {
+      const penalty = wipeSequencingPenalty(game, player, action, total, plannedBoardWipes(view, profile, q));
+      if (penalty) { breakdown.sequencing = -penalty; total -= penalty; }
+    }
     return { total: round(total), breakdown: Object.fromEntries(Object.entries(breakdown).map(([key, value]) => [key, round(value)])) };
   }
   MTG.quickScoreBotAction = function (view, action, profile, q) { return quickScoreAction(view, action, profile, q); };

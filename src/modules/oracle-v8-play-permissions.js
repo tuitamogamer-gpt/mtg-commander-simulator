@@ -20,7 +20,7 @@
  function offers(game,player){
   const frame=frames.get(game);if(!frame||frame.player!==player)return [];
   return frame.entries.filter(present).flatMap(entry=>entry.alternatives.filter(alt=>!game.castHasType(entry.card,alt,'Land')&&
-   (!alt.lifeCost||game.canPayLife(player,alt.lifeCost))&&(!alt.pomEnergyCost||M.OracleV8Energy.count(player)>=alt.pomEnergyCost)&&(!frame.filter||frame.filter(game,prospective(game,entry.card,alt,player),player,frame.source))).map(alt=>({card:entry.card,from:entry.zone,alt})));
+   (!alt.cond||alt.cond(game,player,entry.card))&&(!alt.lifeCost||game.canPayLife(player,alt.lifeCost))&&(!alt.pomEnergyCost||M.OracleV8Energy.count(player)>=alt.pomEnergyCost)&&(!frame.filter||frame.filter(game,prospective(game,entry.card,alt,player),player,frame.source))).map(alt=>({card:entry.card,from:entry.zone,alt})));
  }
  function allowed(game,player,card,options){
   const frame=frames.get(game);if(!frame||frame.player!==player||frame.id!==options.oracleImmediateCast)return false;
@@ -28,30 +28,52 @@
   return offers(game,player).some(entry=>entry.card===card&&entry.from===(options.from||card.zone)&&
    ['bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
  }
- async function castOne(ctx,cards,effect,helpers){
-  effect={free:true,...effect};
+ function openFrame(ctx,cards,effect,helpers){
   const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{})};
   const filter=effect.filter?helpers.target(effect.filter,[],0,{...ctx.data,oracleX:ctx.so?.x??ctx.x??0,oracleSourceCapture:ctx.oracleSourceCapture||{zoneVersion:ctx.sourceZoneVersion??ctx.src.zoneVersion}}).filter:null;
   const frame={id,player:ctx.you,source:ctx.src,free:effect.free,anyColor:base.asThoughAnyColor,filter,entries:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion,alternatives:alternatives(ctx.g,card,base).map(alt=>effect.exileAfter&&effect.exileTypes?.some(type=>ctx.g.castHasType(card,alt,type))?{...alt,oracleExileOnGraveyard:true}:alt)}))};
+  // A paid immediate cast still allows printed alternatives such as Snuff
+  // Out's four life. Do not combine one with a free cast or another face's
+  // cost. More complex payment plans retain their own engine routes.
+  if(!effect.free)for(const entry of frame.entries){
+   const simple=(entry.card.def.altCosts||[]).filter(option=>Object.keys(option).every(key=>['label','altCostStr','lifeCost','cond'].includes(key)));
+   entry.alternatives=entry.alternatives.flatMap(alt=>[alt,...(!alt.adventure&&!alt.splitHalf&&!alt.oracleFace&&alt.altCostStr===undefined?simple.map(option=>({...alt,...option})):[])]);
+  }
   if(effect.lifeManaValue)for(const entry of frame.entries)for(const alt of entry.alternatives)alt.lifeCost=ctx.g.stackSpellManaValue(prospective(ctx.g,entry.card,alt,ctx.you));
   if(effect.energyManaValue)for(const entry of frame.entries)for(const alt of entry.alternatives)alt.pomEnergyCost=ctx.g.stackSpellManaValue(prospective(ctx.g,entry.card,alt,ctx.you));
   frames.set(ctx.g,frame);
+  frame.allowLand=!!effect.playLand;
+  return {frame,restore:()=>{if(prior)frames.set(ctx.g,prior);else frames.delete(ctx.g);}};
+ }
+ function frameChoices(ctx,frame){
+  return ctx.g.castableList(ctx.you).filter(entry=>entry.alt?.oracleImmediateCast===frame.id).concat(landOffers(ctx.g,ctx.you).map(card=>({card,from:card.zone,alt:{oracleImmediateLand:frame.id}})));
+ }
+ // Read-only preview shares exactly the permission, costs and target checks
+ // used by casting. Its temporary permission cannot escape this call.
+ function preview(ctx,cards,effect={},helpers={}){
+  const scope=openFrame(ctx,cards,{free:true,...effect},helpers);
+  try{return frameChoices(ctx,scope.frame);}finally{scope.restore();}
+ }
+ async function castOne(ctx,cards,effect,helpers){
+  effect={free:true,...effect};
+  const scope=openFrame(ctx,cards,effect,helpers),frame=scope.frame;
   try{
-   frame.allowLand=!!effect.playLand;
-   const choices=ctx.g.castableList(ctx.you).filter(entry=>entry.alt?.oracleImmediateCast===id).concat(landOffers(ctx.g,ctx.you).map(card=>({card,from:card.zone,alt:{oracleImmediateLand:id}}))),from=[...new Set(choices.map(entry=>entry.card))];
+   const choices=frameChoices(ctx,frame),from=[...new Set(choices.map(entry=>entry.card))];
    if(!from.length)return null;
-   const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',player:ctx.you,from,min:effect.mandatory?1:0,max:1,
+   // A targeted may-cast trigger already chose its exact card and asked
+   // whether to use it. Do not ask for the same card a second time.
+   const answer=effect.selected&&cards.length===1?[cards[0]]:await ctx.you.controller.decide(ctx.g,{type:'chooseCards',player:ctx.you,from,min:effect.mandatory?1:0,max:1,
     prompt:(effect.mandatory?'Cast this card':'You may cast one of these cards')+(effect.free?' without paying its mana cost':''),aiHint:{kind:'recur'}});
    if(!Array.isArray(answer)||effect.mandatory&&answer.length!==1||answer.length>1||answer.some(card=>!from.includes(card)))throw new Error('Invalid immediate cast selection');
    if(!answer.length)return null;
    const card=answer[0];frame.entries=frame.entries.filter(entry=>entry.card===card);
    const selected=choices.filter(entry=>entry.card===card);
-   const key=selected.length===1?'0':await ctx.you.controller.decide(ctx.g,{type:'chooseOption',player:ctx.you,prompt:'Choose a spell face',
+   const key=selected.length===1?'0':await ctx.you.controller.decide(ctx.g,{type:'chooseOption',player:ctx.you,prompt:effect.selected?`Choose how to cast ${card.name}`:'Choose a spell face',
     options:selected.map((entry,index)=>({key:String(index),label:entry.alt.label||entry.alt.name||card.name,face:entry.alt.oracleFace})),aiHint:{kind:'oracleSpellFace',card}});
    const index=Number(key);if(!Number.isInteger(index)||!selected[index])throw new Error('Invalid immediate cast face');
    const choice=selected[index];if(choice.alt.oracleImmediateLand)return await ctx.g.playLand(ctx.you,card,choice.alt)?card:null;if(!allowed(ctx.g,ctx.you,card,{...choice.alt,from:choice.from}))return null;
    return await ctx.g.castSpell(ctx.you,card,{from:choice.from,alt:choice.alt})?card:null;
-  }finally{if(prior)frames.set(ctx.g,prior);else frames.delete(ctx.g);}
+  }finally{scope.restore();}
  }
  async function run(ctx,effect,helpers){
   if(!actions.has(effect.action)||typeof effect.free!=='boolean')throw new Error('Unsupported immediate cast instruction');
@@ -93,5 +115,5 @@
  }
  function landOffers(g,p){const f=frames.get(g);return f?.allowLand&&f.player===p&&g.turnPlayer===p&&p.landsPlayed<g.landPlayLimit(p)?f.entries.filter(present).map(r=>r.card).filter(c=>c.is('Land')):[];}
  function landAllowed(g,p,c,o){const f=frames.get(g);return !!f&&f.id===o.oracleImmediateLand&&landOffers(g,p).includes(c);}
- M.OracleV8PlayPermissions={actions,run,offers,allowed,castOne,landOffers,landAllowed};
+ M.OracleV8PlayPermissions={actions,run,offers,allowed,castOne,preview,landOffers,landAllowed};
 })(globalThis.MTG||={});

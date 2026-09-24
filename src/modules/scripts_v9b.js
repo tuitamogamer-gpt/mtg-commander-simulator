@@ -1033,7 +1033,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Villain')),
+        restrictAbilities: true,
+        restrict: (g, action) => !!action?.card && (action.isAbility
+          ? action.card.hasSub(MTG.c1719TextType(g, 'Villain'))
+          : g.castChangelingV16(action.card, action.castOpts || {}) || g.castSubtypesV16(action.card, action.castOpts || {}).includes(MTG.c1719TextType(g, 'Villain'))),
       },
     ],
     abilities: [{
@@ -1899,6 +1902,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Sac: legends indestructible', cost: { sacSelf: true },
+      priorityRelevant: (g, self, p) => g.bf().some(c => c !== self && c.ctrl === p &&
+        (c.cur.super || []).includes('Legendary') && !c.kw('indestructible')),
       run: async ctx => {
         for (const c of ctx.g.bf()) if (c.ctrl === ctx.you && (c.cur.super || []).includes('Legendary')) E.grantUntilEOT(ctx.g, c, ['indestructible']);
       },

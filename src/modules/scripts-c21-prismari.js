@@ -88,7 +88,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     await ctx.g.draw(ctx.you,3);const picked=await choose(ctx.g,ctx.you,ctx.you.hand,Math.min(2,ctx.you.hand.length),2,'Brainstorm: choose cards in top-to-bottom order','putBack');
     for(const c of picked.slice().reverse())await ctx.g.move(c,'library');
   }};
-  SC["Pyromancer's Goggles"]={mana:{manual:true,c21Goggles:true,restrict:()=>true,cost:{tap:true},produce:[{R:1}]}};
+  SC["Pyromancer's Goggles"]={mana:{manual:true,c21Goggles:true,restrict:()=>true,restrictAbilities:true,cost:{tap:true},produce:[{R:1}]}};
   SC['Metallurgic Summonings']={triggers:[{on:'cast',filter:castIS,desc:'Create a Construct equal to the spell mana value',run:async ctx=>{
     const n=ctx.g.stackSpellManaValue(ctx.data.so);await ctx.g.makeTokens(artifactToken(MTG.c1719TextType(ctx,'Construct'),[MTG.c1719TextType(ctx,'Construct')],n,n),ctx.you);
   }}],abilities:[{label:'Return all instants and sorceries from your graveyard',cost:{mana:'{3}{U}{U}',exileSelf:true},cond:(g,c,p)=>g.bf().filter(x=>x.ctrl===p&&x.is('Artifact')).length>=6,

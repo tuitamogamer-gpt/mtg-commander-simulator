@@ -366,6 +366,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Selfless Spirit'] = {
     abilities: [{
       label: 'Sacrifice: indestructible to all', cost: { sacSelf: true },
+      priorityRelevant: (g, self, p) => g.creatures(p).some(c => c !== self && !c.kw('indestructible')),
       run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 0, 0, ['indestructible']); },
     }],
   };
@@ -937,6 +938,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         label: 'Sacrifice another Serpent: Koma gains indestructible',
+        priorityRelevant: (g, self) => !self.kw('indestructible'),
         cost: { sac: (g, x, self) => x.hasSub(MTG.c1719TextType(g,'Serpent')) && x !== self, sacOther: true },
         run: async ctx => { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
       },

@@ -46,9 +46,10 @@ async function captureLayout(label) {
     };
     return {
       width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth,
-      view: root.dataset.mobileView, columns: getComputedStyle(root).gridTemplateColumns,
+      view: root.dataset.mobileView, mobileBoard: root.dataset.mobileBoard, gridTable: root.classList.contains('ct-grid-view'), columns: getComputedStyle(root).gridTemplateColumns,
       topbar: rect('.topbar'), turnTitle: rect('.phase'), topActions: rect('.topbtns'), tabs: rect('.mobileviewtabs'), opponents: rect('.oppsouter'),
       prompt: rect('.promptbar'), hand: rect('.handwrap'), board: rect('.myboard'), sidebar: rect('.sidebar'),
+      focusedOpponent: rect('.opprow.ct-focused'),
       decision: window._ui.pending?.q.type,
     };
   });
@@ -74,7 +75,13 @@ async function assertPhoneLayout(label) {
   assert.ok(layout.tabs.y + layout.tabs.height <= layout.height, 'Arena tabs remain on screen');
   assert.ok(layout.prompt.y + layout.prompt.height <= layout.height + 1, `Prompt remains on screen: ${JSON.stringify(layout)}`);
   if (layout.view === 'mine') {
-    assertUsable(layout, 'board');
+    if (layout.mobileBoard === 'opponent') {
+      assertUsable(layout, 'focusedOpponent');
+      assert.equal(layout.board.display, 'none', 'A focused opponent gets the entire board area');
+    } else {
+      assertUsable(layout, 'board');
+      assert.equal(layout.opponents.display, 'none', 'Mine gets the entire board area');
+    }
     assertUsable(layout, 'hand');
     assert.ok(layout.hand.y + layout.hand.height <= layout.height + 1, `Hand remains on screen: ${JSON.stringify(layout)}`);
   } else {
@@ -163,6 +170,42 @@ async function inspectEveryOpponent() {
 }
 
 try {
+  // Reproduce the half-width board after an elimination, including Safari
+  // viewport heights immediately above the old 720px layout boundary.
+  await installFixture();
+  for (const count of [2, 3, 1]) {
+    await page.evaluate(count => {
+      _game.players.slice(1).forEach((player, index) => { player.lost = index >= count; });
+      _ui.render();
+    }, count);
+    for (const [width, height] of [[393, 724], [390, 844], [320, 568], [430, 932]]) {
+      await page.setViewportSize({ width, height });
+      for (const id of await page.locator('.ct-seat').evaluateAll(seats => seats.map(seat => seat.dataset.focusPlayer))) {
+        await page.locator(`.ct-seat[data-focus-player="${id}"]`).tap();
+        assert.equal(await page.locator('.opprow:visible').count(), 1);
+        assert.equal(await page.locator('.opprow:visible').getAttribute('data-player-id'), id);
+        await assertPhoneLayout(`focus-${count}-opponents-seat-${id}-${width}x${height}`);
+        if (height >= 724) {
+          const visibleCard = await page.locator('.opprow:visible .mini').first().evaluate(card => {
+            const r = card.getBoundingClientRect(), board = card.closest('.oppstrip').getBoundingClientRect();
+            return r.top >= board.top && r.bottom <= board.bottom && r.left >= board.left && r.right <= board.right;
+          });
+          assert.ok(visibleCard, 'A complete opponent card fits above the hand and decision controls');
+        }
+        if (count === 2 && width === 393) await screenshot(`two-opponents-focus-seat-${id}`);
+      }
+      await switchView('Table');
+      await inspectEveryOpponent();
+      await assertPhoneLayout(`table-${count}-opponents-${width}x${height}`);
+      await switchView('Mine');
+      await assertPhoneLayout(`mine-${count}-opponents-${width}x${height}`);
+      assert.equal(await page.locator('.ct-seat[aria-pressed="true"]').count(), 0, 'Mine does not select a hidden opponent');
+      if (count === 2 && width === 393) await screenshot('two-opponents-mine');
+      assert.equal(await page.evaluate(() => _ui.pending === window.__mobilePending && !window.__mobileDecisionAnswered), true);
+    }
+  }
+  check('One, two and three opponents: every seat uses the full mobile board, including 724px Safari viewport; Mine and Table preserve access');
+
   await startGame();
   await page.locator('.toastmsg').waitFor({ state: 'detached' });
   assert.equal(await page.locator('.opprow').count(), 3, 'Real game has three opponents');
@@ -223,10 +266,10 @@ try {
       await page.setViewportSize({ width, height });
       const layout = await captureLayout(`desktop-from-${lastMobileView}-${width}`);
       assert.equal(layout.tabs.display, 'none', 'Phone navigation is hidden on desktop');
-      // Desktop reserves a decision rail beside the battlefield and hand.
+      // Desktop reserves a decision rail; Table places the four boards in a grid.
       assertUsable(layout, 'topbar', width - 80);
       assertUsable(layout, 'hand', width - 340);
-      assertUsable(layout, 'board', width - 360);
+      assertUsable(layout, 'board', layout.hand.width / (layout.gridTable ? 2 : 1) - 24);
       assert.ok(layout.scrollWidth <= width + 1);
     }
     await screenshot(`arena-${width}`);

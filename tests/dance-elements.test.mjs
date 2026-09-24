@@ -303,7 +303,7 @@ test('Risen Reef, landfall, and restricted tribal mana execute without fallback 
   assert.equal(mana.restrict(game, { card: new MTG.CardInst(MTG.DEFS['Distant Melody'], elements) }), false);
 });
 
-test('Opal Palace restricted mana applies the linked commander counters on entry', async () => {
+test('Opal Palace unrestricted mana applies commander entry counters only when spent on the cast', async () => {
   const { game, players: [elements] } = rulesGame([], 2);
   const palace = permanent(game, elements, 'Opal Palace');
   const ability = palace.def.mana[1];
@@ -311,10 +311,14 @@ test('Opal Palace restricted mana applies the linked commander counters on entry
   commander.commander = true;
   commander.cmdCasts = 1;
   const ordinary = new MTG.CardInst(MTG.DEFS.Mulldrifter, elements);
-  assert.equal(ability.restrict(game, { card: ordinary }), false);
+  assert.equal(ability.restrict(game, { card: ordinary }), true);
   assert.equal(ability.restrict(game, { card: commander }), true);
-  await ability.onProduce(game, palace, elements, { U: 1 }, { card: commander });
-  await game.move(commander, 'battlefield', { ctrl: elements });
+  elements.colorIdentity = ['R'];
+  for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) elements.pool[color] = 5;
+  const action = game.activatableList(elements).find(entry => entry.card === palace && entry.manaSource?.m.opalPalace);
+  assert.equal(await game.activateAbility(elements, action), true);
+  assert.equal(await game.castSpell(elements, commander, { from: 'command' }), true);
+  assert.equal(commander.castMeta.opalPalaceMana, 1, 'the Palace mana paid the required red pip');
   await resolveAll(game);
   assert.equal(commander.counters['+1/+1'], 2, 'the second command-zone cast enters with two counters');
 });

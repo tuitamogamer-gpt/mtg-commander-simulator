@@ -113,14 +113,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.removeManaCounters) costParts.push(`remove chosen ${cost.removeManaCounters.kind} counters`);
     const produces = source.produce.map(manaOptionLabel).join(' or ');
     const grantedBy = source.grantedBy ? ` — granted by ${source.grantedBy.name}` : '';
-    const restriction = source.m.restrictLabel ? ` · ${source.m.restrictLabel}` : '';
+    const oracle = (source.grantedBy || source.card).def.oracle || '';
+    const restrictionLabel = source.m.restrictLabel || (source.m.restrict
+      ? oracle.match(/(?:Spend this mana only|This mana (?:can't|can’t) be spent)[^.\n]*/i)?.[0] : '');
+    const restriction = restrictionLabel ? ` · ${restrictionLabel}` : '';
     return `Mana: ${costParts.length ? costParts.join(' + ') + ' → ' : ''}${produces}${restriction}${grantedBy}`;
   }
 
-  function manualManaKey(source) {
+  function manualManaKey(source, restrictionIds) {
     const cost = source.extraCost || {};
+    if (source.m.restrict && !restrictionIds.has(source.m.restrict)) {
+      restrictionIds.set(source.m.restrict, restrictionIds.size + 1);
+    }
     return JSON.stringify({
       card: source.card.iid,
+      restriction: restrictionIds.get(source.m.restrict) || 0,
+      restrictAbilities: !!source.m.restrictAbilities,
+      coloredOnly: !!source.m.coloredOnly,
+      grantedBy: source.grantedBy?.iid || null,
       tap: !!cost.tap,
       exertSelf: !!cost.exertSelf,
       sacSelf: !!cost.sacSelf,
@@ -414,6 +424,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { pool, coloredOnlyPool, meta };
   }
 
+  function recordManaSpent(game, player, payment, unit) {
+    MTG.C21Rules?.spent(game, player, payment, unit);
+    MTG.CDK?.spent(game, player, payment, unit);
+    MTG.POM?.spent(game, player, payment, unit);
+    if (unit.opalPalace && payment?.card?.commander && !payment.isAbility) {
+      payment.opalPalaceMana = (payment.opalPalaceMana || 0) + 1;
+    }
+  }
+
   function spendPoolUnit(game, player, color, forSpell, generic) {
     const entries = (player.poolMeta || []).filter(entry =>
       entry.color === color && (Number(entry.n) || 0) > 0);
@@ -438,9 +457,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (tracked) {
-      MTG.C21Rules?.spent(game,player,forSpell,tracked);
-      MTG.CDK?.spent(game,player,forSpell,tracked);
-      MTG.POM?.spent(game,player,forSpell,tracked);
+      recordManaSpent(game, player, forSpell, tracked);
       tracked.n--;
       player.pool[color]--;
       if (tracked.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
@@ -465,9 +482,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !!entry.c13Snow === !!unit.c13Snow &&
         manaRestrictionAllows(game, entry, forSpell) && (!generic || !entry.coloredOnly));
       if (!tracked) return false;
-      MTG.C21Rules?.spent(game,player,forSpell,tracked);
-      MTG.CDK?.spent(game,player,forSpell,tracked);
-      MTG.POM?.spent(game,player,forSpell,tracked);
+      recordManaSpent(game, player, forSpell, tracked);
       tracked.n--;
       player.pool[color]--;
       if (tracked.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
@@ -572,6 +587,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             cost: gcost,
             restrict: gm.restrict,
             restrictAbilities: !!gm.restrictAbilities,
+            restrictLabel: gm.restrictLabel,
+            manual: gm.manual,
             ignoreSickness: !!gm.ignoreSickness,
           },
           produce: gm.produce,
@@ -1756,6 +1773,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         p.poolMeta.push({
           color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:!!s.m.cslHasteMana,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
           c13Snow: snowSource,
+          opalPalace: !!s.m.opalPalace,
           restrictAbilities: !!s.m.restrictAbilities,
           coloredOnly: !!s.m.coloredOnly, persist: s.m.retainManaV11 || !!s.m.persist,
         });
@@ -2857,7 +2875,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const from = castOpts.from || card.zone;
       if (!castOpts.splitHalf && !castOpts.splitFuse) {
         const choices = this.oracleSplitCastingOptions(card, from, castOpts).filter(option => {
-          if (from === 'graveyard' && !option.isAftermath && !option.flashback && !option.free && !option.retrace && !option.jumpstart) return false;
+          if (from === 'graveyard' && !option.isAftermath && !option.flashback && !option.free && !option.retrace && !option.jumpstart && option.oracleImmediateCast === undefined) return false;
           const specs = this.spellTargetSpecs(card, option, p) || [];
           return specs.every(spec => spec.upTo || this.legalTargets(spec, card, p).length >= (spec.min ?? spec.count ?? 1)) &&
             this.canPayMana(p, this.spellCost(p, card, option), {card, castOpts: option, xVal: 0});
@@ -2874,7 +2892,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const face = d.oracleSplit.faces.find(entry => entry.key === castOpts.splitHalf);
       if (castOpts.splitHalf && (!face || castOpts.splitFuse || face.aftermath && from !== 'graveyard')) return false;
       if (castOpts.splitFuse && (!d.oracleSplit.fuse || castOpts.splitFuse !== 'right' || from !== 'hand')) return false;
-      if (from === 'graveyard' && !face?.aftermath && !castOpts.flashback && !castOpts.free && !castOpts.retrace && !castOpts.jumpstart) return false;
+      if (from === 'graveyard' && !face?.aftermath && !castOpts.flashback && !castOpts.free && !castOpts.retrace && !castOpts.jumpstart && castOpts.oracleImmediateCast === undefined) return false;
       if (face?.aftermath) {castOpts.flashback = true; castOpts.isAftermath = true;}
       if (castOpts.altCostStr === undefined) castOpts.altCostStr = this.oracleSplitPrintedCost(card, castOpts);
     }
@@ -3697,6 +3715,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     card.castMeta = {
       wasCast:true, castBy:p.idx, convokedCount:so.convokedCards.length, cdkExiled:so.cdkExiled,cdkBiophagus:paySpell.cdkBiophagus||0,
+      opalPalaceMana: paySpell.opalPalaceMana || 0,
       afcGorexExiled:so.afcGorexExiled,
       vnEscapeExiled:d.vnSkyway?escapeExiled.map(c=>({iid:c.iid,version:c.zoneVersion})):undefined,
       zkWasForetold:!!so.zkWasForetold,
@@ -4295,7 +4314,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const yes=await so.ctrl.controller.decide(this,{
           type:'chooseOption',prompt:`${so.ctx.src?so.ctx.src.name:''}: ${choice.name} — use it?`,
           options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],
-          aiHint:Object.assign({kind:'optTrigger',src:so.ctx.src,name:choice.name},choice.aiHint||{}),data:so.ctx.data,
+          aiHint:Object.assign({kind:'optTrigger',src:so.ctx.src,name:choice.name,targets:so.ctx.targets},choice.aiHint||{}),data:so.ctx.data,
         });
         if(yes!=='yes')return;
       }
@@ -4924,20 +4943,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const abilities=(c.cur?.abilitiesDisabled?[]:c.def.abilities||[]).concat(c.cur?.extraAbilities||[]);
       abilities.forEach((ability,index)=>{if(ability.oracleAnyPlayer)offerAbility(c,ability,index,{anyPlayerAbility:true});});
     }
-    // Mana solver i dalje automatski bira izvore pri plaćanju. Kada permanent
-    // ima i drugu aktiviranu funkciju (Food život, utility land, sposobnost
-    // kopirana preko Brewmastera...), igrač mora moći eksplicitno izabrati
-    // hoće li koristiti tu funkciju ili njegovu vlastitu/dodijeljenu mana
-    // sposobnost. Ne nudimo obične mana-only permanente da meni ne postane
-    // popis svih landova. Restricted mana se nudi samo ako je skripta izričito
-    // označi kao `manual`; poolMeta tada čuva njenu namjenu poslije floatanja.
+    // Creature mana and restricted sources must be available from the card
+    // sheet even without a per-card `manual` flag (Somberwald Sage). Include
+    // every mana mode on those cards, preserving the choice of unrestricted
+    // or granted mana. Ordinary mana-only lands/rocks still use the payment
+    // picker unless explicitly manual; utility permanents retain both actions.
+    // poolMeta preserves spending restrictions after manual activation.
     const manualManaSeen = new Set();
-    for (const source of this.manaSources(p, null)) {
+    const restrictionIds = new Map();
+    const availableMana = this.manaSources(p, null);
+    const restrictedCards = new Set(availableMana.filter(source => source.m.restrict).map(source => source.card));
+    for (const source of availableMana) {
       const c = source.card;
       if (!c) continue;
       const utility = (c.def.abilities || []).concat(c.cur && c.cur.extraAbilities || [])
-        .some(ability => !ability.manaAbilityOnly) || source.m.manual;
-      if (!utility || source.m.restrict && !source.m.manual) continue;
+        .some(ability => !ability.manaAbilityOnly) || source.m.manual || c.is('Creature') || restrictedCards.has(c);
+      if (!utility) continue;
       const cost = source.extraCost || {};
       if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) continue;
       if (cost.mana) {
@@ -4948,7 +4969,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           artifactAbilityAlreadyUsed: c.is('Artifact'),
         })) continue;
       }
-      const key = manualManaKey(source);
+      const key = manualManaKey(source, restrictionIds);
       if (manualManaSeen.has(key)) continue;
       manualManaSeen.add(key);
       out.push({ card: c, manaAbility: true, manaSource: source, label: manualManaLabel(source) });
@@ -5911,7 +5932,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         ctx.x = await p.controller.decide(this, {
           type: 'chooseX', min: a.minX||0, max: maxX, card: c,
-          prompt: `X for ${c.name} — ${a.label || 'ability'}?`, aiHint: { kind: 'chooseX', card: c },
+          prompt: `X for ${c.name} — ${a.label || 'ability'}?`, aiHint: { kind: 'chooseX', card: c, ability: a },
         });
         if(!Number.isSafeInteger(ctx.x)||ctx.x<(a.minX||0)||ctx.x>maxX)return false;
       }
@@ -6339,9 +6360,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return false;
   };
 
+  function sacrificeHasPriorityPayoff(g, entry, me) {
+    const cost = entry.ability?.cost || {};
+    if (!(cost.sacSelf || cost.sacCreature || cost.sac)) return false;
+    const sacrifices = g.bf().filter(card => card.ctrl === me && g.canSacrifice(card) &&
+      (cost.sacSelf && card === entry.card || (!(cost.sacOther || cost.sacSelf) || card !== entry.card) &&
+        (cost.sacCreature && card.is('Creature') || cost.sac && cost.sac(g, card, entry.card))));
+    return sacrifices.some(card => {
+      const data = {player: me, card, snap: g.snapshot(card)};
+      // The engine's dies event also carries noncreatures entering a graveyard
+      // (for example Spellbombs); each trigger applies its own type filter.
+      const events = ['sacrificed', 'lto', 'dies'];
+      // A death/sacrifice payoff can make an otherwise empty buff useful.
+      // Inspect public triggers without paying costs or emitting any event.
+      return events.some(event => g.collectTriggers(event, data).some(trigger =>
+        (trigger.ctrlOverride || trigger.card.ctrl) === me));
+    });
+  }
+
   MTG.autoPassPolicy = function (mode, g, q, me) {
     if (!q || q.type !== 'priority') return false;
-    const casts = q.casts || [], acts = q.acts || [];
+    // Relevance controls automatic pauses only. Keep every legal activation
+    // in the original question for HOLD, Full control and manual responses.
+    const casts = q.casts || [], acts = (q.acts || []).filter(entry =>
+      !entry.ability?.priorityRelevant || entry.ability.priorityRelevant(g, entry.card, me) ||
+      sacrificeHasPriorityPayoff(g, entry, me));
+    const relevantQuestion = { ...q, acts };
     const canAct = casts.length > 0 || acts.length > 0;
     const top = g.stack[g.stack.length - 1];
     if (top) {
@@ -6353,7 +6397,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // instant, Fork efekti, counter sa table) postoji samo dok taj objekat
       // stoji. Automatski pass ju je činio nedostupnom: igrač je bacio spell,
       // a on bi se razriješio prije nego dobije priliku da reaguje.
-      if (MTG.priorityRespondsToStack(q, g, me)) return false;
+      if (MTG.priorityRespondsToStack(relevantQuestion, g, me)) return false;
       if (mode === 'full') return false;
       if (mode === 'off') return true;
       // Protivnikova sposobnost uperena u mene ili moj permanent: ako uopšte
@@ -6371,7 +6415,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!canAct) return true;                                // nema šta da se odigra
     // Sposobnost koja postoji samo u ovom prozoru mora dobiti priliku, inače
     // je karta u praksi neigriva.
-    if (MTG.priorityHasWindowOnlyPlay(q, g, me)) return false;
+    if (MTG.priorityHasWindowOnlyPlay(relevantQuestion, g, me)) return false;
     // POSLJEDNJI end step prije mog poteza: zadnja prilika da nešto odigram u
     // tuđem potezu (instanti, flash, aktivacije). Uvijek stani — igrač sam
     // odlučuje kad nastavlja, dugmetom "Nastavi na moj potez".

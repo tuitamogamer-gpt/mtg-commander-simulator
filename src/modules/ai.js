@@ -6,6 +6,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // Valki's X must match a creature still linked to this ability. A legal
+  // zero-mana activation with no copy choice makes no progress and can loop.
+  // Share the same affordable values between both planners and X selection.
+  MTG.valkiCopyXValues = function (game, player, source, ability, maxX = Infinity) {
+    if (!ability?.bomValkiCopy) return null;
+    const values = [...new Set(MTG.BOM.valkiCopyCards(source).map(card => card.mv))];
+    const cost = game.abilityManaCost(player, source, ability.cost.mana, {ability});
+    return values.filter(x => x <= maxX && game.canPayMana(player, cost,
+      {card: source, isAbility: true, cdkCostHasX: !!cost.x},
+      {xVal: x, artifactAbilityAlreadyUsed: source.is('Artifact')}));
+  };
+
   // During an entry replacement the incoming land is structurally inserted,
   // but is not available for real payments yet. Compare the future legal
   // spell/ability windows after it enters tapped or untapped. The hypothetical
@@ -663,8 +675,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // 2. score castables
       const scored = [];
+      const wipes = [];
+      if (MTG.botBoardWipeImpact) for (const e of q.casts) {
+        const action = { kind: 'cast', card: e.card, alt: e.alt, from: e.from };
+        const impact = MTG.botBoardWipeImpact(g, p, action);
+        if (impact && impact.theirsLoss >= 4 && impact.theirsLoss >= impact.mineLoss + 3 && this.castScore(g, e) > 2) {
+          wipes.push({ action, impact });
+        }
+      }
       for (const e of q.casts) {
         let v = this.castScore(g, e);
+        v -= MTG.botWipeSequencingPenalty?.(g, p, { kind: 'cast', card: e.card }, v, wipes) || 0;
         if (v > 0) scored.push({ act: { kind: 'cast', card: e.card, alt: e.alt, from: e.from }, v });
       }
       for (const e of q.acts) {
@@ -756,6 +777,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!a) return 0;
       const pumpPlan = MTG.sacrificePumpPlan(g, this.p, e);
       if (pumpPlan) return pumpPlan.score;
+      const copyValues = MTG.valkiCopyXValues(g, this.p, c, a);
+      if (copyValues) return copyValues.length ? 6 : -100;
       if (a.aiScore) return a.aiScore(g, c, this.p);
       if (a.loyalty !== undefined) return 3;
       const label = (a.label || '').toLowerCase();
@@ -1758,6 +1781,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseX(g, q) {
+      const copyValues = MTG.valkiCopyXValues(g, this.p, q.card, q.aiHint?.ability, q.max);
+      if (copyValues) return copyValues.length ? Math.max(...copyValues) : q.min || 0;
       if (Array.isArray(q.values) && q.values.length) {
         return [...new Set(q.values.map(Number).filter(Number.isFinite))].sort((a, b) => a - b).at(-1);
       }

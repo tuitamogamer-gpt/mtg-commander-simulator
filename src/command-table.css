@@ -66,11 +66,12 @@ body.high-contrast #game .playmatpreview { background-image: none !important; }
 body.game-active #game.command-table .oppsouter { grid-area: opps; padding: 5px 10px 8px !important; min-height: 0; min-width: 0; }
 body.game-active #game.command-table .oppswrap,
 body.game-active #game.command-table .oppswrap.active-ai-turn {
-  display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  display: grid !important; grid-template-columns: repeat(var(--ct-opponent-columns, 3), minmax(0, 1fr)) !important;
   height: 100% !important; min-height: 0 !important; gap: 8px !important; overflow: hidden;
 }
-body.game-active #game.command-table .oppswrap[data-opponent-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-body.game-active #game.command-table .oppswrap[data-opponent-count='1'] { grid-template-columns: minmax(0, 1fr) !important; }
+/* Counts size the table view without overriding the single-column focus view. */
+body.game-active #game.command-table .oppswrap[data-opponent-count='2'] { --ct-opponent-columns: 2; }
+body.game-active #game.command-table .oppswrap[data-opponent-count='1'] { --ct-opponent-columns: 1; }
 body.game-active #game.command-table .opprow,
 body.game-active #game.command-table .opprow.activeai {
   display: flex !important; flex-direction: column; min-height: 0; min-width: 0;
@@ -301,9 +302,14 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
     --ct-card: 90px; --ct-opponent-card: 82px; --ct-hand: 144px;
     --ct-tabs: calc(54px + env(safe-area-inset-bottom, 0px));
     grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 52px 60px minmax(110px, 1fr) minmax(145px, 1fr) auto calc(var(--ct-hand) + var(--ct-hand-extra)) var(--ct-tabs) !important;
-    grid-template-areas: 'topbar' 'seats' 'opps' 'mine' 'decision' 'hand' 'tabs' !important;
+    grid-template-rows: 52px 60px minmax(0, 1fr) auto calc(var(--ct-hand) + var(--ct-hand-extra)) var(--ct-tabs) !important;
+    grid-template-areas: 'topbar' 'seats' 'mine' 'decision' 'hand' 'tabs' !important;
   }
+  /* Every mobile height uses one readable board. A seat opens that opponent;
+     Mine restores your board, and Table keeps all opponents in a scrollable list. */
+  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='mine'] .oppsouter { display: none !important; }
+  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='opponent'] { grid-template-areas: 'topbar' 'seats' 'opps' 'decision' 'hand' 'tabs' !important; }
+  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard { display: none !important; }
   body.game-active #game.command-table .arenaheader { padding: 4px 8px !important; gap: 4px; min-height: 0 !important; height: 100%; flex-wrap: nowrap; }
   body.game-active #game.command-table .arenaheader .phasewrap { min-width: 0; width: auto; flex: 1 1 0; flex-wrap: nowrap; }
   body.game-active #game.command-table .arenaheader .phase { display: flex; flex: 1 1 0; gap: 5px; font-size: 10px; flex-wrap: wrap; }
@@ -414,7 +420,7 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   body.game-active #game.command-table[data-mobile-view='stack'] .sidebar { grid-area: center; position: static !important; width: 100% !important; height: 100%; max-height: none; min-height: 0; margin: 0; transform: none !important; }
 }
 @media (max-width: 900px) and (max-height: 720px) {
-  body.game-active #game.command-table { --ct-card: 74px; --ct-opponent-card: 70px; --ct-hand: 116px; --ct-tabs: calc(48px + env(safe-area-inset-bottom, 0px)); grid-template-rows: 48px 52px minmax(65px, .65fr) minmax(85px, 1fr) auto calc(var(--ct-hand) + var(--ct-hand-extra)) var(--ct-tabs) !important; }
+  body.game-active #game.command-table { --ct-card: 74px; --ct-opponent-card: 70px; --ct-hand: 116px; --ct-tabs: calc(48px + env(safe-area-inset-bottom, 0px)); grid-template-rows: 48px 52px minmax(0, 1fr) auto calc(var(--ct-hand) + var(--ct-hand-extra)) var(--ct-tabs) !important; }
   #game.command-table .ct-seat-ribbon { padding-block: 2px; }
   body.game-active #game.command-table .arenaheader { padding-block: 2px !important; }
   #game.command-table .mobileviewtabs { padding-block: 1px; }
@@ -422,12 +428,6 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #game.command-table .ct-decision-rail { max-height: 130px; }
   #game.command-table .ct-decision-rail.has-review { height: calc(100 * var(--dvhu) - 160px); max-height: 640px; }
   body.game-active #game.command-table .ct-decision-rail .promptbar { max-height: 100px; flex-shrink: 1; }
-  /* A short phone cannot fit two readable battlefields above the hand. Show
-     the active board at full height; a seat tap or Mine switches it directly. */
-  body.game-active #game.command-table[data-mobile-view='mine'] { grid-template-rows: 48px 52px minmax(0, 1fr) auto calc(var(--ct-hand) + var(--ct-hand-extra)) var(--ct-tabs) !important; grid-template-areas: 'topbar' 'seats' 'mine' 'decision' 'hand' 'tabs' !important; }
-  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='mine'] .oppsouter { display: none !important; }
-  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='opponent'] { grid-template-areas: 'topbar' 'seats' 'opps' 'decision' 'hand' 'tabs' !important; }
-  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard { display: none !important; }
   body.game-active #game.command-table[data-mobile-view='table'],
   body.game-active #game.command-table[data-mobile-view='stack'] { grid-template-rows: 48px 52px minmax(0, 1fr) auto var(--ct-tabs) !important; }
 }

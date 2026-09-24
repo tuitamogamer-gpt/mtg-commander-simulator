@@ -1695,7 +1695,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Hero')),
+        restrictAbilities: true,
+        restrict: (g, action) => !!action?.card && (action.isAbility
+          ? action.card.hasSub(MTG.c1719TextType(g, 'Hero'))
+          : g.castChangelingV16(action.card, action.castOpts || {}) || g.castSubtypesV16(action.card, action.castOpts || {}).includes(MTG.c1719TextType(g, 'Hero'))),
       },
     ],
     abilities: [{

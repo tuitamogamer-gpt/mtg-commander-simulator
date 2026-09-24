@@ -578,13 +578,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: COLORS,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
       cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
-      restrict: (g, action) => action && !action.isAbility && action.card && action.card.is('Creature'),
+      restrictLabel: 'only for creature spells',
+      restrict: (g, action) => action && !action.isAbility && action.card && g.castHasType(action.card, action.castOpts || {}, 'Creature'),
     }],
     abilities: [{ label: 'Create a changeling', cost: { tap: true, mana: '{6}' },
       run: async ctx => { await ctx.g.makeTokens('elementsShapeshifter11', ctx.you); }, aiScore: () => 2 }],
   };
   SC['Ancient Ziggurat'] = { producesColors: COLORS, mana: { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
-    restrict: (g, action) => action && !action.isAbility && action.card && action.card.is('Creature') } };
+    restrictLabel: 'only for creature spells',
+    restrict: (g, action) => action && !action.isAbility && action.card && g.castHasType(action.card, action.castOpts || {}, 'Creature') } };
   SC['Flamekin Village'] = {
     producesColors: ['R'],
     asEnters: async (g, card) => {
@@ -605,14 +607,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: COLORS,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
       cost: { tap: true, mana: '{1}' }, produce: (g, card, player) => player.colorIdentity.map(color => ({ [color]: 1 })),
-      restrict: (g, action) => !!(action && action.card && action.card.commander),
-      onProduce: async (g, card, player, chosen, action) => { if (action && action.card && action.card.commander) {
-        player.opalPalacePending = { commander: action.card, n: (action.card.cmdCasts || 0) + 1 };
-      } },
+      // The mana itself is unrestricted. Its commander entry bonus follows
+      // the mana until it is spent, including when it was floated manually.
+      opalPalace: true, restrict: () => true, restrictAbilities: true,
     }],
-    triggers: [{ on: 'etb', desc: 'Commander counters', filter: (g, self, data) => data.card.commander && data.card.ctrl === self.ctrl &&
-      self.ctrl.opalPalacePending && self.ctrl.opalPalacePending.commander === data.card,
-      run: async ctx => { const pending = ctx.you.opalPalacePending; delete ctx.you.opalPalacePending; if (pending) ctx.g.addCounters(ctx.data.card, '+1/+1', pending.n, false, ctx.you); } }],
   };
   SC['Primal Beyond'] = {
     producesColors: COLORS,

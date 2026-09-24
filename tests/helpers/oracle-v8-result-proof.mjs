@@ -40,6 +40,7 @@ function install(MTG,context,h){
   try{
    row.result=await run.call(this,ctx,effect,{...helpers,run:async(childCtx,children)=>{
     const before=snap(state),child={ctx:childCtx,effects:children,before};row.children.push(child);
+    before.oracleX=childCtx.x??childCtx.so?.x??0;
     for(const printed of children)if(printed.action==='zone-select'&&!state.context.zoneFixtures.has(printed)){const fixtures=[...before.cards].filter(([card,old])=>old.zone===printed.zone&&matchesTarget(card,{...printed.filter,controller:'any'},state.context,ctx.src)).map(([card])=>card);state.context.zoneFixtures.set(printed,fixtures);}
     const result=await helpers.run(childCtx,children);child.after=snap(state);
     // Validate the real effect at its own resolution boundary, before a later

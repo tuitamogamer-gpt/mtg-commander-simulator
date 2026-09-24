@@ -18,14 +18,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     g.recalc();
   };
-  const castGraveyardCard = async (g, player, card, free) => {
+  U.scionsGraveCastOptions = (g, player, card, free) => !card || card.zone !== 'graveyard' ? []
+    : U.OracleV8PlayPermissions.preview({ g, you: player, src: card }, [card], { free: !!free, exileAfter: true });
+  const castGraveyardCard = async (ctx, card, free) => {
     if (!card || card.zone !== 'graveyard') return false;
-    const cast = await g.castSpell(player, card, { from: 'graveyard', free: !!free, exileAfter: true });
-    if (cast && card.zone === 'stack') {
-      card.meta = card.meta || {};
-      card.meta.exileIfStackLeaves = true;
+    if (!U.scionsGraveCastOptions(ctx.g, ctx.you, card, free).length) {
+      ctx.g.lg(`${card.name} cannot be cast now: check its costs, legal targets and casting restrictions. It stays in the graveyard.`);
+      return false;
     }
-    return cast;
+    return !!await U.OracleV8PlayPermissions.castOne(ctx, [card], { free: !!free, exileAfter: true, selected: true }, {});
   };
   const partnerWith = otherName => ({
     on: 'etb', desc: `Partner with ${otherName}`, filter: etbSelf,
@@ -147,10 +148,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         on: 'postcombatMain', desc: 'Cards for opponents dealt damage',
-        filter: (g, self, d) => d.player === self.ctrl,
+        filter: (g, self, d) => d.player === self.ctrl && d.ordinal === 2,
         run: async ctx => {
-          const opponents = new Set((ctx.you.turnState.combatDamageHits || [])
-            .filter(hit => hit.ctrl === ctx.you && (hit.card === ctx.src || hit.card.hasSub(MTG.c1719TextType(ctx,'Dragon'))))
+          const dragonType = MTG.c1719TextType(ctx, 'Dragon');
+          const currentOpponents = new Set(ctx.you.opponents(ctx.g));
+          const sourceVersion = ctx.sourceZoneVersion ?? ctx.src.zoneVersion;
+          const opponents = new Set(ctx.g.players.flatMap(player => player.turnState.combatDamageHits || [])
+            .filter(hit => {
+              if (!currentOpponents.has(hit.player)) return false;
+              const sameEstinien = hit.card === ctx.src &&
+                (hit.sourceVersion ?? hit.card.zoneVersion) === sourceVersion;
+              // Older saved games have no captured types; retain their prior
+              // behavior, while new hits use the characteristics at damage time.
+              const wasDragon = hit.subtypes
+                ? hit.subtypes.includes(dragonType) || hit.changeling && MTG.CREATURE_SUBTYPES.has(dragonType)
+                : hit.card.hasSub(dragonType);
+              return sameEstinien || wasDragon;
+            })
             .map(hit => hit.player));
           const x = opponents.size;
           if (x) { await ctx.g.draw(ctx.you, x); await ctx.g.loseLife(ctx.you, x, 'Estinien'); }
@@ -258,12 +272,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => etbSelf(g, self, d) && self.ctrl.graveyard.some(card => card.is('Instant')),
       opt: true, aiHint: { kind: 'scionsGraveCast', free: true },
       targets: [{
-        zone: 'graveyard', what: 'card', prompt: 'Cast an instant for free', aiHint: { kind: 'freeCast' },
+        zone: 'graveyard', what: 'card', prompt: 'Choose an instant card in your graveyard. You may cast it without paying its mana cost when this ability resolves.', aiHint: { kind: 'scionsGraveTarget', free: true },
         filter: (g, card, ctrl) => card.owner === ctrl && card.zone === 'graveyard' && card.is('Instant'),
       }],
       run: async ctx => {
         const card = ctx.targets[0];
-        if (card) await castGraveyardCard(ctx.g, ctx.you, card, true);
+        if (card) return castGraveyardCard(ctx, card, true);
       },
     }],
   };
@@ -589,12 +603,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => d.player && d.player !== self.ctrl &&
         self.ctrl.graveyard.some(card => card.is('Instant') || card.is('Sorcery')),
       targets: [{
-        zone: 'graveyard', what: 'card', prompt: 'Cast an instant or sorcery from the graveyard', aiHint: { kind: 'gyRecur' },
+        zone: 'graveyard', what: 'card', prompt: 'Choose an instant or sorcery card in your graveyard. Casting it is optional and still requires paying its costs, with a {2} reduction.', aiHint: { kind: 'scionsGraveTarget', free: false },
         filter: (g, card, ctrl) => card.owner === ctrl && card.zone === 'graveyard' && (card.is('Instant') || card.is('Sorcery')),
       }],
       run: async ctx => {
         const card = ctx.targets[0];
-        return card ? castGraveyardCard(ctx.g, ctx.you, card, false) : false;
+        return card ? castGraveyardCard(ctx, card, false) : false;
       },
     }],
   };

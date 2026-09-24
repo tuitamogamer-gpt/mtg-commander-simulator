@@ -2698,6 +2698,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ...(operation.condition?{activationCondition:operation.condition}:{}),...(operation.onceEachTurn?{onceEachTurn:true}:{}),contract:'generic-activated-effect'};
   }
   MTG.oracleManaUsesStack=manaUsesStack;
+  // Pure sacrifice buffs need a surviving recipient before they justify an
+  // automatic priority stop. Other effects (draw, counters, Ring temptation,
+  // modes, etc.) retain their ordinary windows, even with no buff recipient.
+  function genericSacrificePriorityRelevant(operation, cost, targets) {
+    if (!(cost.sacSelf || cost.sacCreature || cost.sac) || operation.modalBody || operation.v4Body ||
+        !operation.effects?.length) return null;
+    const checks = [];
+    const redundantKeywords = new Set(['indestructible', 'hexproof', 'shroud', 'deathtouch',
+      'first strike', 'double strike', 'flying', 'haste', 'lifelink', 'menace', 'reach', 'trample', 'vigilance']);
+    for (const effect of operation.effects) {
+      const group = effect.action === 'battlefield-group' && effect.operation === 'pump';
+      const keys = group ? ['action', 'operation', 'filters', 'power', 'toughness', 'keywords']
+        : ['action', 'target', 'power', 'toughness', 'keywords'];
+      if ((!group && effect.action !== 'pump') || Object.keys(effect).some(key => !keys.includes(key)) ||
+          !Number.isFinite(effect.power ?? 0) || !Number.isFinite(effect.toughness ?? 0) ||
+          (effect.power || 0) < 0 || (effect.toughness || 0) < 0 ||
+          (effect.keywords || []).some(keyword => !redundantKeywords.has(keyword))) return null;
+      if (!group && effect.target !== 'self' && !targets[effect.target]) return null;
+      checks.push((game, source, player) => {
+        const ctx = { g: game, src: source, you: player, targets: [] };
+        const filters = group && effect.filters.map(filter => genericResolutionTargetSpec(ctx, filter, [], 0).filter);
+        const recipients = group ? game.bf().filter(card => filters.some(filter => filter(game, card, player, source)))
+          : effect.target === 'self' ? [source] : game.legalTargets(targets[effect.target], source, player);
+        return recipients.some(card => card.zone === 'battlefield' && !card.phasedOut &&
+          !(cost.sacSelf && card === source) && ((effect.power || 0) !== 0 || (effect.toughness || 0) !== 0 ||
+            (effect.keywords || []).some(keyword => !card.kw(keyword))));
+      });
+    }
+    return (game, source, player) => checks.some(check => check(game, source, player));
+  }
+
   function compileGenericAbility(operation) {
     if(operation.from&&operation.cost?.oracleCounterPayment)throw new Error('Counter payment needs a battlefield activation');
     const v4Body = operation.v4Body && MTG.compileOracleSpellV4(operation.v4Body);
@@ -2741,6 +2772,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       spec.aiHint = Object.assign({}, spec.aiHint, { avoidCostSource: true });
     }
     const modeScores = modalBody?.modes.map(mode=>genericAbilityAiScore({...operation,...mode.body},cost));
+    const priorityRelevant = genericSacrificePriorityRelevant(operation, cost, targets);
     const ordinaryAbilityScore=genericAbilityAiScore(operation,cost);
     const baseAbilityScore=operation.oracleEquip?(game,source,player)=>{
       const useful=(targets||[]).some(spec=>game.legalTargets(spec,source,player).some(target=>target.iid!==source.attachedTo));
@@ -2758,6 +2790,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ...(operation.anyPlayer?{oracleAnyPlayer:true}:{}),
       cost,
       targets,
+      ...(priorityRelevant ? {priorityRelevant} : {}),
       ...(modes?{modes}:{}),
       ...(hasGenericDivision(operation.effects) || modalBody?.modes.some(mode => hasGenericDivision(mode.body.effects)) || JSON.stringify(operation).includes('"kind":"chosen-subtype-v16"')
         ? {prepareTargets:ctx => {if(JSON.stringify(operation).includes('"kind":"chosen-subtype-v16"'))ctx.oracleSourceCapture={...ctx.oracleSourceCapture,chosenSubtypeV16:chosenSubtypeV16(ctx.src)};return prepareGenericDivisions(ctx, modalBody ? modalBody.modes[ctx.mode]?.body.effects : operation.effects);}} : {}),

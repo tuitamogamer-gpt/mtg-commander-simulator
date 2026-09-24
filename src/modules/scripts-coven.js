@@ -510,7 +510,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // --- Coven Counters: ostatak ---
   SC['Avacyn\'s Pilgrim'] = { mana: { cost: { tap: true }, produce: [{ W: 1 }] } };
   SC['Somberwald Sage'] = {
-    mana: { cost: { tap: true }, produce: [{ W: 3 }, { U: 3 }, { B: 3 }, { R: 3 }, { G: 3 }], restrict: (g, forSpell) => !!(forSpell && forSpell.card && forSpell.card.is('Creature')) },
+    mana: {
+      cost: { tap: true }, produce: [{ W: 3 }, { U: 3 }, { B: 3 }, { R: 3 }, { G: 3 }],
+      restrictLabel: 'only for creature spells',
+      restrict: (g, action) => !!action?.card && !action.isAbility && g.castHasType(action.card, action.castOpts || {}, 'Creature'),
+    },
   };
   SC['Eternal Witness'] = {
     triggers: [{

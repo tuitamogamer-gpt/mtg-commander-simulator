@@ -157,6 +157,7 @@ try {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     await shot(`playmats-${width}`);
     await page.getByRole('button', {name: 'Done', exact: true}).click();
+    if (width < 901) await page.locator('.ct-seat').first().tap();
     await page.locator('.opprow:visible .oppname').first().click();
     const overview = page.locator('.playeroverview');
     await overview.waitFor();
@@ -213,12 +214,13 @@ try {
   await nextTurn(3); // Consecutive extra turn still restores automatic following.
   await expectFocus(3);
   await nextTurn(0);
-  await expectFocus(3);
-  for (const [width, height] of [[320, 568], [390, 660], [667, 375], [844, 390]]) {
+  assert.equal(await page.locator('.myboard:visible').count(), 1, 'Your turn restores Mine on tall phones too');
+  assert.equal(await page.locator('.opprow:visible').count(), 0);
+  for (const [width, height] of [[320, 568], [390, 660], [393, 724], [390, 844], [430, 932], [667, 375], [844, 390]]) {
     await page.setViewportSize({ width, height });
     await nextTurn(2);
     await expectFocus(2);
-    assert.equal(await page.locator('.myboard:visible').count(), 0, 'Short phones give the active opponent the board area');
+    assert.equal(await page.locator('.myboard:visible').count(), 0, 'Phones give the active opponent the board area');
     const nav = page.getByRole('navigation', { name: 'Arena view' });
     await nav.getByRole('button', { name: /^Mine/i }).tap();
     assert.equal(await page.locator('.myboard:visible').count(), 1, 'Mine gives direct access to your battlefield during another turn');
@@ -234,6 +236,7 @@ try {
     await shot(`mobile-compact-mine-${width}`);
   }
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('[data-focus-player="3"]').tap();
   await page.locator('.opprow:visible .oppname').tap();
   await page.locator('.sheet').getByRole('button', { name: 'Close', exact: true }).click();
   assert.equal(await page.locator('.opprow:visible .oppstrip').count(), 1, 'Tapping the opponent header cannot silently collapse the board');
@@ -321,27 +324,32 @@ try {
   assert.equal(await page.evaluate(() => _ui.pending === window.__ctMain), true);
   check('Stack review remains a hard pause with a reachable Proceed action on desktop, short laptop and phones');
 
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 390, height: 660 });
   await page.evaluate(() => {
     _game.stack.length = 0;
     for (let count = 0; count < 11; count++) __ctPut('Forest', _ui.me, 'hand');
-    for (let count = 0; count < 12; count++) __ctPut('Riders of Gavony', _ui.me);
+    for (let count = 0; count < 12; count++) __ctPut('Riders of Gavony', _ui.me).counters['+1/+1'] = count + 5;
     _game.recalc(); _ui.render();
   });
+  const mineTab = page.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: /^Mine/i });
+  await mineTab.tap();
   await swipeBoard('.mybattlefieldmain', -160, 0);
   const boardScroll = await page.locator('.mybattlefieldmain').evaluate(element => element.scrollLeft);
   assert.ok(boardScroll > 0, 'A horizontal touch swipe scrolls the dense battlefield');
-  await swipeBoard('.opprow:visible .oppboardmain', 0, -85);
-  const opponentScroll = await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop);
-  assert.ok(opponentScroll > 0, 'A vertical swipe over battlefield cards reaches the resources');
-  assert.equal(await page.evaluate(() => !!(_ui.sheet || _ui.playerSheet)), false, 'Scrolling does not open a card or player sheet');
   await page.locator('.hand').evaluate(element => { element.scrollLeft = 380; });
   await page.locator('.myboard').evaluate(element => { element.scrollTop = 180; });
   const before = await page.evaluate(() => [document.querySelector('.hand').scrollLeft, document.querySelector('.myboard').scrollTop]);
   await page.evaluate(() => _ui.render());
   assert.deepEqual(await page.evaluate(() => [document.querySelector('.hand').scrollLeft, document.querySelector('.myboard').scrollTop]), before);
   assert.equal(await page.locator('.mybattlefieldmain').evaluate(element => element.scrollLeft), boardScroll);
+  await page.locator('[data-focus-player="2"]').tap();
+  await swipeBoard('.opprow:visible .oppboardmain', 0, -85);
+  const opponentScroll = await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop);
+  assert.ok(opponentScroll > 0, 'A vertical swipe over battlefield cards reaches the resources');
+  assert.equal(await page.evaluate(() => !!(_ui.sheet || _ui.playerSheet)), false, 'Scrolling does not open a card or player sheet');
+  await page.evaluate(() => _ui.render());
   assert.equal(await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop), opponentScroll);
+  await mineTab.tap();
   await assertPrimaryVisible('.promptbar .pbtn.primary');
   const standardSize = await page.locator('.hcard').first().boundingBox();
   await page.evaluate(() => { _ui.handSize = 'large'; _ui.render(); });
@@ -349,7 +357,7 @@ try {
   assert.ok(largerSize.width > standardSize.width && largerSize.height > standardSize.height, 'Larger-card preference changes actual dimensions');
   await shot('mobile-crowded');
   const hand = await page.locator('.hand').boundingBox();
-  assert.ok(hand.width > 200 && hand.y + hand.height <= 844);
+  assert.ok(hand.width > 200 && hand.y + hand.height <= 660);
   check('Touch swipes scroll crowded boards horizontally and reach resources vertically; board and hand positions survive rerender');
   assert.deepEqual(errors, []);
   assert.deepEqual(failedRequests, []);

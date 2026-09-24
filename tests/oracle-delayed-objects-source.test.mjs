@@ -27,7 +27,9 @@ test('delayed extension preserves every previously imported delayed-object descr
    if(!JSON.stringify(entry.implementation||[]).includes('"action":"delayed-object"'))continue;
    const raw=entry.raw,card={name:raw.name,oracle_text:raw.oracle,mana_cost:raw.cost||'',type_line:entry.catalog.typeLine,
     layout:raw._layout||'normal',power:raw.power,toughness:raw.toughness,loyalty:raw.loyalty,keywords:entry.catalog.keywords};
-   assert.deepEqual(semanticClass(card).implementation,entry.implementation,raw.name+': frozen imported descriptor');
+   // Later imports can require a newer grammar than this extension's default.
+   // Recreate each frozen descriptor with its recorded compiler version.
+   assert.deepEqual(semanticClass(card,{compilerVersion:report.selectionPolicy?.compilerVersion}).implementation,entry.implementation,raw.name+': frozen imported descriptor');
   }
  }
 });

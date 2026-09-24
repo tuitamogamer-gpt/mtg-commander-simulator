@@ -628,7 +628,7 @@ for(const role of ['human','ai']){
  });
  test(`v7 ${role}: revealed hand choice belongs to the caster and only sees eligible cards`,async()=>{
   const ctx=context(role),{game,a,b,trace}=ctx,land=put(game,b,'Forest','hand'),artifact=put(game,b,'Sol Ring','hand');let seen=[];game.revealToHuman=async data=>seen.push(...data.cards);
-  await cast(ctx,'Hand Artifact');assert.equal(artifact.zone,'graveyard');assert.equal(land.zone,'hand');assert.ok(seen.includes(land)&&seen.includes(artifact));const choice=trace.find(row=>row.q.prompt==='Choose the revealed card to discard');assert.equal(choice.q.from.length,1);assert.equal(choice.q.from[0],artifact);
+  await cast(ctx,'Hand Artifact');assert.equal(artifact.zone,'graveyard');assert.equal(land.zone,'hand');assert.ok(seen.includes(land)&&seen.includes(artifact));const choice=trace.find(row=>row.q.type==='chooseCards'&&row.q.aiHint?.kind==='bestCard'&&row.q.from.includes(artifact));assert.ok(choice,'the caster receives the revealed-hand choice');assert.equal(choice.q.from.length,1);assert.equal(choice.q.from[0],artifact);
   const bear=put(game,b,'Grizzly Bears','hand');await cast(ctx,'Hand Exile');assert.equal(bear.zone,'exile');assert.equal(b.turnState.discardedN||0,1);
   const n=b.library.length;await cast(ctx,'Hand Shuffle');assert.equal(land.zone,'library');assert.equal(b.library.length,n+1);assert.equal(b.turnState.discardedN||0,1);
  });

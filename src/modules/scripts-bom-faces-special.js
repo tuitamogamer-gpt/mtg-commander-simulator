@@ -13,5 +13,31 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  C.valentinPest=async ctx=>{if(await C.pay(ctx,'{2}'))await ctx.g.makeTokens(pest,ctx.you);};
  C.face('Valentin, Dean of the Vein',{bomValentin:true},{triggers:[{on:'lifeGain',filter:(g,c,d)=>d.player===c.ctrl,desc:'You may pay {1}; put a counter on your creatures and give them trample',run:async ctx=>{if(await C.pay(ctx,'{1}'))for(const c of ctx.g.creatures(ctx.you)){C.add(ctx,c,'+1/+1');C.grant(ctx,c,['trample'],'eot');}}}]});
  const tibaltExile=async(ctx,cards)=>{for(const c of cards){await ctx.g.move(c,'exile');if(c.zone==='exile'&&!c.isToken)C.playGrant(ctx,c,{anyColor:true});}};
- C.face('Valki, God of Lies',{triggers:[C.enterTrigger('Each opponent reveals their hand; exile a creature from each until Valki leaves',async ctx=>{const picked=[];for(const p of ctx.you.opponents(ctx.g)){await ctx.g.revealToHuman({cards:p.hand.slice(),ctrl:p,kind:'reveal'});const pool=p.hand.filter(c=>c.is('Creature')),[c]=await C.choose(ctx.g,ctx.you,pool,Math.min(1,pool.length),1,'Valki: choose a creature from '+p.name+'’s hand');if(c)picked.push(c);}if(!C.same(ctx))return;const duration={source:ctx.src,sourceZoneVersion:ctx.sourceZoneVersion,cards:picked.map(card=>({card,zoneVersion:card.zoneVersion+1})),returnZone:'hand'};(ctx.g.oracleExileDurations||=[]).push(duration);for(const c of picked){await ctx.g.move(c,'exile');if(c.zone==='exile')C.linkState(ctx.src,'bomValki').push(C.row(c));}})],abilities:[{label:'Choose an exiled creature with mana value X and become its copy',xCost:true,cost:{mana:'{X}'},run:async ctx=>{if(!C.same(ctx))return;const[c]=await C.choose(ctx.g,ctx.you,C.linked(C.linkState(ctx.src,'bomValki')).map(r=>r.card).filter(c=>c.is('Creature')&&c.mv===ctx.x),1,1,'Valki: choose an exiled creature');if(c){M.OracleV8Copies.applyCopy(ctx.g,ctx.src,M.OracleV8Faces.copyTokenDefinition(c));ctx.g.recalc();}}}]},{asEnters:(g,c)=>c.ctrl.emblems.push({name:'Tibalt, Cosmic Impostor Emblem',source:c,triggers:[]}),abilities:[L(2,'Exile the top card of each library; your emblem lets you play them',ctx=>tibaltExile(ctx,ctx.g.alivePlayers().map(p=>p.library.at(-1)).filter(Boolean))),L(-3,'Exile an artifact or creature; your emblem lets you play it',ctx=>tibaltExile(ctx,C.flat(ctx.targets)),{targets:[T.permanent((g,c)=>c.is('Artifact')||c.is('Creature'))]}),L(-8,'Exile all graveyards, gain permission to play those cards, and add three red mana',async ctx=>{await tibaltExile(ctx,ctx.g.players.flatMap(p=>p.graveyard.slice()));ctx.you.pool.R+=3;})]});
+ // Reading the linked choices must not create metadata during AI planning.
+ C.valkiCopyCards=source=>{
+  const key='bomValki:'+(source.meta.oracleCopyState?.applied||0);
+  return C.linked(source.meta.c1719Links?.[key]).map(r=>r.card).filter(c=>c.is('Creature'));
+ };
+ C.face('Valki, God of Lies',{
+  triggers:[C.enterTrigger('Each opponent reveals their hand; exile a creature from each until Valki leaves',async ctx=>{
+   const picked=[];
+   for(const p of ctx.you.opponents(ctx.g)){
+    await ctx.g.revealToHuman({cards:p.hand.slice(),ctrl:p,kind:'reveal'});
+    const pool=p.hand.filter(c=>c.is('Creature')),[c]=await C.choose(ctx.g,ctx.you,pool,Math.min(1,pool.length),1,'Valki: choose a creature from '+p.name+'’s hand');
+    if(c)picked.push(c);
+   }
+   if(!C.same(ctx))return;
+   const duration={source:ctx.src,sourceZoneVersion:ctx.sourceZoneVersion,cards:picked.map(card=>({card,zoneVersion:card.zoneVersion+1})),returnZone:'hand'};
+   (ctx.g.oracleExileDurations||=[]).push(duration);
+   for(const c of picked){await ctx.g.move(c,'exile');if(c.zone==='exile')C.linkState(ctx.src,'bomValki').push(C.row(c));}
+  })],
+  abilities:[{
+   label:'Choose an exiled creature with mana value X and become its copy',bomValkiCopy:true,xCost:true,cost:{mana:'{X}'},
+   run:async ctx=>{
+    if(!C.same(ctx))return;
+    const[c]=await C.choose(ctx.g,ctx.you,C.valkiCopyCards(ctx.src).filter(c=>c.mv===ctx.x),1,1,'Valki: choose an exiled creature');
+    if(c){M.OracleV8Copies.applyCopy(ctx.g,ctx.src,M.OracleV8Faces.copyTokenDefinition(c));ctx.g.recalc();}
+   }
+  }]
+ },{asEnters:(g,c)=>c.ctrl.emblems.push({name:'Tibalt, Cosmic Impostor Emblem',source:c,triggers:[]}),abilities:[L(2,'Exile the top card of each library; your emblem lets you play them',ctx=>tibaltExile(ctx,ctx.g.alivePlayers().map(p=>p.library.at(-1)).filter(Boolean))),L(-3,'Exile an artifact or creature; your emblem lets you play it',ctx=>tibaltExile(ctx,C.flat(ctx.targets)),{targets:[T.permanent((g,c)=>c.is('Artifact')||c.is('Creature'))]}),L(-8,'Exile all graveyards, gain permission to play those cards, and add three red mana',async ctx=>{await tibaltExile(ctx,ctx.g.players.flatMap(p=>p.graveyard.slice()));ctx.you.pool.R+=3;})]});
 })();

@@ -16,13 +16,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   if (typeof document === 'undefined' || !U.UI) return;
   const P = U.UI.prototype;
   const mobileLayout = window.matchMedia('(max-width: 900px)');
-  const compactLayout = window.matchMedia('(max-width: 900px) and (max-height: 720px)');
   let currentUI = null;
   const refreshLayout = () => {
     if (document.body.classList.contains('game-active')) currentUI?.render();
   };
   mobileLayout.addEventListener('change', refreshLayout);
-  compactLayout.addEventListener('change', refreshLayout);
   const node = (tag, cls, text) => {
     const element = document.createElement(tag);
     if (cls) element.className = cls;
@@ -68,7 +66,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ribbon = node('nav', 'ct-seat-ribbon');
     ribbon.setAttribute('aria-label', 'Players at the table');
     for (const player of focus.opponents) {
-      const selected = player === focus.focused && (!compactLayout.matches || this.mobileView !== 'mine' || this.commandMobileBoard === 'opponent');
+      const selected = player === focus.focused && (!mobileLayout.matches || this.mobileView !== 'mine' || this.commandMobileBoard === 'opponent');
       const seat = button('ct-seat' + (selected ? ' selected' : '') + (player === game.turnPlayer ? ' active' : ''), undefined, () => {
         this.commandFocusPlayer = player.idx;
         this.commandMobileBoard = 'opponent';
@@ -123,7 +121,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (mineTab) {
       const openMine = mineTab.onclick;
       mineTab.onclick = () => { this.commandMobileBoard = 'mine'; openMine(); };
-      const selected = this.mobileView === 'mine' && (!compactLayout.matches || root.dataset.mobileBoard === 'mine');
+      const selected = this.mobileView === 'mine' && (!mobileLayout.matches || root.dataset.mobileBoard === 'mine');
       mineTab.classList.toggle('on', selected);
       mineTab.setAttribute('aria-pressed', String(selected));
     }
