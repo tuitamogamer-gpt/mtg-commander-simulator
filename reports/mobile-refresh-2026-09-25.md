@@ -23,6 +23,9 @@
 - U stvarnoj Solo partiji, Quick Draw, seed 11081: Island je odigran iz Hand prikaza kroz uobičajeni card sheet. Broj karata se smanjio s 8 na 7, Island se pojavio među resursima i pogled se vratio na Mine.
 - U pripremi su provjereni pretraga, filter boje, sortiranje, Compact/Grid, Deck Spotlight, Build this pod, Learn a deck i Review. Preset je prenesen u završni pregled kao jedan AI i easy težina.
 - Postojeća skripta `tests/browser/mobile-table-view.mjs` proširena je za Hand, praznu/veliku ruku i povratak na desktop. Ta Playwright skripta nije izvršavana u ovoj sesiji; gore su navedene zasebno izvršene provjere.
+- Provjera objave uskladila je postojeći test navigacije s novim Hand tabom te zastarjele inventarne provjere s prethodno dodanim FRC špilom: 6.384 aktivne karte, 3.917 native definicija, eksplicitne slike tokena i 176 aktivnih X spellova, uključujući White Sun's Twilight. Pogođene četiri datoteke prolaze u završnoj zajedničkoj provjeri, **29/29**; pravila i podaci igre nisu mijenjani.
+- Širi prolaz kroz 470 praćenih testnih datoteka završio je s **12.263 prolazne i četiri neuspjele provjere**. Sve četiri bile su gore navedena zastarjela očekivanja i pokrivene su završnim prolaznim ponavljanjem. Početni izlazni kod 1 ostaje zabilježen. Duga globalna simulacija `headless-smoke.test.mjs` nije pokretana, pa ovo nije tvrdnja o punom `npm test` prolazu.
+- `npm.cmd run audit`, `npm.cmd run certify:strict` i `npm.cmd audit --omit=dev --audit-level=high` prolaze. Certifikacija provjerava 24.775 definicija i 14.224 card/deck kombinacije; sigurnosni audit ne prijavljuje ranjivosti.
 
 ## Pregled toka
 

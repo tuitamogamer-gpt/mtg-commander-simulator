@@ -175,6 +175,7 @@ const ACTIVE_X_SPELLS = [
   "Wake the Dead",
   "West Coast Expansion",
   "Whir of Invention",
+  "White Sun's Twilight",
   "White Sun's Zenith",
   "Wildfire Awakener",
   "Worldsoul's Rage",
@@ -258,7 +259,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva svih 175 aktivnih X spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva svih 176 aktivnih X spella i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();

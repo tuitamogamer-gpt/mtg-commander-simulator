@@ -70,9 +70,19 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   const finalImages=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c13-td0-sld-2026-09-19/images.json',import.meta.url)));
   for(const token of finalImages.tokenVariants)expected.add(token.alias);
   for(const [name,alias] of Object.entries(finalImages.canonicalAliases)){expected.add(name);assert.equal(MTG.cardImageURL(name),MTG.cardImageURL(alias),name+': pinned canonical token alias');}
+  const frcOracle = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-frc-2026-09-24/oracle.json', import.meta.url)));
+  for (const face of frcOracle.cards.flatMap(row => row.faces || [])) expected.add(face.name);
+  const frcImages = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-frc-2026-09-24/images.json', import.meta.url)));
+  for (const token of frcImages.tokenVariants) expected.add(token.alias);
+  for (const [name, alias] of Object.entries(frcImages.canonicalAliases)) {
+    expected.add(name);
+    assert.equal(MTG.cardImageURL(name), MTG.cardImageURL(alias), name + ': pinned canonical token alias');
+  }
   for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {
-    expected.add(faceName(token.name));
-    if(token.tokenImageName)expected.add(token.tokenImageName);
+    // Renderers use a token's explicit art alias. Its printed name can also
+    // identify a different catalog card, as with the Gingerbrute token.
+    expected.add(faceName(token.tokenImageName || token.name));
+    if (!token.tokenImageName || !MTG.CARD_CATALOG?.[token.name]) expected.add(faceName(token.name));
   }
   assert.notEqual(MTG.cardImageURL(MTG.TOKENS.c1516DaxosSpirit.tokenImageName),MTG.cardImageURL('Spirit'));
 
