@@ -101,6 +101,32 @@
   #game.command-table .ct-player-zones button.zonecounter { min-height: 44px; }
   #game.command-table .ct-focus-board { min-height: 44px; min-width: 44px; }
 
+  /* Targeting needs the battlefield. Size the prompt to its content, keep
+     confirmation outside the scrolling instructions, and use Hand for cards
+     in hand until the choice is complete. */
+  #game.command-table .ct-decision-rail.has-targets {
+    height: auto;
+    max-height: 180px;
+  }
+  #game.command-table .ct-decision-rail.has-targets:has(.targetzonelinks) { max-height: 228px; }
+  #game.command-table .ct-decision-rail.has-targets .ct-decision-heading { display: none; }
+  body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    gap: 6px;
+  }
+  #game.command-table .targetpromptbody { flex: 0 1 auto; gap: 6px; }
+  #game.command-table .targetpromptbody > .targetprompthint:not(.targetconstraint) { order: 1; }
+  #game.command-table .targetinstruction { padding: 5px 8px; }
+  #game.command-table .targetstep { margin-bottom: 2px; }
+  #game.command-table .targetprompt:not(.proliferateprompt) .targetpickchips:has(.targetpickempty) { display: none; }
+  body.game-active #game.command-table[data-mobile-view='mine']:has(.ct-decision-rail.has-targets) {
+    --ct-hand: 0px;
+    --ct-hand-extra: 0px;
+  }
+  body.game-active #game.command-table[data-mobile-view='mine']:has(.ct-decision-rail.has-targets) .handwrap { display: none !important; }
+
   /* Hand tools sit above the cards instead of consuming a card's width. */
   body.game-active #game.command-table .handwrap {
     display: grid !important;
@@ -185,6 +211,17 @@
 }
 
 @media (min-width: 600px) and (max-width: 900px) and (max-height: 500px) {
+  /* A side dock leaves a complete row of battlefield cards visible even on
+     short landscape screens. The Hand destination still uses the full width. */
+  body.game-active #game.command-table[data-mobile-view='mine']:has(.ct-decision-rail.has-targets) {
+    grid-template-columns: 104px minmax(0, 1fr) 240px !important;
+    grid-template-rows: 48px minmax(0, 1fr) var(--ct-tabs) !important;
+    grid-template-areas: 'topbar topbar topbar' 'seats mine decision' 'tabs tabs tabs' !important;
+  }
+  body.game-active #game.command-table[data-mobile-view='mine'][data-mobile-board='opponent']:has(.ct-decision-rail.has-targets) {
+    grid-template-areas: 'topbar topbar topbar' 'seats opps decision' 'tabs tabs tabs' !important;
+  }
+  #game.command-table[data-mobile-view='mine'] .ct-decision-rail.has-targets { max-height: 100%; align-self: end; }
   /* Preserve the side-by-side battlefield and hand in landscape. */
   body.game-active #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets) .promptbar { display: flex; flex-direction: row; align-items: center; gap: 12px; }
   #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets) .promptbar .ptext { flex: 1; min-width: 0; }
