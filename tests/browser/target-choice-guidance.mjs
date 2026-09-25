@@ -127,6 +127,7 @@ try {
   await page.evaluate(() => { _ui.resolvePending([]); __beginGuidance(); });
   for (const [width, height] of [[1440, 1024], [1280, 720], [390, 844], [320, 568]]) {
     await page.setViewportSize({ width, height });
+    await page.waitForFunction(() => Math.abs(document.querySelector('#game').getBoundingClientRect().height - innerHeight) < 2);
     assert.equal(await page.locator('.targetinstructiontext').innerText(), await page.evaluate(() => __guidance.prompt));
     assert.equal(await page.locator('.targetstep').innerText(), 'TARGET 1 OF 2');
     assert.ok(await page.locator('.targetpromptbody').evaluate(element => element.clientHeight >= 64), 'The instruction has readable space above the fixed actions');
