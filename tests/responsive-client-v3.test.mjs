@@ -269,7 +269,7 @@ test('Arena menus own keyboard input and new human decisions return mobile UI to
   assert.equal(prevented, true);
   assert.equal(renders, 1);
 
-  arena.mobileView = 'table';
+  arena.mobileView = 'hand';
   arena.utilityDrawerOpen = true;
   arena.autoAnswer = () => undefined;
   arena.openReactWindow = () => false;
@@ -278,4 +278,29 @@ test('Arena menus own keyboard input and new human decisions return mobile UI to
   assert.equal(arena.utilityDrawerOpen, false);
   arena.resolvePending({ cards: [] });
   await decision;
+});
+
+test('mobile hand, table and stack navigation preserves the unanswered engine decision and hand', () => {
+  const { UI } = loadUIForKeyboardTest();
+  const arena = new UI();
+  const cards = Object.freeze([{ iid: 17 }, { iid: 29 }]);
+  const decision = Object.freeze({ q: { type: 'main' }, resolve() { assert.fail('Navigation must not answer a decision'); } });
+  arena.me = { hand: cards };
+  arena.pending = decision;
+  arena.commandMobileBoard = 'opponent';
+  let renders = 0;
+  arena.render = () => { renders++; };
+  for (const view of ['hand', 'table', 'stack', 'hand', 'mine']) {
+    arena.showMobileView(view);
+    assert.equal(arena.mobileView, view);
+    assert.equal(arena.utilityDrawerOpen, view === 'stack');
+    assert.equal(arena.pending, decision);
+    assert.equal(arena.me.hand, cards);
+  }
+  assert.equal(arena.commandMobileBoard, 'mine');
+  assert.equal(arena.sidebarTab, 'table');
+  assert.equal(renders, 5);
+  arena.showMobileView('unknown');
+  assert.equal(arena.mobileView, 'mine');
+  assert.equal(renders, 5);
 });

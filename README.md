@@ -243,6 +243,8 @@ Solo players and all Live players use the **Command Table** interface. **Table**
 
 On phones and tablets, the focused opponent follows the active player's turn. Tap another opponent to inspect their board until the next turn. Short screens show one battlefield at a time: **Mine** opens your board, and an opponent's seat opens theirs. Your turn brings your battlefield back automatically. Dense mobile battlefields scroll horizontally, with lands and mana sources below; landscape phones place the hand beside the board.
 
+The mobile **Hand** tab (or **View all** above your cards) opens a scrollable grid of your entire hand. Sort, inspect and play cards through their usual actions while the current decision stays within reach. **Mine** returns to your battlefield; **Table** and **Stack** keep their own views. In the phone deck library, **Filters** also opens sorting and the Grid/Compact layout choices.
+
 ## Automatic and manual mana
 
 The arena's **MANA** button switches between automatic payment and choosing your mana sources manually. **Automatic** is the default; the preference is saved in your current browser. The same toggle and source picker are available in Solo and to every Live player. Each Live player's preference is independent; the host validates and applies their selected payment.

@@ -67,7 +67,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ribbon = node('nav', 'ct-seat-ribbon');
     ribbon.setAttribute('aria-label', 'Players at the table');
     for (const player of focus.opponents) {
-      const selected = player === focus.focused && (!mobileLayout.matches || this.mobileView !== 'mine' || this.commandMobileBoard === 'opponent');
+      const selected = player === focus.focused && (!mobileLayout.matches || (this.mobileView === 'mine' && this.commandMobileBoard === 'opponent'));
       const seat = button('ct-seat' + (selected ? ' selected' : '') + (player === game.turnPlayer ? ' active' : ''), undefined, () => {
         this.commandFocusPlayer = player.idx;
         this.commandMobileBoard = 'opponent';

@@ -2209,12 +2209,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.render();
     }
 
+    showMobileView(view) {
+      if (!['mine', 'table', 'hand', 'stack'].includes(view)) return;
+      this.mobileView = view;
+      this.utilityDrawerOpen = view === 'stack';
+      if (view === 'mine') this.commandMobileBoard = 'mine';
+      if (view === 'stack') this.sidebarTab = 'table';
+      this.render();
+      document.querySelector(`.mobileviewtab[data-view="${view}"]`)?.focus({ preventScroll: true });
+    }
+
     renderMobileViewTabs(g) {
       const tabs = el('nav', 'mobileviewtabs');
       tabs.setAttribute('aria-label', 'Arena view');
       const diplomacyView = g.diplomacy && g.diplomacy.enabled && g.diplomacyView ? g.diplomacyView(this.me) : null;
       const incoming = diplomacyView ? diplomacyView.incoming.length : 0;
-      const items = [['mine', 'player', 'MINE'], ['table', 'cards', 'TABLE'], ['stack', 'stack', `STACK ${g.stack.length || ''}`]];
+      const items = [['mine', 'player', 'MINE'], ['table', 'playmat', 'TABLE'], ['hand', 'cards', `HAND ${this.me.hand.length}`], ['stack', 'stack', `STACK ${g.stack.length || ''}`]];
       if (diplomacyView) items.push(['diplomacy', 'deals', `POLITICS${incoming ? ` ${incoming}` : ''}`]);
       for (const [key, icon, label] of items) {
         const isPolitics = key === 'diplomacy';
@@ -2223,12 +2233,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : this.mobileView === key;
         const button = el('button', 'mobileviewtab' + (isOn ? ' on' : '') + (isPolitics ? ' politics' : ''), `${U.icon(icon)}<span>${esc(label.trim())}</span>`);
         button.type = 'button';
+        button.dataset.view = key;
+        button.setAttribute('aria-pressed', String(isOn));
         button.onclick = () => {
           if (isPolitics) { this.openUtility('diplomacy'); return; }
-          this.mobileView = key;
-          this.utilityDrawerOpen = key === 'stack';
-          if (key === 'stack') this.sidebarTab = 'table';
-          this.render();
+          this.showMobileView(key);
         };
         if (isPolitics && incoming) button.title = `${incoming} unanswered diplomacy proposal${incoming === 1 ? '' : 's'}`;
         tabs.appendChild(button);

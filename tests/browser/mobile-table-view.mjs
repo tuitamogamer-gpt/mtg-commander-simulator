@@ -84,6 +84,16 @@ async function assertPhoneLayout(label) {
     }
     assertUsable(layout, 'hand');
     assert.ok(layout.hand.y + layout.hand.height <= layout.height + 1, `Hand remains on screen: ${JSON.stringify(layout)}`);
+  } else if (layout.view === 'hand') {
+    assertUsable(layout, 'hand');
+    assert.equal(layout.board.display, 'none', 'Full hand owns the board area');
+    assert.equal(layout.opponents.display, 'none', 'Full hand does not leave a hidden opponent grid row');
+    assert.ok(layout.hand.y + layout.hand.height <= layout.prompt.y + 1, 'All-card view ends before the decision controls');
+    const cards = await page.locator('.hand .hcard').evaluateAll(nodes => nodes.map(node => {
+      const r = node.getBoundingClientRect();
+      return { width: r.width, height: r.height };
+    }));
+    for (const card of cards) assert.ok(card.width >= 120 && card.height >= 168, 'Expanded hand cards remain readable');
   } else {
     assert.equal(layout.hand.display, 'none', `${layout.view} hides the hand without an implicit grid area`);
     assertUsable(layout, layout.view === 'table' ? 'opponents' : 'sidebar');
@@ -217,17 +227,21 @@ try {
   await assertPhoneLayout('real-table-390');
   await switchView('Stack');
   await assertPhoneLayout('real-stack-390');
+  await switchView('Hand');
+  await assertPhoneLayout('real-hand-390');
+  await screenshot('real-hand-390');
   await switchView('Mine');
   await assertPhoneLayout('real-mine-390');
   assert.equal(await page.evaluate(() => _ui.pending === window.__mobilePending), true, 'View changes preserve the actual pending decision');
   assert.deepEqual(await page.evaluate(() => _ui.me.hand.map(card => card.iid)), await page.evaluate(() => window.__mobileHand));
-  check('Real seeded four-player game: Mine → Table → Stack → Mine, usable layout and pending decision retained');
+  check('Real seeded four-player game: Mine → Table → Stack → Hand → Mine, usable layout and pending decision retained');
 
   const land = await page.evaluate(() => ({ iid: _ui.pending.q.lands[0].iid, name: _ui.pending.q.lands[0].name }));
+  await switchView('Hand');
   await page.locator('.hand .hcard').filter({ has: page.locator('.mname', { hasText: land.name }) }).first().click();
   await page.locator('.sheetacts button').filter({ hasText: 'Play land' }).click();
   await page.waitForFunction(id => _game.bf().some(card => card.ctrl === _ui.me && card.iid === id), land.iid);
-  check('Actual land play through the card sheet succeeds after view switching');
+  check('Actual land play from the full hand succeeds through the original card sheet after view switching');
 
   for (const handMode of ['normal', 'empty', 'large']) {
     await installFixture(handMode);
@@ -242,25 +256,28 @@ try {
       await switchView('Stack');
       await assertPhoneLayout(`${handMode}-stack-${width}x${height}`);
       if (width === 390 && height === 844) await screenshot(`${handMode}-stack-390`);
+      await switchView('Hand');
+      await assertPhoneLayout(`${handMode}-hand-${width}x${height}`);
+      if (width === 390 && height === 844) await screenshot(`${handMode}-hand-390`);
       await switchView('Mine');
       await assertPhoneLayout(`${handMode}-mine-${width}x${height}`);
       if (width === 390 && height === 844) await screenshot(`${handMode}-mine-390`);
       assert.equal(await page.evaluate(() => _ui.pending === window.__mobilePending && !window.__mobileDecisionAnswered), true);
       assert.deepEqual(await page.evaluate(() => _ui.me.hand.map(card => card.iid)), await page.evaluate(() => window.__mobileHand));
     }
-    check(`${handMode} hand: Table, Stack and Mine at 320×568, 390×720/844, 430×932 and 767×900; all decisions retained`);
+    check(`${handMode} hand: Table, Hand, Stack and Mine at 320×568, 390×720/844, 430×932 and 767×900; all decisions retained`);
   }
   check('Every opponent seat is scrollable and public battlefield cards remain clickable');
 
   await page.setViewportSize({ width: 820, height: 1180 });
-  for (const view of ['table', 'stack', 'mine']) {
+  for (const view of ['table', 'hand', 'stack', 'mine']) {
     await switchView(view);
     await assertPhoneLayout(`tablet-${view}-820`);
   }
   await screenshot('arena-820');
   for (const [width, height] of [[1024, 900], [1440, 1000]]) {
     await page.setViewportSize({ width, height });
-    for (const lastMobileView of ['table', 'stack', 'mine']) {
+    for (const lastMobileView of ['table', 'hand', 'stack', 'mine']) {
       // Resize from each phone destination so desktop cannot inherit a hidden hand.
       await page.setViewportSize({ width: 390, height: 844 });
       await switchView(lastMobileView);

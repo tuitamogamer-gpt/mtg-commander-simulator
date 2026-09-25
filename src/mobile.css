@@ -1,0 +1,215 @@
+/* Phone presentation. Keep the original card controls and engine decisions;
+   only the space allocated to each surface changes between destinations. */
+#game .handexpand { display: none; }
+
+@media (max-width: 700px) {
+  /* Give the primary action a clear place, with the two alternatives beside
+     each other. These rules also apply to the lightweight first paint. */
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions .mainmenu-primary {
+    grid-column: 1 / -1;
+    min-height: 66px;
+    flex-direction: row;
+    align-items: center;
+  }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions button { min-height: 72px; padding: 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions b { font-size: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions small { font-size: 11px; line-height: 1.5; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions .mainmenu-primary b { font-size: 18px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions .gameicon { display: none; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-action-arrow { margin-left: auto; }
+
+  /* Setup needs a short introduction, not a second hero above its controls. */
+  #setup[data-app-view="setup"] .menuhead {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+    padding: max(10px, env(safe-area-inset-top)) 16px 14px !important;
+    gap: 8px !important;
+  }
+  #setup[data-app-view="setup"] .setupbrand { grid-column: 1; grid-row: 1; display: grid; place-items: center; width: 44px; min-height: 44px; }
+  #setup[data-app-view="setup"] .setupbrand :is(b, small) { display: none; }
+  #setup[data-app-view="setup"] .setupbrand .menumark { grid-column: 1; grid-row: 1; margin: 0; }
+  #setup[data-app-view="setup"] .menu-mana-showcase { display: none !important; }
+  #setup[data-app-view="setup"] .setupsteps { grid-column: 2; grid-row: 1; margin: 0; gap: 6px; }
+  #setup[data-app-view="setup"] .setupstep { flex: 1; min-width: 0; gap: 4px; padding: 7px 4px; font-size: 12px; }
+  #setup[data-app-view="setup"] .setupstep > span { flex: 0 0 20px; width: 20px; height: 24px; font-size: 12px; }
+  #setup[data-app-view="setup"] .setupstep b { font-size: 12px; letter-spacing: 0; text-transform: none; }
+  #setup[data-app-view="setup"] .setupstep::after { display: none; }
+  #setup[data-app-view="setup"] .setuphero { grid-column: 1 / -1; grid-row: 2; padding-top: 4px !important; }
+  #setup[data-app-view="setup"] .setuphero .menu-kicker { display: none; }
+  #setup[data-app-view="setup"] .setuphero .title { font-size: clamp(25px, 6.7vw, 34px); line-height: 1.15; margin: 0 !important; }
+  #setup[data-app-view="setup"] .setuphero .subtitle { margin: 7px 0 0 !important; font-size: 12px; line-height: 1.5; }
+  #setup[data-app-view="setup"] .setupgrid { padding-top: 10px !important; }
+  #setup .deckexplorerhead { margin-bottom: 8px; }
+  #setup[data-setup-stage="deck"] .deckexplorerhead h2 { font-size: 17px; }
+  #setup .deckdiscovery { margin-bottom: 4px; }
+  #setup .decktoolbar { padding-block: 8px; margin-bottom: 10px; }
+  #setup .decktoolbar .deckbrowsebar { margin-top: 6px; row-gap: 4px; }
+  /* Sort and layout are secondary options, beside the other filters. The
+     result count and pagination remain available while browsing. */
+  #setup .decktoolbar:not(:has(.filters-open)) .deckbrowseoptions { display: none; }
+  #setup .decktoolbar .deckbrowseoptions { padding-top: 4px; }
+  #setup .decktoolbar .deckfiltertoggle { padding-inline: 10px; }
+  #setup[data-deck-view] .decklist { scroll-margin-top: 122px; gap: 10px !important; }
+  #setup:has(.filters-open) .decklist { scroll-margin-top: 300px; }
+  #setup .deckcardheading { min-height: 76px; padding: 10px 36px 8px 10px; gap: 5px; }
+  #setup[data-deck-view] .deckname { font-size: 16px !important; line-height: 1.2 !important; }
+  #setup .deckportraits { height: 152px; }
+  #setup .deckvisual { padding: 0 8px 10px; }
+  #setup[data-deck-view] .deckinfo { padding: 10px !important; gap: 5px; }
+  #setup[data-deck-view] .deckset { font-size: 10px !important; line-height: 1.4 !important; }
+  #setup[data-deck-view="compact"] .deckcard { grid-template-columns: 100px minmax(0, 1fr) !important; }
+  #setup[data-deck-view="compact"] .deckcardheading { min-height: 0; }
+  #setup[data-deck-view="compact"] .deckportraits { height: 132px; }
+  #setup .setupmobilebar { bottom: max(8px, env(safe-area-inset-bottom)); width: calc(100% - 16px); padding: 10px 12px; gap: 10px; }
+  #setup .setupmobilebar .pbtn { padding-inline: 18px; }
+  #setup .mobiledeck b { font-size: 14px; }
+  #setup .podpresets { margin-block: 14px; padding-bottom: 14px; }
+  #setup .podpresetchips { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  #setup .podpresetchips button { padding: 10px 8px; min-height: 80px; gap: 6px; }
+  #setup .podpresetchips button b { font-size: 12px; line-height: 1.35; }
+  #setup .podpresetchips button small { font-size: 10px; line-height: 1.5; }
+  /* A 16px input prevents focus zoom on phone browsers. */
+  #setup[data-app-view="setup"] input,
+  #game :is(.sheet, .modal, .quickmenu) :is(input, textarea) { font-size: 16px; }
+}
+
+@media (max-width: 900px) {
+  body.game-active #game.command-table {
+    --ct-hand: 184px;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-left: env(safe-area-inset-left, 0px) !important;
+    padding-right: env(safe-area-inset-right, 0px) !important;
+    box-sizing: border-box;
+  }
+  #game.command-table .mobileviewtabs { gap: 4px; padding-inline: 8px; }
+  #game.command-table .mobileviewtab { border-radius: 8px; font-size: 11px; gap: 4px; }
+  #game.command-table .mobileviewtab.on { background: rgba(var(--ds-accent-rgb), .12); }
+  #game.command-table .mobileviewtab:focus-visible { outline: 2px solid var(--ds-accent-bright); outline-offset: -2px; }
+  #game.command-table .ct-seat { border-radius: 8px; }
+  #game.command-table .ct-seat-copy b { font-size: 11px; }
+  #game.command-table .ct-seat-life { font-size: 15px; }
+  /* The phase is already in the header. Keep targeting and review headings. */
+  #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets) .ct-decision-heading { display: none; }
+  #game.command-table .ct-decision-rail { padding: 8px 10px; }
+  #game.command-table .promptbar .btnrow { gap: 6px; }
+  #game.command-table .promptbar .btnrow > .pbtn { min-height: 46px; border-radius: 8px; font-size: 12px; }
+  #game.command-table .ct-player-head .zbtn,
+  #game.command-table .ct-player-zones button.zonecounter { min-height: 44px; }
+  #game.command-table .ct-focus-board { min-height: 44px; min-width: 44px; }
+
+  /* Hand tools sit above the cards instead of consuming a card's width. */
+  body.game-active #game.command-table .handwrap {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 44px minmax(0, 1fr);
+    padding: 0 8px 6px !important;
+    gap: 0;
+  }
+  #game.command-table .handtools {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+    gap: 8px;
+    padding: 0;
+    order: -1;
+  }
+  #game.command-table .handtoolstitle { font-size: 11px; gap: 5px; white-space: nowrap; flex-wrap: nowrap; }
+  #game.command-table .handtoolstitle b { color: var(--ds-accent-bright); }
+  #game.command-table .handsortlabel { width: auto; margin: 0 0 0 auto; min-width: 0; }
+  #game.command-table .handsortlabel > span { display: none; }
+  #game.command-table .handtools select { width: 110px; max-width: 100%; font-size: 12px; padding: 4px 6px; border: 0; background: transparent; }
+  #game.command-table .handexpand { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-height: 44px; padding: 5px 8px; border: 0; background: transparent; color: var(--ds-accent-bright); font: 650 12px var(--ds-font-body); cursor: pointer; }
+  #game.command-table .handexpand:focus-visible { outline: 2px solid var(--ds-accent-bright); outline-offset: -2px; }
+  body.game-active #game.command-table .hand { grid-row: 2; grid-column: 1; width: 100%; height: 100% !important; min-height: 0 !important; gap: 8px !important; padding: 3px 3px 6px !important; overflow-y: hidden; scroll-snap-type: x proximity; }
+  body.game-active #game.command-table .hcard { width: calc((var(--ct-hand) + var(--ct-hand-extra) - 70px) / 1.4) !important; height: calc(var(--ct-hand) + var(--ct-hand-extra) - 70px) !important; }
+  #game.command-table .hcard { scroll-snap-align: start; }
+  #game.command-table .handwrap:has(.handzones) { grid-template-columns: minmax(90px, 26%) minmax(0, 1fr); column-gap: 6px; }
+  #game.command-table .handwrap:has(.handzones) .hand { grid-column: 2; }
+  body.game-active #game.command-table[data-mobile-view='mine'] .handzones + .hand { min-height: 0 !important; }
+  #game.command-table .handzones { grid-column: 1; grid-row: 2; width: 100%; max-width: none; min-height: 0; }
+  body.game-active #game.command-table.empty-hand .handwrap { grid-template-rows: minmax(0, 1fr); }
+  body.game-active #game.command-table.empty-hand .hand { grid-row: 1; }
+
+  /* Full hand is a destination, using the very same card nodes and handlers.
+     Decision buttons and navigation stay visible outside its scroll area. */
+  body.game-active #game.command-table[data-mobile-view='hand'] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: 52px 60px minmax(0, 1fr) auto var(--ct-tabs) !important;
+    grid-template-areas: 'topbar' 'seats' 'hand' 'decision' 'tabs' !important;
+  }
+  body.game-active #game.command-table[data-mobile-view='hand'] :is(.oppsouter, .myboard) { display: none !important; }
+  body.game-active #game.command-table[data-mobile-view='hand'] .handwrap { grid-template-columns: minmax(0, 1fr); margin: 0 8px 6px; width: auto; padding-inline: 8px !important; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-panel); }
+  body.game-active #game.command-table[data-mobile-view='hand'] .hand {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(126px, 1fr));
+    grid-auto-rows: max-content;
+    align-content: start;
+    justify-items: center;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scroll-snap-type: none;
+    gap: 12px !important;
+    padding: 6px !important;
+  }
+  body.game-active #game.command-table[data-mobile-view='hand'] .hcard {
+    width: 100% !important;
+    max-width: 200px;
+    height: auto !important;
+    aspect-ratio: 5 / 7;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  #game.command-table[data-mobile-view='hand'] .hcard .mname { font-size: 12px; line-height: 1.4; }
+  #game.command-table[data-mobile-view='hand'] .handwrap:has(.handzones) { grid-template-rows: 44px minmax(64px, auto) minmax(0, 1fr); }
+  #game.command-table[data-mobile-view='hand'] .handzones { grid-column: 1; grid-row: 2; max-height: 112px; }
+  body.game-active #game.command-table[data-mobile-view='hand'] .handzones + .hand { grid-column: 1; grid-row: 3; }
+  body.game-active #game.command-table[data-mobile-view='hand'] .hand.is-empty { height: 100% !important; grid-template-columns: 1fr; align-content: center; }
+  #game.command-table[data-mobile-view='hand'] .hand.is-empty .emptyrow > span { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+  #game.command-table[data-mobile-view='hand'] .hand.is-empty .emptyrow b { font-size: 15px; }
+  #game.command-table[data-mobile-view='hand'] .hand.is-empty .emptyrow small { display: block; max-width: 220px; font-size: 12px; line-height: 1.5; }
+}
+
+@media (max-width: 900px) and (max-height: 720px) {
+  body.game-active #game.command-table { --ct-hand: 160px; }
+  body.game-active #game.command-table[data-mobile-view='hand'] { grid-template-rows: 48px 52px minmax(0, 1fr) auto var(--ct-tabs) !important; }
+  #game.command-table .ct-decision-rail { padding-block: 5px; }
+}
+
+@media (min-width: 600px) and (max-width: 900px) and (max-height: 500px) {
+  /* Preserve the side-by-side battlefield and hand in landscape. */
+  body.game-active #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets) .promptbar { display: flex; flex-direction: row; align-items: center; gap: 12px; }
+  #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets) .promptbar .ptext { flex: 1; min-width: 0; }
+  #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets) .promptbar .btnrow { flex: 1; margin: 0; }
+  #game.command-table[data-mobile-view='mine'] .handtools { gap: 3px; flex-wrap: nowrap; }
+  #game.command-table[data-mobile-view='mine'] .handsortlabel { display: none; }
+  #game.command-table[data-mobile-view='mine'] .handtoolstitle > span { display: none; }
+  #game.command-table[data-mobile-view='hand'] .ct-seat-ribbon { display: none; }
+  body.game-active #game.command-table[data-mobile-view='hand'] {
+    --ct-landscape-card: clamp(90px, calc((100 * var(--dvhu) - 224px) / 1.4), 160px);
+    grid-template-rows: 48px minmax(0, 1fr) auto var(--ct-tabs) !important;
+    grid-template-areas: 'topbar' 'hand' 'decision' 'tabs' !important;
+  }
+  body.game-active #game.command-table[data-mobile-view='hand'] .hand { grid-template-columns: repeat(auto-fill, minmax(var(--ct-landscape-card), 1fr)); }
+  body.game-active #game.command-table[data-mobile-view='hand'] .hcard { width: var(--ct-landscape-card) !important; }
+  body.game-active #game.command-table[data-mobile-view='hand'] .handwrap:has(.handzones) { grid-template-columns: 160px minmax(0, 1fr); grid-template-rows: 44px minmax(0, 1fr); column-gap: 8px; }
+  #game.command-table[data-mobile-view='hand'] .handzones { grid-column: 1; grid-row: 2; max-height: none; height: 100%; }
+  body.game-active #game.command-table[data-mobile-view='hand'] .handzones + .hand { grid-column: 2; grid-row: 2; }
+}
+
+@media (max-width: 360px) {
+  #game.command-table .handtools { gap: 3px; }
+  #game.command-table .handtools select { width: 96px; }
+  #game.command-table .handtoolstitle .gameicon { display: none; }
+  #game.command-table .handexpand { padding-inline: 4px; font-size: 11px; }
+  #setup .podpresetchips { grid-template-columns: minmax(0, 1fr); }
+  #setup .podpresetchips button { min-height: 54px; }
+}
