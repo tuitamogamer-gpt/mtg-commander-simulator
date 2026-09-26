@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-26",
+  "baseUrl": "http://127.0.0.1:8000/",
+  "method": "Codex browser UI; normal selector, spotlight, pod builder, review and opening-hand controls",
+  "guideChecks": [
+    {
+      "deck": "Keen Engineering",
+      "width": 1280,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Wretched Ranks",
+      "width": 1280,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Reign of Dragons",
+      "width": 1280,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Tramplesaurus Rex",
+      "width": 1280,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Calling All Angels",
+      "width": 1280,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Calling All Angels",
+      "width": 390,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Keen Engineering",
+      "width": 390,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Wretched Ranks",
+      "width": 390,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Reign of Dragons",
+      "width": 390,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "deck": "Tramplesaurus Rex",
+      "width": 390,
+      "guide": true,
+      "commanderImageLoaded": true,
+      "horizontalOverflow": false
+    }
+  ],
+  "desktopSignatureImagesLoaded": true,
+  "opening": {
+    "humanDeck": "Tramplesaurus Rex",
+    "commander": "Ghalta, Primal Hunger",
+    "opponents": [
+      "Calling All Angels",
+      "Keen Engineering",
+      "Reign of Dragons"
+    ],
+    "seed": 296953970,
+    "hand": 7,
+    "library": 92,
+    "command": 1,
+    "allSeatsTotal": 100,
+    "keptHand": true,
+    "reachedTurn": 2
+  },
+  "notes": [
+    "The first dynamic module request failed locally. Reload succeeded and all recorded checks ran after recovery. No later application errors were captured.",
+    "Mobile commander artwork and layout were checked at 390 pixels. Below-fold signature images use lazy loading; their loaded state was verified at the desktop size.",
+    "The temporary viewport override was reset."
+  ],
+  "passed": true
+}

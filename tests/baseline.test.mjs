@@ -27,9 +27,9 @@ test('commander svakog decka postoji u listi i kompletnom katalogu, uključujuć
   }
 });
 
-test('svih 170 originalnih deckova dostupno je u proizvodu, uključujući Blame Game', () => {
-  assert.equal(raw.decks.length, 170);
-  assert.equal(report.deckRows.length, 170);
+test('svih 175 originalnih deckova dostupno je u proizvodu, uključujući Blame Game', () => {
+  assert.equal(raw.decks.length, 175);
+  assert.equal(report.deckRows.length, 175);
   assert.deepEqual(report.excludedDeckRows, []);
   assert.deepEqual(report.deckRows.map(deck => deck.name).sort(), Object.keys(loadEngine().DECKS).sort());
 });

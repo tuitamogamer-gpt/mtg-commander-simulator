@@ -1,0 +1,68 @@
+{
+  "baseline": "e24aa5ac14adfda448e5d83a1587d1e8c903d69a",
+  "passed": true,
+  "originalPhysicalCards": 500,
+  "uniqueNames": 321,
+  "sourceLists": [
+    {
+      "name": "Calling All Angels",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/CallingAllAngels_FDC.json"
+      ],
+      "exportSha256": "80cfe30e531d41f6e9c23eedce3071daaa9cfaf4c9ccad933846da8f42d35a2a"
+    },
+    {
+      "name": "Keen Engineering",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/KeenEngineering_FDC.json"
+      ],
+      "exportSha256": "af6717d79162a2336d23469e4b68c1006f5453f93a12dc7a8aa0bb3fac3d369f"
+    },
+    {
+      "name": "Wretched Ranks",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/WretchedRanks_FDC.json"
+      ],
+      "exportSha256": "abe53e88aa52333228dc1a29430ab5f9ec3561d14fd978fac493f1604166693b"
+    },
+    {
+      "name": "Reign of Dragons",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/ReignOfDragons_FDC.json"
+      ],
+      "exportSha256": "6ab23d6208ac01744512dbbcb7af0b75e4f9e2bfe8566674fd4c37b11c64bdc2"
+    },
+    {
+      "name": "Tramplesaurus Rex",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/TramplesaurusRex_FDC.json"
+      ],
+      "exportSha256": "5b2edbb1b2142e5eb0834d5faaff61ca4e2c6370eb46633c3ac3e7c597b2d79a"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3917,
+  "existingRawDeckRecordsPreserved": 170,
+  "nativeRawDefinitions": 3934,
+  "existingImageMappingsPreserved": 6797,
+  "existingCommanderCropsPreserved": 179,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 96,
+  "allNewImageDigestsMatch": true,
+  "allNewOracleDefinitionsMatch": true,
+  "idempotentDataSha256": "bf6c6b0b711ee16d68a9195f7486025d8e0ac92ac559ade10f2af7ab072ab237",
+  "current": {
+    "decks": 175,
+    "definitions": 24792,
+    "eligible": 24791
+  }
+}

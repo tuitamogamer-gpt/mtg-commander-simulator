@@ -16,18 +16,18 @@ Generic Oracle import state: **2026-09-20T21:53:30.369Z**. The counts below incl
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 24,775 |
+| Runtime card definitions | 24,792 |
 | Generic Oracle imports (208 batches of 100) | 20,800 |
 | Dedicated/manual Oracle imports | 58 |
-| Legacy definitions | 3,917 |
+| Legacy definitions | 3,934 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 24,774 |
+| Definitions allowed in arbitrary deck imports | 24,791 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 24,710 |
-| Source Oracle IDs still absent from the runtime | 6,074 |
+| Source Oracle IDs represented by a runtime name or face alias | 24,727 |
+| Source Oracle IDs still absent from the runtime | 6,057 |
 | Of those: parser-eligible but not imported | 8 |
-| Of those: deferred by the current semantic compiler | 6,066 |
+| Of those: deferred by the current semantic compiler | 6,049 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -43,13 +43,13 @@ Current parser-eligible, unimported names: `Warbringer`, `Weathered Runestone`, 
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 2,608 |
-| `spell-needs-explicit-semantics` | 1,397 |
-| `noncreature-needs-explicit-semantics` | 1,362 |
+| `oracle-needs-explicit-semantics` | 2,597 |
+| `spell-needs-explicit-semantics` | 1,394 |
+| `noncreature-needs-explicit-semantics` | 1,360 |
 | `double-faced-card-needs-complete-front-semantics` | 219 |
 | `land-needs-explicit-semantics` | 78 |
 | `complex-layout` | 70 |
-| `saga-chapter-needs-complete-semantics` | 69 |
+| `saga-chapter-needs-complete-semantics` | 68 |
 | `double-faced-card-needs-face-transition-semantics` | 48 |
 | `adventure-needs-complete-face-semantics` | 33 |
 | `unbound-event-reference` | 29 |

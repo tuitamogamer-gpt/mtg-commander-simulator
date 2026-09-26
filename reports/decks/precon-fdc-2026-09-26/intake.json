@@ -1,0 +1,54 @@
+{
+  "retrievedOn": "2026-09-26",
+  "baselineCards": 24775,
+  "baselineDecks": 170,
+  "uniqueCards": 321,
+  "reusedCards": 304,
+  "newCards": 17,
+  "newNames": [
+    "Carnelian Orb of Dragonkind",
+    "Consumed by Greed",
+    "Dragonhawk, Fate's Tempest",
+    "Fall from Favor",
+    "Goddric, Cloaked Reveler",
+    "Hit the Mother Lode",
+    "Kalitas, Traitor of Ghet",
+    "Minion of the Mighty",
+    "Ram Through",
+    "Razorlash Transmogrant",
+    "Sarkhan, Dragon Ascendant",
+    "Scrapshooter",
+    "Serra Avenger",
+    "The Elder Dragon War",
+    "Undead Butler",
+    "Wojek Investigator",
+    "Zul Ashur, Lich Lord"
+  ],
+  "decks": [
+    {
+      "name": "Calling All Angels",
+      "commander": "Giada, Font of Hope",
+      "cards": 100
+    },
+    {
+      "name": "Keen Engineering",
+      "commander": "Sai, Master Thopterist",
+      "cards": 100
+    },
+    {
+      "name": "Wretched Ranks",
+      "commander": "Ghoulcaller Gisa",
+      "cards": 100
+    },
+    {
+      "name": "Reign of Dragons",
+      "commander": "Lathliss, Dragon Queen",
+      "cards": 100
+    },
+    {
+      "name": "Tramplesaurus Rex",
+      "commander": "Ghalta, Primal Hunger",
+      "cards": 100
+    }
+  ]
+}

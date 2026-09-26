@@ -21,6 +21,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      'Calling All Angels': {icon: '🪽', colors: ['W'], style: 'Angels, counters and lifegain', set: 'Foundations Commander (2026)', blurb: 'Giada helps cast a growing flight of Angels, while lifegain and vigilance keep you safe.'},
+      'Keen Engineering': {icon: '⚙️', colors: ['U'], style: 'Artifacts and Thopter tokens', set: 'Foundations Commander (2026)', blurb: 'Cast artifacts with Sai to build a Thopter army, draw cards and power enormous artifact creatures.'},
+      'Wretched Ranks': {icon: '🧟', colors: ['B'], style: 'Zombies, sacrifice and recursion', set: 'Foundations Commander (2026)', blurb: 'Ghoulcaller Gisa turns one creature into a Zombie army, with lords, death triggers and graveyard recursion.'},
+      'Reign of Dragons': {icon: '🐉', colors: ['R'], style: 'Dragon ramp and direct damage', set: 'Foundations Commander (2026)', blurb: 'Lathliss rewards every nontoken Dragon with another flying threat as Dragon Tempest burns the table.'},
+      'Tramplesaurus Rex': {icon: '🦖', colors: ['G'], style: 'Large creatures, ramp and trample', set: 'Foundations Commander (2026)', blurb: 'Build power to reduce Ghalta’s cost, keep drawing creatures and overrun blockers with trample.'},
       'Multiverse Reforged': {icon: '🌀', colors: ['W', 'U', 'B', 'R'], style: 'Tokens, polymorph and legendary finishers',
         set: 'Reality Fracture Commander (2026)', blurb: 'Protect Jace with tokens, then reshape them into enormous creatures and planeswalkers.'},
   "Evasive Maneuvers": {

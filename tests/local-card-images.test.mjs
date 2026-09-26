@@ -74,6 +74,8 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   for (const face of frcOracle.cards.flatMap(row => row.faces || [])) expected.add(face.name);
   const frcImages = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-frc-2026-09-24/images.json', import.meta.url)));
   for (const token of frcImages.tokenVariants) expected.add(token.alias);
+  const fdcImages = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-fdc-2026-09-26/images.json', import.meta.url)));
+  for (const token of fdcImages.tokenVariants) expected.add(token.alias);
   for (const [name, alias] of Object.entries(frcImages.canonicalAliases)) {
     expected.add(name);
     assert.equal(MTG.cardImageURL(name), MTG.cardImageURL(alias), name + ': pinned canonical token alias');

@@ -1107,6 +1107,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
         if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
         if(toZone==='exile')for(const row of zoneReplacement.bomValentins||[])this.queueTrigger({src:row.card,ctrl:row.ctrl,sourceZoneVersion:row.snap.zoneVersion,sourceMeta:row.snap.sourceMeta,name:'Valentin: you may pay {2} to create a Pest',run:ctx=>MTG.BOM.valentinPest(ctx)});
+        if(toZone==='exile')for(const row of zoneReplacement.fdcKalitas||[])await this.makeTokens(MTG.TOKENS.zombie22,row.ctrl);
         if(toZone==='exile'&&zoneReplacement.c1920Blood)card.counters.blood=(card.counters.blood||0)+1;
         await MTG.ZK.exiled(this,card,fromZone,toZone,snap,opts);
         if (voidReplacement && toZone === 'exile') {

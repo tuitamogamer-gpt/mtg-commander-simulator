@@ -1,0 +1,545 @@
+{
+  "Serra Avenger": [
+    {
+      "object": "ruling",
+      "oracle_id": "b91b65b3-b35c-460e-a49b-333000a9a519",
+      "source": "wotc",
+      "published_at": "2012-07-01",
+      "comment": "Serra Avenger cares about how many turns you have taken, not necessarily how many turns the game has had, in case you take an extra turn."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b91b65b3-b35c-460e-a49b-333000a9a519",
+      "source": "wotc",
+      "published_at": "2012-07-01",
+      "comment": "If the game is restarted (by Karn Liberated), you can't cast Serra Avenger in your first, second, or third turn in the new game."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b91b65b3-b35c-460e-a49b-333000a9a519",
+      "source": "wotc",
+      "published_at": "2006-09-25",
+      "comment": "You can cast Serra Avenger during another player's first, second, or third turns of the game if some other effect (such as Vedalken Orrery) enables that."
+    }
+  ],
+  "Wojek Investigator": [
+    {
+      "object": "ruling",
+      "oracle_id": "ab41243d-b178-4ebe-a7ac-bea37427be99",
+      "source": "wotc",
+      "published_at": "2024-02-02",
+      "comment": "Clue is an artifact type. Even though it appears on some cards with other permanent types, it's never a creature type, a land type, or anything but an artifact type."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "ab41243d-b178-4ebe-a7ac-bea37427be99",
+      "source": "wotc",
+      "published_at": "2024-02-02",
+      "comment": "If an effect refers to a Clue, it means any Clue artifact, not just a Clue artifact token. For example, you can sacrifice Wrench to pay for Alquist Proft, Master Sleuth's activated ability."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "ab41243d-b178-4ebe-a7ac-bea37427be99",
+      "source": "wotc",
+      "published_at": "2024-02-02",
+      "comment": "You can't sacrifice a Clue to pay multiple costs. For example, you can't sacrifice a Clue token to activate its own ability and also to activate Alquist Proft, Master Sleuth's ability."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "ab41243d-b178-4ebe-a7ac-bea37427be99",
+      "source": "wotc",
+      "published_at": "2024-02-02",
+      "comment": "Some spells and abilities that investigate may require targets. If each target chosen is an illegal target as that spell or ability tries to resolve, it won't resolve. You won't create any Clue tokens."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "ab41243d-b178-4ebe-a7ac-bea37427be99",
+      "source": "wotc",
+      "published_at": "2024-02-02",
+      "comment": "Some abilities trigger \"whenever you sacrifice a Clue\". Those abilities trigger whenever you sacrifice a Clue for any reason, not just to activate a Clue's activated ability."
+    }
+  ],
+  "Fall from Favor": [
+    {
+      "object": "ruling",
+      "oracle_id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+      "source": "wotc",
+      "published_at": "2020-11-10",
+      "comment": "If the target creature is an illegal target by the time Fall from Favor tries to resolve, it doesn't resolve. It won't enter the battlefield, so its enters-the-battlefield ability won't trigger."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+      "source": "wotc",
+      "published_at": "2020-11-10",
+      "comment": "The game starts with no monarch. Once an effect makes one player the monarch, the game will have exactly one monarch from that point forward. As a player becomes the monarch, the current monarch (if any) ceases being the monarch."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+      "source": "wotc",
+      "published_at": "2020-11-10",
+      "comment": "There are two inherent triggered abilities associated with being the monarch. These triggered abilities have no source and are controlled by the player who was the monarch at the time the abilities triggered. The full texts of these abilities are \"At the beginning of the monarch's end step, that player draws a card\" and \"Whenever a creature deals combat damage to the monarch, its controller becomes the monarch.\""
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+      "source": "wotc",
+      "published_at": "2020-11-10",
+      "comment": "If the triggered ability that causes the monarch to draw a card goes on the stack and a different player becomes the monarch before that ability resolves, the first player will still draw the card."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+      "source": "wotc",
+      "published_at": "2020-11-10",
+      "comment": "If the monarch leaves the game during another player's turn, that player becomes the monarch. If the monarch leaves the game during their turn, the next player in turn order becomes the monarch."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+      "source": "wotc",
+      "published_at": "2020-11-10",
+      "comment": "If combat damage dealt to the monarch causes that player to lose the game, the triggered ability that causes the controller of the attacking creature to become the monarch doesn't resolve. In most cases, the controller of the attacking creature will still become the monarch as it is likely their turn."
+    }
+  ],
+  "Kalitas, Traitor of Ghet": [
+    {
+      "object": "ruling",
+      "oracle_id": "e1cfd1cb-44a5-429f-a5c1-e6d29bad1c71",
+      "source": "wotc",
+      "published_at": "2016-01-22",
+      "comment": "Abilities that trigger whenever a creature an opponent controls dies won't trigger unless that creature is a token (see below)."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e1cfd1cb-44a5-429f-a5c1-e6d29bad1c71",
+      "source": "wotc",
+      "published_at": "2016-01-22",
+      "comment": "If a creature token an opponent controls dies, it goes to that player's graveyard as normal before ceasing to exist."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e1cfd1cb-44a5-429f-a5c1-e6d29bad1c71",
+      "source": "wotc",
+      "published_at": "2016-01-22",
+      "comment": "If Kalitas dies at the same time as creatures your opponents control, those creature cards will be exiled and you'll get that many Zombies."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "e1cfd1cb-44a5-429f-a5c1-e6d29bad1c71",
+      "source": "wotc",
+      "published_at": "2016-01-22",
+      "comment": "You can't sacrifice Kalitas to activate the last ability, even if it's somehow become a Zombie."
+    }
+  ],
+  "Razorlash Transmogrant": [],
+  "Zul Ashur, Lich Lord": [
+    {
+      "object": "ruling",
+      "oracle_id": "a7c6c9b3-91f2-4ecf-b2b0-b0edd96974d9",
+      "source": "wotc",
+      "published_at": "2024-11-08",
+      "comment": "You pay all costs and follow all normal timing rules for Zombie creature cards cast with the permission granted by Zul Ashur's last ability."
+    }
+  ],
+  "Consumed by Greed": [
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "If the target opponent has multiple creatures tied for the greatest power, that player chooses which one to sacrifice."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "As an additional cost to cast a spell with gift, you can promise the listed gift to an opponent. That opponent is chosen as part of that additional cost. The gift isn’t given at this time; rather, it’s given at a later time based on whether or not the spell is a permanent spell."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "For permanent spells with gift, an ability triggers when that permanent enters if the gift was promised. When that ability resolves, the gift is given to the appropriate opponent."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "For instants and sorceries with gift, the gift is given to the appropriate opponent as part of the resolution of the spell. This happens before any of the spell’s other effects would take place."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "If a spell for which the gift was promised is countered, doesn’t resolve (perhaps because all of its targets are illegal), or is otherwise removed from the stack, the gift won’t be given. None of its other effects will happen either."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "You can’t pay a gift cost more than once."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "If you copy a spell for which the gift was promised, the gift was also promised to the same opponent for the copy. If a card or token enters as a copy of a permanent that’s already on the battlefield, the gift isn’t promised for that new permanent, even if it was promised for the original."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "Some instant or sorcery spells require alternative or additional targets if the gift was promised. You ignore these targeting requirements if the gifts aren’t promised for those spells. On the other hand, you can promise a gift for a permanent spell even if you won’t be able to choose targets for an enters ability of that permanent once the spell resolves."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "b548578c-4910-402c-8e78-498924e0a9be",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "In the main set, there are four different kinds of gifts. “Gift a Food” causes the chosen opponent to create a Food token, while “Gift a Treasure” causes the chosen opponent to create a Treasure token. “Gift a card” causes them to draw a card, and “Gift a tapped Fish” causes them to create a tapped 1/1 blue Fish creature token. The Commander decks contain two more kinds of gifts: “Gift an Octopus,” which causes the chosen opponent to create an 8/8 blue Octopus creature token, and “Gift an extra turn,” which causes them to take an extra turn after the current turn ends."
+    }
+  ],
+  "Undead Butler": [],
+  "Dragonhawk, Fate's Tempest": [
+    {
+      "object": "ruling",
+      "oracle_id": "f7f435bc-1716-4412-9505-a1f2f2d83d08",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "The value of X is calculated only once, as Dragonhawk's last ability resolves."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "f7f435bc-1716-4412-9505-a1f2f2d83d08",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "You pay all costs and follow all timing rules for cards played this way. For example, if the exiled card is a land card, you may play it only during your main phase while the stack is empty."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "f7f435bc-1716-4412-9505-a1f2f2d83d08",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "The delayed triggered ability created by Dragonhawk's last ability counts only cards that were exiled by the ability that created it. It doesn't count cards exiled by previous instances of Dragonhawk's last ability or by the abilities of other Dragonhawks you may have controlled previously."
+    }
+  ],
+  "The Elder Dragon War": [
+    {
+      "object": "ruling",
+      "oracle_id": "4945f03b-ff99-4923-b62d-3cdb60275ef1",
+      "source": "wotc",
+      "published_at": "2022-09-09",
+      "comment": "In a Two-Headed Giant game, the first chapter ability deals to damage to each player on the opposing team, reducing that team's life total by 4."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "4945f03b-ff99-4923-b62d-3cdb60275ef1",
+      "source": "wotc",
+      "published_at": "2022-09-09",
+      "comment": "As a Saga with read ahead enters the battlefield, its controller chooses a number from one to that Saga's greatest chapter number. The Saga enters the battlefield with the chosen number of lore counters. Neither choosing the number nor putting the counters on the Saga use the stack, and neither can be responded to."
+    }
+  ],
+  "Goddric, Cloaked Reveler": [
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "If an effect causes Goddric to lose all abilities during a turn in which it has already become a Dragon, he's still a Dragon creature with base power and toughness 4/4."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "Goddric's activated ability affects only Dragons you control at the time it resolves. Any Dragons that come under your control later in the turn won't be affected."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "Each celebration ability has a different effect."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "Some celebration abilities trigger at specific parts of the turn and check whether two or more nonland permanents entered the battlefield under your control already in that turn."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "Others are static abilities that give creatures abilities or power and toughness increases as long as two or more nonland permanents entered the battlefield under your control that turn."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "Celebration abilities only care if two or more nonland permanents entered the battlefield under your control in a turn. They won't get more powerful if more than two permanents entered the battlefield under your control in a turn."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
+      "source": "wotc",
+      "published_at": "2023-09-01",
+      "comment": "The permanents that entered the battlefield don't need to remain on the battlefield or under your control. Celebration abilities are checking for past events, not the current game state."
+    }
+  ],
+  "Hit the Mother Lode": [
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "You won't create any Treasure tokens until you finish discovering. For example, if the card you discover has \"As an additional cost to cast this spell, sacrifice an artifact,\" you can't sacrifice one of the Treasures from Hit the Mother Lode to pay that additional cost."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "A spell's mana value is determined only by its mana cost. Ignore any alternative costs, additional costs, cost increases, or cost reductions."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "When you discover, you must exile cards. The only optional part of the ability is whether you cast the exiled card or put it into your hand."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "You exile the cards face up. All players will be able to see them."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "If you cast a spell \"without paying its mana cost\", you can't choose to cast it for any alternative costs. You can, however, pay additional costs. If the spell has any mandatory additional costs, you must pay those to cast it."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "If the discovered card has {X} in its mana cost, you must choose 0 as the value of X when casting it without paying its mana cost."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "If you can't cast the discovered card (perhaps because there are no legal targets for the spell), you'll put it into your hand."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "Some spells and abilities that cause you to discover may require targets. If each target chosen is an illegal target as that spell or ability tries to resolve, it won't resolve and you won't discover."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "The mana value of a split card is determined by the combined mana cost of its two halves. If discover allows you to cast a split card, you may cast either half (as long as its mana value is less than or equal to the effect's discover value) but not both halves."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "a49900b3-cc34-428f-806d-71861dc8059d",
+      "source": "wotc",
+      "published_at": "2023-11-10",
+      "comment": "If you discover an adventurer card, split card, or modal double-faced card, you might be able to cast that card with either set of characteristics depending on the effect's discover value. For example, if you discover 4 and reveal Galvanic Giant (an adventurer card from Wilds of Eldraine with a mana value of 4), you could cast Galvanic Giant, but not Storm Reading (its Adventure, which has a mana value of 7). If you discover 7 and reveal Galvanic Giant, you could cast either Galvanic Giant or Storm Reading."
+    }
+  ],
+  "Minion of the Mighty": [
+    {
+      "object": "ruling",
+      "oracle_id": "058062c7-071b-4b14-903d-ae8d2876b37f",
+      "source": "wotc",
+      "published_at": "2021-07-23",
+      "comment": "A Dragon creature card is a creature card with the creature type Dragon, not necessarily a creature card with the word “Dragon” in its name."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "058062c7-071b-4b14-903d-ae8d2876b37f",
+      "source": "wotc",
+      "published_at": "2021-07-23",
+      "comment": "You choose which player or planeswalker the Dragon is attacking as you put it onto the battlefield. It doesn't have to be the same player or planeswalker Minion of the Mighty is attacking."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "058062c7-071b-4b14-903d-ae8d2876b37f",
+      "source": "wotc",
+      "published_at": "2021-07-23",
+      "comment": "The creature card is already tapped and attacking as it's put onto the battlefield. Any abilities that trigger whenever a creature becomes tapped or whenever a creature attacks won't trigger."
+    }
+  ],
+  "Sarkhan, Dragon Ascendant": [
+    {
+      "object": "ruling",
+      "oracle_id": "71cb48e2-2328-471c-a04a-7b6461f378f4",
+      "source": "wotc",
+      "published_at": "2025-04-04",
+      "comment": "If an effect refers to a “[subtype] card,” it refers only to a card that has that subtype. For example, Teeming Dragonstorm is a card that cares about Dragons and features Dragons in its art, but it isn’t a Dragon card."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "71cb48e2-2328-471c-a04a-7b6461f378f4",
+      "source": "wotc",
+      "published_at": "2025-04-04",
+      "comment": "Effects that say “If a [quality] was beheld” only care if a card of that quality was revealed or a permanent you control of that quality was chosen. No matter what happens to that card or permanent after that, it was still beheld, and any additional effects that depend on that card or permanent being beheld will still happen."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "71cb48e2-2328-471c-a04a-7b6461f378f4",
+      "source": "wotc",
+      "published_at": "2025-04-04",
+      "comment": "If a cost to cast a spell includes revealing a card, that card remains revealed from the time the spell is announced until the time it leaves the stack."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "71cb48e2-2328-471c-a04a-7b6461f378f4",
+      "source": "wotc",
+      "published_at": "2025-04-04",
+      "comment": "If a card in your hand is already revealed (perhaps because it was revealed to pay a cost of a spell that’s still on the stack or due to the effect of a card like Telepathy), you may reveal it again to pay the cost of another spell or ability that requires you to reveal a card from your hand."
+    }
+  ],
+  "Carnelian Orb of Dragonkind": [
+    {
+      "object": "ruling",
+      "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+      "source": "wotc",
+      "published_at": "2022-06-10",
+      "comment": "The mana created by Carnelian Orb of Dragonkind can be spent on anything, not just Dragon creature spells."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+      "source": "wotc",
+      "published_at": "2022-06-10",
+      "comment": "If the mana from Carnelian Orb of Dragonkind is spent to pay any part of the Dragon creature spell's cost, including an alternative or additional cost, the Dragon will gain haste until end of turn."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+      "source": "wotc",
+      "published_at": "2022-06-10",
+      "comment": "An instant or sorcery spell is not a creature spell, even if that spell creates Dragon creature tokens."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+      "source": "wotc",
+      "published_at": "2022-06-10",
+      "comment": "If the mana is spent on a non-Dragon spell that becomes a Dragon later in the turn, that creature won't have haste."
+    }
+  ],
+  "Scrapshooter": [
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "As an additional cost to cast a spell with gift, you can promise the listed gift to an opponent. That opponent is chosen as part of that additional cost. The gift isn’t given at this time; rather, it’s given at a later time based on whether or not the spell is a permanent spell."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "For permanent spells with gift, an ability triggers when that permanent enters if the gift was promised. When that ability resolves, the gift is given to the appropriate opponent."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "For instants and sorceries with gift, the gift is given to the appropriate opponent as part of the resolution of the spell. This happens before any of the spell’s other effects would take place."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "If a spell for which the gift was promised is countered, doesn’t resolve (perhaps because all of its targets are illegal), or is otherwise removed from the stack, the gift won’t be given. None of its other effects will happen either."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "You can’t pay a gift cost more than once."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "If you copy a spell for which the gift was promised, the gift was also promised to the same opponent for the copy. If a card or token enters as a copy of a permanent that’s already on the battlefield, the gift isn’t promised for that new permanent, even if it was promised for the original."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "Some instant or sorcery spells require alternative or additional targets if the gift was promised. You ignore these targeting requirements if the gifts aren’t promised for those spells. On the other hand, you can promise a gift for a permanent spell even if you won’t be able to choose targets for an enters ability of that permanent once the spell resolves."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "235e3231-c5e5-4696-a867-705b2c4158fe",
+      "source": "wotc",
+      "published_at": "2024-07-26",
+      "comment": "In the main set, there are four different kinds of gifts. “Gift a Food” causes the chosen opponent to create a Food token, while “Gift a Treasure” causes the chosen opponent to create a Treasure token. “Gift a card” causes them to draw a card, and “Gift a tapped Fish” causes them to create a tapped 1/1 blue Fish creature token. The Commander decks contain two more kinds of gifts: “Gift an Octopus,” which causes the chosen opponent to create an 8/8 blue Octopus creature token, and “Gift an extra turn,” which causes them to take an extra turn after the current turn ends."
+    }
+  ],
+  "Ram Through": [
+    {
+      "object": "ruling",
+      "oracle_id": "4b1befff-48fa-47a3-832e-bdaf43495c02",
+      "source": "wotc",
+      "published_at": "2020-04-17",
+      "comment": "If either creature is an illegal target as Ram Through tries to resolve, the creature you control won’t deal damage to any creature or player."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "4b1befff-48fa-47a3-832e-bdaf43495c02",
+      "source": "wotc",
+      "published_at": "2020-04-17",
+      "comment": "Excess damage caused by a spell or ability is similar to how combat damage from a creature with trample is handled. Start with the amount of damage being dealt to the creature and determine what is “lethal.” This is the creature’s toughness minus the amount of damage that it already has marked on it, but ignoring any replacement or prevention effects that will modify this damage. Also ignore whether the creature has an ability such as indestructible that will result in it not being destroyed by this damage."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "4b1befff-48fa-47a3-832e-bdaf43495c02",
+      "source": "wotc",
+      "published_at": "2020-04-17",
+      "comment": "If the target creature you control has deathtouch, 1 damage from it is lethal."
+    },
+    {
+      "object": "ruling",
+      "oracle_id": "4b1befff-48fa-47a3-832e-bdaf43495c02",
+      "source": "wotc",
+      "published_at": "2020-04-17",
+      "comment": "Once you’ve determined how much damage is excess, the creature you control simultaneously deals damage to the creature and to its controller. This damage may be modified by replacement or prevention effects."
+    }
+  ]
+}

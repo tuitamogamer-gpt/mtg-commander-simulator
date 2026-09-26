@@ -1,0 +1,113 @@
+{
+  "date": "2026-09-26",
+  "status": "passed",
+  "targetedNewCardTests": 65,
+  "selectedDistinctTestsPassed": 661,
+  "selectedTestFiles": [
+    "tests/ai-v2.test.mjs",
+    "tests/baseline.test.mjs",
+    "tests/blame-game.test.mjs",
+    "tests/bom-precons.test.mjs",
+    "tests/c13-td0-sld-precons.test.mjs",
+    "tests/catalog-source-match.test.mjs",
+    "tests/clb-dmc-40k-precons.test.mjs",
+    "tests/cmd-sld-advanced.test.mjs",
+    "tests/cmd-sld-precons.test.mjs",
+    "tests/cmm-woc-who-precons.test.mjs",
+    "tests/commander-visuals.test.mjs",
+    "tests/fdc-precons.test.mjs",
+    "tests/frc-precon.test.mjs",
+    "tests/full-card-audit.test.mjs",
+    "tests/legacy-card-catalog-integrity.test.mjs",
+    "tests/local-card-images.test.mjs",
+    "tests/ltc-cmm-precons.test.mjs",
+    "tests/oracle-zone-replacement-source.test.mjs",
+    "tests/pip-otc-m3c-advanced.test.mjs",
+    "tests/restricted-legacy-import.test.mjs",
+    "tests/save-state.test.mjs",
+    "tests/voc-ncc-precons.test.mjs",
+    "tests/who-lcc-sld-mkc-precons.test.mjs"
+  ],
+  "fullRepositorySuiteRun": false,
+  "testRuns": [
+    {
+      "file": "output/precon-fdc-2026-09-26/regressions.log",
+      "tests": 379,
+      "pass": 377,
+      "fail": 2,
+      "sha256": "0bbe4c80461b90f927a422b4238dec4a7583d5aa9819ca77d61a1f1de16c163e"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/final-validation.log",
+      "tests": 336,
+      "pass": 335,
+      "fail": 1,
+      "sha256": "d7a19c76595b3361f75c1f0329a7f0f3a3c71bfa435b04526c1b51e40783014c"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/visuals.log",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "sha256": "429aec7efe48b81e14aea8384d28d37c830ef4a579c45742e1707882bc74970d"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/integrity.log",
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "sha256": "f9e78de89ca7b6f1cbedec7857a3420e4fe25468bedf35895f5565ed5ed92a4b"
+    }
+  ],
+  "resolvedFailures": [
+    {
+      "test": "reviewed native import eligibility",
+      "initial": "regressions.log",
+      "verification": "final-validation.log",
+      "fix": "Current eligible count includes the 17 FDC additions."
+    },
+    {
+      "test": "commander still-image coverage",
+      "initial": "regressions.log",
+      "verification": "visuals.log",
+      "fix": "181 distinct default commanders; five FDC commanders are included in the still-image cohort."
+    },
+    {
+      "test": "pinned legacy partition",
+      "initial": "final-validation.log",
+      "verification": "integrity.log",
+      "fix": "The new FDC cohort is disjoint and excluded from the unchanged original 1,626-name legacy digest."
+    }
+  ],
+  "countCalculation": "379 + 336 - 65 repeated FDC tests - 5 repeated reviewed-import tests + 17 integrity checks - 1 repeated legacy-partition check = 661",
+  "checks": [
+    {
+      "file": "output/precon-fdc-2026-09-26/check.log",
+      "sha256": "a70c787b94c2aaf1044d465392333f546cc8ab84cbc20d7f94dae07e04def41a"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/audit.log",
+      "sha256": "4e99f6741cecbcf094cbb429f4ebcfb6a15cd9001ee94cbbac17c6f749c97b5f"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/certify.log",
+      "sha256": "cf0a8377793e64e3d5c248b718829cd271185c323941c2997d75dd215dac8e88"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/source-validation.log",
+      "sha256": "a8d2716b8e6e8fe2cfc1d88eca73a37fbc3d75da6cc56a27e0edcb0449d20506"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/catalog.log",
+      "sha256": "47c46c5fb70861e4ec702af22c855a87ee5b09987bdd3d7d65a410ef97ec3e16"
+    },
+    {
+      "file": "output/precon-fdc-2026-09-26/catalog-check.log",
+      "sha256": "e410652bdb9e56effa059a058b2d439210bd3706b3c22e2bc8eb7f36c01aeaf9"
+    }
+  ],
+  "headlessGamesPassed": 5,
+  "browserGuideCasesPassed": 10,
+  "gitDiffCheck": true,
+  "validationScope": "Local checkout; existing unrelated UI/diplomacy edits remain in place. No release commit, push or production deployment was performed for this import."
+}

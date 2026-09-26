@@ -1,0 +1,69 @@
+{
+  "results": [
+    {
+      "deck": "Calling All Angels",
+      "opponents": [
+        "Keen Engineering",
+        "Wretched Ranks",
+        "Reign of Dragons"
+      ],
+      "seed": 92600,
+      "turns": 53,
+      "winner": "AI Wolf",
+      "durationMs": 47396,
+      "passed": true
+    },
+    {
+      "deck": "Keen Engineering",
+      "opponents": [
+        "Wretched Ranks",
+        "Reign of Dragons",
+        "Tramplesaurus Rex"
+      ],
+      "seed": 92601,
+      "turns": 31,
+      "winner": "AI Raven",
+      "durationMs": 21165,
+      "passed": true
+    },
+    {
+      "deck": "Wretched Ranks",
+      "opponents": [
+        "Reign of Dragons",
+        "Tramplesaurus Rex",
+        "Calling All Angels"
+      ],
+      "seed": 92602,
+      "turns": 35,
+      "winner": "AI Wolf",
+      "durationMs": 19781,
+      "passed": true
+    },
+    {
+      "deck": "Reign of Dragons",
+      "opponents": [
+        "Tramplesaurus Rex",
+        "Calling All Angels",
+        "Keen Engineering"
+      ],
+      "seed": 92603,
+      "turns": 51,
+      "winner": "AI Dragon",
+      "durationMs": 53718,
+      "passed": true
+    },
+    {
+      "deck": "Tramplesaurus Rex",
+      "opponents": [
+        "Calling All Angels",
+        "Keen Engineering",
+        "Wretched Ranks"
+      ],
+      "seed": 92604,
+      "turns": 46,
+      "winner": "AI Wolf",
+      "durationMs": 83644,
+      "passed": true
+    }
+  ]
+}

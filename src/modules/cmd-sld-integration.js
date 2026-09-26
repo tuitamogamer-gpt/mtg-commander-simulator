@@ -16,7 +16,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const entryCounters = P.entryCounters;
   P.entryCounters = (g, c) => entryCounters(g, c) + (c.castMeta?.cslChorusCounters || 0);
   const spent = P.spent;
-  P.spent = (g, p, action, unit) => {spent(g, p, action, unit); if (action && unit.cslHasteMana) action.cslHasteMana = (action.cslHasteMana || 0) + 1;};
+  P.spent = (g, p, action, unit) => {
+    spent(g, p, action, unit);
+    const dragon = action?.card && !action.isAbility && g.castHasType(action.card, action.castOpts || {}, 'Creature') &&
+      (g.castDefinition(action.card, action.castOpts || {}).changeling || g.castDefinition(action.card, action.castOpts || {}).subtypes?.includes('Dragon'));
+    if (action && (unit.cslHasteMana === true || unit.cslHasteMana === 'dragon' && dragon)) action.cslHasteMana = (action.cslHasteMana || 0) + 1;
+  };
   const emit = G.emit;
   G.emit = async function (on, d) {
     if (on === 'cast' && d.so && d.card?.castMeta) {

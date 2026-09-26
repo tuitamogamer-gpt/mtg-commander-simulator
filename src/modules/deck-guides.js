@@ -3,6 +3,31 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+    fdcAngels: [
+      {label: 'Early game', title: 'Let Giada lead', text: 'Keep lands and early mana. Cast Giada before your other Angels so she can help pay for them and increase their entry counters.'},
+      {label: 'Midgame', title: 'Grow your flight', text: 'Add Angels one at a time, use lifegain to turn on Righteous Valkyrie, and save removal for the threats your flyers cannot race.'},
+      {label: 'Endgame', title: 'Rule the skies', text: 'Attack with large flying Angels while vigilance preserves blockers. Keep a threat in reserve for a board wipe.'},
+    ],
+    fdcArtifacts: [
+      {label: 'Early game', title: 'Prepare the workshop', text: 'Develop mana rocks and cast Sai before chaining cheap artifacts. Each artifact spell then brings a flying Thopter.'},
+      {label: 'Midgame', title: 'Turn artifacts into cards', text: 'Use Shimmer Dragon and your draw engines to refill. Keep useful artifacts and sacrifice expendable ones to Sai when you need cards.'},
+      {label: 'Endgame', title: 'Attack on two fronts', text: 'Pressure opponents with Thopters and a growing Kappa Cannoneer. Protect the engine with counterspells and keep Aetherize for dangerous attacks.'},
+    ],
+    fdcZombies: [
+      {label: 'Early game', title: 'Stock the graveyard', text: 'Play Swamps, mana rocks and inexpensive Zombies. Undead Butler and repeatable draw help assemble creatures to sacrifice and return.'},
+      {label: 'Midgame', title: 'Raise the ranks', text: 'Once Gisa can tap, sacrifice a creature with substantial power to make Zombies. Lords strengthen the whole army and recursion supplies the next sacrifice.'},
+      {label: 'Endgame', title: 'Win through attrition', text: 'Use Zombie death and entry payoffs to drain opponents while attacking with the army. Rebuild with Zul Ashur and graveyard recursion after removal.'},
+    ],
+    fdcDragons: [
+      {label: 'Early game', title: 'Fund the first Dragon', text: 'Keep lands with mana rocks or Dragon cost reducers. Avoid hands full of expensive Dragons without a way to accelerate.'},
+      {label: 'Midgame', title: 'Build Lathliss’s brood', text: 'Cast Lathliss before another nontoken Dragon to create a 5/5 flyer. Dragon Tempest and Scourge of Valkas turn each Dragon entry into damage.'},
+      {label: 'Endgame', title: 'Bring the fire', text: 'Attack through the air and use haste to shorten the opponents’ response window. Play Dragonhawk’s exiled cards before your next end step, or let their remaining count deal damage.'},
+    ],
+    fdcPower: [
+      {label: 'Early game', title: 'Grow your mana', text: 'Keep Forests and mana creatures, then establish a creature draw engine. Build the total power that will reduce Ghalta’s generic cost.'},
+      {label: 'Midgame', title: 'Deploy Ghalta efficiently', text: 'Cast large creatures while keeping protection available. Ghalta’s reduction also helps cover commander tax, but you still need green mana.'},
+      {label: 'Endgame', title: 'Trample over the table', text: 'Use Overwhelming Stampede or Unnatural Growth to make combat decisive. Ram Through turns a large trampler into removal plus damage to its victim’s controller.'},
+    ],
     multiverseReforged: [
       {label: 'Early game', title: 'Fix four colors', text: 'Keep lands and mana rocks that produce your missing colors. Create inexpensive tokens to block and protect Jace.'},
       {label: 'Midgame', title: 'Reshape your tokens', text: 'Use Jace to exchange a small token for a creature or planeswalker from your library. Draw and bottom expensive cards to keep your hand moving.'},
@@ -933,6 +958,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+    'Calling All Angels': {
+      route: 'fdcAngels', pace: 'GROWING FLYING ARMY', complexity: 'Beginner',
+      theme: 'Giada turns each new Angel into a larger flying threat, supported by life gain and protective interaction.',
+      plan: 'Develop mana, cast Giada early and follow with Angels. Build counters and life, remove dangerous threats and finish with a resilient airborne attack.',
+      mulligan: 'Keep three Plains or reliable lands, an early mana play and an Angel you can cast soon after Giada. Avoid an opening full of expensive Angels.',
+      tip: 'Giada counts Angels you already control for entry counters. Her white mana can pay only for Angel spells. Serra Avenger cannot be cast during your first three own turns.',
+      keys: ['Lyra Dawnbringer', 'Righteous Valkyrie', 'Wojek Investigator'],
+    },
+    'Keen Engineering': {
+      route: 'fdcArtifacts', pace: 'ARTIFACTS INTO THOPTERS', complexity: 'Intermediate',
+      theme: 'Sai turns artifact spells into flying tokens while your artifact count powers discounts, card draw and large threats.',
+      plan: 'Build mana, deploy Sai and cast artifacts to create Thopters. Draw through your engine and finish with evasive tokens or a large artifact creature.',
+      mulligan: 'Keep three lands, a mana rock and a cheap artifact or draw spell. Make sure you can produce blue for Sai and your interaction.',
+      tip: 'Sai triggers when you cast an artifact spell, even if that spell is countered. His draw ability sacrifices two artifacts as a cost, so those artifacts cannot also pay another sacrifice cost.',
+      keys: ['Kappa Cannoneer', 'Thopter Spy Network', 'Shimmer Dragon'],
+    },
+    'Wretched Ranks': {
+      route: 'fdcZombies', pace: 'SACRIFICE AND REBUILD', complexity: 'Intermediate',
+      theme: 'Gisa converts creature power into Zombies, backed by lords, death triggers and repeated graveyard access.',
+      plan: 'Develop black mana and Zombies, draw cards and prepare a strong sacrifice for Gisa. Reuse the graveyard while your army and drain effects wear opponents down.',
+      mulligan: 'Keep three lands, early mana or draw, and an inexpensive creature. Gisa needs a sacrifice and a turn without summoning sickness before she can build an army.',
+      tip: 'Gisa uses the sacrificed creature’s power as it last existed on the battlefield. Zul Ashur lets you cast the targeted Zombie normally this turn; you still pay its costs.',
+      keys: ['Gravecrawler', 'Death Baron', 'Kalitas, Traitor of Ghet'],
+    },
+    'Reign of Dragons': {
+      route: 'fdcDragons', pace: 'FLYING THREATS AND DAMAGE', complexity: 'Intermediate',
+      theme: 'Lathliss multiplies nontoken Dragons into a flying army, with entry damage, haste and extra combat pressure.',
+      plan: 'Ramp into Lathliss, then cast nontoken Dragons to generate 5/5 flyers. Use damage payoffs and haste to pressure life totals before opponents can rebuild.',
+      mulligan: 'Keep three lands, a mana rock or cost reducer and a reachable Dragon. Ship slow hands that cannot develop mana before turn four.',
+      tip: 'Lathliss ignores token Dragons, preventing her own tokens from looping. Dragonhawk’s play permission expires at the beginning of your next end step, before its damage trigger resolves.',
+      keys: ['Dragon Tempest', 'Scourge of Valkas', "Dragonhawk, Fate's Tempest"],
+    },
+    'Tramplesaurus Rex': {
+      route: 'fdcPower', pace: 'BIG CREATURES AND TRAMPLE', complexity: 'Beginner',
+      theme: 'Green mana creatures and large bodies make Ghalta cheaper while creature draw engines keep threats coming.',
+      plan: 'Ramp, build power on the battlefield and cast Ghalta at a discount. Protect key creatures and finish with trample, power doubling or a team-wide boost.',
+      mulligan: 'Keep Forests, an early mana creature and a useful three- or four-mana play. Do not rely on Ghalta alone to make a hand of expensive spells work.',
+      tip: 'Ghalta’s discount uses the total power of creatures you control at casting time. Ram Through deals no damage if either of its two creature targets becomes illegal.',
+      keys: ['Beast Whisperer', 'Overwhelming Stampede', 'Unnatural Growth'],
+    },
     'Multiverse Reforged': {
       route: 'multiverseReforged', pace: 'TOKENS INTO LEGENDARY THREATS', complexity: 'Advanced',
       theme: 'Jace shapes small tokens into enormous creatures and planeswalkers while Echoverse legends generate cards, mana and resilient threats.',

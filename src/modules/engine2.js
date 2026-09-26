@@ -1771,7 +1771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const [color, n] of Object.entries(actualProduced)) {
         if (!(Number(n) > 0)) continue;
         p.poolMeta.push({
-          color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:!!s.m.cslHasteMana,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
+          color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:s.m.cslHasteMana||false,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
           c13Snow: snowSource,
           opalPalace: !!s.m.opalPalace,
           restrictAbilities: !!s.m.restrictAbilities,
