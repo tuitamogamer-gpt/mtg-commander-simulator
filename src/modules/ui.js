@@ -1733,11 +1733,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.render();
     }
 
+    diplomacyMotionOnce(node, key) {
+      this.diplomacyMotionSeen ||= new Set();
+      if (this.diplomacyMotionSeen.has(key)) return;
+      // A decision can render more than once before the browser paints. Only
+      // spend the animation on the node that actually reaches the screen.
+      requestAnimationFrame(() => {
+        if (!node.isConnected || this.diplomacyMotionSeen.has(key)) return;
+        this.diplomacyMotionSeen.add(key);
+        if (this.diplomacyMotionSeen.size > 80) this.diplomacyMotionSeen.delete(this.diplomacyMotionSeen.values().next().value);
+        node.classList.add('dipanimate');
+      });
+    }
+
+    diplomacyQuickStarts(requests, offers) {
+      const kinds = [
+        ['no_attack', '⚔', 'Combat truce', 'Ask to be spared during their next combat.'],
+        ['no_target_player', '◇', 'Hands off', 'Trade a turn of protection from harmful targeting.'],
+        ['protect_permanent', '▣', 'Protect a card', 'Name the permanent you want left alone.'],
+        ['let_resolve', '✦', 'Let it resolve', 'Negotiate over a spell or ability on the stack.'],
+        ['pressure_player', '↗', 'Pressure the leader', 'Ask for a sound attack on the runaway threat.'],
+      ];
+      return kinds.flatMap(([type, icon, title, description]) => {
+        const request = requests.find(option => option.type === type);
+        const offer = offers.find(option => option.type === type) || offers.find(option => option.type === 'no_target_player') || offers[0];
+        return request && offer ? [{ type, icon, title, description, requestKey: request.key, offerKey: offer.key }] : [];
+      });
+    }
+
     renderDiplomacyPanel(g) {
       const panel = el('div', 'diplomacypanel');
       const view = g.diplomacyView(this.me);
       panel.appendChild(el('div', 'diplomacyhero', `
         <span>🕊️</span><div><b>Diplomacy &amp; Politics</b><small>Short, public, binding agreements. Every player still plays to win.</small></div>`));
+
+      const guide = el('details', 'dipguide');
+      guide.open = !!this.diplomacyGuideOpen;
+      guide.ontoggle = () => { if (guide.isConnected) this.diplomacyGuideOpen = guide.open; };
+      guide.appendChild(el('summary', '', 'Explore the deals you can make'));
+      guide.appendChild(el('div', 'dipguidebody', '<p><b>Buy breathing room</b> Trade a combat truce, protection from harmful targeting, or protection for a named permanent.</p><p><b>Change the table</b> Let a stack object resolve, pressure a runaway threat, or coordinate a three-player removal deal when a legal answer is available.</p><p><b>Use the moment</b> Last Stand opens near elimination. Vote bargains appear during supported public choices.</p><small>Available terms follow the current board. A proposal never guarantees acceptance or makes a spell free.</small>'));
+      panel.appendChild(guide);
 
       if (!view.status.unlocked) {
         const progress = Math.min(view.status.unlockRounds, view.status.rounds);
@@ -1752,6 +1787,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         panel.appendChild(el('div', 'dipsectiontitle', `AWAITING YOUR DECISION · ${view.incoming.length}`));
         for (const proposal of view.incoming) {
           const card = el('div', 'dipincoming' + (proposal.isCounteroffer ? ' counteroffer' : '') + (proposal.lastStand ? ' laststand' : ''));
+          this.diplomacyMotionOnce(card, `incoming:${proposal.id}`);
           card.innerHTML = proposal.lastStand
             ? `<b>🩸 ${esc(proposal.fromName)} asks for amnesty</b><div class="diproute">${esc(proposal.signals.join(' · ')) || 'They are at risk of elimination.'}</div>`
             : proposal.kind === 'group-removal'
@@ -1793,6 +1829,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!view.activeContracts.length) panel.appendChild(el('div', 'dipempty', 'No active agreements.'));
       for (const contract of view.activeContracts) {
         const item = el('div', 'dipcontract');
+        this.diplomacyMotionOnce(item, `contract:${contract.id}`);
         item.appendChild(el('b', '', `${contract.kind === 'group-removal' ? 'TABLE DEAL' : 'AGREEMENT'} #${contract.id} · ${esc(contract.title)}`));
         item.appendChild(el('small', 'diproute', esc(contract.participantNames.join(' · '))));
         for (const clause of contract.clauses) item.appendChild(el('p', 'state-' + clause.state, `${clause.state === 'active' ? '◆' : '✓'} ${esc(clause.label)}`));
@@ -1854,7 +1891,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         make.onclick = () => this.beginDiplomacyOffer(g, other);
         item.appendChild(make); panel.appendChild(item);
       }
-      panel.appendChild(el('div', 'diprules', 'No alliances, open-ended favors, secret-vote deals, concessions, or promises beyond one combat or one turn. Forced Magic actions override agreements without blame.'));
+      panel.appendChild(el('div', 'diprules', 'Ordinary deals last one combat or one turn. Last Stand can require a two-turn or two-combat pledge. No alliances, open-ended favors, secret-vote deals, or concessions. Forced Magic actions override agreements without blame.'));
       return panel;
     }
 
@@ -1986,12 +2023,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       modal.appendChild(el('div', 'mtitle', `You are offering a deal to ${esc(to.name)}`));
       modal.appendChild(el('div', 'dippreamble', 'You are the initiator. Choose what you want the bot to promise and what you promise in return. The bot will independently accept, reject, or counter based on the current board.'));
 
+      const starts = el('div', 'dipquickstarts');
+      starts.setAttribute('aria-label', 'Start with a deal');
+      for (const preset of this.diplomacyQuickStarts(requests, offers)) {
+        const selected = composer.requestKey === preset.requestKey && composer.offerKey === preset.offerKey;
+        const quick = el('button', 'dipquickstart' + (selected ? ' selected' : ''), `<span aria-hidden="true">${preset.icon}</span><b>${esc(preset.title)}</b><small>${esc(preset.description)}</small>`);
+        quick.type = 'button';
+        quick.dataset.testid = `diplomacy-preset-${preset.type}`;
+        quick.setAttribute('aria-pressed', String(selected));
+        quick.onclick = () => {
+          composer.requestKey = preset.requestKey; composer.offerKey = preset.offerKey;
+          this.render();
+        };
+        starts.appendChild(quick);
+      }
+      modal.appendChild(starts);
+      modal.appendChild(el('div', 'dipcustomhint', 'Start with an idea, then choose the exact terms below.'));
+
       const field = (title, sub, options, value, onChange) => {
         const label = el('label', 'dipfield');
         label.innerHTML = `<span>${esc(title)}<small>${esc(sub)}</small></span>`;
         const select = el('select', 'styleselect');
         for (const option of options) {
-          const node = el('option', '', option.label); node.value = option.key; node.selected = option.key === value; select.appendChild(node);
+          const node = el('option', '', esc(option.label)); node.value = option.key; node.selected = option.key === value; select.appendChild(node);
         }
         select.onchange = () => onChange(select.value);
         label.appendChild(select);
@@ -2005,12 +2059,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       const request = requests.find(option => option.key === composer.requestKey);
       const offer = offers.find(option => option.key === composer.offerKey);
-      modal.appendChild(el('div', 'dipreview', `<b>YOUR PROPOSED CONTRACT</b><p><span>THE BOT</span>${esc(request.label)}</p><p><span>YOU</span>${esc(offer.label)}</p>`));
+      const preview = g.previewDiplomacy ? g.previewDiplomacy(this.me, to, composer.requestKey, composer.offerKey) : { ok: true, labels: [request.label, offer.label] };
+      const review = el('div', 'dipreview', `<b>YOUR PROPOSED CONTRACT</b><p><span>${esc(to.name)}</span>${esc(preview.labels[0] || request.label)}</p><p><span>YOU</span>${esc(preview.labels[1] || offer.label)}</p>`);
+      review.setAttribute('aria-live', 'polite');
+      modal.appendChild(review);
+      const availability = el('div', `dipavailability ${preview.ok ? 'ready' : 'blocked'}`, `${preview.ok ? '✓ Ready to propose · acceptance is up to the other player.' : esc(preview.reason)}`);
+      availability.setAttribute('role', 'status');
+      modal.appendChild(availability);
       modal.appendChild(el('div', 'dipwarning', 'Sending is not acceptance. The bot weighs board value, threat, opportunity cost, personality, and recent reliability. Accepted terms bind voluntary choices; forced Magic actions remain legal.'));
 
       const actions = el('div', 'btnrow');
       const send = el('button', 'pbtn primary', 'Send offer');
       send.dataset.testid = 'send-diplomacy-offer';
+      send.disabled = !preview.ok;
+      if (!preview.ok) send.title = preview.reason;
       send.onclick = async () => {
         send.disabled = true;
         const result = g.proposeDiplomacy(this.me, to, composer.requestKey, composer.offerKey);
@@ -4958,7 +5020,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const statusClass = String(status).toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
       const modal = el('div', `modal diplomacymodal diplomacyreviewmodal status-${statusClass}`);
       modal.dataset.testid = 'diplomacy-hard-pause';
+      this.diplomacyMotionOnce(modal, `review:${proposal?.id || q.contract?.id || q.source}:${status}`);
       ov.appendChild(modal);
+
+      const emblem = el('div', 'dipaccordvisual', `<span class="dipaccordline"></span><span class="dipaccordseal">${status === 'accepted' ? '✓' : proposal?.isCounteroffer || status === 'countered' ? '↩' : '◇'}</span><span class="dipaccordline"></span>`);
+      emblem.setAttribute('aria-hidden', 'true');
+      modal.appendChild(emblem);
 
       const kicker = incoming ? `${esc(from ? from.name : 'BOT')} → YOU · DECISION REQUIRED`
         : humanInitiated ? 'YOUR OFFER · RESULT PAUSED'
@@ -6677,8 +6744,10 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const names = ids.map(id => this.game.players.find(player => player.idx === id)?.name).filter(Boolean);
       const rawClauses = proposal && (proposal.clauses || [proposal.request, proposal.offer]) || contract && contract.clauses || [];
       const labels = rawClauses.filter(Boolean).map(clause => MTG.diplomacyClauseLabel ? MTG.diplomacyClauseLabel(this.game, clause) : '').filter(Boolean);
-      const notice = el('div', 'diplomacyannouncement' + (proposal && proposal.toId === this.me?.idx ? ' incoming' : ''));
-      notice.innerHTML = `<span class="diplomacyannouncementicon" aria-hidden="true">🕊</span><div class="diplomacyannouncementcopy">` +
+      const eventKind = event.kind === 'agreement' ? 'accepted' : proposal?.isCounteroffer ? 'countered' : event.kind === 'completed' ? 'completed' : 'proposal';
+      const notice = el('div', `diplomacyannouncement status-${eventKind}` + (proposal && proposal.toId === this.me?.idx ? ' incoming' : ''));
+      notice.setAttribute('role', 'status');
+      notice.innerHTML = `<span class="diplomacyannouncementicon" aria-hidden="true">${eventKind === 'accepted' || eventKind === 'completed' ? '✓' : eventKind === 'countered' ? '↩' : '🕊'}</span><div class="diplomacyannouncementcopy">` +
         `<small>${esc(event.kind === 'agreement' ? 'PUBLIC AGREEMENT' : event.kind === 'completed' ? 'AGREEMENT UPDATE' : 'TABLE NEGOTIATION')}</small>` +
         `<b>${esc(event.title || 'Diplomacy & Politics')}</b>` +
         (names.length ? `<em>${esc(names.join(' · '))}</em>` : '') +

@@ -45,6 +45,9 @@ node tests/browser/oracle-import-release.mjs --output output/playwright/release-
 node tests/browser/player-experience.mjs
 node tests/browser/mobile-table-view.mjs
 node tests/browser/commander-live-launch.mjs --output output/playwright/release-live
+node tests/browser/commander-live-four-player.mjs --output output/playwright/release-live-four
+node tests/browser/battlefield-combat.mjs
+node tests/browser/diplomacy-options.mjs
 ```
 
 Check real user-facing behavior, including:
@@ -54,6 +57,7 @@ Check real user-facing behavior, including:
 - Human and local AI decisions through the stack, Proceed, and combat.
 - Phone and desktop layouts, card artwork, and browser console/page errors.
 - Two or more separate Live clients: create/join, private hands, imported guest deck delivery, ready/start, a guest decision, and guest reconnection.
+- For shared-control changes, run four isolated Live clients and exercise payment, abilities, private choices, attacks and blocks from every seat. Keep the host active while reconnecting each guest.
 - Optional account registration/login/logout, a private Solo save/continue, owner-bound imported lists, and favorites using a disposable local or staging account.
 
 The host must remain active for Live reconnect testing. A surviving Redis room record does not establish that a closed host's engine can resume.

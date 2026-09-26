@@ -241,6 +241,8 @@ Solo players and all Live players use the **Command Table** interface. **Table**
 
 **Combat on the battlefield:** select your creatures, then click a defender's portrait, planeswalker, or name in the bottom dock. You can also choose the defender first, use **All attack**, or drag creatures directly to a defender. To block, select your creature and then an incoming attacker; attacker-first selection and dragging also work. Gold attack lines and blue block lines show desktop assignments. **Attack**, **Block**, or **No attacks / No blocks** confirms the declaration; selecting cards alone never advances combat. **Clear** resets the draft, and **Details** opens the full combat overview without losing assignments. On phones, incoming attackers stay beside your battlefield while you choose blockers. The ordinary action dock is compact; stack reviews and target selection open a panel when needed.
 
+Attack targets show life or planeswalker loyalty, assigned attackers and their combined power. The attack heading totals the draft; blue selected creatures still need a defender, while gold marks assigned attackers. On phones, swipe the defender row to reach additional players or planeswalkers. These power totals describe the chosen creatures, not predicted damage after blockers and other effects.
+
 On phones and tablets, the focused opponent follows the active player's turn. Tap another opponent to inspect their board until the next turn. Short screens show one battlefield at a time: **Mine** opens your board, and an opponent's seat opens theirs. Your turn brings your battlefield back automatically. Dense mobile battlefields scroll horizontally, with lands and mana sources below; landscape phones place the hand beside the board.
 
 The mobile **Hand** tab (or **View all** above your cards) opens a scrollable grid of your entire hand. Sort, inspect and play cards through their usual actions while the current decision stays within reach. **Mine** returns to your battlefield; **Table** and **Stack** keep their own views. In the phone deck library, **Filters** also opens sorting and the Grid/Compact layout choices.
@@ -343,6 +345,8 @@ Skills use the **`commander-ai-skill/v1`** declarative JSON format. They can bui
 5. Read the response. A bot can accept, decline, or return a counteroffer. A counteroffer is a new proposal requiring your decision, not an automatic acceptance of revised terms.
 
 The normal offer allowance is **two proposals per table round**, with at most one to the same opponent. Repeating a rejected offer without a meaningful board change is blocked. Ordinary diplomacy ends when only two players remain.
+
+The offer composer provides **Combat truce**, **Hands off**, **Protect a card**, **Let it resolve**, and **Pressure the leader** starters when their terms are available on the current board. Adjust the exact promises below, then read the named participants and expiry in the contract preview. The same rules used when sending check whether the proposal is currently allowed; previewing spends no offer allowance and does not predict the bot's answer. Incoming offers and signed agreements receive short visual cues, with both system and in-game Reduced motion respected.
 
 ### What a deal can promise
 

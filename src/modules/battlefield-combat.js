@@ -140,20 +140,33 @@ export function renderBattlefieldCombat(ui, game, root) {
   let hint, title, confirm;
 
   if (pd.q.type === 'attackers') {
-    title = 'Choose attackers';
     const waiting = pd.attackPending || [];
+    const totalPower = pd.sel.reduce((sum, entry) => sum + Math.max(0, Number(entry.card.power) || 0), 0);
+    title = pd.sel.length ? `${pd.sel.length} attacker${pd.sel.length === 1 ? '' : 's'} · ${totalPower} power` : 'Choose attackers';
     hint = waiting.length ? `${waiting.length} selected · choose a defender`
       : pd.attackTarget ? `Attacking ${pd.attackTarget.name} · choose creatures`
-        : 'Select creatures, then a defender';
+        : pd.sel.length ? 'Ready · add more or confirm below' : 'Tap creatures, then a defender';
     const offered = pd.q.attackTargets || [...(pd.q.opponents || []),
       ...game.bf().filter(card => card.is('Planeswalker') && card.ctrl !== ui.me)];
     const targets = offered.filter(target => pd.q.eligible.some(card => ui.arenaLegalAttackTargets(card, pd).includes(target)));
     const defenders = node('div', 'ct-defender-choices');
     defenders.setAttribute('aria-label', 'Choose defender');
     for (const target of targets) {
-      const count = pd.sel.filter(entry => entry.target === target).length;
-      const pick = button(`${target.name}${count ? ` · ${count}` : ''}`, () => chooseDefender(ui, pd, target), 'ct-defender-choice');
+      const assigned = pd.sel.filter(entry => entry.target === target);
+      const count = assigned.length;
+      const power = assigned.reduce((sum, entry) => sum + Math.max(0, Number(entry.card.power) || 0), 0);
+      const walker = target.iid != null;
+      const stat = walker ? `${target.counters.loyalty || 0} loyalty` : `${target.life} life`;
+      const canAssign = !waiting.length || waiting.some(card => ui.arenaLegalAttackTargets(card, pd).includes(target));
+      const pick = button('', () => chooseDefender(ui, pd, target), `ct-defender-choice${walker ? ' ct-defender-walker' : ''}${count ? ' has-attackers' : ''}`);
+      const identity = node('span', 'ct-defender-identity');
+      identity.append(node('b', '', target.name), node('small', '', walker ? `◆ ${stat} · ${target.ctrl.name}` : stat));
+      const allocation = node('span', 'ct-defender-allocation', count ? `${count} ⚔ · ${power} power` : canAssign ? 'Choose defender' : 'Cannot attack');
+      pick.append(identity, allocation);
       pick.dataset.combatDefender = entityKey(target);
+      pick.disabled = !canAssign;
+      pick.title = `${target.name} · ${walker ? 'Planeswalker · ' : ''}${stat}${walker ? ` · ${target.ctrl.name}` : ''}`;
+      pick.setAttribute('aria-label', `Attack ${target.name}, ${walker ? 'planeswalker, ' : ''}${stat}. ${count} attacker${count === 1 ? '' : 's'} assigned, ${power} power.${canAssign ? '' : ' Selected creatures cannot attack this defender.'}`);
       pick.setAttribute('aria-pressed', String(pd.attackTarget === target));
       ui.registerArenaDropTarget(pick, { kind: 'entity', value: target });
       defenders.append(pick);
@@ -182,8 +195,12 @@ export function renderBattlefieldCombat(ui, game, root) {
     }, 'primary');
     confirm.disabled = !!missingForced.length || !!waiting.length;
     for (const card of pd.q.eligible) for (const element of root.querySelectorAll(`.mini[data-iid="${card.iid}"]`)) {
-      const selected = pd.sel.some(entry => entry.card === card) || waiting.includes(card);
-      bindEntity(ui, element, card, () => ui.toggleAttacker(card), selected, `${card.name}. ${selected ? 'Remove attacker' : 'Select attacker'}.`);
+      const assigned = pd.sel.find(entry => entry.card === card);
+      const selected = !!assigned || waiting.includes(card);
+      const state = assigned ? `Attacking ${assigned.target.name}. Remove attacker.`
+        : waiting.includes(card) ? 'Selected, choose a defender. Remove selection.' : 'Select attacker.';
+      bindEntity(ui, element, card, () => ui.toggleAttacker(card), selected, `${card.name}, ${card.power}/${card.toughness}. ${state}`);
+      element.classList.toggle('ct-attack-pending', waiting.includes(card));
     }
   } else if (pd.q.type === 'blockers') {
     title = 'Choose blockers';

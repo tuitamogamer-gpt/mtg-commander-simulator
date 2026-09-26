@@ -1786,6 +1786,57 @@ body:has(#setup) { background: #08090d; }
 .diplomacyreviewactions .pbtn { min-height: 44px; }
 .diplomacypausebar { border-color: rgba(211,151,76,.58) !important; box-shadow: inset 3px 0 var(--ds-accent); }
 
+/* Board-aware deal starters and a short, one-time signing animation. */
+#game .dipguide { flex: none; border: 1px solid rgba(231,177,94,.18); border-radius: 9px; background: rgba(211,151,76,.035); }
+#game .dipguide summary { padding: 12px; color: #d7c7a7; font-size: 11px; cursor: pointer; }
+#game .dipguidebody { display: grid; gap: 10px; padding: 0 12px 12px; }
+#game .dipguidebody p { margin: 0; color: #b6b3a9; font-size: 11px; line-height: 1.5; }
+#game .dipguidebody b { display: block; color: #e0d6c4; }
+#game .dipguidebody small { color: var(--ds-muted); font-size: 10px; line-height: 1.4; }
+.dipquickstarts { display: grid; grid-template-columns: repeat(auto-fit,minmax(122px,1fr)); gap: 8px; }
+.dipquickstart { display: grid; grid-template-columns: 24px minmax(0,1fr); align-content: start; align-items: center; gap: 7px; min-height: 92px; min-width: 0; padding: 11px; border: 1px solid rgba(231,215,181,.2); border-radius: 9px; color: #d9d2c2; background: #0b1414; text-align: left; cursor: pointer; transition: border-color .16s ease, background .16s ease; }
+.dipquickstart > span { color: #d8b679; font-size: 22px; line-height: 1; }
+.dipquickstart b { font-size: 12px; line-height: 1.2; }
+.dipquickstart small { grid-column: 1 / -1; color: #9fa99f; font-size: 10px; line-height: 1.4; }
+.dipquickstart:hover, .dipquickstart.selected { border-color: #c79e5d; background: #25271c; }
+.dipquickstart:focus-visible, #game .dipguide summary:focus-visible { outline: 2px solid #f4d59c; outline-offset: 3px; }
+.dipcustomhint { margin: 9px 0 13px; color: #a6a393; font-size: 11px; line-height: 1.4; }
+.dipavailability { margin-top: 10px; padding: 9px 11px; border-radius: 7px; font-size: 11px; line-height: 1.45; }
+.dipavailability.ready { color: #b5d6b8; background: rgba(99,150,109,.1); border: 1px solid rgba(99,150,109,.25); }
+.dipavailability.blocked { color: #e5bf98; background: rgba(179,115,65,.12); border: 1px solid rgba(205,154,91,.3); }
+.dipreview p span { overflow-wrap: anywhere; }
+.dipaccordvisual { display: flex; align-items: center; justify-content: center; gap: 13px; margin: 0 0 15px; color: #e3bd7a; }
+.dipaccordline { width: min(24%,120px); height: 1px; background: linear-gradient(90deg,transparent,currentColor); transform-origin: right center; opacity: .55; }
+.dipaccordline:last-child { transform: rotate(180deg); }
+.dipaccordseal { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border: 1px solid currentColor; border-radius: 50%; font-size: 26px; line-height: 1; background: rgba(205,154,91,.08); box-shadow: 0 0 0 5px rgba(205,154,91,.04); }
+.status-accepted .dipaccordvisual, .diplomacyannouncement.status-accepted .diplomacyannouncementicon { color: #a9d6ad; }
+.status-accepted .dipaccordseal { background: rgba(87,145,104,.16); box-shadow: 0 0 0 5px rgba(87,145,104,.05); }
+.dipanimate .dipaccordseal { animation: dipSign .5s cubic-bezier(.2,.8,.2,1) both; }
+.dipanimate.status-accepted .dipaccordseal { animation: dipSign .5s cubic-bezier(.2,.8,.2,1) both, dipSealGlow .9s .3s ease-out; }
+.dipanimate .dipaccordline { animation: dipLink .55s ease-out both; }
+#game .dipincoming.dipanimate, #game .dipcontract.dipanimate { animation: dipArrive .32s ease-out both; }
+.diplomacyannouncement.status-accepted .diplomacyannouncementicon { animation: dipSign .5s .1s ease-out both; }
+.diplomacyannouncement.status-countered .diplomacyannouncementicon { animation: dipCounter .5s ease-out both; }
+@keyframes dipSign { from { opacity: 0; scale: .65; rotate: -14deg; } to { opacity: 1; scale: 1; rotate: 0deg; } }
+@keyframes dipLink { from { opacity: 0; scale: 0 1; } to { opacity: .55; scale: 1; } }
+@keyframes dipSealGlow { 0% { box-shadow: 0 0 0 3px #77b98244; } 100% { box-shadow: 0 0 0 20px #77b98200; } }
+@keyframes dipArrive { from { opacity: .35; translate: 0 7px; } to { opacity: 1; translate: 0 0; } }
+@keyframes dipCounter { from { opacity: .2; rotate: -65deg; } to { opacity: 1; rotate: 0deg; } }
+body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced-motion .diplomacyannouncement, body.reduced-motion .diplomacyannouncement *, body.reduced-motion .dipquickstart { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .dipanimate, .dipanimate *, .diplomacyannouncement, .diplomacyannouncement *, .dipquickstart { animation: none !important; transition: none !important; }
+}
+@media (max-width: 700px) {
+  .diplomacyreviewroute { flex-wrap: wrap; gap: 7px; }
+  .diplomacyreviewroute span { flex: 1; min-width: 0; padding: 10px 7px; font-size: 9px; overflow-wrap: anywhere; }
+}
+@media (max-width: 520px) {
+  .dipquickstarts { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .dipquickstart { min-height: 84px; padding: 10px; }
+  .dipaccordvisual { margin-bottom: 12px; }
+  .dipaccordseal { width: 36px; height: 36px; font-size: 22px; }
+}
+
 @media (max-width: 520px) {
   .diplomacymodal { width: calc(100 * var(--vwu) - 24px) !important; max-height: calc(100 * var(--dvhu) - 24px) !important; padding: 16px !important; }
   .dipfields { grid-template-columns: minmax(0,1fr); gap: 8px; }

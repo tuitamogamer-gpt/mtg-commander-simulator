@@ -171,10 +171,18 @@ try {
   await card(ids.creatures[0]).focus(); await page.keyboard.press('Enter');
   assert.equal(await confirm().isDisabled(), true, 'Unassigned selected creature cannot be submitted');
   assert.equal(await page.evaluate(() => __combatAnswer), null, 'Keyboard selection never confirms');
+  assert.match(await card(ids.creatures[0]).getAttribute('aria-label'), /Selected, choose a defender/, 'Pending and assigned attacks have distinct accessible states');
+  assert.equal(await card(ids.creatures[0]).evaluate(node => node.classList.contains('ct-attack-pending')), true);
+  assert.match(await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).textContent(), /36 life/, 'Defender choice includes current life');
+  assert.match(await page.locator(`[data-combat-defender="card-${ids.walker}"]`).getAttribute('aria-label'), /planeswalker, 6 loyalty/, 'Planeswalker is distinguished from its controller');
   await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).click();
   await card(ids.creatures[1]).click();
   await page.locator(`[data-combat-defender="card-${ids.walker}"]`).click();
   assert.deepEqual(await page.evaluate(() => _ui.pending.sel.map(e => e.target.iid ?? e.target.idx)), [ids.opponent, ids.walker]);
+  assert.match(await card(ids.creatures[0]).getAttribute('aria-label'), /Attacking AI Dragon/, 'Assigned attacker announces its defender');
+  const assignedPower = await page.evaluate(() => _ui.pending.sel.reduce((sum, entry) => sum + Math.max(0, entry.card.power), 0));
+  assert.equal(await page.locator('.ct-combat-copy b').textContent(), `2 attackers · ${assignedPower} power`, 'Attack summary updates after split assignment');
+  assert.match(await page.locator(`[data-combat-defender="card-${ids.walker}"] .ct-defender-allocation`).textContent(), /1 ⚔ · 2 power/, 'Each defender shows its assigned attackers and power');
   await page.waitForFunction(() => document.querySelectorAll('.ct-combat-lines path').length === 2, null, {timeout: 5000});
   await shot('desktop-attack');
   await page.getByRole('button', {name:'Details', exact:true}).click();
@@ -198,6 +206,18 @@ try {
   await page.evaluate(() => { _ui.pending.q.forced = [_ui.pending.q.eligible[0]]; _ui.render(); });
   assert.equal(await confirm().isDisabled(), true, 'Forced attacker cannot be skipped');
   check('All attack, clear, and forced-attack confirmation');
+  await fixture(); ids = await combat('attackers');
+  await page.evaluate(iid => {
+    _game.creatures(_ui.me).find(card => card.iid === iid).meta.goadedBy = [_game.players[1]];
+    _game.recalc(); _ui.render();
+  }, ids.creatures[0]);
+  await card(ids.creatures[0]).click();
+  assert.equal(await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).isDisabled(), true, 'Goading player cannot receive the selected goaded creature');
+  assert.equal(await page.locator(`[data-combat-defender="card-${ids.walker}"]`).isDisabled(), true, 'Planeswalker cannot bypass the goad requirement');
+  await page.locator('[data-combat-defender="player-2"]').click();
+  assert.equal(await page.evaluate(() => _ui.pending.sel[0].target.idx), 2);
+  assert.equal(await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).isDisabled(), false, 'Defender becomes available for other eligible creatures after assignment');
+  check('Defender choices explain and respect selected creatures’ attack restrictions');
   await fixture(); ids = await combat('blockers');
   await visibleAction();
   await card(ids.creatures[0]).click();
@@ -229,12 +249,23 @@ try {
   assert.equal(await confirm().isDisabled(), false);
   await confirm().click();
   check('Dragging an assigned blocker moves it to the new legal attacker in one gesture');
-  for (const viewport of [{width:390,height:844},{width:844,height:390},{width:768,height:1024},{width:1280,height:720}]) {
+  for (const viewport of [{width:320,height:568},{width:390,height:844},{width:844,height:390},{width:768,height:1024},{width:1280,height:720}]) {
     await page.setViewportSize(viewport); await fixture(); ids = await combat('attackers');
     await visibleAction();
     await card(ids.creatures[0]).tap();
     await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).tap();
     assert.equal(await page.evaluate(() => _ui.pending.sel.length), 1);
+    if (viewport.width <= 390) {
+      for (const box of await page.locator('.ct-defender-choice').evaluateAll(nodes => nodes.map(node => {
+        const r = node.getBoundingClientRect(); return {width: r.width, height: r.height};
+      }))) assert.ok(box.width >= 44 && box.height >= 44, 'Every defender has a full touch target');
+      await card(ids.creatures[1]).tap();
+      const walker = page.locator(`[data-combat-defender="card-${ids.walker}"]`);
+      await walker.scrollIntoViewIfNeeded(); await walker.tap();
+      assert.deepEqual(await page.evaluate(() => _ui.pending.sel.map(entry => entry.target.iid ?? entry.target.idx)), [ids.opponent, ids.walker], 'A phone can split attacks with the scrolled planeswalker choice');
+      assert.equal(await confirm().isDisabled(), false);
+      await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).scrollIntoViewIfNeeded();
+    }
     await shot(`${viewport.width}-attack`);
     await fixture(); ids = await combat('blockers');
     await visibleAction();

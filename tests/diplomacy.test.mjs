@@ -98,6 +98,43 @@ test('a materially favorable reciprocal combat truce is accepted and filters vol
   assert.deepEqual(game.diplomacyAttackTargetsFor(humanCreature, [bot, third], false), [third]);
 });
 
+test('preview checks the exact public deal without spending proposals or exposing bot evaluation', () => {
+  const { game, players: [human, bot] } = makeGame();
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, bot);
+  const before = JSON.stringify(game.diplomacy);
+  const requestKey = `no_attack:${human.idx}`, offerKey = `no_attack:${bot.idx}`;
+  const preview = game.previewDiplomacy(human, bot, requestKey, offerKey);
+  assert.equal(preview.ok, true);
+  assert.equal(preview.reason, '');
+  assert.match(preview.labels[0], /^AI Dragon will not voluntarily attack You/);
+  assert.match(preview.labels[1], /^You will not voluntarily attack AI Dragon/);
+  assert.deepEqual(Object.keys(preview).sort(), ['labels', 'ok', 'reason']);
+  assert.equal(JSON.stringify(game.diplomacy), before);
+  assert.equal(game.proposeDiplomacy(human, bot, requestKey, offerKey).status, 'accepted');
+  const duplicate = game.previewDiplomacy(human, bot, requestKey, offerKey);
+  assert.equal(duplicate.ok, false);
+  assert.match(duplicate.reason, /already have an active agreement/);
+});
+
+test('preview rejects locked, exhausted and stale terms before the user can send them', () => {
+  const { game, players: [human, bot] } = makeGame({ unlocked: false });
+  const requestKey = `no_target_player:${human.idx}`, offerKey = `no_target_player:${bot.idx}`;
+  assert.match(game.previewDiplomacy(human, bot, requestKey, offerKey).reason, /turn 3/);
+  game.players.forEach(player => { player.turnsStarted = 3; });
+  assert.equal(game.previewDiplomacy(human, bot, requestKey, offerKey).ok, true);
+  const card = addCreature(game, human);
+  assert.equal(game.previewDiplomacy(human, bot, `protect_permanent:${card.iid}`, offerKey).ok, true);
+  card.zone = 'graveyard';
+  game.battlefield = game.battlefield.filter(item => item !== card);
+  assert.equal(game.previewDiplomacy(human, bot, `protect_permanent:${card.iid}`, offerKey).ok, false);
+  game.proposeDiplomacy(human, bot, requestKey, offerKey);
+  const repeat = game.previewDiplomacy(human, bot, requestKey, offerKey);
+  assert.equal(repeat.ok, false);
+  assert.match(repeat.reason, /active agreement|one proposal|unanswered/);
+});
+
 test('forced attacks override an impossible truce without recording a betrayal', () => {
   const { game, players: [human, bot] } = makeGame();
   addCreature(game, human, 'Inferno Titan');

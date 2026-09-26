@@ -1373,6 +1373,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.diplomacyStatus = function () { refresh(this); return status(this); };
   G.diplomacyClauseOptions = function (actor, beneficiary) { refresh(this); return clauseOptions(this, actor, beneficiary); };
+  // Inspect the exact terms with the same rules as Send, without recording an
+  // attempt, predicting a bot's private evaluation, or allocating a proposal.
+  G.previewDiplomacy = function (from, to, requestKey, offerKey) {
+    refresh(this);
+    const request = clauseFromKey(this, to, from, requestKey);
+    const offer = clauseFromKey(this, from, to, offerKey);
+    if (!from || !to || !request || !offer) return { ok: false, reason: REASONS.invalid, labels: [] };
+    const check = validateProposal(this, { fromId: from.idx, toId: to.idx, request, offer });
+    return { ...check, labels: [clauseLabel(this, request), clauseLabel(this, offer)] };
+  };
   G.diplomacyGroupRemovalOptions = function (actor) { refresh(this); return groupRemovalOptions(this, actor); };
   G.diplomacyRunawayThreat = function () { return runawayThreat(this); };
   G.diplomacyPressureAttackOpportunity = function (actor, target) { refresh(this); return pressureAttackOpportunity(this, actor, target); };

@@ -1104,8 +1104,17 @@ body.game-active #game.command-table .mini.mutated {
 #game.command-table .ct-combat-copy b { font: 650 14px/1.4 var(--ds-font-body); color: var(--ds-text); white-space: nowrap; }
 #game.command-table .ct-combat-copy > span { color: var(--ds-muted); font: 500 12px/1.4 var(--ds-font-body); }
 #game.command-table .ct-combat-actions { flex: 0 0 auto; align-items: center; }
-#game.command-table .ct-defender-choices { display: flex; gap: 5px; margin-top: 4px; overflow: auto; scrollbar-width: thin; }
-#game.command-table .ct-defender-choice { flex: 0 0 auto; min-height: 28px; padding: 3px 9px; border: 1px solid var(--ds-line); border-radius: 4px; background: transparent; font: 500 11px/1.3 var(--ds-font-body); letter-spacing: 0; white-space: nowrap; }
+#game.command-table .ct-defender-choices { display: flex; gap: 6px; margin-top: 6px; padding: 1px 1px 3px; overflow: auto; scrollbar-width: thin; scroll-snap-type: x proximity; }
+#game.command-table .ct-defender-choice { flex: 1 0 112px; min-width: 0; max-width: 180px; min-height: 58px; display: flex; flex-direction: column; align-items: stretch; gap: 5px; padding: 7px 9px; border: 1px solid var(--ds-line); border-radius: 7px; background: #171e25; color: var(--ds-text); font: 500 11px/1.3 var(--ds-font-body); letter-spacing: 0; text-align: left; text-transform: none; white-space: normal; scroll-snap-align: start; }
+#game.command-table .ct-defender-identity { min-width: 0; display: grid; gap: 2px; }
+#game.command-table .ct-defender-identity b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 650 12px/1.25 var(--ds-font-body); letter-spacing: 0; }
+#game.command-table .ct-defender-identity small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #b1c0cb; font: 500 10px/1.2 var(--ds-font-body); letter-spacing: 0; }
+#game.command-table .ct-defender-allocation { font: 600 10px/1.2 var(--ds-font-body); color: var(--ds-muted); letter-spacing: 0; }
+#game.command-table .ct-defender-choice.has-attackers { border-color: #9a704a; background: #2c241e; }
+#game.command-table .ct-defender-choice.has-attackers .ct-defender-allocation { color: #f4c394; }
+#game.command-table .ct-defender-walker .ct-defender-identity small { color: #c9ace6; }
+#game.command-table .ct-defender-choice:disabled { opacity: .48; cursor: not-allowed; }
+#game.command-table .ct-defender-choice:focus-visible { outline: 2px solid #96d6ee; outline-offset: -2px; }
 #game.command-table .ct-defender-choice[aria-pressed='true'] { border-color: var(--ds-accent); background: rgba(var(--ds-accent-rgb), .14); color: var(--ds-accent-bright); }
 #game.command-table .ct-quiet-action { background: transparent; border-color: transparent; box-shadow: none; color: var(--ds-muted); }
 #game.command-table .ct-quiet-action:hover { color: var(--ds-text); border-color: var(--ds-line); }
@@ -1113,6 +1122,8 @@ body.game-active #game.command-table .mini.mutated {
 #game.command-table .ct-combat-pick:focus-visible { outline: 2px solid #96d6ee; outline-offset: 3px; }
 #game.command-table .mini.eligible { box-shadow: 0 0 0 1px #75b2c1, 0 0 12px #75b2c122 !important; animation: none !important; }
 #game.command-table .mini.ct-combat-selected { border-color: #eeaa70 !important; box-shadow: 0 0 0 2px #eeaa70, 0 0 18px #ed9b4c30 !important; }
+#game.command-table .mini.ct-attack-pending { border-color: #9ae5f1 !important; box-shadow: 0 0 0 2px #9ae5f1, 0 0 18px #79d5e930 !important; }
+#game.command-table .mini.ct-attack-pending .atkchip { background: #153b46f5; color: #cdf6ff; }
 #game.command-table .mini.ct-block-pending { box-shadow: 0 0 0 2px #9ae5f1, 0 0 18px #79d5e930 !important; }
 #game.command-table .ct-block-unavailable { opacity: .5; }
 #game.command-table .opphead.ct-combat-pick { box-shadow: inset 0 -2px #72909b; }
@@ -1254,7 +1265,7 @@ body.game-active #game.command-table .ct-battle-blocks .ct-block-link { min-heig
   #game.command-table .ct-combat-copy { flex-wrap: wrap; gap: 2px 8px; }
   #game.command-table .ct-combat-copy b { font-size: 12px; }
   #game.command-table .ct-combat-copy > span { font-size: 11px; }
-  #game.command-table .ct-defender-choice { min-height: 40px; }
+  #game.command-table .ct-defender-choice { min-height: 64px; padding: 7px 8px; }
   #game.command-table .ct-combat-actions { flex-wrap: nowrap; gap: 4px; }
   body.game-active #game.command-table .ct-combat-prompt .btnrow > .pbtn { flex: 0 0 auto; min-height: 44px; width: auto; padding: 6px 9px; font-size: 11px; letter-spacing: 0; }
   body.game-active #game.command-table .ct-combat-prompt .btnrow > .primary { margin-left: auto; min-width: 108px; max-width: 160px; }
