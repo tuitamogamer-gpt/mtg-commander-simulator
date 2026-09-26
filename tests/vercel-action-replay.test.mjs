@@ -205,3 +205,62 @@ test('a busy rejoin retries on the same socket without changing room state befor
   assert.equal(rejoined.view.you, 0);
   assert.equal(JSON.stringify(rejoined).includes('actionReceipts'), false);
 });
+
+test('a delayed lower-revision broadcast cannot revoke a replacement connection, but a real takeover can', async t => {
+  const f = await fixture(t);
+  const stale = await f.store.get(f.room);
+  const oldClosed = once(f.guest.ws, 'close');
+  const secondServer = await f.server();
+  const replacement = await f.join(secondServer, 'test-guest-000000001');
+  assert.equal((await oldClosed)[0], 4001, 'the real replacement closes the superseded socket');
+  await f.host.act({ type: 'configure', deckId: 'Abzan Armor', ready: true });
+  const current = await f.store.get(f.room);
+  await replacement.wait(message => message.type === 'state' && message.view.revision === current.revision);
+  const from = replacement.messages.length;
+  const get = f.store.get.bind(f.store);
+  try {
+    // A pub/sub GET started before the reconnect can finish after its newer
+    // direct reply. It must not treat the older connection ID as a takeover.
+    f.store.get = async () => structuredClone(stale);
+    await f.store.publish(f.room);
+  } finally { f.store.get = get; }
+  const connection = [...secondServer.commanderLive.clients].find(client => client.playerId === 'test-guest-000000001');
+  assert.equal(connection.ws.readyState, WebSocket.OPEN, 'older ownership must never close the current connection');
+  await replacement.act({ type: 'configure', deckId: 'Elven Council', ready: true });
+  assert.ok(replacement.messages.slice(from).filter(message => message.type === 'state').every(message => message.view.revision >= current.revision));
+  const replacedAgain = once(replacement.ws, 'close');
+  await f.join(f.first, 'test-guest-000000001');
+  assert.equal((await replacedAgain)[0], 4001, 'newer ownership still closes the replaced connection');
+});
+
+test('an accepted join receives newer states while its initial publication is delayed', async t => {
+  const f = await fixture(t), secondServer = await f.server();
+  const publish = f.store.publish.bind(f.store);
+  let releasePublication, enteredPublication, delayFirst = true;
+  const delayed = new Promise(resolve => { releasePublication = resolve; });
+  const entered = new Promise(resolve => { enteredPublication = resolve; });
+  f.store.publish = async room => {
+    if (delayFirst) { delayFirst = false; enteredPublication(); await delayed; }
+    return publish(room);
+  };
+  const joining = f.join(secondServer, 'test-guest-000000001');
+  try {
+    await entered;
+    await f.host.act({ type: 'configure', deckId: 'Abzan Armor', ready: true });
+    const current = await f.store.get(f.room);
+    releasePublication();
+    const guest = await joining;
+    await guest.wait(message => message.type === 'state' && message.view.revision === current.revision);
+    // This action is serialized after the join on the server, ensuring its
+    // delayed final reply has also been delivered before inspecting the log.
+    await guest.act({ type: 'configure', deckId: 'Elven Council', ready: true });
+    const after = await f.store.get(f.room);
+    const states = guest.messages.filter(message => message.type === 'state');
+    assert.equal(states.at(-1).view.revision, after.revision, 'the delayed initial join reply cannot overwrite the current state');
+    assert.equal(states.at(-1).view.seats[0].deckId, 'Abzan Armor');
+    for (let i = 1; i < states.length; i++) assert.ok(states[i].view.revision >= states[i - 1].view.revision);
+  } finally {
+    releasePublication();
+    f.store.publish = publish;
+  }
+});

@@ -190,7 +190,10 @@ receipts never appear in player views. Uncommitted decisions wait through a paus
 while Resume remains available. Temporary room contention uses bounded retries
 with the same action identity; reconnect handshakes also retry without sending
 gameplay before the seat is accepted. Server lock acquisition waits beyond a
-previous worker's five-second lease. Disconnecting a participant pauses the room;
+previous worker's five-second lease. Active commits renew that lease, and each
+Redis write atomically checks its owner so a suspended worker cannot overwrite a
+newer state after expiry. Older broadcasts cannot eject a reconnected seat.
+Disconnecting a participant pauses the room;
 the host resumes once everyone is connected. Room Redis data has a 24-hour TTL,
 renewed on writes. This is room retention, not a 24-hour durable game save.
 

@@ -74,10 +74,10 @@ class MemoryRoomStore {
   async close() {}
 }
 
-class RedisRoomStore {
-  constructor(url) {
+export class RedisRoomStore {
+  constructor(url, { redis } = {}) {
     this.kind = 'redis';
-    this.redis = new Redis(url, { maxRetriesPerRequest: 3, enableReadyCheck: true });
+    this.redis = redis || new Redis(url, { maxRetriesPerRequest: 3, enableReadyCheck: true });
     this.subscriber = this.redis.duplicate();
     this.listeners = new Set();
     this.subscriber.on('message', (_channel, payload) => {
@@ -94,8 +94,14 @@ class RedisRoomStore {
     return value ? JSON.parse(value) : null;
   }
 
-  async set(room, state) {
-    await this.redis.set(roomKey(room), JSON.stringify(state), 'EX', ROOM_TTL_SECONDS);
+  async set(room, state, lease) {
+    // The lease can expire while a worker is suspended or waiting for Redis.
+    // Check ownership atomically with the write, not just when releasing it.
+    const written = lease && await this.redis.eval(
+      "if redis.call('get', KEYS[1]) == ARGV[1] then redis.call('set', KEYS[2], ARGV[2], 'EX', ARGV[3]); return 1 else return 0 end",
+      2, lockKey(room), roomKey(room), lease, JSON.stringify(state), ROOM_TTL_SECONDS,
+    );
+    if (!written) throw Object.assign(new Error('The room changed while waiting. Retrying.'), { code: 'ROOM_BUSY' });
   }
 
   async publish(room) {
@@ -124,13 +130,21 @@ class RedisRoomStore {
       error.code = 'ROOM_BUSY';
       throw error;
     }
+    const renewal = setInterval(() => {
+      void this.redis.eval(
+        "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('pexpire', KEYS[1], ARGV[2]) else return 0 end",
+        1, key, token, ROOM_LOCK_TTL_MS,
+      ).catch(() => {}); // The fenced write rejects a lost lease safely.
+    }, Math.floor(ROOM_LOCK_TTL_MS / 3));
+    renewal.unref();
     try {
-      return await work();
+      return await work(token);
     } finally {
+      clearInterval(renewal);
       await this.redis.eval(
         "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end",
         1, key, token,
-      );
+      ).catch(() => {}); // Cleanup failure must not reject a durable commit.
     }
   }
 
@@ -212,6 +226,10 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
 
   const sendState = (client, state) => {
     if (!client.playerId) return;
+    // Cross-worker reads/publications can finish out of order. An older
+    // connection ID must never eject a seat whose newer join was accepted.
+    if (state.revision < client.lastRevision) return;
+    client.lastRevision = state.revision;
     const seat = state.seats.find(item => item.playerId === client.playerId);
     if (!seat || seat.connectionId !== client.connectionId) {
       // A reconnect replaces the old transport. Never send a private view to
@@ -245,12 +263,15 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     }
   });
 
-  const commit = async (room, work) => {
+  const commit = async (room, work, onStored) => {
     let next;
-    await store.withLock(room, async () => {
+    await store.withLock(room, async lease => {
       const current = await store.get(room);
       next = await work(current);
-      if (next) await store.set(room, next);
+      if (next) {
+        await store.set(room, next, lease);
+        onStored?.();
+      }
     });
     if (next) {
       broadcastLocal(room, next);
@@ -280,7 +301,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
 
     const client = {
       ws, room, mayCreate, playerId: null, connectionId: randomUUID(),
-      chain: Promise.resolve(), windowStartedAt: Date.now(), messages: 0,
+      chain: Promise.resolve(), windowStartedAt: Date.now(), messages: 0, lastRevision: -1,
     };
     clients.add(client);
 
@@ -301,10 +322,12 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
         }
         assignConnection(state, playerId, client.connectionId);
         return state;
+      }, () => {
+        // Bind after durable acceptance but before awaited publication. A
+        // newer state arriving during publication must reach this socket.
+        // Rejected joins never subscribe to private room broadcasts.
+        client.playerId = playerId;
       });
-      // Bind only after the join has been accepted and stored. A failed join
-      // must not subscribe the socket to later private room broadcasts.
-      client.playerId = playerId;
       if (ws.readyState === WebSocket.OPEN) sendState(client, joined);
       else {
         await commit(room, state => {

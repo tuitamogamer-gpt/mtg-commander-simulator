@@ -29,6 +29,9 @@ const browserName = process.env.BROWSER || 'chromium';
 const browser = await pw[browserName].launch({ headless: true });
 const pages = [], checks = [], errors = [], wireChecks = [0, 0, 0, 0];
 const socketEvents = [[], [], [], []];
+const transportMetadata = Array.from({ length: 4 }, () => ({
+  sockets: 0, maxRevision: -1, deferred: { paused: 0, busy: 0 }, regressions: [], recentStates: [],
+}));
 let liveStartedAt = 0, resumes = 0, stopRecoveryMonitor = false;
 const mark = label => { checks.push(label); console.log('PASS ' + label); };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -117,12 +120,31 @@ async function pageFor(seat) {
     };
   });
   const page = await context.newPage(); pages.push(page);
-  await page.exposeFunction('__recordLiveClose', event => socketEvents[seat].push(event));
+  await page.exposeFunction('__recordLiveClose', event => {
+    socketEvents[seat].push(event);
+    console.log(`TRANSPORT seat ${seat + 1} closed code ${event.code}, lifetime ${event.durationMs}ms, expected reload ${event.expected}`);
+  });
   page.on('pageerror', error => errors.push(`Seat ${seat + 1}: ${redact(error.message)}`));
   page.on('console', message => { if (message.type() === 'error') errors.push(`Seat ${seat + 1}: ${redact(message.text())}`); });
-  page.on('websocket', ws => ws.on('framereceived', event => {
+  page.on('websocket', ws => {
+    const meta = transportMetadata[seat], socketOrdinal = ++meta.sockets;
+    ws.on('framereceived', event => {
     let message; try { message = JSON.parse(String(event.payload)); } catch { return; }
+    if (message.type === 'actionDeferred' && ['paused', 'busy'].includes(message.reason)) meta.deferred[message.reason]++;
     const view = message.view;
+    if (view && Number.isInteger(view.revision)) {
+      // Only public transport metadata: never credentials, decision IDs or cards.
+      const state = { at: new Date().toISOString(), socket: socketOrdinal, revision: view.revision,
+        phase: view.phase, turn: view.gameView?.turn ?? null, gamePhase: view.gameView?.phase ?? null,
+        connected: (view.seats || []).map(player => !!player.connected) };
+      if (view.revision < meta.maxRevision) {
+        meta.regressions.push({ ...state, previousRevision: meta.maxRevision });
+        meta.regressions = meta.regressions.slice(-30);
+      }
+      meta.maxRevision = Math.max(meta.maxRevision, view.revision);
+      meta.recentStates.push(state);
+      meta.recentStates = meta.recentStates.slice(-40);
+    }
     if (!view?.gameView) return;
     try {
       if (seat > 0) assert.equal(view.settings.seed, null);
@@ -131,7 +153,8 @@ async function pageFor(seat) {
       if (view.pendingDecision) assert.equal(view.pendingDecision.seat, seat);
       wireChecks[seat]++;
     } catch (error) { errors.push(`Seat ${seat + 1} private view: ${error.message}`); }
-  }));
+    });
+  });
   await page.goto(base, { waitUntil: 'domcontentloaded' }); return page;
 }
 
@@ -140,7 +163,10 @@ async function pageFor(seat) {
 const recoveryMonitor = (async () => {
   while (!stopRecoveryMonitor) {
     try {
-      if (liveStartedAt && pages[0] && await click(pages[0], /^Resume live game$/, 'body')) resumes++;
+      if (liveStartedAt && pages[0] && await click(pages[0], /^Resume live game$/, 'body')) {
+        resumes++;
+        console.log(`RECOVERY host clicked visible Resume (${resumes})`);
+      }
     } catch (error) {
       if (!stopRecoveryMonitor) errors.push('Recovery control: ' + redact(error.message));
     }
@@ -299,18 +325,23 @@ try {
   }
   await combat(0);
   assert.ok(wireChecks.every(n => n > 10));
+  assert.ok(transportMetadata.every(meta => meta.regressions.length === 0), 'no client receives a lower room revision');
+  assert.ok(socketEvents.every(events => events.every(event => event.expected || event.code !== 4001)), 'no unexpected seat takeover closes a live client');
   assert.deepEqual(errors, []);
   mark('every human attacks and blocks; all four views hide other hands and decisions; guests never receive the shuffle seed; zero browser errors');
   writeFileSync(`${out}/result.json`, JSON.stringify({ ok: true, browserName, target: new URL(base).origin, humans: 4, checks, wireChecks,
-    liveSeconds: Math.round((Date.now() - liveStartedAt) / 1000), resumes, socketEvents, errors }, null, 2));
+    liveSeconds: Math.round((Date.now() - liveStartedAt) / 1000), resumes, socketEvents, transportMetadata, errors }, null, 2));
 } catch (error) {
   for (let seat = 0; seat < pages.length; seat++) {
     const page = pages[seat];
     await page.screenshot({ path: `${out}/failure-seat-${seat + 1}.png`, mask: [page.locator('.online-invite')] }).catch(() => {});
-    const state = await page.evaluate(() => ({ text: document.querySelector('#game')?.innerText, question: _ui?.pending?.q.type, phase: _ui?.game?.phase })).catch(() => null);
+    const state = await page.evaluate(() => ({ text: document.querySelector('#game')?.innerText,
+      question: _ui?.pending?.q.type, phase: _ui?.game?.phase,
+      room: _ui?.liveSession?.room && { revision: _ui.liveSession.room.revision, phase: _ui.liveSession.room.phase,
+        connected: _ui.liveSession.room.seats.map(player => !!player.connected) } })).catch(() => null);
     writeFileSync(`${out}/failure-seat-${seat + 1}.json`, redact(JSON.stringify(state, null, 2)));
   }
-  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, checks, wireChecks, resumes, socketEvents, errors, failure: redact(error.stack) }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, checks, wireChecks, resumes, socketEvents, transportMetadata, errors, failure: redact(error.stack) }, null, 2));
   throw new Error(redact(error.stack));
 } finally {
   stopRecoveryMonitor = true;
