@@ -8,6 +8,8 @@ import { setup, validateAction, applyAction, viewFor } from '../logic.js';
 const ROOM_TTL_SECONDS = 24 * 60 * 60;
 const MAX_MESSAGE_BYTES = 2_100_000;
 const MAX_ACTION_RECEIPTS = 128;
+const ROOM_LOCK_TTL_MS = 5000;
+const ROOM_LOCK_WAIT_MS = 6500;
 const RUNNING_ACTIONS = new Set(['decisionRequest', 'decisionResponse', 'decisionPreview', 'manualAction']);
 const CHANNEL = 'commander-live:room-events';
 const roomKey = room => `commander-live:room:${room}`;
@@ -109,12 +111,19 @@ class RedisRoomStore {
     const key = lockKey(room);
     const token = randomUUID();
     let acquired = false;
-    for (let attempt = 0; attempt < 30; attempt++) {
-      acquired = (await this.redis.set(key, token, 'PX', 5000, 'NX')) === 'OK';
+    // A worker can disappear with its lease still live. Wait beyond that lease
+    // before returning temporary contention to a replacement connection.
+    const deadline = Date.now() + ROOM_LOCK_WAIT_MS;
+    for (let attempt = 0; Date.now() < deadline; attempt++) {
+      acquired = (await this.redis.set(key, token, 'PX', ROOM_LOCK_TTL_MS, 'NX')) === 'OK';
       if (acquired) break;
-      await delay(20 + attempt * 5);
+      await delay(Math.min(200, 20 + attempt * 5));
     }
-    if (!acquired) throw new Error('The room is busy. Try the action again.');
+    if (!acquired) {
+      const error = new Error('The room is busy. Waiting to retry.');
+      error.code = 'ROOM_BUSY';
+      throw error;
+    }
     try {
       return await work();
     } finally {
@@ -375,12 +384,17 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
               ? { type: 'actionDeferred', requestId, reason: 'paused' }
               : { type: 'actionAck', requestId });
           } catch (error) {
-            safeSend(ws, { type: 'error', requestId, error: error.message || String(error) });
+            safeSend(ws, error.code === 'ROOM_BUSY' && requestId?.startsWith('action:v1:')
+              ? { type: 'actionDeferred', requestId, reason: 'busy', retryAfterMs: 1000 }
+              : { type: 'error', requestId, error: error.message || String(error) });
           }
           return;
         }
         throw new Error('Unsupported room message.');
-      }).catch(error => safeSend(ws, { type: 'error', error: error.message || String(error) }));
+      }).catch(error => safeSend(ws, {
+        type: 'error', error: error.message || String(error),
+        ...(error.code === 'ROOM_BUSY' ? { code: 'ROOM_BUSY', retryAfterMs: 1000 } : {}),
+      }));
     });
 
     ws.on('close', () => {

@@ -951,6 +951,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // on page reload. Server receipts make an uncertain request safe to resend.
     const actionStream = crypto.randomUUID();
     let nextSendAt = 0, pumpTimer = null;
+    const maxBusyRetries = 6;
+    const busyRetryDelay = (message, attempt) => Math.min(2000,
+      Math.max(250, Number(message.retryAfterMs) || 1000) * attempt);
 
     const waitingView = message => {
       const ids = Array.isArray(message.seats) ? message.seats : [];
@@ -1010,6 +1013,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       current.reject(error instanceof Error ? error : new Error(String(error)));
       pump();
     };
+    const stopWithError = error => {
+      stopped = true;
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (pumpTimer) { clearTimeout(pumpTimer); pumpTimer = null; }
+      rejectInflight(error);
+      while (queue.length) queue.shift().reject(error);
+      if (socket) socket.close();
+    };
     const queueReconnect = () => {
       if (reconnectQueued || !latest || latest.you === null) return;
       const mine = latest.seats && latest.seats.find(seat => seat.seat === latest.you);
@@ -1051,6 +1062,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const connect = () => {
       if (stopped) return;
       const connection = new WebSocket(socketUrl);
+      let joinTimer = null, joinBusyRetries = 0;
       socket = connection;
       connection.onopen = () => {
         if (socket !== connection || stopped) return;
@@ -1071,24 +1083,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return;
         }
         if (message.type === 'actionDeferred') {
-          if (actionReplay && message.reason === 'paused' && inflight?.requestId === message.requestId) {
+          if (actionReplay && ['paused', 'busy'].includes(message.reason) && inflight?.requestId === message.requestId) {
+            if (message.reason === 'busy') {
+              inflight.busyRetries = (inflight.busyRetries || 0) + 1;
+              if (inflight.busyRetries > maxBusyRetries) {
+                stopWithError(new Error('The live room remained busy after several retries. Reopen the room to reconnect.'));
+                return;
+              }
+              nextSendAt = Math.max(nextSendAt, Date.now() + busyRetryDelay(message, inflight.busyRetries));
+            }
             const deferred = inflight;
             inflight = null;
-            deferred.waitForRunning = true;
+            deferred.waitForRunning = message.reason === 'paused';
             queue.unshift(deferred);
             pump();
           }
           return;
         }
         if (message.type === 'error') {
+          // An expired worker can leave its short Redis lock until its TTL.
+          // This refusal happens before joining, so retry only that handshake
+          // on the same connection and keep gameplay queued until its state.
+          if (message.code === 'ROOM_BUSY' && !message.requestId && !kernelState) {
+            if (joinTimer) return;
+            if (++joinBusyRetries > maxBusyRetries) {
+              stopWithError(new Error('The live room remained busy while reconnecting. Reopen the room to try again.'));
+              return;
+            }
+            joinTimer = setTimeout(() => {
+              joinTimer = null;
+              if (!stopped && socket === connection && open && !kernelState) {
+                connection.send(JSON.stringify({ type: 'join', playerId }));
+              }
+            }, busyRetryDelay(message, joinBusyRetries));
+            return;
+          }
           if (message.requestId && message.requestId !== inflight?.requestId) return;
           rejectInflight(new Error(message.error || 'The live room rejected the action.'));
           return;
         }
-        if (message.type === 'state') acceptState(message);
+        if (message.type === 'state') {
+          if (joinTimer) { clearTimeout(joinTimer); joinTimer = null; }
+          joinBusyRetries = 0;
+          acceptState(message);
+        }
       };
       connection.onclose = event => {
         if (socket !== connection) return;
+        if (joinTimer) { clearTimeout(joinTimer); joinTimer = null; }
         open = false;
         kernelState = null;
         if (pumpTimer) { clearTimeout(pumpTimer); pumpTimer = null; }

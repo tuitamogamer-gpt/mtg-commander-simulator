@@ -187,7 +187,10 @@ Keep the host tab open throughout a game. A temporary socket drop reconnects aft
 the room stores bounded, per-seat receipts atomically with accepted actions so a
 lost acknowledgement can be recovered without applying the action again. These
 receipts never appear in player views. Uncommitted decisions wait through a pause,
-while Resume remains available. Disconnecting a participant pauses the room;
+while Resume remains available. Temporary room contention uses bounded retries
+with the same action identity; reconnect handshakes also retry without sending
+gameplay before the seat is accepted. Server lock acquisition waits beyond a
+previous worker's five-second lease. Disconnecting a participant pauses the room;
 the host resumes once everyone is connected. Room Redis data has a 24-hour TTL,
 renewed on writes. This is room retention, not a 24-hour durable game save.
 

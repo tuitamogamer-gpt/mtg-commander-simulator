@@ -161,3 +161,47 @@ test('a transient notification failure retries delivery to another worker withou
   assert.equal(attempts, 2);
   assert.equal((await f.store.get(f.room)).revision, before.revision + 1);
 });
+
+test('lock contention defers the same action without a mutation or duplicate receipt', async t => {
+  const f = await fixture(t);
+  const lock = f.store.withLock.bind(f.store);
+  let failures = 2;
+  f.store.withLock = async (room, work) => {
+    if (failures-- > 0) throw Object.assign(new Error('Temporary room contention'), { code: 'ROOM_BUSY' });
+    return lock(room, work);
+  };
+  const requestId = f.host.nextId();
+  const action = { type: 'configure', deckId: 'Abzan Armor', ready: true };
+  const before = await f.store.get(f.room);
+  for (let i = 0; i < 2; i++) {
+    const result = await f.host.reply(action, requestId);
+    assert.equal(result.type, 'actionDeferred');
+    assert.equal(result.reason, 'busy');
+    assert.equal(result.retryAfterMs, 1000);
+    assert.deepEqual(await f.store.get(f.room), before);
+  }
+  await f.host.act(action, requestId);
+  const after = await f.store.get(f.room);
+  assert.equal(after.revision, before.revision + 1);
+  assert.equal(after.actionReceipts[0].filter(item => item.requestId === requestId).length, 1);
+});
+
+test('a busy rejoin retries on the same socket without changing room state before acceptance', async t => {
+  const f = await fixture(t);
+  const lock = f.store.withLock.bind(f.store);
+  let failures = 1;
+  f.store.withLock = async (room, work) => {
+    if (failures-- > 0) throw Object.assign(new Error('Temporary room contention'), { code: 'ROOM_BUSY' });
+    return lock(room, work);
+  };
+  const before = await f.store.get(f.room);
+  const from = f.host.messages.length;
+  f.host.ws.send(JSON.stringify({ type: 'join', playerId: 'test-host-0000000001' }));
+  const busy = await f.host.wait(message => message.type === 'error' && message.code === 'ROOM_BUSY', from);
+  assert.equal(busy.retryAfterMs, 1000);
+  assert.deepEqual(await f.store.get(f.room), before);
+  f.host.ws.send(JSON.stringify({ type: 'join', playerId: 'test-host-0000000001' }));
+  const rejoined = await f.host.wait(message => message.type === 'state' && message.view.revision > before.revision, from);
+  assert.equal(rejoined.view.you, 0);
+  assert.equal(JSON.stringify(rejoined).includes('actionReceipts'), false);
+});
