@@ -959,7 +959,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.DECK_GUIDES = Object.freeze({
     'Calling All Angels': {
-      route: 'fdcAngels', pace: 'GROWING FLYING ARMY', complexity: 'Beginner',
+      route: 'fdcAngels', pace: 'GROWING FLYING ARMY', complexity: 'Approachable',
       theme: 'Giada turns each new Angel into a larger flying threat, supported by life gain and protective interaction.',
       plan: 'Develop mana, cast Giada early and follow with Angels. Build counters and life, remove dangerous threats and finish with a resilient airborne attack.',
       mulligan: 'Keep three Plains or reliable lands, an early mana play and an Angel you can cast soon after Giada. Avoid an opening full of expensive Angels.',
@@ -991,7 +991,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       keys: ['Dragon Tempest', 'Scourge of Valkas', "Dragonhawk, Fate's Tempest"],
     },
     'Tramplesaurus Rex': {
-      route: 'fdcPower', pace: 'BIG CREATURES AND TRAMPLE', complexity: 'Beginner',
+      route: 'fdcPower', pace: 'BIG CREATURES AND TRAMPLE', complexity: 'Approachable',
       theme: 'Green mana creatures and large bodies make Ghalta cheaper while creature draw engines keep threats coming.',
       plan: 'Ramp, build power on the battlefield and cast Ghalta at a discount. Protect key creatures and finish with trample, power doubling or a team-wide boost.',
       mulligan: 'Keep Forests, an early mana creature and a useful three- or four-mana play. Do not rely on Ghalta alone to make a hand of expensive spells work.',
