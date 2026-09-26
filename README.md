@@ -445,7 +445,7 @@ In Solo, the browser owns the complete rules engine. In Live, the host browser o
 
 ## Vercel and multiplayer
 
-The existing production project serves the static client and the APIs from the same origin. `vercel.json` defines security/cache headers and a 300-second duration for `api/ws.js`; the client reconnects its socket when necessary.
+The existing production project serves the static client and the APIs from the same origin. `vercel.json` defines security/cache headers and a 300-second duration for `api/ws.js`; the client reconnects its socket when necessary. Keep the original host tab open. A temporary connection drop preserves pending actions and decisions; the host can resume after everyone reconnects. A lost confirmation does not apply the same action twice.
 
 Live room storage needs server-only `REDIS_URL`, `KV_URL`, or `UPSTASH_REDIS_URL`. Accounts use the REST pair `KV_REST_API_URL` / `KV_REST_API_TOKEN`, or `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`. A Redis TCP URL and Redis REST credentials serve different integrations. Configure both for a deployment that offers Live and accounts.
 

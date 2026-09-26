@@ -83,7 +83,10 @@ Repeat the relevant browser flow against production, for example:
 ```bash
 node tests/browser/oracle-import-release.mjs --url https://mtg-commander-simulator.vercel.app --output output/playwright/production-import
 node tests/browser/commander-live-launch.mjs --url https://mtg-commander-simulator.vercel.app --output output/playwright/production-live
+node tests/browser/commander-live-four-player.mjs --url https://mtg-commander-simulator.vercel.app --min-live-seconds 330 --output output/playwright/production-live-four
 ```
+
+For Live transport changes, the four-client production check must observe a natural host socket replacement, use the visible Resume control, and complete combat afterward. A short lobby connection does not verify recovery beyond the Function's connection lifetime.
 
 Record the source revision, command results, production deployment ID/state, canonical HTTP checks, browser evidence, and any untested limits in a dated report. Inspect final `git status` and branch state before reporting completion.
 

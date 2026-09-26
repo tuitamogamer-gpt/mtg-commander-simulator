@@ -183,7 +183,11 @@ previously disclosed identifiers are not retroactively secured, and the new
 client deliberately does not reuse those old seat credentials.
 
 Keep the host tab open throughout a game. A temporary socket drop reconnects after
-1.5 seconds and reloads the room view. Disconnecting a participant pauses the room;
+1.5 seconds and reloads the room view. In-flight actions retain their request identity;
+the room stores bounded, per-seat receipts atomically with accepted actions so a
+lost acknowledgement can be recovered without applying the action again. These
+receipts never appear in player views. Uncommitted decisions wait through a pause,
+while Resume remains available. Disconnecting a participant pauses the room;
 the host resumes once everyone is connected. Room Redis data has a 24-hour TTL,
 renewed on writes. This is room retention, not a 24-hour durable game save.
 

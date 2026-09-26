@@ -710,6 +710,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const waiters = new Set();
     let manualHandler = null;
     let manualProcessing = null;
+    const manualResults = new Map();
     let activeRequest = null, previewProcessing = null;
     const processPreview = view => {
       const request = view?.pendingPreview;
@@ -722,13 +723,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const processManualAction = view => {
       const request = view && view.pendingManualAction;
-      if (!request || !manualHandler || manualProcessing === request.id) return;
+      if (!request || !manualHandler || manualProcessing) return;
       manualProcessing = request.id;
-      Promise.resolve().then(() => manualHandler(clone(request))).then(result =>
-        roomClient.dispatch({ type: 'manualAck', manualId: request.id, ok: true, message: result && result.text || 'Correction applied.' })
-      ).catch(error =>
-        roomClient.dispatch({ type: 'manualAck', manualId: request.id, ok: false, message: error && error.message || 'Correction rejected.' })
-      ).finally(() => { manualProcessing = null; });
+      const result = manualResults.has(request.id) ? Promise.resolve(manualResults.get(request.id)) :
+        Promise.resolve().then(() => manualHandler(clone(request))).then(value =>
+          ({ ok: true, message: value && value.text || 'Correction applied.' }), error =>
+          ({ ok: false, message: error && error.message || 'Correction rejected.' }));
+      result.then(value => {
+        // Retrying a lost acknowledgement must never create a token, move a
+        // card or apply another manual correction for a second time.
+        manualResults.set(request.id, value);
+        if (manualResults.size > 128) manualResults.delete(manualResults.keys().next().value);
+        return roomClient.dispatch({ type: 'manualAck', manualId: request.id, ...value });
+      }).catch(error => console.error('Live correction acknowledgement failed:', error))
+        .finally(() => {
+          manualProcessing = null;
+          if (latest?.pendingManualAction?.id !== request.id) processManualAction(latest);
+        });
     };
     roomClient.subscribe(view => {
       latest = view;
@@ -793,6 +804,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (player) player.manualMana = view.lastDecision.manaMode === 'manual';
         await bridge.waitUntilRunning();
         await roomClient.dispatch({ type: 'decisionAck', decisionId: payload.id });
+        // Its acknowledgement may have survived a connection replacement while
+        // the table paused. Do not let that answer advance the engine yet.
+        await bridge.waitUntilRunning();
         activeRequest = null;
         return response;
       },
@@ -932,6 +946,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let stopped = false;
     let actionSerial = 0;
     let actionAcks = false;
+    let actionReplay = false;
+    // The stream identity survives socket replacement, but deliberately changes
+    // on page reload. Server receipts make an uncertain request safe to resend.
+    const actionStream = crypto.randomUUID();
     let nextSendAt = 0, pumpTimer = null;
 
     const waitingView = message => {
@@ -957,8 +975,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const emit = () => listeners.forEach(listener => listener(latest));
     const pump = () => {
-      if (!open || inflight || !queue.length || !kernelState ||
+      if (stopped || !open || inflight || !queue.length || !kernelState ||
         kernelState.status !== 'playing' || !kernelState.view) return;
+      // An interrupted uncommitted decision may need the host to Resume first.
+      // Keep its promise and request ID, while allowing that control past it.
+      const index = queue[0].waitForRunning && latest?.phase !== 'running'
+        ? queue.findIndex(item => ['resume', 'reconnect'].includes(item.action.type) || item.action.type === 'presence' && item.action.connected === true)
+        : 0;
+      if (index < 0) return;
       // Shared human priority can complete immediately on every browser.
       // Keep that legitimate traffic below the room's 600 messages/minute
       // limit without dropping or reordering any decisions or snapshots.
@@ -967,10 +991,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!pumpTimer) pumpTimer = setTimeout(() => { pumpTimer = null; pump(); }, delay);
         return;
       }
-      inflight = queue.shift();
+      inflight = queue.splice(index, 1)[0];
+      if (inflight.replay && !actionReplay) {
+        rejectInflight(new Error('This room cannot safely recover an interrupted action. Keep the host tab open and use a current room server.'));
+        return;
+      }
       nextSendAt = Date.now() + 125;
-      inflight.baseRevision = Number.isInteger(latest && latest.revision) ? latest.revision : -1;
-      inflight.requestId = `action:${++actionSerial}`;
+      if (!inflight.requestId) {
+        inflight.baseRevision = Number.isInteger(latest && latest.revision) ? latest.revision : -1;
+        inflight.requestId = `action:v1:${actionStream}:${++actionSerial}`;
+      }
       socket.send(JSON.stringify({ type: 'action', requestId: inflight.requestId, action: inflight.action }));
     };
     const rejectInflight = error => {
@@ -994,6 +1024,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const acceptState = message => {
       if (message.actionAcks) actionAcks = true;
+      actionReplay = message.actionReplay === true;
       // Redis notifications and direct replies can arrive out of order.
       if (latest && message.view && message.view.revision < latest.revision) return;
       kernelState = message;
@@ -1019,12 +1050,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const connect = () => {
       if (stopped) return;
-      socket = new WebSocket(socketUrl);
-      socket.onopen = () => {
+      const connection = new WebSocket(socketUrl);
+      socket = connection;
+      connection.onopen = () => {
+        if (socket !== connection || stopped) return;
         open = true;
-        socket.send(JSON.stringify({ type: 'join', playerId }));
+        connection.send(JSON.stringify({ type: 'join', playerId }));
       };
-      socket.onmessage = event => {
+      connection.onmessage = event => {
+        if (socket !== connection || stopped) return;
         let message;
         try { message = JSON.parse(event.data); } catch { return; }
         if (message.type === 'actionAck') {
@@ -1036,6 +1070,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return;
         }
+        if (message.type === 'actionDeferred') {
+          if (actionReplay && message.reason === 'paused' && inflight?.requestId === message.requestId) {
+            const deferred = inflight;
+            inflight = null;
+            deferred.waitForRunning = true;
+            queue.unshift(deferred);
+            pump();
+          }
+          return;
+        }
         if (message.type === 'error') {
           if (message.requestId && message.requestId !== inflight?.requestId) return;
           rejectInflight(new Error(message.error || 'The live room rejected the action.'));
@@ -1043,21 +1087,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (message.type === 'state') acceptState(message);
       };
-      socket.onclose = event => {
+      connection.onclose = event => {
+        if (socket !== connection) return;
         open = false;
         kernelState = null;
+        if (pumpTimer) { clearTimeout(pumpTimer); pumpTimer = null; }
         if (event.code === 4001) stopped = true;
         if (latest && ['running', 'paused'].includes(latest.phase)) {
-          latest = { ...latest, phase: 'paused', pause: { reason: 'connection-lost', seat: latest.you } };
+          latest = { ...latest, phase: 'paused', pause: { reason: 'connection-lost', seat: latest.you },
+            seats: latest.seats.map(seat => seat.seat === latest.you ? { ...seat, connected: false } : seat) };
           emit();
         }
-        rejectInflight(new Error('Room connection closed before the action was confirmed.'));
+        if (!stopped && actionReplay && inflight) {
+          inflight.replay = true;
+          queue.unshift(inflight);
+          inflight = null;
+        } else rejectInflight(new Error('Room connection closed before the action was confirmed.'));
         if (stopped) {
           while (queue.length) queue.shift().reject(new Error('This seat reconnected in another connection.'));
         }
         if (!stopped) reconnectTimer = setTimeout(connect, 1500);
       };
-      socket.onerror = () => {};
+      connection.onerror = () => {};
     };
     const disconnectPresence = () => {
       if (!open || !latest || !['running', 'paused'].includes(latest.phase)) return;
@@ -1091,6 +1142,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (reconnectTimer) clearTimeout(reconnectTimer);
         if (pumpTimer) clearTimeout(pumpTimer);
         window.removeEventListener('pagehide', disconnectPresence);
+        rejectInflight(new Error('This live connection was closed.'));
+        while (queue.length) queue.shift().reject(new Error('This live connection was closed.'));
         if (socket) socket.close();
       },
     };

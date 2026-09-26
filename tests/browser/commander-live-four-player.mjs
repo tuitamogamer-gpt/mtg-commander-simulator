@@ -11,6 +11,8 @@ import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 
 const arg = name => { const i = process.argv.indexOf(name); return i < 0 ? null : process.argv[i + 1]; };
 const externalURL = arg('--url') || process.env.GAME_URL;
+const minLiveSeconds = Number(arg('--min-live-seconds') || 0);
+assert.ok(Number.isFinite(minLiveSeconds) && minLiveSeconds >= 0 && minLiveSeconds <= 900, 'live duration must be 0–900 seconds');
 const out = arg('--output') || process.env.GAME_QA_OUTPUT || 'output/playwright/commander-live-four-player';
 mkdirSync(out, { recursive: true });
 const server = externalURL ? null : createCommanderLiveServer({ store: createMemoryRoomStore() });
@@ -26,6 +28,8 @@ const pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browserName = process.env.BROWSER || 'chromium';
 const browser = await pw[browserName].launch({ headless: true });
 const pages = [], checks = [], errors = [], wireChecks = [0, 0, 0, 0];
+const socketEvents = [[], [], [], []];
+let liveStartedAt = 0, resumes = 0, stopRecoveryMonitor = false;
 const mark = label => { checks.push(label); console.log('PASS ' + label); };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Credentials stay in browser storage. Never save frames or invitation URLs.
@@ -97,8 +101,23 @@ async function pageFor(seat) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce', hasTouch: true });
   await context.addInitScript(() => {
     localStorage.setItem('mtgOnboardingComplete', '1'); localStorage.setItem('mtgReducedMotion', '1'); localStorage.setItem('mtgStopProfile', 'auto');
+    // Record transport lifecycle only, never the socket URL or message data.
+    const NativeSocket = window.WebSocket;
+    window.WebSocket = class extends NativeSocket {
+      constructor(...args) {
+        super(...args);
+        let opened = performance.now();
+        this.addEventListener('open', () => { opened = performance.now(); });
+        this.addEventListener('close', event => {
+          void window.__recordLiveClose({ code: event.code, clean: event.wasClean,
+            durationMs: Math.round(performance.now() - opened), expected: !!window.__expectedLiveReload,
+            at: new Date().toISOString() }).catch(() => {});
+        });
+      }
+    };
   });
   const page = await context.newPage(); pages.push(page);
+  await page.exposeFunction('__recordLiveClose', event => socketEvents[seat].push(event));
   page.on('pageerror', error => errors.push(`Seat ${seat + 1}: ${redact(error.message)}`));
   page.on('console', message => { if (message.type() === 'error') errors.push(`Seat ${seat + 1}: ${redact(message.text())}`); });
   page.on('websocket', ws => ws.on('framereceived', event => {
@@ -116,6 +135,19 @@ async function pageFor(seat) {
   await page.goto(base, { waitUntil: 'domcontentloaded' }); return page;
 }
 
+// Respond through the same visible recovery control a host uses. A background
+// monitor can handle a lifecycle close even during a pending Playwright click.
+const recoveryMonitor = (async () => {
+  while (!stopRecoveryMonitor) {
+    try {
+      if (liveStartedAt && pages[0] && await click(pages[0], /^Resume live game$/, 'body')) resumes++;
+    } catch (error) {
+      if (!stopRecoveryMonitor) errors.push('Recovery control: ' + redact(error.message));
+    }
+    await sleep(250);
+  }
+})();
+
 try {
   const host = await pageFor(0);
   await host.locator('[data-menu-action="live"]').first().click();
@@ -132,6 +164,7 @@ try {
   await until(() => host.locator('.online-start').isEnabled(), 'four ready humans');
   await host.screenshot({ path: `${out}/01-four-human-lobby.png`, mask: [host.locator('.online-invite')] });
   await host.locator('.online-start').click();
+  liveStartedAt = Date.now();
   await main(host);
   assert.equal(await host.evaluate(() => _game.players.length === 4 && _game.players.every(p => !p.isAI)), true);
   mark('four isolated browsers join, ready, keep opening hands and start a human-only Live table');
@@ -181,9 +214,9 @@ try {
     await until(() => defender.locator('[data-testid="confirm-combat-battlefield"]').isEnabled(), 'validated block preview');
     if (defendingSeat > 0) {
       const decision = await defender.evaluate(() => _ui.pending.q.onlineDecision.id);
+      await defender.evaluate(() => { window.__expectedLiveReload = true; });
       await defender.reload();
       await until(async () => {
-        await click(host, /^Resume live game$/, 'body');
         return defender.evaluate(id => window._ui?.pending?.q.onlineDecision.id === id && _ui.liveSession.room.phase === 'running', decision);
       }, `seat ${defendingSeat + 1} reconnect`);
       assert.equal(await defender.locator('.myboard .mini.ct-combat-selected').count(), 1);
@@ -255,11 +288,21 @@ try {
     if (seat > 0) await combat(seat);
     await until(() => click(page, /^End turn/), 'end completed seat turn');
   }
-  await main(host); await combat(0);
+  await main(host);
+  if (minLiveSeconds > 0) {
+    await until(async () => Date.now() - liveStartedAt >= minLiveSeconds * 1000 &&
+      socketEvents[0].some(event => !event.expected && event.durationMs >= 250000) &&
+      await host.evaluate(() => _ui.liveSession.room.phase === 'running' && _ui.liveSession.room.seats.every(seat => seat.connected)),
+    'natural socket lifecycle replacement and visible host Resume', minLiveSeconds * 1000 + 120000);
+    assert.ok(resumes > 0);
+    mark('host socket lifecycle closure recovers through visible Resume beyond 300 seconds; host continues into combat');
+  }
+  await combat(0);
   assert.ok(wireChecks.every(n => n > 10));
   assert.deepEqual(errors, []);
   mark('every human attacks and blocks; all four views hide other hands and decisions; guests never receive the shuffle seed; zero browser errors');
-  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: true, browserName, target: new URL(base).origin, humans: 4, checks, wireChecks, errors }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: true, browserName, target: new URL(base).origin, humans: 4, checks, wireChecks,
+    liveSeconds: Math.round((Date.now() - liveStartedAt) / 1000), resumes, socketEvents, errors }, null, 2));
 } catch (error) {
   for (let seat = 0; seat < pages.length; seat++) {
     const page = pages[seat];
@@ -267,9 +310,11 @@ try {
     const state = await page.evaluate(() => ({ text: document.querySelector('#game')?.innerText, question: _ui?.pending?.q.type, phase: _ui?.game?.phase })).catch(() => null);
     writeFileSync(`${out}/failure-seat-${seat + 1}.json`, redact(JSON.stringify(state, null, 2)));
   }
-  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, checks, wireChecks, errors, failure: redact(error.stack) }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, checks, wireChecks, resumes, socketEvents, errors, failure: redact(error.stack) }, null, 2));
   throw new Error(redact(error.stack));
 } finally {
+  stopRecoveryMonitor = true;
+  await recoveryMonitor;
   await browser.close();
   if (server) { for (const client of server.commanderLive.clients) client.ws.terminate(); await new Promise(resolve => server.close(resolve)); }
 }

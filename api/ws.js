@@ -1,12 +1,14 @@
 import express from 'express';
 import { createServer } from 'node:http';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { WebSocketServer, WebSocket } from 'ws';
 import Redis from 'ioredis';
 import { setup, validateAction, applyAction, viewFor } from '../logic.js';
 
 const ROOM_TTL_SECONDS = 24 * 60 * 60;
 const MAX_MESSAGE_BYTES = 2_100_000;
+const MAX_ACTION_RECEIPTS = 128;
+const RUNNING_ACTIONS = new Set(['decisionRequest', 'decisionResponse', 'decisionPreview', 'manualAction']);
 const CHANNEL = 'commander-live:room-events';
 const roomKey = room => `commander-live:room:${room}`;
 const lockKey = room => `commander-live:lock:${room}`;
@@ -212,6 +214,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
       type: 'state',
       status: 'playing',
       actionAcks: true,
+      actionReplay: true,
       // playerId is the anonymous seat's reconnect capability. It must stay
       // server-side; the filtered view already contains public seat numbers.
       view: viewFor(state, client.playerId),
@@ -242,7 +245,15 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     });
     if (next) {
       broadcastLocal(room, next);
-      await store.publish(room);
+      // The mutation is already durable. A notification failure must not turn
+      // a committed action into a rejection that could be applied again.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try { await store.publish(room); break; }
+        catch (error) {
+          if (attempt < 2) await delay(100 * (attempt + 1));
+          else console.error('Commander Live notification failed after commit:', error.message);
+        }
+      }
     }
     return next;
   };
@@ -301,15 +312,41 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
       if (!message.action || typeof message.action !== 'object' || Array.isArray(message.action)) {
         throw new Error('Invalid room action.');
       }
-      return commit(room, state => {
+      const replayId = typeof message.requestId === 'string' && message.requestId.startsWith('action:v1:')
+        ? message.requestId : null;
+      if (replayId && (!/^action:v1:[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}:[1-9]\d{0,15}$/i.test(replayId) ||
+        !Number.isSafeInteger(Number(replayId.split(':').at(-1))))) throw new Error('Invalid replay request identity.');
+      const digest = replayId ? createHash('sha256').update(JSON.stringify(message.action)).digest('hex') : null;
+      let deferred = false;
+      await commit(room, state => {
         if (ws.readyState !== WebSocket.OPEN) throw new Error('This connection is closed.');
         if (!state) throw new Error('This private room expired.');
         const seat = state.seats.find(item => item.playerId === client.playerId);
         if (!seat || seat.connectionId !== client.connectionId) throw new Error('This connection no longer owns the seat. Reconnect to continue.');
+        const receipts = state.actionReceipts?.[seat.seat] || [];
+        const receipt = replayId && receipts.find(item => item.requestId === replayId);
+        if (receipt) {
+          if (receipt.digest !== digest) throw new Error('A replay request cannot change its action.');
+          // A lost acknowledgement may arrive after a decision was answered.
+          // Never apply the old action again or erase the newer decision.
+          return null;
+        }
+        if (replayId && state.phase === 'paused' && RUNNING_ACTIONS.has(message.action.type)) {
+          deferred = true;
+          return null;
+        }
         const result = validateAction(state, client.playerId, message.action);
         if (!result || result.ok !== true) throw new Error(result && result.error || 'The room rejected the action.');
-        return applyAction(state, client.playerId, message.action);
+        const next = applyAction(state, client.playerId, message.action);
+        if (replayId) {
+          // Stored with the mutation under the same room lock. This stays out
+          // of viewFor's allowlisted public/private presentation fields.
+          next.actionReceipts ||= {};
+          next.actionReceipts[seat.seat] = [...receipts, { requestId: replayId, digest }].slice(-MAX_ACTION_RECEIPTS);
+        }
+        return next;
       });
+      return { deferred };
     };
 
     ws.on('message', data => {
@@ -331,10 +368,12 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
         if (message.type === 'action') {
           const requestId = typeof message.requestId === 'string' ? message.requestId.slice(0, 100) : null;
           try {
-            await handleAction(message);
+            const result = await handleAction(message);
             // A room broadcast may include another player's newer revision.
             // Confirm this exact action independently of broadcast ordering.
-            if (requestId) safeSend(ws, { type: 'actionAck', requestId });
+            if (requestId) safeSend(ws, result.deferred
+              ? { type: 'actionDeferred', requestId, reason: 'paused' }
+              : { type: 'actionAck', requestId });
           } catch (error) {
             safeSend(ws, { type: 'error', requestId, error: error.message || String(error) });
           }
