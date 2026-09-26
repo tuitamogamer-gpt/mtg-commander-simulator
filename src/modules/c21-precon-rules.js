@@ -28,9 +28,9 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   };
   G.c21AttackTax=function(attacker,target){
     const defender=target instanceof M.Player?target:target?.is('Planeswalker')?target.ctrl:null;
-    if(!defender)return 0;
+    if(!defender)return M.OracleV20Permanents?.attackTax(this,attacker,target)||0;
     return this.bf().filter(c=>live(c)&&c.ctrl===defender).reduce((n,c)=>n+(target instanceof M.Player?(c.def.attackTax||0):0)+
-      (c.def.c21Nils?M.C21.countCounters(attacker):0),0);
+      (c.def.c21Nils?M.C21.countCounters(attacker):0),0)+(M.OracleV20Permanents?.attackTax(this,attacker,target)||0);
   };
   const legalTargets=G.legalTargets;
   G.legalTargets=function(spec,source,player,opts){

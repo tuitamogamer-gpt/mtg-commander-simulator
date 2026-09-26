@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {stageCostsActivatedV20,assertCostsActivatedV20} from './oracle-v20-costs-proof.mjs';
 
 // Stage only the closed v8 cost choices that are not already part of the
 // generic proof harness. The returned cards are fed to the human controller's
@@ -12,10 +13,12 @@ export function stageActivatedCost(MTG, context, cost, helpers) {
       returnCards.push(...[staged].flat());
     }
   }
-  return { returnCards, wantedCards: returnCards.slice() };
+  const additional=stageCostsActivatedV20(MTG,context,cost,helpers);
+  return { returnCards, wantedCards: [...returnCards,...additional.wantedCards] };
 }
 
 export function assertActivatedCost(context, cost, source, before, trace, label) {
+  assertCostsActivatedV20(context,cost,source,before,trace,label);
   const { a } = context;
   if (cost?.returnFilter) {
     const choice = trace.findLast(row => row.query?.type === 'chooseCards' &&

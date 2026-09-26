@@ -1,4 +1,6 @@
 import {stageActivationSuffix} from './oracle-v8-activation-suffixes-proof.mjs';
+import {stagePermanentConditionV20,stagePermanentCountV20,permanentCountValueV20,permanentTargetMatchesV20} from './oracle-v20-permanents-proof.mjs';
+import {stageCostsConditionV20,stageCostsCountV20,costsCountValueV20} from './oracle-v20-costs-proof.mjs';
 import {enterChosenColorSource} from './oracle-chosen-color-proof.mjs';
 import {bindChosenType,wardPaymentProofV16} from './oracle-v16-proof.mjs';
 import {combatExtraProof} from './oracle-v8-combat-restrictions-proof.mjs';
@@ -17,6 +19,8 @@ import {stageEntryCastingRules,stageCastingRuleCondition,stageCastingRuleCount,c
 import { stageOracleCastingCosts, assertOracleCastingCostRecord, proveOracleAlternativeCastingCost, proveOracleCastingChoice } from './oracle-v8-casting-cost-proof.mjs';
 
 export function stageFalseCondition(MTG,ctx,condition,source,helpers){
+ if(stageCostsConditionV20(MTG,ctx,condition,source,helpers,false))return;
+ if(stagePermanentConditionV20(MTG,ctx,condition,source,helpers,false))return;
  if(condition?.kind==='source-blocked-history-v19'){source.meta.oracleBlockHistoryV19={turn:ctx.game.turnNo,blocks:[],blockedBy:[]};return;}
  if(condition?.kind==='extra-turn-v19'){ctx.game.extraTurnDepth=0;return;}
  if(condition?.kind==='opponent-cast-v19'){for(const p of ctx.game.players)p.turnState.spellsCastList=[];return;}
@@ -154,6 +158,8 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
 }
 
 export function stageCondition(MTG,ctx,condition,source,helpers) {
+ if(stageCostsConditionV20(MTG,ctx,condition,source,helpers))return;
+ if(stagePermanentConditionV20(MTG,ctx,condition,source,helpers))return;
  if(condition?.kind==='not'&&condition.condition?.kind==='source-controlled'){stageFalseCondition(MTG,ctx,condition.condition,source,helpers);return;}
  if(condition?.kind==='extra-turn-v19'){ctx.game.extraTurnDepth=1;return;}
  if(condition?.kind==='opponent-cast-v19'){ctx.b.turnState.spellsCastList.push({colors:condition.color?[condition.color]:[],types:[condition.type||'Instant'],isCreature:condition.type==='Creature'});return;}
@@ -318,6 +324,8 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
 }
 
 export function countValue(ctx,source,node,snapshot=null){
+ const costsV20=costsCountValueV20(ctx,source,node);if(costsV20!==undefined)return costsV20;
+ const permanentV20=permanentCountValueV20(ctx,source,node,snapshot);if(permanentV20!==undefined)return permanentV20;
  if(node?.kind==='transformed-permanents-v19')return ctx.game.bf().filter(card=>card.ctrl===ctx.a&&card.oracleFaces?.layout==='transform'&&card.oracleFace==='back').length;
  if(node?.kind==='sacrificed-count-v19')return ctx.game.players.reduce((n,p)=>n+(p.turnState.oracleSacrificedV19||0),0);
   if(node?.kind==='product-v16')return countValue(ctx,source,node.left,snapshot)*countValue(ctx,source,node.right,snapshot);
@@ -384,9 +392,10 @@ export function matches(card,what){
   if(what==='basic land')return card.is('Land')&&card.def.super.includes('Basic');
   if(what==='nonland permanent')return !card.is('Land')&&!card.is('Instant')&&!card.is('Sorcery');
   if(what==='permanent')return !card.is('Instant')&&!card.is('Sorcery');
-  return what.replace(/ permanent$/,'').split(' or ').some(t=>/^(artifact|creature|land|instant|sorcery|enchantment|planeswalker)$/i.test(t)?card.is(t[0].toUpperCase()+t.slice(1).toLowerCase()):card.hasSub(t));
+  return what.replace(/ permanent$/,'').split(' or ').some(t=>/^(artifact|creature|land|instant|sorcery|enchantment|planeswalker|battle|kindred)$/i.test(t)?card.is(t[0].toUpperCase()+t.slice(1).toLowerCase()):card.hasSub(t));
 }
 export function matchesTarget(card,f,ctx,source){
+ if(permanentTargetMatchesV20(ctx,source,f,card)===false)return false;
   if(JSON.stringify(f).includes('"kind":"chosen-subtype-v16"'))return matchesTarget(card,bindChosenType(f,source?.meta?.oracleChosenSubtypeV16||ctx.chosenSubtypeV16),ctx,source);
   if(f.chosenColorV10&&!(source?.zone==='battlefield'&&card.colors?.includes(source.meta.oracleChosenColor)))return false;
  const {a,game}=ctx;
@@ -434,6 +443,8 @@ export function matchesTarget(card,f,ctx,source){
  return true;
 }
 export function stageCount(MTG,ctx,node,helpers){
+ if(stageCostsCountV20(MTG,ctx,node,helpers))return;
+ if(stagePermanentCountV20(MTG,ctx,node,helpers))return;
  if(node?.kind==='transformed-permanents-v19'){const def=Object.values(MTG.DEFS).find(def=>def.oracleFaces?.layout==='transform'&&def.oracleFaces.faces.every(face=>face.def.types.includes('Creature')&&Number(face.def.toughness)>0&&!face.def.bomDaybound&&!face.def.bomNightbound));assert.ok(def);for(let i=0;i<3;i++){const card=helpers.permanent(MTG,ctx.game,ctx.a,def);MTG.OracleV8Faces.setFace(card,'back');}ctx.game.recalc();return;}
  if(node?.kind==='sacrificed-count-v19'){ctx.a.turnState.oracleSacrificedV19=3;return;}
  if(['bound-x-v10','event-spell-mv-v10','event-mana-spent-v10','cast-mana-spent-v10'].includes(node?.kind))return;

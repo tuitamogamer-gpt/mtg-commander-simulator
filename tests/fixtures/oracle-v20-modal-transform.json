@@ -1,0 +1,731 @@
+[
+  {
+    "object": "card",
+    "id": "3f995518-b12a-4623-9ab3-b79a5cef3cba",
+    "oracle_id": "8dd929cb-0fe1-4cb3-bc8d-96ca37f194f3",
+    "multiverse_ids": [],
+    "resource_id": "1917947B8C7C56EB7F3D251096EEBF9B03A91B882DB1D5B7FD5CA7685F83B55E",
+    "mtgo_id": 152227,
+    "arena_id": 104915,
+    "tcgplayer_id": 696258,
+    "cardmarket_id": 890544,
+    "name": "Monica Rambeau // Photon, Living Light",
+    "lang": "en",
+    "released_at": "2026-06-26",
+    "uri": "https://api.scryfall.com/cards/3f995518-b12a-4623-9ab3-b79a5cef3cba",
+    "scryfall_uri": "https://scryfall.com/card/msh/23/monica-rambeau-photon-living-light?utm_source=api",
+    "layout": "modal_dfc",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T00:36:15Z",
+    "cmc": 3,
+    "type_line": "Legendary Creature — Human Hero // Legendary Creature — Elemental Hero",
+    "color_identity": [
+      "R",
+      "W"
+    ],
+    "keywords": [
+      "Flying",
+      "Prowess",
+      "Transform",
+      "Hexproof"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Monica Rambeau",
+        "mana_cost": "{2}{W}",
+        "type_line": "Legendary Creature — Human Hero",
+        "oracle_text": "Flying, prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\n{2}{R}{W}{W}: Transform Monica Rambeau. Activate only as a sorcery.",
+        "colors": [
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "flavor_text": "Above the city, she glows . . .",
+        "artist": "Xabi Gaztelua",
+        "artist_id": "35b87e24-bfe0-43f4-83c3-2fa9574d6026",
+        "illustration_id": "6c864c1a-8332-4bdc-b771-e8b0ebee92ca",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "normal": "https://cards.scryfall.io/normal/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "large": "https://cards.scryfall.io/large/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "png": "https://cards.scryfall.io/png/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.png?1783902975",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "thumb": "https://cards.scryfall.io/thumb/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "grid": "https://cards.scryfall.io/grid/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "display": "https://cards.scryfall.io/display/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "art": "https://cards.scryfall.io/art/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "crop": "https://cards.scryfall.io/crop/front/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Photon, Living Light",
+        "mana_cost": "{2}{R}{W}{W}",
+        "type_line": "Legendary Creature — Elemental Hero",
+        "oracle_text": "Flying, hexproof, prowess\nWhenever you cast a noncreature spell, put a +1/+1 counter on each other creature you control.",
+        "colors": [
+          "R",
+          "W"
+        ],
+        "power": "4",
+        "toughness": "4",
+        "flavor_text": ". . . her power beyond anyone's wildest dreams.",
+        "artist": "Marta Nael",
+        "artist_id": "266ab861-ed64-4ba5-865c-f18758421cc3",
+        "illustration_id": "95c296de-c97a-445f-885f-f48ee0a4537d",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "normal": "https://cards.scryfall.io/normal/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "large": "https://cards.scryfall.io/large/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "png": "https://cards.scryfall.io/png/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.png?1783902975",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.jpg?1783902975",
+          "thumb": "https://cards.scryfall.io/thumb/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "grid": "https://cards.scryfall.io/grid/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "display": "https://cards.scryfall.io/display/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "art": "https://cards.scryfall.io/art/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975",
+          "crop": "https://cards.scryfall.io/crop/back/3/f/3f995518-b12a-4623-9ab3-b79a5cef3cba.webp?1783902975"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "ba9bf625-681c-4a4e-ab48-399b2fecac6b",
+    "set": "msh",
+    "set_name": "Marvel Super Heroes",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/ba9bf625-681c-4a4e-ab48-399b2fecac6b",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Amsh&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/msh?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/3f995518-b12a-4623-9ab3-b79a5cef3cba/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A8dd929cb-0fe1-4cb3-bc8d-96ca37f194f3&unique=prints",
+    "collector_number": "23",
+    "digital": false,
+    "rarity": "mythic",
+    "artist": "Xabi Gaztelua & Marta Nael",
+    "artist_ids": [
+      "35b87e24-bfe0-43f4-83c3-2fa9574d6026",
+      "266ab861-ed64-4ba5-865c-f18758421cc3"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "legendary"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": false,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond"
+    ],
+    "edhrec_rank": 13980,
+    "prices": {
+      "usd": "1.60",
+      "usd_foil": "2.25",
+      "usd_etched": null,
+      "eur": "1.63",
+      "eur_foil": "2.20",
+      "tix": "0.09"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DMonica%2BRambeau%2B%252F%252F%2BPhoton%252C%2BLiving%2BLight",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DMonica%2BRambeau%2B%252F%252F%2BPhoton%252C%2BLiving%2BLight",
+      "edhrec": "https://edhrec.com/route/?cc=Monica+Rambeau"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F696258%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=890544&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/152227?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "7676abd9-0a3d-4721-b17b-778d2e3c2e25",
+    "oracle_id": "ad225ec2-ff3a-48f6-81a7-dfdd1b75e1f7",
+    "multiverse_ids": [
+      661789
+    ],
+    "mtgo_id": 126565,
+    "arena_id": 90836,
+    "tcgplayer_id": 552649,
+    "cardmarket_id": 771545,
+    "name": "Legion Leadership // Legion Stronghold",
+    "lang": "en",
+    "released_at": "2024-06-14",
+    "uri": "https://api.scryfall.com/cards/7676abd9-0a3d-4721-b17b-778d2e3c2e25",
+    "scryfall_uri": "https://scryfall.com/card/mh3/255/legion-leadership-legion-stronghold?utm_source=api",
+    "layout": "modal_dfc",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:53:45Z",
+    "cmc": 2,
+    "type_line": "Instant // Land",
+    "color_identity": [
+      "R",
+      "W"
+    ],
+    "keywords": [
+      "Double"
+    ],
+    "produced_mana": [
+      "R",
+      "W"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Legion Leadership",
+        "mana_cost": "{1}{R/W}",
+        "type_line": "Instant",
+        "oracle_text": "Until end of turn, double target creature's power and it gains first strike.",
+        "colors": [
+          "R",
+          "W"
+        ],
+        "flavor_text": "\"The firemane angels are mighty, but their greatest value lies in the fervor their presence kindles in the heart of a soldier.\"\n—Agrus Kos",
+        "artist": "Ryan Valle",
+        "artist_id": "6190569f-5e77-4bc1-bf22-9f85dba3a139",
+        "illustration_id": "5b2a5308-8ccc-44bb-a5e7-088b0ff2627f",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "normal": "https://cards.scryfall.io/normal/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "large": "https://cards.scryfall.io/large/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "png": "https://cards.scryfall.io/png/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.png?1783911225",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "thumb": "https://cards.scryfall.io/thumb/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "grid": "https://cards.scryfall.io/grid/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "display": "https://cards.scryfall.io/display/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "art": "https://cards.scryfall.io/art/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "crop": "https://cards.scryfall.io/crop/front/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Legion Stronghold",
+        "mana_cost": "",
+        "type_line": "Land",
+        "oracle_text": "This land enters tapped.\n{T}: Add {R} or {W}.",
+        "colors": [],
+        "flavor_text": "Boros fortresses bristle with high towers so that, even at rest, Legion soldiers can remain in the light of the sun.",
+        "artist": "Ryan Valle",
+        "artist_id": "6190569f-5e77-4bc1-bf22-9f85dba3a139",
+        "illustration_id": "375c4108-7bd3-49a2-94cf-9e7187574713",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "normal": "https://cards.scryfall.io/normal/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "large": "https://cards.scryfall.io/large/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "png": "https://cards.scryfall.io/png/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.png?1783911225",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.jpg?1783911225",
+          "thumb": "https://cards.scryfall.io/thumb/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "grid": "https://cards.scryfall.io/grid/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "display": "https://cards.scryfall.io/display/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "art": "https://cards.scryfall.io/art/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225",
+          "crop": "https://cards.scryfall.io/crop/back/7/6/7676abd9-0a3d-4721-b17b-778d2e3c2e25.webp?1783911225"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "3ed80bb6-77e8-4aa7-8262-95377a38aba1",
+    "set": "mh3",
+    "set_name": "Modern Horizons 3",
+    "set_type": "draft_innovation",
+    "set_uri": "https://api.scryfall.com/sets/3ed80bb6-77e8-4aa7-8262-95377a38aba1",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Amh3&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/mh3?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/7676abd9-0a3d-4721-b17b-778d2e3c2e25/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aad225ec2-ff3a-48f6-81a7-dfdd1b75e1f7&unique=prints",
+    "collector_number": "255",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Ryan Valle",
+    "artist_ids": [
+      "6190569f-5e77-4bc1-bf22-9f85dba3a139"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 1208,
+    "preview": {
+      "source": "IGN",
+      "source_uri": "https://www.ign.com/articles/magic-the-gathering-modern-horizons-3-spoilers-mdfc-dual-land",
+      "previewed_at": "2024-05-22"
+    },
+    "prices": {
+      "usd": "0.44",
+      "usd_foil": "3.37",
+      "usd_etched": null,
+      "eur": "0.47",
+      "eur_foil": "0.92",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=661789&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DLegion%2BLeadership%2B%252F%252F%2BLegion%2BStronghold",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DLegion%2BLeadership%2B%252F%252F%2BLegion%2BStronghold",
+      "edhrec": "https://edhrec.com/route/?cc=Legion+Leadership"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F552649%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=771545&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/126565?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "9f8b4d9b-208a-4673-a617-5e3edd069c33",
+    "oracle_id": "be48c721-bdc6-4f2c-96d6-82d934b31615",
+    "multiverse_ids": [],
+    "resource_id": "C698F2565BA5457A85719CA1109E94E0AFB4BAB9473DB8EC3124167AFC0CF42E",
+    "mtgo_id": 153457,
+    "arena_id": 97925,
+    "tcgplayer_id": 646579,
+    "cardmarket_id": 839570,
+    "name": "Miles Morales // Ultimate Spider-Man",
+    "lang": "en",
+    "released_at": "2025-09-26",
+    "uri": "https://api.scryfall.com/cards/9f8b4d9b-208a-4673-a617-5e3edd069c33",
+    "scryfall_uri": "https://scryfall.com/card/spm/108/miles-morales-ultimate-spider-man?utm_source=api",
+    "layout": "modal_dfc",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:15:31Z",
+    "cmc": 2,
+    "type_line": "Legendary Creature — Human Citizen Hero // Legendary Creature — Spider Human Hero",
+    "color_identity": [
+      "G",
+      "R",
+      "W"
+    ],
+    "keywords": [
+      "Camouflage",
+      "Transform",
+      "First strike",
+      "Haste",
+      "Double"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Miles Morales",
+        "mana_cost": "{1}{G}",
+        "type_line": "Legendary Creature — Human Citizen Hero",
+        "oracle_text": "When Miles Morales enters, put a +1/+1 counter on each of up to two target creatures.\n{3}{R}{G}{W}: Transform Miles Morales. Activate only as a sorcery.",
+        "colors": [
+          "G"
+        ],
+        "power": "1",
+        "toughness": "2",
+        "flavor_text": "\"You can't call yourself Spider-Man without taking a leap of faith. It's a lot to live up to. But I'm creating an all-new legacy.\"",
+        "artist": "L.A. Draws",
+        "artist_id": "1f22abb8-3873-4e81-93f3-79db5e56dd64",
+        "illustration_id": "1735f8e7-c64b-49da-945f-f6c6a430ed08",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "normal": "https://cards.scryfall.io/normal/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "large": "https://cards.scryfall.io/large/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "png": "https://cards.scryfall.io/png/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.png?1783905331",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "thumb": "https://cards.scryfall.io/thumb/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "grid": "https://cards.scryfall.io/grid/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "display": "https://cards.scryfall.io/display/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "art": "https://cards.scryfall.io/art/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "crop": "https://cards.scryfall.io/crop/front/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Ultimate Spider-Man",
+        "mana_cost": "{3}{R}{G}{W}",
+        "type_line": "Legendary Creature — Spider Human Hero",
+        "oracle_text": "First strike, haste\nCamouflage — {2}: Put a +1/+1 counter on Ultimate Spider-Man. He gains hexproof and becomes colorless until end of turn.\nWhenever you attack, double the number of each kind of counter on each Spider and legendary creature you control.",
+        "colors": [
+          "G",
+          "R",
+          "W"
+        ],
+        "power": "4",
+        "toughness": "3",
+        "artist": "L.A. Draws",
+        "artist_id": "1f22abb8-3873-4e81-93f3-79db5e56dd64",
+        "illustration_id": "d507d29d-4e3f-4010-80d8-f599023c0902",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "normal": "https://cards.scryfall.io/normal/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "large": "https://cards.scryfall.io/large/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "png": "https://cards.scryfall.io/png/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.png?1783905331",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.jpg?1783905331",
+          "thumb": "https://cards.scryfall.io/thumb/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "grid": "https://cards.scryfall.io/grid/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "display": "https://cards.scryfall.io/display/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "art": "https://cards.scryfall.io/art/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331",
+          "crop": "https://cards.scryfall.io/crop/back/9/f/9f8b4d9b-208a-4673-a617-5e3edd069c33.webp?1783905331"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a1c7b891-9e96-434c-9994-be58b62b27f1",
+    "set": "spm",
+    "set_name": "Marvel's Spider-Man",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a1c7b891-9e96-434c-9994-be58b62b27f1",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aspm&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/spm?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/9f8b4d9b-208a-4673-a617-5e3edd069c33/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Abe48c721-bdc6-4f2c-96d6-82d934b31615&unique=prints",
+    "collector_number": "108",
+    "digital": false,
+    "rarity": "mythic",
+    "artist": "L.A. Draws",
+    "artist_ids": [
+      "1f22abb8-3873-4e81-93f3-79db5e56dd64"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "legendary"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond"
+    ],
+    "edhrec_rank": 7424,
+    "prices": {
+      "usd": "5.84",
+      "usd_foil": "6.88",
+      "usd_etched": null,
+      "eur": "2.53",
+      "eur_foil": "3.09",
+      "tix": "0.12"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DMiles%2BMorales%2B%252F%252F%2BUltimate%2BSpider-Man",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DMiles%2BMorales%2B%252F%252F%2BUltimate%2BSpider-Man",
+      "edhrec": "https://edhrec.com/route/?cc=Miles+Morales"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F646579%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=839570&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/153457?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "add7d3ce-aa58-4da0-8c2a-cfd01c3a8975",
+    "oracle_id": "fe00278d-4385-4e3f-919c-12a794fd86f5",
+    "multiverse_ids": [],
+    "resource_id": "B83C6A8DBB947ECBFEF20A47898E4E0B8164330FB6FC3CE8CFB3642657A60F61",
+    "mtgo_id": 152625,
+    "arena_id": 105114,
+    "tcgplayer_id": 696324,
+    "cardmarket_id": 890581,
+    "name": "King T'Challa // Black Panther, Hope Enduring",
+    "lang": "en",
+    "released_at": "2026-06-26",
+    "uri": "https://api.scryfall.com/cards/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975",
+    "scryfall_uri": "https://scryfall.com/card/msh/219/king-tchalla-black-panther-hope-enduring?utm_source=api",
+    "layout": "modal_dfc",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T00:35:11Z",
+    "cmc": 3,
+    "type_line": "Legendary Creature — Human Noble Hero // Legendary Creature — Human Warrior Hero",
+    "color_identity": [
+      "U",
+      "W"
+    ],
+    "keywords": [
+      "Transform",
+      "Double strike",
+      "Flash"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "King T'Challa",
+        "mana_cost": "{1}{W}{U}",
+        "type_line": "Legendary Creature — Human Noble Hero",
+        "oracle_text": "Flash\nWhenever a player draws their second card each turn, you draw a card.\n{4}{W}{U}: Transform King T'Challa. Activate only as a sorcery.",
+        "colors": [
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "2",
+        "artist": "Aaron J. Riley",
+        "artist_id": "f21b412c-aef5-4d15-88be-4f40615acde3",
+        "illustration_id": "0386898c-efa9-43db-9bb8-89e2463fd748",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "normal": "https://cards.scryfall.io/normal/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "large": "https://cards.scryfall.io/large/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "png": "https://cards.scryfall.io/png/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.png?1783902911",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "thumb": "https://cards.scryfall.io/thumb/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "grid": "https://cards.scryfall.io/grid/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "display": "https://cards.scryfall.io/display/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "art": "https://cards.scryfall.io/art/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "crop": "https://cards.scryfall.io/crop/front/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Black Panther, Hope Enduring",
+        "mana_cost": "{4}{W}{U}",
+        "type_line": "Legendary Creature — Human Warrior Hero",
+        "oracle_text": "Flash\nDouble strike\nPrevent all damage that would be dealt to Black Panther.\nWhenever Black Panther deals combat damage to a player, draw a card.",
+        "colors": [
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "artist": "Eric Wilkerson",
+        "artist_id": "525ec49d-a7c8-4ddc-96aa-58cf5ad5e937",
+        "illustration_id": "d9f06a81-ebf6-4e64-adf3-61b2308c11dc",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "normal": "https://cards.scryfall.io/normal/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "large": "https://cards.scryfall.io/large/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "png": "https://cards.scryfall.io/png/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.png?1783902911",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.jpg?1783902911",
+          "thumb": "https://cards.scryfall.io/thumb/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "grid": "https://cards.scryfall.io/grid/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "display": "https://cards.scryfall.io/display/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "art": "https://cards.scryfall.io/art/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911",
+          "crop": "https://cards.scryfall.io/crop/back/a/d/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975.webp?1783902911"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "ba9bf625-681c-4a4e-ab48-399b2fecac6b",
+    "set": "msh",
+    "set_name": "Marvel Super Heroes",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/ba9bf625-681c-4a4e-ab48-399b2fecac6b",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Amsh&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/msh?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/add7d3ce-aa58-4da0-8c2a-cfd01c3a8975/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Afe00278d-4385-4e3f-919c-12a794fd86f5&unique=prints",
+    "collector_number": "219",
+    "digital": false,
+    "rarity": "mythic",
+    "artist": "Aaron J. Riley & Eric Wilkerson",
+    "artist_ids": [
+      "f21b412c-aef5-4d15-88be-4f40615acde3",
+      "525ec49d-a7c8-4ddc-96aa-58cf5ad5e937"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "legendary"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": false,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond"
+    ],
+    "edhrec_rank": 6984,
+    "prices": {
+      "usd": "11.64",
+      "usd_foil": "13.76",
+      "usd_etched": null,
+      "eur": "11.46",
+      "eur_foil": "14.00",
+      "tix": "0.88"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DKing%2BT%2527Challa%2B%252F%252F%2BBlack%2BPanther%252C%2BHope%2BEnduring",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DKing%2BT%2527Challa%2B%252F%252F%2BBlack%2BPanther%252C%2BHope%2BEnduring",
+      "edhrec": "https://edhrec.com/route/?cc=King+T%27Challa"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F696324%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=890581&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/152625?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  }
+]

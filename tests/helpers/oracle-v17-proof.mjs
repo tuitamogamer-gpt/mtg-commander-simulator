@@ -46,7 +46,11 @@ export async function playerAuraProofV17(M,entry,op,role){
  for(let i=0;i<3;i++)put(M,game,b,'Forest','graveyard');for(let i=0;i<2;i++)put(M,game,b,'Forest','hand');
  choose(a,(g,q)=>q.type==='chooseTargets'&&q.candidates.includes(b)?[b]:undefined);choose(b,(g,q)=>q.aiHint?.kind==='oracleUnlessPayment'?'no':undefined);
  const source=put(M,game,a,entry.raw.name,'hand');assert.equal(await game.castSpell(a,source,{from:'hand'}),true);await settle(game);assert.equal(source.meta.cursedPlayer,b);assert.equal(source.attachedTo,null);
- if(op.kind==='aura-target'){assert.equal(game.spellTargetSpecs(put(M,game,a,entry.raw.name,'hand'),{},a)[0].filter(game,own,a,source),false);return 4;}
+ if(op.kind==='aura-target'){const specs=entry.oracleLayout==='transform'?source.def.auraTarget:game.spellTargetSpecs(put(M,game,a,entry.raw.name,'hand'),{},a);assert.equal(specs[0].filter(game,own,a,source),false);return 4;}
+ if(op.kind==='v8-replacement'&&op.event==='etbTapped'&&op.tapped&&op.filters?.every(filter=>filter.enchantedControllerV17)){
+  for(const player of [a,b,others[1]]){const incoming=put(M,game,player,'Grizzly Bears','hand');assert.equal(await game.castSpell(player,incoming,{from:'hand',alt:{free:true},ignoreTiming:true}),true);await settle(game);assert.equal(incoming.tapped,player===b,'only the enchanted player creature enters tapped');}
+  await game.move(source,'exile');const incoming=put(M,game,b,'Grizzly Bears','hand');assert.equal(await game.castSpell(b,incoming,{from:'hand',alt:{free:true},ignoreTiming:true}),true);await settle(game);assert.equal(incoming.tapped,false);assertGameStateInvariants(game);return 8;
+ }
  if(op.kind==='generic-static'){
   assert.equal(enemy.power,6+op.power);assert.equal(enemy.toughness,4+op.toughness);assert.equal(own.power,6);await game.move(source,'exile');assert.equal(enemy.power,6);return 5;
  }

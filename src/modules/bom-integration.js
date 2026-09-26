@@ -3,7 +3,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.BOM,G=M.Game.prototype;
  const advance=G.advanceTurnPlayer;G.advanceTurnPlayer=function(p){this.bomPreviousActive=p.idx;return advance.call(this,p);};
- G.bomUpdateDayNight=async function(){const p=this.players[this.bomPreviousActive];if(!this.bomDayNight||!p)return;const n=p.lastTurnSpellsCast||0,next=this.bomDayNight==='day'&&n===0?'night':this.bomDayNight==='night'&&n>=2?'day':this.bomDayNight;if(next===this.bomDayNight)return;this.bomDayNight=next;const cards=this.bf().filter(c=>C.live(c)&&(next==='night'?c.def.bomDaybound:c.def.bomNightbound));for(const c of cards)await C.transform({g:this,src:c,you:c.ctrl,sourceZoneVersion:c.zoneVersion,bomDayNight:true});this.lg('It becomes '+next+'.');await this.emit('dayNightChanged',{dayNight:next});};
+ G.bomUpdateDayNight=async function(){const p=this.players[this.bomPreviousActive];if(!this.bomDayNight||!p)return;const n=p.lastTurnSpellsCast||0,next=this.bomDayNight==='day'&&n===0?'night':this.bomDayNight==='night'&&n>=2?'day':this.bomDayNight;if(next===this.bomDayNight)return;const previousDayNight=this.bomDayNight;this.bomDayNight=next;const cards=this.bf().filter(c=>C.live(c)&&(next==='night'?c.def.bomDaybound:c.def.bomNightbound));for(const c of cards)await C.transform({g:this,src:c,you:c.ctrl,sourceZoneVersion:c.zoneVersion,bomDayNight:true});this.lg('It becomes '+next+'.');await this.emit('dayNightChanged',{dayNight:next,previousDayNight});};
  const move=G.move;G.move=async function(c,to,opts={}){
   if(to==='battlefield'&&c.zone!=='battlefield'){
    const front=c.oracleFaces?.faces[0]?.def;

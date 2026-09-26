@@ -9,10 +9,11 @@ export function compileFaces(card, helpers = {}) {
   const dayNight=helpers.dayNight&&card.layout==='transform'&&card.card_faces.every((face,index)=>new RegExp('^'+(index?'Nightbound':'Daybound')+'(?: \\([^\\n]*\\))?$', 'm').test(face.oracle_text||''));
   for (const [index, face] of card.card_faces.entries()) {
     // Transforming is executable; the remaining transition mechanics are not
-    // and still fail closed. A modal card never transforms at all.
+    // and still fail closed. Compiler v20 also handles modal cards whose
+    // printed rules transform them (CR 712.9); older certificates stay frozen.
     const forbidden = card.layout === 'transform'
       ? dayNight ? /\b(?:convert|meld|disturb)\b/i : /\b(?:convert|meld|daybound|nightbound|disturb)\b/i
-      : /\b(?:transform|convert|meld|daybound|nightbound)\b/i;
+      : helpers.allowModalTransform ? /\b(?:convert|meld|daybound|nightbound)\b/i : /\b(?:transform|convert|meld|daybound|nightbound)\b/i;
     if (!face?.name || !face.type_line || typeof face.oracle_text !== 'string' || forbidden.test(face.oracle_text)) {
       return {reason: 'double-faced-card-needs-face-transition-semantics'};
     }
@@ -32,7 +33,7 @@ export function compileFaces(card, helpers = {}) {
   // A face reached only by transforming is proved where it actually arrives.
   // When the two faces disagree about being a land they arrive by different
   // routes, and that transition has no executable proof yet.
-  if (card.layout === 'transform' &&
+  if (card.layout === 'transform' && !helpers.allowLandTransition &&
     faces[0].raw.types.includes('Land') !== faces[1].raw.types.includes('Land')) {
     return {reason: 'transform-land-face-transition-needs-proof'};
   }

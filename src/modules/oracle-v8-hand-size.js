@@ -9,8 +9,9 @@
   let n=7;
   for(const source of game.bf()){
    if(source.cur?.abilitiesDisabled)continue;
-   if(source.ctrl===player&&source.def.noMaxHand)return Infinity;
+   if(source.ctrl===player&&(typeof source.def.noMaxHand==='function'?source.def.noMaxHand(game,source):source.def.noMaxHand))return Infinity;
    for(const rule of source.def.oracleHandSizeRules||[]){
+    if(rule.activeV20&&!rule.activeV20(game,source))continue;
     if(rule.who==='you'&&source.ctrl!==player||rule.who==='opponents'&&source.ctrl===player)continue;
     if(rule.unlimited)return Infinity;n+=rule.n;
    }

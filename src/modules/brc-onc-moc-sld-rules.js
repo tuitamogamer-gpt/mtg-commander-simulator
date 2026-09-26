@@ -12,9 +12,11 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const powerstone=registerToken('bomPowerstone',{...C.token('Powerstone',['Powerstone'],0,0,[]),types:['Artifact'],tokenImageName:'Powerstone',mana:{cost:{tap:true},produce:[{C:1}],restrictAbilities:true,restrict:(g,spell)=>!spell||spell.isAbility||!!spell.card&&g.castHasType(spell.card,spell.castOpts||{},'Artifact')}});
  const transform=async(ctx,c=ctx.src)=>{
   if((c.def.bomDaybound||c.def.bomNightbound)&&!ctx.bomDayNight)return false;
-  if(c.zone!=='battlefield'||c===ctx.src&&!C.same(ctx)||!c.oracleFaces||c.oracleFaces.layout!=='transform')return false;
-  if(c.mutateState){await M.Mutate.transform(ctx.g,c);return true;}
+  if(c.zone!=='battlefield'||c.faceDown||c===ctx.src&&!C.same(ctx))return false;
+  if(c.mutateState)return M.Mutate.transform(ctx.g,c);
+  if(!c.oracleFaces||!['transform','modal_dfc'].includes(c.oracleFaces.layout))return false;
   const face=c.oracleFace==='back'?'front':'back';
+  if(c.oracleFaces.faces.find(row=>row.key===face)?.def.types.some(type=>['Instant','Sorcery'].includes(type)))return false;
   if(!M.OracleV8Faces.setFace(c,face))return false;
   c.oracleTransformCount=(c.oracleTransformCount||0)+1;ctx.g.recalc();
   await ctx.g.emit('transformed',{card:c,face});return true;

@@ -6,6 +6,7 @@ export function installNameSearchProof(M,context){
  worlds.set(context.game,context);if(installed.has(M))return;installed.add(M);const original=M.OracleV8NameSearch.run;
  M.OracleV8NameSearch.run=async(ctx,effect,h)=>{
   const world=worlds.get(ctx.g);if(!world)return original(ctx,effect,h);
+  if(effect.declaredNameV20)return original(ctx,effect,h);
   const primary=effect.models||effect.namesFrom==='own-hand'?ctx.src:effect.eventName?ctx.oracleSourceCapture?.eventCard||ctx.data?.card:h.subjects(ctx,effect.target)[0];assert.ok(primary,'name search has its printed antecedent');
   const eventSnap=effect.eventName&&(ctx.oracleSourceCapture?.eventSnap||ctx.data?.snap),owner=effect.owner==='you'?ctx.you:effect.owner==='target-player'?primary:effect.owner==='event-controller'?ctx.oracleSourceCapture?.eventController||eventSnap?.ctrl:effect.owner==='owner'?(primary.card||primary).owner:primary.ctrl;
   const put=(definition,zone,player=owner)=>{const card=new M.CardInst(definition,player);card.zone=zone;card.sick=false;if(zone==='battlefield')ctx.g.battlefield.push(card);else player[zone].unshift(card);return card;};

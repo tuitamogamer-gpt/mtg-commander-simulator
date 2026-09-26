@@ -1449,6 +1449,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'tapUntap': { const target=q.aiHint.target,desired=target?.ctrl===this.p?'untap':'tap';return target?.tapped===(desired==='tap')&&keys.includes('none')?'none':desired; }
         case 'entryCounterOpponent': return q.options.slice().sort((a,b)=>g.bf().filter(card=>card.ctrl.idx===Number(a.key)&&card.is('Creature')).length-g.bf().filter(card=>card.ctrl.idx===Number(b.key)&&card.is('Creature')).length)[0]?.key;
         case 'damagePreventionSource': return q.options.slice().sort((a,b)=>MTG.OracleV8SourcePrevention.threat(g,this.p,b.card)-MTG.OracleV8SourcePrevention.threat(g,this.p,a.card))[0]?.key;
+        case 'damageRedirectionSourceV20': return q.options.slice().sort((a,b)=>MTG.OracleV20Damage.sourceThreat(g,this.p,b.card)-MTG.OracleV20Damage.sourceThreat(g,this.p,a.card))[0]?.key;
         case 'dredge': {
           const offered = q.options.filter(option => option.card);
           if (!offered.length) return keys[0];

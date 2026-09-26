@@ -22,6 +22,7 @@ import * as v16 from './oracle-extensions-v16.mjs';
 import * as v17 from './oracle-extensions-v17.mjs';
 import * as v18 from './oracle-extensions-v18.mjs';
 import * as v19 from './oracle-extensions-v19.mjs';
+import * as v20 from './oracle-extensions-v20.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
 
@@ -1145,7 +1146,8 @@ function permanentLines(rulesCore) {
   if(!extensionsActive)return lines;
   const result=[];
   for(const line of lines) {
-    if(line.startsWith('• ')&&result.length&&/choose one —/i.test(result.at(-1))) result[result.length-1]+='\n'+line;
+    const modalHeader=extensionsActive===8&&v8.allowsBroaderModalHeadersV20()?/choose (?:one(?: or both| that hasn't been chosen(?: this turn)?)?|two) —/i:/choose one —/i;
+    if(line.startsWith('• ')&&result.length&&modalHeader.test(result.at(-1))) result[result.length-1]+='\n'+line;
     else result.push(line);
   }
   return result;
@@ -2127,12 +2129,13 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
-  if ([10,11,12,13,14,15,16,17,18,19].includes(compilerVersion)) {
-    const grammar = compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
+  if ([10,11,12,13,14,15,16,17,18,19,20].includes(compilerVersion)) {
+    const grammar = compilerVersion === 20 ? v20 : compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
     const frozen = semanticClass(card, {compilerVersion: compilerVersion - 1, memoize});
     if (frozen.semanticClass) return frozen;
     const normalized = grammar.normalizeCard(card);
-    const result = v8.withAdditionalGrammar(grammar, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
+    const result = grammar.compileWholeCard?.(normalized,{compile:part=>semanticClass(part,{compilerVersion,memoize}),compileCurrent:part=>v8.withAdditionalGrammar(grammar,()=>semanticClass(grammar.normalizeCard(part),{compilerVersion:8,memoize})),stripReminderText,raw:rawCard})
+      || v8.withAdditionalGrammar(grammar, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
     // Normalization supplies executable grammar; the physical faces keep the
     // exact printed Oracle text used by deck import, card details, and copies.
     if(result.semanticClass&&card.card_faces?.length){
@@ -2248,7 +2251,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     }
     if(extensionsActive>=7&&operations.some(op=>!['spell-generic','spell-modal-generic','adventure-face','split-faces'].includes(op.kind)&&JSON.stringify(op).includes('"action":"exile-resolving-spell"')))return {reason:'self-exile-outside-spell-resolution'};
     // Target-as-damage-source continuations need an explicit source binding.
-    if(extensionsActive>=7 && /\bthen it deals|\. It deals/i.test(card.oracle_text||'')&&!JSON.stringify(operations).includes('"action":"bite"'))return {reason:'unbound-target-damage-source'};
+    if(extensionsActive>=7 && /\bthen it deals|\. It deals/i.test(card.oracle_text||'')&&!/"action":"(?:bite|selected-group-damage-v20)"/.test(JSON.stringify(operations)))return {reason:'unbound-target-damage-source'};
     if (extensionsActive >= 6 && operations.some(op => op.kind === 'generic-ability' &&
       JSON.stringify(op).includes('"action":"add-mana"')&&!(extensionsActive===8&&op.stackMana))) {
       return {reason:'mana-ability-needs-explicit-semantics'};
@@ -2276,6 +2279,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     };
     if(extensionsActive>=7)operations.forEach(addScope);else bindingScopes.push(...operations);
     const boundEvents=operation=>{
+      if(operation.kind==='permanent-native-trigger-v20')return operation.event==='etb'&&(operation.nativeEvent==='pomEnlisted'&&operation.nativeSubject==='self'&&operation.eventFilter==='self'||operation.nativeEvent==='oracleCrewedByV20'&&operation.nativeSubject==='crewer'&&operation.eventFilter?.kind==='v8-event'&&operation.eventFilter.target?.subtype==='Vehicle')&&boundEvents({...operation,kind:'generic-trigger'});
       if(operation.kind==='attachment-operation')return boundEvents(operation.operation);
       if(operation.grantedOperation)return boundEvents(operation.grantedOperation);
       const encoded=JSON.stringify(operation);
@@ -2304,7 +2308,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
         if(operation.grantedOperation)return xTargetsBound(operation.grantedOperation);
         const printedX=/\{X\}/.test(card.mana_cost||'')||v8.allowsBindingScopesV15()&&operations.some(op=>op.kind==='mechanic-additional-costs'&&(op.lifeX||op.costs?.some(cost=>cost.quantity?.xV19)));
         const allowed=['spell-generic','spell-modal-generic'].includes(operation.kind)?printedX:
-          operation.kind==='generic-ability'?((!operation.from||operation.from==='hand')&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&(operation.cost?.oracleCounterPayment?.n==='X'||operation.loyalty==='-X'||operation.cost?.sacN==='X')):
+          operation.kind==='generic-ability'?((!operation.from||operation.from==='hand')&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&(operation.cost?.oracleCounterPayment?.n==='X'||operation.loyalty==='-X'||operation.cost?.sacN==='X'||operation.cost?.tapN==='X'&&!!operation.cost.tapFilter)):
           operation.kind==='generic-trigger'&&operation.eventFilter==='self'&&(operation.event==='etb'&&printedX||v8.preservesPrintedParagraphs()&&operation.event==='cycled'&&operations.some(op=>op.kind==='cycling'&&/\{X\}/.test(op.cost))||operation.event==='monstrous'&&operations.some(upgrade=>upgrade.kind==='generic-ability'&&upgrade.effects?.some(effect=>effect.action==='monstrosity-v8'&&effect.n==='X')&&/\{X\}/.test(upgrade.cost?.mana||'')));
         const checkBody=body=>{
           const {targets=[],...other}=body;
@@ -2322,6 +2326,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
             ...(node.action==='battlefield-group'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
             ...(v8.preservesPrintedParagraphs()&&node.action==='combat-restriction'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
             ...(v8.preservesPrintedParagraphs()&&node.action==='library-select-v8'&&Array.isArray(node.selections)?{selections:node.selections.map(selection=>({...selection,filter:boundFilter(selection.filter)}))}:{}),
+            ...(v8.allowsBroaderModalHeadersV20()&&node.action==='zone-choice-v20'&&Array.isArray(node.selections)?{selections:node.selections.map(selection=>({...selection,filter:boundFilter(selection.filter)}))}:{}),
           }:node;
           if(/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(boundEffects(other))))return false;
           return !/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(targets))||allowed;
@@ -2330,6 +2335,25 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
         return checkBody(operation);
       };
       if(bindingScopes.some(operation=>!xTargetsBound(operation)))return {reason:'unbound-target-X'};
+      if(v8.allowsBroaderModalHeadersV20()){
+        const validTargets=value=>Array.isArray(value)?value.every(validTargets):!value||typeof value!=='object'||Object.entries(value).every(([key,child])=>key==='targets'?Array.isArray(child)&&child.every(target=>target&&typeof target==='object'&&validTargets(target)):validTargets(child));
+        if(!validTargets(operations))return {reason:'invalid-v20-target-descriptor'};
+        if(/"(?:craft-stat-v20|craft-keywords-v20)"|"craftColorsV20":true/.test(JSON.stringify(operations))&&!card.oracleCraftBackV20)return {reason:'unbound-crafted-material-v20'};
+        if(bindingScopes.some(operation=>JSON.stringify(operation).includes('"kicker-x-value-v20"')&&!(operation.kickerBoundV20&&operation.kind==='generic-trigger'&&operation.event==='etb'&&operation.eventFilter==='self'&&operation.condition?.kind==='kicked'&&operations.filter(row=>row.kind==='mechanic-kicker-x-v20').length===1)))return {reason:'unbound-kicker-x-v20'};
+        if(bindingScopes.some(operation=>JSON.stringify(operation).includes('"prowl-paid-v20"')&&!(operations.filter(row=>row.kind==='mechanic-prowl-v20').length===1&&(['spell-generic','spell-modal-generic'].includes(operation.kind)||operation.kind==='generic-trigger'&&operation.event==='etb'&&operation.eventFilter==='self'))))return {reason:'unbound-prowl-paid-v20'};
+        if(JSON.stringify(operations).includes('"chosenTypeV20":true')&&!operations.some(operation=>['permanent-choose-card-type-v20','chosen-subtype-entry-v16'].includes(operation.kind)))return {reason:'unbound-chosen-type-v20'};
+        if(/"chosenSubtypeV20":true|"mode":"chosen-creature-spell"/.test(JSON.stringify(operations))&&!operations.some(operation=>operation.kind==='chosen-subtype-entry-v16'))return {reason:'unbound-chosen-subtype-v20'};
+        const revealCount=operations.filter(operation=>operation.kind==='mechanic-reveal-cost-v20').length;
+        const boundReveal=(value,bound=false)=>{
+          if(Array.isArray(value))return value.every(child=>boundReveal(child,bound));
+          if(!value||typeof value!=='object')return true;
+          if(value.kind==='casting-reveal-stat-v20')return bound;
+          if(['spell-generic','spell-modal-generic'].includes(value.kind))bound=revealCount===1;
+          else if(['generic-trigger','generic-ability'].includes(value.kind))bound=false;
+          return Object.values(value).every(child=>boundReveal(child,bound));
+        };
+        if(bindingScopes.some(operation=>!boundReveal(operation)))return {reason:'unbound-revealed-cost-stat'};
+      }
       const oneSacrifice=cost=>!!cost&&((cost.sacSelf?1:0)+((cost.sacWhat||cost.sacCreature||cost.sacFilter)?(cost.sacN??1):0)===1);
       const additional=operations.filter(op=>op.kind==='mechanic-additional-costs').flatMap(op=>op.costs||[]).filter(cost=>cost.kind==='sacrifice');
       const spellSacrifice=additional.length===1&&additional[0].quantity?.min===1&&additional[0].quantity?.max===1;
@@ -2366,14 +2390,14 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     const amountBound=op=>op.kind==='attachment-operation'?amountBound(op.operation):op.grantedOperation?amountBound(op.grantedOperation):!JSON.stringify(op).includes('"kind":"event-amount"')||op.kind==='generic-trigger'&&(op.attackersAmountV19===true&&op.event==='attackersDeclared'&&op.eventFilter?.kind==='v8-event'&&op.eventFilter.target|| (extensionsActive===8&&['v8-event','damage-event-v8'].includes(op.eventFilter?.kind)?v8.eventReferenceAllowed(op,'event-amount'):[op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer','lifeGain'].includes(event))));
     if(bindingScopes.some(op=>!amountBound(op)))return {reason:'unbound-event-amount'};
     const additionalXV19=operations.some(op=>op.kind==='mechanic-additional-costs'&&op.costs?.some(cost=>cost.quantity?.xV19));
-    if(extensionsActive>=6&&JSON.stringify(operations).includes('"X"')&&!/\{X\}|pay X life/i.test((card.mana_cost||'')+' '+(card.oracle_text||'')+(extensionsActive>=7?(card.card_faces||[]).map(face=>(face.mana_cost||'')+' '+(face.oracle_text||'')).join(' '):''))&&!bindingScopes.every(op=>!JSON.stringify(op).includes('"X"')||additionalXV19&&['spell-generic','spell-modal-generic','spell-template-v4','spell-damage','spell-pump'].includes(op.kind)||op.kind==='generic-ability'&&!op.from&&(op.loyalty==='-X'||op.cost?.sacN==='X'||op.cost?.oracleCounterPayment?.n==='X'&&op.cost.oracleCounterPayment.self&&op.cost.oracleCounterPayment.kinds?.length===1)))return {reason:'unbound-X'};
+    if(extensionsActive>=6&&JSON.stringify(operations).includes('"X"')&&!/\{X\}|pay X life/i.test((card.mana_cost||'')+' '+(card.oracle_text||'')+(extensionsActive>=7?(card.card_faces||[]).map(face=>(face.mana_cost||'')+' '+(face.oracle_text||'')).join(' '):''))&&!bindingScopes.every(op=>!JSON.stringify(op).includes('"X"')||additionalXV19&&['spell-generic','spell-modal-generic','spell-template-v4','spell-damage','spell-pump'].includes(op.kind)||op.kind==='generic-ability'&&!op.from&&(op.loyalty==='-X'||op.cost?.sacN==='X'||op.cost?.tapN==='X'&&!!op.cost.tapFilter||op.cost?.oracleCounterPayment?.n==='X'&&op.cost.oracleCounterPayment.self&&op.cost.oracleCounterPayment.kinds?.length===1)))return {reason:'unbound-X'};
     return result;
   } finally { extensionsActive = previous;compilerParseCache=previousCache; }
 }
 
 function rawCard(card) {
   if(card.layout==='split'&&card.card_faces?.length===2)card={...card,mana_cost:card.card_faces.map(face=>face.mana_cost).join(''),type_line:[...new Set(card.card_faces.map(face=>face.type_line))].join(' '),oracle_text:card.card_faces.map(face=>face.name+': '+face.oracle_text).join('\n')};
-  if(['adventure','modal_dfc','transform','prepare'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
+  if(['adventure','modal_dfc','transform','prepare','flip'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
   const parsed = parseTypeLine(card.type_line);
   const raw = {
     name: card.name,
@@ -2609,7 +2633,7 @@ export function createImportPlan({
     }
     sourceNames.add(card.name);
     sourceOracleIds.add(card.oracle_id);
-    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=10&&card.layout==='prepare'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
+    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=10&&card.layout==='prepare'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))||(compilerVersion>=20&&(card.layout==='flip'||card.layout==='split'&&card.card_faces?.some(face=>/\bRoom\b/.test(face.type_line||'')))&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
       addReason(deferredByReason, deferredExamples, 'already-in-legacy-engine', card);
       continue;
     }
@@ -2766,7 +2790,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
   const outputStatePath = path.join(outputReportDir, 'state.json');
   const selectedLimit = validateLimit(argValue(args, 'limit', String(DEFAULT_LIMIT)));
   const compilerVersion=Number(argValue(args,'compiler-version',String(SEMANTIC_COMPILER_VERSION)));
-  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>19)throw new Error('Oracle compiler version must be an integer from 1 to 19.');
+  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>20)throw new Error('Oracle compiler version must be an integer from 1 to 20.');
   const state = readState(outputStatePath, io);
   const sequence = batchNumberFrom(state, args);
   const id = batchId(sequence);

@@ -1143,7 +1143,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // ni prazni placeholder koji bi kasnije mogao biti slučajno popunjen.
       if (mine) row.hand = other.hand.map(card => publicCard(card, player, true));
       if (other.library.length && battlefieldCards.some(source => source.ctrl === other && !source.cur?.abilitiesDisabled &&
-        (source.def.revealAllTop || mine && source.def.revealOwnTop))) row.visibleLibraryTop = publicCard(other.library.at(-1), player, true);
+        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,gameState,source) || mine && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,gameState,source)))) row.visibleLibraryTop = publicCard(other.library.at(-1), player, true);
       const forecastCards=[...(gameState.forecastRevealedCards?.(other)||[]),...(gameState.miracleRevealedCards?.(other)||[])];
       if(!mine&&forecastCards.length)row.revealedHand=forecastCards.map(card=>publicCard(card,player,true));
       return deepFreeze(row);
@@ -2465,7 +2465,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (picks) actions.push({kind:'chooseCards',picks});
       }
     } else if (q.type === 'chooseOption') {
-      for (const option of q.aiHint?.kind==='cardName'?(q.options||[]).filter(o=>o.key==='Forest').slice(0,1):q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
+      const options=q.aiHint?.kind==='cardName'?[q.options?.find(o=>o.key===(q.aiHint.nameV20||'Forest'))||q.options?.[0]].filter(Boolean):q.options||[];
+      for (const option of options) actions.push({ kind: 'chooseOption', value: option.key, option });
     } else if (q.type === 'chooseMulti') {
       const min = q.min ?? q.count ?? 1, max = q.max ?? q.count ?? min;
       const pickSets = q.repeats
@@ -5362,6 +5363,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.choice=action.value===(wantLand?'land':'nonland')?10:0;
       } else if(hintKind==='damagePreventionSource'){
         breakdown.choice=U.OracleV8SourcePrevention.threat(game,player,action.option?.card);
+      } else if(hintKind==='damageRedirectionSourceV20'){
+        breakdown.choice=U.OracleV20Damage.sourceThreat(game,player,action.option?.card);
       } else if(hintKind==='oracleLibraryChoice'){
         const card=q.aiHint.card,wantTop=card&&(card.mv>=3||card.is?.('Creature'));
         breakdown.choice=action.value===(wantTop?'top':'bottom')?10:0;
@@ -6140,7 +6143,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!observer) return;
     const known = new Set(information.knownCardIds || []);
     for (const source of clone.bf()) {
-      if (source.cur?.abilitiesDisabled || !(source.def.revealAllTop || source.ctrl === observer && source.def.revealOwnTop)) continue;
+      if (source.cur?.abilitiesDisabled || !(MTG.oracleLibraryFlagV20(source.def.revealAllTop,clone,source) || source.ctrl === observer && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,clone,source))) continue;
       const top = source.ctrl?.library.at(-1);
       if (top) known.add(top.iid);
     }
@@ -6192,6 +6195,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !!candidate.ninjutsu === !!action.entry.ninjutsu && !!candidate.c1719IgnoreArbiter===!!action.entry.c1719IgnoreArbiter &&
         !!candidate.suspend === !!action.entry.suspend && !!candidate.handAbility === !!action.entry.handAbility && !!candidate.gyAbility === !!action.entry.gyAbility &&
         !!candidate.turnFaceUp === !!action.entry.turnFaceUp &&
+        candidate.oracleUnlockRoomV20 === action.entry.oracleUnlockRoomV20 &&
         (!action.entry.turnFaceUp || candidate.faceUpCost === action.entry.faceUpCost && candidate.faceUpKind === action.entry.faceUpKind) &&
         !!candidate.manaAbility === !!action.entry.manaAbility);
       return entry ? { kind: 'activate', entry } : null;

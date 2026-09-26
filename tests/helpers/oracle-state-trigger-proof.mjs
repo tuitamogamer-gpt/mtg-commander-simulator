@@ -21,7 +21,7 @@ export async function stateTriggerProof(M,entry,operation,role,h){
  const f=h.gameFor(M,[decisions,decisions],{ai:role==='ai'}),{game,a,b}=f;
  h.assertControllerRole(M,f,entry.raw.name);h.fillLibrary(M,a,20);h.fillLibrary(M,b,20);
  const support=stageStateSupport(M,game,a,M.DEFS[entry.raw.name],h),state=operation.state;
- if(state.kind==='life')a.life=state.threshold+2;
+ if(state.kind==='life')a.life=state.threshold+(state.comparison==='greater'?-2:2);
  if(state.kind==='opponent-life')b.life=state.max+2;
  if(state.kind==='count-comparison'&&state.count.kind==='source-counters')for(let n=0;n<2;n++)h.permanent(M,game,b,'Grizzly Bears');
  const transferTrigger=state.kind==='not'&&state.condition.kind==='source-quality'&&entry.implementation.find(op=>op.kind==='generic-trigger'&&op.event==='upkeep'&&op.eventFilter==='your-upkeep'&&op.effects?.some(effect=>effect.action==='move-counters-v8'&&effect.sourceTarget==='self'&&effect.counter===state.condition.filter.hasCounter&&effect.n===1));
@@ -31,7 +31,11 @@ export async function stateTriggerProof(M,entry,operation,role,h){
  if(source.is('Land')){const before=a.landsPlayed;assert.equal(await game.playLand(a,source),true,entry.raw.name+': legal land play');assert.equal(a.landsPlayed,before+1);}
  else {fund(a);const before=total(a);assert.equal(await game.castSpell(a,source,{from:'hand'}),true,entry.raw.name+': paid source cast');assert.ok(total(a)<before);}
  await h.resolveAll(game);assert.equal(source.zone,'battlefield',entry.raw.name+': stable entry while its state condition is false');
- if(state.kind==='life'||state.kind==='opponent-life'){
+ if(state.kind==='source-quality'&&state.filter.withKeyword==='flying'){
+  assert.equal(source.kw('flying'),false);await cast(a,'Jump',[source]);await game.resolveTop();assert.equal(source.kw('flying'),true);
+ }else if(state.kind==='life'&&state.comparison==='greater'){
+  assert.equal(await game.gainLife(a,2,source),2);await game.checkSBA();await game.flushTriggers();
+ }else if(state.kind==='life'||state.kind==='opponent-life'){
   await cast(state.kind==='life'?b:a,'Shock',[state.kind==='life'?a:b]);await game.resolveTop();
  }else if(state.kind==='count-comparison'&&state.count.kind==='source-counters'){
   assert.ok(Number.isSafeInteger(state.min)&&state.min>0);fund(a);
@@ -54,7 +58,8 @@ export async function stateTriggerProof(M,entry,operation,role,h){
  const targets=trigger.targets.flat().filter(Boolean);await h.resolveAll(game);
  if(/if this permanent is an enchantment, it becomes a 3\/[25] (?:Soldier|Jackal) creature\./.test(entry.raw.oracle)){
   const printed=/it becomes a (\d+)\/(\d+) (Soldier|Jackal) creature/.exec(entry.raw.oracle);assert.equal(source.zone,'battlefield');assert.equal(source.is('Enchantment'),false);assert.equal(source.is('Creature'),true);assert.equal(source.power,Number(printed[1]));assert.equal(source.toughness,Number(printed[2]));assert.equal(source.hasSub(printed[3]),true);
- }else{assert.equal(source.zone,'graveyard');if(/If you do, destroy up to two target creatures\./.test(entry.raw.oracle)){assert.ok(targets.length>0);for(const target of targets)assert.equal(target.zone,'graveyard');}}
+ }else if(operation.trigger.effects.some(effect=>effect.action==='lose-game-v10'&&effect.who==='you')){assert.equal(a.lost,true,entry.raw.name+': actual state trigger eliminates its controller');assert.equal(source.zone,'ceased');}
+ else{assert.equal(source.zone,'graveyard');if(/If you do, destroy up to two target creatures\./.test(entry.raw.oracle)){assert.ok(targets.length>0);for(const target of targets)assert.equal(target.zone,'graveyard');}}
  if(/create Marit Lage, a legendary 20\/20 black Avatar creature token with flying and indestructible\./.test(entry.raw.oracle)){const tokens=game.bf().filter(card=>card.ctrl===a&&card.isToken);assert.equal(tokens.length,1);const token=tokens[0];assert.equal(token.name,'Marit Lage');assert.equal(token.power,20);assert.equal(token.toughness,20);assert.deepEqual([...token.colors],['B']);assert.equal(token.hasSub('Avatar'),true);assert.equal(token.cur.super.includes('Legendary'),true);for(const key of ['flying','indestructible'])assert.equal(token.kw(key),true);}
  assert.equal((game.aiDecisionLog||[]).some(row=>row.fallback),false);
  return 1+targets.length;

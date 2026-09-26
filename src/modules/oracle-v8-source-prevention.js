@@ -1,6 +1,6 @@
 ((M)=>{
  const sourceView=(card,version,snap)=>snap?{...snap,is:type=>snap.types?.includes(type)}:card;
- const qualifies=(card,quality)=>!!card&&(!quality.type||card.is?.(quality.type))&&(!quality.colors||quality.colors.some(color=>card.colors?.includes(color)));
+ const qualifies=(card,quality)=>!!card&&(!quality.type||card.is?.(quality.type))&&(!quality.colors||quality.colors.some(color=>card.colors?.includes(color)))&&(!quality.keyword||(typeof card.kw==='function'?card.kw(quality.keyword):card.kw?.includes(quality.keyword)))&&(!quality.subtype||(typeof card.hasSub==='function'?card.hasSub(quality.subtype):card.subtypes?.includes(quality.subtype)||card.changeling&&M.CREATURE_SUBTYPES.has(quality.subtype)));
  function candidates(game,quality={},resolving){
   const rows=[];
   const add=(card,version=card?.zoneVersion,snap)=>{

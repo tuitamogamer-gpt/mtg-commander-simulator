@@ -1,0 +1,934 @@
+[
+  {
+    "object": "card",
+    "id": "3d715e9f-223d-462e-8ce3-eebbaf1cd021",
+    "oracle_id": "2f4374f6-c695-4a5d-a6d6-0e41eaa587ca",
+    "multiverse_ids": [
+      636856,
+      636857
+    ],
+    "mtgo_id": 118108,
+    "arena_id": 87296,
+    "tcgplayer_id": 525164,
+    "cardmarket_id": 743028,
+    "name": "Dowsing Device // Geode Grotto",
+    "lang": "en",
+    "released_at": "2023-11-17",
+    "uri": "https://api.scryfall.com/cards/3d715e9f-223d-462e-8ce3-eebbaf1cd021",
+    "scryfall_uri": "https://scryfall.com/card/lci/146/dowsing-device-geode-grotto?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T03:36:09Z",
+    "cmc": 2,
+    "type_line": "Artifact // Land — Cave",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Transform"
+    ],
+    "produced_mana": [
+      "R"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Dowsing Device",
+        "mana_cost": "{1}{R}",
+        "type_line": "Artifact",
+        "oracle_text": "Whenever this artifact or another artifact you control enters, up to one target creature you control gets +1/+0 and gains haste until end of turn. Then transform this artifact if you control four or more artifacts.",
+        "colors": [
+          "R"
+        ],
+        "flavor_text": "\"A little innovation can lead to a big score.\"\n—Admiral Beckett Brass",
+        "artist": "Olena Richards",
+        "artist_id": "fad4282c-49d1-4b5b-be1d-713369fc8bc8",
+        "illustration_id": "120a82bc-0bff-458a-8b16-21dd798dd873",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "normal": "https://cards.scryfall.io/normal/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "large": "https://cards.scryfall.io/large/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "png": "https://cards.scryfall.io/png/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.png?1783913769",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "thumb": "https://cards.scryfall.io/thumb/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "grid": "https://cards.scryfall.io/grid/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "display": "https://cards.scryfall.io/display/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "art": "https://cards.scryfall.io/art/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "crop": "https://cards.scryfall.io/crop/front/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Geode Grotto",
+        "mana_cost": "",
+        "type_line": "Land — Cave",
+        "oracle_text": "(Transforms from Dowsing Device.)\n{T}: Add {R}.\n{2}{R}, {T}: Until end of turn, target creature gains haste and gets +X/+0, where X is the number of artifacts you control. Activate only as a sorcery.",
+        "colors": [],
+        "artist": "Olena Richards",
+        "artist_id": "fad4282c-49d1-4b5b-be1d-713369fc8bc8",
+        "illustration_id": "c785c608-0589-4114-a208-5fccccfe4718",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "normal": "https://cards.scryfall.io/normal/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "large": "https://cards.scryfall.io/large/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "png": "https://cards.scryfall.io/png/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.png?1783913769",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.jpg?1783913769",
+          "thumb": "https://cards.scryfall.io/thumb/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "grid": "https://cards.scryfall.io/grid/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "display": "https://cards.scryfall.io/display/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "art": "https://cards.scryfall.io/art/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769",
+          "crop": "https://cards.scryfall.io/crop/back/3/d/3d715e9f-223d-462e-8ce3-eebbaf1cd021.webp?1783913769"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "70169a6e-89d1-4a3a-aef7-3152958d55ac",
+    "set": "lci",
+    "set_name": "The Lost Caverns of Ixalan",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/70169a6e-89d1-4a3a-aef7-3152958d55ac",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Alci&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/lci?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/3d715e9f-223d-462e-8ce3-eebbaf1cd021/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A2f4374f6-c695-4a5d-a6d6-0e41eaa587ca&unique=prints",
+    "collector_number": "146",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Olena Richards",
+    "artist_ids": [
+      "fad4282c-49d1-4b5b-be1d-713369fc8bc8"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 5769,
+    "penny_rank": 4264,
+    "preview": {
+      "source": "AGirlNamedRon",
+      "source_uri": "https://twitter.com/AGirlNamedRon/status/1718017386861957165",
+      "previewed_at": "2023-10-27"
+    },
+    "prices": {
+      "usd": "0.32",
+      "usd_foil": "0.43",
+      "usd_etched": null,
+      "eur": "0.15",
+      "eur_foil": "0.40",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=636856&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DDowsing%2BDevice%2B%252F%252F%2BGeode%2BGrotto",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DDowsing%2BDevice%2B%252F%252F%2BGeode%2BGrotto",
+      "edhrec": "https://edhrec.com/route/?cc=Dowsing+Device"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F525164%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=743028&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/118108?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "81b8b9c9-725d-476d-a3cf-55e3dc3e433d",
+    "oracle_id": "522a4b02-24c7-45d2-9097-2803cc9fffad",
+    "multiverse_ids": [
+      636812,
+      636813
+    ],
+    "mtgo_id": 118020,
+    "arena_id": 87252,
+    "tcgplayer_id": 526377,
+    "cardmarket_id": 743996,
+    "name": "Grasping Shadows // Shadows' Lair",
+    "lang": "en",
+    "released_at": "2023-11-17",
+    "uri": "https://api.scryfall.com/cards/81b8b9c9-725d-476d-a3cf-55e3dc3e433d",
+    "scryfall_uri": "https://scryfall.com/card/lci/108/grasping-shadows-shadows-lair?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T03:36:21Z",
+    "cmc": 4,
+    "type_line": "Enchantment // Land — Cave",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Transform"
+    ],
+    "produced_mana": [
+      "B"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Grasping Shadows",
+        "mana_cost": "{3}{B}",
+        "type_line": "Enchantment",
+        "oracle_text": "Whenever a creature you control attacks alone, it gains deathtouch and lifelink until end of turn. Put a dread counter on this enchantment. Then if there are three or more dread counters on it, transform it.",
+        "colors": [
+          "B"
+        ],
+        "artist": "Sam Wolfe Connelly",
+        "artist_id": "e839afac-338b-47fe-a356-04753f69d507",
+        "illustration_id": "96929395-6743-4755-9bc8-7beec8da29a3",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "normal": "https://cards.scryfall.io/normal/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "large": "https://cards.scryfall.io/large/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "png": "https://cards.scryfall.io/png/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.png?1783913781",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "thumb": "https://cards.scryfall.io/thumb/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "grid": "https://cards.scryfall.io/grid/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "display": "https://cards.scryfall.io/display/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "art": "https://cards.scryfall.io/art/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "crop": "https://cards.scryfall.io/crop/front/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Shadows' Lair",
+        "mana_cost": "",
+        "type_line": "Land — Cave",
+        "oracle_text": "(Transforms from Grasping Shadows.)\n{T}: Add {B}.\n{B}, {T}, Remove a dread counter from this land: You draw a card and you lose 1 life.",
+        "colors": [],
+        "flavor_text": "The shadows make no mark upon the flesh. It is the mind they claw and strangle.",
+        "artist": "Sam Wolfe Connelly",
+        "artist_id": "e839afac-338b-47fe-a356-04753f69d507",
+        "illustration_id": "ce34a5b6-add2-496a-9252-30e3eaff01e5",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "normal": "https://cards.scryfall.io/normal/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "large": "https://cards.scryfall.io/large/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "png": "https://cards.scryfall.io/png/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.png?1783913781",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.jpg?1783913781",
+          "thumb": "https://cards.scryfall.io/thumb/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "grid": "https://cards.scryfall.io/grid/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "display": "https://cards.scryfall.io/display/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "art": "https://cards.scryfall.io/art/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781",
+          "crop": "https://cards.scryfall.io/crop/back/8/1/81b8b9c9-725d-476d-a3cf-55e3dc3e433d.webp?1783913781"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "70169a6e-89d1-4a3a-aef7-3152958d55ac",
+    "set": "lci",
+    "set_name": "The Lost Caverns of Ixalan",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/70169a6e-89d1-4a3a-aef7-3152958d55ac",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Alci&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/lci?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/81b8b9c9-725d-476d-a3cf-55e3dc3e433d/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A522a4b02-24c7-45d2-9097-2803cc9fffad&unique=prints",
+    "collector_number": "108",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Sam Wolfe Connelly",
+    "artist_ids": [
+      "e839afac-338b-47fe-a356-04753f69d507"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 13276,
+    "penny_rank": 10505,
+    "prices": {
+      "usd": "0.25",
+      "usd_foil": "0.29",
+      "usd_etched": null,
+      "eur": "0.10",
+      "eur_foil": "0.28",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=636812&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DGrasping%2BShadows%2B%252F%252F%2BShadows%2527%2BLair",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DGrasping%2BShadows%2B%252F%252F%2BShadows%2527%2BLair",
+      "edhrec": "https://edhrec.com/route/?cc=Grasping+Shadows"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F526377%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=743996&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/118020?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "c16ba84e-a0cc-4c6c-9b80-713247b8fef9",
+    "oracle_id": "72205fac-a94a-45cc-94c6-40ece2fdce0e",
+    "multiverse_ids": [
+      439834,
+      439835
+    ],
+    "mtgo_id": 66807,
+    "arena_id": 66971,
+    "tcgplayer_id": 153226,
+    "cardmarket_id": 314458,
+    "name": "Storm the Vault // Vault of Catlacan",
+    "lang": "en",
+    "released_at": "2018-01-19",
+    "uri": "https://api.scryfall.com/cards/c16ba84e-a0cc-4c6c-9b80-713247b8fef9",
+    "scryfall_uri": "https://scryfall.com/card/rix/173/storm-the-vault-vault-of-catlacan?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T09:34:34Z",
+    "cmc": 4,
+    "type_line": "Legendary Enchantment // Legendary Land",
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "keywords": [
+      "Transform",
+      "Treasure"
+    ],
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Storm the Vault",
+        "mana_cost": "{2}{U}{R}",
+        "type_line": "Legendary Enchantment",
+        "oracle_text": "Whenever one or more creatures you control deal combat damage to a player, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nAt the beginning of your end step, if you control five or more artifacts, transform Storm the Vault.",
+        "colors": [
+          "R",
+          "U"
+        ],
+        "artist": "Victor Adame Minguez",
+        "artist_id": "bd8f7368-5b10-4554-b6b8-d052c6aca89f",
+        "illustration_id": "3ae3d9a2-a893-4a25-a2be-6513af20310c",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "normal": "https://cards.scryfall.io/normal/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "large": "https://cards.scryfall.io/large/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "png": "https://cards.scryfall.io/png/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.png?1783935274",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "thumb": "https://cards.scryfall.io/thumb/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "grid": "https://cards.scryfall.io/grid/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "display": "https://cards.scryfall.io/display/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "art": "https://cards.scryfall.io/art/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "crop": "https://cards.scryfall.io/crop/front/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Vault of Catlacan",
+        "mana_cost": "",
+        "type_line": "Legendary Land",
+        "oracle_text": "(Transforms from Storm the Vault.)\n{T}: Add one mana of any color.\n{T}: Add {U} for each artifact you control.",
+        "colors": [],
+        "flavor_text": "Swimming in coins proved harder than they'd hoped, but dancing was a jingling delight.",
+        "artist": "Victor Adame Minguez",
+        "artist_id": "bd8f7368-5b10-4554-b6b8-d052c6aca89f",
+        "illustration_id": "9076c9ad-c11e-47b4-9a0e-1f46f75bacec",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "normal": "https://cards.scryfall.io/normal/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "large": "https://cards.scryfall.io/large/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "png": "https://cards.scryfall.io/png/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.png?1783935274",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.jpg?1783935274",
+          "thumb": "https://cards.scryfall.io/thumb/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "grid": "https://cards.scryfall.io/grid/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "display": "https://cards.scryfall.io/display/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "art": "https://cards.scryfall.io/art/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274",
+          "crop": "https://cards.scryfall.io/crop/back/c/1/c16ba84e-a0cc-4c6c-9b80-713247b8fef9.webp?1783935274"
+        }
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "bbe8bced-9524-47f6-a600-bf4ddc072698",
+        "component": "token",
+        "name": "Treasure",
+        "type_line": "Token Artifact — Treasure",
+        "uri": "https://api.scryfall.com/cards/bbe8bced-9524-47f6-a600-bf4ddc072698"
+      },
+      {
+        "object": "related_card",
+        "id": "9236ab9c-7730-46d9-a543-84ff7b245ece",
+        "component": "combo_piece",
+        "name": "Rivals of Ixalan Checklist",
+        "type_line": "Card",
+        "uri": "https://api.scryfall.com/cards/9236ab9c-7730-46d9-a543-84ff7b245ece"
+      },
+      {
+        "object": "related_card",
+        "id": "c16ba84e-a0cc-4c6c-9b80-713247b8fef9",
+        "component": "combo_piece",
+        "name": "Storm the Vault // Vault of Catlacan",
+        "type_line": "Legendary Enchantment // Legendary Land",
+        "uri": "https://api.scryfall.com/cards/c16ba84e-a0cc-4c6c-9b80-713247b8fef9"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "arena",
+      "paper",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "2f7e40fc-772d-4a85-bfdd-01653c41d0fa",
+    "set": "rix",
+    "set_name": "Rivals of Ixalan",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/2f7e40fc-772d-4a85-bfdd-01653c41d0fa",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Arix&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/rix?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/c16ba84e-a0cc-4c6c-9b80-713247b8fef9/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A72205fac-a94a-45cc-94c6-40ece2fdce0e&unique=prints",
+    "collector_number": "173",
+    "digital": false,
+    "rarity": "rare",
+    "artist": "Victor Adame Minguez",
+    "artist_ids": [
+      "bd8f7368-5b10-4554-b6b8-d052c6aca89f"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "compasslanddfc"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 3489,
+    "penny_rank": 10238,
+    "prices": {
+      "usd": "5.72",
+      "usd_foil": "14.24",
+      "usd_etched": null,
+      "eur": "5.65",
+      "eur_foil": "8.49",
+      "tix": "0.02"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=439834&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DStorm%2Bthe%2BVault%2B%252F%252F%2BVault%2Bof%2BCatlacan",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DStorm%2Bthe%2BVault%2B%252F%252F%2BVault%2Bof%2BCatlacan",
+      "edhrec": "https://edhrec.com/route/?cc=Storm+the+Vault"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F153226%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=314458&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/66807?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "001e9f20-5b15-41cb-bf82-46172decc235",
+    "oracle_id": "8b84fec5-617c-4088-8250-2ba1f1f9479a",
+    "multiverse_ids": [],
+    "resource_id": "C92C4E13E3340F3594F515DE39A78D2D448AC0DFBC530AEADCE4B192DEB258CC",
+    "mtgo_id": 141511,
+    "arena_id": 96150,
+    "tcgplayer_id": 634012,
+    "cardmarket_id": 827001,
+    "name": "Balamb Garden, SeeD Academy // Balamb Garden, Airborne",
+    "lang": "en",
+    "released_at": "2025-06-13",
+    "uri": "https://api.scryfall.com/cards/001e9f20-5b15-41cb-bf82-46172decc235",
+    "scryfall_uri": "https://scryfall.com/card/fin/272/balamb-garden-seed-academy-balamb-garden-airborne?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:35:58Z",
+    "cmc": 0,
+    "type_line": "Land — Town // Legendary Artifact — Vehicle",
+    "color_identity": [
+      "G",
+      "U"
+    ],
+    "keywords": [
+      "Flying",
+      "Transform",
+      "Crew"
+    ],
+    "produced_mana": [
+      "G",
+      "U"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Balamb Garden, SeeD Academy",
+        "mana_cost": "",
+        "type_line": "Land — Town",
+        "oracle_text": "This land enters tapped.\n{T}: Add {G} or {U}.\n{5}{G}{U}, {T}: Transform this land. This ability costs {1} less to activate for each other Town you control.",
+        "colors": [],
+        "artist": "Jonas De Ro",
+        "artist_id": "561ebf9e-8d93-4b57-8156-8826d0c19601",
+        "illustration_id": "83559f92-ec25-4f3e-8f67-a66970c1e01e",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "normal": "https://cards.scryfall.io/normal/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "large": "https://cards.scryfall.io/large/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "png": "https://cards.scryfall.io/png/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.png?1783906558",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "thumb": "https://cards.scryfall.io/thumb/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "grid": "https://cards.scryfall.io/grid/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "display": "https://cards.scryfall.io/display/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "art": "https://cards.scryfall.io/art/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "crop": "https://cards.scryfall.io/crop/front/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Balamb Garden, Airborne",
+        "mana_cost": "",
+        "type_line": "Legendary Artifact — Vehicle",
+        "oracle_text": "Flying\nWhenever Balamb Garden attacks, draw a card.\nCrew 1 (Tap any number of creatures you control with total power 1 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "colors": [],
+        "power": "5",
+        "toughness": "4",
+        "artist": "Jonas De Ro",
+        "artist_id": "561ebf9e-8d93-4b57-8156-8826d0c19601",
+        "illustration_id": "dd3fc1d7-6e7c-4b10-a4b5-8dc0804061e1",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "normal": "https://cards.scryfall.io/normal/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "large": "https://cards.scryfall.io/large/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "png": "https://cards.scryfall.io/png/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.png?1783906558",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.jpg?1783906558",
+          "thumb": "https://cards.scryfall.io/thumb/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "grid": "https://cards.scryfall.io/grid/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "display": "https://cards.scryfall.io/display/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "art": "https://cards.scryfall.io/art/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558",
+          "crop": "https://cards.scryfall.io/crop/back/0/0/001e9f20-5b15-41cb-bf82-46172decc235.webp?1783906558"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "d7beb4b7-e1ff-4d35-ab07-5700f17ea1ea",
+    "set": "fin",
+    "set_name": "Final Fantasy",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/d7beb4b7-e1ff-4d35-ab07-5700f17ea1ea",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Afin&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/fin?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/001e9f20-5b15-41cb-bf82-46172decc235/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A8b84fec5-617c-4088-8250-2ba1f1f9479a&unique=prints",
+    "collector_number": "272",
+    "digital": false,
+    "rarity": "rare",
+    "artist": "Jonas De Ro",
+    "artist_ids": [
+      "561ebf9e-8d93-4b57-8156-8826d0c19601"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "legendary"
+    ],
+    "security_stamp": "triangle",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond",
+      "ffviii"
+    ],
+    "edhrec_rank": 6408,
+    "penny_rank": 9803,
+    "preview": {
+      "source": "CGMagazine",
+      "source_uri": "https://www.cgmagonline.com/articles/previews/mtg-final-fantasy-homebases/",
+      "previewed_at": "2025-05-23"
+    },
+    "prices": {
+      "usd": "0.32",
+      "usd_foil": "0.43",
+      "usd_etched": null,
+      "eur": "0.29",
+      "eur_foil": "0.53",
+      "tix": "0.02"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DBalamb%2BGarden%252C%2BSeeD%2BAcademy%2B%252F%252F%2BBalamb%2BGarden%252C%2BAirborne",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DBalamb%2BGarden%252C%2BSeeD%2BAcademy%2B%252F%252F%2BBalamb%2BGarden%252C%2BAirborne",
+      "edhrec": "https://edhrec.com/route/?cc=Balamb+Garden%2C+SeeD+Academy"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F634012%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=827001&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/141511?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "004524bf-b249-4dac-9c10-44d57143feb9",
+    "oracle_id": "ea9c459a-6047-43aa-968f-a582be4000e8",
+    "multiverse_ids": [
+      636902,
+      636903
+    ],
+    "mtgo_id": 118200,
+    "arena_id": 87342,
+    "tcgplayer_id": 524220,
+    "cardmarket_id": 740871,
+    "name": "Growing Rites of Itlimoc // Itlimoc, Cradle of the Sun",
+    "lang": "en",
+    "released_at": "2023-11-17",
+    "uri": "https://api.scryfall.com/cards/004524bf-b249-4dac-9c10-44d57143feb9",
+    "scryfall_uri": "https://scryfall.com/card/lci/188/growing-rites-of-itlimoc-itlimoc-cradle-of-the-sun?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T03:35:51Z",
+    "cmc": 3,
+    "type_line": "Legendary Enchantment // Legendary Land",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Transform"
+    ],
+    "produced_mana": [
+      "G"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Growing Rites of Itlimoc",
+        "mana_cost": "{2}{G}",
+        "type_line": "Legendary Enchantment",
+        "oracle_text": "When Growing Rites of Itlimoc enters, look at the top four cards of your library. You may reveal a creature card from among them and put it into your hand. Put the rest on the bottom of your library in any order.\nAt the beginning of your end step, if you control four or more creatures, transform Growing Rites of Itlimoc.",
+        "colors": [
+          "G"
+        ],
+        "artist": "Josu Hernaiz",
+        "artist_id": "74246024-92b4-43d0-a5af-a3f9f2a35d5f",
+        "illustration_id": "d097bf4c-243d-4a10-bcc3-457f1ceff7c7",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "normal": "https://cards.scryfall.io/normal/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "large": "https://cards.scryfall.io/large/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "png": "https://cards.scryfall.io/png/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.png?1783913751",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "thumb": "https://cards.scryfall.io/thumb/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "grid": "https://cards.scryfall.io/grid/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "display": "https://cards.scryfall.io/display/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "art": "https://cards.scryfall.io/art/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "crop": "https://cards.scryfall.io/crop/front/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Itlimoc, Cradle of the Sun",
+        "mana_cost": "",
+        "type_line": "Legendary Land",
+        "oracle_text": "(Transforms from Growing Rites of Itlimoc.)\n{T}: Add {G}.\n{T}: Add {G} for each creature you control.",
+        "colors": [],
+        "flavor_text": "Though the Sun Empire and the River Heralds once came together to plant the sacred forest, its roots have been tended by the mycoids ever since.",
+        "artist": "Josu Hernaiz",
+        "artist_id": "74246024-92b4-43d0-a5af-a3f9f2a35d5f",
+        "illustration_id": "a4cc664f-4ae2-4051-a6ef-4ac731dd64b6",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "normal": "https://cards.scryfall.io/normal/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "large": "https://cards.scryfall.io/large/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "png": "https://cards.scryfall.io/png/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.png?1783913751",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.jpg?1783913751",
+          "thumb": "https://cards.scryfall.io/thumb/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "grid": "https://cards.scryfall.io/grid/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "display": "https://cards.scryfall.io/display/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "art": "https://cards.scryfall.io/art/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751",
+          "crop": "https://cards.scryfall.io/crop/back/0/0/004524bf-b249-4dac-9c10-44d57143feb9.webp?1783913751"
+        }
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "4a8b3030-5495-404b-938c-8c4a387a1341",
+        "component": "combo_piece",
+        "name": "Ixalan Checklist",
+        "type_line": "Card",
+        "uri": "https://api.scryfall.com/cards/4a8b3030-5495-404b-938c-8c4a387a1341"
+      },
+      {
+        "object": "related_card",
+        "id": "36651c33-d570-4d48-a1d3-bac736d3f043",
+        "component": "combo_piece",
+        "name": "Growing Rites of Itlimoc // Itlimoc, Cradle of the Sun",
+        "type_line": "Legendary Enchantment // Legendary Land",
+        "uri": "https://api.scryfall.com/cards/36651c33-d570-4d48-a1d3-bac736d3f043"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": true,
+    "variation": false,
+    "set_id": "70169a6e-89d1-4a3a-aef7-3152958d55ac",
+    "set": "lci",
+    "set_name": "The Lost Caverns of Ixalan",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/70169a6e-89d1-4a3a-aef7-3152958d55ac",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Alci&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/lci?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/004524bf-b249-4dac-9c10-44d57143feb9/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aea9c459a-6047-43aa-968f-a582be4000e8&unique=prints",
+    "collector_number": "188",
+    "digital": false,
+    "rarity": "rare",
+    "artist": "Josu Hernaiz",
+    "artist_ids": [
+      "74246024-92b4-43d0-a5af-a3f9f2a35d5f"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "legendary"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 566,
+    "penny_rank": 5395,
+    "prices": {
+      "usd": "9.36",
+      "usd_foil": "10.22",
+      "usd_etched": null,
+      "eur": "6.26",
+      "eur_foil": "6.26",
+      "tix": "0.02"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=636902&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DGrowing%2BRites%2Bof%2BItlimoc%2B%252F%252F%2BItlimoc%252C%2BCradle%2Bof%2Bthe%2BSun",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DGrowing%2BRites%2Bof%2BItlimoc%2B%252F%252F%2BItlimoc%252C%2BCradle%2Bof%2Bthe%2BSun",
+      "edhrec": "https://edhrec.com/route/?cc=Growing+Rites+of+Itlimoc"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F524220%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=740871&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/118200?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  }
+]

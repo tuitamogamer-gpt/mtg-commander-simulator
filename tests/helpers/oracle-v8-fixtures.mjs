@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { loadEngine } from './load-engine.mjs';
 import { semanticClass } from '../../scripts/import-oracle-batch.mjs';
+import {installStageProofV20} from './oracle-v20-layouts-proof.mjs';
+import {installFaceProof} from './oracle-v8-face-proof.mjs';
 
 export function fixtureEngine(rows) {
   const MTG=loadEngine();
@@ -34,6 +36,8 @@ export function context(MTG,role='human',opponents=1) {
     return null;
   }};
   const game=new MTG.Game({seed:127156,paced:false});
+  installStageProofV20(MTG,game);
+  installFaceProof(MTG,game);
   const a=game.addPlayer('A',{name:'A'},human,role==='ai');
   const others=Array.from({length:opponents},(_,i)=>game.addPlayer('Opponent '+i,{name:'Opponent '+i},human,false));
   if(role==='ai')a.controller=new MTG.AIController(a,{difficulty:'hard',style:'balanced'});

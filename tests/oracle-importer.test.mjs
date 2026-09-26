@@ -32,7 +32,7 @@ test('CLI keeps the historical default and enables v11 only with an explicit com
     let fetched=0;
     const card=oracleCard('Compiler choice fixture','compiler-choice',{type_line:'Instant',mana_cost:'{U}',oracle_text:'Draw a card.\nSplice onto instant or sorcery {1}{U}'});
     const dependencies={root:directory,fetchOracleCards:async()=>{fetched++;return {bulk:bulk(SNAPSHOT_A),cards:[card]};},console:{log(){}},now:()=>GENERATED_AT};
-    for(const version of ['0','20','11.5','NaN'])await assert.rejects(runOracleImport(['--limit=1','--compiler-version='+version],dependencies),/compiler version/);
+    for(const version of ['0','21','11.5','NaN'])await assert.rejects(runOracleImport(['--limit=1','--compiler-version='+version],dependencies),/compiler version/);
     assert.equal(fetched,0,'invalid versions fail before loading the source');
     await assert.rejects(runOracleImport(['--limit=1'],dependencies),/Only 0 cards/);
     const plan=await runOracleImport(['--limit=1','--compiler-version=11'],dependencies);
@@ -185,6 +185,78 @@ test('flat i wrapped reservations blokiraju i ime i Oracle ID uz legacy/state ko
   assert.deepEqual(result.report.cards.map(entry => entry.raw.name), ['Free Card']);
   assert.equal(result.report.catalogSummary.deferredByReason['already-in-legacy-engine'], 1);
   assert.equal(result.report.catalogSummary.deferredByReason['already-imported-batch'], 6);
+});
+
+test('v20 excludes legacy flip and Room face aliases without changing older selection', () => {
+  const flip = oracleCard('Budoka Gardener // Dokai, Weaver of Life', 'legacy-flip', {
+    layout: 'flip', mana_cost: '{1}{G}', type_line: 'Creature — Human Monk',
+    oracle_text: undefined, power: undefined, toughness: undefined,
+    card_faces: [
+      {
+        name: 'Budoka Gardener', mana_cost: '{1}{G}', type_line: 'Creature — Human Monk',
+        power: '2', toughness: '1',
+        oracle_text: '{T}: You may put a land card from your hand onto the battlefield. If you control ten or more lands, flip this creature.',
+      },
+      {
+        name: 'Dokai, Weaver of Life', mana_cost: '', type_line: 'Legendary Creature — Human Monk',
+        power: '3', toughness: '3',
+        oracle_text: '{4}{G}{G}, {T}: Create an X/X green Elemental creature token, where X is the number of lands you control.',
+      },
+    ],
+  });
+  const room = oracleCard('Spiked Corridor // Torture Pit', 'legacy-room', {
+    layout: 'split', mana_cost: '{3}{R}{3}{R}', type_line: 'Enchantment — Room',
+    oracle_text: undefined, power: undefined, toughness: undefined,
+    card_faces: [
+      {
+        name: 'Spiked Corridor', mana_cost: '{3}{R}', type_line: 'Enchantment — Room',
+        oracle_text: 'When you unlock this door, create three 1/1 red Devil creature tokens with "When this token dies, it deals 1 damage to any target."',
+      },
+      {
+        name: 'Torture Pit', mana_cost: '{3}{R}', type_line: 'Enchantment — Room',
+        oracle_text: 'If a source you control would deal noncombat damage to an opponent, it deals that much damage plus 2 instead.',
+      },
+    ],
+  });
+  const fresh = oracleCard('Unrelated New Card', 'unrelated-new-card');
+  const cards = [flip, room, fresh];
+
+  // Both full cards are otherwise eligible: exclusion must come from native identity.
+  const unclaimed = plan({ cards, compilerVersion: 20, limit: 3 });
+  assert.deepEqual(unclaimed.report.cards.map(entry => entry.raw.name), cards.map(card => card.name));
+
+  for (const faceIndex of [0, 1]) {
+    const baseNames = new Set([flip.card_faces[faceIndex].name, room.card_faces[faceIndex].name]);
+    const current = plan({ cards, baseNames, compilerVersion: 20 });
+    assert.deepEqual(current.report.cards.map(entry => entry.raw.name), [fresh.name]);
+    assert.equal(current.report.catalogSummary.deferredByReason['already-in-legacy-engine'], 2);
+    assert.deepEqual(current.nextState.importedOracleIds, [fresh.oracle_id]);
+    assert.deepEqual(current.nextState.importedNames, [fresh.name]);
+
+    for (const compilerVersion of [5, 19]) {
+      const historical = plan({ cards, baseNames, compilerVersion });
+      assert.deepEqual(historical.report.cards.map(entry => entry.raw.name), [fresh.name]);
+      assert.deepEqual(historical.report.catalogSummary.deferredByReason, compilerVersion === 5
+        ? { 'complex-layout': 2 }
+        : { 'complex-layout': 1, 'unsupported-split-faces': 1 });
+    }
+  }
+});
+
+test('v20 native face selection guard remains limited to Room split cards', () => {
+  const split = oracleCard('Legacy Split Alias // New Split Face', 'new-split-card', {
+    layout: 'split', mana_cost: '{U}{U}', type_line: 'Instant',
+    power: undefined, toughness: undefined,
+    card_faces: [
+      { name: 'Legacy Split Alias', mana_cost: '{U}', type_line: 'Instant', oracle_text: 'Draw a card.' },
+      { name: 'New Split Face', mana_cost: '{U}', type_line: 'Instant', oracle_text: 'Draw two cards.' },
+    ],
+  });
+  for (const compilerVersion of [19, 20]) {
+    const result = plan({ cards: [split], baseNames: new Set(['Legacy Split Alias']), compilerVersion });
+    assert.deepEqual(result.report.cards.map(entry => entry.raw.name), [split.name]);
+    assert.deepEqual(result.report.catalogSummary.deferredByReason, {});
+  }
 });
 
 test('semantic gate odbija djelimične, kompleksne i dinamičke Oracle tekstove', () => {

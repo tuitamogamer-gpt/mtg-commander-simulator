@@ -1,0 +1,1772 @@
+[
+  {
+    "object": "card",
+    "id": "e96901eb-5b57-43f4-a7b1-ae3b809bc36e",
+    "oracle_id": "2af01e09-f233-4675-89cd-470816471c62",
+    "multiverse_ids": [
+      673552
+    ],
+    "mtgo_id": 130425,
+    "arena_id": 92231,
+    "tcgplayer_id": 578342,
+    "cardmarket_id": 788240,
+    "name": "Painter's Studio // Defaced Gallery",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/e96901eb-5b57-43f4-a7b1-ae3b809bc36e",
+    "scryfall_uri": "https://scryfall.com/card/dsk/147/painters-studio-defaced-gallery?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:25Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.jpg?1783909465",
+      "normal": "https://cards.scryfall.io/normal/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.jpg?1783909465",
+      "large": "https://cards.scryfall.io/large/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.jpg?1783909465",
+      "png": "https://cards.scryfall.io/png/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.png?1783909465",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.jpg?1783909465",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.jpg?1783909465",
+      "thumb": "https://cards.scryfall.io/thumb/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.webp?1783909465",
+      "grid": "https://cards.scryfall.io/grid/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.webp?1783909465",
+      "display": "https://cards.scryfall.io/display/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.webp?1783909465",
+      "art": "https://cards.scryfall.io/art/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.webp?1783909465",
+      "crop": "https://cards.scryfall.io/crop/front/e/9/e96901eb-5b57-43f4-a7b1-ae3b809bc36e.webp?1783909465"
+    },
+    "mana_cost": "{2}{R} // {1}{R}",
+    "cmc": 5,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Painter's Studio",
+        "mana_cost": "{2}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, exile the top two cards of your library. You may play them until the end of your next turn.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Marc Simonetti",
+        "artist_id": "8089db55-5105-47b0-8c64-f320e08c97f0",
+        "illustration_id": "858471c8-196e-4dd0-8d50-6c3466c8d899"
+      },
+      {
+        "object": "card_face",
+        "name": "Defaced Gallery",
+        "mana_cost": "{1}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Whenever you attack, attacking creatures you control get +1/+0 until end of turn.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Marc Simonetti",
+        "artist_id": "8089db55-5105-47b0-8c64-f320e08c97f0"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/e96901eb-5b57-43f4-a7b1-ae3b809bc36e/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A2af01e09-f233-4675-89cd-470816471c62&unique=prints",
+    "collector_number": "147",
+    "digital": false,
+    "rarity": "uncommon",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Marc Simonetti",
+    "artist_ids": [
+      "8089db55-5105-47b0-8c64-f320e08c97f0"
+    ],
+    "illustration_id": "858471c8-196e-4dd0-8d50-6c3466c8d899",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 9972,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "",
+      "previewed_at": "2024-09-11"
+    },
+    "prices": {
+      "usd": "0.26",
+      "usd_foil": "0.35",
+      "usd_etched": null,
+      "eur": "0.07",
+      "eur_foil": "0.20",
+      "tix": "0.04"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673552&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DPainter%2527s%2BStudio%2B%252F%252F%2BDefaced%2BGallery",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DPainter%2527s%2BStudio%2B%252F%252F%2BDefaced%2BGallery",
+      "edhrec": "https://edhrec.com/route/?cc=Painter%27s+Studio+%2F%2F+Defaced+Gallery"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F578342%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788240&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130425?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "fe32f667-8d9f-4414-913e-256cbc2fbc45",
+    "oracle_id": "4122720b-cad9-4ebb-b458-be71411c21e3",
+    "multiverse_ids": [
+      673542
+    ],
+    "mtgo_id": 130405,
+    "arena_id": 92219,
+    "tcgplayer_id": 576499,
+    "cardmarket_id": 786876,
+    "name": "Glassworks // Shattered Yard",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/fe32f667-8d9f-4414-913e-256cbc2fbc45",
+    "scryfall_uri": "https://scryfall.com/card/dsk/137/glassworks-shattered-yard?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:29Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.jpg?1783909469",
+      "normal": "https://cards.scryfall.io/normal/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.jpg?1783909469",
+      "large": "https://cards.scryfall.io/large/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.jpg?1783909469",
+      "png": "https://cards.scryfall.io/png/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.png?1783909469",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.jpg?1783909469",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.jpg?1783909469",
+      "thumb": "https://cards.scryfall.io/thumb/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.webp?1783909469",
+      "grid": "https://cards.scryfall.io/grid/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.webp?1783909469",
+      "display": "https://cards.scryfall.io/display/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.webp?1783909469",
+      "art": "https://cards.scryfall.io/art/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.webp?1783909469",
+      "crop": "https://cards.scryfall.io/crop/front/f/e/fe32f667-8d9f-4414-913e-256cbc2fbc45.webp?1783909469"
+    },
+    "mana_cost": "{2}{R} // {4}{R}",
+    "cmc": 8,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Glassworks",
+        "mana_cost": "{2}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, this Room deals 4 damage to target creature an opponent controls.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Sergey Glushakov",
+        "artist_id": "8df4596a-1d88-4b6a-9ce8-5c8089c3946c",
+        "illustration_id": "f3d639a5-1fff-4211-83b0-c253e65701e7"
+      },
+      {
+        "object": "card_face",
+        "name": "Shattered Yard",
+        "mana_cost": "{4}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "At the beginning of your end step, this Room deals 1 damage to each opponent.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Sergey Glushakov",
+        "artist_id": "8df4596a-1d88-4b6a-9ce8-5c8089c3946c"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/fe32f667-8d9f-4414-913e-256cbc2fbc45/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A4122720b-cad9-4ebb-b458-be71411c21e3&unique=prints",
+    "collector_number": "137",
+    "digital": false,
+    "rarity": "common",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Sergey Glushakov",
+    "artist_ids": [
+      "8df4596a-1d88-4b6a-9ce8-5c8089c3946c"
+    ],
+    "illustration_id": "f3d639a5-1fff-4211-83b0-c253e65701e7",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 8774,
+    "penny_rank": 7712,
+    "preview": {
+      "source": "Charles Wickham",
+      "source_uri": "",
+      "previewed_at": "2024-09-05"
+    },
+    "prices": {
+      "usd": "0.20",
+      "usd_foil": "0.26",
+      "usd_etched": null,
+      "eur": "0.03",
+      "eur_foil": "0.07",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673542&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DGlassworks%2B%252F%252F%2BShattered%2BYard",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DGlassworks%2B%252F%252F%2BShattered%2BYard",
+      "edhrec": "https://edhrec.com/route/?cc=Glassworks+%2F%2F+Shattered+Yard"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F576499%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=786876&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130405?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "058ffe36-ed2d-4b67-83cd-162db8383a32",
+    "oracle_id": "4d01b62b-b924-4da5-8ff5-b2f29d7f19b2",
+    "multiverse_ids": [
+      673563
+    ],
+    "mtgo_id": 130447,
+    "arena_id": 92244,
+    "tcgplayer_id": 579332,
+    "cardmarket_id": 788425,
+    "name": "Ticket Booth // Tunnel of Hate",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/058ffe36-ed2d-4b67-83cd-162db8383a32",
+    "scryfall_uri": "https://scryfall.com/card/dsk/158/ticket-booth-tunnel-of-hate?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:21Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.jpg?1783909461",
+      "normal": "https://cards.scryfall.io/normal/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.jpg?1783909461",
+      "large": "https://cards.scryfall.io/large/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.jpg?1783909461",
+      "png": "https://cards.scryfall.io/png/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.png?1783909461",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.jpg?1783909461",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.jpg?1783909461",
+      "thumb": "https://cards.scryfall.io/thumb/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.webp?1783909461",
+      "grid": "https://cards.scryfall.io/grid/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.webp?1783909461",
+      "display": "https://cards.scryfall.io/display/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.webp?1783909461",
+      "art": "https://cards.scryfall.io/art/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.webp?1783909461",
+      "crop": "https://cards.scryfall.io/crop/front/0/5/058ffe36-ed2d-4b67-83cd-162db8383a32.webp?1783909461"
+    },
+    "mana_cost": "{2}{R} // {4}{R}{R}",
+    "cmc": 9,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Manifest",
+      "Manifest dread"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Ticket Booth",
+        "mana_cost": "{2}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, manifest dread.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Marco Gorlei",
+        "artist_id": "b6476cc7-1576-47e8-9f6a-68d05b45cf62",
+        "illustration_id": "b0b68b98-8abc-466b-ba81-48211f8330d9"
+      },
+      {
+        "object": "card_face",
+        "name": "Tunnel of Hate",
+        "mana_cost": "{4}{R}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Whenever you attack, target attacking creature gains double strike until end of turn.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Marco Gorlei",
+        "artist_id": "b6476cc7-1576-47e8-9f6a-68d05b45cf62"
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "058ffe36-ed2d-4b67-83cd-162db8383a32",
+        "component": "combo_piece",
+        "name": "Ticket Booth // Tunnel of Hate",
+        "type_line": "Enchantment — Room // Enchantment — Room",
+        "uri": "https://api.scryfall.com/cards/058ffe36-ed2d-4b67-83cd-162db8383a32"
+      },
+      {
+        "object": "related_card",
+        "id": "01104ab1-84e1-4c78-853d-637c6554bdf9",
+        "component": "combo_piece",
+        "name": "Manifest",
+        "type_line": "Creature",
+        "uri": "https://api.scryfall.com/cards/01104ab1-84e1-4c78-853d-637c6554bdf9"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/058ffe36-ed2d-4b67-83cd-162db8383a32/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A4d01b62b-b924-4da5-8ff5-b2f29d7f19b2&unique=prints",
+    "collector_number": "158",
+    "digital": false,
+    "rarity": "common",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Marco Gorlei",
+    "artist_ids": [
+      "b6476cc7-1576-47e8-9f6a-68d05b45cf62"
+    ],
+    "illustration_id": "b0b68b98-8abc-466b-ba81-48211f8330d9",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 10189,
+    "penny_rank": 4214,
+    "prices": {
+      "usd": "0.16",
+      "usd_foil": "0.28",
+      "usd_etched": null,
+      "eur": "0.06",
+      "eur_foil": "0.02",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673563&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DTicket%2BBooth%2B%252F%252F%2BTunnel%2Bof%2BHate",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DTicket%2BBooth%2B%252F%252F%2BTunnel%2Bof%2BHate",
+      "edhrec": "https://edhrec.com/route/?cc=Ticket+Booth+%2F%2F+Tunnel+of+Hate"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F579332%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788425&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130447?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "96b2dc14-4477-4444-a9eb-4fa4c02dfbde",
+    "oracle_id": "68bb76af-f933-430a-a66a-fe4a7d6be4e0",
+    "multiverse_ids": [
+      673439
+    ],
+    "mtgo_id": 130199,
+    "arena_id": 92094,
+    "tcgplayer_id": 578878,
+    "cardmarket_id": 788271,
+    "name": "Surgical Suite // Hospital Room",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/96b2dc14-4477-4444-a9eb-4fa4c02dfbde",
+    "scryfall_uri": "https://scryfall.com/card/dsk/34/surgical-suite-hospital-room?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:25:01Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.jpg?1783909501",
+      "normal": "https://cards.scryfall.io/normal/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.jpg?1783909501",
+      "large": "https://cards.scryfall.io/large/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.jpg?1783909501",
+      "png": "https://cards.scryfall.io/png/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.png?1783909501",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.jpg?1783909501",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.jpg?1783909501",
+      "thumb": "https://cards.scryfall.io/thumb/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.webp?1783909501",
+      "grid": "https://cards.scryfall.io/grid/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.webp?1783909501",
+      "display": "https://cards.scryfall.io/display/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.webp?1783909501",
+      "art": "https://cards.scryfall.io/art/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.webp?1783909501",
+      "crop": "https://cards.scryfall.io/crop/front/9/6/96b2dc14-4477-4444-a9eb-4fa4c02dfbde.webp?1783909501"
+    },
+    "mana_cost": "{1}{W} // {3}{W}",
+    "cmc": 6,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Surgical Suite",
+        "mana_cost": "{1}{W}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, return target creature card with mana value 3 or less from your graveyard to the battlefield.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Titus Lunter",
+        "artist_id": "b11e6b3a-f4ca-4cf1-8fd7-475696de5f5c",
+        "illustration_id": "75b27721-d9f4-4b33-821b-d0c83ad25bed"
+      },
+      {
+        "object": "card_face",
+        "name": "Hospital Room",
+        "mana_cost": "{3}{W}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Whenever you attack, put a +1/+1 counter on target attacking creature.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Titus Lunter",
+        "artist_id": "b11e6b3a-f4ca-4cf1-8fd7-475696de5f5c"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/96b2dc14-4477-4444-a9eb-4fa4c02dfbde/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A68bb76af-f933-430a-a66a-fe4a7d6be4e0&unique=prints",
+    "collector_number": "34",
+    "digital": false,
+    "rarity": "uncommon",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Titus Lunter",
+    "artist_ids": [
+      "b11e6b3a-f4ca-4cf1-8fd7-475696de5f5c"
+    ],
+    "illustration_id": "75b27721-d9f4-4b33-821b-d0c83ad25bed",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 8436,
+    "penny_rank": 10406,
+    "preview": {
+      "source": "luastardust",
+      "source_uri": "https://twitter.com/luastardust/status/1833868578442957285",
+      "previewed_at": "2024-09-11"
+    },
+    "prices": {
+      "usd": "0.26",
+      "usd_foil": "0.30",
+      "usd_etched": null,
+      "eur": "0.12",
+      "eur_foil": "0.22",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673439&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DSurgical%2BSuite%2B%252F%252F%2BHospital%2BRoom",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DSurgical%2BSuite%2B%252F%252F%2BHospital%2BRoom",
+      "edhrec": "https://edhrec.com/route/?cc=Surgical+Suite+%2F%2F+Hospital+Room"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F578878%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788271&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130199?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "b3c773f0-9e65-48de-a362-a9a943198693",
+    "oracle_id": "897eef47-3e99-4a5f-8a3e-ddb06bc95e9a",
+    "multiverse_ids": [
+      673470
+    ],
+    "mtgo_id": 130261,
+    "arena_id": 92131,
+    "tcgplayer_id": 579316,
+    "cardmarket_id": 788420,
+    "name": "Meat Locker // Drowned Diner",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/b3c773f0-9e65-48de-a362-a9a943198693",
+    "scryfall_uri": "https://scryfall.com/card/dsk/65/meat-locker-drowned-diner?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:52Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.jpg?1783909492",
+      "normal": "https://cards.scryfall.io/normal/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.jpg?1783909492",
+      "large": "https://cards.scryfall.io/large/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.jpg?1783909492",
+      "png": "https://cards.scryfall.io/png/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.png?1783909492",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.jpg?1783909492",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.jpg?1783909492",
+      "thumb": "https://cards.scryfall.io/thumb/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.webp?1783909492",
+      "grid": "https://cards.scryfall.io/grid/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.webp?1783909492",
+      "display": "https://cards.scryfall.io/display/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.webp?1783909492",
+      "art": "https://cards.scryfall.io/art/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.webp?1783909492",
+      "crop": "https://cards.scryfall.io/crop/front/b/3/b3c773f0-9e65-48de-a362-a9a943198693.webp?1783909492"
+    },
+    "mana_cost": "{2}{U} // {3}{U}{U}",
+    "cmc": 8,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Meat Locker",
+        "mana_cost": "{2}{U}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, tap up to one target creature and put two stun counters on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Sergey Glushakov",
+        "artist_id": "8df4596a-1d88-4b6a-9ce8-5c8089c3946c",
+        "illustration_id": "8d783c0a-fdc2-4648-9056-ea2ac301120e"
+      },
+      {
+        "object": "card_face",
+        "name": "Drowned Diner",
+        "mana_cost": "{3}{U}{U}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, draw three cards, then discard a card.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Sergey Glushakov",
+        "artist_id": "8df4596a-1d88-4b6a-9ce8-5c8089c3946c"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/b3c773f0-9e65-48de-a362-a9a943198693/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A897eef47-3e99-4a5f-8a3e-ddb06bc95e9a&unique=prints",
+    "collector_number": "65",
+    "digital": false,
+    "rarity": "common",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Sergey Glushakov",
+    "artist_ids": [
+      "8df4596a-1d88-4b6a-9ce8-5c8089c3946c"
+    ],
+    "illustration_id": "8d783c0a-fdc2-4648-9056-ea2ac301120e",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 8238,
+    "penny_rank": 7180,
+    "prices": {
+      "usd": "0.21",
+      "usd_foil": "0.22",
+      "usd_etched": null,
+      "eur": "0.03",
+      "eur_foil": "0.11",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673470&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DMeat%2BLocker%2B%252F%252F%2BDrowned%2BDiner",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DMeat%2BLocker%2B%252F%252F%2BDrowned%2BDiner",
+      "edhrec": "https://edhrec.com/route/?cc=Meat+Locker+%2F%2F+Drowned+Diner"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F579316%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788420&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130261?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "2cae24c1-53f1-4f3f-8795-b634c46a17c4",
+    "oracle_id": "993b7b94-ed06-422d-9c7e-52a74ce9d045",
+    "multiverse_ids": [
+      673498
+    ],
+    "mtgo_id": 130317,
+    "arena_id": 92167,
+    "tcgplayer_id": 579325,
+    "cardmarket_id": 788423,
+    "name": "Derelict Attic // Widow's Walk",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/2cae24c1-53f1-4f3f-8795-b634c46a17c4",
+    "scryfall_uri": "https://scryfall.com/card/dsk/93/derelict-attic-widows-walk?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:42Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.jpg?1783909482",
+      "normal": "https://cards.scryfall.io/normal/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.jpg?1783909482",
+      "large": "https://cards.scryfall.io/large/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.jpg?1783909482",
+      "png": "https://cards.scryfall.io/png/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.png?1783909482",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.jpg?1783909482",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.jpg?1783909482",
+      "thumb": "https://cards.scryfall.io/thumb/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.webp?1783909482",
+      "grid": "https://cards.scryfall.io/grid/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.webp?1783909482",
+      "display": "https://cards.scryfall.io/display/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.webp?1783909482",
+      "art": "https://cards.scryfall.io/art/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.webp?1783909482",
+      "crop": "https://cards.scryfall.io/crop/front/2/c/2cae24c1-53f1-4f3f-8795-b634c46a17c4.webp?1783909482"
+    },
+    "mana_cost": "{2}{B} // {3}{B}",
+    "cmc": 7,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Derelict Attic",
+        "mana_cost": "{2}{B}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, you draw two cards and you lose 2 life.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Marc Simonetti",
+        "artist_id": "8089db55-5105-47b0-8c64-f320e08c97f0",
+        "illustration_id": "01cdaf9c-3aad-4b44-8f6b-105b4ab6bce0"
+      },
+      {
+        "object": "card_face",
+        "name": "Widow's Walk",
+        "mana_cost": "{3}{B}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Whenever a creature you control attacks alone, it gets +1/+0 and gains deathtouch until end of turn.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Marc Simonetti",
+        "artist_id": "8089db55-5105-47b0-8c64-f320e08c97f0"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/2cae24c1-53f1-4f3f-8795-b634c46a17c4/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A993b7b94-ed06-422d-9c7e-52a74ce9d045&unique=prints",
+    "collector_number": "93",
+    "digital": false,
+    "rarity": "common",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Marc Simonetti",
+    "artist_ids": [
+      "8089db55-5105-47b0-8c64-f320e08c97f0"
+    ],
+    "illustration_id": "01cdaf9c-3aad-4b44-8f6b-105b4ab6bce0",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 7965,
+    "penny_rank": 10886,
+    "prices": {
+      "usd": "0.13",
+      "usd_foil": "0.28",
+      "usd_etched": null,
+      "eur": "0.04",
+      "eur_foil": "0.10",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673498&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DDerelict%2BAttic%2B%252F%252F%2BWidow%2527s%2BWalk",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DDerelict%2BAttic%2B%252F%252F%2BWidow%2527s%2BWalk",
+      "edhrec": "https://edhrec.com/route/?cc=Derelict+Attic+%2F%2F+Widow%27s+Walk"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F579325%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788423&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130317?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "48237c98-5067-47a8-af74-7b9bce57c6a4",
+    "oracle_id": "a39d541e-86c1-4595-a2e9-f107def5bbc6",
+    "multiverse_ids": [
+      673505
+    ],
+    "mtgo_id": 130331,
+    "arena_id": 92176,
+    "tcgplayer_id": 576497,
+    "cardmarket_id": 786877,
+    "name": "Funeral Room // Awakening Hall",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/48237c98-5067-47a8-af74-7b9bce57c6a4",
+    "scryfall_uri": "https://scryfall.com/card/dsk/100/funeral-room-awakening-hall?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:40Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.jpg?1783909480",
+      "normal": "https://cards.scryfall.io/normal/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.jpg?1783909480",
+      "large": "https://cards.scryfall.io/large/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.jpg?1783909480",
+      "png": "https://cards.scryfall.io/png/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.png?1783909480",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.jpg?1783909480",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.jpg?1783909480",
+      "thumb": "https://cards.scryfall.io/thumb/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.webp?1783909480",
+      "grid": "https://cards.scryfall.io/grid/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.webp?1783909480",
+      "display": "https://cards.scryfall.io/display/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.webp?1783909480",
+      "art": "https://cards.scryfall.io/art/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.webp?1783909480",
+      "crop": "https://cards.scryfall.io/crop/front/4/8/48237c98-5067-47a8-af74-7b9bce57c6a4.webp?1783909480"
+    },
+    "mana_cost": "{2}{B} // {6}{B}{B}",
+    "cmc": 11,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Funeral Room",
+        "mana_cost": "{2}{B}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Whenever a creature you control dies, each opponent loses 1 life and you gain 1 life.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Miklós Ligeti",
+        "artist_id": "397e374b-b428-4bab-b198-372f7f4c2f40",
+        "illustration_id": "54af30ac-b3cf-40c9-a24b-ca1836ea1722"
+      },
+      {
+        "object": "card_face",
+        "name": "Awakening Hall",
+        "mana_cost": "{6}{B}{B}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, return all creature cards from your graveyard to the battlefield.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Miklós Ligeti",
+        "artist_id": "397e374b-b428-4bab-b198-372f7f4c2f40"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/48237c98-5067-47a8-af74-7b9bce57c6a4/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aa39d541e-86c1-4595-a2e9-f107def5bbc6&unique=prints",
+    "collector_number": "100",
+    "digital": false,
+    "rarity": "mythic",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Miklós Ligeti",
+    "artist_ids": [
+      "397e374b-b428-4bab-b198-372f7f4c2f40"
+    ],
+    "illustration_id": "54af30ac-b3cf-40c9-a24b-ca1836ea1722",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 2077,
+    "penny_rank": 4146,
+    "preview": {
+      "source": "Gameshub",
+      "source_uri": "https://www.gameshub.com/news/features/mtg-duskmourn-funeral-room-awakening-hall-2644900/",
+      "previewed_at": "2024-09-04"
+    },
+    "prices": {
+      "usd": "6.51",
+      "usd_foil": "6.07",
+      "usd_etched": null,
+      "eur": "4.23",
+      "eur_foil": "5.18",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673505&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DFuneral%2BRoom%2B%252F%252F%2BAwakening%2BHall",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DFuneral%2BRoom%2B%252F%252F%2BAwakening%2BHall",
+      "edhrec": "https://edhrec.com/route/?cc=Funeral+Room+%2F%2F+Awakening+Hall"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F576497%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=786877&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130331?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef",
+    "oracle_id": "b36286fa-4007-4276-af9c-d8f0da9e94d1",
+    "multiverse_ids": [
+      673632
+    ],
+    "mtgo_id": 130585,
+    "arena_id": 92321,
+    "tcgplayer_id": 578071,
+    "cardmarket_id": 788187,
+    "name": "Restricted Office // Lecture Hall",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef",
+    "scryfall_uri": "https://scryfall.com/card/dsk/227/restricted-office-lecture-hall?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:23:58Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.jpg?1783909438",
+      "normal": "https://cards.scryfall.io/normal/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.jpg?1783909438",
+      "large": "https://cards.scryfall.io/large/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.jpg?1783909438",
+      "png": "https://cards.scryfall.io/png/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.png?1783909438",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.jpg?1783909438",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.jpg?1783909438",
+      "thumb": "https://cards.scryfall.io/thumb/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.webp?1783909438",
+      "grid": "https://cards.scryfall.io/grid/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.webp?1783909438",
+      "display": "https://cards.scryfall.io/display/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.webp?1783909438",
+      "art": "https://cards.scryfall.io/art/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.webp?1783909438",
+      "crop": "https://cards.scryfall.io/crop/front/a/c/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef.webp?1783909438"
+    },
+    "mana_cost": "{2}{W}{W} // {5}{U}{U}",
+    "cmc": 11,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "U",
+      "W"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Restricted Office",
+        "mana_cost": "{2}{W}{W}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, destroy all creatures with power 3 or greater.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Antonio José Manzanedo",
+        "artist_id": "74986d28-0001-4a78-827c-e490b325d0e3",
+        "illustration_id": "abd1616b-db41-45f2-9594-18149516f2b7"
+      },
+      {
+        "object": "card_face",
+        "name": "Lecture Hall",
+        "mana_cost": "{5}{U}{U}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Other permanents you control have hexproof.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Antonio José Manzanedo",
+        "artist_id": "74986d28-0001-4a78-827c-e490b325d0e3"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/ac794b2f-b5ea-449d-bb0b-4f0e6cc145ef/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Ab36286fa-4007-4276-af9c-d8f0da9e94d1&unique=prints",
+    "collector_number": "227",
+    "digital": false,
+    "rarity": "rare",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Antonio José Manzanedo",
+    "artist_ids": [
+      "74986d28-0001-4a78-827c-e490b325d0e3"
+    ],
+    "illustration_id": "abd1616b-db41-45f2-9594-18149516f2b7",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 5234,
+    "penny_rank": 9445,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.facebook.com/MagicTheGathering.jp/posts/pfbid022p9vx7kQfBu8CndTRTkfqKVtFvN9Vus1S3njG4vBUYtN39G3DEd6AoF7AnD5R7Fzl",
+      "previewed_at": "2024-09-09"
+    },
+    "prices": {
+      "usd": "0.30",
+      "usd_foil": "0.38",
+      "usd_etched": null,
+      "eur": "0.21",
+      "eur_foil": "0.30",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673632&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DRestricted%2BOffice%2B%252F%252F%2BLecture%2BHall",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DRestricted%2BOffice%2B%252F%252F%2BLecture%2BHall",
+      "edhrec": "https://edhrec.com/route/?cc=Restricted+Office+%2F%2F+Lecture+Hall"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F578071%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788187&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130585?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "94352ffb-d716-484d-b018-4e1c033ef2f3",
+    "oracle_id": "d5f31713-d380-42ba-8052-4b8d9beb3958",
+    "multiverse_ids": [
+      673635
+    ],
+    "mtgo_id": 130591,
+    "arena_id": 92326,
+    "tcgplayer_id": 579339,
+    "cardmarket_id": 789421,
+    "name": "Roaring Furnace // Steaming Sauna",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/94352ffb-d716-484d-b018-4e1c033ef2f3",
+    "scryfall_uri": "https://scryfall.com/card/dsk/230/roaring-furnace-steaming-sauna?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:23:58Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.jpg?1783909438",
+      "normal": "https://cards.scryfall.io/normal/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.jpg?1783909438",
+      "large": "https://cards.scryfall.io/large/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.jpg?1783909438",
+      "png": "https://cards.scryfall.io/png/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.png?1783909438",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.jpg?1783909438",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.jpg?1783909438",
+      "thumb": "https://cards.scryfall.io/thumb/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.webp?1783909438",
+      "grid": "https://cards.scryfall.io/grid/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.webp?1783909438",
+      "display": "https://cards.scryfall.io/display/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.webp?1783909438",
+      "art": "https://cards.scryfall.io/art/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.webp?1783909438",
+      "crop": "https://cards.scryfall.io/crop/front/9/4/94352ffb-d716-484d-b018-4e1c033ef2f3.webp?1783909438"
+    },
+    "mana_cost": "{1}{R} // {3}{U}{U}",
+    "cmc": 7,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "R",
+      "U"
+    ],
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Roaring Furnace",
+        "mana_cost": "{1}{R}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, this Room deals damage equal to the number of cards in your hand to target creature an opponent controls.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Miklós Ligeti",
+        "artist_id": "397e374b-b428-4bab-b198-372f7f4c2f40",
+        "illustration_id": "5a316c06-5116-4a15-a0bb-39f1d0c81129"
+      },
+      {
+        "object": "card_face",
+        "name": "Steaming Sauna",
+        "mana_cost": "{3}{U}{U}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "You have no maximum hand size.\nAt the beginning of your end step, draw a card.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Miklós Ligeti",
+        "artist_id": "397e374b-b428-4bab-b198-372f7f4c2f40"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/94352ffb-d716-484d-b018-4e1c033ef2f3/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Ad5f31713-d380-42ba-8052-4b8d9beb3958&unique=prints",
+    "collector_number": "230",
+    "digital": false,
+    "rarity": "rare",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Miklós Ligeti",
+    "artist_ids": [
+      "397e374b-b428-4bab-b198-372f7f4c2f40"
+    ],
+    "illustration_id": "5a316c06-5116-4a15-a0bb-39f1d0c81129",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 6623,
+    "penny_rank": 263,
+    "prices": {
+      "usd": "0.34",
+      "usd_foil": "0.44",
+      "usd_etched": null,
+      "eur": "0.23",
+      "eur_foil": null,
+      "tix": "0.02"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673635&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DRoaring%2BFurnace%2B%252F%252F%2BSteaming%2BSauna",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DRoaring%2BFurnace%2B%252F%252F%2BSteaming%2BSauna",
+      "edhrec": "https://edhrec.com/route/?cc=Roaring+Furnace+%2F%2F+Steaming+Sauna"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F579339%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=789421&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130591?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "ef8a8ba7-f955-425d-9a16-816fc48a2a83",
+    "oracle_id": "f7574379-d10e-4bbf-b0b1-13feee753d8b",
+    "multiverse_ids": [
+      673420
+    ],
+    "mtgo_id": 130161,
+    "arena_id": 92073,
+    "tcgplayer_id": 577648,
+    "cardmarket_id": 788258,
+    "name": "Grand Entryway // Elegant Rotunda",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/ef8a8ba7-f955-425d-9a16-816fc48a2a83",
+    "scryfall_uri": "https://scryfall.com/card/dsk/15/grand-entryway-elegant-rotunda?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:25:09Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.jpg?1783909509",
+      "normal": "https://cards.scryfall.io/normal/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.jpg?1783909509",
+      "large": "https://cards.scryfall.io/large/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.jpg?1783909509",
+      "png": "https://cards.scryfall.io/png/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.png?1783909509",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.jpg?1783909509",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.jpg?1783909509",
+      "thumb": "https://cards.scryfall.io/thumb/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.webp?1783909509",
+      "grid": "https://cards.scryfall.io/grid/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.webp?1783909509",
+      "display": "https://cards.scryfall.io/display/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.webp?1783909509",
+      "art": "https://cards.scryfall.io/art/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.webp?1783909509",
+      "crop": "https://cards.scryfall.io/crop/front/e/f/ef8a8ba7-f955-425d-9a16-816fc48a2a83.webp?1783909509"
+    },
+    "mana_cost": "{1}{W} // {2}{W}",
+    "cmc": 5,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Grand Entryway",
+        "mana_cost": "{1}{W}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, create a 1/1 white Glimmer enchantment creature token.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Carlos Palma Cruchaga",
+        "artist_id": "f0c43e1b-1853-4abc-8a1b-d7dda6c1d592",
+        "illustration_id": "069d8fc9-3104-44df-baf1-b91d5abbfd58"
+      },
+      {
+        "object": "card_face",
+        "name": "Elegant Rotunda",
+        "mana_cost": "{2}{W}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, put a +1/+1 counter on each of up to two target creatures.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Carlos Palma Cruchaga",
+        "artist_id": "f0c43e1b-1853-4abc-8a1b-d7dda6c1d592"
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "475c7449-2c95-4873-94de-68a5e06cdfb8",
+        "component": "token",
+        "name": "Glimmer",
+        "type_line": "Token Enchantment Creature — Glimmer",
+        "uri": "https://api.scryfall.com/cards/475c7449-2c95-4873-94de-68a5e06cdfb8"
+      },
+      {
+        "object": "related_card",
+        "id": "6ef39d0e-4caa-4808-949f-1d75e160dbc3",
+        "component": "combo_piece",
+        "name": "Grand Entryway // Elegant Rotunda",
+        "type_line": "Enchantment — Room // Enchantment — Room",
+        "uri": "https://api.scryfall.com/cards/6ef39d0e-4caa-4808-949f-1d75e160dbc3"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/ef8a8ba7-f955-425d-9a16-816fc48a2a83/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Af7574379-d10e-4bbf-b0b1-13feee753d8b&unique=prints",
+    "collector_number": "15",
+    "digital": false,
+    "rarity": "common",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Carlos Palma Cruchaga",
+    "artist_ids": [
+      "f0c43e1b-1853-4abc-8a1b-d7dda6c1d592"
+    ],
+    "illustration_id": "069d8fc9-3104-44df-baf1-b91d5abbfd58",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 10111,
+    "penny_rank": 8148,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "",
+      "previewed_at": "2024-09-09"
+    },
+    "prices": {
+      "usd": "0.12",
+      "usd_foil": "0.21",
+      "usd_etched": null,
+      "eur": "0.06",
+      "eur_foil": "0.06",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673420&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DGrand%2BEntryway%2B%252F%252F%2BElegant%2BRotunda",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DGrand%2BEntryway%2B%252F%252F%2BElegant%2BRotunda",
+      "edhrec": "https://edhrec.com/route/?cc=Grand+Entryway+%2F%2F+Elegant+Rotunda"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F577648%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788258&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130161?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "d94fb4da-0d3f-4d84-966b-914b84b23289",
+    "oracle_id": "f97de425-c7ab-4688-8606-159370d179ee",
+    "multiverse_ids": [
+      673496
+    ],
+    "mtgo_id": 130313,
+    "arena_id": 92163,
+    "tcgplayer_id": 579320,
+    "cardmarket_id": 788422,
+    "name": "Defiled Crypt // Cadaver Lab",
+    "lang": "en",
+    "released_at": "2024-09-27",
+    "uri": "https://api.scryfall.com/cards/d94fb4da-0d3f-4d84-966b-914b84b23289",
+    "scryfall_uri": "https://scryfall.com/card/dsk/91/defiled-crypt-cadaver-lab?utm_source=api",
+    "layout": "split",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T02:24:44Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.jpg?1783909484",
+      "normal": "https://cards.scryfall.io/normal/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.jpg?1783909484",
+      "large": "https://cards.scryfall.io/large/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.jpg?1783909484",
+      "png": "https://cards.scryfall.io/png/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.png?1783909484",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.jpg?1783909484",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.jpg?1783909484",
+      "thumb": "https://cards.scryfall.io/thumb/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.webp?1783909484",
+      "grid": "https://cards.scryfall.io/grid/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.webp?1783909484",
+      "display": "https://cards.scryfall.io/display/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.webp?1783909484",
+      "art": "https://cards.scryfall.io/art/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.webp?1783909484",
+      "crop": "https://cards.scryfall.io/crop/front/d/9/d94fb4da-0d3f-4d84-966b-914b84b23289.webp?1783909484"
+    },
+    "mana_cost": "{3}{B} // {B}",
+    "cmc": 5,
+    "type_line": "Enchantment — Room // Enchantment — Room",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Defiled Crypt",
+        "mana_cost": "{3}{B}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "Whenever one or more cards leave your graveyard, create a 2/2 black Horror enchantment creature token. This ability triggers only once each turn.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Martin de Diego Sádaba",
+        "artist_id": "bc760b5e-6f98-4a17-9b12-5f4eccd12bb2",
+        "illustration_id": "d28a4287-7e7b-4dd3-b09b-10dde4e33d0a"
+      },
+      {
+        "object": "card_face",
+        "name": "Cadaver Lab",
+        "mana_cost": "{B}",
+        "type_line": "Enchantment — Room",
+        "oracle_text": "When you unlock this door, return target creature card from your graveyard to your hand.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+        "artist": "Martin de Diego Sádaba",
+        "artist_id": "bc760b5e-6f98-4a17-9b12-5f4eccd12bb2"
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "36bb6907-e7d7-4f99-966a-ab09ca130fb8",
+        "component": "token",
+        "name": "Horror",
+        "type_line": "Token Enchantment Creature — Horror",
+        "uri": "https://api.scryfall.com/cards/36bb6907-e7d7-4f99-966a-ab09ca130fb8"
+      },
+      {
+        "object": "related_card",
+        "id": "d94fb4da-0d3f-4d84-966b-914b84b23289",
+        "component": "combo_piece",
+        "name": "Defiled Crypt // Cadaver Lab",
+        "type_line": "Enchantment — Room // Enchantment — Room",
+        "uri": "https://api.scryfall.com/cards/d94fb4da-0d3f-4d84-966b-914b84b23289"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set": "dsk",
+    "set_name": "Duskmourn: House of Horror",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/a111d8a9-b647-48ec-afab-2b78f92173f5",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Adsk&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/dsk?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/d94fb4da-0d3f-4d84-966b-914b84b23289/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Af97de425-c7ab-4688-8606-159370d179ee&unique=prints",
+    "collector_number": "91",
+    "digital": false,
+    "rarity": "uncommon",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Martin de Diego Sádaba",
+    "artist_ids": [
+      "bc760b5e-6f98-4a17-9b12-5f4eccd12bb2"
+    ],
+    "illustration_id": "d28a4287-7e7b-4dd3-b09b-10dde4e33d0a",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 5633,
+    "penny_rank": 2089,
+    "preview": {
+      "source": "SilverScale Games",
+      "source_uri": "https://www.instagram.com/reel/C_0WMLAyH6P/",
+      "previewed_at": "2024-09-12"
+    },
+    "prices": {
+      "usd": "0.27",
+      "usd_foil": "0.34",
+      "usd_etched": null,
+      "eur": "0.15",
+      "eur_foil": "0.14",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=673496&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DDefiled%2BCrypt%2B%252F%252F%2BCadaver%2BLab",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DDefiled%2BCrypt%2B%252F%252F%2BCadaver%2BLab",
+      "edhrec": "https://edhrec.com/route/?cc=Defiled+Crypt+%2F%2F+Cadaver+Lab"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F579320%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=788422&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/130313?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  }
+]

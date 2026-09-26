@@ -1,0 +1,2655 @@
+[
+  {
+    "object": "card",
+    "id": "e8a51d2a-1582-4bad-995c-e7fe9f810149",
+    "oracle_id": "02c60b8b-f665-4279-a00f-ae03991df4a6",
+    "multiverse_ids": [
+      548477,
+      548478
+    ],
+    "mtgo_id": 97278,
+    "arena_id": 79604,
+    "tcgplayer_id": 262000,
+    "cardmarket_id": 607004,
+    "name": "Azusa's Many Journeys // Likeness of the Seeker",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/e8a51d2a-1582-4bad-995c-e7fe9f810149",
+    "scryfall_uri": "https://scryfall.com/card/neo/172/azusas-many-journeys-likeness-of-the-seeker?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:24:21Z",
+    "cmc": 2,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Human Monk",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Transform"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Azusa's Many Journeys",
+        "mana_cost": "{1}{G}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI — You may play an additional land this turn.\nII — You gain 3 life.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "G"
+        ],
+        "artist": "Lindsey Look",
+        "artist_id": "95bc132d-37aa-4063-8ed8-04d489e826cd",
+        "illustration_id": "fbf9a675-17b6-4b3e-bef1-68969bff8b18",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "normal": "https://cards.scryfall.io/normal/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "large": "https://cards.scryfall.io/large/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "png": "https://cards.scryfall.io/png/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.png?1783923861",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "thumb": "https://cards.scryfall.io/thumb/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "grid": "https://cards.scryfall.io/grid/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "display": "https://cards.scryfall.io/display/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "art": "https://cards.scryfall.io/art/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "crop": "https://cards.scryfall.io/crop/front/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Likeness of the Seeker",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Human Monk",
+        "oracle_text": "Whenever this creature becomes blocked, untap up to three lands you control.",
+        "colors": [
+          "G"
+        ],
+        "color_indicator": [
+          "G"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "flavor_text": "\"I ask for nothing more than a new journey and a fresh path to greet my feet when I wake each morning.\"\n—Azusa",
+        "artist": "Lindsey Look",
+        "artist_id": "95bc132d-37aa-4063-8ed8-04d489e826cd",
+        "illustration_id": "12269015-7eed-4c5f-a10e-fbcaeb4b74b9",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "normal": "https://cards.scryfall.io/normal/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "large": "https://cards.scryfall.io/large/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "png": "https://cards.scryfall.io/png/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.png?1783923861",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.jpg?1783923861",
+          "thumb": "https://cards.scryfall.io/thumb/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "grid": "https://cards.scryfall.io/grid/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "display": "https://cards.scryfall.io/display/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "art": "https://cards.scryfall.io/art/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861",
+          "crop": "https://cards.scryfall.io/crop/back/e/8/e8a51d2a-1582-4bad-995c-e7fe9f810149.webp?1783923861"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/e8a51d2a-1582-4bad-995c-e7fe9f810149/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A02c60b8b-f665-4279-a00f-ae03991df4a6&unique=prints",
+    "collector_number": "172",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Lindsey Look",
+    "artist_ids": [
+      "95bc132d-37aa-4063-8ed8-04d489e826cd"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 4682,
+    "penny_rank": 3761,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.twitch.tv/videos/1277767538",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.29",
+      "usd_foil": "0.38",
+      "usd_etched": null,
+      "eur": "0.14",
+      "eur_foil": "0.15",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548477&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DAzusa%2527s%2BMany%2BJourneys%2B%252F%252F%2BLikeness%2Bof%2Bthe%2BSeeker",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DAzusa%2527s%2BMany%2BJourneys%2B%252F%252F%2BLikeness%2Bof%2Bthe%2BSeeker",
+      "edhrec": "https://edhrec.com/route/?cc=Azusa%27s+Many+Journeys"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262000%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607004&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97278?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "512bc867-3a86-4da2-93f0-dd76d6a6f30d",
+    "oracle_id": "096fbb51-be73-4edc-a051-770a12c09005",
+    "multiverse_ids": [
+      548519,
+      548520
+    ],
+    "mtgo_id": 97362,
+    "arena_id": 79646,
+    "tcgplayer_id": 262663,
+    "cardmarket_id": 608274,
+    "name": "Tales of Master Seshiro // Seshiro's Living Legacy",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/512bc867-3a86-4da2-93f0-dd76d6a6f30d",
+    "scryfall_uri": "https://scryfall.com/card/neo/210/tales-of-master-seshiro-seshiros-living-legacy?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:24:05Z",
+    "cmc": 5,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Snake Warrior",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Vigilance",
+      "Transform",
+      "Haste"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Tales of Master Seshiro",
+        "mana_cost": "{4}{G}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Put a +1/+1 counter on target creature or Vehicle you control. It gains vigilance until end of turn.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "G"
+        ],
+        "artist": "Olena Richards",
+        "artist_id": "fad4282c-49d1-4b5b-be1d-713369fc8bc8",
+        "illustration_id": "1af9ef4c-d17b-40b1-8157-2dfaac4e9315",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "normal": "https://cards.scryfall.io/normal/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "large": "https://cards.scryfall.io/large/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "png": "https://cards.scryfall.io/png/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.png?1783923845",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "thumb": "https://cards.scryfall.io/thumb/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "grid": "https://cards.scryfall.io/grid/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "display": "https://cards.scryfall.io/display/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "art": "https://cards.scryfall.io/art/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "crop": "https://cards.scryfall.io/crop/front/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Seshiro's Living Legacy",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Snake Warrior",
+        "oracle_text": "Vigilance, haste",
+        "colors": [
+          "G"
+        ],
+        "color_indicator": [
+          "G"
+        ],
+        "power": "5",
+        "toughness": "5",
+        "flavor_text": "\"In times of strife, the foolish make a fist while the wise make a friend.\"\n—*First Address of Seshiro the Anointed as Broodmaster of the Orochi Colonies*",
+        "artist": "Olena Richards",
+        "artist_id": "fad4282c-49d1-4b5b-be1d-713369fc8bc8",
+        "illustration_id": "ecaa80da-4e19-4f41-9b5c-6a58545e64f4",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "normal": "https://cards.scryfall.io/normal/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "large": "https://cards.scryfall.io/large/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "png": "https://cards.scryfall.io/png/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.png?1783923845",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.jpg?1783923845",
+          "thumb": "https://cards.scryfall.io/thumb/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "grid": "https://cards.scryfall.io/grid/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "display": "https://cards.scryfall.io/display/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "art": "https://cards.scryfall.io/art/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845",
+          "crop": "https://cards.scryfall.io/crop/back/5/1/512bc867-3a86-4da2-93f0-dd76d6a6f30d.webp?1783923845"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/512bc867-3a86-4da2-93f0-dd76d6a6f30d/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A096fbb51-be73-4edc-a051-770a12c09005&unique=prints",
+    "collector_number": "210",
+    "digital": false,
+    "rarity": "common",
+    "artist": "Olena Richards",
+    "artist_ids": [
+      "fad4282c-49d1-4b5b-be1d-713369fc8bc8"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 16210,
+    "penny_rank": 17876,
+    "preview": {
+      "source": "Bigweb",
+      "source_uri": "https://mtg.bigweb.co.jp/article/preview/NEO",
+      "previewed_at": "2022-02-02"
+    },
+    "prices": {
+      "usd": "0.16",
+      "usd_foil": "0.27",
+      "usd_etched": null,
+      "eur": "0.04",
+      "eur_foil": "0.08",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548519&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DTales%2Bof%2BMaster%2BSeshiro%2B%252F%252F%2BSeshiro%2527s%2BLiving%2BLegacy",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DTales%2Bof%2BMaster%2BSeshiro%2B%252F%252F%2BSeshiro%2527s%2BLiving%2BLegacy",
+      "edhrec": "https://edhrec.com/route/?cc=Tales+of+Master+Seshiro"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262663%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=608274&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97362?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "5e9a53d3-7f2f-4a9c-9516-0713da740478",
+    "oracle_id": "201b8936-18f4-4881-a1d4-c308cf3832bf",
+    "multiverse_ids": [],
+    "resource_id": "755E8ABC225F2B7697C8AAAB138202C754CCA3E29A68BD802AFF02554CA4CC3A",
+    "mtgo_id": 144602,
+    "arena_id": 97335,
+    "tcgplayer_id": 660506,
+    "cardmarket_id": 855703,
+    "name": "The Legend of Kuruk // Avatar Kuruk",
+    "lang": "en",
+    "released_at": "2025-11-21",
+    "uri": "https://api.scryfall.com/cards/5e9a53d3-7f2f-4a9c-9516-0713da740478",
+    "scryfall_uri": "https://scryfall.com/card/tla/61/the-legend-of-kuruk-avatar-kuruk?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:09:50Z",
+    "cmc": 4,
+    "type_line": "Enchantment — Saga // Legendary Creature — Avatar",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": [
+      "Transform",
+      "Exhaust",
+      "Waterbend",
+      "Scry"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "The Legend of Kuruk",
+        "mana_cost": "{2}{U}{U}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Scry 2, then draw a card.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "U"
+        ],
+        "artist": "Takayama Toshiaki",
+        "artist_id": "a4879110-33bc-4261-8e00-30b897df509b",
+        "illustration_id": "ba5872b9-708e-4501-a2dd-92d6915c7fbf",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "normal": "https://cards.scryfall.io/normal/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "large": "https://cards.scryfall.io/large/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "png": "https://cards.scryfall.io/png/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.png?1783904990",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "thumb": "https://cards.scryfall.io/thumb/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "grid": "https://cards.scryfall.io/grid/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "display": "https://cards.scryfall.io/display/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "art": "https://cards.scryfall.io/art/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "crop": "https://cards.scryfall.io/crop/front/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Avatar Kuruk",
+        "mana_cost": "",
+        "type_line": "Legendary Creature — Avatar",
+        "oracle_text": "Whenever you cast a spell, create a 1/1 colorless Spirit creature token with \"This token can't block or be blocked by non-Spirit creatures.\"\nExhaust — Waterbend {20}: Take an extra turn after this one. (While paying a waterbend cost, you can tap your artifacts and creatures to help. Each one pays for {1}. Activate each exhaust ability only once.)",
+        "colors": [],
+        "power": "4",
+        "toughness": "3",
+        "artist": "Takayama Toshiaki",
+        "artist_id": "a4879110-33bc-4261-8e00-30b897df509b",
+        "illustration_id": "f05aaa94-f4c4-4e35-9ffc-a5ed6dadadb8",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "normal": "https://cards.scryfall.io/normal/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "large": "https://cards.scryfall.io/large/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "png": "https://cards.scryfall.io/png/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.png?1783904990",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.jpg?1783904990",
+          "thumb": "https://cards.scryfall.io/thumb/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "grid": "https://cards.scryfall.io/grid/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "display": "https://cards.scryfall.io/display/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "art": "https://cards.scryfall.io/art/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990",
+          "crop": "https://cards.scryfall.io/crop/back/5/e/5e9a53d3-7f2f-4a9c-9516-0713da740478.webp?1783904990"
+        }
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "f487686d-2b8a-440f-b2f3-8a07dd95ad93",
+        "component": "combo_piece",
+        "name": "The Legend of Kuruk // Avatar Kuruk",
+        "type_line": "Enchantment — Saga // Legendary Creature — Avatar",
+        "uri": "https://api.scryfall.com/cards/f487686d-2b8a-440f-b2f3-8a07dd95ad93"
+      },
+      {
+        "object": "related_card",
+        "id": "f59eba51-458a-40e0-b754-999f91d5d839",
+        "component": "token",
+        "name": "Spirit",
+        "type_line": "Token Creature — Spirit",
+        "uri": "https://api.scryfall.com/cards/f59eba51-458a-40e0-b754-999f91d5d839"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "118f7e64-5caa-4cb7-99a8-184f4d3a7422",
+    "set": "tla",
+    "set_name": "Avatar: The Last Airbender",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/118f7e64-5caa-4cb7-99a8-184f4d3a7422",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Atla&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/tla?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/5e9a53d3-7f2f-4a9c-9516-0713da740478/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A201b8936-18f4-4881-a1d4-c308cf3832bf&unique=prints",
+    "collector_number": "61",
+    "digital": false,
+    "rarity": "mythic",
+    "artist": "Takayama Toshiaki",
+    "artist_ids": [
+      "a4879110-33bc-4261-8e00-30b897df509b"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "enchantment",
+      "legendary"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond"
+    ],
+    "edhrec_rank": 6442,
+    "prices": {
+      "usd": "2.38",
+      "usd_foil": "3.17",
+      "usd_etched": null,
+      "eur": "3.49",
+      "eur_foil": "3.71",
+      "tix": "1.00"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DThe%2BLegend%2Bof%2BKuruk%2B%252F%252F%2BAvatar%2BKuruk",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DThe%2BLegend%2Bof%2BKuruk%2B%252F%252F%2BAvatar%2BKuruk",
+      "edhrec": "https://edhrec.com/route/?cc=The+Legend+of+Kuruk"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F660506%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=855703&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/144602?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "8ad44884-ae0d-40ae-87a9-bad043d4e9ad",
+    "oracle_id": "2ee5f5ad-2f16-40d9-831a-2aefece31b36",
+    "multiverse_ids": [
+      548294,
+      548295
+    ],
+    "mtgo_id": 96912,
+    "arena_id": 79421,
+    "tcgplayer_id": 262183,
+    "cardmarket_id": 607052,
+    "name": "Befriending the Moths // Imperial Moth",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/8ad44884-ae0d-40ae-87a9-bad043d4e9ad",
+    "scryfall_uri": "https://scryfall.com/card/neo/4/befriending-the-moths-imperial-moth?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:25:33Z",
+    "cmc": 4,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Insect",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Flying",
+      "Transform"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Befriending the Moths",
+        "mana_cost": "{3}{W}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Target creature you control gets +1/+1 and gains flying until end of turn.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "W"
+        ],
+        "artist": "Matt Stewart",
+        "artist_id": "20871267-2d8a-41d5-b03a-be3d557c5734",
+        "illustration_id": "a35ceece-124c-41aa-b9f1-ef95f7d20228",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "normal": "https://cards.scryfall.io/normal/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "large": "https://cards.scryfall.io/large/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "png": "https://cards.scryfall.io/png/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.png?1783923933",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "thumb": "https://cards.scryfall.io/thumb/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "grid": "https://cards.scryfall.io/grid/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "display": "https://cards.scryfall.io/display/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "art": "https://cards.scryfall.io/art/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "crop": "https://cards.scryfall.io/crop/front/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Imperial Moth",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Insect",
+        "oracle_text": "Flying",
+        "colors": [
+          "W"
+        ],
+        "color_indicator": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "4",
+        "flavor_text": "\"The moths of Eiganjo were once no different from any other great beast of Kamigawa's wilds. It took years of patience and dedication to convince them to bear riders.\"\n—*History of the Empire*",
+        "artist": "Matt Stewart",
+        "artist_id": "20871267-2d8a-41d5-b03a-be3d557c5734",
+        "illustration_id": "c29c6dd3-47b3-4749-b172-cb68c21d3ccd",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "normal": "https://cards.scryfall.io/normal/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "large": "https://cards.scryfall.io/large/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "png": "https://cards.scryfall.io/png/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.png?1783923933",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.jpg?1783923933",
+          "thumb": "https://cards.scryfall.io/thumb/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "grid": "https://cards.scryfall.io/grid/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "display": "https://cards.scryfall.io/display/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "art": "https://cards.scryfall.io/art/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933",
+          "crop": "https://cards.scryfall.io/crop/back/8/a/8ad44884-ae0d-40ae-87a9-bad043d4e9ad.webp?1783923933"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/8ad44884-ae0d-40ae-87a9-bad043d4e9ad/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A2ee5f5ad-2f16-40d9-831a-2aefece31b36&unique=prints",
+    "collector_number": "4",
+    "digital": false,
+    "rarity": "common",
+    "artist": "Matt Stewart",
+    "artist_ids": [
+      "20871267-2d8a-41d5-b03a-be3d557c5734"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 17376,
+    "preview": {
+      "source": "The Games Capital",
+      "source_uri": "https://thegamescapital.com.au/pages/exclusive-kamigawa-neon-dynasty-preview",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.16",
+      "usd_foil": "0.27",
+      "usd_etched": null,
+      "eur": "0.05",
+      "eur_foil": "0.13",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548294&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DBefriending%2Bthe%2BMoths%2B%252F%252F%2BImperial%2BMoth",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DBefriending%2Bthe%2BMoths%2B%252F%252F%2BImperial%2BMoth",
+      "edhrec": "https://edhrec.com/route/?cc=Befriending+the+Moths"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262183%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607052&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/96912?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "95f2f5af-d405-4534-8683-5a9001f997b4",
+    "oracle_id": "2f26f270-26d9-46d3-957f-19f52d51eb03",
+    "multiverse_ids": [],
+    "resource_id": "5AF6AFBCC69575FD384841805FC87E0DAF72578F7E804DE83BD9D8678726AB54",
+    "mtgo_id": 144774,
+    "arena_id": 97421,
+    "tcgplayer_id": 660549,
+    "cardmarket_id": 855715,
+    "name": "The Legend of Roku // Avatar Roku",
+    "lang": "en",
+    "released_at": "2025-11-21",
+    "uri": "https://api.scryfall.com/cards/95f2f5af-d405-4534-8683-5a9001f997b4",
+    "scryfall_uri": "https://scryfall.com/card/tla/145/the-legend-of-roku-avatar-roku?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:09:19Z",
+    "cmc": 4,
+    "type_line": "Enchantment — Saga // Legendary Creature — Avatar",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Transform",
+      "Firebending"
+    ],
+    "produced_mana": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "The Legend of Roku",
+        "mana_cost": "{2}{R}{R}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI — Exile the top three cards of your library. Until the end of your next turn, you may play those cards.\nII — Add one mana of any color.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "R"
+        ],
+        "artist": "Song Qijin",
+        "artist_id": "67750cc4-846d-40a2-8d1a-e8085544be07",
+        "illustration_id": "d0c6906e-1de7-4521-a2a4-5a46f4fa4fb3",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "normal": "https://cards.scryfall.io/normal/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "large": "https://cards.scryfall.io/large/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "png": "https://cards.scryfall.io/png/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.png?1783904959",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "thumb": "https://cards.scryfall.io/thumb/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "grid": "https://cards.scryfall.io/grid/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "display": "https://cards.scryfall.io/display/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "art": "https://cards.scryfall.io/art/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "crop": "https://cards.scryfall.io/crop/front/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Avatar Roku",
+        "mana_cost": "",
+        "type_line": "Legendary Creature — Avatar",
+        "oracle_text": "Firebending 4 (Whenever this creature attacks, add {R}{R}{R}{R}. This mana lasts until end of combat.)\n{8}: Create a 4/4 red Dragon creature token with flying and firebending 4.",
+        "colors": [],
+        "power": "4",
+        "toughness": "4",
+        "flavor_text": "\"You must be decisive.\"",
+        "artist": "Song Qijin",
+        "artist_id": "67750cc4-846d-40a2-8d1a-e8085544be07",
+        "illustration_id": "72143273-53f0-4fed-9a56-1b7c86c8a8b2",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "normal": "https://cards.scryfall.io/normal/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "large": "https://cards.scryfall.io/large/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "png": "https://cards.scryfall.io/png/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.png?1783904959",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.jpg?1783904959",
+          "thumb": "https://cards.scryfall.io/thumb/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "grid": "https://cards.scryfall.io/grid/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "display": "https://cards.scryfall.io/display/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "art": "https://cards.scryfall.io/art/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959",
+          "crop": "https://cards.scryfall.io/crop/back/9/5/95f2f5af-d405-4534-8683-5a9001f997b4.webp?1783904959"
+        }
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "4a8bdef0-c50c-4a30-81bc-507a8289a81b",
+        "component": "combo_piece",
+        "name": "The Legend of Roku // Avatar Roku",
+        "type_line": "Enchantment — Saga // Legendary Creature — Avatar",
+        "uri": "https://api.scryfall.com/cards/4a8bdef0-c50c-4a30-81bc-507a8289a81b"
+      },
+      {
+        "object": "related_card",
+        "id": "cddc0746-6d3e-441f-866f-28587bf54801",
+        "component": "token",
+        "name": "Dragon",
+        "type_line": "Token Creature — Dragon",
+        "uri": "https://api.scryfall.com/cards/cddc0746-6d3e-441f-866f-28587bf54801"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "118f7e64-5caa-4cb7-99a8-184f4d3a7422",
+    "set": "tla",
+    "set_name": "Avatar: The Last Airbender",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/118f7e64-5caa-4cb7-99a8-184f4d3a7422",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Atla&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/tla?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/95f2f5af-d405-4534-8683-5a9001f997b4/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A2f26f270-26d9-46d3-957f-19f52d51eb03&unique=prints",
+    "collector_number": "145",
+    "digital": false,
+    "rarity": "mythic",
+    "artist": "Song Qijin",
+    "artist_ids": [
+      "67750cc4-846d-40a2-8d1a-e8085544be07"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "enchantment",
+      "legendary"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond"
+    ],
+    "edhrec_rank": 4252,
+    "prices": {
+      "usd": "10.42",
+      "usd_foil": "10.98",
+      "usd_etched": null,
+      "eur": "11.10",
+      "eur_foil": "12.93",
+      "tix": "1.00"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DThe%2BLegend%2Bof%2BRoku%2B%252F%252F%2BAvatar%2BRoku",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DThe%2BLegend%2Bof%2BRoku%2B%252F%252F%2BAvatar%2BRoku",
+      "edhrec": "https://edhrec.com/route/?cc=The+Legend+of+Roku"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F660549%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=855715&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/144774?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "4f0582b4-d951-4450-b158-4a34109e48cd",
+    "oracle_id": "54257132-c67a-4c19-bada-08e7025c2929",
+    "multiverse_ids": [
+      548417,
+      548418
+    ],
+    "mtgo_id": 97158,
+    "arena_id": 79544,
+    "tcgplayer_id": 262474,
+    "cardmarket_id": 607572,
+    "name": "Okiba Reckoner Raid // Nezumi Road Captain",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/4f0582b4-d951-4450-b158-4a34109e48cd",
+    "scryfall_uri": "https://scryfall.com/card/neo/117/okiba-reckoner-raid-nezumi-road-captain?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:24:45Z",
+    "cmc": 1,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Rat Rogue",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Transform",
+      "Menace"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Okiba Reckoner Raid",
+        "mana_cost": "{B}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Each opponent loses 1 life and you gain 1 life.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "B"
+        ],
+        "artist": "Victor Adame Minguez",
+        "artist_id": "bd8f7368-5b10-4554-b6b8-d052c6aca89f",
+        "illustration_id": "e7724835-ed10-4d6f-8688-12eeeb03a12b",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "normal": "https://cards.scryfall.io/normal/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "large": "https://cards.scryfall.io/large/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "png": "https://cards.scryfall.io/png/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.png?1783923885",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "thumb": "https://cards.scryfall.io/thumb/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "grid": "https://cards.scryfall.io/grid/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "display": "https://cards.scryfall.io/display/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "art": "https://cards.scryfall.io/art/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "crop": "https://cards.scryfall.io/crop/front/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Nezumi Road Captain",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Rat Rogue",
+        "oracle_text": "Menace\nVehicles you control have menace. (They can't be blocked except by two or more creatures.)",
+        "colors": [
+          "B"
+        ],
+        "color_indicator": [
+          "B"
+        ],
+        "power": "2",
+        "toughness": "2",
+        "flavor_text": "United by defiant pride in their outsider status, the nezumi of the Okiba Reckoners boast the most advanced cyberbikes and the best riders of all the Reckoner gangs.",
+        "artist": "Victor Adame Minguez",
+        "artist_id": "bd8f7368-5b10-4554-b6b8-d052c6aca89f",
+        "illustration_id": "c17a71fb-a56c-4fa7-9187-df778c6f6fb6",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "normal": "https://cards.scryfall.io/normal/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "large": "https://cards.scryfall.io/large/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "png": "https://cards.scryfall.io/png/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.png?1783923885",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.jpg?1783923885",
+          "thumb": "https://cards.scryfall.io/thumb/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "grid": "https://cards.scryfall.io/grid/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "display": "https://cards.scryfall.io/display/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "art": "https://cards.scryfall.io/art/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885",
+          "crop": "https://cards.scryfall.io/crop/back/4/f/4f0582b4-d951-4450-b158-4a34109e48cd.webp?1783923885"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/4f0582b4-d951-4450-b158-4a34109e48cd/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A54257132-c67a-4c19-bada-08e7025c2929&unique=prints",
+    "collector_number": "117",
+    "digital": false,
+    "rarity": "common",
+    "artist": "Victor Adame Minguez",
+    "artist_ids": [
+      "bd8f7368-5b10-4554-b6b8-d052c6aca89f"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 11650,
+    "penny_rank": 2411,
+    "preview": {
+      "source": "SpellTable",
+      "source_uri": "",
+      "previewed_at": "2022-02-01"
+    },
+    "prices": {
+      "usd": "0.20",
+      "usd_foil": "0.27",
+      "usd_etched": null,
+      "eur": "0.09",
+      "eur_foil": "0.20",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548417&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DOkiba%2BReckoner%2BRaid%2B%252F%252F%2BNezumi%2BRoad%2BCaptain",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DOkiba%2BReckoner%2BRaid%2B%252F%252F%2BNezumi%2BRoad%2BCaptain",
+      "edhrec": "https://edhrec.com/route/?cc=Okiba+Reckoner+Raid"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262474%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607572&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97158?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "54613f38-ca91-4764-b1fe-60cd83707fb4",
+    "oracle_id": "81622cf6-3021-4ad4-933d-a7e3d8ac817f",
+    "multiverse_ids": [
+      548425,
+      548426
+    ],
+    "mtgo_id": 97174,
+    "arena_id": 79552,
+    "tcgplayer_id": 262277,
+    "cardmarket_id": 607377,
+    "name": "Tribute to Horobi // Echo of Death's Wail",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/54613f38-ca91-4764-b1fe-60cd83707fb4",
+    "scryfall_uri": "https://scryfall.com/card/neo/124/tribute-to-horobi-echo-of-deaths-wail?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:24:42Z",
+    "cmc": 2,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Spirit",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Flying",
+      "Transform",
+      "Haste"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Tribute to Horobi",
+        "mana_cost": "{1}{B}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Each opponent creates a 1/1 black Rat Rogue creature token.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "B"
+        ],
+        "artist": "Robin Olausson",
+        "artist_id": "adb9ad6d-6173-454b-8b50-a102b182548b",
+        "illustration_id": "f15506e4-7003-4ce8-ad36-88e1bcdaef06",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "normal": "https://cards.scryfall.io/normal/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "large": "https://cards.scryfall.io/large/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "png": "https://cards.scryfall.io/png/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.png?1783923882",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "thumb": "https://cards.scryfall.io/thumb/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "grid": "https://cards.scryfall.io/grid/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "display": "https://cards.scryfall.io/display/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "art": "https://cards.scryfall.io/art/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "crop": "https://cards.scryfall.io/crop/front/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Echo of Death's Wail",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Spirit",
+        "oracle_text": "Flying, haste\nWhen this creature enters, gain control of all Rat tokens.\nWhenever this creature attacks, you may sacrifice another creature. If you do, draw a card.",
+        "colors": [
+          "B"
+        ],
+        "color_indicator": [
+          "B"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "artist": "Robin Olausson",
+        "artist_id": "adb9ad6d-6173-454b-8b50-a102b182548b",
+        "illustration_id": "ba4de0b5-8a78-4e47-a82b-7fe9b6b2398a",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "normal": "https://cards.scryfall.io/normal/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "large": "https://cards.scryfall.io/large/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "png": "https://cards.scryfall.io/png/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.png?1783923882",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.jpg?1783923882",
+          "thumb": "https://cards.scryfall.io/thumb/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "grid": "https://cards.scryfall.io/grid/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "display": "https://cards.scryfall.io/display/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "art": "https://cards.scryfall.io/art/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882",
+          "crop": "https://cards.scryfall.io/crop/back/5/4/54613f38-ca91-4764-b1fe-60cd83707fb4.webp?1783923882"
+        }
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "695f72ea-13e6-40ab-afc7-55657701c82d",
+        "component": "token",
+        "name": "Rat Rogue",
+        "type_line": "Token Creature — Rat Rogue",
+        "uri": "https://api.scryfall.com/cards/695f72ea-13e6-40ab-afc7-55657701c82d"
+      },
+      {
+        "object": "related_card",
+        "id": "d8f1b467-3cfe-4fab-bfd1-b7ac856d608c",
+        "component": "combo_piece",
+        "name": "Tribute to Horobi // Echo of Death's Wail",
+        "type_line": "Enchantment — Saga // Enchantment Creature — Spirit",
+        "uri": "https://api.scryfall.com/cards/d8f1b467-3cfe-4fab-bfd1-b7ac856d608c"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/54613f38-ca91-4764-b1fe-60cd83707fb4/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A81622cf6-3021-4ad4-933d-a7e3d8ac817f&unique=prints",
+    "collector_number": "124",
+    "digital": false,
+    "rarity": "rare",
+    "artist": "Robin Olausson",
+    "artist_ids": [
+      "adb9ad6d-6173-454b-8b50-a102b182548b"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 8924,
+    "penny_rank": 7309,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://magic.wizards.com/en/articles/archive/card-image-gallery/kamigawa-neon-dynasty",
+      "previewed_at": "2022-01-31"
+    },
+    "prices": {
+      "usd": "0.27",
+      "usd_foil": "0.75",
+      "usd_etched": null,
+      "eur": "0.28",
+      "eur_foil": "0.31",
+      "tix": "0.02"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548425&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DTribute%2Bto%2BHorobi%2B%252F%252F%2BEcho%2Bof%2BDeath%2527s%2BWail",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DTribute%2Bto%2BHorobi%2B%252F%252F%2BEcho%2Bof%2BDeath%2527s%2BWail",
+      "edhrec": "https://edhrec.com/route/?cc=Tribute+to+Horobi"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262277%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607377&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97174?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "74f12c23-5c15-4ae6-8f4d-c5e6c1878817",
+    "oracle_id": "94794f7c-62e7-43c8-ba7f-ac5c0bc9a712",
+    "multiverse_ids": [
+      548322,
+      548323
+    ],
+    "mtgo_id": 96968,
+    "arena_id": 79449,
+    "tcgplayer_id": 261980,
+    "cardmarket_id": 607003,
+    "name": "Michiko's Reign of Truth // Portrait of Michiko",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/74f12c23-5c15-4ae6-8f4d-c5e6c1878817",
+    "scryfall_uri": "https://scryfall.com/card/neo/29/michikos-reign-of-truth-portrait-of-michiko?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:25:21Z",
+    "cmc": 2,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Human Noble",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Transform"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Michiko's Reign of Truth",
+        "mana_cost": "{1}{W}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Target creature gets +1/+1 until end of turn for each artifact and/or enchantment you control.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "W"
+        ],
+        "artist": "Volkan Baǵa",
+        "artist_id": "93bec3c0-0260-4d31-8064-5d01efb4153f",
+        "illustration_id": "453ed3b6-6824-4a8a-b49e-e9f0c0ce1ee6",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "normal": "https://cards.scryfall.io/normal/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "large": "https://cards.scryfall.io/large/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "png": "https://cards.scryfall.io/png/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.png?1783923921",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "thumb": "https://cards.scryfall.io/thumb/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "grid": "https://cards.scryfall.io/grid/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "display": "https://cards.scryfall.io/display/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "art": "https://cards.scryfall.io/art/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "crop": "https://cards.scryfall.io/crop/front/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Portrait of Michiko",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Human Noble",
+        "oracle_text": "This creature gets +1/+1 for each artifact and/or enchantment you control.",
+        "colors": [
+          "W"
+        ],
+        "color_indicator": [
+          "W"
+        ],
+        "power": "0",
+        "toughness": "0",
+        "flavor_text": "Long ago, as the first mortal to bond with Kyodai, Michiko Konda brought an end to the Kami War and guided Kamigawa into an age of truth and harmony.",
+        "artist": "Volkan Baǵa",
+        "artist_id": "93bec3c0-0260-4d31-8064-5d01efb4153f",
+        "illustration_id": "c81a1285-ae4c-45ca-ba90-9afd993f0a4e",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "normal": "https://cards.scryfall.io/normal/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "large": "https://cards.scryfall.io/large/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "png": "https://cards.scryfall.io/png/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.png?1783923921",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.jpg?1783923921",
+          "thumb": "https://cards.scryfall.io/thumb/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "grid": "https://cards.scryfall.io/grid/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "display": "https://cards.scryfall.io/display/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "art": "https://cards.scryfall.io/art/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921",
+          "crop": "https://cards.scryfall.io/crop/back/7/4/74f12c23-5c15-4ae6-8f4d-c5e6c1878817.webp?1783923921"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/74f12c23-5c15-4ae6-8f4d-c5e6c1878817/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A94794f7c-62e7-43c8-ba7f-ac5c0bc9a712&unique=prints",
+    "collector_number": "29",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Volkan Baǵa",
+    "artist_ids": [
+      "93bec3c0-0260-4d31-8064-5d01efb4153f"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 5586,
+    "penny_rank": 1110,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.twitch.tv/videos/1277767538",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.31",
+      "usd_foil": "0.33",
+      "usd_etched": null,
+      "eur": "0.16",
+      "eur_foil": "0.32",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548322&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DMichiko%2527s%2BReign%2Bof%2BTruth%2B%252F%252F%2BPortrait%2Bof%2BMichiko",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DMichiko%2527s%2BReign%2Bof%2BTruth%2B%252F%252F%2BPortrait%2Bof%2BMichiko",
+      "edhrec": "https://edhrec.com/route/?cc=Michiko%27s+Reign+of+Truth"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F261980%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607003&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/96968?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "517392f6-d3fd-4c59-8317-2a3595ab7562",
+    "oracle_id": "99473461-3c6f-4f7f-8ba2-d6c090ddb567",
+    "multiverse_ids": [
+      548466,
+      548467
+    ],
+    "mtgo_id": 97256,
+    "arena_id": 79593,
+    "tcgplayer_id": 261999,
+    "cardmarket_id": 607008,
+    "name": "The Shattered States Era // Nameless Conqueror",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/517392f6-d3fd-4c59-8317-2a3595ab7562",
+    "scryfall_uri": "https://scryfall.com/card/neo/162/the-shattered-states-era-nameless-conqueror?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:24:25Z",
+    "cmc": 5,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Human Samurai",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Transform",
+      "Haste",
+      "Trample"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "The Shattered States Era",
+        "mana_cost": "{4}{R}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI — Gain control of target creature until end of turn. Untap it. It gains haste until end of turn.\nII — Creatures you control get +1/+0 until end of turn.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "R"
+        ],
+        "artist": "David Gaillet",
+        "artist_id": "3496c5b4-57bf-4e5e-8bac-a1e05a911a2d",
+        "illustration_id": "07aea44a-b1d9-499a-be06-c6ae1b367479",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "normal": "https://cards.scryfall.io/normal/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "large": "https://cards.scryfall.io/large/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "png": "https://cards.scryfall.io/png/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.png?1783923865",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "thumb": "https://cards.scryfall.io/thumb/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "grid": "https://cards.scryfall.io/grid/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "display": "https://cards.scryfall.io/display/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "art": "https://cards.scryfall.io/art/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "crop": "https://cards.scryfall.io/crop/front/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Nameless Conqueror",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Human Samurai",
+        "oracle_text": "Trample, haste",
+        "colors": [
+          "R"
+        ],
+        "color_indicator": [
+          "R"
+        ],
+        "power": "3",
+        "toughness": "3",
+        "flavor_text": "\"In the wake of the Kami War, Kamigawa descended into a state of constant warfare. Even with Kyodai's wisdom guiding them, it took the first Imperials decades of work and bloodshed to subdue the clans and bring peace to the land.\"\n—*History of the Empire*",
+        "artist": "David Gaillet",
+        "artist_id": "3496c5b4-57bf-4e5e-8bac-a1e05a911a2d",
+        "illustration_id": "33bd3415-e75b-4c00-a592-00e970f50253",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "normal": "https://cards.scryfall.io/normal/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "large": "https://cards.scryfall.io/large/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "png": "https://cards.scryfall.io/png/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.png?1783923865",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.jpg?1783923865",
+          "thumb": "https://cards.scryfall.io/thumb/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "grid": "https://cards.scryfall.io/grid/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "display": "https://cards.scryfall.io/display/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "art": "https://cards.scryfall.io/art/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865",
+          "crop": "https://cards.scryfall.io/crop/back/5/1/517392f6-d3fd-4c59-8317-2a3595ab7562.webp?1783923865"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/517392f6-d3fd-4c59-8317-2a3595ab7562/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A99473461-3c6f-4f7f-8ba2-d6c090ddb567&unique=prints",
+    "collector_number": "162",
+    "digital": false,
+    "rarity": "common",
+    "artist": "David Gaillet",
+    "artist_ids": [
+      "3496c5b4-57bf-4e5e-8bac-a1e05a911a2d"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 16182,
+    "penny_rank": 17903,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.twitch.tv/videos/1277767538",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.13",
+      "usd_foil": "0.20",
+      "usd_etched": null,
+      "eur": "0.05",
+      "eur_foil": "0.15",
+      "tix": "0.01"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548466&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DThe%2BShattered%2BStates%2BEra%2B%252F%252F%2BNameless%2BConqueror",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DThe%2BShattered%2BStates%2BEra%2B%252F%252F%2BNameless%2BConqueror",
+      "edhrec": "https://edhrec.com/route/?cc=The+Shattered+States+Era"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F261999%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607008&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97256?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc",
+    "oracle_id": "9d9b52b2-2edc-4f7f-a8d9-e024b1398847",
+    "multiverse_ids": [
+      548328,
+      548329
+    ],
+    "mtgo_id": 96980,
+    "arena_id": 79455,
+    "tcgplayer_id": 262322,
+    "cardmarket_id": 607398,
+    "name": "The Restoration of Eiganjo // Architect of Restoration",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc",
+    "scryfall_uri": "https://scryfall.com/card/neo/34/the-restoration-of-eiganjo-architect-of-restoration?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:25:20Z",
+    "cmc": 3,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Fox Monk",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Vigilance",
+      "Transform"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "The Restoration of Eiganjo",
+        "mana_cost": "{2}{W}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI — Search your library for a basic Plains card, reveal it, put it into your hand, then shuffle.\nII — You may discard a card. When you do, return target permanent card with mana value 2 or less from your graveyard to the battlefield tapped.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "W"
+        ],
+        "artist": "Titus Lunter",
+        "artist_id": "b11e6b3a-f4ca-4cf1-8fd7-475696de5f5c",
+        "illustration_id": "45d88f8a-a44e-485c-ba23-001b9b901ad1",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "normal": "https://cards.scryfall.io/normal/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "large": "https://cards.scryfall.io/large/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "png": "https://cards.scryfall.io/png/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.png?1783923920",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "thumb": "https://cards.scryfall.io/thumb/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "grid": "https://cards.scryfall.io/grid/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "display": "https://cards.scryfall.io/display/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "art": "https://cards.scryfall.io/art/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "crop": "https://cards.scryfall.io/crop/front/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Architect of Restoration",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Fox Monk",
+        "oracle_text": "Vigilance\nWhenever this creature attacks or blocks, create a 1/1 colorless Spirit creature token.",
+        "colors": [
+          "W"
+        ],
+        "color_indicator": [
+          "W"
+        ],
+        "power": "3",
+        "toughness": "4",
+        "flavor_text": "\"A visionary looks at rubble and sees not only what was, but also what could be.\"\n—Onyx-Eye, architect of Eiganjo",
+        "artist": "Titus Lunter",
+        "artist_id": "b11e6b3a-f4ca-4cf1-8fd7-475696de5f5c",
+        "illustration_id": "f589def6-2dc2-40b5-a5bd-d6cd4d0674a4",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "normal": "https://cards.scryfall.io/normal/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "large": "https://cards.scryfall.io/large/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "png": "https://cards.scryfall.io/png/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.png?1783923920",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.jpg?1783923920",
+          "thumb": "https://cards.scryfall.io/thumb/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "grid": "https://cards.scryfall.io/grid/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "display": "https://cards.scryfall.io/display/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "art": "https://cards.scryfall.io/art/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920",
+          "crop": "https://cards.scryfall.io/crop/back/a/1/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc.webp?1783923920"
+        }
+      }
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "ca20548f-6324-4858-adbe-87303ff1ca52",
+        "component": "token",
+        "name": "Spirit",
+        "type_line": "Token Creature — Spirit",
+        "uri": "https://api.scryfall.com/cards/ca20548f-6324-4858-adbe-87303ff1ca52"
+      },
+      {
+        "object": "related_card",
+        "id": "070d6344-ee01-4e27-a513-467d8775a853",
+        "component": "combo_piece",
+        "name": "The Restoration of Eiganjo // Architect of Restoration",
+        "type_line": "Enchantment — Saga // Enchantment Creature — Fox Monk",
+        "uri": "https://api.scryfall.com/cards/070d6344-ee01-4e27-a513-467d8775a853"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/a11a33ae-e7fa-4bd4-8cd8-3a3239a29bcc/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A9d9b52b2-2edc-4f7f-a8d9-e024b1398847&unique=prints",
+    "collector_number": "34",
+    "digital": false,
+    "rarity": "rare",
+    "artist": "Titus Lunter",
+    "artist_ids": [
+      "b11e6b3a-f4ca-4cf1-8fd7-475696de5f5c"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 4315,
+    "penny_rank": 1136,
+    "preview": {
+      "source": "Numot The Nummy",
+      "source_uri": "https://twitter.com/NumotTheNummy/status/1488242516772093952",
+      "previewed_at": "2022-01-31"
+    },
+    "prices": {
+      "usd": "0.57",
+      "usd_foil": "0.76",
+      "usd_etched": null,
+      "eur": "0.57",
+      "eur_foil": "0.71",
+      "tix": "0.02"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548328&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DThe%2BRestoration%2Bof%2BEiganjo%2B%252F%252F%2BArchitect%2Bof%2BRestoration",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DThe%2BRestoration%2Bof%2BEiganjo%2B%252F%252F%2BArchitect%2Bof%2BRestoration",
+      "edhrec": "https://edhrec.com/route/?cc=The+Restoration+of+Eiganjo"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262322%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607398&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/96980?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "74f43827-2b9b-4fc9-a6e2-c682dfbf14f7",
+    "oracle_id": "a6d646e8-0d84-489b-a46a-3bd5b1141864",
+    "multiverse_ids": [
+      548302,
+      548303
+    ],
+    "mtgo_id": 96928,
+    "arena_id": 79429,
+    "tcgplayer_id": 261972,
+    "cardmarket_id": 607009,
+    "name": "Era of Enlightenment // Hand of Enlightenment",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7",
+    "scryfall_uri": "https://scryfall.com/card/neo/11/era-of-enlightenment-hand-of-enlightenment?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:25:30Z",
+    "cmc": 2,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Human Monk",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Transform",
+      "First strike",
+      "Scry"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Era of Enlightenment",
+        "mana_cost": "{1}{W}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI — Scry 2.\nII — You gain 2 life.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "W"
+        ],
+        "artist": "Amayagido",
+        "artist_id": "1c77964f-0b08-4bf8-a4a1-076ec8da4df0",
+        "illustration_id": "e5d7d0dc-c86b-4734-87af-635b624958c1",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "normal": "https://cards.scryfall.io/normal/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "large": "https://cards.scryfall.io/large/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "png": "https://cards.scryfall.io/png/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.png?1783923930",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "thumb": "https://cards.scryfall.io/thumb/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "grid": "https://cards.scryfall.io/grid/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "display": "https://cards.scryfall.io/display/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "art": "https://cards.scryfall.io/art/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "crop": "https://cards.scryfall.io/crop/front/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Hand of Enlightenment",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Human Monk",
+        "oracle_text": "First strike",
+        "colors": [
+          "W"
+        ],
+        "color_indicator": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "2",
+        "flavor_text": "\"We have endured lifetimes of war and carved our way to peace by blade and conquest. Now, united at last under Kyodai's guidance, we lay down our weapons and open our minds.\"\n—Aoha, general of the First Emperor",
+        "artist": "Amayagido",
+        "artist_id": "1c77964f-0b08-4bf8-a4a1-076ec8da4df0",
+        "illustration_id": "e78ac1e3-8765-44b9-b8a8-a3d4d43db398",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "normal": "https://cards.scryfall.io/normal/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "large": "https://cards.scryfall.io/large/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "png": "https://cards.scryfall.io/png/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.png?1783923930",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.jpg?1783923930",
+          "thumb": "https://cards.scryfall.io/thumb/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "grid": "https://cards.scryfall.io/grid/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "display": "https://cards.scryfall.io/display/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "art": "https://cards.scryfall.io/art/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930",
+          "crop": "https://cards.scryfall.io/crop/back/7/4/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7.webp?1783923930"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/74f43827-2b9b-4fc9-a6e2-c682dfbf14f7/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aa6d646e8-0d84-489b-a46a-3bd5b1141864&unique=prints",
+    "collector_number": "11",
+    "digital": false,
+    "rarity": "common",
+    "artist": "Amayagido",
+    "artist_ids": [
+      "1c77964f-0b08-4bf8-a4a1-076ec8da4df0"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 15475,
+    "penny_rank": 10903,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.twitch.tv/videos/1277767538",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.08",
+      "usd_foil": "0.35",
+      "usd_etched": null,
+      "eur": "0.06",
+      "eur_foil": "0.16",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548302&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DEra%2Bof%2BEnlightenment%2B%252F%252F%2BHand%2Bof%2BEnlightenment",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DEra%2Bof%2BEnlightenment%2B%252F%252F%2BHand%2Bof%2BEnlightenment",
+      "edhrec": "https://edhrec.com/route/?cc=Era+of+Enlightenment"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F261972%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607009&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/96928?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5",
+    "oracle_id": "a8995df6-99a7-41a7-bd3e-f34643b27947",
+    "multiverse_ids": [
+      548363,
+      548364
+    ],
+    "mtgo_id": 97050,
+    "arena_id": 79490,
+    "tcgplayer_id": 261985,
+    "cardmarket_id": 607014,
+    "name": "The Modern Age // Vector Glider",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5",
+    "scryfall_uri": "https://scryfall.com/card/neo/66/the-modern-age-vector-glider?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:25:07Z",
+    "cmc": 2,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Spirit",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": [
+      "Flying",
+      "Transform"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "The Modern Age",
+        "mana_cost": "{1}{U}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI, II — Draw a card, then discard a card.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "U"
+        ],
+        "artist": "Anastasia Ovchinnikova",
+        "artist_id": "3605d81f-5c97-4958-9dcc-d44a85e10305",
+        "illustration_id": "68457888-2e67-4b5a-91c9-3e4bff8d156c",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "normal": "https://cards.scryfall.io/normal/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "large": "https://cards.scryfall.io/large/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "png": "https://cards.scryfall.io/png/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.png?1783923907",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "thumb": "https://cards.scryfall.io/thumb/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "grid": "https://cards.scryfall.io/grid/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "display": "https://cards.scryfall.io/display/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "art": "https://cards.scryfall.io/art/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "crop": "https://cards.scryfall.io/crop/front/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Vector Glider",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Spirit",
+        "oracle_text": "Flying",
+        "colors": [
+          "U"
+        ],
+        "color_indicator": [
+          "U"
+        ],
+        "power": "2",
+        "toughness": "3",
+        "flavor_text": "It drifted from the spirit realm into a neon world full of new possibilities . . . and decided to stay.",
+        "artist": "Anastasia Ovchinnikova",
+        "artist_id": "3605d81f-5c97-4958-9dcc-d44a85e10305",
+        "illustration_id": "762b1ae7-5a10-43f0-b606-9572ed806dce",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "normal": "https://cards.scryfall.io/normal/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "large": "https://cards.scryfall.io/large/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "png": "https://cards.scryfall.io/png/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.png?1783923907",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.jpg?1783923907",
+          "thumb": "https://cards.scryfall.io/thumb/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "grid": "https://cards.scryfall.io/grid/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "display": "https://cards.scryfall.io/display/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "art": "https://cards.scryfall.io/art/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907",
+          "crop": "https://cards.scryfall.io/crop/back/e/e/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5.webp?1783923907"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/ee60a8e9-3201-4a7e-8aa4-2c5e1042c8a5/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aa8995df6-99a7-41a7-bd3e-f34643b27947&unique=prints",
+    "collector_number": "66",
+    "digital": false,
+    "rarity": "common",
+    "artist": "Anastasia Ovchinnikova",
+    "artist_ids": [
+      "3605d81f-5c97-4958-9dcc-d44a85e10305"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 15454,
+    "penny_rank": 3073,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.twitch.tv/videos/1277767538",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.17",
+      "usd_foil": "0.28",
+      "usd_etched": null,
+      "eur": "0.20",
+      "eur_foil": "0.25",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548363&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DThe%2BModern%2BAge%2B%252F%252F%2BVector%2BGlider",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DThe%2BModern%2BAge%2B%252F%252F%2BVector%2BGlider",
+      "edhrec": "https://edhrec.com/route/?cc=The+Modern+Age"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F261985%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607014&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97050?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "5f51c853-949d-44e9-a3a2-02e1ce69a147",
+    "oracle_id": "b291d046-7649-4a05-98c4-224ecaece912",
+    "multiverse_ids": [],
+    "resource_id": "7528410FF4EAB0017622DDC0DC65640E1462351E71B6E0F22E5B71BAE674ACDF",
+    "mtgo_id": 140943,
+    "arena_id": 95865,
+    "tcgplayer_id": 633109,
+    "cardmarket_id": 826596,
+    "name": "Crystal Fragments // Summon: Alexander",
+    "lang": "en",
+    "released_at": "2025-06-13",
+    "uri": "https://api.scryfall.com/cards/5f51c853-949d-44e9-a3a2-02e1ce69a147",
+    "scryfall_uri": "https://scryfall.com/card/fin/13/crystal-fragments-summon:-alexander?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:37:37Z",
+    "cmc": 1,
+    "type_line": "Artifact — Equipment // Enchantment Creature — Saga Construct",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Flying",
+      "Transform",
+      "Equip"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Crystal Fragments",
+        "mana_cost": "{W}",
+        "type_line": "Artifact — Equipment",
+        "oracle_text": "Equipped creature gets +1/+1.\n{5}{W}{W}: Exile this Equipment, then return it to the battlefield transformed under its owner's control. Activate only as a sorcery.\nEquip {1}",
+        "colors": [
+          "W"
+        ],
+        "artist": "Bachzim",
+        "artist_id": "c1a926d5-abed-4ecc-a653-17d389cac12a",
+        "illustration_id": "897ea68d-8636-4e14-8955-6049c9bfe389",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "normal": "https://cards.scryfall.io/normal/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "large": "https://cards.scryfall.io/large/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "png": "https://cards.scryfall.io/png/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.png?1783906657",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "thumb": "https://cards.scryfall.io/thumb/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "grid": "https://cards.scryfall.io/grid/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "display": "https://cards.scryfall.io/display/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "art": "https://cards.scryfall.io/art/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "crop": "https://cards.scryfall.io/crop/front/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Summon: Alexander",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Saga Construct",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI, II — Prevent all damage that would be dealt to creatures you control this turn.\nIII — Tap all creatures your opponents control.\nFlying",
+        "colors": [
+          "W"
+        ],
+        "color_indicator": [
+          "W"
+        ],
+        "power": "4",
+        "toughness": "3",
+        "artist": "Bachzim",
+        "artist_id": "c1a926d5-abed-4ecc-a653-17d389cac12a",
+        "illustration_id": "3d7204f6-e11c-4fd4-be39-ba141ab577c8",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "normal": "https://cards.scryfall.io/normal/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "large": "https://cards.scryfall.io/large/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "png": "https://cards.scryfall.io/png/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.png?1783906657",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.jpg?1783906657",
+          "thumb": "https://cards.scryfall.io/thumb/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "grid": "https://cards.scryfall.io/grid/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "display": "https://cards.scryfall.io/display/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "art": "https://cards.scryfall.io/art/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657",
+          "crop": "https://cards.scryfall.io/crop/back/5/f/5f51c853-949d-44e9-a3a2-02e1ce69a147.webp?1783906657"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "d7beb4b7-e1ff-4d35-ab07-5700f17ea1ea",
+    "set": "fin",
+    "set_name": "Final Fantasy",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/d7beb4b7-e1ff-4d35-ab07-5700f17ea1ea",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Afin&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/fin?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/5f51c853-949d-44e9-a3a2-02e1ce69a147/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Ab291d046-7649-4a05-98c4-224ecaece912&unique=prints",
+    "collector_number": "13",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Bachzim",
+    "artist_ids": [
+      "c1a926d5-abed-4ecc-a653-17d389cac12a"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "enchantment"
+    ],
+    "security_stamp": "triangle",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "promo_types": [
+      "universesbeyond",
+      "ffix"
+    ],
+    "edhrec_rank": 7514,
+    "penny_rank": 9255,
+    "preview": {
+      "source": "Galaxy",
+      "source_uri": "https://vxtwitter.com/galaxyAUS/status/1925028201551823350",
+      "previewed_at": "2025-05-20"
+    },
+    "prices": {
+      "usd": "0.25",
+      "usd_foil": "0.30",
+      "usd_etched": null,
+      "eur": "0.13",
+      "eur_foil": "0.31",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DCrystal%2BFragments%2B%252F%252F%2BSummon%253A%2BAlexander",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DCrystal%2BFragments%2B%252F%252F%2BSummon%253A%2BAlexander",
+      "edhrec": "https://edhrec.com/route/?cc=Crystal+Fragments"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F633109%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=826596&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/140943?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "1144014b-f13b-4397-97ed-a8de46371a2c",
+    "oracle_id": "ec08aeb3-bba7-4982-9160-68d25bd411d6",
+    "multiverse_ids": [
+      548483,
+      548484
+    ],
+    "mtgo_id": 97290,
+    "arena_id": 79610,
+    "tcgplayer_id": 262007,
+    "cardmarket_id": 607013,
+    "name": "Boseiju Reaches Skyward // Branch of Boseiju",
+    "lang": "en",
+    "released_at": "2022-02-18",
+    "uri": "https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c",
+    "scryfall_uri": "https://scryfall.com/card/neo/177/boseiju-reaches-skyward-branch-of-boseiju?utm_source=api",
+    "layout": "transform",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T06:24:18Z",
+    "cmc": 4,
+    "type_line": "Enchantment — Saga // Enchantment Creature — Plant",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Reach",
+      "Transform"
+    ],
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Boseiju Reaches Skyward",
+        "mana_cost": "{3}{G}",
+        "type_line": "Enchantment — Saga",
+        "oracle_text": "(As this Saga enters and after your draw step, add a lore counter.)\nI — Search your library for up to two basic Forest cards, reveal them, put them into your hand, then shuffle.\nII — Put up to one target land card from your graveyard on top of your library.\nIII — Exile this Saga, then return it to the battlefield transformed under your control.",
+        "colors": [
+          "G"
+        ],
+        "artist": "Zezhou Chen",
+        "artist_id": "810677e5-a502-4c03-b726-78cd808a75d4",
+        "illustration_id": "f2a7914d-a42f-46ae-9bda-e3b82c293eab",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "normal": "https://cards.scryfall.io/normal/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "large": "https://cards.scryfall.io/large/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "png": "https://cards.scryfall.io/png/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.png?1783923858",
+          "art_crop": "https://cards.scryfall.io/art_crop/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "border_crop": "https://cards.scryfall.io/border_crop/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "thumb": "https://cards.scryfall.io/thumb/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "grid": "https://cards.scryfall.io/grid/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "display": "https://cards.scryfall.io/display/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "art": "https://cards.scryfall.io/art/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "crop": "https://cards.scryfall.io/crop/front/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858"
+        }
+      },
+      {
+        "object": "card_face",
+        "name": "Branch of Boseiju",
+        "mana_cost": "",
+        "type_line": "Enchantment Creature — Plant",
+        "oracle_text": "Reach\nThis creature gets +1/+1 for each land you control.",
+        "colors": [
+          "G"
+        ],
+        "color_indicator": [
+          "G"
+        ],
+        "power": "0",
+        "toughness": "0",
+        "flavor_text": "Though they razed the surrounding forest, the builders of Towashi left Boseiju unscathed, shaping the city around the ancient tree.",
+        "artist": "Zezhou Chen",
+        "artist_id": "810677e5-a502-4c03-b726-78cd808a75d4",
+        "illustration_id": "fc65ba73-c7d7-4490-ad56-f04e4474e527",
+        "image_uris": {
+          "small": "https://cards.scryfall.io/small/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "normal": "https://cards.scryfall.io/normal/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "large": "https://cards.scryfall.io/large/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "png": "https://cards.scryfall.io/png/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.png?1783923858",
+          "art_crop": "https://cards.scryfall.io/art_crop/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "border_crop": "https://cards.scryfall.io/border_crop/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.jpg?1783923858",
+          "thumb": "https://cards.scryfall.io/thumb/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "grid": "https://cards.scryfall.io/grid/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "display": "https://cards.scryfall.io/display/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "art": "https://cards.scryfall.io/art/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858",
+          "crop": "https://cards.scryfall.io/crop/back/1/1/1144014b-f13b-4397-97ed-a8de46371a2c.webp?1783923858"
+        }
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "59a2059f-5482-433f-8761-eb2e17859b71",
+    "set": "neo",
+    "set_name": "Kamigawa: Neon Dynasty",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/59a2059f-5482-433f-8761-eb2e17859b71",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aneo&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/neo?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/1144014b-f13b-4397-97ed-a8de46371a2c/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aec08aeb3-bba7-4982-9160-68d25bd411d6&unique=prints",
+    "collector_number": "177",
+    "digital": false,
+    "rarity": "uncommon",
+    "artist": "Zezhou Chen",
+    "artist_ids": [
+      "810677e5-a502-4c03-b726-78cd808a75d4"
+    ],
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "fandfc",
+      "enchantment"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 6016,
+    "penny_rank": 10860,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.twitch.tv/videos/1277767538",
+      "previewed_at": "2022-01-27"
+    },
+    "prices": {
+      "usd": "0.29",
+      "usd_foil": "0.31",
+      "usd_etched": null,
+      "eur": "0.10",
+      "eur_foil": "0.16",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=548483&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DBoseiju%2BReaches%2BSkyward%2B%252F%252F%2BBranch%2Bof%2BBoseiju",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DBoseiju%2BReaches%2BSkyward%2B%252F%252F%2BBranch%2Bof%2BBoseiju",
+      "edhrec": "https://edhrec.com/route/?cc=Boseiju+Reaches+Skyward"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F262007%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=607013&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/97290?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  }
+]

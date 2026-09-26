@@ -23,16 +23,17 @@
   }
   async function apply(game,card,destination,snap,opts){
     const from=card.zone;
-    if(destination!=='graveyard'&&!(from==='battlefield'&&card.meta.unearth&&destination!=='exile')){
+    if(destination!=='graveyard'&&!(from==='battlefield'&&card.meta.unearth&&destination!=='exile')&&!(M.OracleV20Permanents?.discardReplacements(game,card,destination,snap,opts)||[]).length){
       if(from==='stack'&&destination!=='stack')delete card.meta.exileIfStackLeaves;
       return {toZone:destination,opts,voidReplacement:null,shuffleOwners:[]};
     }
     const used=new Set(),rows=sources(game),shuffleOwners=new Set(),c1719Slimes=[],bomValentins=[],fdcKalitas=[];
-    let to=destination,toBottom=!!opts.toBottom,voidReplacement=null,noCmdReplace=!!opts.noCmdReplace,c1920Blood=false,zkCosmic=null;
+    let to=destination,toBottom=!!opts.toBottom,voidReplacement=null,noCmdReplace=!!opts.noCmdReplace,c1920Blood=false,zkCosmic=null,extensionOpts={};
     const own=from==='battlefield'?rows.find(row=>row.card===card):{card,ctrl:card.owner,snap};
     while(true){
       const candidates=[];
       const add=(key,label,run)=>{if(!used.has(key))candidates.push({key,label,run});};
+      for(const rule of M.OracleV20Permanents?.discardReplacements(game,card,to,snap,opts)||[])add(rule.key,rule.label,async()=>{const result=await rule.run();to=result.toZone;Object.assign(extensionOpts,result.opts||{});if(result.opts?.toBottom!==undefined)toBottom=result.opts.toBottom;});
       if(from==='stack'&&to==='graveyard'&&card.meta.exileIfStackLeaves)add('stack-exile','Exile the spell',()=>{to='exile';});
       if(from==='battlefield'&&to!=='exile'&&card.meta.unearth)add('unearth','Unearth — exile',()=>{to='exile';noCmdReplace=true;});
       if(from==='battlefield'&&to==='graveyard'&&(snap.counters.finality||0)>0)add('finality','Finality counter — exile',()=>{to='exile';});
@@ -69,14 +70,14 @@
       used.add(selected.key);await selected.run();
     }
     if(from==='stack'&&to!=='stack')delete card.meta.exileIfStackLeaves;
-    return {toZone:to,opts:{...opts,toBottom,noCmdReplace,...(zkCosmic?{zkCosmic}:{})},voidReplacement,c1719Slimes,bomValentins,fdcKalitas,c1920Blood,shuffleOwners:[...shuffleOwners]};
+    return {toZone:to,opts:{...opts,...extensionOpts,toBottom,noCmdReplace,...(zkCosmic?{zkCosmic}:{})},voidReplacement,c1719Slimes,bomValentins,fdcKalitas,c1920Blood,shuffleOwners:[...shuffleOwners]};
   }
   function compile(operation){
     const allowed=['kind','scope','from','to','placement','reveal','creatureOnly','contract'];
     if(operation.kind!=='zone-replacement-v8'||operation.contract!=='ordered-zone-replacement'||Object.keys(operation).some(key=>!allowed.includes(key)))throw new Error('Unknown zone replacement descriptor');
     const common=operation.to==='exile'&&!operation.placement&&!operation.reveal;
     const global=common&&(['all','instant-or-sorcery','opponent-owned-creature-card','opponent-owned-card-v19'].includes(operation.scope)&&operation.from==='any'||['all','opponent-creature','damaged-by-source'].includes(operation.scope)&&operation.from==='battlefield')&&!operation.creatureOnly;
-    const self=operation.scope==='self'&&(operation.from==='any'&&operation.to==='library'&&operation.placement==='shuffle'&&operation.reveal===true&&!operation.creatureOnly||operation.from==='battlefield'&&operation.creatureOnly===true&&(common||operation.to==='library'&&['top','bottom'].includes(operation.placement)&&!operation.reveal));
+    const self=operation.scope==='self'&&(operation.from==='any'&&(common||operation.to==='library'&&operation.placement==='shuffle'&&operation.reveal===true)&&!operation.creatureOnly||operation.from==='battlefield'&&operation.creatureOnly===true&&(common||operation.to==='library'&&['top','bottom'].includes(operation.placement)&&!operation.reveal));
     if(!global&&!self)throw new Error('Unsupported zone replacement semantics');
     return operation;
   }

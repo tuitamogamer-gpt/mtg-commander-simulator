@@ -6,6 +6,7 @@ export async function zoneReplacementProof(M,entry,operation,role,h){
   for(const p of game.players){h.fund(p,100);h.fillLibrary(M,p,35);}
   h.stageCardCosts(M,ctx,entry);
   for(const other of entry.implementation)for(const [i,target]of(other.targets||[]).entries())if(target.zone!=='stack')h.stageGenericTarget(M,ctx,target,'zone-entry-'+i);
+  for(const other of entry.implementation)if(other.kind==='aura-target')h.stageGenericTarget(M,ctx,h.auraProofTarget(other,'you'),'zone-entry-aura');
   const source=h.zoneCard(M,a,entry.raw.name,'hand'),mana=Object.values(a.pool).reduce((x,y)=>x+y,0);
   assert.equal(await game.castSpell(a,source,{from:'hand'}),true,label+': actual paid source cast');await h.resolveAll(game);
   assert.ok(Object.values(a.pool).reduce((x,y)=>x+y,0)<mana,label+': paid printed mana');

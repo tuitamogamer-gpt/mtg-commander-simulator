@@ -36,6 +36,8 @@ export async function spellKeywordProofV19(M,entry,op,role,h){
  h.fund(a,100);a.library.splice(0);h.fillLibrary(M,a,3);let resolved=0;
  const hit=h.zoneCard(M,a,h.fixtureDefinition('Cascade hit',['Instant'],{cost:'{0}',resolve:async()=>{resolved++;}}),'library');
  const spell=h.zoneCard(M,a,h.fixtureDefinition('Granted cascade spell',['Creature'],{cost:op.filter.threshold?'{6}':'{2}',subtypes:op.filter.subtype?[op.filter.subtype]:['Bear'],power:'2',toughness:'3'}),'hand');
+ if(op.filter.commanderV20)spell.commander=true;
+ if(op.filter.alternatives?.some(filter=>filter.spellQuality==='instant'||filter.spellFilter?.what==='instant'))spell.def={...spell.def,types:['Instant'],resolve:async()=>{}};
  assert.equal(await game.castSpell(a,spell,{from:'hand'}),true);assert.ok(game.stack.some(row=>row.name?.endsWith(': Cascade')));await h.resolveAll(game);assert.equal(hit.zone,'graveyard');assert.equal(resolved,1);
  await game.move(source,'exile');const next=h.zoneCard(M,a,spell.def,'hand');assert.equal(await game.castSpell(a,next,{from:'hand'}),true);assert.equal(game.stack.some(row=>row.name?.endsWith(': Cascade')),false);return 6;
 }
