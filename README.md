@@ -1,18 +1,38 @@
 # Commander Simulator
 
-A browser Commander table with local AI opponents, private multiplayer, animated commanders, and your own imported decks. Pick one of 175 ready-to-play precon decks or bring a supported list, choose the personalities around the table, and play through the stack, priority, combat, triggered abilities, and optional political negotiations at your own pace.
+**Play Magic: The Gathering Commander in your browser, with local AI opponents or friends at a private table.**
 
-**[Play Commander Simulator](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Deployment](docs/deployment.md)
+Choose a ready-to-play precon or import your own supported deck. Build a pod, pick opponent personalities, and play through casting, priority, the stack, combat, and triggered abilities at your own pace. Solo AI runs on your device and needs no model API key or AI subscription.
 
-**iPhone & iPad:** the [iOS app project](docs/ios.md) adds a SwiftUI home screen, bundled Solo play and an online view for the existing service. Build and install it with Xcode on a Mac.
+**[Play now](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Report a bug](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues)
 
-> **Napomena / Disclaimer:** Multiplayer mod sa živim igračem je trenutno u testnoj fazi. Molim za strpljenje.
+![Commander Simulator Command Table showing the battlefield, player seats, hand, and action controls](assets/menu/command-table-preview.jpg)
+
+> **Development focus:** Solo play against local AI. Commander Live with human players is currently in testing.
 >
-> Kompletna pažnja je posvećena isključivo borbi protiv AI protivnika.
+> **Napomena:** Multiplayer mod sa živim igračem je trenutno u testnoj fazi. Molim za strpljenje. Kompletna pažnja je posvećena isključivo borbi protiv AI protivnika.
 
-![Commander Simulator Command Table interface](assets/menu/command-table-preview.jpg)
+## Start playing
 
-**Explore:** [Game modes](#what-you-can-play) · [Precons and commander videos](#175-precon-decks-and-commander-video-animations) · [First game](#your-first-game) · [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) · [AI and Command Zone styles](#ai-archetypes-and-custom-skills) · [Diplomacy & Politics](#diplomacy--politics) · [Judge and recovery](#judge-and-last-resort-recovery) · [Run locally](#run-locally) · [Hosting and Live](#vercel-and-multiplayer) · [Saves and help](#saves-privacy-and-troubleshooting) · [Current limits](#current-limits)
+1. [Open Commander Simulator](https://mtg-commander-simulator.vercel.app/) in a current desktop, tablet, or mobile browser. Guest Solo needs no account or installation.
+2. Choose **Play solo**, select a deck, and set up one to three AI opponents in **Pod**.
+3. Review the settings, keep or mulligan your opening hand, and follow the available actions. Open **Guide** if this is your first visit.
+
+For friends, choose **Play with friends** to open Commander Live and invite them to a private two-to-four-player table. Keep the host's game tab open for the whole match. For your own list, open **My Library** and paste a plain-text deck export under **Import your decklist here**.
+
+**Developers:** jump to [Run locally](#run-locally). **iPhone & iPad:** use the browser or build the [iOS app project](#iphone-and-ipad-app) on a Mac.
+
+## Explore this guide
+
+| For players | For developers and maintainers |
+| --- | --- |
+| [Modes and card coverage](#what-you-can-play) | [Local setup: Windows, macOS, Linux](#run-locally) |
+| [All precons and commander videos](#175-precon-decks-and-commander-video-animations) | [Application architecture](#how-the-application-works) |
+| [First game, combat, mobile controls, and audio](#your-first-game) | [Vercel and multiplayer](#vercel-and-multiplayer) |
+| [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) | [iPhone and iPad app](#iphone-and-ipad-app) |
+| [AI styles and custom skills](#ai-archetypes-and-custom-skills) · [Politics](#diplomacy--politics) | [Tests and release checks](#verification-and-release) |
+| [Judge and recovery](#judge-and-last-resort-recovery) · [Saves and troubleshooting](#saves-privacy-and-troubleshooting) | [Contributing](#contributing) · [Documentation index](#documentation-index) |
+| [Current limits](#current-limits) | [Import history](#catalog-and-import-history) · [Credits](#ai-tools-used-for-this-project) |
 
 ## What you can play
 
@@ -22,7 +42,30 @@ A browser Commander table with local AI opponents, private multiplayer, animated
 | Commander Live | Invite friends to a private table of two to four human players. The host runs the game engine; the room server synchronizes decisions and sends each guest their own view. Keep the host's game tab open. |
 | Imported decks | Paste a Commander decklist, check it against the supported catalog, and save it to My Library. Ready lists can be used by you, Solo opponents, and Live players. |
 
-There are **175 built-in 100-card decks**. As of **27 September 2026**, the engine catalog contains **25,792 card definitions**, of which **25,791 are eligible for deck import**. Brisela is available as a meld result and cannot be imported as a standalone card. These figures describe this repository's supported catalog, not every Magic card. The [Foundations Commander import](reports/decks/precon-fdc-2026-09-26/README.md) adds Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons and Tramplesaurus Rex, with 17 native card definitions, 304 reused identities, deck guides, AI profiles and local artwork. The [Reality Fracture import](reports/decks/precon-frc-2026-09-24/README.md) adds the complete Multiverse Reforged precon, 26 native card definitions, empower Jace and impending support, a deck guide, an AI profile and local artwork. The latest [1,000-card Oracle import](reports/oracle-import/validation-0209-0218.md) adds batches 0209–0218 with executable rules, source provenance, and human/local-AI verification for every new card. The [preceding 1,000-card Oracle import](reports/oracle-import/validation-0199-0208.md) added batches 0199–0208. The [previous 1,000-card Oracle import](reports/oracle-import/validation-0189-0198.md) added batches 0189–0198 with full rules, source provenance and human/local-AI verification. The [preceding 1,000-card Oracle import](reports/mechanics-import-1000-2026-09-13.md) adds batches 0179–0188 with executable rules, source provenance and human/local-AI verification. The [18-card native review](reports/cards/restricted-legacy-2026-09-10/README.md) enables the formerly restricted cards after rule corrections and executable import and gameplay checks. The [Blame Game restoration](reports/decks/blame-game-2026-09-19/README.md) makes the original Nelly Borca deck selectable after its native-rule review, with a guide, AI profile and local artwork. The [Commander 2013, Angels and MTGO import report](reports/decks/precon-c13-td0-sld-2026-09-19/README.md) adds the final eight distinct lists from the pinned queue, with 80 new deck cards and the Brisela meld result, guides, AI profiles and local artwork. The [Commander 2011 and Secret Lair import report](reports/decks/precon-cmd-sld-2026-09-19/README.md) adds seven original decks, 373 reused cards and 79 new native definitions, with guides, AI profiles and local artwork. The [Secrets of Strixhaven import report](reports/decks/precon-soc-2026-09-18/README.md) adds Lorehold Spirit, Silverquill Influence and Witherbloom Pestilence, with 189 reused cards, 48 new native definitions, deck guides, AI profiles and local artwork. The preceding [Bloomburrow / Duskmourn / Secret Lair / Aetherdrift / Final Fantasy import report](reports/decks/precon-blc-dsc-sld-drc-fic-2026-09-12/README.md) records ten original decks, 559 reused cards and 156 new native definitions, with deck guides, AI profiles and local artwork. It covers gifts, Rooms, granted miracle, manifest dread, alternate wins, energy, creature types, counters and graveyard casting. The preceding [Fallout / Thunder Junction / Modern Horizons 3 import report](reports/decks/precon-pip-otc-m3c-2026-09-12/README.md) records ten original decks, 512 reused cards and 214 new native definitions, with deck guides, AI profiles, card artwork and visible radiation counters. The batch covers Junk and attachment synergies, energy, radiation, squad, stolen-card permissions, Deserts, graveyard recursion, everything counters and Eldrazi spell copies. The preceding [Doctor Who / Lost Caverns / Secret Lair / Karlov Manor import report](reports/decks/precon-who-lcc-sld-mkc-2026-09-12/README.md) records ten original decks, 472 reused cards and 209 new native definitions, with dedicated deck guides and AI profiles. The batch covers paradox, historic casting, villainous choices, discover, explore, Vampire death triggers, Pirate recursion, Cat/Dog tokens, surveil and face-down combat. Paradox Power and Blast from the Past preserve both printed commander pairs. The preceding [Commander Masters / Wilds of Eldraine / Doctor Who import report](reports/decks/precon-cmm-woc-who-2026-09-10/README.md) records five original decks, 263 reused cards and 109 new native definitions, including enchantment copies, colorless cascade, Faerie combat triggers, suspend and time travel. Timey-Wimey starts with The Tenth Doctor and Rose Tyler. The preceding [Lord of the Rings / Commander Masters import report](reports/decks/precon-ltc-cmm-2026-09-10/README.md) records five original decks, 293 reused cards and 76 new native definitions, including Food and Ring interactions, Sliver encore and replicate, and planeswalker loyalty abilities. Food and Fellowship starts with both Frodo and Sam. The preceding [Brothers’ War, Phyrexia, March of the Machine and Secret Lair import report](reports/decks/precon-brc-onc-moc-sld-2026-09-09/README.md) records ten original decks, 503 reused cards and 139 new native definitions, including incubate, convoke, backup, poison and double-faced cards. The preceding [Baldur's Gate, Dominaria United and Warhammer 40,000 import report](reports/decks/precon-clb-dmc-40k-2026-09-09/README.md) records ten original decks, 493 reused cards and 188 new native definitions, including party, initiative, ravenous, unearth and cascade. The preceding [Crimson Vow through New Capenna import report](reports/decks/precon-voc-ncc-2026-09-09/README.md) records ten original decks, 490 reused cards and 165 new native definitions, including Vehicles, reconfigure, coin flips, blitz, casualty and connive. Upgrades Unleashed preserves the original two Mossfire Valleys; Heads I Win, Tails You Lose starts with both printed partner commanders. The preceding [Forgotten Realms and Midnight Hunt import report](reports/decks/precon-afc-mic-2026-09-09/README.md) records five original decks, 258 reused cards and 92 new native definitions, including dice, dungeons and decayed Zombies. The preceding [ZNC, Commander Legends and Kaldheim import report](reports/decks/precon-znc-cmr-khc-2026-09-08/README.md) records five original decks, 291 reused cards and 42 new definitions. The preceding [Commander 2019–2020 and ZNC import report](reports/decks/precon-c19-c20-znc-2026-09-08/README.md) records the preceding eight decks, 398 reused cards, 149 new definitions, source provenance and validation evidence. Original cards are retained regardless of banlist status, including Dockside Extortionist. The preceding [Commander 2017–2019 import report](reports/decks/precon-c17-c19-2026-09-08/README.md) records ten decks, 493 reused cards, 170 new definitions, source provenance and validation evidence. The preceding [Commander 2015/2016 batch](reports/decks/precon-c15-c16-2026-09-08/README.md) added ten decks and 142 definitions. The preceding [Commander 2014 batch](reports/decks/precon-c14-2026-09-06/README.md) added five decks and 65 definitions. The preceding [Commander 2021 batch](reports/decks/precon-c21-2026-09-06/README.md) added five decks and 80 definitions. The previous [Starter batch](reports/decks/precon-starter-2026-09-06/README.md) added five decks and 61 definitions. The [generated inventory and remaining-card lists](docs/card-catalog.md) use the pinned Scryfall source snapshot from 30 August, with current runtime availability recorded separately.
+### Current catalog
+
+Repository inventory checked on **27 September 2026**:
+
+| Measure | Available |
+| --- | ---: |
+| Built-in precon decks | **175**, each with 100 cards |
+| Runtime card definitions | **25,792** |
+| Definitions eligible for deck import | **25,791** |
+| Generic Oracle batches | **218**, containing 21,800 definitions |
+| Dedicated commander videos | **28**, across the original 27 decks |
+
+These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
+
+Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **30 August 2026**, with later native additions recorded separately.
+
+### Recent additions
+
+- **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
+- **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
+- **1,000 more Oracle cards:** batches 0209–0218, with executable rules, recorded source provenance, and human/local-AI verification. [Validation report](reports/oracle-import/validation-0209-0218.md)
+- **Mobile table improvements:** a full-hand grid, compact setup, battlefield combat controls, and clearer target selection. [Mobile report](reports/mobile-refresh-2026-09-25.md) · [Target-selection report](reports/mobile-target-visibility-2026-09-26.md)
+
+Earlier deck and Oracle imports remain available in the [import history](#catalog-and-import-history).
 
 Accounts are optional. Guests can play immediately and retain imported lists in their current browser. Signing in adds a private Solo checkpoint, synced imported decks and favorites, lifetime statistics, and recent match results. Custom AI skills and saved pod presets remain local to the browser.
 
@@ -224,11 +267,13 @@ The built-in library contains **175 precon decks, each with 100 cards**. Choose 
 
 ## Your first game
 
-1. Open the game and choose **Start a solo table**, or open **Guide** for a walkthrough.
+1. Open the game and choose **Play solo**, or open **Guide** for a walkthrough.
 2. Select a built-in deck or a ready list in **My Library**. Its deck overview explains the game plan and card composition.
 3. Continue to **Pod**, choose opponents and settings, and review the table before starting.
 4. Keep or mulligan your opening hand. Use the available action buttons to play lands, cast spells, activate abilities, and pass priority.
 5. **HOLD** arms a stop at the next priority window; **Proceed** advances a presented action or review. Important spells and combat decisions wait for your input. Click controls remain available alongside optional drag controls.
+
+### Decisions and result reviews
 
 **After effects:** routine searches and smaller changes appear in a compact corner panel with the battlefield still visible; **Details & stack** expands the full explanation. Board wipes, large damage and major shifts receive a central spotlight with prominent artwork and actual impact totals. Both wait for **Proceed**. Reviews show the source, actual damage and life changes, permanents that left or survived, and stack objects still waiting to resolve. Chaos Warp always shows its revealed card and outcome, including lands and nonpermanent cards that stay on top of the library. Library searches show the cards found and their destinations; a tutor that does not reveal its selection keeps the identity private from opponents. These reviews also work with reduced motion and fast playback.
 
@@ -238,9 +283,13 @@ The arena includes card inspection, searchable zones, a game log, combat assignm
 
 **Selective recaps** explain opponents' less obvious results, such as a fetch land's destination, reanimation, blink, or a change of control. Ordinary casts, small token batches, and small life changes continue without an extra recap. Board wipes and other major outcomes get one highlight with the actual result, up to three key changes, and a collapsible full breakdown. Pending triggers remain visible as pending; **Proceed** resumes play at your pace. Your own routine searches do not interrupt you, and opponents' unrevealed cards stay private.
 
+### Dungeons and target selection
+
 **Dungeons & routes** appears in Deck Spotlight for built-in and imported decks with dungeon or initiative cards. Before playing, browse Lost Mine of Phandelver, Dungeon of the Mad Mage, Tomb of Annihilation, and Undercity, with every room's effect and connected paths. During a venture decision, preview a dungeon or select a highlighted legal next room, then confirm entry. The dungeon button beside a player's life area opens their map, including their current room, visited route, next exits, and completed-dungeon count; **Game menu → Dungeons & routes** is always available. Maps explain initiative and the entry restriction for Undercity. Progress survives Solo saves and is public in Live, including for opponents. Older saves show the current room and record the route from that point onward.
 
 Target choices show the source card, the full current instruction, and progress such as **Target 1 of 2**, with earlier choices listed on the next step. When eligible cards are in a graveyard, exile, or the command zone, the decision panel offers a direct **Open** button. Relevant graveyard/exile controls are marked **CHOOSE**, and legal cards are highlighted inside the zone. Select a card, then confirm it in the decision panel.
+
+### Table views and combat
 
 Solo players and all Live players use the **Command Table** interface. **Table** shows the opponents together; **Focus** gives a selected opponent more room. The decision panel keeps the current action visible, and target/combat choices reveal the relevant players. Live hosts and guests share the same gameplay controls, including HOLD, mana selection, card actions, Stack responses, combat and Last Resort. Each player sees their own hand and chooses their own priority and display preferences. The landing-page Table/Focus preview shows screenshots of the interface; it does not start a game.
 
@@ -248,9 +297,17 @@ Solo players and all Live players use the **Command Table** interface. **Table**
 
 Attack targets show life or planeswalker loyalty, assigned attackers and their combined power. The attack heading totals the draft; blue selected creatures still need a defender, while gold marks assigned attackers. On phones, swipe the defender row to reach additional players or planeswalkers. These power totals describe the chosen creatures, not predicted damage after blockers and other effects.
 
+### Phones and tablets
+
 On phones and tablets, the focused opponent follows the active player's turn. Tap another opponent to inspect their board until the next turn. Short screens show one battlefield at a time: **Mine** opens your board, and an opponent's seat opens theirs. Your turn brings your battlefield back automatically. Dense mobile battlefields scroll horizontally, with lands and mana sources below; landscape phones place the hand beside the board.
 
 The mobile **Hand** tab (or **View all** above your cards) opens a scrollable grid of your entire hand. Sort, inspect and play cards through their usual actions while the current decision stays within reach. **Mine** returns to your battlefield; **Table** and **Stack** keep their own views. In the phone deck library, **Filters** also opens sorting and the Grid/Compact layout choices.
+
+### Music, sound, and motion
+
+Open **MENU → Music & sound** to choose among three background tracks, adjust music and effects independently, mute playback, or preview an effect. Short cues mark combat, dungeon rooms, counters, and spellcasting; major arrivals, damage, board wipes, and game endings have their own effects. Audio preferences stay in the current browser.
+
+Browsers may require a click or tap before audio starts. Reduced motion is available for presentation, and commander entrances fall back to card art when it is enabled. Sound and cinematics do not change game decisions or card rules.
 
 ## Automatic and manual mana
 
@@ -283,7 +340,7 @@ Commander tax adds **{2} for each previous cast from the command zone**, and app
 
 ## Import your deck
 
-Build or edit your list in a deck builder such as Moxfield, then copy its **plain-text export**. On the home screen, choose **Import your decklist here**, paste the list, and press **Check decklist**. Once validation passes, choose **Save to My Library** and select the saved deck to continue through Deck → Pod → Review.
+Build or edit your list in a deck builder such as Moxfield, then copy its **plain-text export**. On the home screen, open **My Library**, paste the list under **Import your decklist here**, and press **Check decklist**. Once validation passes, choose **Save to My Library** and select the saved deck to continue through Deck → Pod → Review.
 
 The list must contain 100 cards including the commander or legal commander pair, and satisfy the engine's commander, color-identity, singleton, and card-support checks. Unknown, ineligible, or unsupported cards are reported before play; importing text does not implement new cards. The player UI accepts decklist text, not a Moxfield URL.
 
@@ -420,7 +477,20 @@ Recovery preserves hidden-information boundaries: it does not reveal opponents' 
 
 ## Run locally
 
-Requirements: **Node.js 22+**, npm, and Python 3 for the static preview command.
+Use **Git**, **Node.js 22 or newer**, **npm**, and **Python 3**. Serve the repository over HTTP; opening `index.html` directly as a `file://` URL is not the supported startup path. The frontend uses native browser ES modules, so there is no frontend build step.
+
+### Windows PowerShell
+
+```powershell
+git clone https://github.com/tuitamogamer-gpt/mtg-commander-simulator.git
+cd mtg-commander-simulator
+npm.cmd ci
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Use `npm.cmd` if PowerShell blocks `npm.ps1`. The repository's `npm run serve` invokes `python3`; on Windows, use the working `python` command shown above instead of a Windows Store alias. If your Python installation exposes only the launcher, use `py -3 -m http.server 8000 --bind 127.0.0.1`.
+
+### macOS and Linux
 
 ```bash
 git clone https://github.com/tuitamogamer-gpt/mtg-commander-simulator.git
@@ -429,24 +499,51 @@ npm ci
 npm run serve
 ```
 
-Open <http://127.0.0.1:8000>. This starts a static preview for guest Solo play. It does not start the account or multiplayer APIs; those need the server setup in [Deployment and multiplayer operations](docs/deployment.md).
+Open **<http://127.0.0.1:8000/>**. Keep the terminal running; **Ctrl+C** stops this foreground server. Run commands from the repository root and repeat `npm ci` after dependency-lockfile changes.
 
-The frontend uses native browser ES modules and bundled data. There is no production frontend build step. Card art for the built-in decks is bundled locally; other catalog cards and unresolved alternate prints can use Scryfall image endpoints, with a card-back fallback. Imported decks can therefore need network access for artwork. `npm run sync:card-images` is the explicit image-maintenance command.
+### Choose the right local environment
+
+| Environment | What works | Additional setup |
+| --- | --- | --- |
+| Python static preview | Guest Solo, local AI, deck import, and browser-local preferences | No Redis or API credentials |
+| Full web application | Accounts, cloud saves, and Commander Live alongside Solo | Node API routes and Development Redis configuration |
+| iOS bundle | Bundled Solo and a separate online view | [iOS build instructions](docs/ios.md); a Mac for Xcode |
+
+Python does not execute `api/account.js` or `api/ws.js`. For the full application, configure the Development environment from [Deployment](docs/deployment.md), then run `vercel dev --listen 3000` (`vercel.cmd dev --listen 3000` in Windows PowerShell). Use **<http://localhost:3000/>** for that server.
+
+Built-in deck artwork is bundled locally. Other catalog cards and unresolved alternate prints can use Scryfall image endpoints, with a card-back fallback, so imported decks may need internet access for artwork. `npm run sync:card-images` is an explicit asset-maintenance command, not a prerequisite for ordinary local play.
 
 ## How the application works
 
 | Area | Main files | Responsibility |
 | --- | --- | --- |
-| Public entry | `index.html`, `src/public-entry.js`, `src/modules/landing.js` | Landing page, interface preview, and guide; load the heavy game modules when needed. |
-| Rules and table | `src/modules/engine2.js`, `src/modules/ui.js`, `src/modules/main.js` | Legal decisions, stack resolution, combat, setup, and game presentation. |
-| Command Table | `src/modules/command-table.js`, `src/command-table.css`, `src/command-landing.css` | Table/Focus presentation, player seats, decision panel, and matching landing design. |
-| Card data | `src/data.js`, `src/modules/oracle-catalog.js`, `src/oracle-batches/` | Built-in decks, card definitions, Oracle batches, and catalog metadata. |
-| Deck import | `src/modules/deck-import.js` | Parse and validate lists; manage saved deck records. |
-| Local AI | `src/modules/ai-*`, `src/modules/ai-skill-ui.js` | Deck strategy, decisions, and custom skill workshop. |
-| Live rooms | `api/ws.js`, `logic.js`, `src/modules/multiplayer.js` | WebSocket connections, Redis room state, seat/action checks, and guest views. |
-| Accounts | `api/account.js` | Sessions, imported libraries, favorites, private Solo saves, and statistics. |
+| Public entry | [index.html](index.html), [src/public-entry.js](src/public-entry.js), [src/modules/landing.js](src/modules/landing.js) | Landing page, interface preview, and guide; load the heavy game modules when needed. |
+| Rules and table | [src/modules/engine2.js](src/modules/engine2.js), [src/modules/ui.js](src/modules/ui.js), [src/modules/main.js](src/modules/main.js) | Legal decisions, stack resolution, combat, setup, and game presentation. |
+| Command Table | [src/modules/command-table.js](src/modules/command-table.js), [src/command-table.css](src/command-table.css), [src/command-landing.css](src/command-landing.css) | Table/Focus presentation, player seats, decision panel, and matching landing design. |
+| Card data | [src/data.js](src/data.js), [src/modules/oracle-catalog.js](src/modules/oracle-catalog.js), [src/oracle-batches/](src/oracle-batches/) | Built-in decks, card definitions, Oracle batches, and catalog metadata. |
+| Deck import | [src/modules/deck-import.js](src/modules/deck-import.js) | Parse and validate lists; manage saved deck records. |
+| Local AI | `src/modules/ai-*`, [src/modules/ai-skill-ui.js](src/modules/ai-skill-ui.js) | Deck strategy, decisions, and custom skill workshop. |
+| Live rooms | [api/ws.js](api/ws.js), [logic.js](logic.js), [src/modules/multiplayer.js](src/modules/multiplayer.js) | WebSocket connections, Redis room state, seat/action checks, and guest views. |
+| Accounts | [api/account.js](api/account.js) | Sessions, imported libraries, favorites, private Solo saves, and statistics. |
 
 In Solo, the browser owns the complete rules engine. In Live, the host browser owns it and publishes per-player projections through the room service. This is a **trusted-host private-table model**: the server validates room roles and decision contracts, but does not independently simulate every game rule or prevent a modified host from cheating.
+
+```mermaid
+flowchart LR
+  Solo["Solo browser: rules and local AI"]
+  Host["Live host browser: rules and full state"]
+  Guest["Live guests: individual player views"]
+  Rooms["Live API /api/ws"]
+  Accounts["Account API /api/account"]
+  Redis[("Redis")]
+  Host <-->|WebSocket| Rooms
+  Guest <-->|WebSocket| Rooms
+  Rooms <-->|Native Redis connection| Redis
+  Solo -->|Optional saves and library sync| Accounts
+  Accounts <-->|Redis REST| Redis
+```
+
+Accounts are optional in all modes; the Solo arrow highlights private checkpoint storage. Live players can also use account libraries and favorites. The [deployment architecture](docs/deployment.md#what-runs-where) describes these boundaries in more detail.
 
 ## Vercel and multiplayer
 
@@ -456,32 +553,181 @@ Live room storage needs server-only `REDIS_URL`, `KV_URL`, or `UPSTASH_REDIS_URL
 
 See [Deployment](docs/deployment.md) for exact commands, environment variables, custom domains, room expiry, local integration testing, and production checks. Never commit `.env` files, Redis credentials, cookies, or private room invitations.
 
+## iPhone and iPad app
+
+The repository includes a **SwiftUI home screen**, a **Capacitor/WKWebView Solo bundle**, and a separate online view for the existing service. The project targets **iOS/iPadOS 17+** and requires **a Mac with Xcode 26+** for native compilation and installation.
+
+```bash
+npm ci
+npm run ios:sync
+npm run ios:test
+npm run ios:open
+```
+
+Use `npm.cmd` for the package commands on Windows. Bundle preparation and JavaScript checks can run there; Xcode and device signing require a Mac. Run `npm run ios:sync` again after changing game source or assets. `npm run ios:package` prepares `dist/commander-ios-mac.zip`, an Xcode source project with the bundled game, not a signed app installer.
+
+Bundled Solo can run offline; unbundled artwork needs a connection. Offline and online storage are separate, and Safari data is not imported automatically. A guest game is not a durable checkpoint. Keep a Live host active in the foreground because iOS can suspend background apps.
+
+See the [iOS guide](docs/ios.md) for signing, simulator/device verification, exports, and packaging. The [macOS workflow](.github/workflows/ios-build.yml) checks an unsigned simulator build; it does not publish to TestFlight or the App Store.
+
 ## Saves, privacy, and troubleshooting
 
-**Save & Continue** stores one private Solo checkpoint per signed-in account. A finished Solo win awards 100 lifetime points; a completed loss awards 25. Match recording is idempotent. Live uses room reconnection and synchronization instead of the Solo save format, and does not support moving a running game to another host.
+### What is saved
+
+| Data or feature | Guest / local behavior | Signed-in behavior |
+| --- | --- | --- |
+| Imported decks | Stored in this browser and website origin | Owner-bound library synced through the account; up to 40 decks |
+| Favorites | Browser-local preferences | Synced through the account |
+| Custom AI skills and pod presets | Browser-local; export skill JSON for backup | Remain browser-local |
+| Solo Save & Continue | No durable account checkpoint | One private Solo checkpoint per account |
+| Match history and lifetime statistics | No account history | Finished Solo wins award 100 points; losses award 25; retries do not count twice |
+| Commander Live | Reconnect to a room with the original active host | Same room model; signing in does not add host migration or durable Live resume |
+
+Guest and account deck libraries are separate; signing in does not silently merge them. Clearing site data or changing browser, device, or domain can remove access to local records. Keep original decklist text and exported skill JSON as backups. Read [Data and account behavior](docs/data-and-accounts.md) for storage, retention, and current account limits.
+
+### Common problems
+
+| Symptom | What to check |
+| --- | --- |
+| `npm` is blocked in PowerShell | Use `npm.cmd` for the commands in this guide. |
+| `python3` opens the Windows Store or cannot be found | Use `python -m http.server 8000 --bind 127.0.0.1`, or the `py -3` launcher. |
+| Local Solo works but sign-in or Live fails | A Python server serves static files only. Configure the API environment in [Deployment](docs/deployment.md). |
+| An imported list is rejected | Paste decklist text, then fix the reported size, commander, color-identity, singleton, or unsupported-card errors. A deck-builder URL is not a decklist. |
+| Cards show a fallback image | Unbundled artwork needs a network connection. Card-image availability and rules support are separate. |
+| Play is waiting | Check the decision panel, Stack review, negotiation, HOLD/priority stop, or recovery pause. Confirm the pending action; use **Finish recovery & resume** after Last Resort. |
+| Live loses its connection | Keep the original host tab active and allow reconnection. Use the visible **Resume** control when available; a closed or refreshed host cannot be replaced by another player. |
+| A saved deck seems missing | Check the account, browser, and website origin. Guest and account libraries are separate. |
+| A debug import starts at turn one | That is expected: debug reports reproduce setup, while account Save & Continue restores a private checkpoint. |
+
+### Report a reproducible bug
 
 **Game Menu → Download debug snapshot** exports a share-safe `mtg-commander-debug/v1` report with the seed, public state, recent public log, and AI decisions. **Import debug snapshot** restores the setup and starts a deterministic game from turn one; it does not restore a midgame private save. Online snapshots are not accepted by the Solo replay importer.
 
-Read [Data and account behavior](docs/data-and-accounts.md) before choosing what to save or share. For a rules/UI bug, [open an issue](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues) with the card names, expected and actual behavior, browser, steps to reproduce, and a share-safe debug report when available. Remove personal information from screenshots and never post private save files or room links.
+[Open an issue](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues) with:
+
+- The card/deck names, game mode, browser, and device.
+- Steps to reproduce, followed by expected and actual behavior.
+- A share-safe debug report or screenshot when available.
+
+Review attachments before posting. Do not publish private saves, room invitations, passwords, session cookies, or server credentials. [Judge and Last Resort](#judge-and-last-resort-recovery) can help you continue a game after a rules issue; a bug report helps fix its cause.
 
 ## Verification and release
+
+Start with the syntax and baseline checks after installing dependencies:
+
+```bash
+npm run check
+npm run test:baseline
+```
+
+On Windows PowerShell, substitute `npm.cmd` for `npm` in this section.
+
+| Command | Purpose |
+| --- | --- |
+| `npm run check` | Parse the JavaScript source and check syntax. |
+| `npm run test:baseline` | Check deck sizes, card definitions, commanders, and the built-in deck inventory. |
+| `npm test` | Run the Node test suite for rules, AI, imports, accounts, and Live. Includes the long all-deck headless simulation. |
+| `npm run test:ai` | Run AI V2 checks and the headless deck simulation. |
+| `npm run test:server` | Run focused Live server, action replay, room lease, and reconnect tests with local test stores. |
+| `npm run audit` | Audit source and built-in deck coverage. |
+| `npm run certify:strict` | Run strict executable card certification. |
+| `npm run benchmark:ai` | Measure the AI workload. |
+| `npm run ios:test` | Check iOS web-package integration. |
+
+The full suite can take substantially longer than focused checks. A stopped run is incomplete, even when earlier checks passed. Certification records project coverage; it does not prove every possible card interaction.
+
+Browser acceptance scripts live in [tests/browser](tests/browser/). They require Playwright and its browser binaries separately; Playwright is not a project dependency. `PLAYWRIGHT_MODULE` can point to an installed `playwright/index.mjs`. The [release guide](PUBLIC_RELEASE.md#browser-acceptance) lists the scripts and required gameplay, mobile, privacy, and reconnect scenarios.
+
+For a public application release, follow [PUBLIC_RELEASE.md](PUBLIC_RELEASE.md), including:
 
 ```bash
 npm run check
 npm test
 npm run audit
 npm run certify:strict
+npm audit --omit=dev --audit-level=high
+git diff --check
 ```
 
-Focused AI and server checks are available as `npm run test:ai` and `npm run test:server`; `npm run benchmark:ai` measures the AI workload. The [release guide](PUBLIC_RELEASE.md) covers browser gameplay, multiplayer privacy/reconnection, account checks, remote commit parity, and deployment verification. Certification is executable project coverage, not proof of every possible card interaction.
+Run the relevant browser flows, commit only intended files, and push the source revision. With the existing Git integration, check the automatic deployment for that exact commit before starting a manual deployment. Verify **READY**, the production alias, and the changed application behavior. An HTTP 200 or an old report does not establish that the current revision passed release checks.
 
-To generate a portable self-host archive:
+### Portable self-host archive
 
 ```bash
 npm run package:public
 ```
 
-The archive is `dist/commander-simulator-public.zip`. It includes the client, local artwork, source, tests, reports, and server modules. Redis configuration and an appropriate server host are still required for online features.
+This generates and integrity-checks `dist/commander-simulator-public.zip`, including the client, local artwork, source, tests, reports, and server modules. After extraction, use the [local setup](#run-locally) for guest Solo. Online features still require the configured APIs and Redis services.
+
+## Contributing
+
+Use [GitHub issues](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues) for reproducible bugs or focused feature proposals, and [pull requests](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/pulls) for changes. Describe the problem, the resulting behavior, and the checks you ran.
+
+1. Work on a topic branch and preserve unrelated local changes.
+2. Follow the existing module structure; use focused regression coverage for rules, AI, or synchronization changes.
+3. Run the checks relevant to the change and document any incomplete validation. Use the release guide when publishing application behavior.
+4. Update the appropriate player or developer guide. For card imports, retain source provenance and executable verification, then regenerate the catalog using its pinned source.
+
+### Keeping this README current
+
+Use [package.json](package.json) for runnable commands, [src/data.js](src/data.js) and the baseline checks for the deck inventory, and [docs/catalog/summary.json](docs/catalog/summary.json) for catalog counts. Keep runtime definitions, deck-import eligibility, and distinct Oracle IDs separate. Date inventory claims and link to the report that supports an addition.
+
+Keep quick-start instructions near the top, use repository-relative links, and put large reference tables in expandable sections. Before publishing, preview headings, links, tables, images, and the architecture diagram on GitHub. The format follows [GitHub's README guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes) and [collapsed-section documentation](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-collapsed-sections).
+
+## Documentation index
+
+| Guide | Contents |
+| --- | --- |
+| [Deck import](docs/deck-import.md) | Accepted formats, commander pairs, validation, and My Library |
+| [Card catalog](docs/card-catalog.md) | Supported/remaining cards, provenance, and inventory regeneration |
+| [AI archetypes](docs/ai-archetypes.md) | Core styles, signature personalities, and deck plans |
+| [Custom AI skills](docs/custom-ai-skills.md) | JSON schema, examples, validation, and installation |
+| [Example custom skill](docs/examples/patient-engine.json) | A concrete skill JSON to inspect and adapt |
+| [AI engine architecture](docs/COMMANDER_AI_ENGINE.md) | Decision pipeline, legal actions, evaluation, and search |
+| [Deployment](docs/deployment.md) | Local APIs, Redis, Vercel, domains, and operational checks |
+| [Data and accounts](docs/data-and-accounts.md) | Local/cloud storage, sessions, retention, and recovery limits |
+| [iOS app](docs/ios.md) | Mac build, signing, offline/online behavior, and device acceptance |
+| [Public release](PUBLIC_RELEASE.md) | Validation gates, deployment verification, packaging, and rollback |
+| [Reports](reports/) | Dated implementation and validation evidence |
+
+## Catalog and import history
+
+These reports describe their dated imports and checks. Use the [generated catalog](docs/card-catalog.md) for the current inventory; historical counts should not be added together to calculate present coverage.
+
+<details>
+<summary>Browse deck imports, Oracle batches, and native-card reviews</summary>
+
+| Report | Recorded scope |
+| --- | --- |
+| [Foundations Commander import](reports/decks/precon-fdc-2026-09-26/README.md) | Five Foundations Commander decks; 17 native definitions. |
+| [Reality Fracture import](reports/decks/precon-frc-2026-09-24/README.md) | Multiverse Reforged; 26 native definitions. |
+| [Oracle 0209–0218](reports/oracle-import/validation-0209-0218.md) | Oracle batches 0209–0218; 1,000 cards. |
+| [Oracle 0199–0208](reports/oracle-import/validation-0199-0208.md) | Oracle batches 0199–0208; 1,000 cards. |
+| [Oracle 0189–0198](reports/oracle-import/validation-0189-0198.md) | Oracle batches 0189–0198; 1,000 cards. |
+| [Oracle 0179–0188](reports/mechanics-import-1000-2026-09-13.md) | Oracle batches 0179–0188; 1,000 cards. |
+| [18-card native review](reports/cards/restricted-legacy-2026-09-10/README.md) | Individual native review of 18 formerly restricted cards. |
+| [Blame Game restoration](reports/decks/blame-game-2026-09-19/README.md) | Restoration of the original Nelly Borca precon. |
+| [Commander 2013, Angels and MTGO import report](reports/decks/precon-c13-td0-sld-2026-09-19/README.md) | Eight distinct decks; 80 new deck cards and the Brisela meld result. |
+| [Commander 2011 and Secret Lair import report](reports/decks/precon-cmd-sld-2026-09-19/README.md) | Seven original decks; 79 new native definitions. |
+| [Secrets of Strixhaven import report](reports/decks/precon-soc-2026-09-18/README.md) | Lorehold Spirit, Silverquill Influence, and Witherbloom Pestilence. |
+| [Bloomburrow / Duskmourn / Secret Lair / Aetherdrift / Final Fantasy import report](reports/decks/precon-blc-dsc-sld-drc-fic-2026-09-12/README.md) | Ten original decks; 156 new native definitions. |
+| [Fallout / Thunder Junction / Modern Horizons 3 import report](reports/decks/precon-pip-otc-m3c-2026-09-12/README.md) | Ten original decks; 214 new native definitions. |
+| [Doctor Who / Lost Caverns / Secret Lair / Karlov Manor import report](reports/decks/precon-who-lcc-sld-mkc-2026-09-12/README.md) | Ten original decks; 209 new native definitions. |
+| [Commander Masters / Wilds of Eldraine / Doctor Who import report](reports/decks/precon-cmm-woc-who-2026-09-10/README.md) | Five original decks; 109 new native definitions. |
+| [Lord of the Rings / Commander Masters import report](reports/decks/precon-ltc-cmm-2026-09-10/README.md) | Five original decks; 76 new native definitions. |
+| [Brothers’ War, Phyrexia, March of the Machine and Secret Lair import report](reports/decks/precon-brc-onc-moc-sld-2026-09-09/README.md) | Ten original decks; 139 new native definitions. |
+| [Baldur's Gate, Dominaria United and Warhammer 40,000 import report](reports/decks/precon-clb-dmc-40k-2026-09-09/README.md) | Ten original decks; 188 new native definitions. |
+| [Crimson Vow through New Capenna import report](reports/decks/precon-voc-ncc-2026-09-09/README.md) | Ten original decks; 165 new native definitions. |
+| [Forgotten Realms and Midnight Hunt import report](reports/decks/precon-afc-mic-2026-09-09/README.md) | Five original decks; 92 new native definitions. |
+| [ZNC, Commander Legends and Kaldheim import report](reports/decks/precon-znc-cmr-khc-2026-09-08/README.md) | Five original decks; 42 new definitions. |
+| [Commander 2019–2020 and ZNC import report](reports/decks/precon-c19-c20-znc-2026-09-08/README.md) | Eight original decks; 149 new definitions. |
+| [Commander 2017–2019 import report](reports/decks/precon-c17-c19-2026-09-08/README.md) | Ten original decks; 170 new definitions. |
+| [Commander 2015/2016 batch](reports/decks/precon-c15-c16-2026-09-08/README.md) | Ten original decks; 142 new definitions. |
+| [Commander 2014 batch](reports/decks/precon-c14-2026-09-06/README.md) | Five original decks; 65 new definitions. |
+| [Commander 2021 batch](reports/decks/precon-c21-2026-09-06/README.md) | Five original decks; 80 new definitions. |
+| [Starter batch](reports/decks/precon-starter-2026-09-06/README.md) | Five original decks; 61 new definitions. |
+
+</details>
 
 ## Current limits
 
