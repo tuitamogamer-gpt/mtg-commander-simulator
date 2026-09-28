@@ -280,6 +280,11 @@ try {
     await card(ids.creatures[1]).tap();
     await page.locator(`[data-combat-attacker="${ids.attackers[0]}"]`).tap();
     assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 2);
+    if (viewport.width <= 900) {
+      assert.deepEqual(await page.locator('.ct-mobile-combat-blocker').evaluateAll(rows => rows.map(row => Number(row.dataset.blockerId))), ids.creatures.slice(0, 2));
+      assert.equal(await page.locator('.ct-mobile-combat-blocker img').count(), 2, 'Assigned blockers display real card faces');
+      assert.match(await page.locator('.ct-mobile-combat-roster-title').textContent(), /2\/3 assigned/);
+    }
     await shot(`${viewport.width}-block`);
     if (viewport.width === 390) {
       const nav = page.getByRole('navigation', {name: 'Arena view'});
@@ -339,6 +344,53 @@ try {
   await confirm().tap();
   await page.waitForFunction(() => Array.isArray(__combatAnswer));
   assert.deepEqual(await page.evaluate(() => __combatAnswer), []);
+  await fixture(); ids = await combat('blockers');
+  await page.locator(`[data-combat-attacker="${ids.attackers[0]}"]`).tap();
+  await card(ids.creatures[0]).tap();
+  await card(ids.creatures[1]).tap();
+  const assignedCard = page.locator(`.ct-mobile-combat-blocker[data-blocker-id="${ids.creatures[0]}"]`);
+  await assignedCard.locator('.ct-mobile-combat-card').tap();
+  await page.locator('.sheet').getByRole('button', {name:'Close', exact:true}).click();
+  assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 2, 'Inspecting an assigned card does not remove the block');
+  await assignedCard.getByRole('button', {name:/^Remove /}).tap();
+  assert.deepEqual(await page.evaluate(() => _ui.blockAssignments().map(pair => pair.blocker.iid)), [ids.creatures[1]], 'Remove changes only the chosen blocker');
+  assert.equal(await confirm().isDisabled(), true, 'Removing the pictured blocker rechecks menace');
+  await card(ids.creatures[0]).tap();
+  await confirm().tap();
+  await page.waitForFunction(() => Array.isArray(__combatAnswer));
+  assert.deepEqual(await page.evaluate(() => __combatAnswer.map(pair => [pair.blocker, pair.attacker]).sort()), ids.creatures.slice(0, 2).map(id => [id, ids.attackers[0]]).sort());
+  // Apply the accepted public declaration and hold the normal response window.
+  await page.evaluate(() => {
+    for (const pair of __combatAnswer) {
+      const attacker = _game.byIid(pair.attacker), blocker = _game.byIid(pair.blocker);
+      attacker.blockedBy.push(blocker); attacker.wasBlocked = true; blocker.blocking = attacker.iid;
+    }
+    _ui.prioMode = 'full';
+    void _ui.me.controller.decide(_game, {type:'priority', player:_ui.me, casts:[], acts:[]});
+    _ui.showMobileView('combat');
+  });
+  const matchup = page.locator(`.ct-mobile-combat-matchup[data-attacker-id="${ids.attackers[0]}"]`);
+  assert.equal(await matchup.locator('.ct-mobile-combat-blocker').count(), 2, 'Declared blockers remain beneath their attacker during responses');
+  assert.equal(await page.locator('.ct-mobile-combat-remove').count(), 0, 'Declared blocks cannot be edited');
+  const art = await matchup.locator('.ct-mobile-combat-blocker img').evaluateAll(images => images.map(img => img.getAttribute('src')));
+  const expectedArt = await page.evaluate(ids => ids.map(id => {
+    const wrap = document.createElement('span'); wrap.innerHTML = MTG.cardArtHTML(_game.byIid(id)); return wrap.querySelector('img').getAttribute('src');
+  }), [ids.creatures[1], ids.creatures[0]]);
+  assert.deepEqual(art, expectedArt, 'Each declared blocker uses the actual assigned card artwork');
+  await matchup.locator('.ct-mobile-combat-blocker .ct-mobile-combat-card').first().tap();
+  await page.locator('.sheet').getByRole('button', {name:'Close', exact:true}).click();
+  assert.equal(await matchup.locator('.ct-mobile-combat-blocker').count(), 2);
+  assert.match(await page.locator(`.ct-mobile-combat-matchup[data-attacker-id="${ids.attackers[1]}"] .ct-mobile-combat-block-status`).textContent(), /^Unblocked$/);
+  await shot('mobile-declared-blockers');
+  await page.evaluate(() => {
+    const attacker = _game.combat.attackers[0];
+    for (const blocker of attacker.blockedBy) blocker.zone = 'graveyard';
+    attacker.blockedBy = [];
+    _ui.render();
+  });
+  assert.equal(await matchup.locator('.ct-mobile-combat-blocker').count(), 0, 'Cards that left combat are not shown as active blockers');
+  assert.match(await matchup.locator('.ct-mobile-combat-block-status').textContent(), /Blocked · blocker left combat/);
+  check('Mobile attacker-first defense, separate inspect/remove controls and declared blocker artwork during responses');
   await fixture(); await combat('combatReview');
   await page.locator('[data-combat-attacker]').first().tap();
   await page.locator('.sheet').getByRole('button', {name:'Close', exact:true}).click();

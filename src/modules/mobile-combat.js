@@ -20,6 +20,34 @@ const face = card => {
   return art;
 };
 
+// Reuse public card faces for both the editable draft and declared blocks.
+// Inspection and removal are separate controls so looking at a card is safe.
+function blockerCards(ui, attacker, blockers, pd = null) {
+  const list = node('div', 'ct-mobile-combat-blockers');
+  list.setAttribute('aria-label', `Blocking ${attacker.name}`);
+  for (const blocker of blockers) {
+    const row = node('article', 'ct-mobile-combat-unit ct-mobile-combat-blocker');
+    row.dataset.blockerId = String(blocker.iid);
+    const card = button('', () => inspect(ui, blocker), 'ct-mobile-combat-card');
+    card.setAttribute('aria-label', `Inspect ${blocker.name}, blocking ${attacker.name}`);
+    const copy = node('span', 'ct-mobile-combat-unit-copy');
+    copy.append(node('b', '', blocker.name), node('strong', '', `${blocker.power}/${blocker.toughness}`));
+    const abilities = keywords(blocker);
+    if (abilities) copy.append(node('small', '', abilities));
+    card.append(face(blocker), copy);
+    row.append(card);
+    if (pd) {
+      const remove = button('×', () => {
+        if (ui.pending === pd) ui.assignBlocker(blocker, attacker);
+      }, 'ct-block-link ct-mobile-combat-remove');
+      remove.setAttribute('aria-label', `Remove ${blocker.name} from blocking ${attacker.name}`);
+      row.append(remove);
+    }
+    list.append(row);
+  }
+  return list;
+}
+
 export function createMobileCombat(ui, game, root, pd) {
   const pane = node('section', 'ct-mobile-combat');
   pane.setAttribute('aria-label', 'Combat');
@@ -36,6 +64,10 @@ export function createMobileCombat(ui, game, root, pd) {
   const cards = pd?.q.type === 'attackers' ? pd.q.eligible.filter(card => card.zone === 'battlefield')
     : pd?.q.type === 'blockers' ? pd.q.potential : [];
   const blocks = pd?.q.type === 'blockers' ? ui.blockAssignments(pd) : [];
+  if (pd?.q.type === 'blockers') {
+    const assigned = new Set(blocks.map(pair => pair.blocker)).size;
+    roster.append(node('h3', 'ct-mobile-combat-roster-title', `Your blockers · ${assigned}/${cards.length} assigned`));
+  }
   for (const card of cards) {
     const row = node('article', 'ct-mobile-combat-unit');
     const pick = button('', () => {}, 'ct-mobile-combat-card');
@@ -75,16 +107,22 @@ export function createMobileCombat(ui, game, root, pd) {
         : 'Your attacks, blocks and combat assignments appear here during combat.'));
     }
     for (const attacker of attackers) {
+      const group = node('article', 'ct-mobile-combat-matchup');
+      group.dataset.attackerId = String(attacker.iid);
       const card = button('', () => inspect(ui, attacker), 'ct-mobile-combat-card');
+      card.setAttribute('aria-label', `Inspect ${attacker.name}`);
       const copy = node('span', 'ct-mobile-combat-unit-copy');
       const blockers = (attacker.blockedBy || []).filter(blocker => blocker.zone === 'battlefield');
-      const afterBlocks = ['firstStrike', 'damage', 'endCombat'].includes(game.step);
+      const afterBlocks = ['firstStrike', 'damage', 'endCombat'].includes(game.step)
+        || game.step === 'blockers' && (ui.pending?.q.type === 'priority' || ui.react?.q.type === 'priority');
       copy.append(node('b', '', attacker.name), node('strong', '', `${attacker.power}/${attacker.toughness}`),
         node('span', 'ct-mobile-combat-assignment', `→ ${attacker.attacking === ui.me ? 'You' : attacker.attacking.name}`),
-        node('small', '', blockers.length ? `Blocked by ${blockers.map(blocker => blocker.name).join(', ')}`
+        node('small', 'ct-mobile-combat-block-status', blockers.length ? `Blocked by ${blockers.length} creature${blockers.length === 1 ? '' : 's'}`
           : attacker.wasBlocked ? 'Blocked · blocker left combat' : afterBlocks ? 'Unblocked' : 'Awaiting blocks'));
       card.append(face(attacker), copy);
-      history.append(card);
+      group.append(card);
+      if (blockers.length) group.append(blockerCards(ui, attacker, blockers));
+      history.append(group);
     }
     const actions = node('div', 'ct-mobile-combat-links');
     actions.append(button('View battlefield', () => ui.showMobileView('mine'), 'pbtn'),
@@ -110,6 +148,13 @@ export function finishMobileCombat(ui, root, pd, pane, heading, actions, prompt)
       const details = button('Inspect', () => inspect(ui, attacker), 'ct-mobile-combat-inspect');
       details.setAttribute('aria-label', `Inspect ${attacker.name}`);
       row.append(pick, details);
+      const assigned = ui.blockAssignments(pd).filter(block => block.attacker === attacker).map(block => block.blocker);
+      pick.querySelector('.ct-battle-copy').append(node('small', 'ct-mobile-combat-pick-hint',
+        pd.mode === attacker ? 'Selected · choose blockers below' : 'Tap to assign blockers'));
+      const blocks = blockerCards(ui, attacker, assigned, pd);
+      blocks.classList.add('ct-battle-blocks');
+      if (!assigned.length) blocks.append(node('span', 'ct-unblocked', attacker.cur.unblockable ? 'Unblockable' : 'No blockers assigned'));
+      pair.querySelector('.ct-battle-blocks').replaceWith(blocks);
     });
     targets.append(incoming);
   }

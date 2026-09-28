@@ -218,7 +218,7 @@ export function renderBattlefieldCombat(ui, game, root) {
     title = 'Choose blockers';
     const waiting = pd.blockPending || [];
     hint = waiting.length ? `${waiting.length} selected · choose an attacker`
-      : pd.mode ? `Blocking ${pd.mode.name} · choose your creatures` : 'Select your creature, then an attacker';
+      : pd.mode ? `Blocking ${pd.mode.name} · choose your creatures` : mobile ? 'Tap an attacker above, then your blockers below' : 'Select your creature, then an attacker';
     const blocks = ui.blockAssignments(pd);
     const legal = game.blockDeclarationLegal(pd.q.attackers, blocks);
     if (!legal) {
@@ -248,7 +248,8 @@ export function renderBattlefieldCombat(ui, game, root) {
     combatTray(ui, game, root, pd);
   } else {
     title = 'Attack declared';
-    hint = 'Responses and blockers come next';
+    const defending = pd.q.attackers.some(card => card.attacking === ui.me || card.attacking?.ctrl === ui.me);
+    hint = mobile && defending ? 'After responses, assign your blockers here in Combat' : 'Responses and blockers come next';
     confirm = button('Continue', () => { if (ui.pending === pd) ui.resolvePendingEntry(pd, null); }, 'primary');
     combatTray(ui, game, root, pd);
   }

@@ -253,6 +253,13 @@ try {
     }
     const priorLife = await host.evaluate(seat => _game.players.find(p => p.onlineSeat === seat).life, defendingSeat);
     await defender.locator('[data-testid="confirm-combat-battlefield"]').click();
+    await until(() => defender.evaluate(({ attack, block }) => _ui.game.combat?.attackers.some(card => card.iid === attack && card.blockedBy.some(blocker => blocker.iid === block)),
+      { attack: ids[seat].attack, block: ids[defendingSeat].block }), 'declared blocker reaches the defending phone');
+    await defender.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: /^Combat/i }).tap();
+    const declaredBlock = defender.locator(`.ct-mobile-combat-matchup[data-attacker-id="${ids[seat].attack}"] .ct-mobile-combat-blocker[data-blocker-id="${ids[defendingSeat].block}"]`);
+    assert.equal(await declaredBlock.locator('img').count(), 1, 'The phone shows the actual declared blocker card');
+    assert.equal(await declaredBlock.locator('.ct-mobile-combat-remove').count(), 0, 'Live declarations are read-only after confirmation');
+    await defender.screenshot({ path: `${out}/seat-${defendingSeat + 1}-declared-blocker.png` });
     await defender.setViewportSize({ width: 1440, height: 1000 });
     await until(async () => {
       if (await attacker.evaluate(() => _ui.pending?.q.type === 'main' && _ui.game.phase === 'main2')) return true;
