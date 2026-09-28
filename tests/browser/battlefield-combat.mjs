@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const playwright = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const browserEngine = process.env.BROWSER_ENGINE || 'chromium';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const output = process.env.BATTLEFIELD_COMBAT_QA_OUTPUT || `${root}output/web-game/battlefield-combat`;
 mkdirSync(output, { recursive: true });
@@ -15,7 +16,7 @@ const server = process.env.GAME_URL ? null : express().use('/api/account', creat
   .use(express.static(root)).listen(0, '127.0.0.1');
 if (server) await once(server, 'listening');
 const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_EXECUTABLE ? { executablePath: process.env.BROWSER_EXECUTABLE } : {}) });
+const browser = await playwright[browserEngine].launch({ headless: true, ...(process.env.BROWSER_EXECUTABLE ? { executablePath: process.env.BROWSER_EXECUTABLE } : {}) });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1024 }, reducedMotion: 'reduce', hasTouch: true });
 const errors = [], failedRequests = [], checks = [];
 page.on('pageerror', error => errors.push(error.message));
@@ -35,7 +36,7 @@ const shot = async name => {
 async function openSetup() {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry:visible');
+  await page.waitForSelector('.deckentry:visible', {timeout:120000});
 }
 async function fixture() {
   if (!await page.evaluate(() => !!window.MTG?.UI)) await openSetup();
@@ -84,7 +85,7 @@ async function fixture() {
     ui.render();
   });
 }
-const card = iid => page.locator(`.mini[data-iid="${iid}"]`).first();
+const card = iid => page.locator(`.ct-mobile-combat-card[data-iid="${iid}"]:visible, .mini[data-iid="${iid}"]:visible`).first();
 const confirm = () => page.locator('[data-testid="confirm-combat-battlefield"]');
 async function drag(source, target) {
   const a = await source.boundingBox(), b = await target.boundingBox();
@@ -252,6 +253,11 @@ try {
   for (const viewport of [{width:320,height:568},{width:390,height:844},{width:844,height:390},{width:768,height:1024},{width:1280,height:720}]) {
     await page.setViewportSize(viewport); await fixture(); ids = await combat('attackers');
     await visibleAction();
+    if (viewport.width <= 900) {
+      assert.equal(await page.locator('#game').getAttribute('data-mobile-view'), 'combat');
+      assert.equal(await page.locator('.mobileviewtab[data-view="hand"]').count(), 0, 'Combat replaces the Hand tab');
+      assert.equal(await page.locator('.ct-mobile-combat:visible').count(), 1);
+    }
     await card(ids.creatures[0]).tap();
     await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).tap();
     assert.equal(await page.evaluate(() => _ui.pending.sel.length), 1);
@@ -281,10 +287,74 @@ try {
       assert.ok(await page.locator('.opprow:visible').count(), 'Table still opens opponents during combat');
       await nav.getByRole('button', {name: /^Mine/i}).tap();
       assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 2, 'Navigation retains the combat draft');
+      assert.equal(await confirm().count(), 0, 'Combat confirmation stays in the Combat tab');
+      await page.locator('.myboard .mini').first().tap();
+      assert.equal(await page.locator('.sheet:visible').count(), 1, 'Battlefield cards inspect normally outside Combat');
+      await page.locator('.sheet').getByRole('button', {name: 'Close', exact: true}).click();
+      await page.getByRole('button', {name: 'Open Combat', exact: true}).tap();
+      assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 2);
+      await page.locator('.ct-mobile-combat-inspect').first().tap();
+      await page.locator('.sheet').getByRole('button', {name: 'Close', exact: true}).click();
+      assert.equal(await page.locator('#game').getAttribute('data-mobile-view'), 'combat');
+      assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 2, 'Inspecting a blocker retains the draft');
+      await page.locator('.ct-mobile-combat-incoming .ct-mobile-combat-inspect').first().tap();
+      await page.locator('.sheet').getByRole('button', {name: 'Close', exact: true}).click();
+      assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 2, 'Inspecting an incoming attacker retains the draft');
     }
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'No page overflow');
     check(`${viewport.width}×${viewport.height}: touch attack and block controls remain reachable`);
   }
+  await page.setViewportSize({width:390,height:844});
+  await fixture(); ids = await combat('attackers');
+  await page.evaluate(() => { _ui.pending.q.forced = [_ui.pending.q.eligible[0]]; _ui.render(); });
+  assert.equal(await confirm().isDisabled(), true, 'Mobile cannot skip a forced attack');
+  await page.locator('[data-testid="combat-all-attack"]').tap();
+  assert.equal(await confirm().isDisabled(), true, 'Selected mobile attackers still need a defender');
+  await page.locator(`[data-combat-defender="player-${ids.opponent}"]`).tap();
+  assert.equal(await page.evaluate(() => _ui.pending.sel.length), 3);
+  await page.setViewportSize({width:1440,height:1024});
+  await page.locator('.ct-mobile-combat').waitFor({state:'detached'});
+  assert.equal(await page.locator('.ct-mobile-combat').count(), 0, 'Desktop never renders the phone workspace');
+  assert.equal(await page.evaluate(() => _ui.pending.sel.length), 3, 'Desktop resize retains every attacker');
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('.ct-mobile-combat').waitFor({state:'visible'});
+  assert.equal(await page.evaluate(() => _ui.pending.sel.length), 3);
+  await confirm().tap();
+  await page.waitForFunction(() => Array.isArray(__combatAnswer));
+  assert.deepEqual(await page.evaluate(() => __combatAnswer.map(entry => [entry.card, entry.target])), ids.creatures.map(id => [id, ids.opponent]));
+  await fixture(); ids = await combat('blockers');
+  await card(ids.creatures[0]).tap();
+  await page.locator(`[data-combat-attacker="${ids.attackers[0]}"]`).tap();
+  assert.equal(await confirm().isDisabled(), true, 'Mobile menace requires another blocker');
+  await card(ids.creatures[1]).tap();
+  await page.locator(`[data-combat-attacker="${ids.attackers[0]}"]`).tap();
+  assert.equal(await confirm().isDisabled(), false);
+  await page.locator('.ct-block-link').first().tap();
+  assert.equal(await confirm().isDisabled(), true, 'Removing a blocker revalidates menace');
+  await page.locator('[data-testid="combat-clear"]').tap();
+  assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 0);
+  await card(ids.creatures[2]).tap();
+  await page.locator(`[data-combat-attacker="${ids.attackers[1]}"]`).tap();
+  assert.equal(await page.evaluate(() => _ui.blockAssignments().length), 0, 'Mobile cannot assign a ground blocker to flying');
+  await confirm().tap();
+  await page.waitForFunction(() => Array.isArray(__combatAnswer));
+  assert.deepEqual(await page.evaluate(() => __combatAnswer), []);
+  await fixture(); await combat('combatReview');
+  await page.locator('[data-combat-attacker]').first().tap();
+  await page.locator('.sheet').getByRole('button', {name:'Close', exact:true}).click();
+  assert.equal(await page.evaluate(() => __combatAnswer), null);
+  await shot('mobile-review');
+  await confirm().tap();
+  await page.waitForFunction(() => __combatAnswer === 'continue');
+  await page.getByRole('navigation', {name:'Arena view'}).getByRole('button', {name: /^Combat/i}).tap();
+  assert.match(await page.locator('.ct-mobile-combat-history').textContent(), /Boggart Brute/);
+  await fixture(); await combat('attackers');
+  await page.evaluate(() => { _ui.pending.q.eligible = []; _ui.render(); });
+  assert.match(await page.locator('.ct-mobile-combat-empty').textContent(), /No creatures can attack/);
+  await confirm().tap();
+  await page.waitForFunction(() => Array.isArray(__combatAnswer));
+  assert.deepEqual(await page.evaluate(() => __combatAnswer), []);
+  check('Mobile forced attacks, exact submission, resize, block restrictions, clear/remove, review and empty roster');
   assert.deepEqual(errors, [], 'No browser errors');
   writeFileSync(`${output}/results.json`, JSON.stringify({ base, checks, errors, failedRequests }, null, 2));
 } catch (error) {

@@ -227,7 +227,8 @@ try {
     const attacker = pages[seat], defendingSeat = (seat + 1) % 4, defender = pages[defendingSeat];
     await until(async () => { if (await question(attacker) === 'attackers') return true; await advance(attacker, ['attackers']); return false; }, `seat ${seat + 1} attackers`);
     await attacker.setViewportSize({ width: 390, height: 844 });
-    await attacker.locator(`.mini[data-iid="${ids[seat].attack}"]`).tap();
+    await attacker.waitForFunction(() => document.querySelector('#game').dataset.mobileView === 'combat');
+    await attacker.locator(`.ct-mobile-combat-card[data-iid="${ids[seat].attack}"]`).tap();
     const targetIdx = await attacker.evaluate(seat => _ui.game.players.find(p => p.onlineSeat === seat).idx, defendingSeat);
     await attacker.locator(`[data-combat-defender="player-${targetIdx}"]`).tap();
     assert.equal(await attacker.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
@@ -235,7 +236,8 @@ try {
     await attacker.locator('[data-testid="confirm-combat-battlefield"]').tap();
     await attacker.setViewportSize({ width: 1440, height: 1000 });
     await until(async () => { if (await question(defender) === 'blockers') return true; await advance(defender, ['blockers']); return false; }, `seat ${defendingSeat + 1} blockers`);
-    await defender.locator(`.mini[data-iid="${ids[defendingSeat].block}"]`).click();
+    await defender.setViewportSize({ width: 390, height: 844 });
+    await defender.locator(`.ct-mobile-combat-card[data-iid="${ids[defendingSeat].block}"]`).tap();
     await defender.locator(`[data-combat-attacker="${ids[seat].attack}"]`).click();
     await until(() => defender.locator('[data-testid="confirm-combat-battlefield"]').isEnabled(), 'validated block preview');
     if (defendingSeat > 0) {
@@ -245,12 +247,13 @@ try {
       await until(async () => {
         return defender.evaluate(id => window._ui?.pending?.q.onlineDecision.id === id && _ui.liveSession.room.phase === 'running', decision);
       }, `seat ${defendingSeat + 1} reconnect`);
-      assert.equal(await defender.locator('.myboard .mini.ct-combat-selected').count(), 1);
+      assert.equal(await defender.locator('.ct-mobile-combat-card.ct-combat-selected').count(), 1);
       await until(() => defender.locator('[data-testid="confirm-combat-battlefield"]').isEnabled(), 'reconnected block preview');
       mark(`seat ${defendingSeat + 1} reconnect restores its private seat, pending decision and selected blocker`);
     }
     const priorLife = await host.evaluate(seat => _game.players.find(p => p.onlineSeat === seat).life, defendingSeat);
     await defender.locator('[data-testid="confirm-combat-battlefield"]').click();
+    await defender.setViewportSize({ width: 1440, height: 1000 });
     await until(async () => {
       if (await attacker.evaluate(() => _ui.pending?.q.type === 'main' && _ui.game.phase === 'main2')) return true;
       for (const page of pages) await click(page, /^(Proceed|Let it|Let resolve)/);

@@ -250,3 +250,88 @@
   #setup .podpresetchips { grid-template-columns: minmax(0, 1fr); }
   #setup .podpresetchips button { min-height: 54px; }
 }
+
+/* Combat is a phone destination. Defenders stay within reach while the
+   creature roster scrolls; confirmation and navigation never scroll away. */
+#game.command-table .ct-mobile-combat { display: none; }
+@media (max-width: 900px) {
+  body.game-active #game.command-table[data-mobile-view='combat'] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: 52px minmax(0, 1fr) auto var(--ct-tabs) !important;
+    grid-template-areas: 'topbar' 'combat' 'decision' 'tabs' !important;
+  }
+  body.game-active #game.command-table[data-mobile-view='combat'] > :is(.ct-seat-ribbon, .oppsouter, .myboard, .handwrap, .center, .sidebar) { display: none !important; }
+  #game.command-table[data-mobile-view='combat'] .ct-mobile-combat {
+    grid-area: combat;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 8px;
+    overflow: hidden;
+    border: 1px solid var(--ds-line);
+    border-radius: 10px;
+    background: var(--ds-panel);
+  }
+  #game.command-table .ct-mobile-combat-head { flex: 0 0 auto; padding: 10px 12px 8px; }
+  #game.command-table .ct-mobile-combat-head h2 { margin: 0 0 5px; font: 650 18px var(--ds-font-body); color: #f5deca; }
+  #game.command-table .ct-mobile-combat .ct-combat-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+  #game.command-table .ct-mobile-combat .ct-combat-copy b { font-size: 13px; }
+  #game.command-table .ct-mobile-combat .ct-combat-copy > span { font-size: 12px; line-height: 1.4; color: #bdcad0; }
+  #game.command-table .ct-mobile-combat-targets { flex: 0 0 auto; min-width: 0; max-height: 38%; overflow: auto; border-bottom: 1px solid var(--ds-line); }
+  #game.command-table .ct-mobile-combat-targets:empty { display: none; }
+  #game.command-table .ct-mobile-combat .ct-defender-choices { display: flex; flex-wrap: nowrap; max-width: none; gap: 8px; padding: 3px 10px 10px; overflow-x: auto; }
+  #game.command-table .ct-mobile-combat .ct-defender-choice { flex: 0 0 190px; min-height: 76px; white-space: normal; }
+  #game.command-table .ct-mobile-combat .ct-defender-identity b { font-size: 13px; }
+  #game.command-table .ct-mobile-combat .ct-defender-allocation { font-size: 11px; }
+  #game.command-table .ct-mobile-combat-roster,
+  #game.command-table .ct-mobile-combat-history { flex: 1 1 0; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  #game.command-table .ct-mobile-combat-unit { display: flex; flex: 0 0 auto; min-width: 0; border: 1px solid #3e4b53; border-radius: 8px; background: #152027; overflow: hidden; }
+  #game.command-table .ct-mobile-combat-card { display: flex; flex: 1 1 auto; min-width: 0; gap: 10px; padding: 8px; border: 0; border-radius: 6px; background: #152027; color: #edf3f5; text-align: left; font: 12px var(--ds-font-body); cursor: pointer; }
+  #game.command-table .ct-mobile-combat-art { flex: 0 0 52px; align-self: flex-start; width: 52px; }
+  #game.command-table .ct-mobile-combat-art img { display: block; width: 52px; height: 73px; border-radius: 4px; object-fit: contain; }
+  #game.command-table .ct-mobile-combat-unit-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 4px; justify-content: center; }
+  #game.command-table .ct-mobile-combat-unit-copy b { font-size: 13px; overflow-wrap: anywhere; }
+  #game.command-table .ct-mobile-combat-unit-copy strong { font: 650 16px var(--ds-font-mono); }
+  #game.command-table .ct-mobile-combat-unit-copy small { font-size: 11px; color: #b6c9d2; line-height: 1.4; }
+  #game.command-table .ct-mobile-combat-assignment { color: #ebbb8f; font-size: 12px; overflow-wrap: anywhere; }
+  #game.command-table .ct-mobile-combat-unit:has(.ct-combat-selected) { border-color: #dfac78; }
+  #game.command-table .ct-mobile-combat-card.ct-combat-selected { background: #302b23; box-shadow: none; outline: 0; }
+  #game.command-table .ct-mobile-combat-card.ct-attack-pending,
+  #game.command-table .ct-mobile-combat-card.ct-block-pending { background: #17364b; }
+  #game.command-table .ct-mobile-combat-card:disabled { opacity: .55; cursor: default; }
+  #game.command-table .ct-mobile-combat-inspect { flex: 0 0 52px; min-width: 44px; min-height: 44px; padding: 4px; border: 0; border-left: 1px solid #3e4b53; background: #101a20; color: #b8d4e4; font: 11px var(--ds-font-body); cursor: pointer; }
+  #game.command-table .ct-mobile-combat button:focus-visible { outline: 2px solid #f6cfaa; outline-offset: -3px; }
+  #game.command-table .ct-mobile-combat .ct-battle-line { display: block; margin: 0; padding: 2px 10px 8px; }
+  #game.command-table .ct-mobile-combat .ct-battle-pair { flex: 0 0 200px; }
+  #game.command-table .ct-mobile-combat .ct-battle-attacker { min-height: 84px; }
+  #game.command-table .ct-mobile-combat-incoming { display: flex; min-width: 0; }
+  #game.command-table .ct-mobile-combat-incoming .ct-battle-attacker { flex: 1; width: auto; min-width: 0; }
+  #game.command-table .ct-mobile-combat .ct-battle-copy b { font-size: 12px; }
+  #game.command-table .ct-mobile-combat .ct-battle-blocks { max-height: 88px; }
+  body.game-active #game.command-table .ct-mobile-combat .ct-block-link { min-height: 44px !important; height: auto !important; font-size: 11px; }
+  #game.command-table .ct-mobile-combat-empty { margin: 12px 0; color: #b9cbd4; font: 14px/1.6 var(--ds-font-body); }
+  #game.command-table .ct-mobile-combat-links { display: flex; flex-wrap: wrap; gap: 8px; }
+  #game.command-table .ct-mobile-combat-links .pbtn { min-height: 44px; }
+  #game.command-table[data-mobile-view='combat'][data-combat-step='combatReview'] .ct-mobile-combat-targets { flex: 1; max-height: none; min-height: 0; }
+  #game.command-table[data-mobile-view='combat'][data-combat-step='combatReview'] .ct-battle-line-cards { flex-direction: column; }
+  #game.command-table[data-mobile-view='combat'][data-combat-step='combatReview'] .ct-battle-pair { flex-basis: auto; }
+  body.game-active #game.command-table[data-mobile-view='combat'] .ct-combat-dock { max-height: none; }
+  body.game-active #game.command-table[data-mobile-view='combat'] .ct-combat-prompt { display: block; }
+  body.game-active #game.command-table[data-mobile-view='combat'] .ct-combat-actions { display: flex; width: 100%; }
+  #game.command-table .ct-mobile-combat-return { font-size: 12px; color: #d1dee4; }
+}
+
+@media (min-width: 600px) and (max-width: 900px) and (max-height: 500px) {
+  body.game-active #game.command-table[data-mobile-view='combat'] { grid-template-rows: 44px minmax(0, 1fr) auto 44px !important; }
+  #game.command-table[data-mobile-view='combat'] .ct-mobile-combat { display: grid; grid-template-columns: minmax(210px, 40%) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  #game.command-table .ct-mobile-combat-head { grid-column: 1; padding: 6px 10px; }
+  #game.command-table .ct-mobile-combat-head h2 { font-size: 16px; }
+  #game.command-table .ct-mobile-combat-targets { grid-column: 1; grid-row: 2; max-height: none; min-height: 0; }
+  #game.command-table .ct-mobile-combat-roster { grid-column: 2; grid-row: 1 / -1; }
+  #game.command-table .ct-mobile-combat-history { grid-column: 2; grid-row: 1 / -1; }
+  #game.command-table .ct-mobile-combat .ct-defender-choices,
+  #game.command-table .ct-mobile-combat .ct-battle-line-cards { flex-direction: column; }
+  #game.command-table .ct-mobile-combat :is(.ct-defender-choice, .ct-battle-pair) { flex-basis: auto; }
+  #game.command-table[data-mobile-view='combat'][data-combat-step='combatReview'] .ct-mobile-combat-targets { grid-column: 2; grid-row: 1 / -1; }
+}

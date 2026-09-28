@@ -38,7 +38,7 @@ test('mobile Setup is a true three-stage flow with quick recommendations and rec
 
 test('Arena has one-level destinations, public activity hierarchy and a compact empty hand', () => {
   assert.doesNotMatch(ui, /const tabs = el\('div', 'sidebartabs'\)/);
-  assert.match(ui, /\['mine', 'player', 'MINE'\], \['table', 'playmat', 'TABLE'\], \['hand', 'cards'/);
+  assert.match(ui, /\['mine', 'player', 'MINE'\], \['table', 'playmat', 'TABLE'\], \['combat', 'attack', 'COMBAT'/);
   assert.match(ui, /\['stack', 'stack', `STACK/);
   assert.match(ui, /renderTurnTimeline\(g, player\)/);
   assert.match(ui, /g\.log\.filter\(entry => entry\.t === g\.turnNo\)/);

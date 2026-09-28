@@ -108,7 +108,8 @@ try {
     await reachable('.targetprompt .primary');
     await page.screenshot({ path: `${output}/short-target-${width}x${height}.png` });
     await page.evaluate(() => { window.__targetPending = _ui.pending; });
-    await page.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: /^Hand/i }).click();
+    await page.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: /^Combat/i }).click();
+    await page.getByRole('button', { name: 'View hand', exact: true }).click();
     assert.equal(await page.locator('.hand .hcard:visible').count(), 6);
     assert.equal(await page.evaluate(() => _ui.pending === __targetPending && _ui.pending.sel[0] === __guidance.body), true);
     await page.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: /^Mine/i }).click();

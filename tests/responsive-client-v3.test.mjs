@@ -280,7 +280,7 @@ test('Arena menus own keyboard input and new human decisions return mobile UI to
   await decision;
 });
 
-test('mobile hand, table and stack navigation preserves the unanswered engine decision and hand', () => {
+test('mobile combat, hand, table and stack navigation preserves the unanswered engine decision and hand', () => {
   const { UI } = loadUIForKeyboardTest();
   const arena = new UI();
   const cards = Object.freeze([{ iid: 17 }, { iid: 29 }]);
@@ -290,7 +290,7 @@ test('mobile hand, table and stack navigation preserves the unanswered engine de
   arena.commandMobileBoard = 'opponent';
   let renders = 0;
   arena.render = () => { renders++; };
-  for (const view of ['hand', 'table', 'stack', 'hand', 'mine']) {
+  for (const view of ['hand', 'table', 'combat', 'stack', 'hand', 'mine']) {
     arena.showMobileView(view);
     assert.equal(arena.mobileView, view);
     assert.equal(arena.utilityDrawerOpen, view === 'stack');
@@ -299,8 +299,8 @@ test('mobile hand, table and stack navigation preserves the unanswered engine de
   }
   assert.equal(arena.commandMobileBoard, 'mine');
   assert.equal(arena.sidebarTab, 'table');
-  assert.equal(renders, 5);
+  assert.equal(renders, 6);
   arena.showMobileView('unknown');
   assert.equal(arena.mobileView, 'mine');
-  assert.equal(renders, 5);
+  assert.equal(renders, 6);
 });

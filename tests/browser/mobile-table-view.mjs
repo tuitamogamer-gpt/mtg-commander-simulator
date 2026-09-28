@@ -34,6 +34,12 @@ const screenshot = async name => {
   await page.screenshot({ path: `${output}/${name}.png` });
 };
 async function switchView(name) {
+  if (name.toLowerCase() === 'hand') {
+    await switchView('Combat');
+    await page.getByRole('button', { name: 'View hand', exact: true }).click();
+    await page.waitForFunction(() => document.querySelector('#game').dataset.mobileView === 'hand');
+    return;
+  }
   await page.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: new RegExp(`^${name}`, 'i') }).click();
   await page.waitForFunction(view => document.querySelector('#game').dataset.mobileView === view, name.toLowerCase());
 }
@@ -94,6 +100,11 @@ async function assertPhoneLayout(label) {
       return { width: r.width, height: r.height };
     }));
     for (const card of cards) assert.ok(card.width >= 120 && card.height >= 168, 'Expanded hand cards remain readable');
+  } else if (layout.view === 'combat') {
+    assert.equal(layout.hand.display, 'none');
+    assert.equal(layout.board.display, 'none');
+    assert.equal(await page.locator('.ct-mobile-combat:visible').count(), 1);
+    assert.equal(await page.getByRole('button', { name: 'View hand', exact: true }).isVisible(), true);
   } else {
     assert.equal(layout.hand.display, 'none', `${layout.view} hides the hand without an implicit grid area`);
     assertUsable(layout, layout.view === 'table' ? 'opponents' : 'sidebar');
@@ -227,6 +238,9 @@ try {
   await assertPhoneLayout('real-table-390');
   await switchView('Stack');
   await assertPhoneLayout('real-stack-390');
+  await switchView('Combat');
+  await assertPhoneLayout('real-combat-390');
+  await screenshot('real-combat-idle-390');
   await switchView('Hand');
   await assertPhoneLayout('real-hand-390');
   await screenshot('real-hand-390');
@@ -270,14 +284,14 @@ try {
   check('Every opponent seat is scrollable and public battlefield cards remain clickable');
 
   await page.setViewportSize({ width: 820, height: 1180 });
-  for (const view of ['table', 'hand', 'stack', 'mine']) {
+  for (const view of ['table', 'hand', 'combat', 'stack', 'mine']) {
     await switchView(view);
     await assertPhoneLayout(`tablet-${view}-820`);
   }
   await screenshot('arena-820');
   for (const [width, height] of [[1024, 900], [1440, 1000]]) {
     await page.setViewportSize({ width, height });
-    for (const lastMobileView of ['table', 'hand', 'stack', 'mine']) {
+    for (const lastMobileView of ['table', 'hand', 'combat', 'stack', 'mine']) {
       // Resize from each phone destination so desktop cannot inherit a hidden hand.
       await page.setViewportSize({ width: 390, height: 844 });
       await switchView(lastMobileView);

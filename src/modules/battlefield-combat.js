@@ -1,5 +1,6 @@
-// Combat stays on the battlefield. Drafts use the existing decision objects;
-// only explicit confirmation hands a declaration back to the rules engine.
+// Desktop battlefield and mobile Combat share the same declaration drafts.
+// Only explicit confirmation hands a declaration back to the rules engine.
+import { createMobileCombat, finishMobileCombat } from './mobile-combat.js';
 const node = (tag, cls, text) => {
   const item = document.createElement(tag);
   item.className = cls;
@@ -16,15 +17,24 @@ const combatDecision = pd => ['attackers', 'blockers', 'combatReview'].includes(
 const inspect = (ui, card) => { ui.sheet = { card }; ui.render(); };
 let connectionOwner = null;
 
-export function prepareBattlefieldCombat(ui) {
+export function prepareBattlefieldCombat(ui, mobile = false) {
   const pd = ui.pending;
   if (!combatDecision(pd)) return;
+  pd.mobileCombatLayout = mobile;
   if (!pd.battlefieldCombat) {
     pd.battlefieldCombat = true;
     pd.boardPeek = true;
     pd.blockPending = [];
     ui.commandMobileBoard = 'mine';
     ui.mobileView = 'mine';
+  }
+  if (mobile) {
+    pd.boardPeek = true;
+    if (!pd.mobileCombatPrepared) {
+      pd.mobileCombatPrepared = true;
+      ui.mobileView = 'combat';
+      ui.utilityDrawerOpen = false;
+    }
   }
   if (pd.q.type === 'attackers') {
     const eligible = pd.q.eligible.filter(card => card.zone === 'battlefield');
@@ -122,7 +132,9 @@ function combatTray(ui, game, root, pd) {
 
 export function renderBattlefieldCombat(ui, game, root) {
   const pd = ui.pending, active = combatDecision(pd) && pd.boardPeek;
-  root.classList.toggle('ct-battlefield-combat', !!active);
+  const mobile = window.matchMedia('(max-width: 900px)').matches;
+  const pane = mobile ? createMobileCombat(ui, game, root, active ? pd : null) : null;
+  root.classList.toggle('ct-battlefield-combat', !!active && !mobile);
   if (!active) { delete root.dataset.combatStep; return; }
   root.dataset.combatStep = pd.q.type;
   root.querySelector('.ct-combat-ledger')?.remove();
@@ -135,7 +147,7 @@ export function renderBattlefieldCombat(ui, game, root) {
   const actions = node('div', 'btnrow ct-combat-actions');
   const details = button('Details', () => { pd.boardPeek = false; ui.render(); }, 'ct-quiet-action');
   details.dataset.testid = 'back-to-combat-overlay';
-  actions.append(details);
+  if (!mobile) actions.append(details);
   const clear = () => { pd.sel = []; pd.attackPending = []; pd.assigns.clear(); pd.blockPending = []; pd.mode = null; ui.render(); };
   let hint, title, confirm;
 
@@ -170,7 +182,7 @@ export function renderBattlefieldCombat(ui, game, root) {
       pick.setAttribute('aria-pressed', String(pd.attackTarget === target));
       ui.registerArenaDropTarget(pick, { kind: 'entity', value: target });
       defenders.append(pick);
-      const elements = target.iid != null ? root.querySelectorAll(`.mini[data-iid="${target.iid}"]`)
+      const elements = mobile ? [] : target.iid != null ? root.querySelectorAll(`.mini[data-iid="${target.iid}"]`)
         : root.querySelectorAll(`.opprow[data-player-id="${target.idx}"] .opphead, .ct-seat[data-focus-player="${target.idx}"]`);
       for (const element of elements) bindEntity(ui, element, target, () => chooseDefender(ui, pd, target), pd.attackTarget === target, `Attack ${target.name}`);
     }
@@ -194,7 +206,7 @@ export function renderBattlefieldCombat(ui, game, root) {
       if (ui.pending === pd) ui.resolvePending(pd.sel.map(entry => ({ card: entry.card, target: entry.target })));
     }, 'primary');
     confirm.disabled = !!missingForced.length || !!waiting.length;
-    for (const card of pd.q.eligible) for (const element of root.querySelectorAll(`.mini[data-iid="${card.iid}"]`)) {
+    for (const card of pd.q.eligible) for (const element of root.querySelectorAll(`${mobile ? '.ct-mobile-combat-card' : '.mini'}[data-iid="${card.iid}"]`)) {
       const assigned = pd.sel.find(entry => entry.card === card);
       const selected = !!assigned || waiting.includes(card);
       const state = assigned ? `Attacking ${assigned.target.name}. Remove attacker.`
@@ -214,19 +226,24 @@ export function renderBattlefieldCombat(ui, game, root) {
         const n = blocks.filter(pair => pair.attacker === attacker).length, bounds = game.blockerBounds(attacker);
         return n > 0 && (n < bounds.min || n > bounds.max);
       });
-      hint = incomplete ? `${incomplete.name} needs ${game.blockerBounds(incomplete).min} blockers` : 'Check blocking restrictions in Details';
+      hint = incomplete ? `${incomplete.name} needs ${game.blockerBounds(incomplete).min} blockers`
+        : mobile ? 'These blocks are not legal together. Adjust your assignments.' : 'Check blocking restrictions in Details';
+      if (mobile && incomplete) {
+        const bounds = game.blockerBounds(incomplete), count = blocks.filter(pair => pair.attacker === incomplete).length;
+        hint = `${incomplete.name} needs ${count < bounds.min ? `at least ${bounds.min}` : `at most ${bounds.max}`} blockers`;
+      }
     }
     confirm = button(blocks.length ? `Block (${blocks.length})` : 'No blocks', () => {
       if (ui.pending === pd && game.blockDeclarationLegal(pd.q.attackers, ui.blockAssignments(pd))) ui.resolvePending(ui.blockAssignments(pd));
     }, 'primary');
     confirm.disabled = !legal || !!waiting.length;
-    for (const card of pd.q.potential) for (const element of root.querySelectorAll(`.mini[data-iid="${card.iid}"]`)) {
+    for (const card of pd.q.potential) for (const element of root.querySelectorAll(`${mobile ? '.ct-mobile-combat-card' : '.mini'}[data-iid="${card.iid}"]`)) {
       const selected = waiting.includes(card) || ui.blockTargets(card, pd).length > 0;
       bindEntity(ui, element, card, () => chooseBlocker(ui, pd, card), selected, `${card.name}. ${selected ? 'Change blocker' : 'Select blocker'}.`);
       element.classList.toggle('ct-block-pending', waiting.includes(card));
       element.classList.toggle('ct-block-unavailable', !!pd.mode && !game.canBlock(card, pd.mode) && !ui.blockTargets(card, pd).length);
     }
-    for (const card of pd.q.attackers) for (const element of root.querySelectorAll(`.mini[data-iid="${card.iid}"]`))
+    for (const card of pd.q.attackers) for (const element of mobile ? [] : root.querySelectorAll(`.mini[data-iid="${card.iid}"]`))
       bindEntity(ui, element, card, () => chooseAttacker(ui, pd, card), pd.mode === card, `Block ${card.name}`);
     combatTray(ui, game, root, pd);
   } else {
@@ -246,6 +263,7 @@ export function renderBattlefieldCombat(ui, game, root) {
   confirm.dataset.testid = 'confirm-combat-battlefield';
   actions.append(confirm);
   prompt.append(heading, actions);
+  if (pane) finishMobileCombat(ui, root, pd, pane, heading, actions, prompt);
 }
 
 // Draw after the stable arena DOM has been committed. Recompute on scroll and

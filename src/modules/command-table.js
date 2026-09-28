@@ -396,7 +396,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.commandFocusTurn = turn;
     this.commandWasMobile = mobile;
     this.collapsed?.clear();
-    prepareBattlefieldCombat(this);
+    prepareBattlefieldCombat(this, mobile);
     root.classList.add('command-table');
     originalRender.call(this);
     queueCombatConnections(this);

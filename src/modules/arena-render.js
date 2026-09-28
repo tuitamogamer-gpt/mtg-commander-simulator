@@ -3,7 +3,7 @@
 'use strict';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
-  const stableAreas = '.arenaheader, .mobileviewtabs, .oppsouter, .myboard, .handwrap, .ct-seat-ribbon';
+  const stableAreas = '.arenaheader, .mobileviewtabs, .oppsouter, .myboard, .handwrap, .ct-seat-ribbon, .ct-mobile-combat';
   // These containers have no event listeners closing over descendants. Do not
   // add dialogs, forms or card controls here; fresh callbacks need fresh nodes.
   const shells = new Set([
@@ -13,6 +13,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'resourcezone', 'landstrip', 'manaartifactstrip', 'playerrail', 'czrow',
     'handwrap', 'hand', 'ct-player-head', 'ct-seat-ribbon',
     'ct-decision-rail', 'ct-decision-content',
+    'ct-mobile-combat', 'ct-mobile-combat-targets', 'ct-mobile-combat-roster',
   ]);
   const key = node => {
     if (node.nodeType !== 1) return `#${node.nodeType}`;
@@ -43,7 +44,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const attr of fresh.attributes) if (old.getAttribute(attr.name) !== attr.value) old.setAttribute(attr.name, attr.value);
     old._arenaDropTarget = fresh._arenaDropTarget;
   };
-  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .oppboardmain, .mybattlefieldmain, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .ct-review-body, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .resolutionrecapbody, .attackalloclanes, .attackpool, .sheet, .quickmenu, .audiobody, .dungeonmapscroll';
+  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .oppboardmain, .mybattlefieldmain, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .ct-review-body, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .resolutionrecapbody, .attackalloclanes, .attackpool, .sheet, .quickmenu, .audiobody, .dungeonmapscroll, .ct-mobile-combat-roster, .ct-mobile-combat-history, .ct-mobile-combat .ct-defender-choices, .ct-mobile-combat .ct-battle-line-cards';
   const path = (node, root) => {
     const parts = [];
     while (node && node !== root) {

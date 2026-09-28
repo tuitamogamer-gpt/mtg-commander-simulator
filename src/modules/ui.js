@@ -2272,7 +2272,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     showMobileView(view) {
-      if (!['mine', 'table', 'hand', 'stack'].includes(view)) return;
+      if (!['mine', 'table', 'hand', 'combat', 'stack'].includes(view)) return;
       this.mobileView = view;
       this.utilityDrawerOpen = view === 'stack';
       if (view === 'mine') this.commandMobileBoard = 'mine';
@@ -2286,7 +2286,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       tabs.setAttribute('aria-label', 'Arena view');
       const diplomacyView = g.diplomacy && g.diplomacy.enabled && g.diplomacyView ? g.diplomacyView(this.me) : null;
       const incoming = diplomacyView ? diplomacyView.incoming.length : 0;
-      const items = [['mine', 'player', 'MINE'], ['table', 'playmat', 'TABLE'], ['hand', 'cards', `HAND ${this.me.hand.length}`], ['stack', 'stack', `STACK ${g.stack.length || ''}`]];
+      const items = [['mine', 'player', 'MINE'], ['table', 'playmat', 'TABLE'], ['combat', 'attack', 'COMBAT'], ['stack', 'stack', `STACK ${g.stack.length || ''}`]];
       if (diplomacyView) items.push(['diplomacy', 'deals', `POLITICS${incoming ? ` ${incoming}` : ''}`]);
       for (const [key, icon, label] of items) {
         const isPolitics = key === 'diplomacy';
@@ -3431,7 +3431,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const proliferate = pd && pd.q.spec && pd.q.spec.what === 'proliferate';
         return this.makeKeyboardButton(d, `${accessibleName}. Select this card ${proliferate ? 'for proliferate' : 'as a target'}.`);
       }
-      if (pd && pd.q.type === 'attackers' && c.ctrl === this.me) {
+      if (pd && !pd.mobileCombatLayout && pd.q.type === 'attackers' && c.ctrl === this.me) {
         const sel = pd.sel.find(s => s.card === c);
         const awaitingDefender = pd.attackPending?.includes(c);
         if (pd.q.eligible.includes(c)) {
@@ -3449,7 +3449,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return this.makeKeyboardButton(d, `${accessibleName}. ${sel || awaitingDefender ? 'Remove this attacker.' : 'Assign this creature as an attacker.'}`);
         }
       }
-      if (pd && pd.q.type === 'blockers') {
+      if (pd && !pd.mobileCombatLayout && pd.q.type === 'blockers') {
         if (pd.q.potential.includes(c)) {
           d.classList.add('eligible');
           const assigned = this.blockTargets(c, pd);
