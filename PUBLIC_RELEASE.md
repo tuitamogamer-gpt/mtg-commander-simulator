@@ -1,6 +1,6 @@
 # Commander Simulator public release
 
-The public entry point is <https://mtg-commander-simulator.vercel.app/>. The [README](README.md) introduces the product; [Deployment](docs/deployment.md) documents its server configuration; the [card catalog](docs/card-catalog.md) defines card coverage.
+The public entry point is <https://www.mtgpod.xyz/>. The [README](README.md) introduces the product; [Deployment](docs/deployment.md) documents its server configuration; the [card catalog](docs/card-catalog.md) defines card coverage.
 
 A release is ready to share after its source revision passes the applicable gates and the canonical deployed URL is verified. A successful CLI upload or a card count alone is insufficient.
 
@@ -71,9 +71,9 @@ Commit only the intended files and push `main`. Compare local HEAD, `origin/main
 Independently inspect the deployment to **READY**, confirm its revision metadata or compare the shipped changed source bytes, and verify the canonical URL:
 
 ```bash
-curl --fail https://mtg-commander-simulator.vercel.app/
-curl --fail https://mtg-commander-simulator.vercel.app/api/ws
-curl --fail 'https://mtg-commander-simulator.vercel.app/api/account?action=session'
+curl --fail https://www.mtgpod.xyz/
+curl --fail https://www.mtgpod.xyz/api/ws
+curl --fail 'https://www.mtgpod.xyz/api/account?action=session'
 ```
 
 Live health must report `ok: true`, Redis storage, `minPlayers: 2`, and `maxPlayers: 4`. A signed-out account session should return `ok: true, user: null` with no-store caching. Neither health response replaces a real socket or browser test.
@@ -81,9 +81,9 @@ Live health must report `ok: true`, Redis storage, `minPlayers: 2`, and `maxPlay
 Repeat the relevant browser flow against production, for example:
 
 ```bash
-node tests/browser/oracle-import-release.mjs --url https://mtg-commander-simulator.vercel.app --output output/playwright/production-import
-node tests/browser/commander-live-launch.mjs --url https://mtg-commander-simulator.vercel.app --output output/playwright/production-live
-node tests/browser/commander-live-four-player.mjs --url https://mtg-commander-simulator.vercel.app --min-live-seconds 330 --output output/playwright/production-live-four
+node tests/browser/oracle-import-release.mjs --url https://www.mtgpod.xyz --output output/playwright/production-import
+node tests/browser/commander-live-launch.mjs --url https://www.mtgpod.xyz --output output/playwright/production-live
+node tests/browser/commander-live-four-player.mjs --url https://www.mtgpod.xyz --min-live-seconds 330 --output output/playwright/production-live-four
 ```
 
 For Live transport changes, the four-client production check must observe a natural host socket replacement, use the visible Resume control, and complete combat afterward. A short lobby connection does not verify recovery beyond the Function's connection lifetime.

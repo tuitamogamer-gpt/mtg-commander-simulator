@@ -40,7 +40,7 @@
   #setup[data-app-view="setup"] .setupstep::after { display: none; }
   #setup[data-app-view="setup"] .setuphero { grid-column: 1 / -1; grid-row: 2; padding-top: 4px !important; }
   #setup[data-app-view="setup"] .setuphero .menu-kicker { display: none; }
-  #setup[data-app-view="setup"] .setuphero .title { font-size: clamp(25px, 6.7vw, 34px); line-height: 1.15; margin: 0 !important; }
+  #setup[data-app-view="setup"] .setuphero .title { font-size: clamp(25px, calc(6.7 * var(--vwu)), 34px); line-height: 1.15; margin: 0 !important; }
   #setup[data-app-view="setup"] .setuphero .subtitle { margin: 7px 0 0 !important; font-size: 12px; line-height: 1.5; }
   #setup[data-app-view="setup"] .setupgrid { padding-top: 10px !important; }
   #setup .deckexplorerhead { margin-bottom: 8px; }

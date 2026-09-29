@@ -1,7 +1,7 @@
 # Deployment, multiplayer, and operations
 
 This guide describes the repository implementation. The production entry is
-<https://mtg-commander-simulator.vercel.app/>. A successful local check or an old
+<https://www.mtgpod.xyz/>. A successful local check or an old
 deployment report does not establish that a newer revision is live.
 
 ## What runs where
@@ -244,8 +244,8 @@ function usage.
 Use read-only health requests on the actual canonical origin:
 
 ```bash
-curl --fail-with-body https://mtg-commander-simulator.vercel.app/api/ws
-curl --fail-with-body 'https://mtg-commander-simulator.vercel.app/api/account?action=session'
+curl --fail-with-body https://www.mtgpod.xyz/api/ws
+curl --fail-with-body 'https://www.mtgpod.xyz/api/account?action=session'
 ```
 
 Live should return `ok: true`, `storage: "redis"`, `minPlayers: 2`, and

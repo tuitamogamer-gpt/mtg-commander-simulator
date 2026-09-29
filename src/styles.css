@@ -311,13 +311,13 @@ img { -webkit-user-drag: none; }
 .pip { display: inline-flex; align-items: center; justify-content: center; min-width: 13px; height: 13px; border-radius: 50%; font-size: 8.5px; font-weight: 800; padding: 0 2px; border: 1px solid #0006; }
 
 /* overlays */
-.overlay { position: fixed; inset: 0; background: #000a; z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
-.overlay.dark { background: #000d; align-items: center; }
-.modal { background: #1c2029; border-radius: 16px 16px 0 0; padding: 14px; width: 100%; max-width: 640px; max-height: calc(82 * var(--dvhu)); overflow-y: auto; }
+.overlay { position: fixed; inset: 0; background: rgba(2, 6, 12, .7); z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.overlay.dark { background: rgba(2, 6, 12, .85); align-items: center; }
+.modal { background: var(--ds-dialog); border: 1px solid var(--ds-line-soft); box-shadow: var(--ds-shadow-dialog); border-radius: 16px 16px 0 0; padding: 16px; width: 100%; max-width: 640px; max-height: calc(82 * var(--dvhu)); overflow-y: auto; }
 .overlay.dark .modal { border-radius: 16px; width: 88%; }
-.mtitle { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.mtitle { color: var(--ds-text); font: 600 18px/1.25 var(--ds-font-display); letter-spacing: -.01em; margin-bottom: 12px; }
 .mtitle.small { font-size: 12.5px; color: var(--ds-accent-soft); margin-top: 10px; }
-.cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 7px; margin: 8px 0; }
+.cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 7px; margin: 8px 0; }
 .bigcard { position: relative; border-radius: 8px; overflow: hidden; background: #262b36; border: 2px solid #333a48; aspect-ratio: 5/7; }
 .bigcard img { width: 100%; height: 100%; object-fit: cover; }
 .bigcard img.noimg { display: none; }
@@ -1120,7 +1120,7 @@ body:has(#setup) { background: #08090d; }
 #game .sideloglist { font-size: 11.5px; }
 #game .sideloglist .ll { border-bottom: 1px solid rgba(185,160,106,.07); color: #b9b3a5; }
 #game .sideloglist .k-turn { color: var(--tbl-gold); letter-spacing: .12em; text-transform: uppercase; font-size: 10px; }
-#game .sidenote { color: var(--tbl-mute2); }
+#game .sidenote { color: var(--tbl-mute2); font-size: 12px; line-height: 1.45; }
 /* --- tvoj život: u dizajnu je krupan broj uz command zonu --- */
 #game .meinfo {
   align-items: baseline; gap: 12px;
@@ -1296,22 +1296,22 @@ body:has(#setup) { background: #08090d; }
 .stackflowtarget > img,.stackflowplayer { width: 34px; height: 47px; object-fit: cover; border-radius: 3px; background: #202326; }
 .stackflowplayer { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #efcf78; border: 1px solid #a8863e66; }
 .stackflowplayer b { font: 800 13px/1 var(--ds-font-body); }
-.stackflowplayer span { margin-top: 3px; font: 800 5px/1 var(--ds-font-body); letter-spacing: .1em; }
+.stackflowplayer span { margin-top: 3px; font: 800 8px/1 var(--ds-font-body); letter-spacing: .06em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .stackflowtargetn { width: 17px; height: 17px; position: absolute; z-index: 2; top: -5px; left: -5px; display: grid; place-items: center; color: var(--ds-accent-ink); background: #edc45b; border-radius: 50%; box-shadow: 0 2px 7px #000b; font: 900 8px/1 var(--ds-font-body); }
 .stackflowtargetinfo { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.stackflowtargetinfo b { overflow: hidden; color: #f2e7c7; font-size: 9.5px; line-height: 1.15; text-overflow: ellipsis; }
-.stackflowtargetinfo small { color: #b89a53; font: 800 6.5px/1.1 var(--ds-font-body); letter-spacing: .08em; }
-.stackflownone { min-width: 105px; display: grid; place-items: center; color: var(--ds-muted); border: 1px dashed #394247; border-radius: 6px; font: 800 7px/1 var(--ds-font-body); letter-spacing: .12em; }
+.stackflowtargetinfo b { overflow: hidden; color: #f2e7c7; font-size: 10px; line-height: 1.15; text-overflow: ellipsis; }
+.stackflowtargetinfo small { color: #b89a53; font: 800 8px/1.1 var(--ds-font-body); letter-spacing: .08em; }
+.stackflownone { min-width: 105px; display: grid; place-items: center; color: var(--ds-muted); border: 1px dashed #394247; border-radius: 6px; font: 800 9px/1 var(--ds-font-body); letter-spacing: .12em; }
 .stackflowmore { min-width: 40px; display: grid; place-items: center; color: #d8c283; font-weight: 800; }
 .stacktargetflow.compact { margin-top: 5px; padding: 4px 0 0; border: 0; border-top: 1px solid rgba(101,181,223,.13); border-radius: 0; background: transparent; box-shadow: none; }
 .stacktargetflow.compact .stackflowtargets { gap: 4px; }
 .stacktargetflow.compact .stackflowtarget { min-width: 80px; max-width: 116px; flex-basis: 80px; grid-template-columns: 23px minmax(0,1fr); padding: 3px; }
 .stacktargetflow.compact .stackflowtarget > img,.stacktargetflow.compact .stackflowplayer { width: 23px; height: 31px; }
-.stacktargetflow.compact .stackflowplayer b { font-size: 9px; }
-.stacktargetflow.compact .stackflowplayer span { font-size: 4px; }
-.stacktargetflow.compact .stackflowtargetinfo b { font-size: 7.5px; }
-.stacktargetflow.compact .stackflowtargetinfo small { font-size: 5.5px; }
-.stacktargetflow.compact .stackflowtargetn { width: 13px; height: 13px; top: -3px; left: -3px; font-size: 6px; }
+.stacktargetflow.compact .stackflowplayer b { font-size: 10px; }
+.stacktargetflow.compact .stackflowplayer span { font-size: 7px; }
+.stacktargetflow.compact .stackflowtargetinfo b { font-size: 9px; }
+.stacktargetflow.compact .stackflowtargetinfo small { font-size: 7px; }
+.stacktargetflow.compact .stackflowtargetn { width: 14px; height: 14px; top: -3px; left: -3px; font-size: 8px; }
 
 /* The desktop action-stage grid collapses its information column to zero on
    phones. Keep the same explicit source/target context, but present it as a
@@ -2615,7 +2615,7 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
   .gamefx-impact > span,.gamefx-impact > i,.gamefx-impact > strong,.gamefx-impact > small,
   .gamefx-zonebadge,.gamefx-wipe,.gamefx-wiperune,.gamefx-wipetitle,.gamefx-counterspell,.counterspell-seal,.counterspell-copy,.gamefx-keyword,.gamefx-minuscounter,.gamefx-strike,.gamefx-proliferatepulse,.gamefx-proliferatetitle { animation-duration:.55s !important; animation-iteration-count:1 !important; }
   #game.fx-boardwipe { filter:none; }
-  #game.fx-combat-camera,.fx-combat-source { animation:none !important; }
+  #game.fx-combat-camera,.fx-combat-source,.fx-damage-target,.fx-keyword-gold,.fx-keyword-blue,.fx-keyword-violet,.fx-keyword-red,.fx-keyword-orange { animation:none !important; }
 }
 
 body.reduced-motion .personareaction,body.reduced-motion .personareactionflare { animation:none !important; }

@@ -2,16 +2,16 @@
 #game .overlay.resolutionrecapoverlay { padding: 20px; z-index: 1500; }
 #game .resolutionrecapoverlay .modal.resolutionrecap {
   display: flex; flex-direction: column; width: min(720px, 100%); max-width: 720px;
-  max-height: calc(100dvh - 40px); padding: 0; overflow: hidden;
+  max-height: calc(100 * var(--dvhu) - 40px); padding: 0; overflow: hidden;
   border: 1px solid #906347; border-radius: 16px;
   background: #131816; color: #ecebe2; box-shadow: 0 24px 100px #000b;
 }
 .resolutionrecaphead { flex: 0 0 auto; padding: 20px 24px; border-bottom: 1px solid #ffffff18; }
-.resolutionrecapkicker { color: #b2bba7; font-size: 10px; font-weight: 700; letter-spacing: .16em; margin-bottom: 12px; }
+.resolutionrecapkicker { color: #b2bba7; font-size: 11px; font-weight: 700; letter-spacing: .16em; margin-bottom: 12px; }
 .resolutionrecaphero { display: flex; align-items: center; gap: 18px; }
 .resolutionrecaphero > img { width: 44px; height: 62px; object-fit: contain; border-radius: 5px; flex-shrink: 0; }
 .resolutionrecaptitle { min-width: 0; }
-.resolutionrecaptitle h2 { margin: 0; color: #fff4d9; font: 600 21px/1.2 Georgia, serif; overflow-wrap: anywhere; }
+.resolutionrecaptitle h2 { margin: 0; color: #fff4d9; font: 600 21px/1.2 var(--ds-font-display); overflow-wrap: anywhere; }
 .resolutionrecaptitle p { margin: 6px 0 0; color: #bbc5b9; font-size: 12px; }
 .resolutionrecapbody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 24px 20px; }
 .resolutionrecapsummary { margin: 16px 0 10px; color: #e0dfcd; font-size: 14px; line-height: 1.55; }
@@ -21,7 +21,7 @@
 .resolutionrecapbody > .resolutionrecapsection .resolutionrecaprow { padding: 11px 12px; margin-top: 6px; border: 1px solid #b4c09d1c; border-radius: 8px; background: #93ab850b; }
 .resolutionrecapbody > .resolutionrecapsection .resolutionrecaprow > img { width: 44px; height: 62px; }
 .resolutionrecapsection { margin-top: 16px; }
-.resolutionrecap h3 { margin: 0 0 9px; color: #b5c2ab; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.resolutionrecap h3 { margin: 0 0 9px; color: #b5c2ab; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .resolutionrecaprow { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #ffffff0c; }
 .resolutionrecaprow > img { width: 38px; height: 53px; object-fit: contain; border-radius: 3px; flex-shrink: 0; }
 .resolutionrecaprow p, .resolutionrecapnext p { margin: 0; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
@@ -37,12 +37,12 @@
   backdrop-filter: none; -webkit-backdrop-filter: none; animation: none;
 }
 #game .recapminor .modal.resolutionrecap {
-  width: min(420px, 100%); max-height: min(650px, calc(100dvh - 40px));
+  width: min(420px, 100%); max-height: min(650px, calc(100 * var(--dvhu) - 40px));
   background: #171e1c; border-color: #75856a65;
   border-radius: 12px; box-shadow: 0 12px 40px #0008, 0 0 0 1px #0004; animation: none;
 }
 .recapminor .resolutionrecaphead { padding: 14px 18px; background: #202820; }
-.recapminor .resolutionrecapkicker { margin-bottom: 9px; font-size: 9px; }
+.recapminor .resolutionrecapkicker { margin-bottom: 9px; font-size: 10px; }
 .recapminor .resolutionrecaphero { gap: 12px; }
 .recapminor .resolutionrecaphero > img { width: 52px; height: 73px; }
 .recapminor .resolutionrecapsummary { margin-top: 12px; font-size: 12px; color: #bbc5b9; }
@@ -76,14 +76,14 @@
 .recapmajor .resolutionrecaphero > img { width: 96px; height: 134px; transform: rotate(-4deg); box-shadow: 0 10px 28px #0008, 0 0 28px #ffba5520; }
 .recapmajor .resolutionrecaptitle .resolutionrecapimpact {
   margin: 0 0 8px; font-family: var(--ds-font-display, 'Bricolage Grotesque', sans-serif);
-  font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.04;
+  font-size: clamp(28px, calc(4 * var(--vwu)), 44px); font-weight: 800; line-height: 1.04;
   letter-spacing: -.035em; text-transform: uppercase; color: #ffdda0; text-wrap: balance;
 }
-.recapmajor .resolutionrecaptitle h2 { font-size: clamp(20px, 2.5vw, 27px); }
+.recapmajor .resolutionrecaptitle h2 { font-size: clamp(20px, calc(2.5 * var(--vwu)), 27px); }
 .resolutionrecapstats { display: flex; gap: 26px; margin-top: 22px; padding: 15px 0 17px; border-top: 1px solid #eeb37530; }
 .resolutionrecapstats > div { flex: 1; min-width: 0; }
 .resolutionrecapstats strong { display: block; color: #ffe4b6; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
-.resolutionrecapstats span { display: block; margin-top: 7px; color: #cebfa6; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; line-height: 1.4; }
+.resolutionrecapstats span { display: block; margin-top: 7px; color: #cebfa6; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; line-height: 1.4; }
 .recapmajor .resolutionrecapbody { padding: 4px 28px 20px; }
 .recapmajor .resolutionrecapfoot { background: linear-gradient(100deg, #242720, #31261f); }
 
@@ -99,23 +99,23 @@
 }
 @media (max-width: 520px), (max-height: 540px) {
   #game .overlay.resolutionrecapoverlay { padding: 8px; }
-  #game .resolutionrecapoverlay .modal.resolutionrecap { max-height: calc(100dvh - 16px); border-radius: 10px; }
+  #game .resolutionrecapoverlay .modal.resolutionrecap { max-height: calc(100 * var(--dvhu) - 16px); border-radius: 10px; }
   .resolutionrecapfoot { padding: 10px 16px; }
   .resolutionrecapfoot > span { max-width: 140px; font-size: 11px; }
   .recapmajor .resolutionrecaphead { padding: 14px 16px 0; }
-  .recapmajor .resolutionrecapkicker { margin-bottom: 10px; font-size: 9px; }
+  .recapmajor .resolutionrecapkicker { margin-bottom: 10px; font-size: 10px; }
   .recapmajor .resolutionrecaphero { gap: 16px; }
   .recapmajor .resolutionrecaphero > img { width: 55px; height: 77px; }
-  .recapmajor .resolutionrecaptitle .resolutionrecapimpact { font-size: clamp(26px, 7vw, 34px); }
+  .recapmajor .resolutionrecaptitle .resolutionrecapimpact { font-size: clamp(26px, calc(7 * var(--vwu)), 34px); }
   .recapmajor .resolutionrecaptitle h2 { font-size: 18px; }
   .recapmajor .resolutionrecaptitle p { font-size: 11px; }
   .resolutionrecapstats { gap: 12px; margin-top: 14px; padding: 11px 0; }
   .resolutionrecapstats strong { font-size: 24px; }
-  .resolutionrecapstats span { font-size: 9px; }
+  .resolutionrecapstats span { font-size: 10px; }
   .recapmajor .resolutionrecapbody { padding: 0 16px 12px; }
 }
 @media (max-width: 520px) {
-  #game .recapminor .modal.resolutionrecap { width: 100%; max-height: min(70dvh, calc(100dvh - 16px)); }
+  #game .recapminor .modal.resolutionrecap { width: 100%; max-height: min(calc(70 * var(--dvhu)), calc(100 * var(--dvhu) - 16px)); }
 }
 @media (max-height: 450px) {
   .recapmajor .resolutionrecaphero > img { width: 38px; height: 53px; }

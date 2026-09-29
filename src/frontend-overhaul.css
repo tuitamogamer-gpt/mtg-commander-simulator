@@ -47,7 +47,7 @@
   cursor: pointer;
 }
 #setup .playstylechoices .gameicon { width: 15px; height: 15px; flex: none; color: #9d8b68; }
-#setup .playstylechoices span { overflow: hidden; font: 700 8px/1.15 var(--ds-font-display); text-overflow: ellipsis; white-space: nowrap; }
+#setup .playstylechoices span { overflow: hidden; font: 700 10px/1.15 var(--ds-font-display); text-overflow: ellipsis; white-space: nowrap; }
 #setup .playstylechoices button.on { color: var(--ds-accent-ink); background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent)); border-color: var(--ds-accent-bright); }
 #setup .playstylechoices button.on .gameicon { color: var(--ds-accent-ink); }
 
@@ -75,9 +75,9 @@
   cursor: pointer;
 }
 #setup .playstylerecs b,
-#setup .deckemptyalternatives b { overflow: hidden; color: var(--ds-text); font: 600 9px/1.15 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#setup .deckemptyalternatives b { overflow: hidden; color: var(--ds-text); font: 600 10px/1.15 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
 #setup .playstylerecs span,
-#setup .deckemptyalternatives span { color: var(--ds-muted); font: 600 7px/1.2 var(--ds-font-display); }
+#setup .deckemptyalternatives span { color: var(--ds-muted); font: 600 9px/1.2 var(--ds-font-display); }
 #setup .deckentry.recommended:not([hidden]) .deckcard { border-top-color: rgba(var(--ds-accent-rgb), .45) !important; }
 
 #setup .decklist.noresults { display: none !important; }
@@ -136,15 +136,15 @@
 #setup .reviewdeck img { width: 62px; height: 76px; object-fit: cover; border-radius: 5px; }
 #setup .reviewdeck div { min-width: 0; display: grid; gap: 4px; }
 #setup .reviewdeck small,
-#setup .reviewrules dt { color: var(--ds-brass); font: 800 7px/1 var(--ds-font-display); letter-spacing: .13em; }
+#setup .reviewrules dt { color: var(--ds-brass); font: 800 9px/1 var(--ds-font-display); letter-spacing: .13em; }
 #setup .reviewdeck b { color: var(--ds-text); font: 400 18px/1.05 var(--ds-font-display); }
-#setup .reviewdeck span { overflow: hidden; color: var(--ds-copy); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+#setup .reviewdeck span { overflow: hidden; color: var(--ds-copy); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 #setup .reviewseats { margin-top: 12px; display: grid; gap: 6px; }
 #setup .reviewseats > div { min-height: 48px; padding: 7px 9px; display: flex; align-items: center; gap: 10px; background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: 6px; }
-#setup .reviewseats i { width: 26px; height: 26px; display: grid; place-items: center; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border-radius: 50%; font: 800 8px/1 var(--ds-font-display); font-style: normal; }
+#setup .reviewseats i { width: 26px; height: 26px; display: grid; place-items: center; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border-radius: 50%; font: 800 10px/1 var(--ds-font-display); font-style: normal; }
 #setup .reviewseats span { min-width: 0; display: grid; gap: 2px; }
-#setup .reviewseats b { color: var(--ds-text); font-size: 11px; }
-#setup .reviewseats small { overflow: hidden; color: var(--ds-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+#setup .reviewseats b { color: var(--ds-text); font-size: 12px; }
+#setup .reviewseats small { overflow: hidden; color: var(--ds-muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 #setup .reviewseats > div > span { flex: 1; }
 #setup .reviewstyle {
   min-width: 0;
@@ -164,7 +164,7 @@
 #setup .reviewstyle strong { width: 25px; height: 25px; flex: none; border-radius: 50%; }
 #setup .reviewstyle img { object-fit: cover; }
 #setup .reviewstyle strong { display: grid; place-items: center; font-size: 13px; }
-#setup .reviewstyle b { overflow: hidden; font: 700 8px/1.15 var(--ds-font-display); text-overflow: ellipsis; white-space: nowrap; }
+#setup .reviewstyle b { overflow: hidden; font: 700 10px/1.15 var(--ds-font-display); text-overflow: ellipsis; white-space: nowrap; }
 
 #setup .botconfig.signaturestyle { border-color: rgba(var(--ds-accent-rgb), .3) !important; }
 #setup .pbadge.hasportrait { overflow: hidden; padding: 0; background: var(--ds-dialog); }
@@ -486,8 +486,8 @@ body.reduced-motion *::after {
 #game .turntimelinehead > span { width: 28px; height: 28px; display: grid; place-items: center; color: #a6c095; background: rgba(128, 154, 114, .12); border: 1px solid rgba(128, 154, 114, .3); border-radius: 50%; }
 #game .turntimelinehead .gameicon { width: 14px; height: 14px; }
 #game .turntimelinehead > div { display: grid; gap: 3px; }
-#game .turntimelinehead small { color: #91aa84; font: 800 6px/1 var(--ds-font-display); letter-spacing: .15em; }
-#game .turntimelinehead b { color: var(--ds-text); font: 700 9px/1.1 var(--ds-font-body); }
+#game .turntimelinehead small { color: #91aa84; font: 800 9px/1 var(--ds-font-display); letter-spacing: .15em; }
+#game .turntimelinehead b { color: var(--ds-text); font: 700 11px/1.1 var(--ds-font-body); }
 #game .turntimeline ol { min-width: 0; margin: 0; padding: 0; display: flex; align-items: center; gap: 6px; list-style: none; overflow: hidden; }
 #game .turntimeline li { min-width: 0; flex: 1 1 0; display: flex; align-items: center; gap: 5px; opacity: .58; }
 #game .turntimeline li i { width: 5px; height: 5px; flex: none; background: #6f8370; border-radius: 50%; }
@@ -513,8 +513,8 @@ body.reduced-motion *::after {
 #game .hand.is-empty .emptyrow small { color: var(--ds-muted); font: 500 8px/1.2 var(--ds-font-body); }
 
 .effectnotice.activity { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px; }
-.effectnotice.activity small { color: var(--ds-brass); font: 800 6px/1 var(--ds-font-display); letter-spacing: .14em; }
-.effectnotice.activity span { min-width: 0; color: var(--ds-copy); font-size: 10px; line-height: 1.3; }
+.effectnotice.activity small { color: var(--ds-brass); font: 800 9px/1 var(--ds-font-display); letter-spacing: .14em; }
+.effectnotice.activity span { min-width: 0; color: var(--ds-copy); font-size: 11px; line-height: 1.3; }
 
 #game .systemstatus {
   position: fixed;
@@ -536,8 +536,8 @@ body.reduced-motion *::after {
 }
 #game .systemstatus > span .gameicon { width: 18px; height: 18px; color: var(--ds-danger); }
 #game .systemstatus > div { min-width: 0; flex: 1; display: grid; gap: 3px; }
-#game .systemstatus small { color: var(--ds-danger); font: 800 6px/1 var(--ds-font-display); letter-spacing: .14em; }
-#game .systemstatus b { overflow: hidden; font: 600 10px/1.25 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#game .systemstatus small { color: var(--ds-danger); font: 800 9px/1 var(--ds-font-display); letter-spacing: .14em; }
+#game .systemstatus b { overflow: hidden; font: 600 11px/1.25 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
 #game .systemstatus .pbtn { min-height: 36px; }
 
 #game .matchrecap { width: min(760px, calc(100 * var(--vwu) - 32px)); max-height: min(820px, calc(100 * var(--dvhu) - 32px)); overflow: auto; }
@@ -549,7 +549,7 @@ body.reduced-motion *::after {
 #game .recapstandings > div { min-height: 58px; padding: 8px 10px; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 9px; background: rgba(255,255,255,.025); border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); }
 #game .recapstandings > div.winner { border-color: rgba(var(--ds-accent-rgb), .55); background: rgba(var(--ds-accent-rgb), .07); }
 #game .recapstandings > div.eliminated { opacity: .66; }
-#game .recapstandings i { width: 28px; height: 28px; display: grid; place-items: center; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border-radius: 50%; font: 800 8px/1 var(--ds-font-display); font-style: normal; }
+#game .recapstandings i { width: 28px; height: 28px; display: grid; place-items: center; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border-radius: 50%; font: 800 10px/1 var(--ds-font-display); font-style: normal; }
 #game .recapstandings span { min-width: 0; display: grid; gap: 3px; }
 #game .recapstandings span b { overflow: hidden; color: var(--ds-text); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 #game .recapstandings span small { overflow: hidden; color: var(--ds-muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
@@ -1762,6 +1762,10 @@ body.high-contrast {
 }
 body.high-contrast #game :is(.oppmeta, .zonecount, .styledesc, .emptyrow, .quickmenuitem small) { color: var(--ds-copy) !important; }
 body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color: var(--ds-line) !important; }
+/* The operating-system contrast preference receives the same token remap as the in-app switch. */
+@media (prefers-contrast: more) {
+  :root { --ds-muted: #b8c4d0; --ds-copy: #e1e6ec; --ds-line: #718092; --ds-line-soft: #455363; }
+}
 #setup[data-app-view="setup"] { padding-bottom: 100px !important; }
 #setup[data-app-view="setup"] .menuhead { max-width: 1440px; margin: auto; padding: 24px 32px 28px; }
 #setup .setuphero { padding: 22px 0 0 !important; }
@@ -1868,13 +1872,13 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup .deckvisual { position: relative; width: 100%; padding: 0 14px 16px; background: var(--ds-table); border-bottom: 1px solid var(--ds-line-soft); }
 #setup .deckedition { color: var(--ds-muted); font: 500 10px/1.3 var(--ds-font-mono); letter-spacing: .04em; }
 #setup .deckportraits { display: flex; align-items: center; justify-content: center; gap: 8px; height: 218px; }
-#setup[data-deck-view] .deckart { position: static !important; display: block; width: auto !important; max-width: 100%; height: 100% !important; min-height: 0 !important; aspect-ratio: 5 / 7; align-self: center; flex: 0 1 auto; min-width: 0; object-fit: contain !important; object-position: center !important; border-radius: 8px !important; filter: none !important; opacity: 1; mask-image: none; transform: none !important; }
+#setup[data-deck-view] .deckart { position: static !important; display: block; width: auto !important; max-width: 100%; height: 100% !important; min-height: 0 !important; aspect-ratio: 5 / 7; background: var(--ds-panel-raised); align-self: center; flex: 0 1 auto; min-width: 0; object-fit: contain !important; object-position: center !important; border-radius: 8px !important; filter: none !important; opacity: 1; mask-image: none; transform: none !important; }
 #setup[data-deck-view] .deckcard:is(:hover, .selected) .deckart { filter: none !important; transform: none !important; }
 #setup .deckvisual.partners .deckart { max-width: calc(50% - 4px); }
 #setup .deckcardheading .deckselectedmark { padding: 0; border: 0; color: var(--ds-accent-bright); background: transparent; font: 700 10px/1.3 var(--ds-font-body); letter-spacing: 0; text-transform: none; }
 #setup .deckcard.selected .deckedition { display: none; }
 #setup[data-deck-view] .deckinfo { flex: 1; gap: 7px; padding: 15px !important; width: 100%; }
-#setup[data-deck-view] .deckname { padding: 0; font: 600 19px/1.2 var(--ds-font-display) !important; letter-spacing: -.025em !important; white-space: normal; overflow-wrap: anywhere; }
+#setup[data-deck-view] .deckname { padding: 0; min-height: 2.4em; font: 600 19px/1.2 var(--ds-font-display) !important; letter-spacing: -.025em !important; white-space: normal; overflow-wrap: anywhere; }
 #setup[data-deck-view] .deckcmd { margin: 0 !important; white-space: normal; overflow: visible; }
 #setup[data-deck-view] .deckcmd b { color: var(--ds-copy); font: 500 12px/1.5 var(--ds-font-body); }
 #setup[data-deck-view] .deckcolors { gap: 5px !important; margin: 3px 0 0 !important; flex-wrap: wrap; }
@@ -2421,4 +2425,12 @@ button.dungeonroom:hover { background: #2f5346; }
   .dungeonmodal .dungeonconfirm { padding: 8px 12px; gap: 8px; flex-direction: row; align-items: center; }
   .dungeonmodal .dungeonconfirm p { display: none; }
   .dungeonmodal .dungeonconfirm .pbtn { width: auto; max-width: 50%; }
+}
+
+/* Deck strategy lines wrap to two lines instead of cutting a word mid-way;
+   the pod builder heading scrolls away on single-column and short screens
+   so the sticky footer and heading no longer squeeze the seat cards. */
+#setup[data-deck-view] .deckstyle { max-width: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: normal; }
+@media (max-width: 1100px), (max-height: 820px) {
+  #setup .controlintro { position: static; }
 }

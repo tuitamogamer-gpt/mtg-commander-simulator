@@ -46,7 +46,7 @@ export async function buildIOSWeb() {
   const packageInfo = JSON.parse(await readFile(join(repository, 'package.json'), 'utf8'));
   await writeFile(join(output, 'ios-bundle.json'), JSON.stringify({
     schema: 'commander-ios-bundle/v1', version: packageInfo.version, files: files.length, bytes,
-    mode: 'offline-solo', onlineURL: 'https://mtg-commander-simulator.vercel.app/'
+    mode: 'offline-solo', onlineURL: 'https://www.mtgpod.xyz/'
   }, null, 2) + '\n');
   console.log(`iOS game bundle: ${files.length} files, ${(bytes / 1024 / 1024).toFixed(1)} MB (${relative(repository, output)})`);
   return output;

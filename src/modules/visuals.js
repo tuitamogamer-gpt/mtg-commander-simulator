@@ -62,7 +62,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.enhanceDialog = function enhanceDialog(overlay, dialog, options = {}) {
     if (!overlay || !dialog || overlay.dataset.dialogEnhanced === 'true') return dialog;
     overlay.dataset.dialogEnhanced = 'true';
-    dialog.setAttribute('role', 'dialog');
+    if (dialog.getAttribute('role') !== 'alertdialog') dialog.setAttribute('role', 'dialog');
     dialog.setAttribute('aria-modal', 'true');
     const title = dialog.querySelector('[data-dialog-title], .mtitle, .gameover, .sname, h1, h2');
     if (title) {

@@ -217,7 +217,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!this.reconnectDialog) {
         const dialog = el('dialog', 'modal online-reconnect-dialog', '<h2 id="online-reconnect-title">Live game paused</h2><p class="online-reconnect-status" role="status" aria-live="polite"></p><p>The current game and player decisions are preserved. Keep this host tab open.</p><div class="btnrow"><button type="button" class="pbtn primary online-resume">Resume live game</button></div><p class="online-reconnect-error" role="alert"></p>');
         dialog.setAttribute('aria-labelledby', 'online-reconnect-title');
-        Object.assign(dialog.style, { margin: 'auto', width: 'min(90vw, 540px)', color: 'inherit', borderRadius: '16px' });
+        Object.assign(dialog.style, { margin: 'auto', width: 'min(calc(90 * var(--vwu)), 540px)', color: 'inherit', borderRadius: '16px' });
         dialog.addEventListener('cancel', event => event.preventDefault());
         dialog.querySelector('.online-resume').onclick = () => this.perform({ type: 'resume' });
         document.body.appendChild(dialog);

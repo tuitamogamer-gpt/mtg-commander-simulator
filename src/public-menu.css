@@ -264,7 +264,7 @@ body.account-dialog-open { overflow: hidden; }
   color: var(--ds-accent-bright);
   border: 1px solid #617654;
   border-radius: 50%;
-  font: 400 20px/1 Georgia, serif;
+  font: 400 20px/1 var(--ds-font-display);
 }
 
 /* Account and profile --------------------------------------------------- */

@@ -29,6 +29,12 @@
     /* Legacy names kept for older rules and inline styles. */
     --ds-brass: var(--ds-accent);
     --ds-brass-bright: var(--ds-accent-bright);
+    /* Older sheets still read these font and colour names; undefined, they
+       fell back to Times/Arial on commander arrivals, recaps and effects. */
+    --tbl-serif: var(--ds-font-display);
+    --tbl-sans: var(--ds-font-body);
+    --ds-font-sans: var(--ds-font-body);
+    --muted: var(--ds-muted);
     --ds-good: #7fcaa4;
     --ds-danger: #ef8b7b;
     --ds-focus: #ffb58c;
@@ -88,10 +94,15 @@
 }
 
 @layer commander.primitives {
-  :where(button, a, input, select, summary, [role="button"]):focus-visible {
+  :where(button, a, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
     outline: 2px solid var(--ds-focus);
     outline-offset: 2px;
+    box-shadow: 0 0 0 5px rgba(var(--ds-accent-rgb), .28);
   }
+
+  /* Headings, stage containers and dialogs take programmatic focus for
+     screen readers only; they are not controls and never show a ring. */
+  :where(main, section, article, div, dialog, h1, h2, h3)[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 
   .ui-status {
     display: flex;

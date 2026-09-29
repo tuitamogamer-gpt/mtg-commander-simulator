@@ -145,7 +145,7 @@ test('cold and warm landing menus share public sections and the same accessibili
 test('share previews and the official fan-project notice are present', () => {
   assert.match(index, /name="description"/);
   assert.match(index, /property="og:title"/);
-  assert.match(index, /property="og:image" content="https:\/\/mtg-commander-simulator\.vercel\.app\/assets\/backgrounds\/commander-war-room\.jpg"/);
+  assert.match(index, /property="og:image" content="https:\/\/www\.mtgpod\.xyz\/assets\/backgrounds\/commander-war-room\.jpg"/);
   assert.match(index, /name="twitter:card" content="summary_large_image"/);
   assert.match(landing, /unofficial Fan Content permitted under the/);
   assert.match(landing, /company\.wizards\.com\/en\/legal\/fancontentpolicy/);
