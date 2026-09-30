@@ -178,7 +178,7 @@ for(const role of ['human','ai']){
  });
  test(role+': a unique modal optional effect can be declined while still consuming the mode',async()=>{
   const f=context(M,role),gandalf=put(M,f.game,f.a,'Gandalf the Grey'),target=creature(f,f.b),options=[];
-  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(q.options.map(o=>o.key));return q.options[0].key;}if(q.prompt==='Use this optional effect?')return 'no';if(q.type==='chooseTargets')return [q.spec?.what==='permanent'?target:f.b].filter(c=>q.candidates.includes(c));});
+  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(Array.from(q.options,o=>o.key));return q.options[0].key;}if(q.prompt==='Use this optional effect?')return 'no';if(q.type==='chooseTargets')return [q.spec?.what==='permanent'?target:f.b].filter(c=>q.candidates.includes(c));});
   fund(f.a);let spell=put(M,f.game,f.a,'Shock','hand');assert.equal(await f.game.castSpell(f.a,spell,{from:'hand'}),true);await settle(f.game);assert.equal(target.tapped,false);assert.deepEqual(options[0],['0','1','2','3']);spell=put(M,f.game,f.a,'Shock','hand');assert.equal(await f.game.castSpell(f.a,spell,{from:'hand'}),true);await settle(f.game);assert.deepEqual(options[1],['1','2','3']);assert.equal(gandalf.zone,'battlefield');assertGameStateInvariants(f.game);
  });
  test(role+': reanimated Vehicle delay follows the returned object and only its controller\'s end step',async()=>{
@@ -199,13 +199,13 @@ for(const role of ['human','ai']){
  });
  test(role+': copying another unique-mode source creates a fresh instance of its ability',async()=>{
   const f=context(M,role),one=put(M,f.game,f.a,'Silent Hallcreeper'),two=put(M,f.game,f.a,'Silent Hallcreeper'),options=[];
-  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(q.options.map(o=>o.key));return q.options[0].key;}if(q.type==='chooseTargets')return [two].filter(c=>q.candidates.includes(c));});
+  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(Array.from(q.options,o=>o.key));return q.options[0].key;}if(q.type==='chooseTargets')return [two].filter(c=>q.candidates.includes(c));});
   for(let i=0;i<4;i++){const dealt=await f.game.damagePlayer(one,f.b,1,{combat:true});await f.game.emit('combatDamageToPlayer',{card:one,player:f.b,n:dealt});await settle(f.game);}
   assert.deepEqual(options,[['0','1','2'],['1','2'],['2'],['0','1','2']]);assert.equal(one.counters['+1/+1'],4);assert.equal(one.isCopyOf.name,'Silent Hallcreeper');assertGameStateInvariants(f.game);
  });
  test(role+': unique modal triggers record choices while stacking, suppress exhausted choices and reset each turn',async()=>{
   const f=context(M,role),gala=put(M,f.game,f.a,'Gala Greeters'),witness=creature(f,f.a),options=[];
-  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(q.options.map(o=>o.key));return q.options[0].key;}});
+  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(Array.from(q.options,o=>o.key));return q.options[0].key;}});
   for(let i=0;i<4;i++)await f.game.emit('etb',{card:witness});
   await f.game.flushTriggers();assert.deepEqual(options,[['0','1','2'],['1','2'],['2']]);assert.equal(f.game.stack.length,3);
   const countered=f.game.stack.at(-1);assert.equal(await f.game.counterStackObject(countered),true);await settle(f.game);
@@ -216,7 +216,7 @@ for(const role of ['human','ai']){
  });
  test(role+': object-scoped modal history survives turns but resets for a new battlefield object',async()=>{
   const f=context(M,role),pact=put(M,f.game,f.a,'Demonic Pact'),options=[];
-  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(q.options.map(o=>o.key));return q.options[0].key;}});
+  choose(f.a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){options.push(Array.from(q.options,o=>o.key));return q.options[0].key;}});
   for(let i=0;i<4;i++){await f.game.emit('upkeep',{player:f.a});await f.game.flushTriggers();assert.equal(f.game.stack.length,1);assert.equal(await f.game.counterStackObject(f.game.stack[0]),true);f.game.turnNo++;}
   assert.deepEqual(options,[['0','1','2','3'],['1','2','3'],['2','3'],['3']]);await f.game.emit('upkeep',{player:f.a});await settle(f.game);assert.equal(options.length,4);
   await f.game.move(pact,'exile');await f.game.putPermanentOntoBattlefield(pact,f.a);await f.game.emit('upkeep',{player:f.a});await f.game.flushTriggers();assert.deepEqual(options.at(-1),['0','1','2','3']);await f.game.counterStackObject(f.game.stack[0]);assertGameStateInvariants(f.game);
