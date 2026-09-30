@@ -79,7 +79,10 @@ test('meta koja dobije hexproof prije rezolucije postaje nelegalna i spell fizzl
   caster.pool.W = 1;
   game.recalc();
   game.priorityRound = async () => {
-    assert.deepEqual(game.stack.at(-1).targetSpecs, spell.def.targets);
+    // The Stack copy carries v20 targeting annotations and wrapped filters;
+    // the printed target requirements themselves are unchanged.
+    const printed = specs => specs.map(spec => ({ what: spec.what, prompt: spec.prompt, aiHint: spec.aiHint, filtered: typeof spec.filter === 'function' }));
+    assert.deepEqual(printed(game.stack.at(-1).targetSpecs), printed(spell.def.targets));
     await game.attach(boots, target);
     await game.resolveTop();
   };
