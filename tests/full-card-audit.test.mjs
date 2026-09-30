@@ -76,7 +76,7 @@ test('svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putan
     }).length;
     const mana = Array.isArray(def.mana) ? def.mana.length : def.mana ? 1 : 0;
     const paths = mana + (def.abilities || []).length + (def.opponentAbilities || []).length +
-      (def.handAbility ? 1 : 0) + (def.gyAbility ? 1 : 0) + (def.cycling ? 1 : 0) +
+      (def.handAbility ? 1 : 0) + (def.gyAbility ? 1 : 0) + (def.oracleExileAbilityV20 ? 1 : 0) + (def.cycling ? 1 : 0) +
       (def.cdkSuspendedSacrifice ? 1 : 0) + (typeof def.c13CommandAbility?.run === 'function' ? 1 : 0) +
       (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0) +
       (def.statics || []).filter(rule => rule.grantsSelfActivatedAbility && typeof rule.apply === 'function').length;
