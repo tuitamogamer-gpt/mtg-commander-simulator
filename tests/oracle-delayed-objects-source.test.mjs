@@ -21,11 +21,12 @@ test('whole pinned delayed-object sources compile; unsupported antecedents and f
   assert.equal(semanticClass({name:'Boundary',oracle_text:oracle,mana_cost:'{B}',type_line:'Instant',layout:'normal'}).semanticClass,undefined);
 });
 test('delayed extension preserves every previously imported delayed-object descriptor',()=>{
+ const faceSources=new Map(JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v20-disturb.json',import.meta.url))).map(card=>[card.name,card]));
  for(const file of fs.readdirSync(new URL('../reports/oracle-import/',import.meta.url)).filter(name=>/^batch-\d+\.json$/.test(name))){
   const report=JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/'+file,import.meta.url)));
   for(const entry of report.cards||[]){
    if(!JSON.stringify(entry.implementation||[]).includes('"action":"delayed-object"'))continue;
-   const raw=entry.raw,card={name:raw.name,oracle_text:raw.oracle,mana_cost:raw.cost||'',type_line:entry.catalog.typeLine,
+   const raw=entry.raw,card=faceSources.get(raw.name)||{name:raw.name,oracle_text:raw.oracle,mana_cost:raw.cost||'',type_line:entry.catalog.typeLine,
     layout:raw._layout||'normal',power:raw.power,toughness:raw.toughness,loyalty:raw.loyalty,keywords:entry.catalog.keywords};
    // Later imports can require a newer grammar than this extension's default.
    // Recreate each frozen descriptor with its recorded compiler version.

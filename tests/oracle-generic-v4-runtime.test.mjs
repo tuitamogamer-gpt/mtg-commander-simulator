@@ -730,10 +730,10 @@ test('v4 eventFilter contracts reject foreign events and accept only the exact s
     const friendly = permanent(context.game, context.player, synthetic('V4 mourned creature'));
     const enemy = permanent(context.game, context.opponent, synthetic('V4 enemy dead creature'));
     const before = context.player.library.length;
-    await context.game.emit('dies', { card: enemy, snap: { ctrl: context.opponent, types: ['Creature'] } });
+    await context.game.emit('dies', { card: enemy, snap: context.game.snapshot(enemy) });
     await settle(context.game);
     assert.equal(context.player.library.length, before);
-    await context.game.emit('dies', { card: friendly, snap: { ctrl: context.player, types: ['Creature'] } });
+    await context.game.emit('dies', { card: friendly, snap: context.game.snapshot(friendly) });
     await settle(context.game);
     assert.equal(context.player.library.length, before - 1, 'dies filter uses last-known controller and type');
   }
