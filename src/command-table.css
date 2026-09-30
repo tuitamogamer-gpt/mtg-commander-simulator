@@ -693,9 +693,8 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   #game.command-table.ct-desktop-lands .ct-hand-command-zone .czgo { padding: 3px 4px; font-size: 10px; }
 }
 
-/* Laptop widths (901-1250px) give three opponent seats about 320px each. The
-   counters move under the name so seat and commander names stay readable
-   instead of collapsing to "AI ...". */
+/* Laptop widths (901-1250px) move opponent counters under the name so seat
+   and commander names stay readable in the desktop table. */
 @media (min-width: 901px) and (max-width: 1250px) {
   body.game-active #game.command-table.ct-desktop-lands .opphead {
     grid-template-columns: 32px minmax(0, 1fr) auto 24px !important;
@@ -1167,23 +1166,26 @@ body.game-active #game.command-table .ct-battle-blocks .ct-block-link { min-heig
 #game.command-table .ct-unblocked { padding: 2px 4px; color: #c1a393; font-size: 10px; }
 
 @media (min-width: 901px) {
+  /* Keep all four battlefields equally sized, with your seat lower-left.
+     Combat and decisions continue to use the compact dock below the table. */
   body.game-active #game.command-table.ct-grid-view,
   body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count]),
   body.game-active #game.command-table.ct-grid-view.ct-no-opponents {
-    --ct-card: 122px; --ct-opponent-card: 94px; --ct-hand: 150px;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    grid-template-rows: 48px 20px minmax(190px, 1fr) auto minmax(200px, 1fr) calc(var(--ct-hand) + var(--ct-hand-extra)) auto !important;
-    grid-template-areas: 'topbar topbar topbar' 'ticker ticker ticker' 'opponent-one opponent-two opponent-three' 'center center center' 'mine mine mine' 'hand hand hand' 'decision decision decision' !important;
+    --ct-card: 94px; --ct-opponent-card: var(--ct-card); --ct-hand: 150px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: 48px 20px repeat(2, minmax(0, 1fr)) auto calc(var(--ct-hand) + var(--ct-hand-extra)) auto !important;
+    grid-template-areas: 'topbar topbar' 'ticker ticker' 'opponent-one opponent-two' 'mine opponent-three' 'center center' 'hand hand' 'decision decision' !important;
   }
-  body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count='2']) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-areas: 'topbar topbar' 'ticker ticker' 'opponent-one opponent-two' 'center center' 'mine mine' 'hand hand' 'decision decision' !important; }
-  body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count='1']) { grid-template-columns: minmax(0, 1fr) !important; grid-template-areas: 'topbar' 'ticker' 'opponent-one' 'center' 'mine' 'hand' 'decision' !important; }
-  body.game-active #game.command-table.ct-grid-view.ct-no-opponents { grid-template-areas: 'topbar topbar topbar' 'ticker ticker ticker' 'mine mine mine' 'mine mine mine' 'center center center' 'hand hand hand' 'decision decision decision' !important; }
+  body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count='2']) { grid-template-areas: 'topbar topbar' 'ticker ticker' 'opponent-one opponent-two' 'mine mine' 'center center' 'hand hand' 'decision decision' !important; }
+  body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count='1']) { grid-template-columns: minmax(0, 1fr) !important; grid-template-areas: 'topbar' 'ticker' 'opponent-one' 'mine' 'center' 'hand' 'decision' !important; }
+  body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count='0']),
+  body.game-active #game.command-table.ct-grid-view.ct-no-opponents { grid-template-areas: 'topbar topbar' 'ticker ticker' 'mine mine' 'mine mine' 'center center' 'hand hand' 'decision decision' !important; }
   body.game-active #game.command-table[data-table-view='focus']:not(.ct-grid-view) {
     grid-template-columns: minmax(0, 1fr) !important;
     grid-template-rows: 48px 52px minmax(170px, 1fr) auto minmax(180px, 1fr) calc(var(--ct-hand) + var(--ct-hand-extra)) auto !important;
     grid-template-areas: 'topbar' 'seats' 'opps' 'center' 'mine' 'hand' 'decision' !important;
   }
-  body.game-active #game.command-table.ct-grid-view .opprow { border-radius: 6px; border-top: 1px solid #9b8c7044; background: linear-gradient(180deg, #151b21dc, #12171e9c) !important; }
+  body.game-active #game.command-table.ct-grid-view .opprow { transform: none; border-radius: 6px; border-top: 1px solid #9b8c7044; background: linear-gradient(180deg, #151b21dc, #12171e9c) !important; }
   body.game-active #game.command-table.ct-grid-view .myboard { border-top: 1px solid #b7835366; background: linear-gradient(180deg, #151b21a8, #151b21de) !important; }
   body.game-active #game.command-table.ct-grid-view .mybattlefieldmain { justify-content: center; }
   body.game-active #game.command-table.ct-grid-view .creaturelane .boardlanecards { justify-content: center; }
@@ -1229,8 +1231,8 @@ body.game-active #game.command-table .ct-battle-blocks .ct-block-link { min-heig
 @media (min-width: 901px) and (max-height: 800px) {
   body.game-active #game.command-table.ct-grid-view,
   body.game-active #game.command-table.ct-grid-view:has(.oppswrap[data-opponent-count]) {
-    --ct-card: 82px; --ct-opponent-card: 70px; --ct-hand: 116px;
-    grid-template-rows: 44px 18px minmax(144px, 1fr) auto minmax(156px, 1fr) calc(var(--ct-hand) + var(--ct-hand-extra)) auto !important;
+    --ct-card: 70px; --ct-opponent-card: var(--ct-card); --ct-hand: 116px;
+    grid-template-rows: 44px 18px repeat(2, minmax(0, 1fr)) auto calc(var(--ct-hand) + var(--ct-hand-extra)) auto !important;
   }
   body.game-active #game.command-table.ct-grid-view:not(.empty-hand) { --ct-hand: 116px; }
   #game.command-table .ct-battle-line { padding-block: 4px; }
@@ -1240,8 +1242,8 @@ body.game-active #game.command-table .ct-battle-blocks .ct-block-link { min-heig
   #game.command-table.ct-grid-view :is(.ct-player-head, .opphead) .ct-portrait { height: 34px; width: 30px; }
   body.game-active #game.command-table.ct-battlefield-combat.ct-grid-view,
   body.game-active #game.command-table.ct-battlefield-combat.ct-grid-view:has(.oppswrap[data-opponent-count]) {
-    --ct-card: 82px; --ct-opponent-card: 76px;
-    grid-template-rows: 44px 18px minmax(190px, 1fr) auto minmax(190px, 1fr) 0 auto !important;
+    --ct-card: 76px; --ct-opponent-card: var(--ct-card);
+    grid-template-rows: 44px 18px repeat(2, minmax(0, 1fr)) auto 0 auto !important;
   }
   body.game-active #game.command-table.ct-battlefield-combat .handwrap { display: none !important; }
   body.game-active #game.command-table.ct-battlefield-combat .ct-player-head { min-height: 40px; height: 40px; padding: 2px 7px; }
