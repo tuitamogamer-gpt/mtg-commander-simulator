@@ -2437,6 +2437,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const relevant=operation.eventFilter.clauses.filter(clause=>clause.event===operation.event);
       if(relevant.length===1)operation={...operation,eventFilter:relevant[0].eventFilter};
     }
+    // "You may ... Do this only once each turn" is consumed by taking the
+    // action (CR 603.2h). Lift a lone untargeted optional effect to the
+    // trigger's own "may" so the engine can track that use per turn.
+    if (operation.onceEachTurn && !operation.optional && /Do this only once each turn\./.test(operation.onceGroup || '') &&
+        !(operation.targets || []).length && (operation.effects || []).length === 1 &&
+        operation.effects[0].action === 'optional-effect-v20') {
+      operation = {...operation, optional: true, effects: operation.effects[0].effects};
+    }
     const v4Body = operation.v4Body && MTG.compileOracleSpellV4(operation.v4Body);
     const modalBody = operation.modalBody;
     if (modalBody && (modalBody.choose?.min !== 1 || modalBody.choose?.max !== 1 ||
@@ -2550,16 +2558,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const baseFilter = genericTriggerFilter(operation.event, operation.eventFilter);
     const triggerTimes = operation.eventFilter?.kickedV17?(game,source,data)=>MTG.oracleKicksV17(game,data.so):MTG.oracleV8TriggerTimes?.(operation.event, operation.eventFilter, genericTargetSpec);
+    // CR 603.2h: "Do this only once each turn" limits the optional action,
+    // not the trigger. Declining leaves the next trigger this turn available;
+    // accepting stops later triggers, as the hand-written scripts already do.
+    const onceOnUse = !!operation.onceEachTurn && !!operation.optional && !targetedOptional &&
+      /Do this only once each turn\./.test(operation.onceGroup || '');
     const trigger = {
       on: operation.event,
-      ...(triggerTimes ? {times: operation.onceEachTurn ? (...args) => Math.min(1, triggerTimes(...args)) : triggerTimes} : {}),
+      ...(triggerTimes ? {times: operation.onceEachTurn && !onceOnUse ? (...args) => Math.min(1, triggerTimes(...args)) : triggerTimes} : {}),
       ...(operation.zone ? {zone:operation.zone} : {}),
       desc: operation.desc || 'Oracle effect',
       // A printed "you may" changes what happens on resolution; it does not
       // make choosing targets optional while the ability is put on the Stack.
       // Keep untargeted legacy optionals on the engine's existing path.
       opt: !!operation.optional && !targetedOptional,
-      oncePerTurn: !!operation.onceEachTurn,
+      oncePerTurn: !!operation.onceEachTurn && !onceOnUse,
+      ...(onceOnUse ? {oncePerTurnOnUse: '_oracleOnceOnUse:' + operation.onceGroup} : {}),
       firstTimeEachTurn: !!operation.onceEachTurn && /for the first time each turn/.test(operation.onceGroup || ''),
       oncePerBatch:!!operation.oncePerBatch,
       onceKey: operation.onceGroup,

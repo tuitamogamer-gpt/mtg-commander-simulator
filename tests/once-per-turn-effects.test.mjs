@@ -9,7 +9,7 @@ const names = [
   'Krile Baldesion', 'Emet-Selch of the Third Seat', "Puca's Covenant", 'The Reaper, King No More',
   'Screeching Scorchbeast', "Tidus, Yuna's Guardian", 'Ondu Spiritdancer',
   'Donal, Herald of Wings', 'Deep Gnome Terramancer', 'Pantlaza, Sun-Favored',
-  'Ancient Cornucopia', 'Nykthos Paragon',
+  'Ancient Cornucopia', 'Nykthos Paragon', 'Earth Kingdom General', 'Terrasymbiosis',
 ];
 const named = (cards, name) => cards.filter(card => card.name === name).length;
 
@@ -24,7 +24,14 @@ function fixture(name, role) {
     assert.equal(await game.castSpell(a, add(name, 'hand'), { from: 'hand' }), true);
   };
   let fire, result, alternate;
-  if (name === 'Ancient Cornucopia') {
+  if (name === 'Earth Kingdom General' || name === 'Terrasymbiosis') {
+    // Oracle generic triggers: "Whenever you put one or more +1/+1 counters on
+    // a creature (you control), you may ... Do this only once each turn."
+    const bear = add('Grizzly Bears');
+    for (let index = 0; index < 8; index++) add('Forest', 'library');
+    fire = async () => game.addCounters(bear, '+1/+1', 1, false, a);
+    result = name === 'Terrasymbiosis' ? () => a.hand.length : () => a.life - 40;
+  } else if (name === 'Ancient Cornucopia') {
     fire = () => cast('Opt');
     result = () => a.life - 40;
   } else if (name === 'Nykthos Paragon') {
