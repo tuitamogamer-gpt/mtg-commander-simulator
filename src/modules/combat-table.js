@@ -183,6 +183,8 @@ function review(ui, modal) {
     }
   }
   const footer = node('footer', 'ct-combat-review-foot');
+  const receipt = modal.querySelector('.combat-tax-summary');
+  if (receipt) footer.append(receipt);
   footer.append(modal.querySelector('.combatreviewnote'), modal.querySelector('.combatreviewactions'));
   workspace(modal, 'review', attacker === ui.me ? 'Your attack is declared' : `${attacker?.name || 'Opponent'} attacks`,
     'Review the attack. Responses and blocker selection come next.', 1, null,

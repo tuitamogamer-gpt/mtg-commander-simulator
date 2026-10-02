@@ -26,18 +26,18 @@
    }};
  }
  function requirements(game,card){return game.untilEffects.filter(effect=>effect.kind==='oracleEncoreAttack'&&effect.iid===card.iid&&effect.version===card.zoneVersion&&effect.timestamp===card.timestamp&&effect.turn===game.turnNo&&!effect.targetPlayer.lost);}
- const taxed=(game,player)=>game.bf().some(card=>card.ctrl===player&&card.def.attackTax>0);
  function declarationTargets(game,card,targets){
   const encore=requirements(game,card);if(!encore.length)return null;
   const goaders=[...new Set(game.goadersOf(card).filter(player=>player!==card.ctrl&&!player.lost))];
   const otherRequirements=game.untilEffects.filter(effect=>((effect.kind==='mustAttack'&&effect.who===card.ctrl)||(effect.kind==='goadCard'&&effect.iid===card.iid))&&effect.notPlayer).map(effect=>effect.notPlayer);
   for(const player of otherRequirements)if(!goaders.includes(player))goaders.push(player);
-  // CR 508.1d: maximize requirements, while choosing to pay an attack tax is
-  // optional. Retain every maximum in either the paid or unpaid tax case.
-  const score=(target,includeTaxed)=>goaders.reduce((n,player)=>n+(target instanceof MTG.Player&&target!==player?1:0),0)+encore.reduce((n,rule)=>n+(target===rule.targetPlayer&&(includeTaxed||!taxed(game,rule.targetPlayer))?1:0),0);
-  const maxPaid=Math.max(0,...targets.map(target=>score(target,true))),maxFree=Math.max(0,...targets.map(target=>score(target,false)));
-  return targets.filter(target=>score(target,true)===maxPaid||score(target,false)===maxFree);
+  // CR 508.1d: optional attack costs cannot force a payment or hide a free
+  // way to satisfy goad. Paid choices must obey at least as many requirements
+  // as the best declaration available without paying an attack cost.
+  const score=target=>goaders.reduce((n,player)=>n+(target instanceof MTG.Player&&target!==player?1:0),0)+encore.reduce((n,rule)=>n+(target===rule.targetPlayer?1:0),0);
+  const maxFree=Math.max(0,...targets.filter(target=>game.attackTargetIsFree(card,target)).map(score));
+  return targets.filter(target=>score(target)>=maxFree);
  }
- function forced(game,card){return requirements(game,card).some(rule=>!taxed(game,rule.targetPlayer)&&game.canAttackTarget(card,rule.targetPlayer));}
+ function forced(game,card){return requirements(game,card).some(rule=>game.canAttackTarget(card,rule.targetPlayer)&&game.attackTargetIsFree(card,rule.targetPlayer));}
  MTG.OracleV8Encore={install,declarationTargets,forced};
 })();

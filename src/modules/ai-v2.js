@@ -2424,7 +2424,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A search-width limit cannot turn a mandatory twenty-target spell into
       // an empty choice. Keep enough distinct legal candidates to pay the
       // announced target count; optional targets remain bounded as before.
-      if (!q.spec?.sameGraveyard) ranked = ranked.slice(0, Math.max(config.targetLimit, q.min || 0));
+      if (!q.spec?.sameGraveyard && !q.spec?.oracleGroupFilterV22) ranked = ranked.slice(0, Math.max(config.targetLimit, q.min || 0));
+      if(q.spec?.oracleGroupPickV22){const picks=q.spec.oracleGroupPickV22(game,ranked,q.min||0,q.max??1);if(picks.length>=(q.min||0))actions.push({kind:'chooseTargets',picks});}
       if (q.aiHint && ['proliferate', 'depthshaker'].includes(q.aiHint.goal)) {
         const strategic = ranked.filter(target => targetValue(game, player, target, q) > 0).slice(0, q.max || ranked.length);
         actions.push({ kind: 'chooseTargets', picks: strategic });
@@ -2435,7 +2436,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const group of groups) {
         const candidates = group.slice(0, Math.max(config.targetLimit, q.min || 0));
         const maxTargets = affordableStriveTargets(game, player, q, Math.min(q.max ?? 1, candidates.length));
-        for (const picks of combinations(candidates, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
+        for (const picks of combinations(candidates, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) if(!q.spec?.oracleGroupFilterV22||q.spec.oracleGroupFilterV22(game,picks,player,q.src))actions.push({ kind: 'chooseTargets', picks });
       }
     } else if (q.type === 'chooseCards') {
       if (q.max === 0) return [{kind: 'chooseCards', picks: []}];
@@ -5035,6 +5036,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const keyPlay = card.commander || profile.importantEngines.includes(card.name) || breakdown.threat >= 8 ||
           sem.roles.includes('ramp') || sem.roles.includes('mana-rock');
         if (eatsReserve && !keyPlay) breakdown.resources -= (phase === 'main1' ? 4 : 3) + 2.5 * holdWeight;
+      }
+      // Ending the turn is credited for keeping an answer and its mana up (see
+      // the pass/done branch). A sorcery-speed cast that still leaves that mana
+      // open keeps the same answer up, so it earns the same credit; otherwise a
+      // one-mana rock lost to "end turn" with a dozen untapped lands.
+      if (ownMainEmptyStack && !instantSpeed) {
+        const openAfterCast = availableNow - spend;
+        const interactionKept = (player.hand || []).some(held => held !== card && isInstantSpeedCard(held) &&
+          inferCardSemantics(held.def).roles.some(role => ['counterspell', 'single-target-removal', 'protection', 'combat-trick'].includes(role)));
+        if (interactionKept && openAfterCast > 0) breakdown.timing += phase === 'main1' ? 2.4 : 1.2;
+        if (heldAnswers.length && holdWeight > 0 && openAfterCast >= reserveNeed && tableWorthAnswering(game, player)) breakdown.timing += 1.5 + holdWeight;
       }
       // A deck with almost no creatures still needs a body in front of it.
       if (sem.roles.includes('creature') && !card.is('Instant')) {

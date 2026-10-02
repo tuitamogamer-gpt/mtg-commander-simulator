@@ -106,6 +106,8 @@ test('svaka karta koja cilja stack ima prozor u kojem se stvarno može odigrati'
         if (name === 'Echo Mage') card.counters.level = 2;
         if (name === 'Kitsa, Otterball Elite') card.counters['+1/+1'] = 2;
         if (name === 'Sigil Tracer') permanent(me, 'Sigil Tracer');
+        // Elder can pay as one of the two untapped Wizards (or Clerics).
+        if (name === 'Shieldmage Elder') permanent(me, 'Shieldmage Elder');
         // Mentor plus the existing Looter need five more untapped Merfolk.
         if (name === 'Lullmage Mentor') for (let index = 0; index < 5; index++) permanent(me, 'Merfolk Looter');
         // Direct battlefield fixtures skip entry replacement effects. Preserve

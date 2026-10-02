@@ -208,6 +208,21 @@ test('every living human receives public reviews, while private looks reach only
   assert.deepEqual(decisions, [[host.name, 'cardReveal'], [observer.name, 'cardReveal']]);
 });
 
+test('completed attack tax receipts survive the Live combat review round trip', () => {
+  const { game, host, guest, card } = table();
+  const attacker = card('Llanowar Elves', host); attacker.attacking = guest;
+  const q = { type: 'combatReview', attackingPlayer: host, attackers: [attacker], attackTaxPayments: [
+    { card: attacker, target: guest, cost: { generic: 4, x: 0, pips: [['W', 'PHY']] }, sources: ['Ghostly Prison', 'Windborn Muse', "Norn's Annex"] },
+  ] };
+  const descriptor = M.onlineDecisionDescriptor(game, q, guest, 'attack-tax-receipt');
+  const model = new M.OnlineArenaView(); model.update(plain(M.onlineGameViewFor(game, guest)), guest.onlineSeat);
+  const review = model.decision(plain(descriptor));
+  assert.equal(review.attackTaxPayments[0].card, model.byIid(attacker.iid));
+  assert.equal(review.attackTaxPayments[0].target, model.viewer);
+  assert.deepEqual(plain(review.attackTaxPayments[0].cost), q.attackTaxPayments[0].cost);
+  assert.deepEqual(plain(review.attackTaxPayments[0].sources), q.attackTaxPayments[0].sources);
+});
+
 test('a human can abort and recast in the same main phase, paying only for the completed cast', async () => {
   const { game, host, guest, card } = table();
   const source = card('Swords to Plowshares', guest, 'hand'), target = card('Llanowar Elves', host);

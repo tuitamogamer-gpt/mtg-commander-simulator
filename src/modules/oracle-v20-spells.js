@@ -45,6 +45,7 @@
     if(spec.distinctCtrl&&picks.some((card,j)=>j!==i&&card.ctrl===picks[i].ctrl))return false;
     if(spec.sameGraveyard&&picks.some(card=>card.owner!==picks[i].owner))return false;
    }
+   if(flags.some(Boolean)&&spec.oracleGroupRetargetV22&&!spec.oracleGroupRetargetV22(game,picks,ids,flags,object.ctrl,source))return false;
    next.push(Array.isArray(previous[index])?picks:picks[0]);nextIdentities.push(Array.isArray(previous[index])?ids:ids[0]);changed.push(...flags);
   }
   if(!changed.some(Boolean))return false;

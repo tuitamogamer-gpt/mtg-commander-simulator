@@ -1,0 +1,64 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createImportPlan,semanticClass} from '../scripts/import-oracle-batch.mjs';
+import {loadEngine} from './helpers/load-engine.mjs';
+import {context,put,settle} from './helpers/oracle-v8-fixtures.mjs';
+import {assertGameStateInvariants} from './helpers/game-state-invariants.mjs';
+const rows=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v22-layouts.json',import.meta.url),'utf8'));
+const M=loadEngine(),absent=rows.filter(c=>!M.DEFS[c.name]);
+if(absent.length){const plan=createImportPlan({cards:absent,bulk:{type:'oracle_cards'},sequence:9961,limit:absent.length,compilerVersion:22});assert.equal(plan.report.cards.length,absent.length,JSON.stringify(plan.report.rejected));M.registerOracleBatch(plan.report);M.initData(M.RAW_DATA);}
+const fund=p=>{for(const c of ['W','U','B','R','G','C'])p.pool[c]=40;};
+const choose=(p,test,value)=>{const prior=p.controller.decide.bind(p.controller);p.controller.decide=(g,q)=>test(q)?value(q):prior(g,q);};
+test('v22 layout rows consume every printed rule and reject an unknown added paragraph',()=>{
+ for(const row of rows){assert.ok(semanticClass(row,{compilerVersion:22}).semanticClass,row.name);const invalid=row.card_faces?{...row,card_faces:row.card_faces.map((face,i)=>i?face:{...face,oracle_text:face.oracle_text+'\nDo an unsupported thing.'})}:{...row,oracle_text:row.oracle_text+'\nDo an unsupported thing.'};assert.equal(semanticClass(invalid,{compilerVersion:22}).semanticClass,undefined,row.name);}
+});
+for(const role of ['human','ai']){
+ test(role+': converted casting pays the exact alternative, arrives as its physical back, and Living metal follows the controller turn',async()=>{
+  for(const converted of [false,true]){const {game,a,b}=context(M,role);fund(a);const c=put(M,game,a,"Goldbug, Humanity's Ally // Goldbug, Scrappy Scout",'hand'),front=c.oracleFaces.faces[0].def;const before=Object.values(a.pool).reduce((n,x)=>n+x,0),cost=converted?front.oracleConvertedCastingV22:front.cost;
+   assert.equal(await game.castSpell(a,c,{from:'hand',alt:converted?{oracleFace:'back',oracleConvertedV22:true,altCostStr:cost}:{oracleFace:'front'}}),true);assert.equal(before-Object.values(a.pool).reduce((n,x)=>n+x,0),M.mv(cost));assert.equal(c.oracleFace,converted?'back':'front');await settle(game);assert.equal(c.zone,'battlefield');assert.equal(c.mv,M.mv(front.cost));
+   if(converted){assert.equal(c.is('Creature'),true);game.turnPlayer=b;game.recalc();assert.equal(c.is('Creature'),false);game.turnPlayer=a;game.recalc();assert.equal(c.is('Creature'),true);await M.OracleV20.helpers.runGenericEffect({g:game,src:c,you:a,sourceZoneVersion:c.zoneVersion},{action:'transform-self'});assert.equal(c.oracleFace,'front');}
+   await game.move(c,'hand');assert.equal(c.oracleFace,'front');assert.equal(await game.castSpell(a,c,{from:'hand',alt:{oracleFace:'back'}}),false);assert.equal(await game.castSpell(a,c,{from:'hand',alt:{oracleFace:'back',oracleConvertedV22:true,altCostStr:'{0}'}}),false);assertGameStateInvariants(game);
+  }
+ });
+ test(role+': a temporary repeat trigger survives its spell source leaving and expires before the caster next untap',async()=>{
+  const {game,a,b}=context(M,role);fund(a);const tapped=put(M,game,b,'Grizzly Bears'),untapped=put(M,game,b,'Grizzly Bears');tapped.tapped=true;const source=put(M,game,a,"Don't Move",'hand');assert.equal(await game.castSpell(a,source,{from:'hand'}),true);await settle(game);assert.equal(tapped.zone,'graveyard');assert.equal(untapped.zone,'battlefield');assert.equal(source.zone,'graveyard');
+  await game.tap(untapped);await settle(game);assert.equal(untapped.zone,'graveyard');const next=put(M,game,b,'Grizzly Bears');await game.runBeginningPhase(a);await settle(game);await game.tap(next);await settle(game);assert.equal(next.zone,'battlefield');assertGameStateInvariants(game);
+ });
+ test(role+': next-cast entry counters ignore other spell qualities, are consumed once, and survive the original land object leaving',async()=>{
+  const {game,a}=context(M,role);fund(a);const land=put(M,game,a,'Chocobo Camp');land.tapped=false;const ability=game.manaSources(a).find(row=>row.card===land&&row.m.afterProduce);assert.ok(ability);assert.equal(await game.activateManaSource(a,ability,ability.produce[0]),true);await settle(game);await game.move(land,'hand');
+  const other=put(M,game,a,'Grizzly Bears','hand');assert.equal(await game.castSpell(a,other,{from:'hand'}),true);await settle(game);assert.equal(other.counters['+1/+1']||0,0);
+  for(let i=0;i<2;i++){const bird=put(M,game,a,'Grizzly Bears','hand');bird.def={...bird.def,name:'Bird entry witness '+i,subtypes:['Bird']};assert.equal(await game.castSpell(a,bird,{from:'hand'}),true);await settle(game);assert.equal(bird.counters['+1/+1']||0,i===0?1:0);}assertGameStateInvariants(game);
+ });
+ test(role+': a shared exile play allowance counts actual casts and land plays once and never follows a later card incarnation',async()=>{
+  const {game,a,b}=context(M,role);fund(a);const source=put(M,game,a,'Grizzly Bears'),first=put(M,game,a,'Opt','library'),land=put(M,game,a,'Forest','library'),second=put(M,game,a,'Opt','library');
+  await M.OracleV20.helpers.runGenericEffect({g:game,src:source,you:a,targets:[]},{action:'exile-permission-v22',who:'you',n:3,max:2,filter:null,spellsOnly:false,free:false,duration:'persistent'});for(const c of [first,land,second])assert.equal(game.hasExilePlayPermission(a,c),true);assert.equal(game.hasExilePlayPermission(b,first),false);
+  assert.equal(await game.castSpell(a,first,{from:'exile',alt:{consumeExilePermission:true}}),true);await settle(game);assert.equal(await game.playLand(a,land),true);assert.equal(game.hasExilePlayPermission(a,second),false);assert.equal(await game.castSpell(a,second,{from:'exile',alt:{consumeExilePermission:true}}),false);
+  await game.move(second,'hand');await game.move(second,'exile');assert.equal(game.hasExilePlayPermission(a,second),false);assertGameStateInvariants(game);
+ });
+ test(role+': next end-step play permissions survive opponents end steps and expire before the caster end-step priority',async()=>{
+  const {game,a,b}=context(M,role);fund(a);const top=put(M,game,a,'Opt','library'),target=put(M,game,a,'Grizzly Bears'),source=put(M,game,a,'Haste Magic','hand');assert.equal(await game.castSpell(a,source,{from:'hand',quickTargets:[target]}),true);await settle(game);assert.equal(top.zone,'exile');assert.equal(game.hasExilePlayPermission(a,top),true);await game.emit('endStep',{player:b});assert.equal(game.hasExilePlayPermission(a,top),true);await game.emit('endStep',{player:a});assert.equal(game.hasExilePlayPermission(a,top),false);assertGameStateInvariants(game);
+ });
+ test(role+': inspected exile selects only a legendary creature and retains paid timing for its later free cast',async()=>{
+  const {game,a,b}=context(M,role);fund(a);const source=put(M,game,a,'Djeru and Hazoret'),legend=put(M,game,a,'Grizzly Bears','library');legend.def={...legend.def,name:'Legendary inspected witness',super:['Legendary']};const rejected=put(M,game,a,'Grizzly Bears','library');choose(a,q=>q.type==='chooseCards'&&q.from.includes(legend),()=>[legend]);
+  await game.emit('attacks',{card:source,player:a,defender:b});await settle(game);assert.equal(legend.zone,'exile');assert.equal(rejected.zone,'library');assert.equal(game.hasExilePlayPermission(a,legend),true);game.turnPlayer=b;assert.equal(await game.castSpell(a,legend,{from:'exile',alt:{consumeExilePermission:true,free:true}}),false);game.turnPlayer=a;assert.equal(await game.castSpell(a,legend,{from:'exile',alt:{consumeExilePermission:true,free:true}}),true);await settle(game);assert.equal(legend.zone,'battlefield');assertGameStateInvariants(game);
+ });
+ test(role+': reveal-until accepts either printed creature subtype and preserves the complete no-match and empty-library fates',async()=>{
+  for(const quality of ['Elf','Elemental',null,'empty']){const {game,a}=context(M,role),source=put(M,game,a,'Grizzly Bears'),filter={what:'card',zone:'graveyard',controller:'you',alternatives:['Elf','Elemental'].map(subtype=>({what:'card',zone:'graveyard',controller:'you',subtype}))};for(const c of a.library.splice(0)){c.zone='graveyard';a.graveyard.push(c);}const lower=quality!=='empty'?put(M,game,a,'Forest','library'):null,chosen=quality&&quality!=='empty'?put(M,game,a,'Grizzly Bears','library'):null;if(chosen)chosen.def={...chosen.def,subtypes:[quality]};const top=quality!=='empty'?put(M,game,a,'Opt','library'):null,original=a.library.slice(),hand=a.hand.length;
+   await M.OracleV20.helpers.runGenericEffect({g:game,src:source,you:a,targets:[]},{action:'reveal-until-v22',filter,destination:'hand',tapped:false,rest:'bottom-random'});assert.equal(a.hand.length,hand+(chosen?1:0));if(chosen){assert.equal(chosen.zone,'hand');assert.equal(a.library[0],top);assert.equal(a.library.at(-1),lower);}else{assert.equal(a.library.length,original.length);assert.ok(original.every(c=>a.library.includes(c)));}assert.equal(a.lost,false);assertGameStateInvariants(game);
+  }
+ });
+ test(role+': the inspected optional selection rejects an ineligible card and a duplicate result',async()=>{
+  for(const invalid of ['quality','duplicate']){const {game,a}=context(M,role),source=put(M,game,a,'Grizzly Bears'),good=put(M,game,a,'Grizzly Bears','library'),bad=put(M,game,a,'Forest','library');choose(a,q=>q.prompt==='You may exile a card from these cards',()=>invalid==='quality'?[bad]:[good,good]);await assert.rejects(M.OracleV20.helpers.runGenericEffect({g:game,src:source,you:a,targets:[]},{action:'inspect-exile-v22',n:2,filter:{what:'creature',zone:'graveyard',controller:'you'},rest:'bottom-random',min:0,max:1,spellsOnly:true,free:false,duration:'eot'}),/Invalid inspected exile selection/);assert.equal(good.zone,'library');assert.equal(bad.zone,'library');assertGameStateInvariants(game);}
+ });
+ test(role+': source-controlled permissions close on a lost controller or a blink and never reopen',async()=>{
+  for(const reason of ['control','blink']){const {game,a,b}=context(M,role),source=put(M,game,a,'Grizzly Bears'),card=put(M,game,a,'Opt','library');await M.OracleV20.helpers.runGenericEffect({g:game,src:source,you:a,targets:[]},{action:'exile-permission-v22',who:'you',n:1,max:null,spellsOnly:false,duration:'source-control'});assert.equal(game.hasExilePlayPermission(a,card),true);if(reason==='control'){source.ctrl=b;game.recalc();source.ctrl=a;game.recalc();}else{await game.move(source,'hand');await game.move(source,'battlefield',{ctrl:a});}assert.equal(game.hasExilePlayPermission(a,card),false);assertGameStateInvariants(game);}
+ });
+ test(role+': Collected Conjuring casts exactly the chosen 0, 1, or 2 eligible sorceries and bottoms every other exiled card',async()=>{
+  for(const stop of [0,1,2]){const {game,a}=context(M,role);fund(a);const cohort=[];for(let i=0;i<6;i++){const c=put(M,game,a,i<3?'Opt':'Forest','library');if(i<3)c.def={...c.def,name:'Conjuring sorcery '+i,types:['Sorcery'],cost:i===2?'{4}':'{3}',targets:[],resolve:async()=>{}};cohort.push(c);}let count=0;choose(a,q=>q.prompt?.startsWith('You may cast one of these cards'),q=>count++<stop?[q.from[0]]:[]);const source=put(M,game,a,'Collected Conjuring','hand');assert.equal(await game.castSpell(a,source,{from:'hand'}),true);await game.resolveTop();const casts=game.stack.filter(so=>cohort.includes(so.card));assert.equal(casts.length,stop);for(const so of casts){assert.equal(so.castOpts.free,true);assert.equal(so.card.mv,3);}const left=cohort.filter(c=>!casts.some(so=>so.card===c));assert.ok(left.every(c=>c.zone==='library'&&a.library.slice(0,left.length).includes(c)));assert.equal(cohort[2].zone,'library');await settle(game);assertGameStateInvariants(game);}
+ });
+ test(role+': temporary self counters retain their original controller and battlefield incarnation',async()=>{
+  const {game,a,b}=context(M,role);fund(a);fund(b);const source=put(M,game,a,'Grizzly Bears'),trigger={kind:'generic-trigger',event:'cast',eventFilter:{kind:'your-filtered-cast',what:'black'},effects:[{action:'counter',target:'self',counter:'+1/+1',n:1}],targets:[],optional:false};await M.OracleV20.helpers.runGenericEffect({g:game,src:source,you:a,sourceZoneVersion:source.zoneVersion,targets:[]},{action:'install-trigger-v8',layoutsV22:true,duration:'eot',once:false,trigger});source.ctrl=b;game.recalc();
+  const cast=async p=>{const c=put(M,game,p,'Opt','hand');c.def={...c.def,name:'Black self-counter witness',cost:'{B}',targets:[],resolve:async()=>{}};assert.equal(await game.castSpell(p,c,{from:'hand'}),true);await settle(game);};await cast(a);assert.equal(source.counters['+1/+1'],1);await cast(b);assert.equal(source.counters['+1/+1'],1);await game.move(source,'hand');await game.move(source,'battlefield',{ctrl:a});await cast(a);assert.equal(source.counters['+1/+1']||0,0);assertGameStateInvariants(game);
+ });
+}

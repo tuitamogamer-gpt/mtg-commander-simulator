@@ -95,6 +95,12 @@ function combatTray(ui, game, root, pd) {
   const center = root.querySelector('.center');
   const tray = node('section', 'ct-battle-line');
   tray.setAttribute('aria-label', 'Incoming attackers and block assignments');
+  const attackPayments = globalThis.MTG.attackTaxPaymentText(pd.q.attackTaxPayments);
+  if (attackPayments) {
+    const receipt = node('div', 'combat-tax-summary', attackPayments);
+    receipt.dataset.testid = 'attack-costs-paid';
+    tray.append(receipt);
+  }
   const copy = node('div', 'ct-battle-line-label');
   copy.append(node('b', '', pd.q.type === 'blockers' ? 'Incoming attack' : 'Attack declared'),
     node('small', '', `${attackers.length} creature${attackers.length === 1 ? '' : 's'}`));

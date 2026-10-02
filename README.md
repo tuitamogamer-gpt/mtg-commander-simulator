@@ -4,7 +4,7 @@
 
 Choose a ready-to-play precon or import your own supported deck. Build a pod, pick opponent personalities, and play through casting, priority, the stack, combat, and triggered abilities at your own pace. Solo AI runs on your device and needs no model API key or AI subscription.
 
-**[Play now](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Report a bug](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues)
+**[Play now](https://mtgpod.xyz/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Report a bug](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues)
 
 ![Commander Simulator Command Table showing the battlefield, player seats, hand, and action controls](assets/menu/command-table-preview.jpg)
 
@@ -14,7 +14,7 @@ Choose a ready-to-play precon or import your own supported deck. Build a pod, pi
 
 ## Start playing
 
-1. [Open Commander Simulator](https://mtg-commander-simulator.vercel.app/) in a current desktop, tablet, or mobile browser. Guest Solo needs no account or installation.
+1. [Open Commander Simulator](https://mtgpod.xyz/) in a current desktop, tablet, or mobile browser. Guest Solo needs no account or installation.
 2. Choose **Play solo**, select a deck, and set up one to three AI opponents in **Pod**.
 3. Review the settings, keep or mulligan your opening hand, and follow the available actions. Open **Guide** if this is your first visit.
 
@@ -44,14 +44,14 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 
 ### Current catalog
 
-Repository inventory checked on **27 September 2026**:
+Repository inventory checked on **30 September 2026**:
 
 | Measure | Available |
 | --- | ---: |
 | Built-in precon decks | **175**, each with 100 cards |
-| Runtime card definitions | **25,792** |
-| Definitions eligible for deck import | **25,791** |
-| Generic Oracle batches | **218**, containing 21,800 definitions |
+| Runtime card definitions | **26,192** |
+| Definitions eligible for deck import | **26,191** |
+| Generic Oracle batches | **222**, containing 22,200 definitions |
 | Dedicated commander videos | **28**, across the original 27 decks |
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
@@ -60,6 +60,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
+- **400 more Oracle cards so far:** batches 0219–0222, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is in progress; 600 remain outstanding. [Latest validation report](reports/oracle-import/validation-0222.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
 - **1,000 more Oracle cards:** batches 0209–0218, with executable rules, recorded source provenance, and human/local-AI verification. [Validation report](reports/oracle-import/validation-0209-0218.md)
@@ -703,6 +704,10 @@ These reports describe their dated imports and checks. Use the [generated catalo
 | --- | --- |
 | [Foundations Commander import](reports/decks/precon-fdc-2026-09-26/README.md) | Five Foundations Commander decks; 17 native definitions. |
 | [Reality Fracture import](reports/decks/precon-frc-2026-09-24/README.md) | Multiverse Reforged; 26 native definitions. |
+| [Oracle 0219](reports/oracle-import/validation-0219.md) | Oracle batch 0219; 100 cards, partial completion of a 1,000-card request. |
+| [Oracle 0220](reports/oracle-import/validation-0220.md) | Oracle batch 0220; 200 of the requested 1,000 cards imported so far. |
+| [Oracle 0221](reports/oracle-import/validation-0221.md) | Oracle batch 0221; 300 of the requested 1,000 cards imported so far. |
+| [Oracle 0222](reports/oracle-import/validation-0222.md) | Oracle batch 0222; 400 of the requested 1,000 cards imported so far. |
 | [Oracle 0209–0218](reports/oracle-import/validation-0209-0218.md) | Oracle batches 0209–0218; 1,000 cards. |
 | [Oracle 0199–0208](reports/oracle-import/validation-0199-0208.md) | Oracle batches 0199–0208; 1,000 cards. |
 | [Oracle 0189–0198](reports/oracle-import/validation-0189-0198.md) | Oracle batches 0189–0198; 1,000 cards. |

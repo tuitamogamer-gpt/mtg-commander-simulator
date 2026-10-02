@@ -100,6 +100,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       generic: Math.max(0, (cost.generic || 0) + (cost.x || 0) * x - (cost.xReduction || 0)) };
   }
 
+  // The engine records only completed attack payments. Keep this public
+  // receipt available to the battlefield, phone combat view and review modal.
+  U.attackTaxPaymentText = function (payments) {
+    if (!payments?.length) return '';
+    const cost = { generic: 0, x: 0, pips: [] };
+    const sources = new Set();
+    for (const payment of payments) {
+      cost.generic += payment.cost?.generic || 0;
+      cost.pips.push(...(payment.cost?.pips || []));
+      for (const source of payment.sources || []) sources.add(source);
+    }
+    return `Attack costs paid: ${U.costStr(cost)}${sources.size ? ' · ' + [...sources].join(' + ') : ''}`;
+  };
+
   function manualManaSourceText(source) {
     const cost = source.extraCost || {};
     const parts = [];
@@ -2682,8 +2696,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     libraryTopSources(g, player) {
       if (g.onlinePresentation) return (player.presentation.libraryTopSources || []).map(id => g.ref(id)).filter(Boolean);
-      return g.bf().filter(source => !source.cur?.abilitiesDisabled && (source.def.oracleRevealAllLibrariesV17 || source.ctrl === player &&
-        (source.def.revealAllTop || player === this.me && source.def.revealOwnTop)));
+      return g.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,g,source) || source.ctrl === player &&
+        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,g,source) || player === this.me && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,g,source))));
     }
 
     visibleLibraryTop(g, player) {
@@ -3925,6 +3939,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           body.appendChild(instruction);
           if (q.spec?.sameGraveyard) body.appendChild(el('div', 'targetprompthint targetconstraint',
             'Choose all cards from one graveyard. Clear your selection to switch graveyards.'));
+          if(q.spec?.oracleGroupRuleV22){const rule=q.spec.oracleGroupRuleV22;body.appendChild(el('div','targetprompthint targetconstraint',rule.test==='total-mana-value'?'The selected cards must have total mana value '+rule.max+' or less.':rule.test==='different-names'?'Choose cards with different names.':rule.test==='different-mana-values'?'Choose cards with different mana values.':'The selected creature cards must share a creature type.'));}
           if (q.previousTargets?.some(target => [target].flat().filter(Boolean).length)) {
             const previous = el('div', 'targetprevious');
             q.previousTargets.forEach((targets, index) => {
@@ -4323,6 +4338,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           body.appendChild(lane);
         }
         m.appendChild(body);
+        const attackPayments = U.attackTaxPaymentText(q.attackTaxPayments);
+        if (attackPayments) m.appendChild(el('div', 'combat-tax-summary', esc(attackPayments)));
         m.appendChild(el('div', 'combatreviewnote', attackingMe
           ? 'Your attackers and their defenders are shown above. After Proceed, attack triggers, priority, and blocker selection follow.'
           : atMe.length
@@ -4770,6 +4787,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (pd?.q.type !== 'chooseTargets') return false;
       if (pd.q.spec?.distinctCtrl && card?.ctrl && pd.sel.some(selected => selected !== card && selected.ctrl === card.ctrl)) return false;
       if (pd.q.spec?.sameGraveyard && pd.sel.some(selected => selected.owner !== card.owner)) return false;
+      if(pd.q.spec?.oracleGroupFilterV22&&!pd.q.spec.oracleGroupFilterV22(this.game,[...pd.sel.filter(selected=>selected!==card),card],this.me,pd.q.src))return false;
       return true;
     }
     targetZoneCandidates(player, zone) {
@@ -5409,9 +5427,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const acts = el('div', 'sheetacts');
       if (prepared) acts.appendChild(this.renderPreparedSpell(g, card, prepared));
       const pd = this.pending;
+      const reaction = !pd && this.react?.q.type === 'priority' ? this.react : null;
+      const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : reaction?.q;
+      const submitAction = action => {
+        if (reaction ? this.react !== reaction || this.pending : this.pending !== pd) return;
+        this.sheet = null;
+        if (reaction) this.takeReactWindow();
+        this.resolvePending(action);
+      };
       let suspendActionOffered = false;
-      if (pd && (pd.q.type === 'main' || pd.q.type === 'priority')) {
-        const q = pd.q;
+      if (actionQ) {
+        const q = actionQ;
         for (const e of (q.casts || [])) {
           if (e.card !== card) continue;
           const cost = g.spellCost(card.owner, card, e.alt ? Object.assign({}, e.alt) : {});
@@ -5424,13 +5450,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             : 'Play from exile' + (e.alt && e.alt.free ? ' (free)' : '');
           if (card.meta?.preparedBy) label = `Cast prepared · ${card.name} ${U.costStr(cost)}`;
           const b = el('button', 'pbtn primary wide', esc(label));
-          b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'cast', card, alt: e.alt, from: e.from }); };
+          b.onclick = () => submitAction({ kind: 'cast', card, alt: e.alt, from: e.from });
           acts.appendChild(b);
         }
         for (const l of (q.lands || [])) {
           if (l !== card) continue;
           const b = el('button', 'pbtn primary wide', 'Play land');
-          b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'land', card }); };
+          b.onclick = () => submitAction({ kind: 'land', card });
           acts.appendChild(b);
         }
         const usedAbilities = new Set();
@@ -5440,7 +5466,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (a.suspend) suspendActionOffered = true;
           const label = this.activationLabel(a);
           const b = el('button', 'pbtn wide abilitybtn' + (a.turnFaceUp ? ' primary faceupaction' : ''), (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
-          b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'activate', entry: a }); };
+          b.onclick = () => submitAction({ kind: 'activate', entry: a });
           acts.appendChild(b);
         }
         // show unavailable abilities greyed-out, so igrač vidi šta karta može
@@ -5459,15 +5485,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           acts.appendChild(b);
         }
       }
+      if (pd?.q.type === 'blockers' && card.zone === 'battlefield' && card.ctrl === this.me &&
+          (card.def.abilities?.length || card.cur?.extraAbilities?.length)) {
+        acts.appendChild(el('div', 'soracle',
+          'Confirm blockers first. You can use abilities in the response window before combat damage.'));
+      }
       if (card.faceDown && card.zone === 'battlefield' && card.ctrl === this.me && mayLookFaceDown) {
         const costs = g.faceUpCosts?.(card) || [];
-        const offered = pd && ['main', 'priority'].includes(pd.q.type) ? pd.q.acts || [] : [];
+        const offered = actionQ?.acts || [];
         const note = el('div', 'facedownsheet faceuphelp');
         if (costs.length) {
           note.textContent = 'Turn face up by paying one of the costs below when you have priority. This does not use the Stack.';
           for (const option of costs) {
             if (offered.some(a => a.card === card && a.turnFaceUp && a.faceUpCost === option.cost && a.faceUpKind === option.kind)) continue;
-            const reason = card.phasedOut ? 'phased out' : !pd || !['main', 'priority'].includes(pd.q.type)
+            const reason = card.phasedOut ? 'phased out' : !actionQ
               ? 'wait until you have priority' : 'not enough mana or required payment';
             const b = el('button', 'pbtn wide disabled abilitybtn faceupaction',
               `🃏 Turn face up (${esc(option.kind)}: ${esc(option.label || option.cost)}) — ${reason}`);

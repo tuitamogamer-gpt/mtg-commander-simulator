@@ -119,8 +119,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const enc = encoder(game, viewer);
     const card = object => { enc.encode(object); return enc.objects.get(token(object)); };
     const players = game.players.map(player => {
-      const topSources = game.bf().filter(source => !source.cur?.abilitiesDisabled && (source.def.oracleRevealAllLibrariesV17 || source.ctrl === player &&
-        (source.def.revealAllTop || player === viewer && source.def.revealOwnTop)));
+      const topSources = game.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,game,source) || source.ctrl === player &&
+        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,game,source) || player === viewer && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,game,source))));
       const top = topSources.length ? player.library.at(-1) : null;
       const visibleTop = top ? U.onlineCardPresentation(top, viewer, true) : null;
       if (visibleTop) enc.objects.set(token(top), visibleTop);
@@ -178,7 +178,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   const questionKeys = ['type', 'prompt', 'abilityLabel', 'acts', 'allTargets', 'allocation', 'amount', 'attackTargets', 'attackers',
-    'attackingPlayer', 'by', 'cancelable', 'candidates', 'card', 'cards', 'casts', 'clashSummary', 'ctrl', 'cost', 'data',
+    'attackingPlayer', 'attackTaxPayments', 'by', 'cancelable', 'candidates', 'card', 'cards', 'casts', 'clashSummary', 'ctrl', 'cost', 'data',
     'effectKind', 'recap', 'eligible', 'forSpell', 'forced', 'free', 'from', 'kind', 'lands', 'max', 'min', 'mulls', 'n',
     'names', 'opponents', 'options', 'opts', 'player', 'potential', 'reason', 'repeats', 'revealedCards', 'source',
     'sources', 'spec', 'src', 'stackObject', 'status', 'sub', 'suggested', 'surveil', 'target', 'targets', 'title', 'triggers', 'values', 'quickTarget',

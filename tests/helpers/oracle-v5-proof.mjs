@@ -1,4 +1,8 @@
+import {stageSpellsConditionV24} from './oracle-v24-spells-proof.mjs';
+import {stageCommonCountV22,commonCountValueV22} from './oracle-v22-common-proof.mjs';
 import {stageActivationSuffix} from './oracle-v8-activation-suffixes-proof.mjs';
+import {stageCommonConditionV21} from './oracle-v21-common-proof.mjs';
+import {stageSpellsConditionV21,stageSpellsCountV21,spellCountValueV21} from './oracle-v21-spells-proof.mjs';
 import {stagePermanentConditionV20,stagePermanentCountV20,permanentCountValueV20,permanentTargetMatchesV20} from './oracle-v20-permanents-proof.mjs';
 import {stageCostsConditionV20,stageCostsCountV20,costsCountValueV20} from './oracle-v20-costs-proof.mjs';
 import {enterChosenColorSource} from './oracle-chosen-color-proof.mjs';
@@ -19,6 +23,10 @@ import {stageEntryCastingRules,stageCastingRuleCondition,stageCastingRuleCount,c
 import { stageOracleCastingCosts, assertOracleCastingCostRecord, proveOracleAlternativeCastingCost, proveOracleCastingChoice } from './oracle-v8-casting-cost-proof.mjs';
 
 export function stageFalseCondition(MTG,ctx,condition,source,helpers){
+ if(condition?.kind==='any-grave-size-v20'){for(const player of ctx.game.players)while(player.graveyard.length>=condition.min){const card=player.graveyard.pop();card.zone='exile';player.exile.push(card);}return;}
+ if(stageSpellsConditionV24(MTG,ctx,condition,source,helpers,false))return;
+ if(stageSpellsConditionV21(MTG,ctx,condition,source,helpers,false))return;
+ if(stageCommonConditionV21(MTG,ctx,condition,source,helpers,false))return;
  if(stageCostsConditionV20(MTG,ctx,condition,source,helpers,false))return;
  if(stagePermanentConditionV20(MTG,ctx,condition,source,helpers,false))return;
  if(condition?.kind==='source-blocked-history-v19'){source.meta.oracleBlockHistoryV19={turn:ctx.game.turnNo,blocks:[],blockedBy:[]};return;}
@@ -158,6 +166,10 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
 }
 
 export function stageCondition(MTG,ctx,condition,source,helpers) {
+ if(condition?.kind==='any-grave-size-v20'){while(ctx.a.graveyard.length<condition.min)helpers.zoneCard(MTG,ctx.a,'Forest','graveyard');return;}
+  if(stageSpellsConditionV24(MTG,ctx,condition,source,helpers,true))return;
+  if(stageSpellsConditionV21(MTG,ctx,condition,source,helpers,true))return;
+  if(stageCommonConditionV21(MTG,ctx,condition,source,helpers,true))return;
  if(stageCostsConditionV20(MTG,ctx,condition,source,helpers))return;
  if(stagePermanentConditionV20(MTG,ctx,condition,source,helpers))return;
  if(condition?.kind==='not'&&condition.condition?.kind==='source-controlled'){stageFalseCondition(MTG,ctx,condition.condition,source,helpers);return;}
@@ -324,6 +336,8 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
 }
 
 export function countValue(ctx,source,node,snapshot=null){
+  const commonV22=commonCountValueV22(ctx,node);if(commonV22!==undefined)return commonV22;
+  const spellV21=spellCountValueV21(ctx,source,node);if(spellV21!==undefined)return spellV21;
  const costsV20=costsCountValueV20(ctx,source,node);if(costsV20!==undefined)return costsV20;
  const permanentV20=permanentCountValueV20(ctx,source,node,snapshot);if(permanentV20!==undefined)return permanentV20;
  if(node?.kind==='transformed-permanents-v19')return ctx.game.bf().filter(card=>card.ctrl===ctx.a&&card.oracleFaces?.layout==='transform'&&card.oracleFace==='back').length;
@@ -443,6 +457,8 @@ export function matchesTarget(card,f,ctx,source){
  return true;
 }
 export function stageCount(MTG,ctx,node,helpers){
+  if(stageCommonCountV22(MTG,ctx,node))return;
+  if(stageSpellsCountV21(MTG,ctx,node,helpers))return;
  if(stageCostsCountV20(MTG,ctx,node,helpers))return;
  if(stagePermanentCountV20(MTG,ctx,node,helpers))return;
  if(node?.kind==='transformed-permanents-v19'){const def=Object.values(MTG.DEFS).find(def=>def.oracleFaces?.layout==='transform'&&def.oracleFaces.faces.every(face=>face.def.types.includes('Creature')&&Number(face.def.toughness)>0&&!face.def.bomDaybound&&!face.def.bomNightbound));assert.ok(def);for(let i=0;i<3;i++){const card=helpers.permanent(MTG,ctx.game,ctx.a,def);MTG.OracleV8Faces.setFace(card,'back');}ctx.game.recalc();return;}

@@ -785,17 +785,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
   };
+  const soulSnareTarget = T.creature({
+    prompt: 'Creature attacking you or a planeswalker you control',
+    filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') &&
+      g.combat?.attackers.includes(c) && (c.attacking === ctrl ||
+        c.attacking instanceof MTG.CardInst && c.attacking.zone === 'battlefield' &&
+        !c.attacking.phasedOut && c.attacking.is('Planeswalker') && c.attacking.ctrl === ctrl),
+    aiHint: { goal: 'removal' },
+  });
+  soulSnareTarget.bindOracleContext = ctx => {
+    // A planeswalker that leaves and returns is no longer the attacked object.
+    const defenders = new Map((ctx.g.combat?.attackers || []).map(c =>
+      [c, { card: c.attacking, version: c.attacking?.zoneVersion }]));
+    return { ...soulSnareTarget, filter: (g, c, ctrl) => {
+      if (!soulSnareTarget.filter(g, c, ctrl)) return false;
+      const defender = defenders.get(c);
+      return !defender || !(defender.card instanceof MTG.CardInst) || c.attacking !== defender.card ||
+        c.attacking.zoneVersion === defender.version;
+    } };
+  };
   SC['Soul Snare'] = {
     abilities: [{
       label: 'Sacrifice: exile an attacker', cost: { mana: '{W}', sacSelf: true },
-      cond: (g, c, p) => g.combat && g.combat.attackers.some(a => a.attacking === p),
+      targets: [soulSnareTarget],
       run: async ctx => {
-        const cands = ctx.g.combat.attackers.filter(a => a.attacking === ctx.you && a.zone === 'battlefield');
-        if (!cands.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Exile', aiHint: { goal: 'removal' },
-        });
-        if (pick.length) await ctx.g.exileCard(pick[0]);
+        const target = ctx.targets[0];
+        if (!target) return;
+        const version = target.zoneVersion;
+        await ctx.g.exileCard(target);
+        if (target.zone !== 'battlefield' || target.zoneVersion !== version) ctx.g.removeFromCombat(target);
       },
     }],
   };

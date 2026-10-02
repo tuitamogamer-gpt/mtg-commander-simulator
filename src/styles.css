@@ -1561,6 +1561,7 @@ body:has(#setup) { background: #08090d; }
 .combatreviewcard strong { color: var(--tbl-gold-lt); font-size: 17px; }
 .combatreviewcard small { color: var(--ds-muted); font-size: 8px; line-height: 1.35; text-transform: uppercase; }
 .combatreviewnote { margin-top: 14px; color: #8c8679; font-size: 12px; line-height: 1.45; }
+.combat-tax-summary { margin-block: 8px; color: #e9bc92; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
 .combatreviewactions { margin-top: 14px; }
 .combatreviewmodal .combatproceed { padding: 13px 18px; }
 .combatboardpeek { box-shadow: 0 -8px 28px rgba(0,0,0,.5); }

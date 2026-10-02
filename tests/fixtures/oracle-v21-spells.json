@@ -1,0 +1,1170 @@
+[
+  {
+    "name": "Wail of the Forgotten",
+    "oracle_text": "Descend 8 — Choose one. If there are eight or more permanent cards in your graveyard as you cast this spell, choose one or more instead.\n• Return target nonland permanent to its owner's hand.\n• Target opponent discards a card.\n• Look at the top three cards of your library. Put one of them into your hand and the rest into your graveyard.",
+    "type_line": "Sorcery",
+    "mana_cost": "{U}{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "030b5408-f216-43e4-8593-f78d22821876",
+    "id": "67108256-b7da-44bd-9639-4264931d348f",
+    "rarity": "rare",
+    "colors": [
+      "B",
+      "U"
+    ],
+    "color_identity": [
+      "B",
+      "U"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Rise of the Dread Marn",
+    "oracle_text": "Create X 2/2 black Zombie Berserker creature tokens, where X is the number of nontoken creatures that died this turn.\nForetell {B} (During your turn, you may pay {2} and exile this card from your hand face down. Cast it on a later turn for its foretell cost.)",
+    "type_line": "Instant",
+    "mana_cost": "{2}{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "0998768a-1632-4da1-8310-352582501c4b",
+    "id": "9d3a1ec1-f362-494d-a23b-6a963ce44fdd",
+    "rarity": "rare",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Zealous Display",
+    "oracle_text": "Creatures you control get +2/+0 until end of turn. If it's not your turn, untap those creatures.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{W}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "0ff3afba-7a90-4f62-a1b0-b553ad81c32b",
+    "id": "f5973fd3-d6bc-48f1-8a44-57d2a6dda228",
+    "rarity": "common",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Soul Transfer",
+    "oracle_text": "Choose one. If you control an artifact and an enchantment as you cast this spell, you may choose both instead.\n• Exile target creature or planeswalker.\n• Return target creature or planeswalker card from your graveyard to your hand.",
+    "type_line": "Sorcery",
+    "mana_cost": "{1}{B}{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "1e46c709-5278-44f3-9f0e-f71bd9558339",
+    "id": "1e5aba90-c8c7-4f06-b7b3-1b4758d2791a",
+    "rarity": "rare",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Fight with Fire",
+    "oracle_text": "Kicker {5}{R} (You may pay an additional {5}{R} as you cast this spell.)\nFight with Fire deals 5 damage to target creature. If this spell was kicked, it deals 10 damage divided as you choose among any number of targets instead. (Those targets can include players and planeswalkers.)",
+    "type_line": "Sorcery",
+    "mana_cost": "{2}{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "202b275e-e0c4-482d-abe9-c5e6360208f3",
+    "id": "72c94d7a-cad7-438f-bc96-e6a7158ab0e6",
+    "rarity": "uncommon",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Jilt",
+    "oracle_text": "Kicker {1}{R} (You may pay an additional {1}{R} as you cast this spell.)\nReturn target creature to its owner's hand. If this spell was kicked, it deals 2 damage to another target creature.",
+    "type_line": "Instant",
+    "mana_cost": "{1}{U}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "382bc554-d170-4c19-82dd-829f254e855e",
+    "id": "a010d2b1-960d-4032-a47a-61fe0998bee3",
+    "rarity": "common",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Bioshift",
+    "oracle_text": "Move any number of +1/+1 counters from target creature onto another target creature with the same controller.",
+    "type_line": "Instant",
+    "mana_cost": "{G/U}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "3da604fc-68e9-4749-98f9-6fbcebcab9b6",
+    "id": "6e18f7a9-2af6-467a-8f62-5f7da83a3c92",
+    "rarity": "common",
+    "colors": [
+      "G",
+      "U"
+    ],
+    "color_identity": [
+      "G",
+      "U"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Bloodchief's Thirst",
+    "oracle_text": "Kicker {2}{B} (You may pay an additional {2}{B} as you cast this spell.)\nDestroy target creature or planeswalker with mana value 2 or less. If this spell was kicked, instead destroy target creature or planeswalker.",
+    "type_line": "Sorcery",
+    "mana_cost": "{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+    "id": "059e8447-6b1c-4651-a734-a8fea2cbf7b2",
+    "rarity": "uncommon",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Ancient Animus",
+    "oracle_text": "Put a +1/+1 counter on target creature you control if it's legendary. Then it fights target creature an opponent controls. (Each deals damage equal to its power to the other.)",
+    "type_line": "Instant",
+    "mana_cost": "{1}{G}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "4c9a38f8-8fcb-45f9-8b70-e54298c7b485",
+    "id": "5ee76006-5272-400d-b6b2-e1548bca9dbf",
+    "rarity": "common",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Divine Resilience",
+    "oracle_text": "Kicker {2}{W} (You may pay an additional {2}{W} as you cast this spell.)\nTarget creature you control gains indestructible until end of turn. If this spell was kicked, instead any number of target creatures you control gain indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy them.)",
+    "type_line": "Instant",
+    "mana_cost": "{W}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "4f6e2e47-34df-4bf3-a546-e06b42840167",
+    "id": "f3a08245-a535-4d24-b8c0-78759bb9c4b0",
+    "rarity": "uncommon",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Get Lost",
+    "oracle_text": "Destroy target creature, enchantment, or planeswalker. Its controller creates two Map tokens. (They're artifacts with \"{1}, {T}, Sacrifice this token: Target creature you control explores. Activate only as a sorcery.\")",
+    "type_line": "Instant",
+    "mana_cost": "{1}{W}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "522dd417-364b-44ab-8ca9-fb55db5f26a6",
+    "id": "522aa72b-2b8c-484c-872b-f082101cee35",
+    "rarity": "rare",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Tail Swipe",
+    "oracle_text": "Choose target creature you control and target creature you don't control. If you cast this spell during your main phase, the creature you control gets +1/+1 until end of turn. Then those creatures fight each other. (Each deals damage equal to its power to the other.)",
+    "type_line": "Instant",
+    "mana_cost": "{G}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "525d98d6-b117-44f4-b19c-3dd26e7c9fd4",
+    "id": "95a39b26-8c83-40ea-b492-036251366d73",
+    "rarity": "uncommon",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Rakdos's Return",
+    "oracle_text": "Rakdos's Return deals X damage to target opponent or planeswalker. That player or that planeswalker's controller discards X cards.",
+    "type_line": "Sorcery",
+    "mana_cost": "{X}{B}{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "52d1d575-3e7f-4df1-8c89-aee0cac03aca",
+    "id": "d72981c0-1632-4d64-9341-2a76047d9b36",
+    "rarity": "mythic",
+    "colors": [
+      "B",
+      "R"
+    ],
+    "color_identity": [
+      "B",
+      "R"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Psychic Spiral",
+    "oracle_text": "Shuffle all cards from your graveyard into your library. Target player mills that many cards.",
+    "type_line": "Instant",
+    "mana_cost": "{4}{U}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "oracle_id": "5f928e54-3027-4f2f-9fef-d63b9ca416aa",
+    "id": "59b09c16-f611-4c90-a990-e22bf46bd0e2",
+    "rarity": "uncommon",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "cmc": 5,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Blood Beckoning",
+    "oracle_text": "Kicker {3} (You may pay an additional {3} as you cast this spell.)\nReturn target creature card from your graveyard to your hand. If this spell was kicked, instead return two target creature cards from your graveyard to your hand.",
+    "type_line": "Sorcery",
+    "mana_cost": "{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "67a48e3f-2388-42a9-a8b1-97c08761f807",
+    "id": "0cb88075-14f8-4ac9-b947-5ca1d30938f1",
+    "rarity": "common",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Inscription of Ruin",
+    "oracle_text": "Kicker {2}{B}{B}\nChoose one. If this spell was kicked, choose any number instead.\n• Target opponent discards two cards.\n• Return target creature card with mana value 2 or less from your graveyard to the battlefield.\n• Destroy target creature with mana value 3 or less.",
+    "type_line": "Sorcery",
+    "mana_cost": "{2}{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "760e8561-4ec6-4594-ba5d-f79cb9f25fd0",
+    "id": "93612079-0b8d-489d-9ae1-3593414a8cee",
+    "rarity": "rare",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Wretched Banquet",
+    "oracle_text": "Destroy target creature if it has the least power or is tied for least power among creatures on the battlefield.",
+    "type_line": "Sorcery",
+    "mana_cost": "{B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "dafd4385-e64f-4a4a-93c4-b0ac6bd30d41",
+    "id": "3bdaf55b-2de3-4c8a-90ae-9c88c9d00fd7",
+    "rarity": "common",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Pyrrhic Revival",
+    "oracle_text": "Each player returns each creature card from their graveyard to the battlefield with an additional -1/-1 counter on it.",
+    "type_line": "Sorcery",
+    "mana_cost": "{3}{W/B}{W/B}{W/B}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "oracle_id": "e8daf155-1fc9-4a0e-a7b5-69a50bc23576",
+    "id": "fae92d23-2028-450c-9598-6932a71f8c32",
+    "rarity": "rare",
+    "colors": [
+      "B",
+      "W"
+    ],
+    "color_identity": [
+      "B",
+      "W"
+    ],
+    "cmc": 6,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Chandra's Fury",
+    "oracle_text": "Chandra's Fury deals 4 damage to target player or planeswalker and 1 damage to each creature that player or that planeswalker's controller controls.",
+    "type_line": "Instant",
+    "mana_cost": "{4}{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "oracle_id": "eb16f188-fe12-4a13-9947-d43cd6ce270c",
+    "id": "d2b85237-98a8-4b52-9cc6-6fd14849b069",
+    "rarity": "common",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "cmc": 5,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Flame of Anor",
+    "oracle_text": "Choose one. If you control a Wizard as you cast this spell, you may choose two instead.\n• Target player draws two cards.\n• Destroy target artifact.\n• Flame of Anor deals 5 damage to target creature.",
+    "type_line": "Instant",
+    "mana_cost": "{1}{U}{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "ecd49d85-9c8c-4cc9-9a83-072ecd433677",
+    "id": "04779a7e-b453-48b9-b392-6d6fd0b8d283",
+    "rarity": "rare",
+    "colors": [
+      "R",
+      "U"
+    ],
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Molten Collapse",
+    "oracle_text": "Choose one. If you descended this turn, you may choose both instead. (You descended if a permanent card was put into your graveyard from anywhere.)\n• Destroy target creature or planeswalker.\n• Destroy target noncreature, nonland permanent with mana value 1 or less.",
+    "type_line": "Sorcery",
+    "mana_cost": "{B}{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "f0d1636e-6f80-44fe-869a-1749ab249815",
+    "id": "2487d124-210b-4808-888c-cd0a78aebd90",
+    "rarity": "rare",
+    "colors": [
+      "B",
+      "R"
+    ],
+    "color_identity": [
+      "B",
+      "R"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Overload",
+    "oracle_text": "Kicker {2} (You may pay an additional {2} as you cast this spell.)\nDestroy target artifact if its mana value is 2 or less. If this spell was kicked, destroy that artifact if its mana value is 5 or less instead.",
+    "type_line": "Instant",
+    "mana_cost": "{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "legal"
+    },
+    "oracle_id": "07159efc-c69f-4164-a8ca-9da641dbf702",
+    "id": "c91fca91-7296-422e-b251-d571b710ff71",
+    "rarity": "common",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "cmc": 1,
+    "games": [
+      "paper",
+      "mtgo"
+    ]
+  },
+  {
+    "name": "Magma Burst",
+    "oracle_text": "Kicker—Sacrifice two lands. (You may sacrifice two lands in addition to any other costs as you cast this spell.)\nMagma Burst deals 3 damage to any target. If this spell was kicked, it deals 3 damage to another target.",
+    "type_line": "Instant",
+    "mana_cost": "{3}{R}",
+    "layout": "normal",
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "oracle_id": "f5af6d60-decd-4e04-8841-da2d3000a405",
+    "id": "d9752bc3-0bdf-4657-8750-73c8cbc8e83f",
+    "rarity": "common",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "cmc": 4,
+    "games": [
+      "paper",
+      "mtgo"
+    ]
+  },
+  {
+    "name": "Necromantic Summons",
+    "oracle_text": "Put target creature card from a graveyard onto the battlefield under your control.\nSpell mastery — If there are two or more instant and/or sorcery cards in your graveyard, that creature enters with two additional +1/+1 counters on it.",
+    "type_line": "Sorcery",
+    "mana_cost": "{4}{B}",
+    "layout": "normal",
+    "legalities": {
+      "commander": "legal"
+    },
+    "oracle_id": "2f921740-de98-4276-8196-47a38a1e4591",
+    "id": "3afe7891-09d5-470e-aa41-71d89249875b",
+    "rarity": "uncommon",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "cmc": 5,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Vigor Mortis",
+    "oracle_text": "Return target creature card from your graveyard to the battlefield. If {G} was spent to cast this spell, that creature enters with an additional +1/+1 counter on it.",
+    "type_line": "Sorcery",
+    "mana_cost": "{2}{B}{B}",
+    "layout": "normal",
+    "legalities": {
+      "commander": "legal"
+    },
+    "oracle_id": "6de27cba-5500-4448-abef-68e69fe519dc",
+    "id": "59587fde-c3f9-48c3-b991-46abb5423314",
+    "rarity": "uncommon",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B",
+      "G"
+    ],
+    "cmc": 4,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Divine Gambit",
+    "oracle_text": "Exile target artifact, creature, or enchantment an opponent controls. That player may put a permanent card from their hand onto the battlefield.",
+    "type_line": "Sorcery",
+    "mana_cost": "{W}{W}",
+    "layout": "normal",
+    "legalities": {
+      "commander": "legal"
+    },
+    "oracle_id": "25fcf381-6f0a-49ef-9c41-f202be7d8368",
+    "id": "696a8c12-4a1f-4b96-a921-538fa1a2de43",
+    "rarity": "uncommon",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "cmc": 2,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Unnerving Assault",
+    "oracle_text": "Creatures your opponents control get -1/-0 until end of turn if {U} was spent to cast this spell, and creatures you control get +1/+0 until end of turn if {R} was spent to cast this spell. (Do both if {U}{R} was spent.)",
+    "type_line": "Instant",
+    "mana_cost": "{2}{U/R}",
+    "layout": "normal",
+    "legalities": {
+      "commander": "legal"
+    },
+    "oracle_id": "023f9e20-51fc-493d-a7aa-c9fcbdc7cd04",
+    "id": "109eccfd-19d0-48cc-8b27-9027e4911fee",
+    "rarity": "uncommon",
+    "colors": [
+      "R",
+      "U"
+    ],
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "cmc": 3,
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "name": "Inscription of Insight",
+    "oracle_text": "Kicker {2}{U}{U}\nChoose one. If this spell was kicked, choose any number instead.\n• Return up to two target creatures to their owners' hands.\n• Scry 2, then draw two cards.\n• Target player creates an X/X blue Illusion creature token, where X is the number of cards in their hand.",
+    "type_line": "Sorcery",
+    "mana_cost": "{3}{U}",
+    "layout": "normal",
+    "legalities": {
+      "commander": "legal"
+    },
+    "oracle_id": "1551fe97-437e-4e89-a0d2-c398cb2155e4",
+    "id": "281cdb1c-21ae-4430-8e0f-c993f52ba891",
+    "rarity": "rare",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "cmc": 4,
+    "games": [
+      "paper"
+    ]
+  }
+]

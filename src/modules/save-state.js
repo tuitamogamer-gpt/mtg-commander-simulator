@@ -100,7 +100,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Every card is written as "what it is" plus "how it sits on the table".
   function captureCard(card) {
     const face=card.faceDown&&!card.isToken?card.meta.faceDownDef||card.def:card.def;
-    const identity = { name: (face?.c1719Unflipped||face)?.name };
+    const printed = face?.c1719Unflipped || face;
+    // Double-faced cards are catalogued under their "Front // Back" name; the
+    // current face is saved separately as oracleFace. Saving the face name
+    // made every checkpoint with such a card fail ("not in this build").
+    const catalogName = printed?.oracleCanonicalName && MTG.DEFS[printed.oracleCanonicalName]
+      ? printed.oracleCanonicalName : printed?.name;
+    const identity = { name: catalogName };
     if (card.isToken) {
       identity.token = tokenKeyOf(card.def);
       // A token copy of a real card keeps that card's name; anything else that
@@ -459,7 +465,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ['power', 'toughness', 'basePower', 'baseToughness'].every(key => Number.isFinite(face[key])), 'invalid phased characteristics.');
         card.cur = {...face, kw: new Set(face.keywords)};
       }
-      if (entry.oracleFace) card.oracleFace = entry.oracleFace;
+      if (entry.oracleFace) {
+        card.oracleFace = entry.oracleFace;
+        // The saved face is the object's current characteristics: a modal
+        // land played as its back face or a transformed Incubator token.
+        if (card.oracleFaces && card.def.oracleFace !== entry.oracleFace) MTG.OracleV8Faces?.setFace(card, entry.oracleFace);
+      }
       if(entry.oraclePrototypeV10){assert(card.def.oraclePrototypeV10&&['battlefield','stack'].includes(card.zone),'invalid prototype state');card.def=MTG.oraclePrototypeDefinitionV10(card.def);card.oraclePrototypeV10=true;}
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);

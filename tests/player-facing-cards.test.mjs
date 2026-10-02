@@ -8,6 +8,10 @@ import { loadEngine } from './helpers/load-engine.mjs';
 
 const MTG = loadEngine();
 const COLORS = ['W', 'U', 'B', 'R', 'G', 'C'];
+const PRINTED_NAMES = new Set([
+  ...Object.keys(MTG.DEFS),
+  ...(MTG.OracleV22Permanents?.choices('any') || []),
+]);
 
 // Bosnian is the source language of the codebase; the interface is English and
 // MTG.uiText() is the presentation layer that translates it.
@@ -21,10 +25,13 @@ function unreadable(text) {
   // its own sentence (card reveals, combat reviews).
   if (!raw.trim()) return null;
   const shown = MTG.uiText(raw);
-  // Exact printed names such as Nema Siltlurker are not untranslated prompts.
-  if (MTG.DEFS[raw] && shown === raw) return null;
+  // Named-card choices also include pinned cards outside the runtime catalog.
+  // Printed words such as "Table" and "Meta" are not untranslated UI text.
+  if (PRINTED_NAMES.has(raw) && shown === raw) return null;
+  const colon = shown.indexOf(': ');
+  const inspected = colon >= 0 && PRINTED_NAMES.has(shown.slice(0, colon)) ? shown.slice(colon + 2) : shown;
   if (INTERNALS.test(shown)) return `internals leak: ${shown.slice(0, 80)}`;
-  if (DIACRITIC.test(shown) || BOSNIAN.test(shown)) return `not English: ${shown.slice(0, 80)}`;
+  if (DIACRITIC.test(inspected) || BOSNIAN.test(inspected)) return `not English: ${shown.slice(0, 80)}`;
   return null;
 }
 

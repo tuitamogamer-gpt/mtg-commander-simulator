@@ -107,7 +107,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       !g.byIid(e.iid).phasedOut && g.byIid(e.iid).is('Planeswalker'));
   }
   M.StarterCombat = {
-    forced: (g, card) => gideonRequirements(g, card).some(e => g.canAttackTarget(card, g.byIid(e.iid))),
+    forced: (g, card) => gideonRequirements(g, card).some(e => g.canAttackTarget(card, g.byIid(e.iid)) && g.attackTargetIsFree(card, g.byIid(e.iid))),
     targets: (g, card, targets) => {
       const requirements = gideonRequirements(g, card);
       if (!requirements.length) return null;
@@ -118,8 +118,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const score = target => requirements.filter(e => target === g.byIid(e.iid)).length +
         encore.filter(e=>target===e.targetPlayer).length+
         goaders.filter(player => target instanceof M.Player && target !== player).length;
-      const max = Math.max(0, ...targets.map(score));
-      return targets.filter(target => score(target) === max);
+      // Optional attack costs do not override a free way to obey Gideon,
+      // Encore or goad, and do not force an unrelated attack when declined.
+      const maxFree = Math.max(0, ...targets.filter(target => g.attackTargetIsFree(card, target)).map(score));
+      return targets.filter(target => score(target) >= maxFree);
     },
   };
   G.fight = async function (first, second, opts={}) {

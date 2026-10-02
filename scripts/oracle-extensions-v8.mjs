@@ -101,6 +101,7 @@ export const allowsTargetedStackV13 = () => additionalGrammar?.targetedStackV13 
 export const allowsObjectEventsV13 = () => additionalGrammar?.objectEventsV13 === true;
 export const allowsBindingScopesV15 = () => additionalGrammar?.bindingScopesV15 === true;
 export const additionalKeywords = () => additionalGrammar?.grantableKeywords || [];
+export const allowsQualifiedHandPaidXV24 = () => additionalGrammar?.qualifiedHandPaidXV24 === true;
 export const allowsBroaderModalHeadersV20 = () => additionalGrammar?.broaderModalHeadersV20 === true;
 export function withAdditionalGrammar(grammar, compile) {
   const previous = additionalGrammar;

@@ -23,6 +23,11 @@ import * as v17 from './oracle-extensions-v17.mjs';
 import * as v18 from './oracle-extensions-v18.mjs';
 import * as v19 from './oracle-extensions-v19.mjs';
 import * as v20 from './oracle-extensions-v20.mjs';
+import * as v21 from './oracle-extensions-v21.mjs';
+import * as v22 from './oracle-extensions-v22.mjs';
+import * as v23 from './oracle-extensions-v23.mjs';
+import * as v24 from './oracle-extensions-v24.mjs';
+import * as v25 from './oracle-extensions-v25.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
 
@@ -2129,13 +2134,14 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
-  if ([10,11,12,13,14,15,16,17,18,19,20].includes(compilerVersion)) {
-    const grammar = compilerVersion === 20 ? v20 : compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
+  if ([10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].includes(compilerVersion)) {
+    const grammar = compilerVersion === 25 ? v25 : compilerVersion === 24 ? v24 : compilerVersion === 23 ? v23 : compilerVersion === 22 ? v22 : compilerVersion === 21 ? v21 : compilerVersion === 20 ? v20 : compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
     const frozen = semanticClass(card, {compilerVersion: compilerVersion - 1, memoize});
     if (frozen.semanticClass) return frozen;
     const normalized = grammar.normalizeCard(card);
-    const result = grammar.compileWholeCard?.(normalized,{compile:part=>semanticClass(part,{compilerVersion,memoize}),compileCurrent:part=>v8.withAdditionalGrammar(grammar,()=>semanticClass(grammar.normalizeCard(part),{compilerVersion:8,memoize})),stripReminderText,raw:rawCard})
+    let result = grammar.compileWholeCard?.(normalized,{compile:part=>semanticClass(part,{compilerVersion,memoize}),compileCurrent:part=>v8.withAdditionalGrammar(grammar,()=>semanticClass(grammar.normalizeCard(part),{compilerVersion:8,memoize})),stripReminderText,raw:rawCard})
       || v8.withAdditionalGrammar(grammar, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
+    if(compilerVersion>=21&&result.semanticClass)result=grammar.finalizeCompilation?.(card,result)||result;
     // Normalization supplies executable grammar; the physical faces keep the
     // exact printed Oracle text used by deck import, card details, and copies.
     if(result.semanticClass&&card.card_faces?.length){
@@ -2323,6 +2329,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
             ...Object.fromEntries(Object.entries(node).map(([key,value])=>[key,boundEffects(value)])),
             ...(node.action==='zone-select'&&node.zone==='graveyard'&&['battlefield','hand','exile'].includes(node.destination)?{filter:boundFilter(node.filter)}:{}),
             ...(['search-library','library-search-v8'].includes(node.action)?{filter:boundFilter(node.filter)}:{}),
+            ...(v8.allowsQualifiedHandPaidXV24()&&node.action==='put-qualified-hand-v24'?{filter:boundFilter(node.filter)}:{}),
             ...(node.action==='battlefield-group'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
             ...(v8.preservesPrintedParagraphs()&&node.action==='combat-restriction'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
             ...(v8.preservesPrintedParagraphs()&&node.action==='library-select-v8'&&Array.isArray(node.selections)?{selections:node.selections.map(selection=>({...selection,filter:boundFilter(selection.filter)}))}:{}),
@@ -2790,7 +2797,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
   const outputStatePath = path.join(outputReportDir, 'state.json');
   const selectedLimit = validateLimit(argValue(args, 'limit', String(DEFAULT_LIMIT)));
   const compilerVersion=Number(argValue(args,'compiler-version',String(SEMANTIC_COMPILER_VERSION)));
-  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>20)throw new Error('Oracle compiler version must be an integer from 1 to 20.');
+  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>25)throw new Error('Oracle compiler version must be an integer from 1 to 25.');
   const state = readState(outputStatePath, io);
   const sequence = batchNumberFrom(state, args);
   const id = batchId(sequence);

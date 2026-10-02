@@ -11,8 +11,19 @@
  }
  function capture(game,src,target,n,opts){
   if(!game._oracleDamageWatch&&!game.delayed.some(row=>[].concat(row.on).some(event=>/^oracleDamage/.test(event))))return null;
-  const sourceSnap=src?._oracleDamageSnapshot||game._oracleDamageBatch?.snapshots?.get(src)||snapshot(game,src),targetSnap=game._oracleDamageBatch?.snapshots?.get(target)||snapshot(game,target);
-  return{src,target,n,combat:!!opts.combat,monarchAtDamage:opts._damageBatch?opts._damageBatch.monarch:game.monarch,sourceSnap,targetSnap,spell:src?.zone==='stack',sourceVersion:sourceSnap?.zoneVersion??src?.zoneVersion,targetVersion:target?.zoneVersion};
+  let sourceSnap=src?._oracleDamageSnapshot||game._oracleDamageBatch?.snapshots?.get(src)||snapshot(game,src);
+  const targetSnap=game._oracleDamageBatch?.snapshots?.get(target)||snapshot(game,target);
+  // A copy has its own controller and remains a spell even if the physical
+  // original has left the Stack. Adventures use their announced spell face.
+  const matches=row=>row?.kind==='spell'&&src instanceof M.CardInst&&row.card?.iid===src.iid;
+  const spell=matches(game.c1516Resolving)?game.c1516Resolving:src?.zone==='stack'?game.stack.find(matches):null;
+  if(spell){
+   const cast=spell.castOpts||{},definition=spell.oracleDefinition||src.def,adventure=cast.adventure&&definition.adventure;
+   const captured=Object.create(src,{def:{value:definition},is:{value:type=>definition.types.includes(type)}});
+   const types=['Artifact','Battle','Creature','Enchantment','Instant','Sorcery','Land','Planeswalker','Kindred','Tribal'].filter(type=>game.castHasType(captured,cast,type));
+   sourceSnap={...sourceSnap,ctrl:spell.ctrl,types,subtypes:adventure?[cast.omen?'Omen':'Adventure']:game.castSubtypesV16(captured,cast),super:adventure?[]:definition.super||[],colors:adventure?M.colorsOfCost(adventure.cost||adventure.altCostStr||''):definition.colorsOverride||src.castMeta?.spellColors||M.colorsOfCost(definition.cost||''),mv:game.stackSpellManaValue({...spell,card:captured})};
+  }
+  return{src,target,n,combat:!!opts.combat,monarchAtDamage:opts._damageBatch?opts._damageBatch.monarch:game.monarch,sourceSnap,targetSnap,spell:!!spell||src?.zone==='stack',sourceVersion:sourceSnap?.zoneVersion??src?.zoneVersion,targetVersion:target?.zoneVersion};
  }
  async function emit(game,hits){
   if(!hits.length)return;
@@ -47,8 +58,11 @@
   if(rule.kind==='a creature or opponent')return object instanceof M.Player?object!==self.ctrl:objectView?.is?.('Creature');
   if(rule.kind==='source')return !!object&&(rule.controller!=='you'||(snap?.ctrl||object.ctrl)===self.ctrl)&&(!rule.noncreature||!objectView.is?.('Creature'))&&(!rule.color||objectView.colors?.includes(rule.color));
   if(rule.kind==='filtered'){
-   const filterView=object===hit.src&&object instanceof M.CardInst?Object.create(objectView,{zone:{value:rule.spell?'stack':'battlefield'}}):objectView;
-   return !!filterView&&(!rule.spell||hit.spell)&&(rule.controller!=='you'||(snap?.ctrl||object.ctrl)===self.ctrl)&&h.target({...rule.target,...(rule.spell?{zone:filterView.zone,controller:'any'}:{})},[],0).filter(game,filterView,self.ctrl,self);
+   // Spell selectors are card-quality predicates compiled in a public card
+   // zone. The damage record separately proves that this was a spell; feeding
+   // a CardInst into a Stack-object predicate loses instant/sorcery unions.
+   const filterView=object===hit.src&&object instanceof M.CardInst?Object.create(objectView,{zone:{value:rule.spell?rule.target.zone:'battlefield'}}):objectView;
+   return !!filterView&&(!rule.spell||hit.spell)&&(rule.controller!=='you'||(snap?.ctrl||object.ctrl)===self.ctrl)&&h.target({...rule.target,...(rule.spell?{controller:'any'}:{})},[],0).filter(game,filterView,self.ctrl,self);
   }
   throw new Error('Unsupported damage event selector');
  }

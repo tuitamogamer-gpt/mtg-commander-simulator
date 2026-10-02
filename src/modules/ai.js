@@ -1017,6 +1017,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const min = q.min !== undefined ? q.min : 1;
       const max = q.max || 1;
       const pick = sorted => {
+        if(q.spec?.oracleGroupPickV22)return q.spec.oracleGroupPickV22(g,sorted,min,max);
         if (q.spec?.sameGraveyard) {
           const groups = new Map();
           for (const card of sorted) {
@@ -1230,6 +1231,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const byValAsc = from.slice().sort((a, b) => this.cardValue(g, a) - this.cardValue(g, b));
       const byValDesc = byValAsc.slice().reverse();
       const byThreatAsc = from.slice().sort((a, b) => this.permThreat(g, a) - this.permThreat(g, b));
+      if(kind==='oracleAdditionalReveal'&&typeof q.aiHint?.canPayRemaining==='function')return MTG.firstPayableAICardSelection(q,byThreatAsc)||[];
       switch (kind) {
         case 'searchBasic': {
           // pick basic matching missing colors
@@ -1271,7 +1273,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // ovako bio potpuno neigriv). Uzimamo koliko treba, najmanje vrijedne prvo.
           return byValAsc.slice(0, Math.max(min, max || 0));
         }
-        case 'sacCost': case 'addlSac': case 'eliminateSacrifice': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
+        case 'sacCost': case 'addlSac': case 'addlTap': case 'eliminateSacrifice': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
           const pumpPlan = MTG.sacrificePumpChoice(g, this.p, q);
           const sorted = pumpPlan ? from.slice().sort((a, b) =>
             Number(b === pumpPlan.cards[0]) - Number(a === pumpPlan.cards[0]) || this.permThreat(g, a) - this.permThreat(g, b))

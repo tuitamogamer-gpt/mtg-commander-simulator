@@ -1,0 +1,63 @@
+{
+  "schema": "oracle-expansion-validation/v1",
+  "requestedCards": 1000,
+  "importedCards": 100,
+  "outstandingRequestedCards": 900,
+  "requestedExpansionComplete": false,
+  "batches": [
+    219
+  ],
+  "source": {
+    "sha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "updatedAt": "2026-08-30T09:01:56.964+00:00",
+    "rows": 38627
+  },
+  "classification": {
+    "previouslyMissingIds": 5057,
+    "fullyCompiled": 123,
+    "remainingMissingIds": 4957,
+    "parserEligibleUnimported": 23
+  },
+  "inventory": {
+    "runtimeDefinitions": 25892,
+    "genericOracleCards": 21900,
+    "genericBatches": 219,
+    "manualOracleCards": 58,
+    "legacyDefinitions": 3934,
+    "individuallyReviewedLegacyDefinitions": 18,
+    "deckImportEligibleDefinitions": 25891,
+    "deckImportRestrictedDefinitions": 1,
+    "representedUniverseOracleIds": 25827,
+    "remainingUniverseOracleIds": 4957,
+    "parserEligibleUnimported": 23,
+    "deferred": 4934,
+    "runtimeEntriesWithoutSnapshotMatch": 36,
+    "runtimeEntriesOutsideComparisonUniverse": 27
+  },
+  "verification": {
+    "installedCards": 100,
+    "roleCardScenarios": 200,
+    "operationRoutes": 346,
+    "keywordRoutes": 26,
+    "nestedProofs": 1690,
+    "invariantGames": 620,
+    "installedIntegrationChecks": 135,
+    "engineRegressionChecks": 332,
+    "initialRootRegressionChecks": 80,
+    "finalDamageCopyRegressionChecks": 81,
+    "browserChecks": 16,
+    "fullRepositorySuiteRun": false,
+    "provenanceOk": true,
+    "syntaxOk": true,
+    "auditOk": true,
+    "strictCertificationOk": true,
+    "catalogCheck": "passed"
+  },
+  "browserEvidence": "output/playwright/oracle-0219-local-api/report.json",
+  "publication": {
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  }
+}

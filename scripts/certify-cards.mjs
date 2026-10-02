@@ -73,7 +73,7 @@ function issuesFor(name) {
     const scriptedLoyalty = (def.abilities || []).filter(ability => ability.loyalty !== undefined).length;
     if (oracleLoyalty !== scriptedLoyalty) issues.push(`Planeswalker ima ${oracleLoyalty} Oracle loyalty sposobnosti, skriptovano ${scriptedLoyalty}`);
   }
-  if (/beginning of your first main phase/i.test(oracle) && !(def.triggers || []).some(t => t.on === 'precombatMain')) {
+  if (/beginning of your first main phase/i.test(oracle) && !(def.triggers || []).some(t => t.on === 'precombatMain') && !(def.oracleOpeningRevealsV23 || []).some(op => op.timing === 'own-first-main')) {
     issues.push('First-main trigger nije vezan za precombatMain događaj');
   }
   if (/beginning of your second main phase/i.test(oracle) && !(def.triggers || []).some(t => t.on === 'postcombatMain')) {

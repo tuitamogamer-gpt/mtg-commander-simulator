@@ -1146,6 +1146,8 @@ body.game-active #game.command-table .mini.mutated {
 #game.command-table .ct-combat-lines circle { fill: currentColor; }
 #game.command-table[data-combat-step='blockers'] .ct-combat-lines { color: #8ccfdc; }
 #game.command-table .ct-battle-line { display: flex; align-items: center; min-width: 0; padding: 6px 12px; gap: 16px; border-block: 1px solid #b8834433; background: #111519ed; }
+#game.command-table .ct-battle-line:has(.combat-tax-summary) { flex-wrap: wrap; gap: 8px 16px; }
+#game.command-table .ct-battle-line > .combat-tax-summary { flex: 0 0 100%; margin: 0; }
 #game.command-table .ct-battle-line-label { flex: 0 0 auto; display: flex; flex-direction: column; gap: 4px; }
 #game.command-table .ct-battle-line-label b { font-size: 12px; color: #e9bc92; }
 #game.command-table .ct-battle-line-label small { font-size: 10px; color: var(--ds-muted); }

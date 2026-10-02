@@ -1388,6 +1388,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await MTG.oracleV8ApplyEntryState(this, card);
       await MTG.VN?.riotEntry?.(this,card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      if(card.is('Creature'))for(const [kind,n]of Object.entries(opts.oracleCreatureEntryCountersV25||{}))additionalEntryCounters[kind]=(additionalEntryCounters[kind]||0)+n;
       const pomEntryBonus=MTG.POM?.entryCounters(this,card)||0;if(pomEntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+pomEntryBonus;
       if(card.castMeta?.cdkBiophagus&&card.is('Creature'))additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.castMeta.cdkBiophagus;
       if (card.castMeta?.opalPalaceMana && card.commander) {
@@ -3180,7 +3181,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // članstvo (mijenja ga zone promjena, koja uvijek pokreće recalc), dok
       // se kontrolor čita uživo pri pozivu.
       this._toughnessCombatSources = bf.filter(card => card.def.toughnessCombatAll || card.def.toughnessCombatYours);
-      this._oracleDamageWatch=bf.some(card=>!card.cur.abilitiesDisabled&&(card.def.triggers||[]).concat(card.cur.extraTriggers||[]).some(trigger=>[].concat(trigger.on).some(event=>/^oracleDamage/.test(event))));
+      const observesOracleDamage=trigger=>[].concat(trigger.on).some(event=>/^oracleDamage/.test(event));
+      this._oracleDamageWatch=bf.some(card=>!card.cur.abilitiesDisabled&&(card.def.triggers||[]).concat(card.cur.extraTriggers||[]).some(observesOracleDamage))||
+        this.players.some(player=>['graveyard','exile','command','hand','library'].some(zone=>player[zone].some(card=>(card.def.triggers||[]).some(trigger=>trigger.zone===zone&&observesOracleDamage(trigger)))));
       if(newlyBlessed)this.recalc();
       MTG.StateTriggers?.refresh(this);
     }
@@ -3663,7 +3666,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ctx = {g: this, src, you: ctrl, ...context};
       const bound = context.bindTargets === false ? specs : specs.map(spec => typeof spec.bindOracleContext === 'function' ? spec.bindOracleContext(ctx) : spec);
       const minimum = spec => spec.min ?? (spec.upTo ? 0 : spec.count ?? 1);
-      const sequential = bound.some(spec => spec.differentFromPrevious || spec.differentFromAllPrevious || spec.dependentFilter);
+      const sequential = bound.some(spec => spec.differentFromPrevious || spec.differentFromAllPrevious || spec.dependentFilter || spec.oracleGroupFilterV22);
       if (!sequential) return bound.every(spec => {
         const pool = this.legalTargets(spec, src, ctrl);
         if (spec.sameGraveyard) return minimum(spec) === 0 || pool.some(card =>
@@ -3685,7 +3688,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const min = minimum(spec), max = Math.min(pool.length, spec.count ?? 1);
         if (pool.length < min) return false;
         const choose = (start, picks, count) => {
-          if (picks.length === count) return visit(index + 1, previous.concat([(spec.count ?? 1) === 1 ? picks[0] : picks]));
+          if (picks.length === count) return (!spec.oracleGroupFilterV22 || spec.oracleGroupFilterV22(this,picks,ctrl,src)) && visit(index + 1, previous.concat([(spec.count ?? 1) === 1 ? picks[0] : picks]));
           for (let i = start; i <= pool.length - (count - picks.length); i++) {
             if (spec.distinctCtrl && picks.some(card => card.ctrl === pool[i].ctrl)) continue;
             if (spec.sameGraveyard && picks.some(card => card.owner !== pool[i].owner)) continue;
@@ -3758,6 +3761,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (new Set(ctrls).size !== ctrls.length) return false;
         }
         if(spec.sameGraveyard&&new Set(picked.map(c=>c.owner)).size>1)return false;
+        if(spec.oracleGroupFilterV22&&!spec.oracleGroupFilterV22(this,picked,ctrl,src))return false;
         // Ward nije dodatni target/cast trošak. Ciljani spell ili ability prvo
         // normalno ide na stack; zatim Ward trigger ide iznad njega i tek na
         // svojoj rezoluciji traži plaćanje ili pokušava counterovati original.

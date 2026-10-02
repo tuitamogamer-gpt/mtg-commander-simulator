@@ -1,0 +1,71 @@
+{
+  "schema": "oracle-import-validation/v1",
+  "date": "2026-10-01",
+  "batch": 222,
+  "importedCards": 100,
+  "requestProgress": {
+    "requested": 1000,
+    "imported": 400,
+    "remaining": 600,
+    "batches": [
+      219,
+      220,
+      221,
+      222
+    ]
+  },
+  "inventory": {
+    "definitions": 26192,
+    "deckImportEligible": 26191,
+    "genericCards": 22200,
+    "genericBatches": 222,
+    "decks": 175
+  },
+  "execution": {
+    "cards": 100,
+    "roles": [
+      "human",
+      "ai"
+    ],
+    "operationRoutes": 406,
+    "keywordRoutes": 18,
+    "nestedProofs": 11420,
+    "stateInvariantGames": 1049,
+    "failures": 0
+  },
+  "provenance": {
+    "verified": 100,
+    "evidence": "0222-provenance.json"
+  },
+  "focused": {
+    "passed": 346,
+    "failed": 0
+  },
+  "syntax": "pass",
+  "audit": "pass",
+  "strictCertification": "pass",
+  "browser": {
+    "passed": 16,
+    "errors": 0,
+    "writes": 0,
+    "humanPaidCard": "Cemetery Prowler",
+    "manaSpent": 3
+  },
+  "fullRepositorySuite": "not-run",
+  "sourceScan": {
+    "missingBefore": 4757,
+    "ready": 122,
+    "missingAfter": 4657,
+    "readyAfter": 22
+  },
+  "limitations": [
+    "Controlled execution scenarios do not exhaust all card combinations.",
+    "The comparison source is the pinned 2026-08-30 snapshot.",
+    "Browser AI used existing cards; new card AI behavior is covered by headless proof."
+  ],
+  "workflow": {
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  }
+}
