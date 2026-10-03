@@ -446,9 +446,17 @@ test('creature triggers cover Elsha, Mentor, Mangara, Bibliophile, and Caldera P
   assert.equal(game.creatures(jeskai).filter(card => card.name === 'Monk Token').length, 3);
 
   const handBefore = jeskai.hand.length;
-  await game.emit('castNonCreature', { player: jeskai, isInstantSorcery: true });
-  await game.emit('cast', { player: jeskai, isInstantSorcery: true, so: { targets: [opponent, pyremaw] } });
-  await game.emit('castIS', { player: jeskai, isInstantSorcery: true, so: { targets: [] } });
+  const spell = new MTG.CardInst({
+    name: 'Jeskai two-target trigger probe', cost: '{0}', super: [], types: ['Instant'],
+    subtypes: [], kws: [], oracle: '', targets: [MTG.T.opponent(), MTG.T.creature()],
+    resolve: async () => {},
+  }, jeskai);
+  spell.zone = 'hand';
+  jeskai.hand.push(spell);
+  assert.equal(await game.castSpell(jeskai, spell, {
+    from: 'hand', quickTargets: [opponent, pyremaw],
+  }), true);
+  assert.ok(spell.castMeta, 'the two-target spell follows the actual casting path');
   await resolveAll(game);
   assert.equal(game.creatures(jeskai).filter(card => card.name === 'Monk Token').length, 4);
   assert.equal(jeskai.hand.length, handBefore + 2);
@@ -459,7 +467,12 @@ test('creature triggers cover Elsha, Mentor, Mangara, Bibliophile, and Caldera P
   for (const attacker of attackers) attacker.attacking = jeskai;
   const mangaraHand = jeskai.hand.length;
   await game.emit('attackersDeclared', { player: opponent, attackers });
-  await game.emit('castSecond', { player: opponent, isInstantSorcery: false, so: { targets: [] } });
+  game.turnPlayer = opponent;
+  for (const name of ['Goblin Electromancer', 'Young Pyromancer']) {
+    const opposingSpell = inZone(opponent, name, 'hand');
+    assert.equal(await game.castSpell(opponent, opposingSpell, { from: 'hand', free: true }), true);
+    await resolveAll(game);
+  }
   await resolveAll(game);
   assert.equal(jeskai.hand.length, mangaraHand + 2);
 });

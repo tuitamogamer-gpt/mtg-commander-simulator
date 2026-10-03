@@ -1,0 +1,77 @@
+{
+  "schema": "oracle-import-validation/v1",
+  "date": "2026-10-03",
+  "batch": 228,
+  "importedCards": 100,
+  "requestProgress": {
+    "requested": 1000,
+    "imported": 1000,
+    "remaining": 0,
+    "batches": [
+      219,
+      220,
+      221,
+      222,
+      223,
+      224,
+      225,
+      226,
+      227,
+      228
+    ]
+  },
+  "inventory": {
+    "definitions": 26792,
+    "deckImportEligible": 26791,
+    "genericCards": 22800,
+    "genericBatches": 228,
+    "decks": 175
+  },
+  "execution": {
+    "cards": 100,
+    "roles": [
+      "human",
+      "ai"
+    ],
+    "operationRoutes": 242,
+    "keywordRoutes": 24,
+    "nestedProofs": 2946,
+    "stateInvariantGames": 462,
+    "failures": 0
+  },
+  "provenance": {
+    "verified": 100,
+    "evidence": "0228-provenance.json"
+  },
+  "focused": {
+    "passed": 322,
+    "failed": 0
+  },
+  "syntax": "pass",
+  "audit": "pass",
+  "strictCertification": "pass",
+  "browser": {
+    "passed": 16,
+    "errors": 0,
+    "writes": 0,
+    "humanPaidCard": "Gate to the Aether",
+    "manaSpent": 6
+  },
+  "fullRepositorySuite": "not-run",
+  "sourceScan": {
+    "missingBefore": 4157,
+    "ready": 105,
+    "missingAfter": 4057,
+    "readyAfter": 5
+  },
+  "limitations": [
+    "Controlled execution scenarios do not exhaust all card combinations.",
+    "The comparison source is the pinned 2026-08-30 snapshot.",
+    "Browser AI used existing cards; new card AI behavior is covered by headless proof."
+  ],
+  "workflow": {
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  }
+}

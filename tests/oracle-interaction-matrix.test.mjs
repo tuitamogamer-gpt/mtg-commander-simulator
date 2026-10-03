@@ -19,6 +19,23 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
     return;
   }
   const implementation = definition.oracleImplementation || [];
+  // Hellhole Rats has a reviewed runtime repair for a frozen manifest that
+  // mistakenly referred to the entering Rats instead of the discarded card.
+  // Keep every other field exact; the real damage semantics are independently
+  // exercised in hellhole-rats.test.mjs.
+  if (entry.oracleId === '7491e0bf-8335-44e4-8e05-b9a737a0f2e7' &&
+      operation.kind === 'generic-trigger' && operation.event === 'etb') {
+    const repaired = implementation.find(candidate => candidate.kind === operation.kind && candidate.event === operation.event);
+    assert.equal(repaired?.effects?.[0]?.captureDiscardedManaValue, true, 'capture the discarded card');
+    assert.equal(repaired.effects[1].n.kind, 'discarded-card-mv', 'damage uses the discarded card mana value');
+    assert.equal(operation.effects[1].n.kind, 'event-card-stat', 'preserve the frozen historical encoding');
+    assert.equal(operation.effects[1].n.stat, 'mv');
+    const originalDiscard = {...repaired.effects[0]};
+    delete originalDiscard.captureDiscardedManaValue;
+    const restored = {...repaired, effects: [originalDiscard, {...repaired.effects[1], n: operation.effects[1].n}]};
+    assert.equal(JSON.stringify(restored), JSON.stringify(operation), 'only the reviewed discard reference changes');
+    operation = repaired;
+  }
   assert.ok(implementation.some(candidate => JSON.stringify(candidate) === JSON.stringify(operation)),
     `${entry.raw.name}: catalog keeps the exact compiled operation`);
   assert.ok(definition.oracleContracts.includes(operation.contract),
@@ -92,7 +109,7 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
 }
 
 function namedFor(MTG, keyword) {
-  const entry = allEntries(MTG).find(card => card.implementedKeywords.some(value =>
+  const entry = allEntries(MTG).find(card => (card.implementedKeywords || []).some(value =>
     value === keyword || keyword === 'ward' && value.startsWith('ward ')));
   assert.ok(entry, `representative for ${keyword}`);
   return entry.raw.name;
@@ -144,7 +161,7 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
       assert.ok(audit.contracts.some(contract => contract.id === operation.contract), `${entry.raw.name}: ${operation.contract}`);
       assertExecutableOperation(MTG, entry, MTG.DEFS[entry.raw.name], operation);
     }
-    for (const keyword of entry.implementedKeywords) {
+    for (const keyword of entry.implementedKeywords || []) {
       const mechanic = keyword.startsWith('ward ') ? 'ward' : keyword;
       const contract = MTG.ORACLE_KEYWORD_CONTRACTS[mechanic];
       assert.ok(contract, `${entry.raw.name}: ${mechanic} contract`);

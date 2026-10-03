@@ -1,0 +1,314 @@
+{
+  "status": "draft-not-imported",
+  "batches": [
+    {
+      "schemaVersion": 1,
+      "id": "oracle-9961",
+      "sequence": 9961,
+      "generatedAt": "2026-10-02T22:52:32.436Z",
+      "source": {
+        "provider": "Scryfall",
+        "endpoint": "https://api.scryfall.com/bulk-data",
+        "bulkType": "oracle_cards"
+      },
+      "selectionPolicy": {
+        "games": [
+          "paper"
+        ],
+        "commanderLegality": "legal",
+        "sort": "English card name, then Oracle ID",
+        "semanticClasses": [
+          "vanilla",
+          "keyword-only",
+          "creature-template",
+          "land-mana-template",
+          "spell-template",
+          "spell-v4-template",
+          "permanent-template",
+          "artifact-template",
+          "enchantment-template",
+          "equipment-template",
+          "aura-template",
+          "vehicle-template"
+        ],
+        "note": "Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.",
+        "compilerVersion": 25
+      },
+      "catalogSummary": {
+        "oracleRows": 1,
+        "paperCards": 1,
+        "commanderLegalCards": 1,
+        "legacyEngineCards": 0,
+        "readyForThisCompiler": 1,
+        "selected": 1,
+        "selectedBySemanticClass": {
+          "creature-template": 1
+        },
+        "deferredByReason": {},
+        "deferredExamples": {},
+        "nextReadyNames": []
+      },
+      "cards": [
+        {
+          "position": 1,
+          "oracleId": "eda11077-b2ce-408b-b982-def2da8fe599",
+          "scryfallId": "0cbc43a3-8cba-4988-9de1-c89aedd79ada",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "double-faced-v8",
+              "layout": "transform",
+              "faces": [
+                {
+                  "key": "front",
+                  "raw": {
+                    "name": "Ojer Kaslem, Deepest Growth",
+                    "cost": "{3}{G}{G}",
+                    "super": [
+                      "Legendary"
+                    ],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "God"
+                    ],
+                    "oracle": "Trample\nWhenever Ojer Kaslem deals combat damage to a player, reveal that many cards from the top of your library. You may put a creature card and/or a land card from among them onto the battlefield. Put the rest on the bottom in a random order.\nWhen Ojer Kaslem dies, return it to the battlefield tapped and transformed under its owner's control.",
+                    "_ci": [
+                      "G"
+                    ],
+                    "_oracleId": "eda11077-b2ce-408b-b982-def2da8fe599",
+                    "_scryfallId": "0cbc43a3-8cba-4988-9de1-c89aedd79ada",
+                    "_layout": "normal",
+                    "_set": "lci",
+                    "_collectorNumber": "204",
+                    "_rarity": "mythic",
+                    "power": "6",
+                    "toughness": "5",
+                    "_produced": [
+                      "G"
+                    ],
+                    "colorsOverride": [
+                      "G"
+                    ]
+                  },
+                  "semanticClass": "creature-template",
+                  "implementedKeywords": [
+                    "trample"
+                  ],
+                  "implementation": [
+                    {
+                      "kind": "generic-trigger",
+                      "event": "combatDamageToPlayer",
+                      "eventFilter": {
+                        "kind": "source-damage-player",
+                        "opponent": false
+                      },
+                      "targets": [],
+                      "effects": [
+                        {
+                          "action": "library-program-v25",
+                          "n": {
+                            "kind": "event-amount"
+                          },
+                          "visibility": "reveal",
+                          "selections": [
+                            {
+                              "filter": {
+                                "what": "creature",
+                                "zone": "graveyard",
+                                "controller": "you",
+                                "min": 1
+                              },
+                              "max": 1,
+                              "required": false,
+                              "destination": "battlefield",
+                              "reveal": false
+                            },
+                            {
+                              "filter": {
+                                "what": "land",
+                                "zone": "graveyard",
+                                "controller": "you",
+                                "min": 1
+                              },
+                              "max": 1,
+                              "required": false,
+                              "destination": "battlefield",
+                              "reveal": false
+                            }
+                          ],
+                          "rest": {
+                            "destination": "bottom",
+                            "random": true
+                          }
+                        }
+                      ],
+                      "optional": false,
+                      "contract": "generic-trigger-effect"
+                    },
+                    {
+                      "kind": "generic-trigger",
+                      "event": "dies",
+                      "eventFilter": "self",
+                      "effects": [
+                        {
+                          "action": "return-faced-source-v21",
+                          "face": "back",
+                          "tapped": true,
+                          "controller": "owner"
+                        }
+                      ],
+                      "targets": [],
+                      "contract": "generic-trigger-effect"
+                    }
+                  ],
+                  "oracleContracts": [
+                    "generic-trigger-effect"
+                  ],
+                  "rulesCore": "Trample\nWhenever this creature deals combat damage to a player, reveal that many cards from the top of your library. You may put a creature card and/or a land card from among them onto the battlefield. Put the rest on the bottom in a random order.\nWhen this creature dies, return it to the battlefield tapped and transformed under its owner's control."
+                },
+                {
+                  "key": "back",
+                  "raw": {
+                    "name": "Temple of Cultivation",
+                    "cost": null,
+                    "super": [],
+                    "types": [
+                      "Land"
+                    ],
+                    "subtypes": [],
+                    "oracle": "(Transforms from Ojer Kaslem, Deepest Growth.)\n{T}: Add {G}.\n{2}{G}, {T}: Transform this land. Activate only if you control ten or more permanents and only as a sorcery.",
+                    "_ci": [
+                      "G"
+                    ],
+                    "_oracleId": "eda11077-b2ce-408b-b982-def2da8fe599",
+                    "_scryfallId": "0cbc43a3-8cba-4988-9de1-c89aedd79ada",
+                    "_layout": "normal",
+                    "_set": "lci",
+                    "_collectorNumber": "204",
+                    "_rarity": "mythic",
+                    "_produced": [
+                      "G"
+                    ],
+                    "colorsOverride": []
+                  },
+                  "semanticClass": "land-mana-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "mana-source",
+                      "produce": [
+                        {
+                          "G": 1
+                        }
+                      ],
+                      "activationMana": null,
+                      "contract": "mana-source"
+                    },
+                    {
+                      "kind": "generic-ability",
+                      "cost": {
+                        "mana": "{2}{G}",
+                        "tap": true
+                      },
+                      "effects": [
+                        {
+                          "action": "transform-self"
+                        }
+                      ],
+                      "targets": [],
+                      "optional": false,
+                      "onceEachTurn": false,
+                      "sorceryOnly": true,
+                      "contract": "generic-activated-effect",
+                      "activationCondition": {
+                        "kind": "count-comparison",
+                        "count": {
+                          "kind": "count",
+                          "zone": "battlefield",
+                          "what": "permanent",
+                          "filters": [
+                            {
+                              "what": "permanent",
+                              "zone": "battlefield",
+                              "controller": "you",
+                              "min": 1
+                            }
+                          ],
+                          "other": false
+                        },
+                        "min": 10
+                      }
+                    }
+                  ],
+                  "oracleContracts": [
+                    "mana-source",
+                    "generic-activated-effect"
+                  ],
+                  "rulesCore": "{T}: Add {G}.\n{2}{G}, {T}: Transform this land. Activate only if you control ten or more permanents and only as a sorcery."
+                }
+              ],
+              "contract": "double-faced-card"
+            }
+          ],
+          "oracleContracts": [
+            "double-faced-card"
+          ],
+          "rulesCore": "Ojer Kaslem, Deepest Growth: Trample\nWhenever Ojer Kaslem deals combat damage to a player, reveal that many cards from the top of your library. You may put a creature card and/or a land card from among them onto the battlefield. Put the rest on the bottom in a random order.\nWhen Ojer Kaslem dies, return it to the battlefield tapped and transformed under its owner's control.\nTemple of Cultivation: {T}: Add {G}.\n{2}{G}, {T}: Transform this land. Activate only if you control ten or more permanents and only as a sorcery.",
+          "raw": {
+            "name": "Ojer Kaslem, Deepest Growth // Temple of Cultivation",
+            "cost": "{3}{G}{G}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "God"
+            ],
+            "oracle": "Trample\nWhenever Ojer Kaslem deals combat damage to a player, reveal that many cards from the top of your library. You may put a creature card and/or a land card from among them onto the battlefield. Put the rest on the bottom in a random order.\nWhen Ojer Kaslem dies, return it to the battlefield tapped and transformed under its owner's control.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "eda11077-b2ce-408b-b982-def2da8fe599",
+            "_scryfallId": "0cbc43a3-8cba-4988-9de1-c89aedd79ada",
+            "_layout": "transform",
+            "_set": "lci",
+            "_collectorNumber": "204",
+            "_rarity": "mythic",
+            "power": "6",
+            "toughness": "5",
+            "_produced": [
+              "G"
+            ]
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — God // Land",
+            "aliases": [
+              "Ojer Kaslem, Deepest Growth",
+              "Temple of Cultivation"
+            ],
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [],
+            "keywords": [
+              "Transform",
+              "Trample"
+            ],
+            "commanderLegality": "legal",
+            "set": "lci",
+            "setName": "The Lost Caverns of Ixalan",
+            "collectorNumber": "204",
+            "rarity": "mythic",
+            "releasedAt": "2023-11-17",
+            "scryfallUri": "https://scryfall.com/card/lci/204/ojer-kaslem-deepest-growth-temple-of-cultivation?utm_source=api"
+          }
+        }
+      ]
+    }
+  ]
+}

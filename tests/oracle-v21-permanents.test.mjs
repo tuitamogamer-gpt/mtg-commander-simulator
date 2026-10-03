@@ -7,9 +7,12 @@ import {context,put,settle} from './helpers/oracle-v8-fixtures.mjs';
 import {assertGameStateInvariants} from './helpers/game-state-invariants.mjs';
 const rows=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v21-permanents.json',import.meta.url),'utf8'));
 const M=loadEngine(),absent=rows.filter(card=>!M.DEFS[card.name]);
-const plan=createImportPlan({cards:absent,bulk:{type:'oracle_cards'},sequence:9949,limit:absent.length,compilerVersion:21});
-assert.equal(plan.report.cards.length,absent.length,absent.filter(card=>!plan.report.cards.some(row=>row.raw.name===card.name)).map(card=>[card.name,semanticClass(card,{compilerVersion:21})]));
-M.registerOracleBatch(plan.report);M.initData(M.RAW_DATA);
+if(absent.length){
+ const plan=createImportPlan({cards:absent,bulk:{type:'oracle_cards'},sequence:9949,limit:absent.length,compilerVersion:21});
+ assert.equal(plan.report.cards.length,absent.length,absent.filter(card=>!plan.report.cards.some(row=>row.raw.name===card.name)).map(card=>[card.name,semanticClass(card,{compilerVersion:21})]));
+ M.registerOracleBatch(plan.report);
+}
+M.initData(M.RAW_DATA);
 const choose=(p,fn)=>{const prior=p.controller.decide.bind(p.controller);p.controller.decide=(g,q)=>fn(g,q)??prior(g,q);};
 const fund=p=>{for(const color of ['W','U','B','R','G','C'])p.pool[color]=30;};
 const witness=(game,player,power,zone='battlefield',cost='{G}')=>{const card=new M.CardInst({...M.DEFS['Grizzly Bears'],name:'V21 event witness',cost,power:String(power),toughness:'20',colorsOverride:['G']},player);card.zone=zone;card.sick=false;if(zone==='battlefield'){game.battlefield.push(card);game.recalc();}else player[zone].push(card);return card;};

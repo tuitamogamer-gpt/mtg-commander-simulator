@@ -1,7 +1,8 @@
 ((M)=>{
  const actions=new Set(['cast-card-v8','cast-from-hand-v8','cast-from-graveyard-v8','cast-inspected-v8']),frames=new WeakMap();let nextId=1;
  const present=entry=>entry.card.zone===entry.zone&&entry.card.zoneVersion===entry.version&&entry.card.owner[entry.zone]?.includes(entry.card);
- function alternatives(game,card,base){
+ function alternatives(game,card,base){return baseAlternatives(game,card,base).flatMap(alt=>card.def.oraclePrototypeV10?[alt,{...alt,oraclePrototypeV10:true,label:"Prototype "+card.def.oraclePrototypeV10.cost}]:[alt]);}
+ function baseAlternatives(game,card,base){
   if(card.def.bdfRoom)return M.BDF.castVariants(game,card,base);
   if(card.def.bdfGift)return [base,{...base,bdfGift:true}];
   const faces=M.OracleV8Faces?.physical(card);
@@ -26,7 +27,7 @@
   const frame=frames.get(game);if(!frame||frame.player!==player||frame.id!==options.oracleImmediateCast)return false;
   if(options.free!==frame.free||options.asThoughAnyColor!==frame.anyColor||options.speed!=='instant'||options.faceDownCast||options.bestow||options.overloaded||options.oracleAlternativeCost)return false;
   return offers(game,player).some(entry=>entry.card===card&&entry.from===(options.from||card.zone)&&
-   ['bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
+   ['oraclePrototypeV10','bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
  }
  function openFrame(ctx,cards,effect,helpers){
   const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{})};
@@ -67,7 +68,7 @@
    if(!Array.isArray(answer)||effect.mandatory&&answer.length!==1||answer.length>1||answer.some(card=>!from.includes(card)))throw new Error('Invalid immediate cast selection');
    if(!answer.length)return null;
    const card=answer[0];frame.entries=frame.entries.filter(entry=>entry.card===card);
-   const selected=choices.filter(entry=>entry.card===card);
+   const selected=choices.filter(entry=>entry.card===card).filter((entry,index,all)=>!all.slice(0,index).some(other=>Object.keys(entry.alt).length===Object.keys(other.alt).length&&Object.keys(entry.alt).every(key=>entry.alt[key]===other.alt[key])));
    const key=selected.length===1?'0':await ctx.you.controller.decide(ctx.g,{type:'chooseOption',player:ctx.you,prompt:effect.selected?`Choose how to cast ${card.name}`:'Choose a spell face',
     options:selected.map((entry,index)=>({key:String(index),label:entry.alt.label||entry.alt.name||card.name,face:entry.alt.oracleFace})),aiHint:{kind:'oracleSpellFace',card}});
    const index=Number(key);if(!Number.isInteger(index)||!selected[index])throw new Error('Invalid immediate cast face');

@@ -157,6 +157,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(card.oraclePrototypeV10)entry.oraclePrototypeV10=true;
     if (card.oracleTransformCount) entry.oracleTransformCount = Number(card.oracleTransformCount) || 0;
     const meta = plainMeta(card.meta);
+    const entryFormV26=MTG.OracleV26Common?.captureForm(card);
+    if(entryFormV26){
+      entry.oracleEntryFormV26=entryFormV26;
+      // Definitions contain compiled functions; restore them from the catalog.
+      delete meta.characteristicOriginalDef;delete meta.oracleEntryFormV26;
+    }
     if (Object.keys(meta).length) entry.meta = meta;
     return entry;
   }
@@ -479,6 +485,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.def = game.faceDownCreatureDef(card.meta.faceDownKind || 'manifest');
       }
       if (entry.isToken && entry.copyOf && MTG.DEFS[entry.copyOf]) card.isCopyOf = card.def;
+      if(entry.oracleEntryFormV26){
+        assert(MTG.OracleV26Common,'entry forms are not supported by this build.');
+        MTG.OracleV26Common.restoreForm(game,card,entry.oracleEntryFormV26);
+        if(card.isToken&&card.isCopyOf)card.isCopyOf=card.def;
+      }
       byIid.set(card.iid, card);
       if (entry.zone === 'battlefield') game.battlefield.push(card);
       else {

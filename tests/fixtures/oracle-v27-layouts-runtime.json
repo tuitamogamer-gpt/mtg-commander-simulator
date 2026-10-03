@@ -1,0 +1,3829 @@
+{
+  "status": "draft-not-imported",
+  "batches": [
+    {
+      "schemaVersion": 1,
+      "id": "oracle-9963",
+      "sequence": 9963,
+      "generatedAt": "2026-10-03T00:28:56.287Z",
+      "source": {
+        "provider": "Scryfall",
+        "endpoint": "https://api.scryfall.com/bulk-data",
+        "bulkType": "oracle_cards",
+        "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+        "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+        "bulkDescription": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card.",
+        "bulkSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528"
+      },
+      "selectionPolicy": {
+        "compilerVersion": 27
+      },
+      "cards": [
+        {
+          "position": 1,
+          "oracleId": "158db438-52ba-4c30-b7bf-d1c4f76da917",
+          "scryfallId": "4d90c3b0-f958-4a15-94a1-9bf1b0a9ac2a",
+          "semanticClass": "enchantment-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "draw",
+              "eventFilter": "your-player",
+              "targets": [
+                {
+                  "what": "opponent",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "optional": false,
+              "effects": [
+                {
+                  "action": "library-repeat-v27",
+                  "mode": "shared-nonland-mill",
+                  "who": 0,
+                  "n": 2
+                }
+              ],
+              "contract": "generic-trigger-effect"
+            },
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{5}{U}"
+              },
+              "effects": [
+                {
+                  "action": "draw",
+                  "who": "you",
+                  "n": 1
+                },
+                {
+                  "action": "discard",
+                  "who": "you",
+                  "n": 1
+                }
+              ],
+              "targets": [],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect",
+            "generic-activated-effect"
+          ],
+          "rulesCore": "Whenever you draw a card, target opponent mills two cards. If two nonland cards that share a color were milled this way, repeat this process.\n{5}{U}: Draw a card, then discard a card.",
+          "raw": {
+            "name": "Sphinx's Tutelage",
+            "cost": "{2}{U}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [],
+            "oracle": "Whenever you draw a card, target opponent mills two cards. If two nonland cards that share a color were milled this way, repeat this process.\n{5}{U}: Draw a card, then discard a card.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "158db438-52ba-4c30-b7bf-d1c4f76da917",
+            "_scryfallId": "4d90c3b0-f958-4a15-94a1-9bf1b0a9ac2a",
+            "_layout": "normal",
+            "_set": "ori",
+            "_collectorNumber": "76",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Enchantment",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "ori",
+            "setName": "Magic Origins",
+            "collectorNumber": "76",
+            "rarity": "uncommon",
+            "releasedAt": "2015-07-17",
+            "scryfallUri": "https://scryfall.com/card/ori/76/sphinxs-tutelage?utm_source=api"
+          }
+        },
+        {
+          "position": 2,
+          "oracleId": "1636c4d2-f699-4af7-8508-dbce2f0b7b52",
+          "scryfallId": "54582b89-a152-4686-8172-82db740dfea2",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "upkeep",
+              "eventFilter": "your-upkeep",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-repeat-v27",
+                  "mode": "land-mill"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": [
+                "cardToGraveyard",
+                "dies"
+              ],
+              "eventFilter": {
+                "kind": "v8-event",
+                "target": {
+                  "what": "land",
+                  "zone": "graveyard",
+                  "controller": "any",
+                  "min": 1,
+                  "nontoken": true
+                },
+                "player": "you",
+                "playerField": "owner",
+                "lookBack": false
+              },
+              "effects": [
+                {
+                  "action": "counter",
+                  "target": "self",
+                  "counter": "+1/+1",
+                  "n": 1
+                }
+              ],
+              "targets": [],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "At the beginning of your upkeep, reveal the top card of your library. If it's a land card, put it into your graveyard and repeat this process.\nWhenever a land card is put into your graveyard from anywhere, put a +1/+1 counter on this creature.",
+          "raw": {
+            "name": "Countryside Crusher",
+            "cost": "{1}{R}{R}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Giant",
+              "Warrior"
+            ],
+            "oracle": "At the beginning of your upkeep, reveal the top card of your library. If it's a land card, put it into your graveyard and repeat this process.\nWhenever a land card is put into your graveyard from anywhere, put a +1/+1 counter on this creature.",
+            "_ci": [
+              "R"
+            ],
+            "_oracleId": "1636c4d2-f699-4af7-8508-dbce2f0b7b52",
+            "_scryfallId": "54582b89-a152-4686-8172-82db740dfea2",
+            "_layout": "normal",
+            "_set": "mma",
+            "_collectorNumber": "108",
+            "_rarity": "rare",
+            "power": "3",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Creature — Giant Warrior",
+            "colorIdentity": [
+              "R"
+            ],
+            "colors": [
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mma",
+            "setName": "Modern Masters",
+            "collectorNumber": "108",
+            "rarity": "rare",
+            "releasedAt": "2013-06-07",
+            "scryfallUri": "https://scryfall.com/card/mma/108/countryside-crusher?utm_source=api"
+          }
+        },
+        {
+          "position": 3,
+          "oracleId": "1eb88d87-e024-47fe-bd63-0eac69c106f6",
+          "scryfallId": "134c8764-028e-4f7f-988d-ffd4d3827eb6",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 3,
+                  "visibility": "look",
+                  "selections": [],
+                  "rest": {
+                    "destination": "stay"
+                  },
+                  "petalsChoiceV27": true
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Look at the top three cards of your library. You may put those cards on the bottom of your library in any order. If you do, return Petals of Insight to its owner's hand. Otherwise, draw three cards.",
+          "raw": {
+            "name": "Petals of Insight",
+            "cost": "{4}{U}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [
+              "Arcane"
+            ],
+            "oracle": "Look at the top three cards of your library. You may put those cards on the bottom of your library in any order. If you do, return Petals of Insight to its owner's hand. Otherwise, draw three cards.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "1eb88d87-e024-47fe-bd63-0eac69c106f6",
+            "_scryfallId": "134c8764-028e-4f7f-988d-ffd4d3827eb6",
+            "_layout": "normal",
+            "_set": "mma",
+            "_collectorNumber": "60",
+            "_rarity": "common"
+          },
+          "catalog": {
+            "typeLine": "Sorcery — Arcane",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mma",
+            "setName": "Modern Masters",
+            "collectorNumber": "60",
+            "rarity": "common",
+            "releasedAt": "2013-06-07",
+            "scryfallUri": "https://scryfall.com/card/mma/60/petals-of-insight?utm_source=api"
+          }
+        },
+        {
+          "position": 4,
+          "oracleId": "2624b5c5-ba59-4e20-8e66-e463268366e4",
+          "scryfallId": "690f1f31-f8c5-4336-9ec9-72ff761e3adc",
+          "semanticClass": "permanent-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "saga-chapters",
+              "chapters": [
+                {
+                  "effects": [
+                    {
+                      "action": "destroy",
+                      "target": 0
+                    }
+                  ],
+                  "targets": [
+                    {
+                      "what": "creature",
+                      "zone": "battlefield",
+                      "controller": "any",
+                      "min": 1,
+                      "max": 1
+                    }
+                  ],
+                  "optional": false
+                },
+                {
+                  "targets": [],
+                  "effects": [
+                    {
+                      "action": "each-player-discard-or-life-v27",
+                      "n": 3
+                    }
+                  ],
+                  "optional": false
+                },
+                {
+                  "effects": [
+                    {
+                      "action": "zone-select",
+                      "zone": "graveyard",
+                      "destination": "exile",
+                      "who": 0,
+                      "n": "all",
+                      "filter": {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      }
+                    }
+                  ],
+                  "targets": [
+                    {
+                      "what": "player",
+                      "zone": "players",
+                      "controller": "any",
+                      "min": 0,
+                      "unbounded": true
+                    }
+                  ],
+                  "optional": false
+                }
+              ],
+              "contract": "saga-chapters"
+            }
+          ],
+          "oracleContracts": [
+            "saga-chapters"
+          ],
+          "rulesCore": "I — Destroy target creature.\nII — Each player may discard a card. Each player who doesn't loses 3 life.\nIII — Exile any number of target players' graveyards.",
+          "raw": {
+            "name": "The Death of Gwen Stacy",
+            "cost": "{2}{B}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Saga"
+            ],
+            "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Destroy target creature.\nII — Each player may discard a card. Each player who doesn't loses 3 life.\nIII — Exile any number of target players' graveyards.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "2624b5c5-ba59-4e20-8e66-e463268366e4",
+            "_scryfallId": "690f1f31-f8c5-4336-9ec9-72ff761e3adc",
+            "_layout": "saga",
+            "_set": "spm",
+            "_collectorNumber": "54",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Saga",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "spm",
+            "setName": "Marvel's Spider-Man",
+            "collectorNumber": "54",
+            "rarity": "rare",
+            "releasedAt": "2025-09-26",
+            "scryfallUri": "https://scryfall.com/card/spm/54/the-death-of-gwen-stacy?utm_source=api"
+          }
+        },
+        {
+          "position": 5,
+          "oracleId": "34d34f2c-06ff-4acf-8f2f-ff867774b777",
+          "scryfallId": "2d838feb-89f2-4cdb-a5ab-ec880f28d873",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "flying"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-static",
+              "scope": "self",
+              "power": 1,
+              "toughness": 1,
+              "keywords": [],
+              "condition": {
+                "kind": "graveyard-count",
+                "min": 7
+              },
+              "contract": "generic-continuous-effect"
+            },
+            {
+              "kind": "adventure-face",
+              "name": "Speak Secrets",
+              "cost": "{1}{U}",
+              "types": [
+                "Sorcery"
+              ],
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-cohort-v25",
+                  "who": "you",
+                  "n": 4,
+                  "filter": {
+                    "what": "card",
+                    "zone": "graveyard",
+                    "controller": "you",
+                    "min": 1,
+                    "alternatives": [
+                      {
+                        "what": "instant",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      {
+                        "what": "sorcery",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      }
+                    ]
+                  },
+                  "max": 1,
+                  "required": true,
+                  "destination": "hand",
+                  "tapped": false,
+                  "shuffle": false
+                }
+              ],
+              "optional": false,
+              "contract": "adventure-casting"
+            }
+          ],
+          "oracleContracts": [
+            "generic-continuous-effect",
+            "adventure-casting"
+          ],
+          "rulesCore": "Most Decrepit Old Bird: Flying\nThis creature gets +1/+1 as long as there are seven or more cards in your graveyard.\nSpeak Secrets: Mill four cards, then put an instant or sorcery card from among them into your hand.",
+          "raw": {
+            "name": "Most Decrepit Old Bird // Speak Secrets",
+            "cost": "{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Bird"
+            ],
+            "oracle": "Flying\nThreshold — This creature gets +1/+1 as long as there are seven or more cards in your graveyard.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "34d34f2c-06ff-4acf-8f2f-ff867774b777",
+            "_scryfallId": "2d838feb-89f2-4cdb-a5ab-ec880f28d873",
+            "_layout": "adventure",
+            "_set": "hob",
+            "_collectorNumber": "49",
+            "_rarity": "rare",
+            "power": "1",
+            "toughness": "1"
+          },
+          "catalog": {
+            "typeLine": "Creature — Bird // Sorcery — Adventure",
+            "aliases": [
+              "Most Decrepit Old Bird",
+              "Speak Secrets"
+            ],
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [
+              "Flying",
+              "Threshold",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "hob",
+            "setName": "The Hobbit",
+            "collectorNumber": "49",
+            "rarity": "rare",
+            "releasedAt": "2026-08-14",
+            "scryfallUri": "https://scryfall.com/card/hob/49/most-decrepit-old-bird-speak-secrets?utm_source=api"
+          }
+        },
+        {
+          "position": 6,
+          "oracleId": "3a05904d-5439-446d-a2a1-1475c9c7371d",
+          "scryfallId": "31f074bb-5ff6-4ce7-a186-1782d940c4a9",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{R}",
+                "tap": true
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 8,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "max": 4,
+                      "required": true,
+                      "destination": "exile",
+                      "randomV27": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "top",
+                    "random": false
+                  }
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{R}, {T}: Look at the top eight cards of your library. Exile four of them at random, then put the rest on top of your library in any order.",
+          "raw": {
+            "name": "Orcish Librarian",
+            "cost": "{1}{R}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Orc"
+            ],
+            "oracle": "{R}, {T}: Look at the top eight cards of your library. Exile four of them at random, then put the rest on top of your library in any order.",
+            "_ci": [
+              "R"
+            ],
+            "_oracleId": "3a05904d-5439-446d-a2a1-1475c9c7371d",
+            "_scryfallId": "31f074bb-5ff6-4ce7-a186-1782d940c4a9",
+            "_layout": "normal",
+            "_set": "tsb",
+            "_collectorNumber": "66",
+            "_rarity": "special",
+            "power": "1",
+            "toughness": "1"
+          },
+          "catalog": {
+            "typeLine": "Creature — Orc",
+            "colorIdentity": [
+              "R"
+            ],
+            "colors": [
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "tsb",
+            "setName": "Time Spiral Timeshifted",
+            "collectorNumber": "66",
+            "rarity": "special",
+            "releasedAt": "2006-10-06",
+            "scryfallUri": "https://scryfall.com/card/tsb/66/orcish-librarian?utm_source=api"
+          }
+        },
+        {
+          "position": 7,
+          "oracleId": "3c18113f-8d1e-4c63-a759-8cfc94e90876",
+          "scryfallId": "f42beafb-2fba-482c-a86a-7d668fa7cb4b",
+          "semanticClass": "permanent-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "saga-chapters",
+              "chapters": [
+                {
+                  "effects": [
+                    {
+                      "action": "damage",
+                      "target": "each-opponent",
+                      "n": 2
+                    },
+                    {
+                      "action": "gain-life",
+                      "who": "you",
+                      "n": 2
+                    }
+                  ],
+                  "targets": [],
+                  "optional": false
+                },
+                {
+                  "effects": [
+                    {
+                      "action": "damage",
+                      "target": "each-opponent",
+                      "n": 2
+                    },
+                    {
+                      "action": "gain-life",
+                      "who": "you",
+                      "n": 2
+                    }
+                  ],
+                  "targets": [],
+                  "optional": false
+                },
+                {
+                  "targets": [],
+                  "effects": [
+                    {
+                      "action": "life-nightmare-token-v27"
+                    }
+                  ],
+                  "optional": false
+                }
+              ],
+              "contract": "saga-chapters"
+            }
+          ],
+          "oracleContracts": [
+            "saga-chapters"
+          ],
+          "rulesCore": "I, II — This Saga deals 2 damage to each opponent and you gain 2 life.\nIII — Create an X/X black Nightmare Horror creature token, where X is half your life total, rounded up. It deals X damage to you.",
+          "raw": {
+            "name": "Chainer's Torment",
+            "cost": "{3}{B}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Saga"
+            ],
+            "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI, II — This Saga deals 2 damage to each opponent and you gain 2 life.\nIII — Create an X/X black Nightmare Horror creature token, where X is half your life total, rounded up. It deals X damage to you.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "3c18113f-8d1e-4c63-a759-8cfc94e90876",
+            "_scryfallId": "f42beafb-2fba-482c-a86a-7d668fa7cb4b",
+            "_layout": "saga",
+            "_set": "dom",
+            "_collectorNumber": "82",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Saga",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "dom",
+            "setName": "Dominaria",
+            "collectorNumber": "82",
+            "rarity": "uncommon",
+            "releasedAt": "2018-04-27",
+            "scryfallUri": "https://scryfall.com/card/dom/82/chainers-torment?utm_source=api"
+          }
+        },
+        {
+          "position": 8,
+          "oracleId": "3edac7df-2a88-4718-865e-703dff9c972e",
+          "scryfallId": "0df0e2eb-753a-4dd1-8b08-f741683e089d",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "opponent",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 3,
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "max": "all",
+                      "required": true,
+                      "destination": "hand"
+                    }
+                  ],
+                  "rest": {
+                    "destination": "graveyard"
+                  },
+                  "opponentChoosesHandV27": {
+                    "who": 0,
+                    "otherwiseDraw": 5
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Reveal the top three cards of your library. Target opponent may choose to put those cards into your hand. If they don't, put those cards into your graveyard and draw five cards.",
+          "raw": {
+            "name": "Covenant of Minds",
+            "cost": "{4}{U}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Reveal the top three cards of your library. Target opponent may choose to put those cards into your hand. If they don't, put those cards into your graveyard and draw five cards.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "3edac7df-2a88-4718-865e-703dff9c972e",
+            "_scryfallId": "0df0e2eb-753a-4dd1-8b08-f741683e089d",
+            "_layout": "normal",
+            "_set": "cn2",
+            "_collectorNumber": "105",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "cn2",
+            "setName": "Conspiracy: Take the Crown",
+            "collectorNumber": "105",
+            "rarity": "rare",
+            "releasedAt": "2016-08-26",
+            "scryfallUri": "https://scryfall.com/card/cn2/105/covenant-of-minds?utm_source=api"
+          }
+        },
+        {
+          "position": 9,
+          "oracleId": "4014f665-08a6-4ae0-b4d7-5a69d043af6a",
+          "scryfallId": "3ac0f1fb-0ada-4b3c-b9bd-654ffc0a167d",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "opponent",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "who": 0,
+                  "until": {
+                    "n": 1,
+                    "filter": {
+                      "what": "creature",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1
+                    }
+                  },
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": true,
+                      "destination": "battlefield"
+                    }
+                  ],
+                  "rest": {
+                    "destination": "graveyard"
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Target opponent reveals cards from the top of their library until they reveal a creature card. That player puts all noncreature cards revealed this way into their graveyard, then you put the creature card onto the battlefield under your control.",
+          "raw": {
+            "name": "Telemin Performance",
+            "cost": "{3}{U}{U}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Target opponent reveals cards from the top of their library until they reveal a creature card. That player puts all noncreature cards revealed this way into their graveyard, then you put the creature card onto the battlefield under your control.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "4014f665-08a6-4ae0-b4d7-5a69d043af6a",
+            "_scryfallId": "3ac0f1fb-0ada-4b3c-b9bd-654ffc0a167d",
+            "_layout": "normal",
+            "_set": "con",
+            "_collectorNumber": "35",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "con",
+            "setName": "Conflux",
+            "collectorNumber": "35",
+            "rarity": "rare",
+            "releasedAt": "2009-02-06",
+            "scryfallUri": "https://scryfall.com/card/con/35/telemin-performance?utm_source=api"
+          }
+        },
+        {
+          "position": 10,
+          "oracleId": "409e0a43-0e85-47ea-9d40-de0860b12952",
+          "scryfallId": "1bb62356-72bb-4dc1-a2f9-45a3aca62e41",
+          "semanticClass": "enchantment-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "upkeep",
+              "eventFilter": "your-upkeep",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-all-top-v27",
+                  "filter": {
+                    "what": "creature",
+                    "zone": "graveyard",
+                    "controller": "you",
+                    "min": 1
+                  },
+                  "destination": "battlefield",
+                  "controller": "owner"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "At the beginning of your upkeep, each player reveals the top card of their library. If all cards revealed this way are creature cards, put those cards onto the battlefield under their owners' control.",
+          "raw": {
+            "name": "Game Preserve",
+            "cost": "{2}{G}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [],
+            "oracle": "At the beginning of your upkeep, each player reveals the top card of their library. If all cards revealed this way are creature cards, put those cards onto the battlefield under their owners' control.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "409e0a43-0e85-47ea-9d40-de0860b12952",
+            "_scryfallId": "1bb62356-72bb-4dc1-a2f9-45a3aca62e41",
+            "_layout": "normal",
+            "_set": "mmq",
+            "_collectorNumber": "248",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Enchantment",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mmq",
+            "setName": "Mercadian Masques",
+            "collectorNumber": "248",
+            "rarity": "rare",
+            "releasedAt": "1999-10-04",
+            "scryfallUri": "https://scryfall.com/card/mmq/248/game-preserve?utm_source=api"
+          }
+        },
+        {
+          "position": 11,
+          "oracleId": "458800d3-47b7-4f28-8371-25c8d1e60011",
+          "scryfallId": "4170ddd3-53bd-4ec7-82c0-4fb48f400aa5",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "tap": true
+              },
+              "targets": [
+                {
+                  "what": "player",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "optional": false,
+              "effects": [
+                {
+                  "action": "exile-library-top-v27",
+                  "who": 0,
+                  "ifLandGain": 1
+                }
+              ],
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": {
+                "kind": "filtered-object",
+                "target": {
+                  "what": "land",
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "min": 1
+                },
+                "another": false
+              },
+              "effects": [
+                {
+                  "action": "optional-effect-v20",
+                  "effects": [
+                    {
+                      "action": "untap",
+                      "target": "self"
+                    }
+                  ]
+                }
+              ],
+              "targets": [],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect",
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "{T}: Exile the top card of target player's library. If it's a land card, you gain 1 life.\nWhenever a land you control enters, you may untap this creature.",
+          "raw": {
+            "name": "Scrib Nibblers",
+            "cost": "{2}{B}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Rat"
+            ],
+            "oracle": "{T}: Exile the top card of target player's library. If it's a land card, you gain 1 life.\nLandfall — Whenever a land you control enters, you may untap this creature.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "458800d3-47b7-4f28-8371-25c8d1e60011",
+            "_scryfallId": "4170ddd3-53bd-4ec7-82c0-4fb48f400aa5",
+            "_layout": "normal",
+            "_set": "wwk",
+            "_collectorNumber": "66",
+            "_rarity": "uncommon",
+            "power": "1",
+            "toughness": "1"
+          },
+          "catalog": {
+            "typeLine": "Creature — Rat",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [
+              "Landfall"
+            ],
+            "commanderLegality": "legal",
+            "set": "wwk",
+            "setName": "Worldwake",
+            "collectorNumber": "66",
+            "rarity": "uncommon",
+            "releasedAt": "2010-02-05",
+            "scryfallUri": "https://scryfall.com/card/wwk/66/scrib-nibblers?utm_source=api"
+          }
+        },
+        {
+          "position": 12,
+          "oracleId": "4604c729-8d2d-4b2b-a95c-5245563637e6",
+          "scryfallId": "b87f3579-f314-4207-a02c-14e9cb269b47",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 5,
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "land",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": "all",
+                      "required": true,
+                      "destination": "battlefield",
+                      "tapped": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "exile"
+                  },
+                  "who": "each-player",
+                  "chooser": "owner",
+                  "controller": "owner"
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Each player reveals the top five cards of their library, puts all land cards revealed this way onto the battlefield tapped, and exiles the rest.",
+          "raw": {
+            "name": "Clear the Land",
+            "cost": "{2}{G}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Each player reveals the top five cards of their library, puts all land cards revealed this way onto the battlefield tapped, and exiles the rest.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "4604c729-8d2d-4b2b-a95c-5245563637e6",
+            "_scryfallId": "b87f3579-f314-4207-a02c-14e9cb269b47",
+            "_layout": "normal",
+            "_set": "mmq",
+            "_collectorNumber": "235",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mmq",
+            "setName": "Mercadian Masques",
+            "collectorNumber": "235",
+            "rarity": "rare",
+            "releasedAt": "1999-10-04",
+            "scryfallUri": "https://scryfall.com/card/mmq/235/clear-the-land?utm_source=api"
+          }
+        },
+        {
+          "position": 13,
+          "oracleId": "4bccfa67-0c6f-42a1-b8d4-0842a8230d1e",
+          "scryfallId": "29bffd7c-73be-4185-976b-36a42a4512fe",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{3}",
+                "tap": true
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-cohort-v25",
+                  "who": "you",
+                  "n": 4,
+                  "filter": {
+                    "what": "card",
+                    "zone": "graveyard",
+                    "controller": "you",
+                    "min": 1,
+                    "alternatives": [
+                      {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "subtype": "Hero",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      {
+                        "what": "enchantment",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      }
+                    ]
+                  },
+                  "max": 1,
+                  "required": false,
+                  "destination": "hand",
+                  "tapped": false,
+                  "shuffle": false
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{3}, {T}: Mill four cards. You may put a Hero or enchantment card from among those cards into your hand.",
+          "raw": {
+            "name": "Rick Jones, Destined Sidekick",
+            "cost": "{G}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Human",
+              "Advisor"
+            ],
+            "oracle": "{3}, {T}: Mill four cards. You may put a Hero or enchantment card from among those cards into your hand. (To mill four cards, put the top four cards of your library into your graveyard.)",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "4bccfa67-0c6f-42a1-b8d4-0842a8230d1e",
+            "_scryfallId": "29bffd7c-73be-4185-976b-36a42a4512fe",
+            "_layout": "normal",
+            "_set": "msh",
+            "_collectorNumber": "184",
+            "_rarity": "uncommon",
+            "power": "0",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Human Advisor",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "msh",
+            "setName": "Marvel Super Heroes",
+            "collectorNumber": "184",
+            "rarity": "uncommon",
+            "releasedAt": "2026-06-26",
+            "scryfallUri": "https://scryfall.com/card/msh/184/rick-jones-destined-sidekick?utm_source=api"
+          }
+        },
+        {
+          "position": 14,
+          "oracleId": "621fc513-b16a-4c09-93f8-424e688471e2",
+          "scryfallId": "50b54524-8345-4b47-913f-d883a1cbe3a1",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "cast",
+              "eventFilter": {
+                "kind": "v8-event",
+                "player": "you",
+                "castKicked": true
+              },
+              "effects": [
+                {
+                  "action": "draw",
+                  "who": "you",
+                  "n": 1
+                },
+                {
+                  "action": "discard",
+                  "who": "you",
+                  "n": 1
+                }
+              ],
+              "targets": [],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [],
+              "optional": false,
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 5,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1,
+                        "kickerV27": true
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "hand",
+                      "reveal": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": true
+                  }
+                }
+              ],
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Whenever you cast a kicked spell, draw a card, then discard a card.\nWhen this creature enters, look at the top five cards of your library. You may reveal a card with a kicker ability from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+          "raw": {
+            "name": "Coralhelm Chronicler",
+            "cost": "{2}{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Merfolk",
+              "Wizard"
+            ],
+            "oracle": "Whenever you cast a kicked spell, draw a card, then discard a card.\nWhen this creature enters, look at the top five cards of your library. You may reveal a card with a kicker ability from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "621fc513-b16a-4c09-93f8-424e688471e2",
+            "_scryfallId": "50b54524-8345-4b47-913f-d883a1cbe3a1",
+            "_layout": "normal",
+            "_set": "znr",
+            "_collectorNumber": "54",
+            "_rarity": "rare",
+            "power": "2",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Creature — Merfolk Wizard",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "znr",
+            "setName": "Zendikar Rising",
+            "collectorNumber": "54",
+            "rarity": "rare",
+            "releasedAt": "2020-09-25",
+            "scryfallUri": "https://scryfall.com/card/znr/54/coralhelm-chronicler?utm_source=api"
+          }
+        },
+        {
+          "position": 15,
+          "oracleId": "77c97dad-17cc-4a28-a48b-907c044d9034",
+          "scryfallId": "fae46a70-a6d3-4584-859d-6c7425fb1508",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "cost-modifier",
+              "self": true,
+              "amount": -1,
+              "multiplier": {
+                "kind": "count",
+                "zone": "battlefield",
+                "what": "permanent",
+                "controller": "all",
+                "filters": [
+                  {
+                    "what": "permanent",
+                    "zone": "battlefield",
+                    "controller": "you",
+                    "min": 1,
+                    "subtype": "Elf"
+                  }
+                ]
+              },
+              "contract": "generic-cost-modification"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-cohort-v25",
+                  "who": "you",
+                  "n": 4,
+                  "filter": {
+                    "what": "card",
+                    "zone": "graveyard",
+                    "subtype": "Elf",
+                    "controller": "you",
+                    "min": 1
+                  },
+                  "max": "all",
+                  "required": true,
+                  "destination": "hand",
+                  "tapped": false,
+                  "shuffle": false
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-cost-modification",
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Affinity for Elves\nWhen this creature enters, mill four cards, then put all Elf cards from among them into your hand.",
+          "raw": {
+            "name": "Cantankerous Keepers",
+            "cost": "{5}{G}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Elf",
+              "Soldier"
+            ],
+            "oracle": "Affinity for Elves (This spell costs {1} less to cast for each Elf you control.)\nWhen this creature enters, mill four cards, then put all Elf cards from among them into your hand.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "77c97dad-17cc-4a28-a48b-907c044d9034",
+            "_scryfallId": "fae46a70-a6d3-4584-859d-6c7425fb1508",
+            "_layout": "normal",
+            "_set": "hob",
+            "_collectorNumber": "122",
+            "_rarity": "rare",
+            "power": "4",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Creature — Elf Soldier",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Affinity",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "hob",
+            "setName": "The Hobbit",
+            "collectorNumber": "122",
+            "rarity": "rare",
+            "releasedAt": "2026-08-14",
+            "scryfallUri": "https://scryfall.com/card/hob/122/cantankerous-keepers?utm_source=api"
+          }
+        },
+        {
+          "position": 16,
+          "oracleId": "79bc2c6d-b03d-4ceb-b468-293378ec73ae",
+          "scryfallId": "c5112bbf-752c-41e7-9c61-4c81e6a77463",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-cohort-v25",
+                  "who": "you",
+                  "n": 4,
+                  "filter": {
+                    "what": "permanent",
+                    "zone": "graveyard",
+                    "controller": "you",
+                    "min": 1
+                  },
+                  "max": 1,
+                  "required": false,
+                  "destination": "hand",
+                  "tapped": false,
+                  "shuffle": false
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Mill four cards, then you may return a permanent card from among them to your hand.",
+          "raw": {
+            "name": "Midnight Tilling",
+            "cost": "{1}{G}",
+            "super": [],
+            "types": [
+              "Instant"
+            ],
+            "subtypes": [],
+            "oracle": "Mill four cards, then you may return a permanent card from among them to your hand. (To mill four cards, put the top four cards of your library into your graveyard.)",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "79bc2c6d-b03d-4ceb-b468-293378ec73ae",
+            "_scryfallId": "c5112bbf-752c-41e7-9c61-4c81e6a77463",
+            "_layout": "normal",
+            "_set": "ecl",
+            "_collectorNumber": "182",
+            "_rarity": "common"
+          },
+          "catalog": {
+            "typeLine": "Instant",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "ecl",
+            "setName": "Lorwyn Eclipsed",
+            "collectorNumber": "182",
+            "rarity": "common",
+            "releasedAt": "2026-01-23",
+            "scryfallUri": "https://scryfall.com/card/ecl/182/midnight-tilling?utm_source=api"
+          }
+        },
+        {
+          "position": 17,
+          "oracleId": "7ddbf891-7f80-44e9-b94c-70c1da0b91ed",
+          "scryfallId": "e4819aa6-5d28-4a37-942d-89523e30c4e1",
+          "semanticClass": "artifact-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "dies",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 13,
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": true,
+                      "destination": "battlefield",
+                      "randomV27": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": true
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "When this artifact is put into a graveyard from the battlefield, reveal the top thirteen cards of your library. Put a random creature card from among them onto the battlefield. Put the rest on the bottom of your library in a random order.",
+          "raw": {
+            "name": "Getaway Barrel",
+            "cost": "{3}{R}",
+            "super": [],
+            "types": [
+              "Artifact"
+            ],
+            "subtypes": [],
+            "oracle": "When this artifact is put into a graveyard from the battlefield, reveal the top thirteen cards of your library. Put a random creature card from among them onto the battlefield. Put the rest on the bottom of your library in a random order.",
+            "_ci": [
+              "R"
+            ],
+            "_oracleId": "7ddbf891-7f80-44e9-b94c-70c1da0b91ed",
+            "_scryfallId": "e4819aa6-5d28-4a37-942d-89523e30c4e1",
+            "_layout": "normal",
+            "_set": "hob",
+            "_collectorNumber": "98",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Artifact",
+            "colorIdentity": [
+              "R"
+            ],
+            "colors": [
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "hob",
+            "setName": "The Hobbit",
+            "collectorNumber": "98",
+            "rarity": "rare",
+            "releasedAt": "2026-08-14",
+            "scryfallUri": "https://scryfall.com/card/hob/98/getaway-barrel?utm_source=api"
+          }
+        },
+        {
+          "position": 18,
+          "oracleId": "861e427f-cbb4-4ed5-8356-747ac638ac34",
+          "scryfallId": "60a78d59-af31-4af9-95aa-2573fe553925",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "targeted",
+              "eventFilter": {
+                "kind": "v8-event",
+                "subject": "self",
+                "player": "you"
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 5,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1,
+                        "stat": "mv",
+                        "comparison": "less",
+                        "threshold": 3
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "battlefield-or-hand-v27",
+                      "reveal": true,
+                      "choiceBattlefieldV27": {
+                        "maxMv": 3,
+                        "yourTurn": true
+                      }
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": true
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect",
+              "onceEachTurn": true,
+              "onceGroup": "Whenever this creature becomes the target of a spell or ability you control for the first time each turn, look at the top five cards of your library. You may reveal a creature card with mana value 3 or less from among them. You may put it onto the battlefield if it's your turn. If you don't put it onto the battlefield, put it into your hand. Put the rest on the bottom of your library in a random order."
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Whenever this creature becomes the target of a spell or ability you control for the first time each turn, look at the top five cards of your library. You may reveal a creature card with mana value 3 or less from among them. You may put it onto the battlefield if it's your turn. If you don't put it onto the battlefield, put it into your hand. Put the rest on the bottom of your library in a random order.",
+          "raw": {
+            "name": "Whiskervale Forerunner",
+            "cost": "{3}{W}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Mouse",
+              "Bard"
+            ],
+            "oracle": "Valiant — Whenever this creature becomes the target of a spell or ability you control for the first time each turn, look at the top five cards of your library. You may reveal a creature card with mana value 3 or less from among them. You may put it onto the battlefield if it's your turn. If you don't put it onto the battlefield, put it into your hand. Put the rest on the bottom of your library in a random order.",
+            "_ci": [
+              "W"
+            ],
+            "_oracleId": "861e427f-cbb4-4ed5-8356-747ac638ac34",
+            "_scryfallId": "60a78d59-af31-4af9-95aa-2573fe553925",
+            "_layout": "normal",
+            "_set": "blb",
+            "_collectorNumber": "40",
+            "_rarity": "rare",
+            "power": "3",
+            "toughness": "4"
+          },
+          "catalog": {
+            "typeLine": "Creature — Mouse Bard",
+            "colorIdentity": [
+              "W"
+            ],
+            "colors": [
+              "W"
+            ],
+            "keywords": [
+              "Valiant"
+            ],
+            "commanderLegality": "legal",
+            "set": "blb",
+            "setName": "Bloomburrow",
+            "collectorNumber": "40",
+            "rarity": "rare",
+            "releasedAt": "2024-08-02",
+            "scryfallUri": "https://scryfall.com/card/blb/40/whiskervale-forerunner?utm_source=api"
+          }
+        },
+        {
+          "position": 19,
+          "oracleId": "94dd397e-0127-4c79-b9d9-22ce62ccdfe7",
+          "scryfallId": "f429617d-7134-4749-af8c-398eee68565d",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "trample"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-program-v27",
+                  "who": "you",
+                  "n": 5,
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "hand"
+                    },
+                    {
+                      "filter": {
+                        "what": "land",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "hand"
+                    }
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": "attacks",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-program-v27",
+                  "who": "you",
+                  "n": 5,
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "hand"
+                    },
+                    {
+                      "filter": {
+                        "what": "land",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "hand"
+                    }
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Trample\nWhenever this creature enters or attacks, mill five cards. You may put a creature card and/or a land card from among them into your hand.",
+          "raw": {
+            "name": "Sludge Titan",
+            "cost": "{4}{B/G}{B/G}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Zombie",
+              "Giant"
+            ],
+            "oracle": "Trample\nWhenever this creature enters or attacks, mill five cards. You may put a creature card and/or a land card from among them into your hand.",
+            "_ci": [
+              "B",
+              "G"
+            ],
+            "_oracleId": "94dd397e-0127-4c79-b9d9-22ce62ccdfe7",
+            "_scryfallId": "f429617d-7134-4749-af8c-398eee68565d",
+            "_layout": "normal",
+            "_set": "clu",
+            "_collectorNumber": "43",
+            "_rarity": "rare",
+            "power": "6",
+            "toughness": "6"
+          },
+          "catalog": {
+            "typeLine": "Creature — Zombie Giant",
+            "colorIdentity": [
+              "B",
+              "G"
+            ],
+            "colors": [
+              "B",
+              "G"
+            ],
+            "keywords": [
+              "Trample",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "clu",
+            "setName": "Ravnica: Clue Edition",
+            "collectorNumber": "43",
+            "rarity": "rare",
+            "releasedAt": "2024-02-23",
+            "scryfallUri": "https://scryfall.com/card/clu/43/sludge-titan?utm_source=api"
+          }
+        },
+        {
+          "position": 20,
+          "oracleId": "99eaac39-28d4-4af7-984b-f75fd37902ed",
+          "scryfallId": "8c628476-0987-47d4-8d2a-cfc3977b2357",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 6,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "battlefield-or-hand-v27",
+                      "reveal": true,
+                      "choiceBattlefieldV27": {
+                        "maxMv": 2,
+                        "haste": true
+                      }
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": true
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Look at the top six cards of your library. You may reveal a creature card from among them. If that card has mana value 2 or less, you may put it onto the battlefield and it gains haste until end of turn. If you didn't put the revealed card onto the battlefield this way, put it into your hand. Put the rest on the bottom of your library in a random order.",
+          "raw": {
+            "name": "Break Out",
+            "cost": "{R}{G}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Look at the top six cards of your library. You may reveal a creature card from among them. If that card has mana value 2 or less, you may put it onto the battlefield and it gains haste until end of turn. If you didn't put the revealed card onto the battlefield this way, put it into your hand. Put the rest on the bottom of your library in a random order.",
+            "_ci": [
+              "G",
+              "R"
+            ],
+            "_oracleId": "99eaac39-28d4-4af7-984b-f75fd37902ed",
+            "_scryfallId": "8c628476-0987-47d4-8d2a-cfc3977b2357",
+            "_layout": "normal",
+            "_set": "mkm",
+            "_collectorNumber": "190",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "G",
+              "R"
+            ],
+            "colors": [
+              "G",
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mkm",
+            "setName": "Murders at Karlov Manor",
+            "collectorNumber": "190",
+            "rarity": "uncommon",
+            "releasedAt": "2024-02-09",
+            "scryfallUri": "https://scryfall.com/card/mkm/190/break-out?utm_source=api"
+          }
+        },
+        {
+          "position": 21,
+          "oracleId": "a341eb75-e6a0-468b-8c83-61102249c648",
+          "scryfallId": "a22e8038-0706-47ec-bfda-f421a4912774",
+          "semanticClass": "permanent-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "room-doors-v20",
+              "doors": [
+                {
+                  "key": "left",
+                  "name": "Greenhouse",
+                  "cost": "{2}{G}",
+                  "implementation": [
+                    {
+                      "kind": "generic-static",
+                      "contract": "generic-continuous-effect",
+                      "scope": "filtered-permanents",
+                      "filters": [
+                        {
+                          "what": "land",
+                          "zone": "battlefield",
+                          "controller": "you",
+                          "min": 1
+                        }
+                      ],
+                      "grantedOperation": {
+                        "kind": "mana-source",
+                        "activationCost": {
+                          "tap": true
+                        },
+                        "produce": [
+                          {
+                            "W": 1
+                          },
+                          {
+                            "U": 1
+                          },
+                          {
+                            "B": 1
+                          },
+                          {
+                            "R": 1
+                          },
+                          {
+                            "G": 1
+                          }
+                        ],
+                        "contract": "mana-source"
+                      }
+                    }
+                  ],
+                  "implementedKeywords": [],
+                  "oracleContracts": [
+                    "generic-continuous-effect"
+                  ]
+                },
+                {
+                  "key": "right",
+                  "name": "Rickety Gazebo",
+                  "cost": "{3}{G}",
+                  "implementation": [
+                    {
+                      "kind": "generic-trigger",
+                      "event": "unlockDoor",
+                      "eventFilter": "self",
+                      "targets": [],
+                      "effects": [
+                        {
+                          "action": "mill-cohort-v25",
+                          "who": "you",
+                          "n": 4,
+                          "filter": {
+                            "what": "permanent",
+                            "zone": "graveyard",
+                            "controller": "you",
+                            "min": 1
+                          },
+                          "max": 2,
+                          "required": false,
+                          "destination": "hand",
+                          "tapped": false,
+                          "shuffle": false
+                        }
+                      ],
+                      "optional": false,
+                      "contract": "generic-trigger-effect"
+                    }
+                  ],
+                  "implementedKeywords": [],
+                  "oracleContracts": [
+                    "generic-trigger-effect"
+                  ]
+                }
+              ],
+              "contract": "room-doors-v20"
+            }
+          ],
+          "oracleContracts": [
+            "room-doors-v20"
+          ],
+          "rulesCore": "Greenhouse: Lands you control have \"{T}: Add one mana of any color.\"\nRickety Gazebo: When you unlock this door, mill four cards, then return up to two permanent cards from among them to your hand.",
+          "raw": {
+            "name": "Greenhouse // Rickety Gazebo",
+            "cost": "{2}{G}{3}{G}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Room"
+            ],
+            "oracle": "Greenhouse: Lands you control have \"{T}: Add one mana of any color.\"\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)\nRickety Gazebo: When you unlock this door, mill four cards, then return up to two permanent cards from among them to your hand.\n(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "a341eb75-e6a0-468b-8c83-61102249c648",
+            "_scryfallId": "a22e8038-0706-47ec-bfda-f421a4912774",
+            "_layout": "split",
+            "_set": "dsk",
+            "_collectorNumber": "181",
+            "_rarity": "uncommon",
+            "_produced": [
+              "B",
+              "G",
+              "R",
+              "U",
+              "W"
+            ]
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Room // Enchantment — Room",
+            "aliases": [
+              "Greenhouse",
+              "Rickety Gazebo"
+            ],
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "dsk",
+            "setName": "Duskmourn: House of Horror",
+            "collectorNumber": "181",
+            "rarity": "uncommon",
+            "releasedAt": "2024-09-27",
+            "scryfallUri": "https://scryfall.com/card/dsk/181/greenhouse-rickety-gazebo?utm_source=api"
+          }
+        },
+        {
+          "position": 22,
+          "oracleId": "a38ebf4a-064c-4517-a553-15f0a252c159",
+          "scryfallId": "48ce03b3-ec7c-46df-b89a-55405f3b5245",
+          "semanticClass": "permanent-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "saga-chapters",
+              "chapters": [
+                {
+                  "effects": [
+                    {
+                      "action": "mill",
+                      "who": "you",
+                      "n": 3
+                    }
+                  ],
+                  "targets": [],
+                  "optional": false
+                },
+                {
+                  "effects": [
+                    {
+                      "action": "move-to-hand",
+                      "target": 0
+                    }
+                  ],
+                  "targets": [
+                    {
+                      "what": "permanent",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 0,
+                      "snow": true,
+                      "max": 2
+                    }
+                  ],
+                  "optional": false
+                },
+                {
+                  "targets": [],
+                  "effects": [
+                    {
+                      "action": "graveyard-owner-shuffle-v27",
+                      "n": 3
+                    }
+                  ],
+                  "optional": false
+                }
+              ],
+              "contract": "saga-chapters"
+            }
+          ],
+          "oracleContracts": [
+            "saga-chapters"
+          ],
+          "rulesCore": "I — Mill three cards.\nII — Return up to two target snow permanent cards from your graveyard to your hand.\nIII — Choose three cards in each graveyard. Their owners shuffle those cards into their libraries.",
+          "raw": {
+            "name": "The Three Seasons",
+            "cost": "{G}{U}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Saga"
+            ],
+            "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Mill three cards.\nII — Return up to two target snow permanent cards from your graveyard to your hand.\nIII — Choose three cards in each graveyard. Their owners shuffle those cards into their libraries.",
+            "_ci": [
+              "G",
+              "U"
+            ],
+            "_oracleId": "a38ebf4a-064c-4517-a553-15f0a252c159",
+            "_scryfallId": "48ce03b3-ec7c-46df-b89a-55405f3b5245",
+            "_layout": "saga",
+            "_set": "khm",
+            "_collectorNumber": "231",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Saga",
+            "colorIdentity": [
+              "G",
+              "U"
+            ],
+            "colors": [
+              "G",
+              "U"
+            ],
+            "keywords": [
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "khm",
+            "setName": "Kaldheim",
+            "collectorNumber": "231",
+            "rarity": "uncommon",
+            "releasedAt": "2021-02-05",
+            "scryfallUri": "https://scryfall.com/card/khm/231/the-three-seasons?utm_source=api"
+          }
+        },
+        {
+          "position": 23,
+          "oracleId": "acfe54b3-10e3-4fdb-b874-d39fde96c40a",
+          "scryfallId": "880adfc8-69cf-4062-a804-e65b6cb6056d",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "optional": false,
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 20,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "land",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": "all",
+                      "required": false,
+                      "destination": "battlefield",
+                      "tapped": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "shuffle"
+                  }
+                },
+                {
+                  "action": "gain-life",
+                  "who": "you",
+                  "n": 8
+                }
+              ],
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Look at the top twenty cards of your library, put any number of land cards from among them onto the battlefield tapped, then shuffle. You gain 8 life.",
+          "raw": {
+            "name": "Through the Forest Gate",
+            "cost": "{6}{G}{G}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Look at the top twenty cards of your library, put any number of land cards from among them onto the battlefield tapped, then shuffle. You gain 8 life.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "acfe54b3-10e3-4fdb-b874-d39fde96c40a",
+            "_scryfallId": "880adfc8-69cf-4062-a804-e65b6cb6056d",
+            "_layout": "normal",
+            "_set": "hob",
+            "_collectorNumber": "137",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "hob",
+            "setName": "The Hobbit",
+            "collectorNumber": "137",
+            "rarity": "rare",
+            "releasedAt": "2026-08-14",
+            "scryfallUri": "https://scryfall.com/card/hob/137/through-the-forest-gate?utm_source=api"
+          }
+        },
+        {
+          "position": 24,
+          "oracleId": "ade8fc6f-efaa-4a24-96d8-99ef5026cd74",
+          "scryfallId": "0fbf9e1e-43f2-499e-844d-22fc10dbad06",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "menace"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "combatDamageToPlayer",
+              "eventFilter": {
+                "kind": "source-damage-player",
+                "opponent": false
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-cohort-v25",
+                  "who": "you",
+                  "n": {
+                    "kind": "event-amount"
+                  },
+                  "filter": {
+                    "what": "card",
+                    "zone": "graveyard",
+                    "controller": "you",
+                    "min": 1,
+                    "alternatives": [
+                      {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1,
+                        "legendary": true
+                      },
+                      {
+                        "what": "enchantment",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      }
+                    ]
+                  },
+                  "max": "all",
+                  "required": false,
+                  "destination": "hand",
+                  "tapped": false,
+                  "shuffle": false,
+                  "elseEffects": [
+                    {
+                      "action": "counter",
+                      "target": "self",
+                      "counter": "+1/+1",
+                      "n": 1
+                    }
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Menace\nWhenever Nashi deals combat damage to a player, you mill that many cards. You may put any number of legendary and/or enchantment cards from among them into your hand. If you put no cards into your hand this way, put a +1/+1 counter on Nashi.",
+          "raw": {
+            "name": "Nashi, Searcher in the Dark",
+            "cost": "{U}{B}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Rat",
+              "Ninja",
+              "Wizard"
+            ],
+            "oracle": "Menace\nWhenever Nashi deals combat damage to a player, you mill that many cards. You may put any number of legendary and/or enchantment cards from among them into your hand. If you put no cards into your hand this way, put a +1/+1 counter on Nashi.",
+            "_ci": [
+              "B",
+              "U"
+            ],
+            "_oracleId": "ade8fc6f-efaa-4a24-96d8-99ef5026cd74",
+            "_scryfallId": "0fbf9e1e-43f2-499e-844d-22fc10dbad06",
+            "_layout": "normal",
+            "_set": "dsk",
+            "_collectorNumber": "223",
+            "_rarity": "rare",
+            "power": "2",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Rat Ninja Wizard",
+            "colorIdentity": [
+              "B",
+              "U"
+            ],
+            "colors": [
+              "B",
+              "U"
+            ],
+            "keywords": [
+              "Menace",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "dsk",
+            "setName": "Duskmourn: House of Horror",
+            "collectorNumber": "223",
+            "rarity": "rare",
+            "releasedAt": "2024-09-27",
+            "scryfallUri": "https://scryfall.com/card/dsk/223/nashi-searcher-in-the-dark?utm_source=api"
+          }
+        },
+        {
+          "position": 25,
+          "oracleId": "b2c53124-e422-4786-8135-67c350d71a36",
+          "scryfallId": "c204b7ca-0904-40fa-b20c-92400fae20b8",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "double-faced-v8",
+              "layout": "modal_dfc",
+              "faces": [
+                {
+                  "key": "front",
+                  "raw": {
+                    "name": "Blex, Vexing Pest",
+                    "cost": "{2}{G}",
+                    "super": [
+                      "Legendary"
+                    ],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Pest"
+                    ],
+                    "oracle": "Other Pests, Bats, Insects, Snakes, and Spiders you control get +1/+1.\nWhen Blex dies, you gain 4 life.",
+                    "_ci": [
+                      "B",
+                      "G"
+                    ],
+                    "_oracleId": "b2c53124-e422-4786-8135-67c350d71a36",
+                    "_scryfallId": "c204b7ca-0904-40fa-b20c-92400fae20b8",
+                    "_layout": "normal",
+                    "_set": "stx",
+                    "_collectorNumber": "148",
+                    "_rarity": "mythic",
+                    "power": "3",
+                    "toughness": "2",
+                    "colorsOverride": [
+                      "G"
+                    ]
+                  },
+                  "semanticClass": "creature-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "generic-static",
+                      "contract": "generic-continuous-effect",
+                      "scope": "filtered-permanents",
+                      "filters": [
+                        {
+                          "what": "creature",
+                          "zone": "battlefield",
+                          "controller": "you",
+                          "min": 1,
+                          "subtype": "Pest"
+                        },
+                        {
+                          "what": "creature",
+                          "zone": "battlefield",
+                          "controller": "you",
+                          "min": 1,
+                          "subtype": "Bat"
+                        },
+                        {
+                          "what": "creature",
+                          "zone": "battlefield",
+                          "controller": "you",
+                          "min": 1,
+                          "subtype": "Insect"
+                        },
+                        {
+                          "what": "creature",
+                          "zone": "battlefield",
+                          "controller": "you",
+                          "min": 1,
+                          "subtype": "Snake"
+                        },
+                        {
+                          "what": "creature",
+                          "zone": "battlefield",
+                          "controller": "you",
+                          "min": 1,
+                          "subtype": "Spider"
+                        }
+                      ],
+                      "excludeSelf": true,
+                      "power": 1,
+                      "toughness": 1,
+                      "keywords": []
+                    },
+                    {
+                      "kind": "dies-life-gain",
+                      "n": 4,
+                      "contract": "dies-life-gain"
+                    }
+                  ],
+                  "oracleContracts": [
+                    "generic-continuous-effect",
+                    "dies-life-gain"
+                  ],
+                  "rulesCore": "Other Pests, Bats, Insects, Snakes, and Spiders you control get +1/+1.\nWhen this creature dies, you gain 4 life."
+                },
+                {
+                  "key": "back",
+                  "raw": {
+                    "name": "Search for Blex",
+                    "cost": "{2}{B}{B}",
+                    "super": [],
+                    "types": [
+                      "Sorcery"
+                    ],
+                    "subtypes": [],
+                    "oracle": "Look at the top five cards of your library. You may put any number of them into your hand and the rest into your graveyard. You lose 3 life for each card you put into your hand this way.",
+                    "_ci": [
+                      "B",
+                      "G"
+                    ],
+                    "_oracleId": "b2c53124-e422-4786-8135-67c350d71a36",
+                    "_scryfallId": "c204b7ca-0904-40fa-b20c-92400fae20b8",
+                    "_layout": "normal",
+                    "_set": "stx",
+                    "_collectorNumber": "148",
+                    "_rarity": "mythic",
+                    "colorsOverride": [
+                      "B"
+                    ]
+                  },
+                  "semanticClass": "spell-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "spell-generic",
+                      "targets": [],
+                      "effects": [
+                        {
+                          "action": "library-program-v27",
+                          "n": 5,
+                          "visibility": "look",
+                          "selections": [
+                            {
+                              "max": "all",
+                              "required": false,
+                              "destination": "hand"
+                            }
+                          ],
+                          "rest": {
+                            "destination": "graveyard"
+                          },
+                          "lifePerHandV27": 3
+                        }
+                      ],
+                      "optional": false,
+                      "contract": "spell-generic-effect"
+                    }
+                  ],
+                  "oracleContracts": [
+                    "spell-generic-effect"
+                  ],
+                  "rulesCore": "Look at the top five cards of your library. You may put any number of them into your hand and the rest into your graveyard. You lose 3 life for each card you put into your hand this way."
+                }
+              ],
+              "contract": "double-faced-card"
+            }
+          ],
+          "oracleContracts": [
+            "double-faced-card"
+          ],
+          "rulesCore": "Blex, Vexing Pest: Other Pests, Bats, Insects, Snakes, and Spiders you control get +1/+1.\nWhen Blex dies, you gain 4 life.\nSearch for Blex: Look at the top five cards of your library. You may put any number of them into your hand and the rest into your graveyard. You lose 3 life for each card you put into your hand this way.",
+          "raw": {
+            "name": "Blex, Vexing Pest // Search for Blex",
+            "cost": "{2}{G}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Pest"
+            ],
+            "oracle": "Other Pests, Bats, Insects, Snakes, and Spiders you control get +1/+1.\nWhen Blex dies, you gain 4 life.",
+            "_ci": [
+              "B",
+              "G"
+            ],
+            "_oracleId": "b2c53124-e422-4786-8135-67c350d71a36",
+            "_scryfallId": "c204b7ca-0904-40fa-b20c-92400fae20b8",
+            "_layout": "modal_dfc",
+            "_set": "stx",
+            "_collectorNumber": "148",
+            "_rarity": "mythic",
+            "power": "3",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Pest // Sorcery",
+            "aliases": [
+              "Blex, Vexing Pest",
+              "Search for Blex"
+            ],
+            "colorIdentity": [
+              "B",
+              "G"
+            ],
+            "colors": [],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "stx",
+            "setName": "Strixhaven: School of Mages",
+            "collectorNumber": "148",
+            "rarity": "mythic",
+            "releasedAt": "2021-04-23",
+            "scryfallUri": "https://scryfall.com/card/stx/148/blex-vexing-pest-search-for-blex?utm_source=api"
+          }
+        },
+        {
+          "position": 26,
+          "oracleId": "bbf90463-280a-413e-b8a3-4577dcf11e54",
+          "scryfallId": "c808a8ec-895c-4777-9e11-e83ce34eddef",
+          "semanticClass": "enchantment-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "upkeep",
+              "eventFilter": "your-upkeep",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 1,
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": true,
+                      "destination": "battlefield",
+                      "hasteUntilEotV27": true,
+                      "sacrificeNextEndV27": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "stay"
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "At the beginning of your upkeep, reveal the top card of your library. If it's a creature card, put it onto the battlefield. That creature gains haste until end of turn. Sacrifice it at the beginning of the next end step.",
+          "raw": {
+            "name": "Killer Instinct",
+            "cost": "{4}{R}{G}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [],
+            "oracle": "At the beginning of your upkeep, reveal the top card of your library. If it's a creature card, put it onto the battlefield. That creature gains haste until end of turn. Sacrifice it at the beginning of the next end step.",
+            "_ci": [
+              "G",
+              "R"
+            ],
+            "_oracleId": "bbf90463-280a-413e-b8a3-4577dcf11e54",
+            "_scryfallId": "c808a8ec-895c-4777-9e11-e83ce34eddef",
+            "_layout": "normal",
+            "_set": "gpt",
+            "_collectorNumber": "120",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Enchantment",
+            "colorIdentity": [
+              "G",
+              "R"
+            ],
+            "colors": [
+              "G",
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "gpt",
+            "setName": "Guildpact",
+            "collectorNumber": "120",
+            "rarity": "rare",
+            "releasedAt": "2006-02-03",
+            "scryfallUri": "https://scryfall.com/card/gpt/120/killer-instinct?utm_source=api"
+          }
+        },
+        {
+          "position": 27,
+          "oracleId": "c027f369-e445-46a8-94ad-93396321295a",
+          "scryfallId": "5f12e3b3-a260-4913-b13a-7fbb753dd702",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "postcombatMain",
+              "eventFilter": {
+                "kind": "observed-player-v8",
+                "mainOrdinal": 2
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": {
+                    "kind": "source-stat",
+                    "stat": "power"
+                  },
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1,
+                        "alternatives": [
+                          {
+                            "what": "creature",
+                            "zone": "graveyard",
+                            "controller": "you",
+                            "min": 1
+                          },
+                          {
+                            "what": "card",
+                            "zone": "graveyard",
+                            "subtype": "Vehicle",
+                            "controller": "you",
+                            "min": 1
+                          }
+                        ]
+                      },
+                      "max": "all",
+                      "required": false,
+                      "destination": "hand",
+                      "distinctPowersV27": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": true
+                  }
+                }
+              ],
+              "optional": false,
+              "condition": {
+                "kind": "source-status",
+                "status": "tapped"
+              },
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "At the beginning of your second main phase, if Rip is tapped, reveal the top X cards of your library, where X is its power. Put any number of creature and/or Vehicle cards with different powers from among them into your hand. Put the rest on the bottom of your library in a random order.",
+          "raw": {
+            "name": "Rip, Spawn Hunter",
+            "cost": "{2}{G}{W}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Human",
+              "Survivor"
+            ],
+            "oracle": "Survival — At the beginning of your second main phase, if Rip is tapped, reveal the top X cards of your library, where X is its power. Put any number of creature and/or Vehicle cards with different powers from among them into your hand. Put the rest on the bottom of your library in a random order.",
+            "_ci": [
+              "G",
+              "W"
+            ],
+            "_oracleId": "c027f369-e445-46a8-94ad-93396321295a",
+            "_scryfallId": "5f12e3b3-a260-4913-b13a-7fbb753dd702",
+            "_layout": "normal",
+            "_set": "dsk",
+            "_collectorNumber": "228",
+            "_rarity": "rare",
+            "power": "4",
+            "toughness": "4"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Human Survivor",
+            "colorIdentity": [
+              "G",
+              "W"
+            ],
+            "colors": [
+              "G",
+              "W"
+            ],
+            "keywords": [
+              "Survival"
+            ],
+            "commanderLegality": "legal",
+            "set": "dsk",
+            "setName": "Duskmourn: House of Horror",
+            "collectorNumber": "228",
+            "rarity": "rare",
+            "releasedAt": "2024-09-27",
+            "scryfallUri": "https://scryfall.com/card/dsk/228/rip-spawn-hunter?utm_source=api"
+          }
+        },
+        {
+          "position": 28,
+          "oracleId": "c2fb8d4c-b973-42a0-9e9c-7abd5cc2c22e",
+          "scryfallId": "ee35f96c-6060-4456-897e-27b74c8c2137",
+          "semanticClass": "aura-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "aura-target",
+              "what": "creature",
+              "contract": "aura-targeting"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": "upkeep",
+              "eventFilter": "your-upkeep",
+              "optional": true,
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 5,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1,
+                        "sharesSourceCreatureTypeV27": "enchanted"
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "battlefield"
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": false
+                  }
+                }
+              ],
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "aura-targeting",
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Enchant creature\nAt the beginning of your upkeep, you may look at the top five cards of your library. If you do, you may put a creature card that shares a creature type with enchanted creature from among them onto the battlefield, then you put the rest of those cards on the bottom of your library in any order.",
+          "raw": {
+            "name": "Call to the Kindred",
+            "cost": "{3}{U}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Aura"
+            ],
+            "oracle": "Enchant creature\nAt the beginning of your upkeep, you may look at the top five cards of your library. If you do, you may put a creature card that shares a creature type with enchanted creature from among them onto the battlefield, then you put the rest of those cards on the bottom of your library in any order.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "c2fb8d4c-b973-42a0-9e9c-7abd5cc2c22e",
+            "_scryfallId": "ee35f96c-6060-4456-897e-27b74c8c2137",
+            "_layout": "normal",
+            "_set": "dka",
+            "_collectorNumber": "30",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Aura",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [
+              "Enchant"
+            ],
+            "commanderLegality": "legal",
+            "set": "dka",
+            "setName": "Dark Ascension",
+            "collectorNumber": "30",
+            "rarity": "rare",
+            "releasedAt": "2012-02-03",
+            "scryfallUri": "https://scryfall.com/card/dka/30/call-to-the-kindred?utm_source=api"
+          }
+        },
+        {
+          "position": 29,
+          "oracleId": "c92d6f26-5856-42dc-9ee5-21292d78a1fb",
+          "scryfallId": "a2cda10b-7cd5-4cf5-87bd-c3b8c6aa2b47",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "double-faced-v8",
+              "layout": "transform",
+              "faces": [
+                {
+                  "key": "front",
+                  "raw": {
+                    "name": "Deathbonnet Sprout",
+                    "cost": "{G}",
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Fungus"
+                    ],
+                    "oracle": "At the beginning of your upkeep, mill a card. Then if there are three or more creature cards in your graveyard, transform this creature. (To mill a card, put the top card of your library into your graveyard.)",
+                    "_ci": [
+                      "G"
+                    ],
+                    "_oracleId": "c92d6f26-5856-42dc-9ee5-21292d78a1fb",
+                    "_scryfallId": "a2cda10b-7cd5-4cf5-87bd-c3b8c6aa2b47",
+                    "_layout": "normal",
+                    "_set": "mid",
+                    "_collectorNumber": "181",
+                    "_rarity": "uncommon",
+                    "power": "1",
+                    "toughness": "1",
+                    "colorsOverride": [
+                      "G"
+                    ]
+                  },
+                  "semanticClass": "creature-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "generic-trigger",
+                      "event": "upkeep",
+                      "effects": [
+                        {
+                          "action": "mill",
+                          "who": "you",
+                          "n": 1
+                        },
+                        {
+                          "action": "conditional",
+                          "condition": {
+                            "kind": "count-comparison",
+                            "count": {
+                              "kind": "count",
+                              "zone": "graveyard",
+                              "what": "creature",
+                              "controller": "you"
+                            },
+                            "min": 3
+                          },
+                          "effects": [
+                            {
+                              "action": "transform-self"
+                            }
+                          ]
+                        }
+                      ],
+                      "targets": [],
+                      "optional": false,
+                      "contract": "generic-trigger-effect",
+                      "eventFilter": "your-upkeep"
+                    }
+                  ],
+                  "oracleContracts": [
+                    "generic-trigger-effect"
+                  ],
+                  "rulesCore": "At the beginning of your upkeep, mill a card. If there are three or more creature cards in your graveyard, transform this creature."
+                },
+                {
+                  "key": "back",
+                  "raw": {
+                    "name": "Deathbonnet Hulk",
+                    "cost": null,
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Fungus",
+                      "Horror"
+                    ],
+                    "oracle": "At the beginning of your upkeep, you may exile a card from a graveyard. If a creature card was exiled this way, put a +1/+1 counter on this creature.",
+                    "_ci": [
+                      "G"
+                    ],
+                    "_oracleId": "c92d6f26-5856-42dc-9ee5-21292d78a1fb",
+                    "_scryfallId": "a2cda10b-7cd5-4cf5-87bd-c3b8c6aa2b47",
+                    "_layout": "normal",
+                    "_set": "mid",
+                    "_collectorNumber": "181",
+                    "_rarity": "uncommon",
+                    "power": "3",
+                    "toughness": "3",
+                    "colorsOverride": [
+                      "G"
+                    ]
+                  },
+                  "semanticClass": "creature-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "generic-trigger",
+                      "event": "upkeep",
+                      "eventFilter": "your-upkeep",
+                      "targets": [],
+                      "effects": [
+                        {
+                          "action": "choose-grave-exile-v27",
+                          "filter": {
+                            "what": "card",
+                            "zone": "graveyard",
+                            "controller": "any",
+                            "min": 1
+                          },
+                          "ifCreatureEffects": [
+                            {
+                              "action": "counter",
+                              "target": "self",
+                              "counter": "+1/+1",
+                              "n": 1
+                            }
+                          ]
+                        }
+                      ],
+                      "optional": false,
+                      "contract": "generic-trigger-effect"
+                    }
+                  ],
+                  "oracleContracts": [
+                    "generic-trigger-effect"
+                  ],
+                  "rulesCore": "At the beginning of your upkeep, you may exile a card from a graveyard. If a creature card was exiled this way, put a +1/+1 counter on this creature."
+                }
+              ],
+              "contract": "double-faced-card"
+            }
+          ],
+          "oracleContracts": [
+            "double-faced-card"
+          ],
+          "rulesCore": "Deathbonnet Sprout: At the beginning of your upkeep, mill a card. Then if there are three or more creature cards in your graveyard, transform this creature.\nDeathbonnet Hulk: At the beginning of your upkeep, you may exile a card from a graveyard. If a creature card was exiled this way, put a +1/+1 counter on this creature.",
+          "raw": {
+            "name": "Deathbonnet Sprout // Deathbonnet Hulk",
+            "cost": "{G}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Fungus"
+            ],
+            "oracle": "At the beginning of your upkeep, mill a card. Then if there are three or more creature cards in your graveyard, transform this creature. (To mill a card, put the top card of your library into your graveyard.)",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "c92d6f26-5856-42dc-9ee5-21292d78a1fb",
+            "_scryfallId": "a2cda10b-7cd5-4cf5-87bd-c3b8c6aa2b47",
+            "_layout": "transform",
+            "_set": "mid",
+            "_collectorNumber": "181",
+            "_rarity": "uncommon",
+            "power": "1",
+            "toughness": "1"
+          },
+          "catalog": {
+            "typeLine": "Creature — Fungus // Creature — Fungus Horror",
+            "aliases": [
+              "Deathbonnet Sprout",
+              "Deathbonnet Hulk"
+            ],
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [],
+            "keywords": [
+              "Transform",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "mid",
+            "setName": "Innistrad: Midnight Hunt",
+            "collectorNumber": "181",
+            "rarity": "uncommon",
+            "releasedAt": "2021-09-24",
+            "scryfallUri": "https://scryfall.com/card/mid/181/deathbonnet-sprout-deathbonnet-hulk?utm_source=api"
+          }
+        },
+        {
+          "position": 30,
+          "oracleId": "cb8289e9-1e59-41f1-a994-6e34d2da2da2",
+          "scryfallId": "88667198-3bec-413c-b41e-de96abc8db7b",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "trample",
+            "haste"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "combatDamageToPlayer",
+              "eventFilter": {
+                "kind": "source-damage-player",
+                "opponent": false
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "mill-program-v27",
+                  "who": "you",
+                  "n": {
+                    "kind": "event-amount"
+                  },
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "subtype": "Saga",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "battlefield"
+                    },
+                    {
+                      "filter": {
+                        "what": "land",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "battlefield"
+                    }
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Trample, haste\nWhenever Eivor deals combat damage to a player, you mill that many cards. You may put a Saga card and/or a land card from among them onto the battlefield.",
+          "raw": {
+            "name": "Eivor, Wolf-Kissed",
+            "cost": "{3}{R}{G}{W}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Human",
+              "Assassin",
+              "Warrior"
+            ],
+            "oracle": "Trample, haste\nWhenever Eivor deals combat damage to a player, you mill that many cards. You may put a Saga card and/or a land card from among them onto the battlefield.",
+            "_ci": [
+              "G",
+              "R",
+              "W"
+            ],
+            "_oracleId": "cb8289e9-1e59-41f1-a994-6e34d2da2da2",
+            "_scryfallId": "88667198-3bec-413c-b41e-de96abc8db7b",
+            "_layout": "normal",
+            "_set": "acr",
+            "_collectorNumber": "54",
+            "_rarity": "mythic",
+            "power": "7",
+            "toughness": "6"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Human Assassin Warrior",
+            "colorIdentity": [
+              "G",
+              "R",
+              "W"
+            ],
+            "colors": [
+              "G",
+              "R",
+              "W"
+            ],
+            "keywords": [
+              "Haste",
+              "Trample",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "acr",
+            "setName": "Assassin's Creed",
+            "collectorNumber": "54",
+            "rarity": "mythic",
+            "releasedAt": "2024-07-05",
+            "scryfallUri": "https://scryfall.com/card/acr/54/eivor-wolf-kissed?utm_source=api"
+          }
+        },
+        {
+          "position": 31,
+          "oracleId": "ce84891f-07e1-4c72-a7b8-93b6afd1293e",
+          "scryfallId": "a1e04eed-9a6c-491b-8f1f-1c76ac40452d",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [],
+              "optional": false,
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": 5,
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "filter": {
+                        "what": "card",
+                        "zone": "graveyard",
+                        "controller": "you",
+                        "min": 1,
+                        "alternatives": [
+                          {
+                            "what": "land",
+                            "zone": "graveyard",
+                            "controller": "you",
+                            "min": 1
+                          },
+                          {
+                            "what": "card",
+                            "zone": "graveyard",
+                            "controller": "you",
+                            "min": 1,
+                            "doubleFacedV27": true
+                          }
+                        ]
+                      },
+                      "max": 1,
+                      "required": false,
+                      "destination": "hand",
+                      "reveal": true
+                    }
+                  ],
+                  "rest": {
+                    "destination": "bottom",
+                    "random": true
+                  }
+                }
+              ],
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "When this creature enters, look at the top five cards of your library. You may reveal a land or double-faced card from among them and put that card into your hand. Put the rest on the bottom of your library in a random order.",
+          "raw": {
+            "name": "Overgrown Pest",
+            "cost": "{2}{G}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Pest"
+            ],
+            "oracle": "When this creature enters, look at the top five cards of your library. You may reveal a land or double-faced card from among them and put that card into your hand. Put the rest on the bottom of your library in a random order.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "ce84891f-07e1-4c72-a7b8-93b6afd1293e",
+            "_scryfallId": "a1e04eed-9a6c-491b-8f1f-1c76ac40452d",
+            "_layout": "normal",
+            "_set": "mom",
+            "_collectorNumber": "197",
+            "_rarity": "common",
+            "power": "2",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Creature — Pest",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mom",
+            "setName": "March of the Machine",
+            "collectorNumber": "197",
+            "rarity": "common",
+            "releasedAt": "2023-04-21",
+            "scryfallUri": "https://scryfall.com/card/mom/197/overgrown-pest?utm_source=api"
+          }
+        },
+        {
+          "position": 32,
+          "oracleId": "d37effd3-d194-4609-9994-6d70038a68f9",
+          "scryfallId": "16c0bb08-36b3-41e2-a5a9-2fcd6bb49beb",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "double-faced-v8",
+              "layout": "transform",
+              "faces": [
+                {
+                  "key": "front",
+                  "raw": {
+                    "name": "Grizzled Angler",
+                    "cost": "{2}{U}",
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Human"
+                    ],
+                    "oracle": "{T}: Mill two cards. Then if there is a colorless creature card in your graveyard, transform this creature. (To mill two cards, put the top two cards of your library into your graveyard.)",
+                    "_ci": [
+                      "U"
+                    ],
+                    "_oracleId": "d37effd3-d194-4609-9994-6d70038a68f9",
+                    "_scryfallId": "16c0bb08-36b3-41e2-a5a9-2fcd6bb49beb",
+                    "_layout": "normal",
+                    "_set": "inr",
+                    "_collectorNumber": "67",
+                    "_rarity": "uncommon",
+                    "power": "2",
+                    "toughness": "3",
+                    "colorsOverride": [
+                      "U"
+                    ]
+                  },
+                  "semanticClass": "creature-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "generic-ability",
+                      "cost": {
+                        "tap": true
+                      },
+                      "effects": [
+                        {
+                          "action": "mill",
+                          "who": "you",
+                          "n": 2
+                        },
+                        {
+                          "action": "conditional",
+                          "condition": {
+                            "kind": "count-comparison",
+                            "count": {
+                              "kind": "count",
+                              "zone": "graveyard",
+                              "what": "card",
+                              "filters": [
+                                {
+                                  "what": "creature",
+                                  "zone": "graveyard",
+                                  "controller": "any",
+                                  "min": 1,
+                                  "color": "colorless"
+                                }
+                              ],
+                              "controller": "you"
+                            },
+                            "min": 1
+                          },
+                          "effects": [
+                            {
+                              "action": "transform-self"
+                            }
+                          ]
+                        }
+                      ],
+                      "targets": [],
+                      "sorceryOnly": false,
+                      "contract": "generic-activated-effect",
+                      "onceEachTurn": false
+                    }
+                  ],
+                  "oracleContracts": [
+                    "generic-activated-effect"
+                  ],
+                  "rulesCore": "{T}: Mill two cards. If there is a colorless creature card in your graveyard, transform this creature."
+                },
+                {
+                  "key": "back",
+                  "raw": {
+                    "name": "Grisly Anglerfish",
+                    "cost": null,
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Eldrazi",
+                      "Fish"
+                    ],
+                    "oracle": "{6}: Creatures your opponents control attack this turn if able.",
+                    "_ci": [
+                      "U"
+                    ],
+                    "_oracleId": "d37effd3-d194-4609-9994-6d70038a68f9",
+                    "_scryfallId": "16c0bb08-36b3-41e2-a5a9-2fcd6bb49beb",
+                    "_layout": "normal",
+                    "_set": "inr",
+                    "_collectorNumber": "67",
+                    "_rarity": "uncommon",
+                    "power": "4",
+                    "toughness": "5",
+                    "colorsOverride": []
+                  },
+                  "semanticClass": "creature-template",
+                  "implementedKeywords": [],
+                  "implementation": [
+                    {
+                      "kind": "generic-ability",
+                      "cost": {
+                        "mana": "{6}"
+                      },
+                      "targets": [],
+                      "effects": [
+                        {
+                          "action": "combat-restriction",
+                          "filters": [
+                            {
+                              "what": "creature",
+                              "zone": "battlefield",
+                              "controller": "opponent",
+                              "min": 1
+                            }
+                          ],
+                          "duration": "eot",
+                          "restriction": {
+                            "mustAttack": true
+                          }
+                        }
+                      ],
+                      "optional": false,
+                      "onceEachTurn": false,
+                      "sorceryOnly": false,
+                      "contract": "generic-activated-effect"
+                    }
+                  ],
+                  "oracleContracts": [
+                    "generic-activated-effect"
+                  ],
+                  "rulesCore": "{6}: Creatures your opponents control attack this turn if able."
+                }
+              ],
+              "contract": "double-faced-card"
+            }
+          ],
+          "oracleContracts": [
+            "double-faced-card"
+          ],
+          "rulesCore": "Grizzled Angler: {T}: Mill two cards. Then if there is a colorless creature card in your graveyard, transform this creature.\nGrisly Anglerfish: {6}: Creatures your opponents control attack this turn if able.",
+          "raw": {
+            "name": "Grizzled Angler // Grisly Anglerfish",
+            "cost": "{2}{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Human"
+            ],
+            "oracle": "{T}: Mill two cards. Then if there is a colorless creature card in your graveyard, transform this creature. (To mill two cards, put the top two cards of your library into your graveyard.)",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "d37effd3-d194-4609-9994-6d70038a68f9",
+            "_scryfallId": "16c0bb08-36b3-41e2-a5a9-2fcd6bb49beb",
+            "_layout": "transform",
+            "_set": "inr",
+            "_collectorNumber": "67",
+            "_rarity": "uncommon",
+            "power": "2",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Creature — Human // Creature — Eldrazi Fish",
+            "aliases": [
+              "Grizzled Angler",
+              "Grisly Anglerfish"
+            ],
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [],
+            "keywords": [
+              "Transform",
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "inr",
+            "setName": "Innistrad Remastered",
+            "collectorNumber": "67",
+            "rarity": "uncommon",
+            "releasedAt": "2025-01-24",
+            "scryfallUri": "https://scryfall.com/card/inr/67/grizzled-angler-grisly-anglerfish?utm_source=api"
+          }
+        },
+        {
+          "position": 33,
+          "oracleId": "db8b4869-f898-40ad-bbad-62390a02d1b1",
+          "scryfallId": "777fc599-8de7-44d2-8fdd-9bddf5948a0c",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "optional": false,
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "n": {
+                    "kind": "product-v16",
+                    "left": "X",
+                    "right": 2
+                  },
+                  "visibility": "look",
+                  "selections": [
+                    {
+                      "max": "X",
+                      "required": true,
+                      "destination": "hand",
+                      "reveal": false
+                    }
+                  ],
+                  "rest": {
+                    "destination": "graveyard",
+                    "random": false
+                  }
+                },
+                {
+                  "action": "lose-life",
+                  "who": "you",
+                  "n": "X"
+                }
+              ],
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Look at twice X cards from the top of your library. Put X cards from among them into your hand and the rest into your graveyard. You lose X life.",
+          "raw": {
+            "name": "Stargaze",
+            "cost": "{X}{B}{B}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Look at twice X cards from the top of your library. Put X cards from among them into your hand and the rest into your graveyard. You lose X life.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "db8b4869-f898-40ad-bbad-62390a02d1b1",
+            "_scryfallId": "777fc599-8de7-44d2-8fdd-9bddf5948a0c",
+            "_layout": "normal",
+            "_set": "blb",
+            "_collectorNumber": "114",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "blb",
+            "setName": "Bloomburrow",
+            "collectorNumber": "114",
+            "rarity": "uncommon",
+            "releasedAt": "2024-08-02",
+            "scryfallUri": "https://scryfall.com/card/blb/114/stargaze?utm_source=api"
+          }
+        },
+        {
+          "position": 34,
+          "oracleId": "e74efcf2-d77f-4fb5-9027-77e462ec829e",
+          "scryfallId": "d0c18ffe-a2b9-40df-a6b4-a9381e6dc467",
+          "semanticClass": "permanent-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "saga-chapters",
+              "chapters": [
+                {
+                  "targets": [],
+                  "effects": [
+                    {
+                      "action": "mill-grave-power-reflexive-v27",
+                      "n": 5,
+                      "reflexiveTargets": [
+                        {
+                          "what": "creature",
+                          "zone": "battlefield",
+                          "controller": "any",
+                          "min": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "optional": false
+                },
+                {
+                  "effects": [
+                    {
+                      "action": "pump",
+                      "target": 0,
+                      "power": 2,
+                      "toughness": 2,
+                      "keywords": []
+                    }
+                  ],
+                  "targets": [
+                    {
+                      "what": "creature",
+                      "zone": "battlefield",
+                      "controller": "you",
+                      "min": 1,
+                      "max": 1
+                    }
+                  ],
+                  "optional": false
+                },
+                {
+                  "effects": [
+                    {
+                      "action": "move-to-hand",
+                      "target": 0
+                    }
+                  ],
+                  "targets": [
+                    {
+                      "what": "creature",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "max": 1
+                    }
+                  ],
+                  "optional": false
+                }
+              ],
+              "contract": "saga-chapters"
+            }
+          ],
+          "oracleContracts": [
+            "saga-chapters"
+          ],
+          "rulesCore": "I — Mill five cards. When you do, this Saga deals damage equal to the greatest power among creature cards in your graveyard to target creature.\nII — Target creature you control gets +2/+2 until end of turn.\nIII — Return target creature card from your graveyard to your hand.",
+          "raw": {
+            "name": "Kraven's Last Hunt",
+            "cost": "{3}{G}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Saga"
+            ],
+            "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Mill five cards. When you do, this Saga deals damage equal to the greatest power among creature cards in your graveyard to target creature.\nII — Target creature you control gets +2/+2 until end of turn.\nIII — Return target creature card from your graveyard to your hand.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "e74efcf2-d77f-4fb5-9027-77e462ec829e",
+            "_scryfallId": "d0c18ffe-a2b9-40df-a6b4-a9381e6dc467",
+            "_layout": "saga",
+            "_set": "spm",
+            "_collectorNumber": "105",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Saga",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Mill"
+            ],
+            "commanderLegality": "legal",
+            "set": "spm",
+            "setName": "Marvel's Spider-Man",
+            "collectorNumber": "105",
+            "rarity": "rare",
+            "releasedAt": "2025-09-26",
+            "scryfallUri": "https://scryfall.com/card/spm/105/kravens-last-hunt?utm_source=api"
+          }
+        },
+        {
+          "position": 35,
+          "oracleId": "f0031ef3-d5f5-4114-97aa-4beabd11ff8d",
+          "scryfallId": "6b1bab36-3fb7-48f3-b3ed-90863d244641",
+          "semanticClass": "equipment-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "attacks",
+              "eventFilter": {
+                "kind": "attached-object"
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v27",
+                  "visibility": "reveal",
+                  "selections": [],
+                  "rest": {
+                    "destination": "graveyard"
+                  },
+                  "who": "captured-defender-v27",
+                  "until": {
+                    "filter": {
+                      "what": "land",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    "n": 1
+                  },
+                  "equippedCohortPumpV27": true
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            },
+            {
+              "kind": "equipment-equip",
+              "cost": "{2}",
+              "contract": "equipment-attach-ability"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect",
+            "equipment-attach-ability"
+          ],
+          "rulesCore": "Whenever equipped creature attacks, defending player reveals cards from the top of their library until they reveal a land card. The creature gets +1/+0 until end of turn for each card revealed this way. That player puts the revealed cards into their graveyard.\nEquip {2}",
+          "raw": {
+            "name": "Trepanation Blade",
+            "cost": "{3}",
+            "super": [],
+            "types": [
+              "Artifact"
+            ],
+            "subtypes": [
+              "Equipment"
+            ],
+            "oracle": "Whenever equipped creature attacks, defending player reveals cards from the top of their library until they reveal a land card. The creature gets +1/+0 until end of turn for each card revealed this way. That player puts the revealed cards into their graveyard.\nEquip {2}",
+            "_ci": [],
+            "_oracleId": "f0031ef3-d5f5-4114-97aa-4beabd11ff8d",
+            "_scryfallId": "6b1bab36-3fb7-48f3-b3ed-90863d244641",
+            "_layout": "normal",
+            "_set": "ima",
+            "_collectorNumber": "231",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Artifact — Equipment",
+            "colorIdentity": [],
+            "colors": [],
+            "keywords": [
+              "Equip"
+            ],
+            "commanderLegality": "legal",
+            "set": "ima",
+            "setName": "Iconic Masters",
+            "collectorNumber": "231",
+            "rarity": "uncommon",
+            "releasedAt": "2017-11-17",
+            "scryfallUri": "https://scryfall.com/card/ima/231/trepanation-blade?utm_source=api"
+          }
+        }
+      ],
+      "catalogSummary": {
+        "selected": 35
+      }
+    }
+  ]
+}

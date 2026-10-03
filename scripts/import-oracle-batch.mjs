@@ -28,6 +28,11 @@ import * as v22 from './oracle-extensions-v22.mjs';
 import * as v23 from './oracle-extensions-v23.mjs';
 import * as v24 from './oracle-extensions-v24.mjs';
 import * as v25 from './oracle-extensions-v25.mjs';
+import * as v26 from './oracle-extensions-v26.mjs';
+import * as v27 from './oracle-extensions-v27.mjs';
+import * as v28 from './oracle-extensions-v28.mjs';
+import * as v29 from './oracle-extensions-v29.mjs';
+import * as v30 from './oracle-extensions-v30.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
 
@@ -2134,8 +2139,8 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
-  if ([10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].includes(compilerVersion)) {
-    const grammar = compilerVersion === 25 ? v25 : compilerVersion === 24 ? v24 : compilerVersion === 23 ? v23 : compilerVersion === 22 ? v22 : compilerVersion === 21 ? v21 : compilerVersion === 20 ? v20 : compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
+  if ([10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30].includes(compilerVersion)) {
+    const grammar = compilerVersion === 30 ? v30 : compilerVersion === 29 ? v29 : compilerVersion === 28 ? v28 : compilerVersion === 27 ? v27 : compilerVersion === 26 ? v26 : compilerVersion === 25 ? v25 : compilerVersion === 24 ? v24 : compilerVersion === 23 ? v23 : compilerVersion === 22 ? v22 : compilerVersion === 21 ? v21 : compilerVersion === 20 ? v20 : compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
     const frozen = semanticClass(card, {compilerVersion: compilerVersion - 1, memoize});
     if (frozen.semanticClass) return frozen;
     const normalized = grammar.normalizeCard(card);
@@ -2797,7 +2802,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
   const outputStatePath = path.join(outputReportDir, 'state.json');
   const selectedLimit = validateLimit(argValue(args, 'limit', String(DEFAULT_LIMIT)));
   const compilerVersion=Number(argValue(args,'compiler-version',String(SEMANTIC_COMPILER_VERSION)));
-  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>25)throw new Error('Oracle compiler version must be an integer from 1 to 25.');
+  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>30)throw new Error('Oracle compiler version must be an integer from 1 to 30.');
   const state = readState(outputStatePath, io);
   const sequence = batchNumberFrom(state, args);
   const id = batchId(sequence);

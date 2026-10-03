@@ -2,6 +2,11 @@
 .env*
 .gstack/
 .vercel/
+.local/
+AGENTS.md
+RAD-NA-OVOM-RACUNARU.md
+POKRENI-MTG.cmd
+ZAUSTAVI-MTG.cmd
 node_modules/
 output/
 dist/commander-simulator-public.zip

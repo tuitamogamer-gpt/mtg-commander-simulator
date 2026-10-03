@@ -5328,7 +5328,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='splice-v11'){
+      if(hintKind==='entryForm'){
+        const form=q.aiHint.forms?.[Number(action.value)];
+        if(form){
+          const keywords=form.keywords||[];
+          breakdown.choice=form.power*(keywords.includes('defender')?0:1.2)+form.toughness*0.5+
+            (keywords.includes('flying')?2.5:0)+(keywords.includes('vigilance')?1:0);
+        }
+      } else if(hintKind==='splice-v11'){
         const extra=action.option?.card;
         breakdown.choice=extra?6-MTG.mv(extra.def.oracleSpliceV11.cost)*0.4:0;
         for(const spec of extra?.def.targets||[]){
@@ -5915,7 +5922,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }, 0);
       }
     } else if (action.kind === 'chooseX') {
-      if(q?.aiHint?.kind==='oracleResolutionX'&&q.aiHint.drawMultiplier){
+      if(q?.aiHint?.kind==='entryNumber'){
+        const number=Number(action.value)||0;
+        breakdown.choice=number===2?5:number===3?4:number===1||number===4?3:1;
+      } else if(q?.aiHint?.kind==='entryLifePT'){
+        const amount=Number(action.value)||0;
+        breakdown.choice=10*Math.log1p(amount);
+        breakdown.safety-=amount*(player.life<=8?5:player.life<=15?1.2:0.55);
+        if(amount>=player.life)breakdown.safety-=1000;
+      } else if(q?.aiHint?.kind==='oracleResolutionX'&&q.aiHint.drawMultiplier){
         const draws=action.value*q.aiHint.drawMultiplier+(q.aiHint.drawOffset||0);
         const doublers=game.bf().filter(card=>card.ctrl===player&&card.def.drawDouble).length;
         const extra=draws>0&&!player.hand.length&&game.bf().some(card=>card.ctrl===player&&card.def.drawWhileEmptyExtra)?1:0;

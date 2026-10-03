@@ -49,9 +49,9 @@ Repository inventory checked on **30 September 2026**:
 | Measure | Available |
 | --- | ---: |
 | Built-in precon decks | **175**, each with 100 cards |
-| Runtime card definitions | **26,192** |
-| Definitions eligible for deck import | **26,191** |
-| Generic Oracle batches | **222**, containing 22,200 definitions |
+| Runtime card definitions | **26,792** |
+| Definitions eligible for deck import | **26,791** |
+| Generic Oracle batches | **228**, containing 22,800 definitions |
 | Dedicated commander videos | **28**, across the original 27 decks |
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
@@ -60,7 +60,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
-- **400 more Oracle cards so far:** batches 0219–0222, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is in progress; 600 remain outstanding. [Latest validation report](reports/oracle-import/validation-0222.md)
+- **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is complete. [Latest validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
 - **1,000 more Oracle cards:** batches 0209–0218, with executable rules, recorded source provenance, and human/local-AI verification. [Validation report](reports/oracle-import/validation-0209-0218.md)
@@ -708,6 +708,12 @@ These reports describe their dated imports and checks. Use the [generated catalo
 | [Oracle 0220](reports/oracle-import/validation-0220.md) | Oracle batch 0220; 200 of the requested 1,000 cards imported so far. |
 | [Oracle 0221](reports/oracle-import/validation-0221.md) | Oracle batch 0221; 300 of the requested 1,000 cards imported so far. |
 | [Oracle 0222](reports/oracle-import/validation-0222.md) | Oracle batch 0222; 400 of the requested 1,000 cards imported so far. |
+| [Oracle 0223](reports/oracle-import/validation-0223.md) | Oracle batch 0223; 500 of the requested 1,000 cards imported so far. |
+| [Oracle 0224](reports/oracle-import/validation-0224.md) | Oracle batch 0224; 600 of the requested 1,000 cards imported so far. |
+| [Oracle 0225](reports/oracle-import/validation-0225.md) | Oracle batch 0225; 700 of the requested 1,000 cards imported so far. |
+| [Oracle 0226](reports/oracle-import/validation-0226.md) | Oracle batch 0226; 800 of the requested 1,000 cards imported so far. |
+| [Oracle 0227](reports/oracle-import/validation-0227.md) | Oracle batch 0227; 900 of the requested 1,000 cards imported so far. |
+| [Oracle 0228](reports/oracle-import/validation-0228.md) | Oracle batch 0228; 1,000 of the requested 1,000 cards imported and verified. |
 | [Oracle 0209–0218](reports/oracle-import/validation-0209-0218.md) | Oracle batches 0209–0218; 1,000 cards. |
 | [Oracle 0199–0208](reports/oracle-import/validation-0199-0208.md) | Oracle batches 0199–0208; 1,000 cards. |
 | [Oracle 0189–0198](reports/oracle-import/validation-0189-0198.md) | Oracle batches 0189–0198; 1,000 cards. |

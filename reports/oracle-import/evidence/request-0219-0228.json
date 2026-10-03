@@ -1,0 +1,135 @@
+{
+  "schema": "oracle-request-verification/v1",
+  "verifiedAt": "2026-10-03T13:27:49.184228+00:00",
+  "requested": 1000,
+  "uniqueImportedCards": 1000,
+  "remaining": 0,
+  "firstBatch": 219,
+  "lastBatch": 228,
+  "sourceSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+  "humanAndAiRoleCardScenarios": 2000,
+  "browserChecks": 160,
+  "stateInvariantGames": 6480,
+  "provenanceRows": 1000,
+  "inventory": {
+    "runtimeDefinitions": 26792,
+    "genericOracleCards": 22800,
+    "genericBatches": 228,
+    "manualOracleCards": 58,
+    "legacyDefinitions": 3934,
+    "individuallyReviewedLegacyDefinitions": 18,
+    "deckImportEligibleDefinitions": 26791,
+    "deckImportRestrictedDefinitions": 1,
+    "representedUniverseOracleIds": 26727,
+    "remainingUniverseOracleIds": 4057,
+    "parserEligibleUnimported": 5,
+    "deferred": 4052,
+    "runtimeEntriesWithoutSnapshotMatch": 36,
+    "runtimeEntriesOutsideComparisonUniverse": 27
+  },
+  "batches": [
+    {
+      "sequence": 219,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": null,
+      "validationFormat": "oracle-expansion-validation/v1",
+      "stateInvariantGames": 620,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 220,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": null,
+      "validationFormat": "historical-markdown-with-direct-execution-provenance-browser-evidence",
+      "stateInvariantGames": 697,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 221,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 237,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 638,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 222,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 346,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 1049,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 223,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 354,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 594,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 224,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 324,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 700,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 225,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 299,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 642,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 226,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 351,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 610,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 227,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 340,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 468,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    },
+    {
+      "sequence": 228,
+      "cards": 100,
+      "humanAndAiVerified": 100,
+      "focusedTests": 322,
+      "validationFormat": "oracle-import-validation/v1",
+      "stateInvariantGames": 462,
+      "browserChecks": 16,
+      "provenanceRows": 100
+    }
+  ],
+  "finalInventorySyntaxAuditAndStrictCertification": "pass",
+  "historicalEvidenceNote": "Batch 0220 deferred global inventory checks at its original checkpoint; the final syntax, audit and strict certification cover the complete installed inventory.",
+  "passed": true
+}

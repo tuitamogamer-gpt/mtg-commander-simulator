@@ -1,0 +1,2466 @@
+{
+  "status": "draft-not-imported",
+  "batches": [
+    {
+      "schemaVersion": 1,
+      "id": "oracle-9962",
+      "sequence": 9962,
+      "generatedAt": "2026-10-03T02:07:57.731Z",
+      "source": {
+        "provider": "Scryfall",
+        "endpoint": "https://api.scryfall.com/bulk-data",
+        "bulkType": "oracle_cards",
+        "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+        "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+        "bulkDescription": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card.",
+        "bulkSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528"
+      },
+      "selectionPolicy": {
+        "compilerVersion": 30
+      },
+      "cards": [
+        {
+          "position": 1,
+          "oracleId": "ecf1e378-d6bc-4ee0-800e-eb8a955d781f",
+          "scryfallId": "783da808-6698-4e55-9fac-430a6effe2b1",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "mixed-v18",
+                  "zone": "mixed-v18",
+                  "min": 1,
+                  "alternatives": [
+                    {
+                      "what": "spell",
+                      "zone": "stack",
+                      "min": 1,
+                      "spellQuality": "any"
+                    },
+                    {
+                      "what": "permanent",
+                      "zone": "battlefield",
+                      "controller": "any",
+                      "min": 1
+                    }
+                  ],
+                  "colorsAny": [
+                    "R",
+                    "G"
+                  ]
+                }
+              ],
+              "effects": [
+                {
+                  "action": "owner-library-position-v30",
+                  "target": 0,
+                  "positions": [
+                    "top",
+                    "bottom"
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Choose target spell or permanent that's red or green. Its owner puts it on their choice of the top or bottom of their library.",
+          "raw": {
+            "name": "Aether Gust",
+            "cost": "{1}{U}",
+            "super": [],
+            "types": [
+              "Instant"
+            ],
+            "subtypes": [],
+            "oracle": "Choose target spell or permanent that's red or green. Its owner puts it on their choice of the top or bottom of their library.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "ecf1e378-d6bc-4ee0-800e-eb8a955d781f",
+            "_scryfallId": "783da808-6698-4e55-9fac-430a6effe2b1",
+            "_layout": "normal",
+            "_set": "m20",
+            "_collectorNumber": "42",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Instant",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "m20",
+            "setName": "Core Set 2020",
+            "collectorNumber": "42",
+            "rarity": "uncommon",
+            "releasedAt": "2019-07-12",
+            "scryfallUri": "https://scryfall.com/card/m20/42/aether-gust?utm_source=api"
+          }
+        },
+        {
+          "position": 2,
+          "oracleId": "565ba85c-bad8-4cbd-a2ff-b4384b886308",
+          "scryfallId": "0b9e5fd6-a5ea-4ae5-83f5-89ed6a658dd3",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "mixed-v18",
+                  "zone": "mixed-v18",
+                  "min": 1,
+                  "alternatives": [
+                    {
+                      "what": "spell",
+                      "zone": "stack",
+                      "min": 1
+                    },
+                    {
+                      "what": "nonland permanent",
+                      "zone": "battlefield",
+                      "controller": "any",
+                      "min": 1
+                    }
+                  ]
+                }
+              ],
+              "effects": [
+                {
+                  "action": "owner-library-position-v30",
+                  "target": 0,
+                  "positions": [
+                    "top",
+                    "bottom"
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "The owner of target spell or nonland permanent puts it on their choice of the top or bottom of their library.",
+          "raw": {
+            "name": "Sudden Setback",
+            "cost": "{2}{U}{U}",
+            "super": [],
+            "types": [
+              "Instant"
+            ],
+            "subtypes": [],
+            "oracle": "The owner of target spell or nonland permanent puts it on their choice of the top or bottom of their library.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "565ba85c-bad8-4cbd-a2ff-b4384b886308",
+            "_scryfallId": "0b9e5fd6-a5ea-4ae5-83f5-89ed6a658dd3",
+            "_layout": "normal",
+            "_set": "mkm",
+            "_collectorNumber": "72",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Instant",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mkm",
+            "setName": "Murders at Karlov Manor",
+            "collectorNumber": "72",
+            "rarity": "uncommon",
+            "releasedAt": "2024-02-09",
+            "scryfallUri": "https://scryfall.com/card/mkm/72/sudden-setback?utm_source=api"
+          }
+        },
+        {
+          "position": 3,
+          "oracleId": "377179d5-ac83-4d34-b5b1-f3d8caa60f79",
+          "scryfallId": "701256d5-1389-48b7-9581-d6037209bd06",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "flash",
+            "flying"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [
+                {
+                  "what": "permanent",
+                  "zone": "stack",
+                  "controller": "any",
+                  "min": 0,
+                  "alternatives": [
+                    {
+                      "what": "spell",
+                      "zone": "stack",
+                      "controller": "any",
+                      "min": 1,
+                      "spellFilter": {
+                        "what": "creature",
+                        "zone": "graveyard",
+                        "controller": "any",
+                        "min": 1
+                      }
+                    },
+                    {
+                      "what": "spell",
+                      "zone": "stack",
+                      "controller": "any",
+                      "min": 1,
+                      "spellFilter": {
+                        "what": "planeswalker",
+                        "zone": "graveyard",
+                        "controller": "any",
+                        "min": 1
+                      }
+                    }
+                  ]
+                }
+              ],
+              "effects": [
+                {
+                  "action": "owner-library-position-v30",
+                  "target": 0,
+                  "positions": [
+                    "top",
+                    "bottom"
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            },
+            {
+              "kind": "mechanic-alternative-costs-v8",
+              "mana": "{0}",
+              "costs": [
+                {
+                  "id": "cost-1",
+                  "kind": "exileHand",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  },
+                  "object": {
+                    "kind": "card",
+                    "qualifier": {
+                      "colors": [
+                        "U"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "evoke": true,
+              "label": "Evoke — Exile a blue card from your hand",
+              "contract": "mechanic-alternative-costs-v8"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect",
+            "mechanic-alternative-costs-v8"
+          ],
+          "rulesCore": "Flash\nFlying\nWhen this creature enters, choose up to one target creature spell or planeswalker spell. Its owner puts it on their choice of the top or bottom of their library.\nEvoke—Exile a blue card from your hand.",
+          "raw": {
+            "name": "Subtlety",
+            "cost": "{2}{U}{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Elemental",
+              "Incarnation"
+            ],
+            "oracle": "Flash\nFlying\nWhen this creature enters, choose up to one target creature spell or planeswalker spell. Its owner puts it on their choice of the top or bottom of their library.\nEvoke—Exile a blue card from your hand.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "377179d5-ac83-4d34-b5b1-f3d8caa60f79",
+            "_scryfallId": "701256d5-1389-48b7-9581-d6037209bd06",
+            "_layout": "normal",
+            "_set": "mh2",
+            "_collectorNumber": "67",
+            "_rarity": "mythic",
+            "power": "3",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Creature — Elemental Incarnation",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [
+              "Flying",
+              "Evoke",
+              "Flash"
+            ],
+            "commanderLegality": "legal",
+            "set": "mh2",
+            "setName": "Modern Horizons 2",
+            "collectorNumber": "67",
+            "rarity": "mythic",
+            "releasedAt": "2021-06-18",
+            "scryfallUri": "https://scryfall.com/card/mh2/67/subtlety?utm_source=api"
+          }
+        },
+        {
+          "position": 4,
+          "oracleId": "daaf33d8-2ee2-41f8-9872-66b6493c6e13",
+          "scryfallId": "e9711fc5-7878-4d38-ac65-46bd720879ab",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "vigilance"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [
+                {
+                  "what": "creature",
+                  "zone": "battlefield",
+                  "controller": "opponent",
+                  "min": 1
+                }
+              ],
+              "effects": [
+                {
+                  "action": "owner-library-position-v30",
+                  "target": 0,
+                  "positions": [
+                    "second",
+                    "bottom"
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Vigilance\nWhen Happy Hogan enters, the owner of target creature an opponent controls puts it into their library second from the top or on the bottom.",
+          "raw": {
+            "name": "Happy Hogan, Bodyguard",
+            "cost": "{5}{U}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Human",
+              "Advisor"
+            ],
+            "oracle": "Vigilance\nWhen Happy Hogan enters, the owner of target creature an opponent controls puts it into their library second from the top or on the bottom.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "daaf33d8-2ee2-41f8-9872-66b6493c6e13",
+            "_scryfallId": "e9711fc5-7878-4d38-ac65-46bd720879ab",
+            "_layout": "normal",
+            "_set": "msc",
+            "_collectorNumber": "622",
+            "_rarity": "uncommon",
+            "power": "3",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Human Advisor",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [
+              "Vigilance"
+            ],
+            "commanderLegality": "legal",
+            "set": "msc",
+            "setName": "Marvel Super Heroes Commander",
+            "collectorNumber": "622",
+            "rarity": "uncommon",
+            "releasedAt": "2026-06-26",
+            "scryfallUri": "https://scryfall.com/card/msc/622/happy-hogan-bodyguard?utm_source=api"
+          }
+        },
+        {
+          "position": 5,
+          "oracleId": "f0bd4a29-ac13-4d4f-8479-e0e80f8d846f",
+          "scryfallId": "cc0835c7-58ca-4f16-984a-c590ce6a229a",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "cost-modifier",
+              "amount": -1,
+              "multiplier": {
+                "kind": "turn-count",
+                "field": "drewThisTurn"
+              },
+              "contract": "generic-cost-modification",
+              "self": true
+            },
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "nonland permanent",
+                  "zone": "battlefield",
+                  "controller": "any",
+                  "min": 1
+                }
+              ],
+              "effects": [
+                {
+                  "action": "owner-library-position-v30",
+                  "target": 0,
+                  "positions": [
+                    "second",
+                    "bottom"
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-cost-modification",
+            "spell-generic-effect"
+          ],
+          "rulesCore": "This spell costs {1} less to cast for each card you've drawn this turn.\nThe owner of target nonland permanent puts it into their library second from the top or on the bottom.",
+          "raw": {
+            "name": "Deem Inferior",
+            "cost": "{3}{U}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "This spell costs {1} less to cast for each card you've drawn this turn.\nThe owner of target nonland permanent puts it into their library second from the top or on the bottom.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "f0bd4a29-ac13-4d4f-8479-e0e80f8d846f",
+            "_scryfallId": "cc0835c7-58ca-4f16-984a-c590ce6a229a",
+            "_layout": "normal",
+            "_set": "mh3",
+            "_collectorNumber": "57",
+            "_rarity": "common"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mh3",
+            "setName": "Modern Horizons 3",
+            "collectorNumber": "57",
+            "rarity": "common",
+            "releasedAt": "2024-06-14",
+            "scryfallUri": "https://scryfall.com/card/mh3/57/deem-inferior?utm_source=api"
+          }
+        },
+        {
+          "position": 6,
+          "oracleId": "3bc47eae-cf6f-4b5e-96e1-94a4f307f474",
+          "scryfallId": "db8e88e3-0931-403f-90e7-3c22c0b61dac",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "effects": [
+                {
+                  "action": "owner-library-position-v30",
+                  "target": 0,
+                  "positions": [
+                    "second",
+                    "bottom"
+                  ]
+                },
+                {
+                  "action": "token-key",
+                  "who": "you",
+                  "n": 1,
+                  "tokenKey": "clue"
+                }
+              ],
+              "targets": [
+                {
+                  "what": "any",
+                  "zone": "battlefield",
+                  "controller": "any",
+                  "min": 1,
+                  "alternatives": [
+                    {
+                      "what": "creature",
+                      "zone": "battlefield",
+                      "controller": "any",
+                      "min": 1
+                    },
+                    {
+                      "what": "enchantment",
+                      "zone": "battlefield",
+                      "controller": "any",
+                      "min": 1
+                    }
+                  ]
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "The owner of target creature or enchantment puts it into their library second from the top or on the bottom. You create a Clue token.",
+          "raw": {
+            "name": "Lost Days",
+            "cost": "{4}{U}",
+            "super": [],
+            "types": [
+              "Instant"
+            ],
+            "subtypes": [
+              "Lesson"
+            ],
+            "oracle": "The owner of target creature or enchantment puts it into their library second from the top or on the bottom. You create a Clue token. (It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "3bc47eae-cf6f-4b5e-96e1-94a4f307f474",
+            "_scryfallId": "db8e88e3-0931-403f-90e7-3c22c0b61dac",
+            "_layout": "normal",
+            "_set": "tla",
+            "_collectorNumber": "62",
+            "_rarity": "common"
+          },
+          "catalog": {
+            "typeLine": "Instant — Lesson",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "tla",
+            "setName": "Avatar: The Last Airbender",
+            "collectorNumber": "62",
+            "rarity": "common",
+            "releasedAt": "2025-11-21",
+            "scryfallUri": "https://scryfall.com/card/tla/62/lost-days?utm_source=api"
+          }
+        },
+        {
+          "position": 7,
+          "oracleId": "32ebb029-9f03-49c9-b9bb-cb1954e2a324",
+          "scryfallId": "83777ac9-93d9-4097-96ca-a8a6a79b84e2",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-search-qualities-v30",
+                  "clauses": [
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "white"
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "blue"
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "black"
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "red"
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "green"
+                    }
+                  ],
+                  "destination": "hand",
+                  "reveal": true
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Search your library for a white card, a blue card, a black card, a red card, and a green card. Reveal those cards, put them into your hand, then shuffle.",
+          "raw": {
+            "name": "Conflux",
+            "cost": "{3}{W}{U}{B}{R}{G}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Search your library for a white card, a blue card, a black card, a red card, and a green card. Reveal those cards, put them into your hand, then shuffle.",
+            "_ci": [
+              "B",
+              "G",
+              "R",
+              "U",
+              "W"
+            ],
+            "_oracleId": "32ebb029-9f03-49c9-b9bb-cb1954e2a324",
+            "_scryfallId": "83777ac9-93d9-4097-96ca-a8a6a79b84e2",
+            "_layout": "normal",
+            "_set": "a25",
+            "_collectorNumber": "202",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "B",
+              "G",
+              "R",
+              "U",
+              "W"
+            ],
+            "colors": [
+              "B",
+              "G",
+              "R",
+              "U",
+              "W"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "a25",
+            "setName": "Masters 25",
+            "collectorNumber": "202",
+            "rarity": "rare",
+            "releasedAt": "2018-03-16",
+            "scryfallUri": "https://scryfall.com/card/a25/202/conflux?utm_source=api"
+          }
+        },
+        {
+          "position": 8,
+          "oracleId": "c51fc4f2-76a6-4337-ab8f-1b3e84f82019",
+          "scryfallId": "285beca0-4876-426f-a4b4-ecefe79ad55d",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-search-qualities-v30",
+                  "clauses": [
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Plains",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Island",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Swamp",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Mountain",
+                      "controller": "you",
+                      "min": 1
+                    }
+                  ],
+                  "destination": "hand",
+                  "reveal": true
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Search your library for a Plains card, an Island card, a Swamp card, and a Mountain card. Reveal those cards, put them into your hand, then shuffle.",
+          "raw": {
+            "name": "Shard Convergence",
+            "cost": "{3}{G}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Search your library for a Plains card, an Island card, a Swamp card, and a Mountain card. Reveal those cards, put them into your hand, then shuffle.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "c51fc4f2-76a6-4337-ab8f-1b3e84f82019",
+            "_scryfallId": "285beca0-4876-426f-a4b4-ecefe79ad55d",
+            "_layout": "normal",
+            "_set": "con",
+            "_collectorNumber": "91",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "con",
+            "setName": "Conflux",
+            "collectorNumber": "91",
+            "rarity": "uncommon",
+            "releasedAt": "2009-02-06",
+            "scryfallUri": "https://scryfall.com/card/con/91/shard-convergence?utm_source=api"
+          }
+        },
+        {
+          "position": 9,
+          "oracleId": "6b1e4940-11ac-4d85-98f4-3f50d1060b96",
+          "scryfallId": "0e07bc36-2207-48f4-a151-4ccb0c6d851d",
+          "semanticClass": "artifact-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{3}",
+                "tap": true,
+                "sacSelf": true
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-search-qualities-v30",
+                  "clauses": [
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Island",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Swamp",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Mountain",
+                      "controller": "you",
+                      "min": 1
+                    }
+                  ],
+                  "destination": "hand",
+                  "reveal": true
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{3}, {T}, Sacrifice this artifact: Search your library for an Island card, a Swamp card, and a Mountain card. Reveal those cards, put them into your hand, then shuffle.",
+          "raw": {
+            "name": "Gem of Becoming",
+            "cost": "{3}",
+            "super": [],
+            "types": [
+              "Artifact"
+            ],
+            "subtypes": [],
+            "oracle": "{3}, {T}, Sacrifice this artifact: Search your library for an Island card, a Swamp card, and a Mountain card. Reveal those cards, put them into your hand, then shuffle.",
+            "_ci": [],
+            "_oracleId": "6b1e4940-11ac-4d85-98f4-3f50d1060b96",
+            "_scryfallId": "0e07bc36-2207-48f4-a151-4ccb0c6d851d",
+            "_layout": "normal",
+            "_set": "m13",
+            "_collectorNumber": "205",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Artifact",
+            "colorIdentity": [],
+            "colors": [],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "m13",
+            "setName": "Magic 2013",
+            "collectorNumber": "205",
+            "rarity": "uncommon",
+            "releasedAt": "2012-07-13",
+            "scryfallUri": "https://scryfall.com/card/m13/205/gem-of-becoming?utm_source=api"
+          }
+        },
+        {
+          "position": 10,
+          "oracleId": "83c8f1ca-194e-4cb6-9d5f-029133c1edbc",
+          "scryfallId": "82aa2593-4a79-46f1-a2bd-b71fb504d0ab",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "lifelink"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-search-qualities-v30",
+                  "clauses": [
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "black"
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "green"
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "controller": "you",
+                      "min": 1,
+                      "color": "blue"
+                    }
+                  ],
+                  "destination": "graveyard",
+                  "reveal": false
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Lifelink\nWhen this creature enters, search your library for a black card, a green card, and a blue card. Put those cards into your graveyard, then shuffle.",
+          "raw": {
+            "name": "Lotuslight Dancers",
+            "cost": "{2}{B}{G}{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Zombie",
+              "Bard"
+            ],
+            "oracle": "Lifelink\nWhen this creature enters, search your library for a black card, a green card, and a blue card. Put those cards into your graveyard, then shuffle.",
+            "_ci": [
+              "B",
+              "G",
+              "U"
+            ],
+            "_oracleId": "83c8f1ca-194e-4cb6-9d5f-029133c1edbc",
+            "_scryfallId": "82aa2593-4a79-46f1-a2bd-b71fb504d0ab",
+            "_layout": "normal",
+            "_set": "tdm",
+            "_collectorNumber": "204",
+            "_rarity": "rare",
+            "power": "3",
+            "toughness": "6"
+          },
+          "catalog": {
+            "typeLine": "Creature — Zombie Bard",
+            "colorIdentity": [
+              "B",
+              "G",
+              "U"
+            ],
+            "colors": [
+              "B",
+              "G",
+              "U"
+            ],
+            "keywords": [
+              "Lifelink"
+            ],
+            "commanderLegality": "legal",
+            "set": "tdm",
+            "setName": "Tarkir: Dragonstorm",
+            "collectorNumber": "204",
+            "rarity": "rare",
+            "releasedAt": "2025-04-11",
+            "scryfallUri": "https://scryfall.com/card/tdm/204/lotuslight-dancers?utm_source=api"
+          }
+        },
+        {
+          "position": 11,
+          "oracleId": "f02ad6fa-7a82-471a-979e-0bb9ba866ef6",
+          "scryfallId": "39cc7fbb-010f-4e7c-b3bf-8853e54bc1b1",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{1}{B}",
+                "tap": true,
+                "sacWhat": "creature"
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-search-qualities-v30",
+                  "clauses": [
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Zombie",
+                      "controller": "you",
+                      "min": 1
+                    },
+                    {
+                      "what": "card",
+                      "zone": "graveyard",
+                      "subtype": "Swamp",
+                      "controller": "you",
+                      "min": 1
+                    }
+                  ],
+                  "destination": "hand",
+                  "reveal": true
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{1}{B}, {T}, Sacrifice a creature: Search your library for a Zombie card and a Swamp card, reveal them, put them into your hand, then shuffle.",
+          "raw": {
+            "name": "Corpse Harvester",
+            "cost": "{3}{B}{B}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Zombie",
+              "Wizard"
+            ],
+            "oracle": "{1}{B}, {T}, Sacrifice a creature: Search your library for a Zombie card and a Swamp card, reveal them, put them into your hand, then shuffle.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "f02ad6fa-7a82-471a-979e-0bb9ba866ef6",
+            "_scryfallId": "39cc7fbb-010f-4e7c-b3bf-8853e54bc1b1",
+            "_layout": "normal",
+            "_set": "hop",
+            "_collectorNumber": "22",
+            "_rarity": "uncommon",
+            "power": "3",
+            "toughness": "3"
+          },
+          "catalog": {
+            "typeLine": "Creature — Zombie Wizard",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "hop",
+            "setName": "Planechase",
+            "collectorNumber": "22",
+            "rarity": "uncommon",
+            "releasedAt": "2009-09-04",
+            "scryfallUri": "https://scryfall.com/card/hop/22/corpse-harvester?utm_source=api"
+          }
+        },
+        {
+          "position": 12,
+          "oracleId": "51d9564b-44fc-4de1-9119-09d7b4089378",
+          "scryfallId": "3c0f5411-1940-410f-96ce-6f92513f753a",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "haste"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "attacks",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-top-program-v30",
+                  "who": "defender",
+                  "visibility": "reveal",
+                  "mode": "land-hand"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Haste\nWhenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+          "raw": {
+            "name": "Goblin Guide",
+            "cost": "{R}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Goblin",
+              "Scout"
+            ],
+            "oracle": "Haste\nWhenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+            "_ci": [
+              "R"
+            ],
+            "_oracleId": "51d9564b-44fc-4de1-9119-09d7b4089378",
+            "_scryfallId": "3c0f5411-1940-410f-96ce-6f92513f753a",
+            "_layout": "normal",
+            "_set": "2xm",
+            "_collectorNumber": "127",
+            "_rarity": "rare",
+            "power": "2",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Creature — Goblin Scout",
+            "colorIdentity": [
+              "R"
+            ],
+            "colors": [
+              "R"
+            ],
+            "keywords": [
+              "Haste"
+            ],
+            "commanderLegality": "legal",
+            "set": "2xm",
+            "setName": "Double Masters",
+            "collectorNumber": "127",
+            "rarity": "rare",
+            "releasedAt": "2020-08-07",
+            "scryfallUri": "https://scryfall.com/card/2xm/127/goblin-guide?utm_source=api"
+          }
+        },
+        {
+          "position": 13,
+          "oracleId": "a03ab63a-83f3-4dd6-926d-08d09ce2e696",
+          "scryfallId": "c28fd840-e633-46d3-991a-b9fea95a2f28",
+          "semanticClass": "artifact-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "upkeep",
+              "eventFilter": "each-upkeep",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-top-program-v30",
+                  "who": "event-player",
+                  "visibility": "reveal",
+                  "mode": "old-permanent-entry"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "At the beginning of each player's upkeep, that player reveals the top card of their library. If it's an artifact, creature, enchantment, or land card, the player may put it onto the battlefield.",
+          "raw": {
+            "name": "Gate to the Aether",
+            "cost": "{6}",
+            "super": [],
+            "types": [
+              "Artifact"
+            ],
+            "subtypes": [],
+            "oracle": "At the beginning of each player's upkeep, that player reveals the top card of their library. If it's an artifact, creature, enchantment, or land card, the player may put it onto the battlefield.",
+            "_ci": [],
+            "_oracleId": "a03ab63a-83f3-4dd6-926d-08d09ce2e696",
+            "_scryfallId": "c28fd840-e633-46d3-991a-b9fea95a2f28",
+            "_layout": "normal",
+            "_set": "mrd",
+            "_collectorNumber": "174",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Artifact",
+            "colorIdentity": [],
+            "colors": [],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mrd",
+            "setName": "Mirrodin",
+            "collectorNumber": "174",
+            "rarity": "rare",
+            "releasedAt": "2003-10-02",
+            "scryfallUri": "https://scryfall.com/card/mrd/174/gate-to-the-aether?utm_source=api"
+          }
+        },
+        {
+          "position": 14,
+          "oracleId": "928a7fbc-ba34-42a9-947e-0f3bf1cba152",
+          "scryfallId": "5d977da2-4024-4c7b-b557-e89564f8d465",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "combatDamageToPlayer",
+              "eventFilter": {
+                "kind": "source-damage-player",
+                "opponent": false
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-program-v30",
+                  "who": "event-player",
+                  "n": 2,
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "max": 1,
+                      "required": true,
+                      "destination": "graveyard"
+                    }
+                  ],
+                  "rest": {
+                    "destination": "stay"
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Whenever this creature deals combat damage to a player, that player reveals the top two cards of their library. You choose one of those cards and put it into their graveyard.",
+          "raw": {
+            "name": "Balshan Beguiler",
+            "cost": "{2}{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Human",
+              "Wizard"
+            ],
+            "oracle": "Whenever this creature deals combat damage to a player, that player reveals the top two cards of their library. You choose one of those cards and put it into their graveyard.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "928a7fbc-ba34-42a9-947e-0f3bf1cba152",
+            "_scryfallId": "5d977da2-4024-4c7b-b557-e89564f8d465",
+            "_layout": "normal",
+            "_set": "ody",
+            "_collectorNumber": "66",
+            "_rarity": "uncommon",
+            "power": "1",
+            "toughness": "1"
+          },
+          "catalog": {
+            "typeLine": "Creature — Human Wizard",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "ody",
+            "setName": "Odyssey",
+            "collectorNumber": "66",
+            "rarity": "uncommon",
+            "releasedAt": "2001-10-01",
+            "scryfallUri": "https://scryfall.com/card/ody/66/balshan-beguiler?utm_source=api"
+          }
+        },
+        {
+          "position": 15,
+          "oracleId": "a1eccd85-d243-4d27-bf49-d3ac816159e4",
+          "scryfallId": "44012bb8-17b7-4b50-a796-662ef09bfc29",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "player",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-program-v30",
+                  "who": 0,
+                  "n": 4,
+                  "visibility": "reveal",
+                  "selections": [
+                    {
+                      "max": 2,
+                      "required": true,
+                      "destination": "graveyard"
+                    }
+                  ],
+                  "rest": {
+                    "destination": "top"
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Target player reveals the top four cards of their library. You choose two of those cards and put them into that player's graveyard. Put the rest on top of their library in any order.",
+          "raw": {
+            "name": "Bamboozle",
+            "cost": "{2}{U}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Target player reveals the top four cards of their library. You choose two of those cards and put them into that player's graveyard. Put the rest on top of their library in any order.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "a1eccd85-d243-4d27-bf49-d3ac816159e4",
+            "_scryfallId": "44012bb8-17b7-4b50-a796-662ef09bfc29",
+            "_layout": "normal",
+            "_set": "ody",
+            "_collectorNumber": "68",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "ody",
+            "setName": "Odyssey",
+            "collectorNumber": "68",
+            "rarity": "uncommon",
+            "releasedAt": "2001-10-01",
+            "scryfallUri": "https://scryfall.com/card/ody/68/bamboozle?utm_source=api"
+          }
+        },
+        {
+          "position": 16,
+          "oracleId": "9d32da71-60e5-4eb3-97ca-ae76e2f5df57",
+          "scryfallId": "f6f37dd8-87d6-432f-a60d-a7a699da3080",
+          "semanticClass": "artifact-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "tap": true
+              },
+              "targets": [
+                {
+                  "what": "player",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-top-program-v30",
+                  "who": 0,
+                  "visibility": "look",
+                  "mode": "pay-life-graveyard",
+                  "life": 2
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{T}: Look at the top card of target player's library. If it's a nonland card, you may pay 2 life. If you do, put it into that player's graveyard.",
+          "raw": {
+            "name": "Wand of Denial",
+            "cost": "{2}",
+            "super": [],
+            "types": [
+              "Artifact"
+            ],
+            "subtypes": [],
+            "oracle": "{T}: Look at the top card of target player's library. If it's a nonland card, you may pay 2 life. If you do, put it into that player's graveyard.",
+            "_ci": [],
+            "_oracleId": "9d32da71-60e5-4eb3-97ca-ae76e2f5df57",
+            "_scryfallId": "f6f37dd8-87d6-432f-a60d-a7a699da3080",
+            "_layout": "normal",
+            "_set": "6ed",
+            "_collectorNumber": "317",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Artifact",
+            "colorIdentity": [],
+            "colors": [],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "6ed",
+            "setName": "Classic Sixth Edition",
+            "collectorNumber": "317",
+            "rarity": "rare",
+            "releasedAt": "1999-04-21",
+            "scryfallUri": "https://scryfall.com/card/6ed/317/wand-of-denial?utm_source=api"
+          }
+        },
+        {
+          "position": 17,
+          "oracleId": "a2f79037-86c0-430c-ba91-62ac807a44ce",
+          "scryfallId": "97bdfb00-7773-4af6-895c-c90088a96b07",
+          "semanticClass": "artifact-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{3}",
+                "tap": true
+              },
+              "targets": [
+                {
+                  "what": "player",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-bottom-program-v30",
+                  "who": 0,
+                  "mode": "creature-token"
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{3}, {T}: Target player puts the bottom card of their library into their graveyard. If it's a creature card, you create a 2/2 black Zombie creature token.",
+          "raw": {
+            "name": "Cellar Door",
+            "cost": "{2}",
+            "super": [],
+            "types": [
+              "Artifact"
+            ],
+            "subtypes": [],
+            "oracle": "{3}, {T}: Target player puts the bottom card of their library into their graveyard. If it's a creature card, you create a 2/2 black Zombie creature token.",
+            "_ci": [],
+            "_oracleId": "a2f79037-86c0-430c-ba91-62ac807a44ce",
+            "_scryfallId": "97bdfb00-7773-4af6-895c-c90088a96b07",
+            "_layout": "normal",
+            "_set": "isd",
+            "_collectorNumber": "218",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Artifact",
+            "colorIdentity": [],
+            "colors": [],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "isd",
+            "setName": "Innistrad",
+            "collectorNumber": "218",
+            "rarity": "uncommon",
+            "releasedAt": "2011-09-30",
+            "scryfallUri": "https://scryfall.com/card/isd/218/cellar-door?utm_source=api"
+          }
+        },
+        {
+          "position": 18,
+          "oracleId": "a374f99e-6443-486c-8026-8eba4c7e6ad7",
+          "scryfallId": "6e19c383-88bd-4bde-ac81-c0eb6d5b5bd4",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "enters-with-counters",
+              "counter": "+1/+1",
+              "n": "X",
+              "contract": "permanent-enters-with-counters"
+            },
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{2}"
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-bottom-program-v30",
+                  "who": "you",
+                  "mode": "power-entry"
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "permanent-enters-with-counters",
+            "generic-activated-effect"
+          ],
+          "rulesCore": "Grenzo enters with X +1/+1 counters on it.\n{2}: Put the bottom card of your library into your graveyard. If it's a creature card with power less than or equal to Grenzo's power, put it onto the battlefield.",
+          "raw": {
+            "name": "Grenzo, Dungeon Warden",
+            "cost": "{X}{B}{R}",
+            "super": [
+              "Legendary"
+            ],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Goblin",
+              "Rogue"
+            ],
+            "oracle": "Grenzo enters with X +1/+1 counters on it.\n{2}: Put the bottom card of your library into your graveyard. If it's a creature card with power less than or equal to Grenzo's power, put it onto the battlefield.",
+            "_ci": [
+              "B",
+              "R"
+            ],
+            "_oracleId": "a374f99e-6443-486c-8026-8eba4c7e6ad7",
+            "_scryfallId": "6e19c383-88bd-4bde-ac81-c0eb6d5b5bd4",
+            "_layout": "normal",
+            "_set": "a25",
+            "_collectorNumber": "205",
+            "_rarity": "rare",
+            "power": "2",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Legendary Creature — Goblin Rogue",
+            "colorIdentity": [
+              "B",
+              "R"
+            ],
+            "colors": [
+              "B",
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "a25",
+            "setName": "Masters 25",
+            "collectorNumber": "205",
+            "rarity": "rare",
+            "releasedAt": "2018-03-16",
+            "scryfallUri": "https://scryfall.com/card/a25/205/grenzo-dungeon-warden?utm_source=api"
+          }
+        },
+        {
+          "position": 19,
+          "oracleId": "f00dd41d-4b11-491a-9e7b-12245092ab77",
+          "scryfallId": "53320321-4f02-40ee-8171-2375b1d4ed66",
+          "semanticClass": "aura-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "aura-target",
+              "what": "creature",
+              "contract": "aura-targeting"
+            },
+            {
+              "kind": "generic-trigger",
+              "event": "upkeep",
+              "eventFilter": {
+                "kind": "observation-v9",
+                "attachedController": true
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-top-program-v30",
+                  "who": "attached-controller",
+                  "visibility": "reveal",
+                  "mode": "host-land-destroy"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "aura-targeting",
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Enchant creature\nAt the beginning of the upkeep of enchanted creature's controller, that player reveals the top card of their library. If that card is a land card, destroy that creature. Otherwise, it gets +3/+3 until end of turn.",
+          "raw": {
+            "name": "Paroxysm",
+            "cost": "{1}{R}",
+            "super": [],
+            "types": [
+              "Enchantment"
+            ],
+            "subtypes": [
+              "Aura"
+            ],
+            "oracle": "Enchant creature\nAt the beginning of the upkeep of enchanted creature's controller, that player reveals the top card of their library. If that card is a land card, destroy that creature. Otherwise, it gets +3/+3 until end of turn.",
+            "_ci": [
+              "R"
+            ],
+            "_oracleId": "f00dd41d-4b11-491a-9e7b-12245092ab77",
+            "_scryfallId": "53320321-4f02-40ee-8171-2375b1d4ed66",
+            "_layout": "normal",
+            "_set": "exo",
+            "_collectorNumber": "94",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Enchantment — Aura",
+            "colorIdentity": [
+              "R"
+            ],
+            "colors": [
+              "R"
+            ],
+            "keywords": [
+              "Enchant"
+            ],
+            "commanderLegality": "legal",
+            "set": "exo",
+            "setName": "Exodus",
+            "collectorNumber": "94",
+            "rarity": "uncommon",
+            "releasedAt": "1998-06-15",
+            "scryfallUri": "https://scryfall.com/card/exo/94/paroxysm?utm_source=api"
+          }
+        },
+        {
+          "position": 20,
+          "oracleId": "8dcf15fd-f000-4424-b74c-22fc2642b8c3",
+          "scryfallId": "f514eb63-3a4e-4410-ba3d-487cf81f7063",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "opponent",
+                  "min": 1,
+                  "zone": "player"
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-top-program-v30",
+                  "who": 0,
+                  "visibility": "reveal",
+                  "mode": "land-life-shuffle"
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            },
+            {
+              "kind": "spell-generic",
+              "effects": [
+                {
+                  "action": "delay-effect-v20",
+                  "event": "upkeep",
+                  "own": false,
+                  "body": {
+                    "effects": [
+                      {
+                        "action": "draw",
+                        "who": "you",
+                        "n": 1
+                      }
+                    ],
+                    "targets": [],
+                    "optional": false
+                  },
+                  "captureTargets": true
+                }
+              ],
+              "targets": [],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Reveal the top card of target opponent's library. If it's a land, you gain 1 life. Then that player shuffles.\nDraw a card at the beginning of the next turn's upkeep.",
+          "raw": {
+            "name": "Prophecy",
+            "cost": "{W}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Reveal the top card of target opponent's library. If it's a land, you gain 1 life. Then that player shuffles.\nDraw a card at the beginning of the next turn's upkeep.",
+            "_ci": [
+              "W"
+            ],
+            "_oracleId": "8dcf15fd-f000-4424-b74c-22fc2642b8c3",
+            "_scryfallId": "f514eb63-3a4e-4410-ba3d-487cf81f7063",
+            "_layout": "normal",
+            "_set": "hml",
+            "_collectorNumber": "11",
+            "_rarity": "common"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "W"
+            ],
+            "colors": [
+              "W"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "hml",
+            "setName": "Homelands",
+            "collectorNumber": "11",
+            "rarity": "common",
+            "releasedAt": "1995-10-01",
+            "scryfallUri": "https://scryfall.com/card/hml/11/prophecy?utm_source=api"
+          }
+        },
+        {
+          "position": 21,
+          "oracleId": "b8780f7b-3093-4509-9cb9-afa9c5f218fa",
+          "scryfallId": "820f1acf-7f0c-4ee5-9f18-b5627aac7c81",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [
+                {
+                  "what": "any",
+                  "min": 1
+                }
+              ],
+              "effects": [
+                {
+                  "action": "library-named-damage-v30",
+                  "n": 7,
+                  "name": "Stomping Slabs",
+                  "target": 0,
+                  "damage": 7
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Reveal the top seven cards of your library, then put those cards on the bottom of your library in any order. If a card named Stomping Slabs was revealed this way, Stomping Slabs deals 7 damage to any target.",
+          "raw": {
+            "name": "Stomping Slabs",
+            "cost": "{2}{R}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Reveal the top seven cards of your library, then put those cards on the bottom of your library in any order. If a card named Stomping Slabs was revealed this way, Stomping Slabs deals 7 damage to any target.",
+            "_ci": [
+              "R"
+            ],
+            "_oracleId": "b8780f7b-3093-4509-9cb9-afa9c5f218fa",
+            "_scryfallId": "820f1acf-7f0c-4ee5-9f18-b5627aac7c81",
+            "_layout": "normal",
+            "_set": "mor",
+            "_collectorNumber": "107",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "R"
+            ],
+            "colors": [
+              "R"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "mor",
+            "setName": "Morningtide",
+            "collectorNumber": "107",
+            "rarity": "uncommon",
+            "releasedAt": "2008-02-01",
+            "scryfallUri": "https://scryfall.com/card/mor/107/stomping-slabs?utm_source=api"
+          }
+        },
+        {
+          "position": 22,
+          "oracleId": "7e6478c1-e5b3-4641-baa7-7cdeab042569",
+          "scryfallId": "426b63f9-5788-45d2-b934-1579320bc775",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-parley-v30",
+                  "mode": "token",
+                  "token": {
+                    "name": "Elephant",
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Elephant"
+                    ],
+                    "colors": [
+                      "G"
+                    ],
+                    "power": 3,
+                    "toughness": 3,
+                    "keywords": []
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Each player reveals the top card of their library. For each nonland card revealed this way, you create a 3/3 green Elephant creature token. Then each player draws a card.",
+          "raw": {
+            "name": "Selvala's Charge",
+            "cost": "{4}{G}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Parley — Each player reveals the top card of their library. For each nonland card revealed this way, you create a 3/3 green Elephant creature token. Then each player draws a card.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "7e6478c1-e5b3-4641-baa7-7cdeab042569",
+            "_scryfallId": "426b63f9-5788-45d2-b934-1579320bc775",
+            "_layout": "normal",
+            "_set": "cns",
+            "_collectorNumber": "39",
+            "_rarity": "uncommon"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Parley"
+            ],
+            "commanderLegality": "legal",
+            "set": "cns",
+            "setName": "Conspiracy",
+            "collectorNumber": "39",
+            "rarity": "uncommon",
+            "releasedAt": "2014-06-06",
+            "scryfallUri": "https://scryfall.com/card/cns/39/selvalas-charge?utm_source=api"
+          }
+        },
+        {
+          "position": 23,
+          "oracleId": "8ee2dd43-cda2-4cb7-9e4b-1946d5b7467e",
+          "scryfallId": "000ba9c3-cd88-47c1-966a-00466569a9bf",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "etb",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-parley-v30",
+                  "mode": "counter"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "When this creature enters, each player reveals the top card of their library. For each nonland card revealed this way, put a +1/+1 counter on this creature. Then each player draws a card.",
+          "raw": {
+            "name": "Selvala's Enforcer",
+            "cost": "{3}{G}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Elf",
+              "Warrior"
+            ],
+            "oracle": "Parley — When this creature enters, each player reveals the top card of their library. For each nonland card revealed this way, put a +1/+1 counter on this creature. Then each player draws a card.",
+            "_ci": [
+              "G"
+            ],
+            "_oracleId": "8ee2dd43-cda2-4cb7-9e4b-1946d5b7467e",
+            "_scryfallId": "000ba9c3-cd88-47c1-966a-00466569a9bf",
+            "_layout": "normal",
+            "_set": "cns",
+            "_collectorNumber": "40",
+            "_rarity": "common",
+            "power": "2",
+            "toughness": "2"
+          },
+          "catalog": {
+            "typeLine": "Creature — Elf Warrior",
+            "colorIdentity": [
+              "G"
+            ],
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "Parley"
+            ],
+            "commanderLegality": "legal",
+            "set": "cns",
+            "setName": "Conspiracy",
+            "collectorNumber": "40",
+            "rarity": "common",
+            "releasedAt": "2014-06-06",
+            "scryfallUri": "https://scryfall.com/card/cns/40/selvalas-enforcer?utm_source=api"
+          }
+        },
+        {
+          "position": 24,
+          "oracleId": "e5e42293-ce01-4872-be2a-a79ff4312992",
+          "scryfallId": "1b7a47cc-9311-4f92-b19c-8956db5f2b5f",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-parley-v30",
+                  "mode": "token",
+                  "token": {
+                    "name": "Spirit",
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Spirit"
+                    ],
+                    "colors": [
+                      "W"
+                    ],
+                    "power": 1,
+                    "toughness": 1,
+                    "keywords": [
+                      "flying"
+                    ]
+                  }
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Each player reveals the top card of their library. For each nonland card revealed this way, you create a 1/1 white Spirit creature token with flying. Then each player draws a card.",
+          "raw": {
+            "name": "Rousing of Souls",
+            "cost": "{2}{W}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Parley — Each player reveals the top card of their library. For each nonland card revealed this way, you create a 1/1 white Spirit creature token with flying. Then each player draws a card.",
+            "_ci": [
+              "W"
+            ],
+            "_oracleId": "e5e42293-ce01-4872-be2a-a79ff4312992",
+            "_scryfallId": "1b7a47cc-9311-4f92-b19c-8956db5f2b5f",
+            "_layout": "normal",
+            "_set": "cns",
+            "_collectorNumber": "19",
+            "_rarity": "common"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "W"
+            ],
+            "colors": [
+              "W"
+            ],
+            "keywords": [
+              "Parley"
+            ],
+            "commanderLegality": "legal",
+            "set": "cns",
+            "setName": "Conspiracy",
+            "collectorNumber": "19",
+            "rarity": "common",
+            "releasedAt": "2014-06-06",
+            "scryfallUri": "https://scryfall.com/card/cns/19/rousing-of-souls?utm_source=api"
+          }
+        },
+        {
+          "position": 25,
+          "oracleId": "b265ac18-3923-46ba-b7b6-4190855815e1",
+          "scryfallId": "8acdb147-2339-4c55-b4f6-6a79679f2040",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [
+            "trample"
+          ],
+          "implementation": [
+            {
+              "kind": "generic-trigger",
+              "event": "attacks",
+              "eventFilter": "self",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-parley-v30",
+                  "mode": "attacking-pump"
+                }
+              ],
+              "optional": false,
+              "contract": "generic-trigger-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-trigger-effect"
+          ],
+          "rulesCore": "Trample\nWhenever this creature attacks, each player reveals the top card of their library. For each nonland card revealed this way, attacking creatures you control get +1/+1 until end of turn. Then each player draws a card.",
+          "raw": {
+            "name": "Woodvine Elemental",
+            "cost": "{4}{G}{W}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Elemental"
+            ],
+            "oracle": "Trample\nParley — Whenever this creature attacks, each player reveals the top card of their library. For each nonland card revealed this way, attacking creatures you control get +1/+1 until end of turn. Then each player draws a card.",
+            "_ci": [
+              "G",
+              "W"
+            ],
+            "_oracleId": "b265ac18-3923-46ba-b7b6-4190855815e1",
+            "_scryfallId": "8acdb147-2339-4c55-b4f6-6a79679f2040",
+            "_layout": "normal",
+            "_set": "cns",
+            "_collectorNumber": "52",
+            "_rarity": "uncommon",
+            "power": "4",
+            "toughness": "4"
+          },
+          "catalog": {
+            "typeLine": "Creature — Elemental",
+            "colorIdentity": [
+              "G",
+              "W"
+            ],
+            "colors": [
+              "G",
+              "W"
+            ],
+            "keywords": [
+              "Trample",
+              "Parley"
+            ],
+            "commanderLegality": "legal",
+            "set": "cns",
+            "setName": "Conspiracy",
+            "collectorNumber": "52",
+            "rarity": "uncommon",
+            "releasedAt": "2014-06-06",
+            "scryfallUri": "https://scryfall.com/card/cns/52/woodvine-elemental?utm_source=api"
+          }
+        },
+        {
+          "position": 26,
+          "oracleId": "63f05280-74de-4fe3-a507-07fb125685c0",
+          "scryfallId": "8e5f71ca-e7d9-4f9a-adf1-40353693deea",
+          "semanticClass": "creature-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "generic-ability",
+              "cost": {
+                "mana": "{U}",
+                "tap": true
+              },
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-parley-v30",
+                  "mode": "optional-graveyard"
+                }
+              ],
+              "optional": false,
+              "onceEachTurn": false,
+              "sorceryOnly": false,
+              "contract": "generic-activated-effect"
+            }
+          ],
+          "oracleContracts": [
+            "generic-activated-effect"
+          ],
+          "rulesCore": "{U}, {T}: Each player reveals the top card of their library. You may put the revealed cards into their owners' graveyards. If you don't, each player draws a card.",
+          "raw": {
+            "name": "Dakra Mystic",
+            "cost": "{U}",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Merfolk",
+              "Wizard"
+            ],
+            "oracle": "{U}, {T}: Each player reveals the top card of their library. You may put the revealed cards into their owners' graveyards. If you don't, each player draws a card.",
+            "_ci": [
+              "U"
+            ],
+            "_oracleId": "63f05280-74de-4fe3-a507-07fb125685c0",
+            "_scryfallId": "8e5f71ca-e7d9-4f9a-adf1-40353693deea",
+            "_layout": "normal",
+            "_set": "jou",
+            "_collectorNumber": "35",
+            "_rarity": "uncommon",
+            "power": "1",
+            "toughness": "1"
+          },
+          "catalog": {
+            "typeLine": "Creature — Merfolk Wizard",
+            "colorIdentity": [
+              "U"
+            ],
+            "colors": [
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "jou",
+            "setName": "Journey into Nyx",
+            "collectorNumber": "35",
+            "rarity": "uncommon",
+            "releasedAt": "2014-05-02",
+            "scryfallUri": "https://scryfall.com/card/jou/35/dakra-mystic?utm_source=api"
+          }
+        },
+        {
+          "position": 27,
+          "oracleId": "1a85ba2b-ae10-4917-954a-7709b75a9740",
+          "scryfallId": "c513f51b-a0db-4c08-8acc-1e91060b93b7",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-tainted-repeat-v30"
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Exile the top card of your library. You may put that card into your hand unless it has the same name as another card exiled this way. Repeat this process until you put a card into your hand or you exile two cards with the same name, whichever comes first.",
+          "raw": {
+            "name": "Tainted Pact",
+            "cost": "{1}{B}",
+            "super": [],
+            "types": [
+              "Instant"
+            ],
+            "subtypes": [],
+            "oracle": "Exile the top card of your library. You may put that card into your hand unless it has the same name as another card exiled this way. Repeat this process until you put a card into your hand or you exile two cards with the same name, whichever comes first.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "1a85ba2b-ae10-4917-954a-7709b75a9740",
+            "_scryfallId": "c513f51b-a0db-4c08-8acc-1e91060b93b7",
+            "_layout": "normal",
+            "_set": "ody",
+            "_collectorNumber": "164",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Instant",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "ody",
+            "setName": "Odyssey",
+            "collectorNumber": "164",
+            "rarity": "rare",
+            "releasedAt": "2001-10-01",
+            "scryfallUri": "https://scryfall.com/card/ody/164/tainted-pact?utm_source=api"
+          }
+        },
+        {
+          "position": 28,
+          "oracleId": "ac5585ce-2959-4eaf-af56-5dca8cdfb2d6",
+          "scryfallId": "25750098-02a1-48e4-917d-187c41e111b6",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-opponent-life-cohort-v30",
+                  "n": 3,
+                  "life": 3
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Reveal the top three cards of your library. For each of those cards, put that card into your hand unless any opponent pays 3 life. Then exile the rest.",
+          "raw": {
+            "name": "Sword-Point Diplomacy",
+            "cost": "{2}{B}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Reveal the top three cards of your library. For each of those cards, put that card into your hand unless any opponent pays 3 life. Then exile the rest.",
+            "_ci": [
+              "B"
+            ],
+            "_oracleId": "ac5585ce-2959-4eaf-af56-5dca8cdfb2d6",
+            "_scryfallId": "25750098-02a1-48e4-917d-187c41e111b6",
+            "_layout": "normal",
+            "_set": "xln",
+            "_collectorNumber": "126",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "B"
+            ],
+            "colors": [
+              "B"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "xln",
+            "setName": "Ixalan",
+            "collectorNumber": "126",
+            "rarity": "rare",
+            "releasedAt": "2017-09-29",
+            "scryfallUri": "https://scryfall.com/card/xln/126/sword-point-diplomacy?utm_source=api"
+          }
+        },
+        {
+          "position": 29,
+          "oracleId": "a9d58cad-c1c2-4bd2-80f2-da9ce60801df",
+          "scryfallId": "593409fd-26ef-463e-9101-ec5ad53dfd67",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-immediate-piles-v30",
+                  "n": 5
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Exile the top five cards of your library. An opponent separates those cards into two piles. You may play lands and cast spells from one of those piles. If you cast a spell this way, you cast it without paying its mana cost.",
+          "raw": {
+            "name": "Brilliant Ultimatum",
+            "cost": "{W}{W}{U}{U}{U}{B}{B}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Exile the top five cards of your library. An opponent separates those cards into two piles. You may play lands and cast spells from one of those piles. If you cast a spell this way, you cast it without paying its mana cost.",
+            "_ci": [
+              "B",
+              "U",
+              "W"
+            ],
+            "_oracleId": "a9d58cad-c1c2-4bd2-80f2-da9ce60801df",
+            "_scryfallId": "593409fd-26ef-463e-9101-ec5ad53dfd67",
+            "_layout": "normal",
+            "_set": "ala",
+            "_collectorNumber": "159",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "B",
+              "U",
+              "W"
+            ],
+            "colors": [
+              "B",
+              "U",
+              "W"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "ala",
+            "setName": "Shards of Alara",
+            "collectorNumber": "159",
+            "rarity": "rare",
+            "releasedAt": "2008-10-03",
+            "scryfallUri": "https://scryfall.com/card/ala/159/brilliant-ultimatum?utm_source=api"
+          }
+        },
+        {
+          "position": 30,
+          "oracleId": "048bdc4a-4d26-420c-88ed-23a073c30fff",
+          "scryfallId": "65e10a22-6070-48d7-99ab-45f770f16fd1",
+          "semanticClass": "spell-template",
+          "implementedKeywords": [],
+          "implementation": [
+            {
+              "kind": "spell-generic",
+              "targets": [],
+              "effects": [
+                {
+                  "action": "library-unexpected-result-v30"
+                }
+              ],
+              "optional": false,
+              "contract": "spell-generic-effect"
+            }
+          ],
+          "oracleContracts": [
+            "spell-generic-effect"
+          ],
+          "rulesCore": "Shuffle your library, then reveal the top card. If it's a nonland card, you may cast it without paying its mana cost. If it's a land card, you may put it onto the battlefield and return Unexpected Results to its owner's hand.",
+          "raw": {
+            "name": "Unexpected Results",
+            "cost": "{2}{G}{U}",
+            "super": [],
+            "types": [
+              "Sorcery"
+            ],
+            "subtypes": [],
+            "oracle": "Shuffle your library, then reveal the top card. If it's a nonland card, you may cast it without paying its mana cost. If it's a land card, you may put it onto the battlefield and return Unexpected Results to its owner's hand.",
+            "_ci": [
+              "G",
+              "U"
+            ],
+            "_oracleId": "048bdc4a-4d26-420c-88ed-23a073c30fff",
+            "_scryfallId": "65e10a22-6070-48d7-99ab-45f770f16fd1",
+            "_layout": "normal",
+            "_set": "gtc",
+            "_collectorNumber": "203",
+            "_rarity": "rare"
+          },
+          "catalog": {
+            "typeLine": "Sorcery",
+            "colorIdentity": [
+              "G",
+              "U"
+            ],
+            "colors": [
+              "G",
+              "U"
+            ],
+            "keywords": [],
+            "commanderLegality": "legal",
+            "set": "gtc",
+            "setName": "Gatecrash",
+            "collectorNumber": "203",
+            "rarity": "rare",
+            "releasedAt": "2013-02-01",
+            "scryfallUri": "https://scryfall.com/card/gtc/203/unexpected-results?utm_source=api"
+          }
+        }
+      ],
+      "catalogSummary": {
+        "selected": 30
+      }
+    }
+  ]
+}

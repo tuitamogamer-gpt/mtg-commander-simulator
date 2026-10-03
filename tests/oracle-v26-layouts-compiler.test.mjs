@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {semanticClass} from '../scripts/import-oracle-batch.mjs';
+const rows=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v26-layouts.json',import.meta.url),'utf8'));
+const all=v=>v&&typeof v==='object'?[v,...Object.values(v).flatMap(x=>Array.isArray(x)?x.flatMap(all):all(x))]:[];
+test('v26 library whole cards consume every physical face and reject an unsupported extra rule on each face',()=>{assert.equal(rows.length,40);for(const row of rows){const result=semanticClass(row,{compilerVersion:26});assert.ok(result.semanticClass,row.name);for(let i=0;i<(row.card_faces?.length||1);i++){const bad=structuredClone(row);const face=bad.card_faces?.[i]||bad;face.oracle_text=(face.oracle_text||'')+'\nDo an unsupported thing.';assert.equal(semanticClass(bad,{compilerVersion:26}).semanticClass,undefined,row.name+' face '+i);}}});
+test('v26 projections bind captured library values, defending players and independent piles',()=>{const effects=name=>all(semanticClass(rows.find(c=>c.name===name),{compilerVersion:26}).implementation);
+ const turntimber=effects('Turntimber Symbiosis // Turntimber, Serpentine Wood').find(n=>n.action==='library-program-v26');assert.deepEqual(turntimber.selections[0].countersIfMVV26,{max:3,counters:{'+1/+1':3}});
+ const cub=effects('Owlbear Cub');assert.ok(cub.some(n=>n.eventFilter?.kind==='attack-player-land-count-v25'));assert.equal(cub.find(n=>n.attackingV26).attackingV26,'attack-defender');
+ const calibrated=effects('Calibrated Blast').find(n=>n.action==='library-value-v26');assert.equal(calibrated.mode,'until-reflexive-mv');assert.equal(calibrated.reflexiveTargets.length,1);
+ const cur=effects('Curator of Destinies').find(n=>n.action==='library-piles-v26');assert.equal(cur.n,5);assert.equal(cur.hidden,true);assert.equal(cur.splitBy,'you');assert.equal(cur.chooseBy,'opponent');
+ assert.equal(effects('Sanity Grinding').find(n=>n.action==='library-value-v26').mode,'blue-symbols');
+ const rulik=effects('Rulik Mons, Warren Chief').find(n=>n.action==='library-top-card-v26');assert.equal(rulik.rules.length,2);assert.equal(rulik.rules[1].effects[0].action,'if-inspected-not-moved-v26');
+});

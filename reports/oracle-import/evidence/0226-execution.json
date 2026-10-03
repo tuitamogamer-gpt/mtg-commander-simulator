@@ -1,0 +1,1701 @@
+{
+  "schema": "oracle-execution-evidence/v1",
+  "cards": [
+    {
+      "name": "Aether Burst",
+      "oracleId": "1e33f39b-a61a-4a09-a541-16cc1bd53d02",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-target-quota-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Agency Coroner",
+      "oracleId": "3686fd97-49ff-4a92-9cb2-7d8e9438d945",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Ashes of the Fallen",
+      "oracleId": "6437867b-a658-4a71-a8a5-0c5a782d1f84",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "entry-creature-type-v28",
+        "chosen-creature-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Aurelia's Fury",
+      "oracleId": "ceaa0e02-2dec-412d-86aa-c1129fd0fb08",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Balance of Power",
+      "oracleId": "c57ee68e-6832-4d4c-b710-fc03a2c10a9c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Baylen, the Haymaker",
+      "oracleId": "73dc28a7-37ac-4b16-aa00-967c9c44d979",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mana-source",
+        "generic-ability",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Betrothed of Fire",
+      "oracleId": "77849657-c872-4d54-9149-a08bbe90f787",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "generic-ability",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Bloodfire Infusion",
+      "oracleId": "d5bd7c0b-c412-47ed-afb8-1a9ba04be77c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Boneyard Desecrator",
+      "oracleId": "c3adc698-a0c5-4c82-8347-536745c9e928",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [
+        "menace"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Candlekeep Inspiration",
+      "oracleId": "32d666ff-4d6b-4c60-8d3d-5bdae2d475fa",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Cerebral Vortex",
+      "oracleId": "c68b4003-e539-4b88-acc9-e95c100173c0",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Cleansing Meditation",
+      "oracleId": "658bccf8-fe73-4d6a-b37b-7a58034e5e5d",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Close Encounter",
+      "oracleId": "032fdd08-2ea7-442e-8162-0a8e5a585253",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Command the Dreadhorde",
+      "oracleId": "198d31e4-1ae1-4bf9-a05a-7fa45c0aeddb",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Concussive Bolt",
+      "oracleId": "e99958bf-458c-403b-aae2-91d60c055ee2",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Conspiracy",
+      "oracleId": "775d284d-0884-4ae3-a1b5-2b2a50a895b4",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "entry-creature-type-v28",
+        "chosen-creature-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Convincing Mirage",
+      "oracleId": "685c4665-e04c-4012-aa5b-888a042c2a21",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "entry-land-type-v28",
+        "chosen-land-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Crackleburr",
+      "oracleId": "59a6cb4e-1646-42b5-b482-da641c0f7f6f",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Cryptic Gateway",
+      "oracleId": "abdc1c92-1434-47d3-abaa-debe047903b9",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Cut Propulsion",
+      "oracleId": "cf3234f2-09d7-4d8b-b871-3bf0fcb75b6d",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Embolden",
+      "oracleId": "9904873c-7669-4485-b380-f28ff529b45c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-flashback",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Falkenrath Aristocrat",
+      "oracleId": "cd2a87c4-d1c3-4a9e-b2df-e6fe251421c4",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [
+        "flying",
+        "haste"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Falkenrath Torturer",
+      "oracleId": "f578a5e0-77e2-4c35-90b2-6628ed9b218e",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Frantic Firebolt",
+      "oracleId": "f1882cc8-c81a-4131-b639-1bd6e083f8ba",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Gisa, Glorious Resurrector",
+      "oracleId": "f1354b1b-896c-4492-b0c0-3dd07c6d3917",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "permanent-zone-replacement-v28",
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Illusionary Terrain",
+      "oracleId": "17ae63fa-fd63-45e6-81c1-bf30851bf77c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-cumulative-upkeep",
+        "entry-land-type-v28",
+        "chosen-land-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Impelled Giant",
+      "oracleId": "eb7c9442-7bfa-4bcf-a394-b5de187f224a",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [
+        "trample"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Jhoira's Timebug",
+      "oracleId": "afe11d79-1edd-4175-9cdd-11e475240e7a",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Kaervek's Spite",
+      "oracleId": "7d69be1e-701a-4bcb-a83e-38b4174f7828",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 16,
+      "failures": []
+    },
+    {
+      "name": "Keldon Battlewagon",
+      "oracleId": "4a2df44b-5d36-4c4e-b982-836d9d7e0505",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "cant-block",
+        "generic-trigger",
+        "generic-ability"
+      ],
+      "keywords": [
+        "trample"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Lethal Throwdown",
+      "oracleId": "4ab565bb-3188-4d23-93d8-5de67fc0d056",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Leyline of Transformation",
+      "oracleId": "cfaa13d6-9992-4223-8bd7-c44046505555",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-leyline-v9",
+        "entry-creature-type-v28",
+        "chosen-creature-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Liesa, Forgotten Archangel",
+      "oracleId": "efcaadbe-24e3-4dfc-b08c-a910f003d427",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger",
+        "permanent-zone-replacement-v28"
+      ],
+      "keywords": [
+        "flying",
+        "lifelink"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Lyzolda, the Blood Witch",
+      "oracleId": "0d80caeb-d2c2-4d0a-b903-dea170fee2cf",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Martyr of Ashes",
+      "oracleId": "7f00bc45-7c65-4455-9db0-58bd79bcdb4b",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Martyr of Frost",
+      "oracleId": "196cacb0-a26a-4540-9143-57867a638085",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Martyr of Sands",
+      "oracleId": "f2048140-b691-4753-8239-1aa75059e389",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Martyr of Spores",
+      "oracleId": "46c128d5-92b7-4132-a865-4db299879579",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Meteor Swarm",
+      "oracleId": "3e7bd846-7295-4590-a419-c97cd2526bc1",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-x-bound-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 16,
+      "failures": []
+    },
+    {
+      "name": "Mind Bomb",
+      "oracleId": "fad1562d-0ab9-4a3f-b80a-476d8132f66d",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Monstrous Emergence",
+      "oracleId": "5542ea4d-34ab-4f89-8894-793a7038f501",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 28,
+      "failures": []
+    },
+    {
+      "name": "Multiversal Passage",
+      "oracleId": "17770eeb-ecbf-4510-af2d-acececfbe146",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "entry-land-type-v28",
+        "chosen-land-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Mythos of Vadrok",
+      "oracleId": "0b72fdeb-80b2-4691-93b9-8df5307b4641",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Necromancer's Magemark",
+      "oracleId": "dffa7c06-096a-47f8-9645-1ba7306ba5b0",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "generic-static",
+        "permanent-zone-replacement-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Nivmagus Elemental",
+      "oracleId": "d2f9a8a0-509b-4c24-a8cc-f27f77c9eefd",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Officious Interrogation",
+      "oracleId": "e57e448b-1186-4662-a6b0-01a9ce33b961",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-strive-v8",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Paradoxical Outcome",
+      "oracleId": "2cce7250-f8f9-4c0a-87b1-ba3c5b8ed6b3",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Phyrexian Purge",
+      "oracleId": "df032801-fccf-4bff-aa88-d01650b6c81e",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Planar Guide",
+      "oracleId": "75701981-b9fc-471f-a97f-e897bb3dfb77",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Pollen Remedy",
+      "oracleId": "ff52f955-98de-4f12-9ec7-f1d73e3edae9",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-keyword-payment-v8",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Priest of Yawgmoth",
+      "oracleId": "cb6465f9-dcf8-4258-aa18-661ad252b58b",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "permanent-donor-mana-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Radiant, Serra Archangel",
+      "oracleId": "4a8227ff-0ae4-4405-8e44-1f5187a7f9f5",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability",
+        "commander-pairing"
+      ],
+      "keywords": [
+        "flying"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Realmwright",
+      "oracleId": "bad869dd-e844-46ca-be53-73c4bc19d09c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "entry-land-type-v28",
+        "chosen-land-types-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Remedy",
+      "oracleId": "c644f190-63e5-4496-8612-bbe7be91afc9",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Rift Elemental",
+      "oracleId": "e9602731-2e8e-44ea-96a1-6b38e1efbbd9",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Rise of the Witch-king",
+      "oracleId": "3c86541c-3601-4a38-8872-39705e41303a",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Roots of Life",
+      "oracleId": "29ec9b49-fbe5-49ac-8ad6-7159cb88bc66",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "entry-land-type-v28",
+        "chosen-land-tap-life-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Sandman's Quicksand",
+      "oracleId": "f2b376d2-a2f4-4d23-a1fb-eb7b6ebd0b7a",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-mayhem-v8",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Sanguine Praetor",
+      "oracleId": "af6124cf-e8c5-44f3-964a-4ac0caa6f22b",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Searing Blaze",
+      "oracleId": "74b08a70-b0bb-4340-98a0-b1d5b7c9d2cc",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Serpentine Curve",
+      "oracleId": "e07ed462-17b8-46ec-8a3f-3f5c89f4bf78",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Shimmer",
+      "oracleId": "f557fb2c-581b-4a8d-8766-1e46e92224fa",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "entry-land-type-v28",
+        "chosen-land-phasing-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Skull Raid",
+      "oracleId": "7d22c7ed-2f45-42af-b999-b921f4f4db25",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-foretell",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Slobad, Iron Goblin",
+      "oracleId": "72062fb6-0329-424d-936a-882b638d6d57",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "permanent-donor-mana-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Soldevi Adnate",
+      "oracleId": "e3174070-542f-429e-9149-b572f6614537",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "permanent-donor-mana-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Superior Numbers",
+      "oracleId": "b98177b5-599f-41b0-aa1e-4769d7005bbd",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Surge of Strength",
+      "oracleId": "bd3e55cf-ffca-402c-91ea-2420035a9dd1",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Swallow Whole",
+      "oracleId": "54d4c632-1e7c-42f1-938c-9b4bd9b9a9b9",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-tap-cost-v20",
+        "spell-tap-evidence-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 24,
+      "failures": []
+    },
+    {
+      "name": "Tangle Tumbler",
+      "oracleId": "0d81ea20-5e7d-4eea-b0ba-fe688f27df94",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability",
+        "generic-ability"
+      ],
+      "keywords": [
+        "vigilance"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Thallid Omnivore",
+      "oracleId": "b9bb1b0e-38ce-40f1-882b-85f6c95610ff",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "The Darkness Crystal",
+      "oracleId": "660f370a-b25b-4ea5-b765-7abf96899c1c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-cost-v20",
+        "permanent-zone-replacement-v28",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "The Elderspell",
+      "oracleId": "eff0a1ad-ecc6-416f-a4ae-96b26cd8a905",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Thran Portal",
+      "oracleId": "926ce6a2-7bdd-4380-ac65-bc902ba0c284",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "conditional-enters-tapped",
+        "entry-land-type-v28",
+        "chosen-land-types-v28",
+        "mana-activation-life-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Traveler's Cloak",
+      "oracleId": "5241182d-e2ca-4b31-809f-fbff2822dbf6",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "entry-land-type-v28",
+        "generic-trigger",
+        "chosen-landwalk-v28"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Treacherous Greed",
+      "oracleId": "5483f787-7aca-4efe-a39a-ea29f8c07f0d",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Triumphant Chomp",
+      "oracleId": "d417f574-38a4-405c-83bb-49c5cf542648",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Unerring Sling",
+      "oracleId": "10a52a73-157f-475e-975a-eb00c80573d4",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Vodalian War Machine",
+      "oracleId": "f72511b0-9993-4998-b646-65a855cb8170",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability",
+        "generic-ability",
+        "generic-trigger"
+      ],
+      "keywords": [
+        "defender"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Void Maw",
+      "oracleId": "ad2a1b07-58f5-44c2-92e0-464ea2d45e7e",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "permanent-zone-replacement-v28",
+        "generic-ability"
+      ],
+      "keywords": [
+        "trample"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Voltage Surge",
+      "oracleId": "1779af8e-38fc-4043-b5fa-ee16a7ea840c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-custom-cost-v28",
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Warren Weirding",
+      "oracleId": "d9c1c4d5-cc60-4762-9fc1-c768a1f61539",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Weight of Conscience",
+      "oracleId": "42989c6d-75d9-4ddd-bb9f-f18c0eb005fe",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "attachment-grant",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Wing Storm",
+      "oracleId": "c593f66d-0e9a-4d46-a9c6-ac7a70bf17ea",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Wiretapping",
+      "oracleId": "befc5986-f06c-40a4-98ee-ffcace4ceaa8",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger",
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Witch's Oven",
+      "oracleId": "8fa0fe02-2452-4386-8e0c-165757b0f0a3",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Witness Protection",
+      "oracleId": "a5f5e71e-83a7-468d-829a-6392b764c76e",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "aura-target",
+        "v8-ability-loss-static",
+        "permanent-attached-name-v23"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Word of Blasting",
+      "oracleId": "8b391f24-992f-4cc0-ac4d-31456983fc03",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "World Queller",
+      "oracleId": "2ac27b74-aa44-412d-8099-ace5009628f0",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 20,
+      "failures": []
+    },
+    {
+      "name": "Worldheart Phoenix",
+      "oracleId": "67c50af9-bb8e-40b6-8b25-c209784b6865",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "cast-permission-v20"
+      ],
+      "keywords": [
+        "flying"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Wormfang Behemoth",
+      "oracleId": "77a000de-76d9-44f8-9789-875aa9f576e7",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger",
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    },
+    {
+      "name": "Wormfang Crab",
+      "oracleId": "4216f9ce-bdd9-4213-8c3f-e2ef4cd848f9",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "unblockable",
+        "generic-trigger",
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Wormfang Drake",
+      "oracleId": "d37c4e77-5023-4d13-9cfe-a43f513364bf",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger",
+        "generic-trigger"
+      ],
+      "keywords": [
+        "flying"
+      ],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 10,
+      "failures": []
+    },
+    {
+      "name": "Worship",
+      "oracleId": "99f9a4c8-b59f-4a41-8577-6c1e4684b240",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "life-rule-v20"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Wrath of the Skies",
+      "oracleId": "21efa6f2-3e7c-4576-b5a3-0b75b2843442",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    },
+    {
+      "name": "Wretched Banquet",
+      "oracleId": "dafd4385-e64f-4a4a-93c4-b0ac6bd30d41",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "spell-generic"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Wu Spy",
+      "oracleId": "4b681770-eea3-459c-ad5b-138834213f8c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Yggdrasil, Rebirth Engine",
+      "oracleId": "7617a6f7-c83b-4ee5-a681-c7e164456526",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-trigger",
+        "generic-ability",
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 6,
+      "failures": []
+    },
+    {
+      "name": "Ygra, Eater of All",
+      "oracleId": "62511d43-8eaf-405a-9c81-7bd593d3a01e",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "mechanic-ward-v8",
+        "permanent-static-v20",
+        "generic-static",
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 8,
+      "failures": []
+    },
+    {
+      "name": "Yisan, the Wanderer Bard",
+      "oracleId": "7f4b0233-a2b0-41a2-8448-2df1f845148c",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "generic-ability"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 2,
+      "failures": []
+    },
+    {
+      "name": "Yorvo, Lord of Garenbrig",
+      "oracleId": "00a15abc-bdac-4977-90a0-f08d41941d01",
+      "batch": "oracle-0226",
+      "passed": true,
+      "operationKinds": [
+        "enters-with-counters",
+        "generic-trigger"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 4,
+      "failures": []
+    }
+  ],
+  "stateInvariantGames": 610,
+  "failures": [],
+  "limitation": "Controlled scenarios and state invariants; not exhaustive Oracle interpretation or all card combinations."
+}

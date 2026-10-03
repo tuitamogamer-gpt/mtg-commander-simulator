@@ -754,10 +754,12 @@ test('v4 eventFilter contracts reject foreign events and accept only the exact s
     const context = gameContext();
     await castFree(context, name);
     const before = context.player.library.length;
-    await context.game.emit(event, { player: context.opponent });
+    const foreignSpell = zoneCard(context.opponent, synthetic(`${event} foreign spell`, ['Instant']), 'hand');
+    assert.equal(await context.game.castSpell(context.opponent, foreignSpell, { from: 'hand', free: true }), true);
     await settle(context.game);
     assert.equal(context.player.library.length, before);
-    await context.game.emit(event, { player: context.player });
+    const ownSpell = zoneCard(context.player, synthetic(`${event} controller spell`, ['Instant']), 'hand');
+    assert.equal(await context.game.castSpell(context.player, ownSpell, { from: 'hand', free: true }), true);
     await settle(context.game);
     assert.equal(context.player.library.length, before - 1);
   }
@@ -765,10 +767,10 @@ test('v4 eventFilter contracts reject foreign events and accept only the exact s
     const context = gameContext();
     await castFree(context, 'V4 Draw Watcher');
     const before = context.player.life;
-    await context.game.emit('draw', { player: context.opponent });
+    await context.game.draw(context.opponent, 1);
     await settle(context.game);
     assert.equal(context.player.life, before);
-    await context.game.emit('draw', { player: context.player });
+    await context.game.draw(context.player, 1);
     await settle(context.game);
     assert.equal(context.player.life, before + 1);
   }

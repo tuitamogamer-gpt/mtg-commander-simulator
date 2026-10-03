@@ -1163,3 +1163,33 @@ Imported the third complete 100-card batch, bringing progress to 300/1,000 with 
 ## 2026-10-01 — Oracle 0222, continuing the next 1,000 import
 
 Imported the fourth complete 100-card batch, bringing progress to 400/1,000 with 600 outstanding. Compiler v24 drift-free scan classified all 4,757 missing source IDs and found 122 complete supported cards. Installed proof passes 100 cards in both roles, 406 operation routes, 18 keyword routes, 11,420 nested checks and 1,049 invariant games; provenance passes all 100 pinned rows. Focused v24 checks 346/346 pass. Syntax, source audit, strict certification and browser 16 checks pass, including an actual three-mana human Cemetery Prowler. Safe Haven proof coverage and Thief of Existence's Stack-to-battlefield granted ability were repaired before installation. Catalog and landing counts regenerated: runtime 26,192 / importable 26,191 / generic 22,200 / batches 222 / remaining source IDs 4,657. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0222.md.
+
+
+## 2026-10-03 — Oracle 0223, continuing the next 1,000 import
+
+Imported the fifth complete 100-card batch, bringing progress to 500/1,000 with 500 outstanding. Compiler v25 final drift-free scan classified all 4,657 missing IDs and found 130 complete supported cards. Installed proof passes 100 cards in both roles, 312 operation routes, 50 keyword routes, 5,653 nested checks and 594 invariant games; provenance passes all 100 pinned rows. Focused v25 checks 354/354 pass. Syntax, audit, strict certification and browser 16 checks pass, including an actual one-mana human Dino DNA. Ojer Kaslem's distinct creature/land choice and Shredder's Technique paid Sneak coverage were repaired before installation. Catalog and landing counts regenerated: runtime 26,292 / importable 26,291 / generic 22,300 / batches 223 / remaining source IDs 4,557. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0223.md.
+
+
+## 2026-10-03 — Oracle 0224, the next 1,000 import
+
+Imported another complete 100-card batch, bringing progress to 600/1,000 with 400 outstanding. Compiler v26 drift-free scan classified all 4,557 missing IDs and found 128 complete supported cards. Installed proof passes 100 cards in both roles, 312 operation routes, 20 keyword routes, 5850 nested checks and 700 invariant games; provenance passes all 100 pinned rows. Focused v26 checks 324/324 pass. Syntax, audit, strict certification and browser 16 checks pass, including an actual 4-mana human Primal Clay. Catalog and landing counts regenerated: runtime 26,392 / importable 26,391 / generic 22,400 / batches 224 / remaining source IDs 4,457. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0224.md.
+
+
+## 2026-10-03 — Oracle 0225, the next 1,000 import
+
+Imported another complete 100-card batch, bringing progress to 700/1,000 with 300 outstanding. Compiler v27 drift-free scan classified all 4,457 missing IDs and found 124 complete supported cards. Installed proof passes 100 cards in both roles, 320 operation routes, 24 keyword routes, 5616 nested checks and 642 invariant games; provenance passes all 100 pinned rows. Focused v27 checks 299/299 pass. Syntax, audit, strict certification and browser 16 checks pass, including an actual 1-mana human Ghost Vacuum. Catalog and landing counts regenerated: runtime 26,492 / importable 26,491 / generic 22,500 / batches 225 / remaining source IDs 4,357. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0225.md.
+
+
+## 2026-10-03 — Oracle 0226, the next 1,000 import
+
+Imported another complete 100-card batch, bringing progress to 800/1,000 with 200 outstanding. Compiler v28 drift-free scan classified all 4,357 missing IDs and found 108 complete supported cards. Installed proof passes 100 cards in both roles, 338 operation routes, 26 keyword routes, 4340 nested checks and 610 invariant games; provenance passes all 100 pinned rows. Focused v28 checks 351/351 pass. Syntax, audit, strict certification and browser 16 checks pass, including an actual 3-mana human Tangle Tumbler. Catalog and landing counts regenerated: runtime 26,592 / importable 26,591 / generic 22,600 / batches 226 / remaining source IDs 4,257. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0226.md.
+
+
+## 2026-10-03 — Oracle 0227, the next 1,000 import
+
+Imported another complete 100-card batch, bringing progress to 900/1,000 with 100 outstanding. Compiler v29 drift-free scan classified all 4,257 missing IDs and found 107 complete supported cards. Installed proof passes 100 cards in both roles, 232 operation routes, 24 keyword routes, 4160 nested checks and 468 invariant games; provenance passes all 100 pinned rows. Focused v29 checks 340/340 pass. Syntax, audit, strict certification and browser 16 checks pass, including an actual 4-mana human Stormscale Anarch. Catalog and landing counts regenerated: runtime 26,692 / importable 26,691 / generic 22,700 / batches 227 / remaining source IDs 4,157. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0227.md.
+
+
+## 2026-10-03 — Oracle 0228, the next 1,000 import
+
+Imported another complete 100-card batch, bringing progress to 1000/1,000 with 0 outstanding. Compiler v30 drift-free scan classified all 4,157 missing IDs and found 105 complete supported cards. Installed proof passes 100 cards in both roles, 242 operation routes, 24 keyword routes, 2946 nested checks and 462 invariant games; provenance passes all 100 pinned rows. Focused v30 checks 322/322 pass. Syntax, audit, strict certification and browser 16 checks pass, including an actual 6-mana human Gate to the Aether. Catalog and landing counts regenerated: runtime 26,792 / importable 26,791 / generic 22,800 / batches 228 / remaining source IDs 4,057. Full suite not run; no commit, push or deployment. Evidence: reports/oracle-import/validation-0228.md.

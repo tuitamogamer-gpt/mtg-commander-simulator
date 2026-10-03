@@ -1,0 +1,42 @@
+const body=(effects,targets=[])=>targets.every(Boolean)?{targets,effects:Array.isArray(effects)?effects:[effects],optional:false}:null;
+const cf=(h,t)=>h.target('target '+t+' from your graveyard');
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const num=s=>({one:1,two:2,three:3,four:4,five:5,six:6,seven:7}[s]??Number(s));
+const target=(h,t)=>h.target(t)||(['target spell or nonland permanent','target spell or creature'].includes(t)?{what:'mixed-v18',zone:'mixed-v18',min:1,alternatives:[{what:'spell',zone:'stack',min:1},{what:t.endsWith('creature')?'creature':'nonland permanent',zone:'battlefield',controller:'any',min:1}]}:null);
+export function extensionEffect(card,line,h){
+ if(process.env.LAYOUTS30_DEBUG)console.log('LEAF',card.name,JSON.stringify(line));
+ const self='(?:'+[card.name,card.name.split(',')[0],'this creature','this artifact','this enchantment','this spell'].map(esc).join('|')+')';let m;
+ m=/^(?:The owner of|Choose) (target .+?)\.? (?:puts it on their choice of the top or bottom of their library\.|Its owner puts it on their choice of the top or bottom of their library\.)$/.exec(line);
+ if(m)return body({action:'owner-library-position-v30',target:0,positions:['top','bottom']},[target(h,m[1])]);
+ m=/^The owner of (target .+?) puts it into their library second from the top or on the bottom\.$/.exec(line);
+ if(m)return body({action:'owner-library-position-v30',target:0,positions:['second','bottom']},[h.target(m[1])]);
+ m=/^Choose (up to one target .+?)\. Its owner puts it on their choice of the top or bottom of their library\.$/.exec(line);
+ if(m)return body({action:'owner-library-position-v30',target:0,positions:['top','bottom']},[h.target(m[1])]);
+ const search=/^Search your library for (.+?)\. Reveal those cards, put them into your hand, then shuffle\.$/.exec(line)||/^Search your library for (.+?), reveal them, put them into your hand, then shuffle\.$/.exec(line)||/^Search your library for (.+?)\. Put those cards into your graveyard, then shuffle\.$/.exec(line);
+ if(search){const clauses=search[1].replace(/, and /g,', ').replace(/ and /g,', ').split(', ').map(s=>/^(?:a|an) (.+? card)$/.exec(s)).map(m=>m&&cf(h,m[1]));if(clauses.length>=2&&clauses.length<=5&&clauses.every(Boolean))return body({action:'library-search-qualities-v30',clauses,destination:line.includes('graveyard')?'graveyard':'hand',reveal:!line.includes('graveyard')});}
+ if(line==='Defending player reveals the top card of their library. If it\'s a land card, that player puts it into their hand.')return body({action:'library-top-program-v30',who:'defender',visibility:'reveal',mode:'land-hand'});
+ if(line==='That player reveals the top card of their library. If it\'s an artifact, creature, enchantment, or land card, the player may put it onto the battlefield.')return body({action:'library-top-program-v30',who:'event-player',visibility:'reveal',mode:'old-permanent-entry'});
+ m=/^That player reveals the top (two|three) cards of their library\. You choose one of those cards and put it into their graveyard\.$/.exec(line);
+ if(m)return body({action:'library-program-v30',who:'event-player',n:num(m[1]),visibility:'reveal',selections:[{max:1,required:true,destination:'graveyard'}],rest:{destination:'stay'}});
+ m=/^Target player reveals the top (four|five) cards of their library\. You choose (two|three) of those cards and put them into that player's graveyard\. Put the rest on top of their library in any order\.$/.exec(line);
+ if(m)return body({action:'library-program-v30',who:0,n:num(m[1]),visibility:'reveal',selections:[{max:num(m[2]),required:true,destination:'graveyard'}],rest:{destination:'top'}},[h.target('target player')]);
+ if(line==='Look at the top card of defending player\'s library. You may put that card on the bottom of that player\'s library.')return body({action:'library-top-program-v30',who:'defender',visibility:'look',mode:'optional-bottom'});
+ if(line==='Look at the top card of target player\'s library. If it\'s a nonland card, you may pay 2 life. If you do, put it into that player\'s graveyard.')return body({action:'library-top-program-v30',who:0,visibility:'look',mode:'pay-life-graveyard',life:2},[h.target('target player')]);
+ if(line==='Target player puts the bottom card of their library into their graveyard. If it\'s a creature card, you create a 2/2 black Zombie creature token.')return body({action:'library-bottom-program-v30',who:0,mode:'creature-token'},[h.target('target player')]);
+ m=new RegExp('^Put the bottom card of your library into your graveyard\\. If it\'s a creature card with power less than or equal to '+self+'\'s power, put it onto the battlefield\\.$').exec(line);
+ if(m)return body({action:'library-bottom-program-v30',who:'you',mode:'power-entry'});
+ if(line==='That player reveals the top card of their library. If that card is a land card, destroy that creature. Otherwise, it gets +3/+3 until end of turn.')return body({action:'library-top-program-v30',who:'attached-controller',visibility:'reveal',mode:'host-land-destroy'});
+ if(line==='Reveal the top card of target opponent\'s library. If it\'s a land, you gain 1 life. That player shuffles.')return body({action:'library-top-program-v30',who:0,visibility:'reveal',mode:'land-life-shuffle'},[h.target('target opponent')]);
+ if(line==='Each player reveals the top card of their library. You may put the revealed cards into their owners\' graveyards. If you don\'t, each player draws a card.')return body({action:'library-parley-v30',mode:'optional-graveyard'});
+ m=/^Each player reveals the top card of their library\. For each nonland card revealed this way, you create a (3\/3 green Elephant|1\/1 white Spirit) creature token( with flying)?\. Each player draws a card\.$/.exec(line);
+ if(m)return body({action:'library-parley-v30',mode:'token',token:m[1].startsWith('3')?{name:'Elephant',types:['Creature'],subtypes:['Elephant'],colors:['G'],power:3,toughness:3,keywords:[]}:{name:'Spirit',types:['Creature'],subtypes:['Spirit'],colors:['W'],power:1,toughness:1,keywords:['flying']}});
+ if(line==='Each player reveals the top card of their library. For each nonland card revealed this way, put a +1/+1 counter on this creature. Each player draws a card.')return body({action:'library-parley-v30',mode:'counter'});
+ if(line==='Each player reveals the top card of their library. For each nonland card revealed this way, attacking creatures you control get +1/+1 until end of turn. Each player draws a card.')return body({action:'library-parley-v30',mode:'attacking-pump'});
+ if(line==='Reveal the top seven cards of your library, then put those cards on the bottom of your library in any order. If a card named Stomping Slabs was revealed this way, Stomping Slabs deals 7 damage to any target.')return body({action:'library-named-damage-v30',n:7,name:'Stomping Slabs',target:0,damage:7},[{what:'any',min:1}]);
+ if(line==='Reveal the top three cards of your library. For each of those cards, put that card into your hand unless any opponent pays 3 life. Exile the rest.')return body({action:'library-opponent-life-cohort-v30',n:3,life:3});
+ if(line==='Exile the top card of your library. You may put that card into your hand unless it has the same name as another card exiled this way. Repeat this process until you put a card into your hand or you exile two cards with the same name, whichever comes first.')return body({action:'library-tainted-repeat-v30'});
+ if(line==='Shuffle your library, then reveal the top card. If it\'s a nonland card, you may cast it without paying its mana cost. If it\'s a land card, you may put it onto the battlefield and return Unexpected Results to its owner\'s hand.')return body({action:'library-unexpected-result-v30'});
+ if(line==='Exile the top five cards of your library. An opponent separates those cards into two piles. You may play lands and cast spells from one of those piles. If you cast a spell this way, you cast it without paying its mana cost.')return body({action:'library-immediate-piles-v30',n:5});
+ return null;
+}
+export const extensionLine=()=>null,normalizeCard=c=>c,finalizeCompilation=(c,r)=>r;

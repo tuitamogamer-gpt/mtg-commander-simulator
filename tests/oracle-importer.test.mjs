@@ -32,7 +32,7 @@ test('CLI keeps the historical default and enables v11 only with an explicit com
     let fetched=0;
     const card=oracleCard('Compiler choice fixture','compiler-choice',{type_line:'Instant',mana_cost:'{U}',oracle_text:'Draw a card.\nSplice onto instant or sorcery {1}{U}'});
     const dependencies={root:directory,fetchOracleCards:async()=>{fetched++;return {bulk:bulk(SNAPSHOT_A),cards:[card]};},console:{log(){}},now:()=>GENERATED_AT};
-    for(const version of ['0','26','11.5','NaN'])await assert.rejects(runOracleImport(['--limit=1','--compiler-version='+version],dependencies),/compiler version/);
+    for(const version of ['0','31','11.5','NaN'])await assert.rejects(runOracleImport(['--limit=1','--compiler-version='+version],dependencies),/compiler version/);
     assert.equal(fetched,0,'invalid versions fail before loading the source');
     await assert.rejects(runOracleImport(['--limit=1'],dependencies),/Only 0 cards/);
     const plan=await runOracleImport(['--limit=1','--compiler-version=11'],dependencies);

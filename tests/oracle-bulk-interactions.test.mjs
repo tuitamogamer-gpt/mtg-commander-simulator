@@ -1,3 +1,20 @@
+import * as spellV30Proof from './helpers/oracle-v30-spells-proof.mjs';
+import * as permanentV30Proof from './helpers/oracle-v30-permanents-proof.mjs';
+import * as layoutV30Proof from './helpers/oracle-v30-layouts-proof.mjs';
+import * as spellV29Proof from './helpers/oracle-v29-spells-proof.mjs';
+import * as permanentV29Proof from './helpers/oracle-v29-permanents-proof.mjs';
+import * as layoutV29Proof from './helpers/oracle-v29-layouts-proof.mjs';
+import * as permanentV28Proof from './helpers/oracle-v28-permanents-proof.mjs';
+import * as spellV28Proof from './helpers/oracle-v28-spells-proof.mjs';
+import * as commonV28Proof from './helpers/oracle-v28-common-proof.mjs';
+import * as layoutV27Proof from './helpers/oracle-v27-layouts-proof.mjs';
+import * as permanentV27Proof from './helpers/oracle-v27-permanents-proof.mjs';
+import * as spellV27Proof from './helpers/oracle-v27-spells-proof.mjs';
+import * as commonV27Proof from './helpers/oracle-v27-common-proof.mjs';
+import * as layoutV26Proof from './helpers/oracle-v26-layouts-proof.mjs';
+import * as spellV26Proof from './helpers/oracle-v26-spells-proof.mjs';
+import * as permanentV26Proof from './helpers/oracle-v26-permanents-proof.mjs';
+import * as commonV26Proof from './helpers/oracle-v26-common-proof.mjs';
 import {rippleProof}from'./helpers/oracle-ripple-proof.mjs';
 import {spliceProofV11} from './helpers/oracle-v11-splice-proof.mjs';
 import {cipherProofV13} from './helpers/oracle-v13-cipher-proof.mjs';
@@ -42,6 +59,9 @@ import * as spellV23Proof from './helpers/oracle-v23-spells-proof.mjs';
 import * as spellV24Proof from './helpers/oracle-v24-spells-proof.mjs';
 import * as commonV24Proof from './helpers/oracle-v24-common-proof.mjs';
 import * as commonV25Proof from './helpers/oracle-v25-common-proof.mjs';
+import * as permanentV25Proof from './helpers/oracle-v25-permanents-proof.mjs';
+import * as spellV25Proof from './helpers/oracle-v25-spells-proof.mjs';
+import * as layoutV25Proof from './helpers/oracle-v25-layouts-proof.mjs';
 import * as permanentV23Proof from './helpers/oracle-v23-permanents-proof.mjs';
 import * as permanentV24Proof from './helpers/oracle-v24-permanents-proof.mjs';
 import * as layoutV23Proof from './helpers/oracle-v23-layouts-proof.mjs';
@@ -218,6 +238,11 @@ function stageCardCosts(MTG,ctx,entry){
   layoutV21Proof.stageLayoutsCardV21(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
   layoutV22Proof.stageLayoutsCardV22(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
   layoutV24Proof.stageLayoutsCardV24(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
+  layoutV30Proof.stageLayoutsCardV30(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
+  layoutV29Proof.stageLayoutsCardV29(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
+  layoutV27Proof.stageLayoutsCardV27(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
+  layoutV26Proof.stageLayoutsCardV26(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
+  layoutV25Proof.stageLayoutsCardV25(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
   layoutV23Proof.stageLayoutsCardV23(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
   costsV20Proof.stageCostsCardV20?.(MTG,ctx,entry,{...v5Helpers(),stageGenericTarget});
   const physical=MTG.DEFS[entry.raw.name]?.oracleFaces;
@@ -356,6 +381,11 @@ function gameFor(MTG, controllers = [decision(), decision()], options = {}) {
   layoutV21Proof.installLayoutsProofV21(MTG, game);
   layoutV22Proof.installLayoutsProofV22(MTG, game);
   layoutV24Proof.installLayoutsProofV24(MTG,game);
+  layoutV30Proof.installLayoutsProofV30(MTG,game);
+  layoutV29Proof.installLayoutsProofV29(MTG,game);
+  layoutV27Proof.installLayoutsProofV27(MTG,game);
+  layoutV26Proof.installLayoutsProofV26(MTG,game);
+  layoutV25Proof.installLayoutsProofV25(MTG,game);
   layoutV23Proof.installLayoutsProofV23(MTG,game);
   const a = game.addPlayer('Oracle A', { name: 'Oracle A' }, controllers[0], options.ai === true);
   const b = game.addPlayer('Oracle B', { name: 'Oracle B' }, controllers[1], true);
@@ -885,6 +915,11 @@ function genericProofSnapshot(context, trackedCards) {
 async function assertGenericEffectEvidence(MTG, context, entry, effect, source, selectedTargets,
   damagedPlayer, before, trace, label) {
   if(await layoutV24Proof.assertLayoutsEffectV24(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
+  if(await layoutV30Proof.assertLayoutsEffectV30(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
+  if(await layoutV29Proof.assertLayoutsEffectV29(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
+  if(await layoutV27Proof.assertLayoutsEffectV27(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
+  if(await layoutV26Proof.assertLayoutsEffectV26(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
+  if(await layoutV25Proof.assertLayoutsEffectV25(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
   if(await layoutV23Proof.assertLayoutsEffectV23(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,v8Helpers()))return;
   if(await spellV24Proof.assertSpellsEffectV24(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,{...v8Helpers(),assertGenericEffectEvidence}))return;
   if(await spellV23Proof.assertSpellsEffectV23(MTG,context,entry,effect,source,selectedTargets,damagedPlayer,before,trace,label,{...v8Helpers(),assertGenericEffectEvidence}))return;
@@ -3382,6 +3417,11 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     if(effect.action==='token-inline')for(const op of effect.token?.operations||[])if(op.kind==='characteristic-pt')for(const player of effect.who==='you'?[a]:game.players)stageCount(MTG,{...context,a:player,b:game.players.find(p=>p!==player)},op.count,v5Helpers());
     if(stageDamageEffectV20(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
     if(layoutV24Proof.stageLayoutsEffectV24(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
+    if(layoutV30Proof.stageLayoutsEffectV30(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
+    if(layoutV29Proof.stageLayoutsEffectV29(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
+    if(layoutV27Proof.stageLayoutsEffectV27(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
+    if(layoutV26Proof.stageLayoutsEffectV26(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
+    if(layoutV25Proof.stageLayoutsEffectV25(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
     if(layoutV23Proof.stageLayoutsEffectV23(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
     if(spellV24Proof.stageSpellsEffectV24(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
     if(spellV23Proof.stageSpellsEffectV23(MTG,context,effect,{...v8Helpers(),stagedTargets,operation,entry,stageEffect}))return;
@@ -5099,8 +5139,8 @@ async function attachmentOperationProof(MTG,entry,op,role){
 }
 
 async function operationProof(MTG, entry, operation, role = 'human') {
-  for(const proof of [commonV25Proof.operationProofV25,permanentV24Proof.operationProofV24,commonV24Proof.operationProofV24,layoutV24Proof.operationProofV24,spellV24Proof.operationProofV24,commonV23Proof.operationProofV23,spellV23Proof.operationProofV23,permanentV23Proof.operationProofV23,layoutV23Proof.operationProofV23,commonV22Proof.operationProofV22,spellV22Proof.operationProofV22,layoutV22Proof.operationProofV22,permanentV22Proof.operationProofV22,spellV21Proof.operationProofV21,layoutV21Proof.operationProofV21,permanentV21Proof.operationProofV21,costsProofV20,spellsProofV20,permanentsProofV20,layoutsProofV20,damageProofV20,rulesProofV20]){
-    const result=await proof(MTG,entry,operation,role,{gameFor,decision,fund,fillLibrary,permanent,zoneCard,fixtureDefinition,resolveAll,stageGenericTarget,assertControllerRole,operationProof,genericRuntimeOperationProof,v8Helpers,stageCondition:(...args)=>stageCondition(...args,v5Helpers())});
+  for(const proof of [spellV30Proof.operationProofV30,permanentV30Proof.operationProofV30,layoutV30Proof.operationProofV30,spellV29Proof.operationProofV29,permanentV29Proof.operationProofV29,layoutV29Proof.operationProofV29,permanentV28Proof.operationProofV28,spellV28Proof.operationProofV28,commonV28Proof.operationProofV28,layoutV27Proof.operationProofV27,permanentV27Proof.operationProofV27,spellV27Proof.operationProofV27,commonV27Proof.operationProofV27,layoutV26Proof.operationProofV26,spellV26Proof.operationProofV26,permanentV26Proof.operationProofV26,commonV26Proof.operationProofV26,commonV25Proof.operationProofV25,permanentV25Proof.operationProofV25,spellV25Proof.operationProofV25,layoutV25Proof.operationProofV25,permanentV24Proof.operationProofV24,commonV24Proof.operationProofV24,layoutV24Proof.operationProofV24,spellV24Proof.operationProofV24,commonV23Proof.operationProofV23,spellV23Proof.operationProofV23,permanentV23Proof.operationProofV23,layoutV23Proof.operationProofV23,commonV22Proof.operationProofV22,spellV22Proof.operationProofV22,layoutV22Proof.operationProofV22,permanentV22Proof.operationProofV22,spellV21Proof.operationProofV21,layoutV21Proof.operationProofV21,permanentV21Proof.operationProofV21,costsProofV20,spellsProofV20,permanentsProofV20,layoutsProofV20,damageProofV20,rulesProofV20]){
+    const result=await proof(MTG,entry,operation,role,{gameFor,decision,fund,fillLibrary,permanent,zoneCard,fixtureDefinition,resolveAll,stageGenericTarget,assertControllerRole,operationProof,genericRuntimeOperationProof,v8Helpers,trackProofGame:game=>activeProofGames?.push(game),stageCondition:(...args)=>stageCondition(...args,v5Helpers())});
     if(result!==null&&result!==undefined&&result!==false)return result;
   }
   if(operation.kind==='hand-visibility-v17')return handVisibilityProofV17(MTG,entry,operation,role);
