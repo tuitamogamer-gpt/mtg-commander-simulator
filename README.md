@@ -44,22 +44,23 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 
 ### Current catalog
 
-Repository inventory checked on **30 September 2026**:
+Repository inventory checked on **5 October 2026**:
 
 | Measure | Available |
 | --- | ---: |
 | Built-in precon decks | **175**, each with 100 cards |
-| Runtime card definitions | **26,792** |
-| Definitions eligible for deck import | **26,791** |
+| Runtime card definitions | **26,799** |
+| Definitions eligible for deck import | **26,798** |
 | Generic Oracle batches | **228**, containing 22,800 definitions |
 | Dedicated commander videos | **28**, across the original 27 decks |
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
 
-Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **30 August 2026**, with later native additions recorded separately.
+Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **30 August 2026**, with later native additions recorded separately. The seven manual Commander staples below are not yet reflected in that export, which needs the pinned snapshot to regenerate.
 
 ### Recent additions
 
+- **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. Their Oracle text was entered by hand and still has to be verified against the pinned snapshot; until Scryfall print IDs are recorded they show the card back. [Provenance](reports/oracle-import/commander-staples-cards.json)
 - **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is complete. [Latest validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)

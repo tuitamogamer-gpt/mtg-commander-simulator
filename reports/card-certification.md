@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-10-03T13:18:16.747Z
+Generisano: 2026-10-05T21:03:52.413Z
 
 Aktivni deckovi: **175** · stvarno jedinstvenih karata: **6474** · card/deck provjere: **14566**
 
 Jedinstvene karte — PASS: **6474** · FAIL: **0** · card/deck pojave — PASS: **14566** · FAIL: **0**
 
-Cijela raw baza — PASS: **26792/26792** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **20318** karata. Cijeli katalog sadrži **22858** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **26799/26799** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **20325** karata. Cijeli katalog sadrži **22865** certifikovanih Oracle batch karata.
 
 Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.
 
@@ -21216,6 +21216,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Esior, Wardwing Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Battlemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Cormorants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Esper Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Sojourners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Stormblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esperzoa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26245,6 +26246,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mana Chains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Confluence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Cylix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mana Drain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Geode | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Leak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27398,6 +27400,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Necropanther | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necropede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necropolis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Necropotence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necropouncer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrosavant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrosquito | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27955,6 +27958,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Orchard Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Artillery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Bloodpainter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Orcish Bowmasters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Cannonade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Hellraiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31805,6 +31809,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Smoldering Tar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smoldering Werewolf // Erupting Dreadwolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smother | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Smothering Tithe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smuggler's Surprise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snake Basket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34487,6 +34492,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Undersea Invader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Undertaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Undertow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Underworld Breach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Underworld Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Underworld Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Underworld Fires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34654,6 +34660,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Urza's Guilt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urza's Rebuff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urza's Tome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Urza, Lord High Artificer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urza, Powerstone Prodigy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urza, Prince of Kroog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Usher of the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |

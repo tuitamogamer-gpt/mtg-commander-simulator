@@ -1,0 +1,309 @@
+// Manual Oracle batch for seven Commander staples. The Oracle text was entered
+// by hand because Scryfall was unreachable; see
+// reports/oracle-import/commander-staples-cards.json for provenance and the
+// verification still required against the pinned snapshot.
+'use strict';
+var MTG = globalThis.MTG || (globalThis.MTG = {});
+MTG.registerOracleBatch({
+  "schemaVersion": 1,
+  "id": "manual-commander-staples",
+  "sequence": "manual-001",
+  "generatedAt": "2026-10-05T20:21:16.000Z",
+  "source": {
+    "provider": "Manual Oracle transcription",
+    "basis": "Current Oracle wording (modern self-reference templating) entered by hand; Scryfall was unreachable from the implementation environment.",
+    "oracleIdSource": "docs/catalog/remaining-cards.csv, generated from the pinned Scryfall oracle_cards snapshot below.",
+    "pinnedSnapshot": {
+      "bulkType": "oracle_cards",
+      "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+      "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+      "bulkSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528"
+    },
+    "verifiedAgainstPinnedSnapshot": false
+  },
+  "selectionPolicy": {
+    "games": [
+      "paper"
+    ],
+    "commanderLegality": "legal",
+    "names": "Seven popular Commander staples that were absent from the runtime and listed in docs/catalog/remaining-cards.csv.",
+    "semanticClasses": [
+      "manual-deck-semantic"
+    ],
+    "note": "Every entry requires an explicit implementation in scripts-commander-staples.js and human/AI interaction tests in tests/commander-staples.test.mjs."
+  },
+  "cards": [
+    {
+      "position": 1,
+      "oracleId": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token.",
+      "raw": {
+        "name": "Smothering Tithe",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal"
+      }
+    },
+    {
+      "position": 2,
+      "oracleId": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "Whenever an opponent casts their first noncreature spell each turn, draw a card unless that player pays {X}, where X is this creature's power.",
+      "raw": {
+        "name": "Esper Sentinel",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Whenever an opponent casts their first noncreature spell each turn, draw a card unless that player pays {X}, where X is this creature's power.",
+        "_ci": [
+          "W"
+        ],
+        "power": "1",
+        "toughness": "1",
+        "_oracleId": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Human Soldier",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal"
+      }
+    },
+    {
+      "position": 3,
+      "oracleId": "ea5103f5-27e0-4eb1-902c-7f34652d6bf3",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "Flash\nWhen this creature enters and whenever an opponent draws a card except the first one they draw in each of their draw steps, this creature deals 1 damage to any target. Then amass Orcs 1.",
+      "raw": {
+        "name": "Orcish Bowmasters",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Orc",
+          "Archer"
+        ],
+        "oracle": "Flash\nWhen this creature enters and whenever an opponent draws a card except the first one they draw in each of their draw steps, this creature deals 1 damage to any target. Then amass Orcs 1.",
+        "_ci": [
+          "B"
+        ],
+        "power": "1",
+        "toughness": "1",
+        "_oracleId": "ea5103f5-27e0-4eb1-902c-7f34652d6bf3",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Creature — Orc Archer",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flash",
+          "Amass"
+        ],
+        "commanderLegality": "legal"
+      }
+    },
+    {
+      "position": 4,
+      "oracleId": "94a844d2-0574-45a7-b347-e0e329767c42",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "Skip your draw step.\nWhenever you discard a card, exile that card from your graveyard.\nPay 1 life: Exile the top card of your library face down. Put that card into your hand at the beginning of your next end step.",
+      "raw": {
+        "name": "Necropotence",
+        "cost": "{B}{B}{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Skip your draw step.\nWhenever you discard a card, exile that card from your graveyard.\nPay 1 life: Exile the top card of your library face down. Put that card into your hand at the beginning of your next end step.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "94a844d2-0574-45a7-b347-e0e329767c42",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal"
+      }
+    },
+    {
+      "position": 5,
+      "oracleId": "27e0948b-9916-473b-8d8c-a51bdfbc7457",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "Each nonland card in your graveyard has escape. The escape cost is equal to the card's mana cost plus exile three other cards from your graveyard.\nAt the beginning of the end step, sacrifice this enchantment.",
+      "raw": {
+        "name": "Underworld Breach",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Each nonland card in your graveyard has escape. The escape cost is equal to the card's mana cost plus exile three other cards from your graveyard. (You may cast cards from your graveyard for their escape cost.)\nAt the beginning of the end step, sacrifice this enchantment.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "27e0948b-9916-473b-8d8c-a51bdfbc7457",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal"
+      }
+    },
+    {
+      "position": 6,
+      "oracleId": "74d3277a-38e5-4732-afed-084a56148f20",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "Counter target spell. At the beginning of your next main phase, add an amount of {C} equal to that spell's mana value.",
+      "raw": {
+        "name": "Mana Drain",
+        "cost": "{U}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target spell. At the beginning of your next main phase, add an amount of {C} equal to that spell's mana value.",
+        "_ci": [
+          "U"
+        ],
+        "_produced": [
+          "C"
+        ],
+        "_oracleId": "74d3277a-38e5-4732-afed-084a56148f20",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal"
+      }
+    },
+    {
+      "position": 7,
+      "oracleId": "e87906d2-db1a-4e19-b910-adb4eb339945",
+      "scryfallId": null,
+      "semanticClass": "manual-deck-semantic",
+      "implementedKeywords": [],
+      "rulesCore": "When Urza enters, create a 0/0 colorless Construct artifact creature token with \"This creature gets +1/+1 for each artifact you control.\"\nTap an untapped artifact you control: Add {U}.\n{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.",
+      "raw": {
+        "name": "Urza, Lord High Artificer",
+        "cost": "{2}{U}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Artificer"
+        ],
+        "oracle": "When Urza enters, create a 0/0 colorless Construct artifact creature token with \"This creature gets +1/+1 for each artifact you control.\"\nTap an untapped artifact you control: Add {U}.\n{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.",
+        "_ci": [
+          "U"
+        ],
+        "_produced": [
+          "U"
+        ],
+        "power": "1",
+        "toughness": "4",
+        "_oracleId": "e87906d2-db1a-4e19-b910-adb4eb339945",
+        "_scryfallId": null,
+        "_layout": "normal"
+      },
+      "catalog": {
+        "typeLine": "Legendary Creature — Human Artificer",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal"
+      }
+    }
+  ]
+});
