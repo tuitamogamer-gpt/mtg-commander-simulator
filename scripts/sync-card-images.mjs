@@ -167,8 +167,9 @@ function manifestSource(cardPaths, artPaths, missing) {
     `MTG.CARD_IMAGE_API_BASE = 'https://api.scryfall.com/cards/named';\n` +
     `MTG.CARD_IMAGE_ID_API_BASE = 'https://api.scryfall.com/cards/';\n` +
     `MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_IMAGE_ID_API_BASE]);\n` +
-    `MTG.cardImageAPIURL = function (name) {\n` +
-    `  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=normal&fuzzy=' + encodeURIComponent(String(name || ''));\n` +
+    `MTG.cardImageAPIURL = function (name, variant) {\n` +
+    `  const version = variant === 'art' ? 'art_crop' : 'normal';\n` +
+    `  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=' + version + '&fuzzy=' + encodeURIComponent(String(name || ''));\n` +
     `};\n\n` +
     `MTG.cardImageAPIURLById = function (id, variant) {\n` +
     `  const version = variant === 'art' ? 'art_crop' : 'normal';\n` +
@@ -190,6 +191,8 @@ function manifestSource(cardPaths, artPaths, missing) {
     "  if (catalog && catalog.engineBatch && catalog.scryfallId) {\n" +
     "    return MTG.cardImageAPIURLById(catalog.scryfallId, variant);\n" +
     "  }\n" +
+    "  // A hand-entered Oracle card without a recorded print is found by name.\n" +
+    "  if (catalog && catalog.engineBatch) return MTG.cardImageAPIURL(face, variant);\n" +
     "  return MTG.CARD_IMAGE_PLACEHOLDER;\n" +
     "};\n";
 }

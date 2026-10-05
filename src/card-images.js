@@ -7103,8 +7103,9 @@ MTG.CARD_IMAGE_PLACEHOLDER = './assets/cards/card-back.webp';
 MTG.CARD_IMAGE_API_BASE = 'https://api.scryfall.com/cards/named';
 MTG.CARD_IMAGE_ID_API_BASE = 'https://api.scryfall.com/cards/';
 MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_IMAGE_ID_API_BASE]);
-MTG.cardImageAPIURL = function (name) {
-  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=normal&fuzzy=' + encodeURIComponent(String(name || ''));
+MTG.cardImageAPIURL = function (name, variant) {
+  const version = variant === 'art' ? 'art_crop' : 'normal';
+  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=' + version + '&fuzzy=' + encodeURIComponent(String(name || ''));
 };
 
 MTG.cardImageAPIURLById = function (id, variant) {
@@ -7128,5 +7129,7 @@ MTG.cardImageURL = function (name, variant) {
   if (catalog && catalog.engineBatch && catalog.scryfallId) {
     return MTG.cardImageAPIURLById(catalog.scryfallId, variant);
   }
+  // A hand-entered Oracle card without a recorded print is found by name.
+  if (catalog && catalog.engineBatch) return MTG.cardImageAPIURL(face, variant);
   return MTG.CARD_IMAGE_PLACEHOLDER;
 };

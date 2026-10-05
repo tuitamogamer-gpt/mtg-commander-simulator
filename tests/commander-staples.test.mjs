@@ -115,7 +115,7 @@ test('the manual batch preserves its provenance and registers seven certified, i
   assert.equal(batch.source.pinnedSnapshot.bulkSha256, 'a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528');
   assert.match(report.provenance.oracleText, /by hand/);
   assert.match(report.provenance.requiredVerification, /pinned Scryfall oracle_cards snapshot/);
-  assert.match(report.provenance.scryfallIds, /card back/);
+  assert.match(report.provenance.scryfallIds, /by card name/);
   assert.match(report.provenance.catalogExport, /intentionally left unchanged/);
 
   const pinned = new Map(fs.readFileSync(new URL('../docs/catalog/remaining-cards.csv', import.meta.url), 'utf8')
@@ -144,7 +144,14 @@ test('the manual batch preserves its provenance and registers seven certified, i
     assert.equal(catalog.typeLine, typeLine);
     assert.deepEqual(Array.from(catalog.colorIdentity), identity);
     assert.equal(catalog.scryfallId, null);
-    assert.equal(MTG.cardImageURL(name), MTG.CARD_IMAGE_PLACEHOLDER, `${name}: no print ID, so the card back is shown`);
+    // No print ID is recorded, so the image is looked up by card name.
+    for (const [variant, version] of [[undefined, 'normal'], ['art', 'art_crop']]) {
+      const url = new URL(MTG.cardImageURL(name, variant));
+      assert.equal(url.origin + url.pathname, MTG.CARD_IMAGE_API_BASE, `${name}: Scryfall name lookup`);
+      assert.equal(url.searchParams.get('format'), 'image');
+      assert.equal(url.searchParams.get('version'), version);
+      assert.equal(url.searchParams.get('fuzzy'), name);
+    }
   }
   // AI-facing hints on every decision the cards add.
   assert.equal(MTG.DEFS['Mana Drain'].targets[0].aiHint.goal, 'counter');

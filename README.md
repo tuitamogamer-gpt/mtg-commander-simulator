@@ -60,7 +60,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
-- **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. Their Oracle text was entered by hand and still has to be verified against the pinned snapshot; until Scryfall print IDs are recorded they show the card back. [Provenance](reports/oracle-import/commander-staples-cards.json)
+- **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. Their Oracle text was entered by hand and still has to be verified against the pinned snapshot; until Scryfall print IDs are recorded, their images are looked up on Scryfall by card name. [Provenance](reports/oracle-import/commander-staples-cards.json)
 - **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is complete. [Latest validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
