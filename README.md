@@ -39,7 +39,7 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 | Mode | How it works |
 | --- | --- |
 | Solo | Control one seat against one to three local AI opponents. Choose decks, opponent styles, difficulty, and optional Politics rules. No model API or AI subscription is required. |
-| Commander Live | Invite friends to a private table of two to four human players. The host runs the game engine; the room server synchronizes decisions and sends each guest their own view. Keep the host's game tab open. |
+| Commander Live | Invite friends to a private table of two to four seats; the host can fill empty seats with local AI bots. The host runs the game engine; the room server synchronizes decisions and sends each guest their own view. Keep the host's game tab open. |
 | Imported decks | Paste a Commander decklist, check it against the supported catalog, and save it to My Library. Ready lists can be used by you, Solo opponents, and Live players. |
 
 ### Current catalog
@@ -381,7 +381,7 @@ The **Command Zone signatures** group offers five more detailed personalities in
 | **[Olivia — Saboteur Instigator](docs/olivia-saboteur-instigator-research.md)** | Probe safe attacks, misdirect pressure, disrupt the public leader, and exploit an opening with a calculated ambush. | Favor precise short deals, pressure the shared threat, and look for ways to weaken opposing cooperation. |
 | **[Josh — Defensive Value](docs/josh-value-engine-research.md)** | Develop mana and repeatable card advantage, preserve interaction, put shields up under threat, and convert a stronger resource position into a win. | Favor exact, short exchanges and cooperation against a shared threat. |
 
-These preferences rank **legal actions available in the current game**. An aggressive bot still has survival checks; a theft-focused style cannot steal a permanent without a suitable card; a political style cannot force another player to accept an offer. All five operate within the same agreement rules when [Diplomacy & Politics](#diplomacy--politics) is enabled. They can also be used with Politics off. Commander Live is human-only, so these opponent styles are Solo features.
+These preferences rank **legal actions available in the current game**. An aggressive bot still has survival checks; a theft-focused style cannot steal a permanent without a suitable card; a political style cannot force another player to accept an offer. All five operate within the same agreement rules when [Diplomacy & Politics](#diplomacy--politics) is enabled. They can also be used with Politics off. In Commander Live the host can fill empty seats with local AI bots, which always use the balanced style, so the other opponent styles are Solo features.
 
 ### Add your own AI skill
 
@@ -745,7 +745,7 @@ These reports describe their dated imports and checks. Use the [generated catalo
 ## Current limits
 
 - Only cards accepted by the catalog and deck validator can be imported. New sets and unsupported mechanics require implementation and verification.
-- Live is invite-only, human-only, and requires a trusted host whose game tab stays open. There is no public matchmaking, host migration, or durable midgame Live restore.
+- Live is invite-only, its local AI bots always use the balanced style, and it requires a trusted host whose game tab stays open. There is no public matchmaking, host migration, or durable midgame Live restore.
 - Browser-local guest lists, skills, and pod presets do not automatically follow you to another device or domain.
 - Account password reset/change, email verification, and self-service account deletion are not implemented. See [account behavior](docs/data-and-accounts.md) for current retention and recovery limits.
 - Passing tests covers the documented scenarios; a large imported catalog does not establish exhaustive multiplayer interaction coverage.
