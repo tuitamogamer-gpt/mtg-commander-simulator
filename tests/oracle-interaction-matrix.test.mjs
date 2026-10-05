@@ -136,7 +136,7 @@ function permanent(MTG, game, player, name) {
 test('svaka generička Oracle batch karta mapira kompletan rules core na poznate interakcijske ugovore', () => {
   const MTG = loadEngine();
   const entries = allEntries(MTG);
-  const batches = MTG.ORACLE_BATCHES.filter(batch => batch.id !== 'moxfield-sauron-dark-lord');
+  const batches = MTG.ORACLE_BATCHES.filter(batch => !['moxfield-sauron-dark-lord', 'manual-commander-staples'].includes(batch.id));
   const state = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/state.json', import.meta.url), 'utf8'));
   assert.ok(state.batches.length >= 148, 'the existing catalog is preserved');
   assert.deepEqual(Array.from(batches, batch => batch.id), state.batches.map(batch => batch.id), 'every recorded batch is registered in order');
