@@ -2747,8 +2747,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Instant-speed power can wait for declared blocks. Haste/evasion and
     // sorcery-only pumps may need to be paid before the attack instead.
+    // Haste only enables the attack of a creature that could not attack yet.
     const enablesAttack = (pump.keywords || []).some(keyword => !source.kw(keyword) &&
-      ['haste', 'flying', 'menace', 'fear', 'trample'].includes(keyword));
+      (keyword === 'haste' ? source.sick : ['flying', 'menace', 'fear', 'trample'].includes(keyword)));
     if (!(ability.sorcery || enablesAttack) || game.turnPlayer !== player || source.tapped ||
       projected.sick && !projected.kw('haste') || !game.canAttackAtAll(projected) ||
       !(game.phase === 'main1' || game.phase === 'combat' && game.step === 'begin')) return benefit;
@@ -2784,11 +2785,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } catch (error) { return null; }
     }
     const mana = U.parseCost(cost.mana || '');
+    // Keywords do not stack, so a keyword-only pump never needs a second activation.
+    const stacks = !!(pump.power || pump.toughness);
     for (const recipient of recipients) {
       // Costs are paid after targets are chosen. Sacrificing the recipient
       // itself would leave the ability without a legal target.
       const pool = fodder.filter(row => row.card !== recipient);
-      const limit = Math.min(pool.length, cost.tap || ability.oncePerTurn ? 1 : 24);
+      const limit = Math.min(pool.length, cost.tap || ability.oncePerTurn || !stacks ? 1 : 24);
       let price = 0, payoff = 0;
       for (let count = 1; count <= limit; count++) {
         const cards = pool.slice(0, count).map(row => row.card);
