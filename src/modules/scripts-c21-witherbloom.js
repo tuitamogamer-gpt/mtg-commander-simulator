@@ -1,7 +1,7 @@
 'use strict';
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
-  const M=MTG,E=M.E,T=M.T,SC=M.SCRIPTS,C=M.C21;
+  const M=MTG,E=M.E,T=M.T,SC=M.SCRIPTS,C=M.C21,G=M.Game.prototype;
   const {same,choose,option,token,enterTrigger,grave,own,selfEvent,row,current,immediate,snapshotEvent,eventStats}=C;
   const gained=p=>p.turnState.lifeGained||0;
   const exileSelf=async ctx=>{if(!ctx.so.isCopy&&ctx.src.zone==='stack')await ctx.g.move(ctx.src,'exile');};
@@ -20,9 +20,12 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     onlyIf:(g,c,d,ctx)=>c.zone==='graveyard'&&gained(ctx.you)>0,desc:'You may cast Sproutback Trudge from your graveyard',run:async ctx=>{
       if(ctx.src.zone==='graveyard'&&ctx.src.zoneVersion===ctx.sourceZoneVersion)await immediate(ctx,[ctx.src],{free:false});
     }}]};
+  // Yedora's face-down Forest. A save rebuilds face-down permanents from their
+  // kind, so the kind alone must describe the land.
+  const faceDownDef=G.faceDownCreatureDef;G.faceDownCreatureDef=function(kind){return kind==='c21Forest'?{name:'Face-down land',rulesNoName:true,cost:null,super:[],types:['Land'],subtypes:['Forest'],colorsOverride:[],kws:[],oracle:''}:faceDownDef.call(this,kind);};
   SC['Yedora, Grave Gardener']={triggers:[{on:'dies',filter:(g,c,d)=>d.card!==c&&d.snap.ctrl===C.controllerAt(g,c,d)&&!d.card.isToken&&d.snap.types.includes('Creature'),opt:true,
     desc:'Return the creature face down as a Forest',run:async ctx=>{const c=ctx.data.card;if(c.zone!=='graveyard'||c.zoneVersion!==ctx.data.graveyardZoneVersion)return;
-      const def=c.def;c.def={name:'Face-down land',rulesNoName:true,cost:null,super:[],types:['Land'],subtypes:['Forest'],colorsOverride:[],kws:[],oracle:''};
+      const def=c.def;c.def=ctx.g.faceDownCreatureDef('c21Forest');
       await ctx.g.move(c,'battlefield',{ctrl:c.owner,faceDownDef:def,faceDownKind:'c21Forest'});
     }}]};
   SC["Verdant Sun's Avatar"]={triggers:[{on:'etb',filter:(g,c,d)=>d.card.ctrl===c.ctrl&&d.card.is('Creature'),desc:'Gain life equal to the entering creature’s toughness',prepareTargets:snapshotEvent,
