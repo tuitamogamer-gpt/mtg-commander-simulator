@@ -6,6 +6,76 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  function kittAttackTargets(game, card) {
+    if (card.tapped || card.sick && !card.kw('haste') || !game.canAttackAtAll(card)) return [];
+    return game.legalDeclarationAttackTargets(card).filter(target => game.attackTargetIsFree(card, target));
+  }
+
+  function kittTargetValue(game, player, card) {
+    const destinations = kittAttackTargets(game, card);
+    if (!destinations.length) return -1000;
+    const power = Math.max(0, card.power);
+    if (card.ctrl !== player) {
+      // In a duel, goad does not protect us. Nor does it force payment of an
+      // attack tax to reach another player. Do not pay to strengthen that foe.
+      const alreadyGoaded = game.goadersOf(card).includes(player) || game.untilEffects.some(effect =>
+        effect.notPlayer === player && (effect.kind === 'mustAttack' && effect.who === card.ctrl ||
+          effect.kind === 'goadCard' && effect.iid === card.iid &&
+          (effect.zoneVersion === undefined || effect.zoneVersion === card.zoneVersion)));
+      if (!destinations.some(target => target instanceof U.Player && target !== player) || alreadyGoaded) return -1000;
+      return 3 + Math.min(6, power) * 0.5 - (card.kw('lifelink') ? 3 : 0);
+    }
+    const trample = card.kw('trample') ? 0 : Math.max(0, ...destinations.map(target => {
+      const defender = target instanceof U.Player ? target : target.ctrl;
+      const blockers = game.creatures(defender).filter(blocker => game.canBlock(blocker, card));
+      return blockers.length ? Math.min(4, Math.max(0, power + 2 - Math.min(...blockers.map(c => c.toughness)))) : 0;
+    }));
+    return (2 + trample) * (card.kw('double strike') ? 2 : 1) + (card.kw('lifelink') ? 1 : 0);
+  }
+
+  function kittTapCost(game, player, activePlayer, card) {
+    if (activePlayer === player) {
+      // Summoning sickness permits this tap payment and is cheap on our turn;
+      // a creature that can attack loses its entire combat contribution.
+      return kittAttackTargets(game, card).length
+        ? 1 + Math.max(0, card.power) * (card.kw('double strike') ? 2 : 1) : 0.25;
+    }
+    // Summoning-sick creatures can still block on an opponent's turn.
+    const incoming = game.creatures(activePlayer).filter(attacker =>
+      kittAttackTargets(game, attacker).includes(player) && game.canBlock(card, attacker));
+    return incoming.length ? 1 + Math.max(0, card.power) * 0.65 + Math.max(0, card.toughness) * 0.35 : 0.25;
+  }
+
+  MTG.kittKantoAIAction = function (game, player, q) {
+    const hint = q.aiHint || q.spec?.aiHint || {};
+    if (q.type === 'chooseTargets' && hint.goal === 'kittKanto') {
+      const picks = q.candidates.slice().sort((a, b) =>
+        kittTargetValue(game, player, b) - kittTargetValue(game, player, a) || a.iid - b.iid).slice(0, 1);
+      return {kind:'chooseTargets', picks};
+    }
+    if (!(q.type === 'chooseOption' && hint.kind === 'kittKanto') &&
+      !(q.type === 'chooseCards' && hint.kind === 'kittKantoTap')) return null;
+    const activePlayer = hint.activePlayer;
+    const pool = (q.from || game.creatures(player)).filter(card =>
+      card.zone === 'battlefield' && card.ctrl === player && card.is('Creature') && !card.tapped);
+    const costs = new Map(pool.map(card => [card, kittTapCost(game, player, activePlayer, card)]));
+    const sorted = pool.slice().sort((a, b) => costs.get(a) - costs.get(b) || a.iid - b.iid);
+    const targets = game.legalTargets(U.T.creature({filter:(g,c)=>c.ctrl===activePlayer}), hint.src, player);
+    let best = {score:0, picks:[]};
+    for (const target of targets) {
+      // Reserve the intended attacker before selecting the two tap costs.
+      const picks = sorted.filter(card => card !== target).slice(0, 2);
+      if (picks.length !== 2) continue;
+      const score = kittTargetValue(game, player, target) - picks.reduce((sum, card) => sum + costs.get(card), 0);
+      if (score > best.score) best = {score, picks};
+    }
+    // Once Yes has been chosen, still satisfy the mandatory payment if a
+    // caller forced that choice or the original opportunity disappeared.
+    if (q.type === 'chooseCards') return {kind:'chooseCards', picks:best.picks.length ? best.picks : sorted.slice(0, 2)};
+    const value = best.score > 0 ? 'yes' : 'no';
+    return {kind:'chooseOption', value, option:q.options.find(option => option.key === value)};
+  };
+
   // Valki's X must match a creature still linked to this ability. A legal
   // zero-mana activation with no copy choice makes no progress and can loop.
   // Share the same affordable values between both planners and X selection.
@@ -977,6 +1047,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseTargets(g, q) {
+      const kitt = MTG.kittKantoAIAction(g, this.p, q);
+      if (kitt) return kitt.picks;
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
       if(goal==='exchange-life-v18'){
@@ -1215,6 +1287,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseCards(g, q) {
+      const kitt = MTG.kittKantoAIAction(g, this.p, q);
+      if (kitt) return kitt.picks;
       if (q.max === 0) return [];
       if(q.aiHint?.kind==='amplify-v9')return q.from.slice(0,q.max);
       if(q.aiHint?.kind==='devour-v9'){
@@ -1440,6 +1514,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseOption(g, q) {
+      const kitt = MTG.kittKantoAIAction(g, this.p, q);
+      if (kitt) return kitt.value;
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
