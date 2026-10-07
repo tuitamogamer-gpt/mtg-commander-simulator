@@ -5,7 +5,28 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const attacking=T.creature({filter:(g,c)=>!!c.attacking});
  SC['Strefan, Maurer Progenitor']={triggers:[C.step('endStep','Create Blood for each player who lost life this turn',ctx=>ctx.g.makeTokens(M.TOKENS.blood,ctx.you,{n:ctx.g.players.filter(p=>p.turnState.lifeLost>0).length})),C.attack('Sacrifice two Blood to put an indestructible Vampire into combat',async ctx=>{const blood=ctx.g.bf().filter(c=>c.ctrl===ctx.you&&c.hasSub('Blood')&&ctx.g.canSacrifice(c));if(blood.length<2||!await C.yes(ctx,'Sacrifice two Blood tokens?'))return;const cards=await C.choose(ctx.g,ctx.you,blood,2,2,'Strefan: sacrifice two Blood','sacCost');if(cards.length!==2)return;const results=await ctx.g.sacrificeMany(ctx.you,cards);if(cards.some(c=>c.zone==='battlefield'))return;const[c]=await C.choose(ctx.g,ctx.you,ctx.you.hand.filter(c=>c.hasSub('Vampire')),0,1,'Strefan: put a Vampire into combat');if(c){const to=await ctx.g.chooseAttackingDestination(ctx.you,null,c,'Strefan');await ctx.g.putPermanentOntoBattlefield(c,ctx.you,{tapped:true,attacking:to});if(c.zone==='battlefield')E.grantUntilEOT(ctx.g,c,['indestructible']);}})]};
  SC['Kamiz, Obscura Oculus']={triggers:[{on:'attackersDeclared',filter:C.own,desc:'An attacker becomes unblockable and connives; a smaller other attacker gains double strike',targets:[attacking],run:async ctx=>{const c=ctx.targets[0];if(!c)return;C.effectOn(ctx,c,(g,c)=>{c.cur.unblockable=true;});await C.connive(ctx,c);const[o]=await C.choose(ctx.g,ctx.you,ctx.g.creatures().filter(x=>x!==c&&x.attacking&&x.power<c.power),1,1,'Kamiz: choose a smaller attacking creature');if(o)E.grantUntilEOT(ctx.g,o,['double strike']);}}]};
- SC['Kitt Kanto, Mayhem Diva']={triggers:[C.enterTrigger('Create a Citizen',ctx=>ctx.g.makeTokens(C.citizen,ctx.you)),{on:'beginCombat',desc:'Tap two creatures to buff and goad an active player’s creature',run:async ctx=>{const pool=ctx.g.creatures(ctx.you).filter(c=>!c.tapped);if(pool.length<2||!await C.yes(ctx,'Tap two creatures for Kitt Kanto?'))return;const cards=await C.choose(ctx.g,ctx.you,pool,2,2,'Kitt Kanto: tap two creatures','addlTap');for(const c of cards)ctx.g.tap(c);const p=ctx.data.player;ctx.g.queueTrigger({src:ctx.src,ctrl:ctx.you,name:'Kitt Kanto: give +2/+2, trample, and goad',targets:[T.creature({filter:(g,c)=>c.ctrl===p})],run:next=>{const c=next.targets[0];if(c){C.buff(next,c,2,2,['trample']);E.goad(next.g,c,next.you);}}});}}]};
+ SC['Kitt Kanto, Mayhem Diva']={triggers:[C.enterTrigger('Create a Citizen',ctx=>ctx.g.makeTokens(C.citizen,ctx.you)),{
+  on:'beginCombat',desc:'Tap two creatures to buff and goad an active player’s creature',run:async ctx=>{
+   const pool=ctx.g.creatures(ctx.you).filter(c=>!c.tapped),p=ctx.data.player;
+   if(pool.length<2)return;
+   const hint={src:ctx.src,activePlayer:p};
+   const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',
+    prompt:'Tap two creatures for Kitt Kanto?',options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],
+    aiHint:{...hint,kind:'kittKanto'}});
+   if(answer!=='yes')return;
+   const cards=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',from:pool,min:2,max:2,
+    prompt:'Kitt Kanto: tap two creatures',aiHint:{...hint,kind:'kittKantoTap'}});
+   if(!Array.isArray(cards)||cards.length!==2||new Set(cards).size!==2||
+    cards.some(c=>!pool.includes(c)||c.zone!=='battlefield'||c.ctrl!==ctx.you||!c.is('Creature')||c.tapped))return;
+   for(const c of cards)ctx.g.tap(c);
+   // This is a reflexive trigger: the target is chosen only after payment.
+   // Tapped creatures remain legal targets for a human who wants that choice.
+   ctx.g.queueTrigger({src:ctx.src,ctrl:ctx.you,name:'Kitt Kanto: give +2/+2, trample, and goad',
+    targets:[T.creature({filter:(g,c)=>c.ctrl===p,aiHint:{...hint,goal:'kittKanto'}})],run:next=>{
+     const c=next.targets[0];if(c){C.buff(next,c,2,2,['trample']);E.goad(next.g,c,next.you);}
+    }});
+  }
+ }]};
  SC["Phabine, Boss's Confidant"]={statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl===c.ctrl&&x.isToken&&x.is('Creature'))x.cur.kw.add('haste');}}],triggers:[C.step('beginCombat','Parley: reveal, create Citizens, strengthen your creatures, then everyone draws',async ctx=>{const cards=ctx.g.apnapFrom(ctx.you).map(p=>p.library.at(-1)).filter(Boolean);await ctx.g.revealToHuman({cards,ctrl:ctx.you,kind:'reveal'});const lands=cards.filter(c=>c.is('Land')).length;await ctx.g.makeTokens(C.citizen,ctx.you,{n:lands});for(const c of ctx.g.creatures(ctx.you))C.buff(ctx,c,cards.length-lands,cards.length-lands);for(const p of ctx.g.apnapFrom(ctx.you))await ctx.g.draw(p,1,ctx.src);})]};
  SC['Life of the Party']={triggers:[C.attack('Get +1/+0 for each creature you control',ctx=>{if(C.same(ctx))C.buff(ctx,ctx.src,ctx.g.creatures(ctx.you).length,0);}),C.enterTrigger('Each opponent creates a permanently goaded copy',async ctx=>{const d=C.snapshotCopy(ctx.src,ctx.sourceZoneVersion);await ctx.g.withBattlefieldEntryBatch(async()=>{for(const p of ctx.you.opponents(ctx.g))for(const c of await C.copy({...ctx,you:p},ctx.src,{definition:d}))ctx.g.untilEffects.push({kind:'goadCard',iid:c.iid,zoneVersion:c.zoneVersion,notPlayer:ctx.you,expires:'object'});});},{filter:(g,c,d)=>d.card===c&&!c.isToken})]};
  SC['Midnight Arsonist']={triggers:[C.enterTrigger('Destroy artifacts without mana abilities for your Vampires',async ctx=>{await ctx.g.destroyMany(C.flat(ctx.targets),{source:ctx.src});},{targets:(g,c)=>[T.permanent((g,c)=>c.is('Artifact')&&!g.manaSources(c.ctrl).some(r=>r.card===c),{count:g.creatures(c.ctrl).filter(c=>c.hasSub('Vampire')).length,min:0,upTo:true})]})]};

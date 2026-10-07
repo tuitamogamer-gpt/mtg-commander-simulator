@@ -2378,6 +2378,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         q = { type: 'main', player, casts: game.castableList(player), acts: game.activatableList(player), lands: game.playableLands(player), phase: game.phase };
       } else q = { type: 'priority', player, casts: [], acts: [], stack: game.stack, phase: game.phase };
     }
+    // Keep Kitt Kanto's optional payment and reserved attacker coordinated.
+    // Difficulty noise must not replace the payment with the intended target.
+    const kitt = MTG.kittKantoAIAction(game, player, q);
+    if (kitt) return [kitt];
     const actions = [];
     if (q.type === 'main' || q.type === 'priority') {
       for (const entry of q.casts || []) actions.push({ kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from });
