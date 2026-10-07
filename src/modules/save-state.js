@@ -222,6 +222,89 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   }
 
+  // Every card identity still present in a zone, with its current version.
+  function cardVersions(game) {
+    const versions = new Map(game.battlefield.map(card => [card.iid, card.zoneVersion]));
+    for (const player of game.players) for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command']) {
+      for (const card of player[zone]) versions.set(card.iid, card.zoneVersion);
+    }
+    return versions;
+  }
+  // These kinds are applied only to the battlefield object with their exact
+  // iid and zone version.
+  const OBJECT_BOUND_KINDS = new Set(['oracleGrantedOperation', 'oracleSourcePump', 'oracleCombatRestriction',
+    'oracleAnimation', 'oracleCharacteristics', 'oracleBasePT', 'oracleLandTypes', 'oracleCopy', 'wlmType', 'cwwFlag']);
+  // Zone versions only increase, so once that object has moved on or ceased
+  // to exist (a dead token), the entry is history, not state, and must not
+  // block every later save in the game. Same for a card-specific attack
+  // restriction whose card no longer exists anywhere. An effect with its own
+  // apply closure runs on every recalculation and is never assumed inert.
+  function isInertEffect(effect, versions) {
+    if (!effect || typeof effect.apply === 'function' || !Number.isSafeInteger(effect.iid) || effect.iid <= 0) return false;
+    if (effect.kind === 'cantAttackPlayerCard') return !versions.has(effect.iid);
+    if (!OBJECT_BOUND_KINDS.has(effect.kind) || effect.expires !== 'object' ||
+      !Number.isSafeInteger(effect.zoneVersion) || effect.zoneVersion < 0) return false;
+    const current = versions.get(effect.iid);
+    return current === undefined || current > effect.zoneVersion;
+  }
+
+  // The continuous-effect list stamps every new entry with a layer timestamp.
+  const validLayerTimestamp = effect => effect.oracleLayerTimestamp === undefined ||
+    Number.isSafeInteger(effect.oracleLayerTimestamp) && effect.oracleLayerTimestamp > 0 &&
+    effect.oracleLayerTimestamp <= MTG.MAX_RESTORED_TIMESTAMP;
+
+  // Attack restrictions only name seats and card identities.
+  const PLAYER_ATTACK_FIELDS = new Set(['kind', 'who', 'notPlayer', 'expires', 'whoTurn', 'afterTurnsStarted', 'oracleLayerTimestamp']);
+  const CARD_ATTACK_FIELDS = new Set(['kind', 'iid', 'timestamp', 'notPlayer', 'expires', 'whileCounter', 'oracleLayerTimestamp']);
+  function validAttackRestriction(effect, seat) {
+    if (!effect || typeof effect !== 'object' || !validLayerTimestamp(effect)) return false;
+    if (effect.kind === 'cantAttackPlayer') {
+      return Object.keys(effect).every(key => PLAYER_ATTACK_FIELDS.has(key)) &&
+        seat(effect.who) && seat(effect.notPlayer) && seat(effect.whoTurn) &&
+        (effect.expires === 'untilTurnOf' && effect.afterTurnsStarted === undefined ||
+          effect.expires === 'throughTurnOf' && Number.isSafeInteger(effect.afterTurnsStarted) && effect.afterTurnsStarted >= 0);
+    }
+    return effect.kind === 'cantAttackPlayerCard' && Object.keys(effect).every(key => CARD_ATTACK_FIELDS.has(key)) &&
+      Number.isSafeInteger(effect.iid) && effect.iid > 0 && seat(effect.notPlayer) && effect.expires === 'never' &&
+      (effect.timestamp === undefined || Number.isSafeInteger(effect.timestamp) && effect.timestamp >= 0 &&
+        effect.timestamp <= MTG.MAX_RESTORED_TIMESTAMP) &&
+      (effect.whileCounter === undefined || typeof effect.whileCounter === 'string' && effect.whileCounter.length <= 64);
+  }
+  const isPlainAttackRestriction = effect => validAttackRestriction(effect, player => player instanceof MTG.Player);
+  // Restrictions are checks, not layered changes, so a restore may stamp them anew.
+  function captureAttackRestriction(effect) {
+    const out = {};
+    for (const [key, value] of Object.entries(effect)) {
+      if (key !== 'oracleLayerTimestamp') out[key] = value instanceof MTG.Player ? value.idx : value;
+    }
+    return out;
+  }
+  function currentAttackRestrictions(game, versions = cardVersions(game)) {
+    return game.untilEffects.filter(effect => isPlainAttackRestriction(effect) && !isInertEffect(effect, versions));
+  }
+
+  // A keyword granted for as long as a permanent stays (token copies that gain
+  // haste, Grave Upheaval). Granted abilities carry compiled closures and
+  // still block a save.
+  const GRANTED_KEYWORD_FIELDS = new Set(['kind', 'expires', 'iid', 'zoneVersion', 'timestamp', 'field', 'grants', 'keywords', 'oracleLayerTimestamp']);
+  function isPlainGrantedKeywords(effect) {
+    return !!effect && effect.kind === 'oracleGrantedOperation' && Object.keys(effect).every(key => GRANTED_KEYWORD_FIELDS.has(key)) &&
+      validLayerTimestamp(effect) &&
+      effect.expires === 'object' && Number.isSafeInteger(effect.iid) && effect.iid > 0 &&
+      Number.isSafeInteger(effect.zoneVersion) && effect.zoneVersion >= 0 &&
+      (effect.timestamp === undefined || Number.isSafeInteger(effect.timestamp) && effect.timestamp > 0 &&
+        effect.timestamp <= MTG.MAX_RESTORED_TIMESTAMP) &&
+      ['extraAbilities', 'extraTriggers', 'extraMana'].includes(effect.field) &&
+      Array.isArray(effect.grants) && effect.grants.length === 0 &&
+      Array.isArray(effect.keywords) && effect.keywords.length <= 32 &&
+      effect.keywords.every(keyword => typeof keyword === 'string' && keyword.length <= 64);
+  }
+  const captureGrantedKeywords = effect => ({...effect, grants: [], keywords: effect.keywords.slice()});
+  function currentGrantedKeywords(game) {
+    const versions = new Map(game.battlefield.map(card => [card.iid, card.zoneVersion]));
+    return game.untilEffects.filter(effect => isPlainGrantedKeywords(effect) && versions.get(effect.iid) === effect.zoneVersion);
+  }
+
   const BASE_PT_FIELDS = new Set(['kind', 'iid', 'zoneVersion', 'timestamp', 'expires', 'power', 'toughness', 'keywords', 'temporary']);
   const MAX_BASE_PT_EFFECTS = 4096;
   function isPlainBasePT(effect) {
@@ -273,7 +356,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
-    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect) && !isPlainLandTypes(effect) && !isPlainEnchantmentReturn(effect));
+    const versions = cardVersions(game);
+    const grantedKeywords = new Set(currentGrantedKeywords(game));
+    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect) && !isPlainLandTypes(effect) &&
+      !isPlainEnchantmentReturn(effect) && !isPlainAttackRestriction(effect) && !grantedKeywords.has(effect) && !isInertEffect(effect, versions));
     if (lasting.length) blockers.push(`${lasting.length} lasting effect(s)`);
     if (currentBasePTEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many base power/toughness effects');
     if (currentLandTypeEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many land type effects');
@@ -358,6 +444,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),
       landTypeEffects: currentLandTypeEffects(game).map(captureLandTypes),
       enchantmentReturns: currentEnchantmentReturns(game).map(captureEnchantmentReturn),
+      attackRestrictions: currentAttackRestrictions(game).map(captureAttackRestriction),
+      grantedKeywords: currentGrantedKeywords(game).map(captureGrantedKeywords),
       cards,
     };
   }
@@ -406,6 +494,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const basePTEffects = snapshot.basePTEffects === undefined ? [] : snapshot.basePTEffects;
     assert(Array.isArray(basePTEffects) && basePTEffects.length <= MAX_BASE_PT_EFFECTS && basePTEffects.every(isPlainBasePT),
       'invalid base power/toughness effects.');
+    const attackRestrictions = snapshot.attackRestrictions ?? [];
+    const seat = index => Number.isSafeInteger(index) && index >= 0 && index < game.players.length;
+    assert(Array.isArray(attackRestrictions) && attackRestrictions.length <= MAX_BASE_PT_EFFECTS &&
+      attackRestrictions.every(effect => validAttackRestriction(effect, seat)), 'invalid attack restrictions.');
+    const grantedKeywords = snapshot.grantedKeywords ?? [];
+    assert(Array.isArray(grantedKeywords) && grantedKeywords.length <= MAX_BASE_PT_EFFECTS &&
+      grantedKeywords.every(isPlainGrantedKeywords), 'invalid granted keywords.');
     // Leave ample exact-integer headroom for future cards/effects. A malformed
     // save must never poison the process-wide clock near MAX_SAFE_INTEGER.
     assert(Array.isArray(snapshot.cards) && snapshot.cards.every(card => card.timestamp === undefined ||
@@ -514,6 +609,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = byIid.get(effect.iid);
       if (card && card.zone === 'battlefield' && card.zoneVersion === effect.zoneVersion) game.untilEffects.push(captureBasePT(effect));
     }
+    for (const effect of attackRestrictions) {
+      const restored = {};
+      for (const [key, value] of Object.entries(effect)) restored[key] = ['who', 'notPlayer', 'whoTurn'].includes(key) ? game.players[value] : value;
+      game.untilEffects.push(restored);
+    }
+    for (const effect of grantedKeywords) {
+      const card = byIid.get(effect.iid);
+      if (card?.zone === 'battlefield' && card.zoneVersion === effect.zoneVersion) game.untilEffects.push(captureGrantedKeywords(effect));
+    }
 
     for (const [index, saved] of snapshot.players.entries()) {
       const player = game.players[index];
@@ -562,7 +666,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Later layer-setting effects must sort after the saved permanents and
     // effects even when this process started with a fresh timestamp clock.
     const highestTimestamp = game.battlefield.concat(game.untilEffects).reduce((max, entry) =>
-      Number.isSafeInteger(entry.timestamp) ? Math.max(max, entry.timestamp) : max, 0);
+      Math.max(max, ...[entry.timestamp, entry.oracleLayerTimestamp].filter(Number.isSafeInteger)), 0);
     MTG.reserveTimestamp(highestTimestamp);
     // The random stream cannot be captured (it lives in a closure), so a
     // resumed game gets a fresh but deterministic one: the same save always
@@ -607,6 +711,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       agreements: (game.diplomacy && game.diplomacy.contracts || []).map(contract =>
         [contract.id, contract.status, contract.clauses.map(clause => `${clause.type}:${clause.state}`).join(',')].join('|')).sort(),
       enchantmentReturns: currentEnchantmentReturns(game).map(captureEnchantmentReturn),
+      attackRestrictions: currentAttackRestrictions(game).map(captureAttackRestriction).map(effect => JSON.stringify(effect)).sort(),
+      grantedKeywords: currentGrantedKeywords(game).map(captureGrantedKeywords),
     });
   };
 })();

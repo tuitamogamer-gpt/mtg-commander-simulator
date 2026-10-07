@@ -19,18 +19,18 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 26792,
+    "runtimeDefinitions": 26799,
     "genericOracleCards": 22800,
     "genericBatches": 228,
-    "manualOracleCards": 58,
+    "manualOracleCards": 65,
     "legacyDefinitions": 3934,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 26791,
+    "deckImportEligibleDefinitions": 26798,
     "deckImportRestrictedDefinitions": 1,
-    "representedUniverseOracleIds": 26727,
-    "remainingUniverseOracleIds": 4057,
+    "representedUniverseOracleIds": 26734,
+    "remainingUniverseOracleIds": 4050,
     "parserEligibleUnimported": 5,
-    "deferred": 4052,
+    "deferred": 4045,
     "runtimeEntriesWithoutSnapshotMatch": 36,
     "runtimeEntriesOutsideComparisonUniverse": 27
   },
@@ -52,14 +52,14 @@
     "gift-needs-complete-branches-v21": 9,
     "land-needs-explicit-semantics": 51,
     "mana-ability-needs-explicit-semantics": 4,
-    "noncreature-needs-explicit-semantics": 1012,
-    "oracle-needs-explicit-semantics": 1886,
+    "noncreature-needs-explicit-semantics": 1009,
+    "oracle-needs-explicit-semantics": 1883,
     "overload-body-needs-complete-semantics": 5,
     "prepare-needs-complete-face-semantics": 1,
     "requires-import-and-executable-proof": 5,
     "room-door-needs-complete-semantics": 9,
     "saga-chapter-needs-complete-semantics-v21": 26,
-    "spell-needs-explicit-semantics": 715,
+    "spell-needs-explicit-semantics": 714,
     "spell-zone-trigger-needs-complete-spell-body-v20": 1,
     "split-needs-complete-face-semantics": 19,
     "station-tier-needs-complete-semantics": 2,
@@ -379,11 +379,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 30,
-  "classifierFilesSha256": "275385dd161cc5d01fb584a7182387d183ab0aa4332cbbbd49f21e83c7e507fc",
-  "inputFilesSha256": "b0f8a6e291a0b030499e51ba3edbd2676a053f840769f2787db1142e56b692c1",
+  "classifierFilesSha256": "b2feee57fd1dc710ee3ed4fce9eeaba92fc2af1f5c43cfa3f87fafddd20f6e0c",
+  "inputFilesSha256": "ec4c4f05b9cfd5229ef24d53e2cab878258d19f0b7dfe3c92b3939f1466926a4",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "b7c29989333c60152c6bda5a516f4a75520d2139ffa89aa50864ae6efd2ccb8d",
-    "docs/catalog/remaining-cards.csv": "23e8f086fc19a80a0e69e0cf948c5d33bf3decd8146daa7a99d0f078fd18a4cf"
+    "docs/catalog/imported-cards.csv": "7684b95b3c945d28d1ea245e76297403176d20e17d07b97a8ffe64987c062b04",
+    "docs/catalog/remaining-cards.csv": "cba9a827e31c57f54fed156669c8838d33a212fce8b4c8091d08673e80f52df4"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

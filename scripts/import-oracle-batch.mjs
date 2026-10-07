@@ -115,7 +115,7 @@ function batchId(sequence) {
   return `oracle-${String(sequence).padStart(4, '0')}`;
 }
 
-function stripReminderText(text) {
+export function stripReminderText(text) {
   let output = '';
   let depth = 0;
   for (const character of String(text || '')) {
@@ -2407,7 +2407,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
   } finally { extensionsActive = previous;compilerParseCache=previousCache; }
 }
 
-function rawCard(card) {
+export function rawCard(card) {
   if(card.layout==='split'&&card.card_faces?.length===2)card={...card,mana_cost:card.card_faces.map(face=>face.mana_cost).join(''),type_line:[...new Set(card.card_faces.map(face=>face.type_line))].join(' '),oracle_text:card.card_faces.map(face=>face.name+': '+face.oracle_text).join('\n')};
   if(['adventure','modal_dfc','transform','prepare','flip'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
   const parsed = parseTypeLine(card.type_line);
@@ -2434,7 +2434,7 @@ function rawCard(card) {
   return raw;
 }
 
-function catalogCard(card) {
+export function catalogCard(card) {
   return {
     typeLine: card.type_line,
     ...(['adventure','split','modal_dfc','transform','prepare'].includes(card.layout)?{aliases:card.card_faces.map(face=>face.name)}:{}),

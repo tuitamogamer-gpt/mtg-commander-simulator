@@ -280,3 +280,60 @@ test('permanent +1/+1 counters are not classified as temporary pumps', () => {
   const view = M.createBotPlayerView(f.game, f.bot.idx, f.query());
   assert.ok(M.generateLegalActions(view).some(action => action.kind === 'activate'));
 });
+
+function thallidTable(difficulty = 'normal') {
+  const game = new M.Game({seed: 61006, paced: false});
+  game.speedFactor = 0;
+  const bot = game.addPlayer('Bot', {name: 'Test'}, null, true);
+  const opponent = game.addPlayer('Opponent', {name: 'Test'}, null, true);
+  bot.controller = new M.AIController(bot, {difficulty, style: 'balanced'});
+  opponent.controller = new M.AIController(opponent, {difficulty: 'normal'});
+  game.turnPlayer = bot; game.turnNo = 8; game.phase = 'main1'; game.step = '';
+  const add = (def, sick = false) => {
+    const card = new M.CardInst(typeof def === 'string' ? M.DEFS[def] || M.TOKENS[def] : def, bot);
+    card.zone = 'battlefield'; card.sick = sick; card.isToken = def === 'saproling';
+    game.battlefield.push(card); game.recalc();
+    return card;
+  };
+  const source = add('Vitaspore Thallid');
+  const entries = () => game.activatableList(bot, false).filter(entry => entry.card === source);
+  const decide = async () => (await M.chooseBotAction({gameState: game, botPlayerId: bot.idx, difficulty,
+    actionWindow: {type: 'main', player: bot, phase: 'main1', casts: [], lands: [], acts: entries(), stack: game.stack},
+    forceSearch: false})).action;
+  return {game, bot, opponent, source, add, entries, decide};
+}
+
+for (const difficulty of ['easy', 'normal', 'hard']) {
+  test(`${difficulty}: Vitaspore Thallid never sacrifices the Saproling it would give haste`, async () => {
+    const f = thallidTable(difficulty);
+    const saproling = f.add('saproling', true);
+    assert.equal(f.entries().length, 1, 'the activation remains legal under the rules');
+    assert.equal((await f.decide()).kind, 'done');
+    assert.equal(saproling.zone, 'battlefield');
+  });
+
+  test(`${difficulty}: Vitaspore Thallid does not trade a Saproling for a hasty 1/1`, async () => {
+    const f = thallidTable(difficulty);
+    f.add('saproling', true); f.add('saproling', true);
+    assert.equal((await f.decide()).kind, 'done');
+  });
+}
+
+test('Vitaspore Thallid gives a lethal attacker haste by sacrificing a different Saproling', async () => {
+  const f = thallidTable();
+  f.opponent.life = 5;
+  const giant = f.add({name: 'Test Giant', types: ['Creature'], subtypes: ['Giant'], power: '6', toughness: '6',
+    cost: '{4}{G}{G}', oracle: '', abilities: [], kws: []}, true);
+  const saproling = f.add('saproling', true);
+  const choice = await f.decide();
+  assert.equal(choice.kind, 'activate');
+  assert.equal(M.sacrificePumpPlan(f.game, f.bot, choice.entry).target, giant);
+  assert.equal(await f.game.activateAbility(f.bot, choice.entry), true);
+  for (let i = 0; i < 10 && (f.game.stack.length || f.game.pendingTriggers.length); i++) {
+    await f.game.flushTriggers();
+    if (f.game.stack.length) await f.game.resolveTop();
+  }
+  assert.notEqual(saproling.zone, 'battlefield', 'the Saproling paid the cost');
+  assert.equal(giant.zone, 'battlefield');
+  assert.ok(giant.kw('haste'), 'the planned recipient was targeted, not the sacrificed Saproling');
+});

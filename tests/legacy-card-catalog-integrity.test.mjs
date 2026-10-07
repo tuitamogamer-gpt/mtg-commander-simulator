@@ -116,6 +116,11 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.deepEqual(intersection(legacyNames, sauronNames), [], 'legacy and Sauron names are disjoint');
   assert.deepEqual(intersection(starterNames,[...legacyNames,...genericNames,...sauronNames]),[], 'Starter additions reuse all existing names without duplication');
   assert.deepEqual(intersection(genericNames, sauronNames), [], 'generic Oracle and Sauron names are disjoint');
+  const staplesBatches = batches.filter(batch => batch.id === 'manual-commander-staples');
+  assert.equal(staplesBatches.length, 1, 'one manual Commander staples batch');
+  const staplesNames = Array.from(staplesBatches[0].cards || [], entry => entry.raw.name);
+  assert.equal(staplesNames.length, 7, 'seven manual Commander staples');
+  assert.deepEqual(intersection(staplesNames, [...legacyNames, ...genericNames, ...sauronNames, ...fdcNames, ...frcNames]), [], 'manual staples are new runtime names');
 
   assert.deepEqual(intersection(c14Names,[...legacyNames,...genericNames,...sauronNames]),[], 'C14 additions are disjoint from all existing catalog definitions');
 
@@ -127,9 +132,9 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.deepEqual(intersection(cwwNames,[...legacyNames,...genericNames,...sauronNames]),[], 'CMM/WOC/WHO additions preserve the pinned legacy and Oracle partitions');
   const runtimeNames = Object.keys(MTG.RAW_DATA.cards || {});
   const catalogNames = Object.keys(MTG.CARD_CATALOG || {});
-  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...zncKhcNames, ...afcMicNames, ...vocNccNames, ...clbDmc40kNames, ...bomNames, ...ltcCmmNames, ...cwwNames, ...wlmNames, ...pomNames, ...bdfNames, ...socNames, ...cslNames, ...c13Names, ...frcNames, ...fdcNames, ...genericNames, ...sauronNames];
+  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...zncKhcNames, ...afcMicNames, ...vocNccNames, ...clbDmc40kNames, ...bomNames, ...ltcCmmNames, ...cwwNames, ...wlmNames, ...pomNames, ...bdfNames, ...socNames, ...cslNames, ...c13Names, ...frcNames, ...fdcNames, ...genericNames, ...sauronNames, ...staplesNames];
   assert.deepEqual(sortedUnique(runtimeNames), sortedUnique(expectedRuntimeUnion),
-    'runtime raw cards are exactly legacy plus Starter, C21, C14, C15/C16, C17-C19 C19-C20/ZNC ZNC/CMR/KHC and AFC/MIC additions plus generic Oracle plus Sauron');
+    'runtime raw cards are exactly legacy plus Starter, C21, C14, C15/C16, C17-C19 C19-C20/ZNC ZNC/CMR/KHC and AFC/MIC additions plus generic Oracle plus Sauron plus the manual staples');
   assert.deepEqual(sortedUnique(catalogNames), sortedUnique(runtimeNames),
     'MTG.CARD_CATALOG is the exact runtime raw-card set');
 

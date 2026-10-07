@@ -3009,7 +3009,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const face = d.oracleSplit.faces.find(entry => entry.key === castOpts.splitHalf);
       if (castOpts.splitHalf && (!face || castOpts.splitFuse || face.aftermath && from !== 'graveyard')) return false;
       if (castOpts.splitFuse && (!d.oracleSplit.fuse || castOpts.splitFuse !== 'right' || from !== 'hand')) return false;
-      if (from === 'graveyard' && !face?.aftermath && !castOpts.flashback && !castOpts.free && !castOpts.retrace && !castOpts.jumpstart && castOpts.oracleImmediateCast === undefined) return false;
+      if (from === 'graveyard' && !face?.aftermath && !castOpts.flashback && !castOpts.free && !castOpts.retrace && !castOpts.jumpstart && !castOpts.escape && castOpts.oracleImmediateCast === undefined) return false;
       if (face?.aftermath) {castOpts.flashback = true; castOpts.isAftermath = true;}
       if (castOpts.altCostStr === undefined) castOpts.altCostStr = this.oracleSplitPrintedCost(card, castOpts);
     }
@@ -4980,7 +4980,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const sacNeed = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? (cost.afcZeroX?0:1) : (cost.sacN || 1);
         if (cost.sacCreature && this.creatures(p).filter(x => (!(cost.sacOther||cost.sacSelf) || x !== c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.sac && this.bf().filter(x => x.ctrl === p && (!(cost.sacOther||cost.sacSelf) || x !== c) && cost.sac(this, x, c) && this.canSacrifice(x)).length < sacNeed) return;
-        if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
+        if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
         if (cost.discard) {
           const discardN = cost.discard === 'all' ? p.hand.length : typeof cost.discard === 'object' ? (cost.discard.n || 1) : cost.discard;
           const discardFilter = typeof cost.discard === 'object' ? cost.discard.filter : null;
@@ -5098,7 +5098,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .some(ability => !ability.manaAbilityOnly) || source.m.manual || c.is('Creature') || restrictedCards.has(c);
       if (!utility) continue;
       const cost = source.extraCost || {};
-      if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) continue;
+      if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) continue;
       if (cost.mana) {
         const manaCost = this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, {isMana:true});
         if (!this.canPayMana(p, manaCost, { card: c, isAbility: true, ability:source.m }, {
@@ -5123,7 +5123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cost = a.cost || {};
         if (cost.mana && !this.canPayMana(p, this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, { ability: a }),
           { card: c, isAbility: true, ability: a })) return;
-        if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
+        if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
         if (a.targets && a.targets.some(spec => !spec.upTo && this.legalTargets(spec, c, p).length < (spec.min ?? spec.count ?? 1))) return;
         out.push({ card: c, ability: a, idx: `opp_${ai}`, opponentAbility: true });
       });
@@ -5263,7 +5263,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (cost.tap && c.tapped) return false;
       if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c) &&
         !source.m.creatureOK && !source.m.ignoreSickness) return false;
-      if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return false;
+      if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return false;
       const handPlanV20=source.m.handRevealV20?await MTG.OracleV20Costs.prepareHandMana(this,p,source):null;
       if(source.m.handRevealV20&&!handPlanV20)return false;
       const activationCtxV20=source.m.activationPaymentV20?{g:this,src:c,you:p,sourceZoneVersion:c.zoneVersion}:null;

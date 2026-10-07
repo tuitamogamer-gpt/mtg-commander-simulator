@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T13:18:16.747Z",
+  "generatedAt": "2026-10-07T06:46:55.251Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
   "oracleBatches": [
     {
@@ -1371,6 +1371,12 @@
       "sourceUpdatedAt": "2026-08-30T09:01:56.964+00:00"
     },
     {
+      "id": "manual-commander-staples",
+      "sequence": "manual-001",
+      "count": 7,
+      "sourceUpdatedAt": "2026-08-30T09:01:56.964+00:00"
+    },
+    {
       "id": "moxfield-sauron-dark-lord",
       "sequence": "deck-001",
       "count": 58
@@ -1385,13 +1391,13 @@
     "uniqueCards": 6474,
     "uniquePassed": 6474,
     "uniqueFailed": 0,
-    "rawCards": 26792,
-    "rawPassed": 26792,
+    "rawCards": 26799,
+    "rawPassed": 26799,
     "rawFailed": 0,
-    "inactiveRawCards": 20318,
-    "inactiveRawPassed": 20318,
+    "inactiveRawCards": 20325,
+    "inactiveRawPassed": 20325,
     "inactiveRawFailed": 0,
-    "oracleBatchCards": 22858
+    "oracleBatchCards": 22865
   },
   "decks": [
     {
@@ -123009,6 +123015,12 @@
       "issues": []
     },
     {
+      "name": "Esper Sentinel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Esper Sojourners",
       "active": false,
       "status": "PASS",
@@ -153183,6 +153195,12 @@
       "issues": []
     },
     {
+      "name": "Mana Drain",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Mana Geode",
       "active": false,
       "status": "PASS",
@@ -160101,6 +160119,12 @@
       "issues": []
     },
     {
+      "name": "Necropotence",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Necropouncer",
       "active": false,
       "status": "PASS",
@@ -163438,6 +163462,12 @@
     },
     {
       "name": "Orcish Bloodpainter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Orcish Bowmasters",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -186543,6 +186573,12 @@
       "issues": []
     },
     {
+      "name": "Smothering Tithe",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Smuggler's Surprise",
       "active": false,
       "status": "PASS",
@@ -202635,6 +202671,12 @@
       "issues": []
     },
     {
+      "name": "Underworld Breach",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Underworld Charger",
       "active": false,
       "status": "PASS",
@@ -203632,6 +203674,12 @@
     },
     {
       "name": "Urza's Tome",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Urza, Lord High Artificer",
       "active": false,
       "status": "PASS",
       "issues": []

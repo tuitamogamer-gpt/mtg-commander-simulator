@@ -3,7 +3,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.CWW,G=M.Game.prototype,SC=M.SCRIPTS;
  const sources=(g,p,key)=>g.bf().filter(c=>(!p||c.ctrl===p)&&C.live(c)&&c.def[key]);
- const flags=(g,c,field)=>g.untilEffects.filter(e=>e.kind==='cwwFlag'&&e.iid===c.iid&&e.zoneVersion===c.zoneVersion&&e.field===field);
+ const NO_FLAGS=Object.freeze([]);
  const grant=C.grant;C.grant=(ctx,c,kw,expires='object',extra={})=>{if(!extra.field?.startsWith('cww'))return grant(ctx,c,kw,expires,extra);ctx.g.untilEffects.push({kind:'cwwFlag',expires,iid:c.iid,zoneVersion:c.zoneVersion,...extra});ctx.g.recalc();};
  const damageBatch=G.damageBatch;G.damageBatch=async function(...args){const prior=this.cwwDamageBatch;this.cwwDamageBatch=new Set();try{return await damageBatch.apply(this,args);}finally{this.cwwDamageBatch=prior;}};
  C.firstDamage=(g,c,d)=>{if(!g.cwwDamageBatch)return true;const memo=(d.cwwFaerieHit||={}),source=c.iid+':'+c.zoneVersion;if(Object.hasOwn(memo,source))return memo[source];const key=source+':'+d.player.idx,seen=g.cwwDamageBatch,first=!seen.has(key);seen.add(key);return memo[source]=first;};
@@ -12,14 +12,18 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const exileMany=G.exileMany;G.exileMany=function(...args){return this.withCWWExileBatch(()=>exileMany.apply(this,args));};
  const exileTop=C.exileTop;C.exileTop=(ctx,...args)=>ctx.g.withCWWExileBatch(()=>exileTop(ctx,...args));
  const phaseOut=G.phaseOutMany;G.phaseOutMany=function(...args){const out=phaseOut.apply(this,args);if(out.length)void this.emit('cwwPhased',{cards:out});return out;};
- const recalc=G.recalc;G.recalc=function(){const r=recalc.call(this);const bf=this.bf();for(const c of bf){
-  if(flags(this,c,'cwwCoward').length&&!c.cur.subtypes.includes('Coward'))c.cur.subtypes.push('Coward');
-  if(flags(this,c,'cwwUnblockable').length)c.cur.unblockable=true;
-  if(flags(this,c,'cwwNoCombat').length){c.cur.cantAttack=true;c.cur.cantBlock=true;}
-  if(c.def.cwwCantBlock||flags(this,c,'cwwCantBlock').length)c.cur.cantBlock=true;
-  if(flags(this,c,'cwwLegendary').length&&!c.cur.super.includes('Legendary'))c.cur.super.push('Legendary');
-  for(const e of flags(this,c,'cwwGoaded'))(c.cur.goadedBy||=[]).push(this.players[e.cwwGoadedBy]);
-  for(const e of flags(this,c,'cwwForcedAttack')){c.cur.mustAttack=true;(c.cur.c14CannotAttack||=[]).push(this.players[e.cwwAvoid]);}
+ const recalc=G.recalc;G.recalc=function(){const r=recalc.call(this);const bf=this.bf();
+  // Index the flags once per pass instead of filtering the whole effect list
+  // seven times for every permanent; most tables have no flags at all.
+  const flagged=new Map();for(const e of this.untilEffects)if(e.kind==='cwwFlag'){const key=e.iid+':'+e.zoneVersion;if(!flagged.has(key))flagged.set(key,[]);flagged.get(key).push(e);}
+  for(const c of bf){const own=flagged.get(c.iid+':'+c.zoneVersion),flags=field=>own?own.filter(e=>e.field===field):NO_FLAGS;
+  if(flags('cwwCoward').length&&!c.cur.subtypes.includes('Coward'))c.cur.subtypes.push('Coward');
+  if(flags('cwwUnblockable').length)c.cur.unblockable=true;
+  if(flags('cwwNoCombat').length){c.cur.cantAttack=true;c.cur.cantBlock=true;}
+  if(c.def.cwwCantBlock||flags('cwwCantBlock').length)c.cur.cantBlock=true;
+  if(flags('cwwLegendary').length&&!c.cur.super.includes('Legendary'))c.cur.super.push('Legendary');
+  for(const e of flags('cwwGoaded'))(c.cur.goadedBy||=[]).push(this.players[e.cwwGoadedBy]);
+  for(const e of flags('cwwForcedAttack')){c.cur.mustAttack=true;(c.cur.c14CannotAttack||=[]).push(this.players[e.cwwAvoid]);}
   if(C.live(c)&&c.def.cwwWhale)for(const x of bf)if(x!==c&&x.ctrl===c.ctrl&&x.is('Creature'))this.grantWard(x,{mana:'{2}'});
   if(C.live(c)&&c.def.cwwIdris){const link=c.meta.cwwImprint,x=link&&this.byIid(link.iid);if(x?.zone==='exile'&&x.zoneVersion===link.version){c.cur.power+=x.mv;c.cur.toughness+=x.mv;c.cur.extraAbilities.push(...(x.def.abilities||[]));c.cur.extraTriggers.push(...(x.def.triggers||[]));if(x.def.mana)c.cur.extraMana.push(...[x.def.mana].flat());}}
  }return r;};

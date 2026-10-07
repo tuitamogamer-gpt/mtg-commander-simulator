@@ -16,18 +16,18 @@ Generic Oracle import state: **2026-10-03T02:47:47.042Z**. The counts below incl
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 26,792 |
+| Runtime card definitions | 26,799 |
 | Generic Oracle imports (228 batches of 100) | 22,800 |
-| Dedicated/manual Oracle imports | 58 |
+| Dedicated/manual Oracle imports | 65 |
 | Legacy definitions | 3,934 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 26,791 |
+| Definitions allowed in arbitrary deck imports | 26,798 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 26,727 |
-| Source Oracle IDs still absent from the runtime | 4,057 |
+| Source Oracle IDs represented by a runtime name or face alias | 26,734 |
+| Source Oracle IDs still absent from the runtime | 4,050 |
 | Of those: parser-eligible but not imported | 5 |
-| Of those: deferred by the current semantic compiler | 4,052 |
+| Of those: deferred by the current semantic compiler | 4,045 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -43,9 +43,9 @@ Current parser-eligible, unimported names: `Zealous Display`, `Zenith Chronicler
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 1,886 |
-| `noncreature-needs-explicit-semantics` | 1,012 |
-| `spell-needs-explicit-semantics` | 715 |
+| `oracle-needs-explicit-semantics` | 1,883 |
+| `noncreature-needs-explicit-semantics` | 1,009 |
+| `spell-needs-explicit-semantics` | 714 |
 | `double-faced-card-needs-complete-front-semantics` | 150 |
 | `land-needs-explicit-semantics` | 51 |
 | `double-faced-card-needs-complete-back-semantics` | 48 |

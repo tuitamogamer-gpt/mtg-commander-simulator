@@ -2415,6 +2415,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       actions.push(...generateBlockPlans(game, player, q, config));
     } else if (q.type === 'chooseTargets') {
       let ranked = (q.candidates || []).slice().sort((a, b) => targetValue(game, player, b, q) - targetValue(game, player, a, q) || targetStableKey(a).localeCompare(targetStableKey(b)));
+      const pumpTarget = sacrificePumpTarget(game, player, q);
+      if (pumpTarget) ranked = [pumpTarget, ...ranked.filter(target => target !== pumpTarget)];
       if (q.spec && q.spec.distinctCtrl) {
         // najviše jedna meta po kontroloru — zadrži najbolju po svakom
         const perCtrl = new Set();
@@ -2658,12 +2660,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (ability.aiSelfPump) return ability.aiSelfPump;
     const effects = ability.oracleOperation?.effects;
     // Permanent counters and mixed value abilities keep their own evaluation.
-    if (!effects?.length || !effects.every(effect => effect.action === 'pump' && effect.target === 'self' &&
+    const pumps = target => !!effects?.length && effects.every(effect => effect.action === 'pump' && effect.target === target &&
       Number.isFinite(effect.power || 0) && Number.isFinite(effect.toughness || 0) &&
-      (effect.power || 0) >= 0 && (effect.toughness || 0) >= 0)) return null;
+      (effect.power || 0) >= 0 && (effect.toughness || 0) >= 0);
+    // "Sacrifice a Saproling: Target creature gains haste" spends the same kind
+    // of resource on one chosen creature (Vitaspore Thallid).
+    const targeted = !pumps('self') && pumps(0) && ability.oracleOperation.targets?.length === 1 &&
+      ability.oracleOperation.targets[0].what === 'creature' && Array.isArray(ability.targets) && ability.targets.length === 1;
+    if (!pumps('self') && !targeted) return null;
     return {power: effects.reduce((n, effect) => n + (effect.power || 0), 0),
       toughness: effects.reduce((n, effect) => n + (effect.toughness || 0), 0),
-      keywords: [...new Set(effects.flatMap(effect => effect.keywords || []))]};
+      keywords: [...new Set(effects.flatMap(effect => effect.keywords || []))], ...(targeted ? {targeted} : {})};
   }
 
   function pumpDeathPayoff(game, player, card) {
@@ -2744,8 +2751,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Instant-speed power can wait for declared blocks. Haste/evasion and
     // sorcery-only pumps may need to be paid before the attack instead.
+    // Haste only enables the attack of a creature that could not attack yet.
     const enablesAttack = (pump.keywords || []).some(keyword => !source.kw(keyword) &&
-      ['haste', 'flying', 'menace', 'fear', 'trample'].includes(keyword));
+      (keyword === 'haste' ? source.sick : ['flying', 'menace', 'fear', 'trample'].includes(keyword)));
     if (!(ability.sorcery || enablesAttack) || game.turnPlayer !== player || source.tapped ||
       projected.sick && !projected.kw('haste') || !game.canAttackAtAll(projected) ||
       !(game.phase === 'main1' || game.phase === 'combat' && game.step === 'begin')) return benefit;
@@ -2764,30 +2772,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ability = entry?.ability, source = entry?.card, pump = sacrificePumpEffect(ability);
     if (!pump || !source) return null;
     const cost = ability.cost;
-    const pool = (candidates || game.bf()).filter(card => card !== source && card.ctrl === player &&
+    const fodder = (candidates || game.bf()).filter(card => card !== source && card.ctrl === player &&
       card.zone === 'battlefield' && game.canSacrifice(card) && !card.attacking && !card.blocking &&
       (cost.sacCreature ? card.is('Creature') : cost.sac(game, card, source)))
       .map(card => ({card, cost: pendingCreatureRemoval(game, card) ? 0.25 : 2 + permanentGameValue(game, card, player),
         payoff: pumpDeathPayoff(game, player, card)}))
       .sort((a, b) => (a.cost - a.payoff) - (b.cost - b.payoff) || a.card.iid - b.card.iid);
-    const best = {score: -100, cards: pool.slice(0, 1).map(row => row.card), count: 0};
-    if (!pool.length || game.stack.some(object => object.ctrl === player && object.kind === 'ability' &&
+    const best = {score: -100, cards: fodder.slice(0, 1).map(row => row.card), count: 0};
+    if (!fodder.length || game.stack.some(object => object.ctrl === player && object.kind === 'ability' &&
       object.srcCard === source)) return best;
+    let recipients = [source];
+    if (pump.targeted) {
+      try {
+        recipients = game.legalTargets(ability.targets[0], source, player).filter(card => card instanceof U.CardInst &&
+          card.ctrl === player && card.zone === 'battlefield' && card.is('Creature'));
+      } catch (error) { return null; }
+    }
     const mana = U.parseCost(cost.mana || '');
-    const limit = Math.min(pool.length, cost.tap || ability.oncePerTurn ? 1 : 24);
-    let price = 0, payoff = 0;
-    for (let count = 1; count <= limit; count++) {
-      const cards = pool.slice(0, count).map(row => row.card);
-      const cumulativeMana = {...mana, generic: (mana.generic || 0) * count,
-        pips: Array.from({length: count}, () => mana.pips || []).flat()};
-      if (!game.canPayMana(player, cumulativeMana, {card: source, isAbility: true}, {protectedSacrifices: cards})) break;
-      price += pool[count - 1].cost + U.mv(cost.mana || '') * 0.5;
-      payoff += pool[count - 1].payoff;
-      const score = pumpCombatValue(game, player, source, pump, count, ability) + payoff - price;
-      if (score > best.score) Object.assign(best, {score, cards, count});
+    // Keywords do not stack, so a keyword-only pump never needs a second activation.
+    const stacks = !!(pump.power || pump.toughness);
+    for (const recipient of recipients) {
+      // Costs are paid after targets are chosen. Sacrificing the recipient
+      // itself would leave the ability without a legal target.
+      const pool = fodder.filter(row => row.card !== recipient);
+      const limit = Math.min(pool.length, cost.tap || ability.oncePerTurn || !stacks ? 1 : 24);
+      let price = 0, payoff = 0;
+      for (let count = 1; count <= limit; count++) {
+        const cards = pool.slice(0, count).map(row => row.card);
+        const cumulativeMana = {...mana, generic: (mana.generic || 0) * count,
+          pips: Array.from({length: count}, () => mana.pips || []).flat()};
+        if (!game.canPayMana(player, cumulativeMana, {card: source, isAbility: true}, {protectedSacrifices: cards})) break;
+        price += pool[count - 1].cost + U.mv(cost.mana || '') * 0.5;
+        payoff += pool[count - 1].payoff;
+        const score = pumpCombatValue(game, player, recipient, pump, count, ability) + payoff - price;
+        if (score > best.score) Object.assign(best, {score, cards, count}, pump.targeted ? {target: recipient} : {});
+      }
     }
     return best;
   };
+  // The planned recipient of a targeted sacrifice pump, so the target prompt
+  // that follows the activation picks the creature the plan was valued for.
+  function sacrificePumpTarget(game, player, q) {
+    const source = q.src;
+    if (!(source instanceof U.CardInst) || !q.spec?.aiHint) return null;
+    const abilities = (source.cur?.abilitiesDisabled ? [] : source.def.abilities || []).concat(source.cur?.extraAbilities || []);
+    const ability = abilities.find(a => Array.isArray(a?.targets) && a.targets.length === 1 && a.targets[0].aiHint === q.spec.aiHint);
+    if (!ability || !sacrificePumpEffect(ability)?.targeted) return null;
+    const plan = MTG.sacrificePumpPlan(game, player, {card: source, ability});
+    return plan?.target && plan.score > 0 && (q.candidates || []).includes(plan.target) ? plan.target : null;
+  }
   const SACRIFICE_PUMP_CHOICES = new WeakMap();
   MTG.sacrificePumpChoice = function (game, player, q) {
     if (!q.aiHint?.ability) return null;
