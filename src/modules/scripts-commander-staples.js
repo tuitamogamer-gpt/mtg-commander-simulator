@@ -6,8 +6,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 // `manual-commander-staples`: Smothering Tithe, Esper Sentinel, Orcish
 // Bowmasters, Necropotence, Underworld Breach, Mana Drain and Urza, Lord High
 // Artificer. Each card uses the normal Stack, trigger, target, cost, mana and
-// casting-permission paths. Provenance and the pending snapshot verification
-// are recorded in reports/oracle-import/commander-staples-cards.json.
+// casting-permission paths. Verified snapshot provenance is recorded in
+// reports/oracle-import/commander-staples-cards.json.
 (function () {
   const M = MTG, C = M.FDC, E = M.E, T = M.T, SC = M.SCRIPTS, G = M.Game.prototype;
   const BATCH = 'manual-commander-staples';
@@ -207,17 +207,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // cost plus exiling three other graveyard cards. The offer uses the engine's
   // escape path, so the chosen cards are exiled after mana payment and the
   // spell counts as escaped. A card without a mana cost has an unpayable
-  // escape cost (CR 118.6). Split cards, Rooms and the back faces of
-  // double-faced cards are not offered.
+  // escape cost (CR 118.6). Face choices use the chosen spell's mana cost;
+  // transforming backs and land faces are never cast through escape.
   const BREACH = 'staplesBreach';
   const breachLive = (game, player) => game.bf().some(card => card.ctrl === player && card.def.staplesUnderworldBreach && C.live(card));
   function breachVariants(game, card) {
-    if (card.def.bdfRoom || card.def.oracleSplit) return [];
+    if (card.def.bdfRoom) return card.def.bdfRoom.map(door => ({
+      bdfDoor: door.key, name: door.name, cost: door.cost,
+    }));
+    if (card.def.oracleSplit) return game.oracleSplitCastingOptions(card, 'graveyard').map(alt => ({
+      ...alt, cost: game.oracleSplitPrintedCost(card, alt),
+    }));
     if (card.oracleFaces) {
-      const front = card.oracleFaces.faces.find(face => face.key === 'front');
-      return front ? [{ oracleFace: 'front', name: front.def.name, cost: front.def.cost }] : [];
+      return card.oracleFaces.faces.filter(face =>
+        (card.oracleFaces.layout === 'modal_dfc' || face.key === 'front') && !face.def.types.includes('Land'))
+        .map(face => ({ oracleFace: face.key, name: face.def.name, cost: face.def.cost }));
     }
-    return [{ cost: card.def.cost }];
+    const adventure = card.def.adventure;
+    return [{ cost: card.def.cost }, ...(adventure ? [{
+      adventure: true, ...(adventure.omen ? { omen: true } : {}),
+      name: adventure.name, types: adventure.types, cost: adventure.cost,
+    }] : [])];
   }
   function breachOffers(game, player) {
     if (!breachLive(game, player)) return [];
@@ -226,11 +236,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.is('Land') || player.graveyard.filter(other => other !== card).length < 3) continue;
       for (const variant of breachVariants(game, card)) {
         if (!variant.cost) continue;
+        const { cost, ...choice } = variant;
         out.push({ card, from: 'graveyard', alt: {
-          ...(variant.oracleFace ? { oracleFace: variant.oracleFace, name: variant.name } : {}),
-          escape: true, exileN: 3, altCostStr: variant.cost,
+          ...choice,
+          escape: true, exileN: 3, altCostStr: cost,
           starterPermission: BREACH, starterCardVersion: card.zoneVersion,
-          label: `Escape ${variant.cost} + exile three other cards (Underworld Breach)`,
+          label: `Escape ${choice.name || card.name} ${cost} + exile three other cards (Underworld Breach)`,
         } });
       }
     }

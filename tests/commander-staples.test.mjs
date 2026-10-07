@@ -8,15 +8,15 @@ const MTG = loadEngine();
 const BATCH_ID = 'manual-commander-staples';
 const report = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/commander-staples-cards.json', import.meta.url), 'utf8'));
 
-// Exact Oracle wording supplied for the hand-entered batch.
+// Exact Oracle wording from the SHA-256-verified pinned Scryfall feed.
 const ORACLE = {
-  'Smothering Tithe': "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token.",
+  'Smothering Tithe': "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
   'Esper Sentinel': "Whenever an opponent casts their first noncreature spell each turn, draw a card unless that player pays {X}, where X is this creature's power.",
   'Orcish Bowmasters': 'Flash\nWhen this creature enters and whenever an opponent draws a card except the first one they draw in each of their draw steps, this creature deals 1 damage to any target. Then amass Orcs 1.',
   'Necropotence': 'Skip your draw step.\nWhenever you discard a card, exile that card from your graveyard.\nPay 1 life: Exile the top card of your library face down. Put that card into your hand at the beginning of your next end step.',
   'Underworld Breach': "Each nonland card in your graveyard has escape. The escape cost is equal to the card's mana cost plus exile three other cards from your graveyard. (You may cast cards from your graveyard for their escape cost.)\nAt the beginning of the end step, sacrifice this enchantment.",
   'Mana Drain': "Counter target spell. At the beginning of your next main phase, add an amount of {C} equal to that spell's mana value.",
-  'Urza, Lord High Artificer': 'When Urza enters, create a 0/0 colorless Construct artifact creature token with "This creature gets +1/+1 for each artifact you control."\nTap an untapped artifact you control: Add {U}.\n{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.',
+  'Urza, Lord High Artificer': 'When Urza enters, create a 0/0 colorless Construct artifact creature token with "This token gets +1/+1 for each artifact you control."\nTap an untapped artifact you control: Add {U}.\n{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.',
 };
 const NAMES = Object.keys(ORACLE);
 const CHARACTERISTICS = {
@@ -111,24 +111,21 @@ test('the manual batch preserves its provenance and registers seven certified, i
   assert.equal(JSON.stringify(batch), JSON.stringify(report.batch), 'runtime batch exactly matches its provenance report');
   assert.equal(report.importedCount, 7);
   assert.deepEqual(report.importedNames, NAMES);
-  assert.equal(batch.source.verifiedAgainstPinnedSnapshot, false);
+  assert.equal(batch.source.verifiedAgainstPinnedSnapshot, true);
   assert.equal(batch.source.pinnedSnapshot.bulkSha256, 'a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528');
-  assert.match(report.provenance.oracleText, /by hand/);
-  assert.match(report.provenance.requiredVerification, /pinned Scryfall oracle_cards snapshot/);
-  assert.match(report.provenance.scryfallIds, /by card name/);
-  assert.match(report.provenance.catalogExport, /intentionally left unchanged/);
-
-  const pinned = new Map(fs.readFileSync(new URL('../docs/catalog/remaining-cards.csv', import.meta.url), 'utf8')
-    .trim().split('\n').slice(1).map(line => line.slice(1, -1).split('","')).map(row => [row[0], row]));
+  assert.equal(report.verification.cards.length, 7);
+  assert.equal(report.verification.compressedSha256, batch.source.pinnedSnapshot.bulkSha256);
+  const remaining = fs.readFileSync(new URL('../docs/catalog/remaining-cards.csv', import.meta.url), 'utf8');
+  const imported = fs.readFileSync(new URL('../docs/catalog/imported-cards.csv', import.meta.url), 'utf8');
   for (const [index, name] of NAMES.entries()) {
     const entry = batch.cards[index], def = MTG.DEFS[name], script = MTG.SCRIPTS[name], catalog = MTG.CARD_CATALOG[name];
     const [cost, typeLine, identity, power, toughness] = CHARACTERISTICS[name];
     assert.equal(entry.raw.name, name);
-    assert.equal(entry.oracleId, pinned.get(name)[1], `${name}: Oracle ID from the pinned export`);
-    assert.equal(entry.raw.cost, pinned.get(name)[2], `${name}: mana cost matches the pinned export`);
-    assert.equal(pinned.get(name)[3], typeLine, `${name}: type line matches the pinned export`);
-    assert.equal(entry.scryfallId, null);
-    assert.equal(def.oracle, ORACLE[name], `${name}: exact hand-entered Oracle text`);
+    assert.equal(remaining.includes('"' + name + '",'), false, `${name}: no longer listed as remaining`);
+    assert.ok(imported.includes('"' + name + '",'), `${name}: present in the exported catalog`);
+    assert.match(entry.scryfallId, /^[a-f0-9-]{36}$/);
+    assert.equal(report.verification.cards[index].scryfallId, entry.scryfallId);
+    assert.equal(def.oracle, ORACLE[name], `${name}: exact pinned Oracle text`);
     assert.equal(def.cost, cost);
     if (power !== undefined) assert.deepEqual([def.power, def.toughness], [power, toughness]);
     assert.equal(!!def.autoScripted || !!def.simplified, false, `${name}: explicit implementation`);
@@ -143,14 +140,14 @@ test('the manual batch preserves its provenance and registers seven certified, i
     assert.equal(catalog.commanderLegality, 'legal');
     assert.equal(catalog.typeLine, typeLine);
     assert.deepEqual(Array.from(catalog.colorIdentity), identity);
-    assert.equal(catalog.scryfallId, null);
-    // No print ID is recorded, so the image is looked up by card name.
+    assert.equal(catalog.scryfallId, entry.scryfallId);
+    // Images resolve to the exact pinned printing.
     for (const [variant, version] of [[undefined, 'normal'], ['art', 'art_crop']]) {
       const url = new URL(MTG.cardImageURL(name, variant));
-      assert.equal(url.origin + url.pathname, MTG.CARD_IMAGE_API_BASE, `${name}: Scryfall name lookup`);
+      assert.equal(url.origin + url.pathname, MTG.CARD_IMAGE_ID_API_BASE + entry.scryfallId, `${name}: pinned Scryfall print`);
       assert.equal(url.searchParams.get('format'), 'image');
       assert.equal(url.searchParams.get('version'), version);
-      assert.equal(url.searchParams.get('fuzzy'), name);
+      assert.equal(url.searchParams.has('fuzzy'), false);
     }
   }
   // AI-facing hints on every decision the cards add.
@@ -472,6 +469,31 @@ test('Necropotence: Pay 1 life exiles the top card face down until your next end
   assert.equal(game.delayed.some(row => row.staplesNecropotence), false);
 });
 
+test('Necropotence: a human can pay their last life, but cannot pay unavailable life', async () => {
+  const { game, players: [alice] } = rulesGame();
+  const card = permanent(game, alice, 'Necropotence');
+  inZone(alice, 'Island', 'library');
+  alice.life = 1;
+  const entry = game.activatableList(alice).find(row => row.card === card);
+  assert.ok(entry, 'paying the exact life total is legal');
+  assert.equal(await game.activateAbility(alice, entry), true);
+  assert.equal(alice.life, 0);
+  await game.checkSBA();
+  assert.equal(alice.lost, true, 'normal state-based actions still cause the loss');
+  const other = rulesGame(), player = other.players[0];
+  const source = permanent(other.game, player, 'Necropotence');
+  player.life = 1;
+  const stale = other.game.activatableList(player).find(row => row.card === source);
+  player.life = 0;
+  assert.equal(other.game.activatableList(player).some(row => row.card === source), false);
+  assert.equal(await other.game.activateAbility(player, stale), false, 'a retained action must recheck the life payment');
+  assert.equal(player.life, 0);
+  player.life = 1;
+  other.game.canPayLife = () => false;
+  assert.equal(other.game.activatableList(player).some(row => row.card === source), false, 'payment restrictions are respected');
+  assert.equal(await other.game.activateAbility(player, stale), false);
+});
+
 test('Necropotence: the AI pays life only with a safe life total and room in hand', async () => {
   const { game, players: [alice, bob] } = rulesGame({ ai: [0] });
   const necropotence = permanent(game, alice, 'Necropotence');
@@ -561,6 +583,59 @@ test('Underworld Breach: a double-faced card escapes as its front face', async (
   assert.equal(bears.zone, 'graveyard');
   assert.equal(hagra.zone, 'graveyard');
   assert.equal(alice.exile.length, 3);
+});
+
+for (const [name, choice, mana, cost, zone] of [
+  ['Alive // Well', { splitHalf: 'left' }, { G: 4 }, 4, 'graveyard'],
+  ['Alive // Well', { splitHalf: 'right' }, { W: 1 }, 1, 'graveyard'],
+  ['Indulge // Excess', { splitHalf: 'excess' }, { R: 2 }, 2, 'exile'],
+  ['Bottomless Pool // Locker Room', { bdfDoor: 'right' }, { U: 5 }, 5, 'battlefield'],
+  ['Cosima, God of the Voyage', { oracleFace: 'back' }, { U: 2 }, 2, 'battlefield'],
+  ['Brazen Borrower', { adventure: true }, { U: 2 }, 2, 'exile'],
+]) test(`Underworld Breach: escapes ${name} using ${JSON.stringify(choice)} and its printed cost`, async () => {
+  const { game, players: [alice, bob] } = rulesGame({ deciders: [{
+    chooseTargets: (g, q) => q.candidates.filter(card => card.ctrl === bob).slice(0, q.min ?? 1),
+  }] });
+  permanent(game, alice, 'Underworld Breach');
+  const target = permanent(game, bob, 'Grizzly Bears');
+  const card = inZone(alice, name, 'graveyard');
+  for (const name of ['Island', 'Forest', 'Plains']) inZone(alice, name, 'graveyard');
+  for (let i = 0; i < 8; i++) inZone(alice, 'Island', 'library');
+  Object.assign(alice.pool, mana);
+  const options = game.castableList(alice).filter(row => row.card === card && row.alt?.starterPermission === 'staplesBreach');
+  assert.equal(options.some(row => row.alt.splitFuse), false, 'fuse is hand-only');
+  const offer = options.find(row => Object.entries(choice).every(([key, value]) => row.alt[key] === value));
+  assert.ok(offer, 'the chosen spell is offered');
+  assert.equal(MTG.mv(offer.alt.altCostStr), cost);
+  assert.equal(await game.castSpell(alice, card, { from: 'graveyard', alt: offer.alt }), true);
+  assert.equal(Object.values(alice.pool).reduce((a, b) => a + b, 0), 0, 'exact mana payment');
+  assert.equal(alice.exile.length, 3, 'three other cards paid');
+  await resolveAll(game);
+  assert.equal(card.zone, zone);
+  if (choice.oracleFace) assert.equal(card.name, 'The Omenkeel');
+  if (choice.bdfDoor) assert.deepEqual(Array.from(card.meta.bdfUnlocked), ['right']);
+  if (choice.adventure) assert.equal(target.zone, 'hand', 'Adventure spell resolved');
+});
+
+test('Underworld Breach: illegal faces and stale or altered offers cannot spend mana or exile cards', async () => {
+  const { game, players: [alice] } = rulesGame();
+  const breach = permanent(game, alice, 'Underworld Breach');
+  const card = inZone(alice, 'Cosima, God of the Voyage', 'graveyard');
+  inZone(alice, 'Archangel Avacyn', 'graveyard');
+  inZone(alice, 'Hagra Mauling', 'graveyard');
+  for (const name of ['Island', 'Forest', 'Plains']) inZone(alice, name, 'graveyard');
+  alice.pool.U = 10; alice.pool.W = 10; alice.pool.B = 10;
+  const offers = MTG.CommanderStaples.breachOffers(game, alice);
+  assert.equal(offers.some(row => row.card !== card && row.alt.oracleFace === 'back'), false, 'no transform backs or land backs');
+  const offer = offers.find(row => row.card === card && row.alt.oracleFace === 'back');
+  for (const alt of [{ ...offer.alt, altCostStr: '{0}' }, { ...offer.alt, exileN: 0 }, { ...offer.alt, oracleFace: 'front' }]) {
+    assert.equal(await game.castSpell(alice, card, { from: 'graveyard', alt }), false);
+  }
+  await game.move(breach, 'graveyard');
+  assert.equal(await game.castSpell(alice, card, { from: 'graveyard', alt: offer.alt }), false);
+  assert.equal(alice.pool.U, 10);
+  assert.equal(alice.exile.length, 0);
+  assert.equal(card.zone, 'graveyard');
 });
 
 test('Underworld Breach: an escaped permanent counts as escaped (Uro stays)', async () => {

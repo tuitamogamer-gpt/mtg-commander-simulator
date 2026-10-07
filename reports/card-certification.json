@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-05T21:03:52.413Z",
+  "generatedAt": "2026-10-07T06:46:55.251Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
   "oracleBatches": [
     {
@@ -1373,7 +1373,8 @@
     {
       "id": "manual-commander-staples",
       "sequence": "manual-001",
-      "count": 7
+      "count": 7,
+      "sourceUpdatedAt": "2026-08-30T09:01:56.964+00:00"
     },
     {
       "id": "moxfield-sauron-dark-lord",

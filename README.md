@@ -44,7 +44,7 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 
 ### Current catalog
 
-Repository inventory checked on **5 October 2026**:
+Repository inventory checked on **7 October 2026**:
 
 | Measure | Available |
 | --- | ---: |
@@ -56,11 +56,11 @@ Repository inventory checked on **5 October 2026**:
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
 
-Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **30 August 2026**, with later native additions recorded separately. The seven manual Commander staples below are not yet reflected in that export, which needs the pinned snapshot to regenerate.
+Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **30 August 2026**, with later native additions recorded separately. The seven manual Commander staples below are included in that export.
 
 ### Recent additions
 
-- **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. Their Oracle text was entered by hand and still has to be verified against the pinned snapshot; until Scryfall print IDs are recorded, their images are looked up on Scryfall by card name. [Provenance](reports/oracle-import/commander-staples-cards.json)
+- **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. All source fields are verified against the SHA-256-pinned Scryfall snapshot, and images use the recorded print IDs. Underworld Breach supports split halves, Room doors, Adventures and nonland modal faces; Necropotence permits paying the last life point. [Provenance](reports/oracle-import/commander-staples-cards.json)
 - **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is complete. [Latest validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
