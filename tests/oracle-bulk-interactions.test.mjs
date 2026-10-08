@@ -1,3 +1,28 @@
+import * as commonV56Proof from './helpers/oracle-v56-common-proof.mjs';
+import * as commonV55Proof from './helpers/oracle-v55-common-proof.mjs';
+import * as commonV54Proof from './helpers/oracle-v54-common-proof.mjs';
+import * as commonV53Proof from './helpers/oracle-v53-common-proof.mjs';
+import * as commonV52Proof from './helpers/oracle-v52-common-proof.mjs';
+import * as commonV51Proof from './helpers/oracle-v51-common-proof.mjs';
+import * as commonV50Proof from './helpers/oracle-v50-common-proof.mjs';
+import * as commonV49Proof from './helpers/oracle-v49-common-proof.mjs';
+import * as commonV48Proof from './helpers/oracle-v48-common-proof.mjs';
+import * as commonV47Proof from './helpers/oracle-v47-common-proof.mjs';
+import * as commonV46Proof from './helpers/oracle-v46-common-proof.mjs';
+import * as commonV45Proof from './helpers/oracle-v45-common-proof.mjs';
+import * as commonV44Proof from './helpers/oracle-v44-common-proof.mjs';
+import * as commonV43Proof from './helpers/oracle-v43-common-proof.mjs';
+import * as commonV42Proof from './helpers/oracle-v42-common-proof.mjs';
+import * as commonV41Proof from './helpers/oracle-v41-common-proof.mjs';
+import * as commonV40Proof from './helpers/oracle-v40-common-proof.mjs';
+import * as commonV39Proof from './helpers/oracle-v39-common-proof.mjs';
+import * as commonV38Proof from './helpers/oracle-v38-common-proof.mjs';
+import * as eventV37Proof from './helpers/oracle-v37-events-proof.mjs';
+import * as spellV36Proof from './helpers/oracle-v36-spells-proof.mjs';
+import * as combatV34Proof from './helpers/oracle-v34-combat-proof.mjs';
+import * as commonV35Proof from './helpers/oracle-v35-common-proof.mjs';
+import * as commonV33Proof from './helpers/oracle-v33-common-proof.mjs';
+import * as spellV32Proof from './helpers/oracle-v32-spells-proof.mjs';
 import * as spellV30Proof from './helpers/oracle-v30-spells-proof.mjs';
 import * as permanentV30Proof from './helpers/oracle-v30-permanents-proof.mjs';
 import * as layoutV30Proof from './helpers/oracle-v30-layouts-proof.mjs';
@@ -277,6 +302,11 @@ function stageCardCosts(MTG,ctx,entry){
 }
 
 async function stageGenericStackTarget(MTG,ctx,target,index,from=target.castFrom||'hand'){
+  if(target.v20?.kind==='uncast-v51'){
+    const {game,a}=ctx,card=zoneCard(MTG,a,fixtureDefinition('Uncast spell witness',['Instant'],{cost:'{U}',resolve:async()=>{}}),'hand');fund(a);
+    assert.equal(await game.castSpell(a,card,{from:'hand'}),true);
+    return game.copySpell(game.stack.find(row=>row.card===card),a,{mayNewTargets:false});
+  }
   if(target.alternatives?.every(part=>part.zone==='stack'))return stageGenericStackTarget(MTG,ctx,{...target,...target.alternatives[0],alternatives:undefined},index,from);
   if(target.singleTargetV10){
     const {game,a,b}=ctx,player=target.controller==='you'?a:b;
@@ -1097,7 +1127,7 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   if(effect.action==='win-game-v9'){assert.equal(a.lost,false,label+': controller remains in game');assert.ok(game.players.filter(p=>p!==a).every(p=>p.lost),label+': all opponents lost to the actual win effect');return 2;}
 
   if(effect.action==='attach-v9'){
-    const attachment=effect.attachment==='self'?source:selectedTargets[effect.attachment],host=selectedTargets[effect.target];
+    const attachment=effect.attachment==='self'?source:selectedTargets[effect.attachment],host=effect.target==='self'?source:selectedTargets[effect.target];
     assert.equal(attachment.attachedTo,host.iid,label+': attachment has selected host');
     assert.ok(host.attachments.includes(attachment.iid),label+': host records attachment');return 2;
   }
@@ -2786,8 +2816,8 @@ async function fireGenericEvent(MTG,context,source,operation){
       const alt=room.def.altCosts.find(row=>row.bdfDoor==='left');assert.ok(alt);
       assert.equal(await game.castSpell(a,room,{from:'hand',alt}),true);await resolveAll(game);
       context.unlockDrawBaselineV10=a.hand.length;
-      const action=game.activatableList(a).find(row=>row.card===room&&row.ability.label==='Unlock Locker Room');assert.ok(action);
-      assert.equal(await game.activateAbility(a,action),true);await game.resolveTop();assert.equal(room.meta.bdfUnlocked.length,2);return;
+      const action=game.activatableList(a).find(row=>row.card===room&&row.oracleUnlockRoomV20==='right');assert.ok(action);
+      assert.equal(await game.activateAbility(a,action),true);await resolveAll(game);assert.equal(room.meta.bdfUnlocked.length,2);return;
     }
 
     if(event==='landPlayed'){const land=zoneCard(MTG,player,'Forest','hand');assert.equal(await game.playLand(player,land),true);return;}
@@ -3010,7 +3040,7 @@ async function fireGenericEvent(MTG,context,source,operation){
   }else if(event==='spellCopied'){
     const spell=zoneCard(MTG,a,'Opt','hand');assert.equal(await game.castSpell(a,spell,{from:'hand'}),true);await game.copySpell(game.stack.find(row=>row.card===spell),a,{mayNewTargets:true});
   }else if(event==='draw'){await game.draw(context.eventPlayer,filter==='your-second-draw'?2:1,source);}
-  else if(event==='discarded'){const card=zoneCard(MTG,a,'Forest','hand');await game.discard(a,[card]);}
+  else if(event==='discarded'){const card=operation.zone==='event-source-v20'&&filter==='self'?source:zoneCard(MTG,a,'Forest','hand');await game.discard(a,[card]);}
   else if(event==='targeted')await game.emit('targeted',{card:source,src:null,player:a,byPlayer:b,isSpell:true});
   else if(event==='dealtDamage'){
     const other=permanent(MTG,game,b,fixtureDefinition('V6 damage event creature',['Creature']));
@@ -3063,6 +3093,17 @@ async function printedTokenProof(MTG,context,entry,effect,before,trace,label){
       await proveSaddleCrewPowerV10(MTG,context,token,operation,v5Helpers());
     }else if(operation.kind==='mechanic-prowess-v10'){
       await grantedMechanicProof(MTG,context,token,operation,v5Helpers());
+    }else if(operation.kind==='crew'){
+      assert.equal(token.def.crew,operation.n,label+': exact printed crew value');
+      const pilot=permanent(MTG,game,a,fixtureDefinition('Printed token crew pilot',['Creature'],{power:String(Math.max(1,operation.n)),toughness:'20'}));
+      const decide=a.controller.decide.bind(a.controller);
+      a.controller.decide=(g,q)=>decide(g,q.type==='chooseCards'&&q.aiHint?.kind==='crew'&&q.aiHint.card===token?{...q,from:[pilot],min:1,max:1}:q);
+      try{
+        const action=game.activatableList(a).find(row=>row.card===token&&row.crew);assert.ok(action,label+': printed crew action');
+        assert.equal(await game.activateAbility(a,action),true,label+': actual token crew activation');
+        assert.equal(pilot.tapped,true,label+': pilot paid the tap cost');assert.ok(game.stack.some(row=>row.srcCard===token&&row.kind==='ability'),label+': crew uses the Stack');
+        await resolveAll(game);assert.equal(token.is('Creature'),true,label+': token became a creature');
+      }finally{a.controller.decide=decide;}
     }else if(operation.kind==='mana-source'){
       if(token.tapped){
         assert.equal(game.manaSources(a).some(row=>row.card===token),false,label+': a tapped token cannot pay its tap cost');
@@ -4011,7 +4052,8 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
         assert.equal(await game.castSpell(a,source,{from:'hand',xVal:3}),true,entry.raw.name+': keyword source uses a paid cast');
         assert.ok(poolTotal(a)<paid,entry.raw.name+': printed mana cost is paid');await resolveAll(game);
         assert.equal(source.zone,'battlefield');source.sick=false;
-      }else source = ['graveyard','exile','cycling-source'].includes(operation.zone)?zoneCard(MTG,a,entry.raw.name,operation.zone==='cycling-source'||event==='oraclePlottedV13'?'hand':operation.zone):permanent(MTG, game, a, entry.raw.name);
+      }else if(event==='discarded'&&operation.zone==='event-source-v20'&&operation.eventFilter==='self')source=zoneCard(MTG,a,entry.raw.name,'hand');
+      else source = ['graveyard','exile','cycling-source'].includes(operation.zone)?zoneCard(MTG,a,entry.raw.name,operation.zone==='cycling-source'||event==='oraclePlottedV13'?'hand':operation.zone):permanent(MTG, game, a, entry.raw.name);
       if(!source.meta.oracleChosenColor)await enterChosenColorSource(MTG,context,entry,source,v5Helpers());
       const aura=entry.implementation.find(row=>row.kind==='aura-target');
       if(aura&&source.zone==='battlefield'&&!source.attachedTo){const host=stageGenericTarget(MTG,context,auraProofTarget(aura,'you'),'trigger-aura-host');await game.attach(source,host);}
@@ -4131,7 +4173,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     const destination={destroy:'graveyard',exile:'exile',bounce:'hand','move-to-hand':'hand','move-to-library':'library','owner-library-choice':'library',reanimate:'battlefield'}[effect.action];
     if(destination&&subject instanceof MTG.CardInst)priorGenericMoves.set(subject,destination);
   }
-  const verifyTokens=async effects=>{for(const effect of effects||[]){if(effect.token?.operations)await printedTokenProof(MTG,context,entry,effect,before,trace,entry.raw.name+'/'+role);if(effect.action==='grant-operation')await grantedEffectProof(MTG,context,entry,effect,source,selectedTargets,trace,entry.raw.name+'/'+role);if(effect.effects)await verifyTokens(effect.effects);}};
+  const verifyTokens=async effects=>{for(const effect of effects||[]){if(effect.token?.operations)await printedTokenProof(MTG,context,entry,effect,before,trace,entry.raw.name+'/'+role);if(effect.action==='grant-operation')await grantedEffectProof(MTG,context,entry,effect,source,selectedTargets,trace,entry.raw.name+'/'+role);if(effect.action==='conditional'&&effect.elseEffects&&operation.proofBranch===false)await verifyTokens(effect.elseEffects);else if(effect.effects)await verifyTokens(effect.effects);}};
   await verifyTokens(operation.effects);
   await finishCopyLinkedProof(MTG,context,entry,v8Helpers());
   await finishV8EffectProof(MTG,context,entry,v8Helpers());
@@ -5139,7 +5181,7 @@ async function attachmentOperationProof(MTG,entry,op,role){
 }
 
 async function operationProof(MTG, entry, operation, role = 'human') {
-  for(const proof of [spellV30Proof.operationProofV30,permanentV30Proof.operationProofV30,layoutV30Proof.operationProofV30,spellV29Proof.operationProofV29,permanentV29Proof.operationProofV29,layoutV29Proof.operationProofV29,permanentV28Proof.operationProofV28,spellV28Proof.operationProofV28,commonV28Proof.operationProofV28,layoutV27Proof.operationProofV27,permanentV27Proof.operationProofV27,spellV27Proof.operationProofV27,commonV27Proof.operationProofV27,layoutV26Proof.operationProofV26,spellV26Proof.operationProofV26,permanentV26Proof.operationProofV26,commonV26Proof.operationProofV26,commonV25Proof.operationProofV25,permanentV25Proof.operationProofV25,spellV25Proof.operationProofV25,layoutV25Proof.operationProofV25,permanentV24Proof.operationProofV24,commonV24Proof.operationProofV24,layoutV24Proof.operationProofV24,spellV24Proof.operationProofV24,commonV23Proof.operationProofV23,spellV23Proof.operationProofV23,permanentV23Proof.operationProofV23,layoutV23Proof.operationProofV23,commonV22Proof.operationProofV22,spellV22Proof.operationProofV22,layoutV22Proof.operationProofV22,permanentV22Proof.operationProofV22,spellV21Proof.operationProofV21,layoutV21Proof.operationProofV21,permanentV21Proof.operationProofV21,costsProofV20,spellsProofV20,permanentsProofV20,layoutsProofV20,damageProofV20,rulesProofV20]){
+  for(const proof of [commonV56Proof.operationProofV56,commonV55Proof.operationProofV55,commonV54Proof.operationProofV54,commonV53Proof.operationProofV53,commonV52Proof.operationProofV52,commonV51Proof.operationProofV51,commonV50Proof.operationProofV50,commonV49Proof.operationProofV49,commonV48Proof.operationProofV48,commonV47Proof.operationProofV47,commonV46Proof.operationProofV46,commonV45Proof.operationProofV45,commonV44Proof.operationProofV44,commonV43Proof.operationProofV43,commonV42Proof.operationProofV42,commonV41Proof.operationProofV41,commonV40Proof.operationProofV40,commonV39Proof.operationProofV39,commonV38Proof.operationProofV38,eventV37Proof.operationProofV37,spellV36Proof.operationProofV36,commonV35Proof.operationProofV35,combatV34Proof.operationProofV34,commonV33Proof.operationProofV33,spellV32Proof.operationProofV32,spellV30Proof.operationProofV30,permanentV30Proof.operationProofV30,layoutV30Proof.operationProofV30,spellV29Proof.operationProofV29,permanentV29Proof.operationProofV29,layoutV29Proof.operationProofV29,permanentV28Proof.operationProofV28,spellV28Proof.operationProofV28,commonV28Proof.operationProofV28,layoutV27Proof.operationProofV27,permanentV27Proof.operationProofV27,spellV27Proof.operationProofV27,commonV27Proof.operationProofV27,layoutV26Proof.operationProofV26,spellV26Proof.operationProofV26,permanentV26Proof.operationProofV26,commonV26Proof.operationProofV26,commonV25Proof.operationProofV25,permanentV25Proof.operationProofV25,spellV25Proof.operationProofV25,layoutV25Proof.operationProofV25,permanentV24Proof.operationProofV24,commonV24Proof.operationProofV24,layoutV24Proof.operationProofV24,spellV24Proof.operationProofV24,commonV23Proof.operationProofV23,spellV23Proof.operationProofV23,permanentV23Proof.operationProofV23,layoutV23Proof.operationProofV23,commonV22Proof.operationProofV22,spellV22Proof.operationProofV22,layoutV22Proof.operationProofV22,permanentV22Proof.operationProofV22,spellV21Proof.operationProofV21,layoutV21Proof.operationProofV21,permanentV21Proof.operationProofV21,costsProofV20,spellsProofV20,permanentsProofV20,layoutsProofV20,damageProofV20,rulesProofV20]){
     const result=await proof(MTG,entry,operation,role,{gameFor,decision,fund,fillLibrary,permanent,zoneCard,fixtureDefinition,resolveAll,stageGenericTarget,assertControllerRole,operationProof,genericRuntimeOperationProof,v8Helpers,trackProofGame:game=>activeProofGames?.push(game),stageCondition:(...args)=>stageCondition(...args,v5Helpers())});
     if(result!==null&&result!==undefined&&result!==false)return result;
   }
@@ -6596,6 +6638,7 @@ async function keywordProof(MTG, entry, rawKeyword, role = 'human') {
     case 'haste': {
       source.sick = true;
       if (source.kw('defender')) {
+        for(const op of entry.implementation)if(op.kind==='generic-ability'&&op.cost?.tap)for(const [index,target]of(op.targets||[]).entries())if(target.zone==='stack')await stageGenericStackTarget(MTG,{game,a,b},target,index);
         const tapAction = game.activatableList(a).find(candidate =>
           candidate.card === source && candidate.ability?.cost?.tap);
         assert.ok(tapAction, `${source.name}/${role}: haste exposes its tap ability through summoning sickness`);

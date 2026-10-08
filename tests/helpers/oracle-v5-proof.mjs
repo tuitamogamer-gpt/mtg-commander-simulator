@@ -347,7 +347,7 @@ export function countValue(ctx,source,node,snapshot=null){
   if(node?.kind==='result-stat-v18')return ctx.oracleResultRowV16?.view[node.stat]||0;
   if(JSON.stringify(node)?.includes('"kind":"chosen-subtype-v16"'))return countValue(ctx,source,bindChosenType(node,source?.meta?.oracleChosenSubtypeV16||ctx.chosenSubtypeV16),snapshot);
   if(node?.kind==='lowest-life-v14')return Math.min(...ctx.game.players.filter(player=>!player.lost).map(player=>snapshot?.players.get(player)?.life??player.life));
-  const sourceLki=ctx.sourceLkiEvidenceV10?.source===source?ctx.sourceLkiEvidenceV10.snapshot:null;
+  const sourceLki=ctx.sourceLkiEvidenceV10&&ctx.sourceLkiEvidenceV10.source===source?ctx.sourceLkiEvidenceV10.snapshot:null;
   if(node?.kind==='v8-permanent-count')return permanentCountValue(ctx,source,node,snapshot);
  const castingValue=castingRuleCountValue(ctx,source,node);if(castingValue!==undefined)return castingValue;
   if(typeof node==='number')return node;
@@ -653,7 +653,7 @@ export async function grantedMechanicProof(MTG,ctx,recipient,mechanic,h){
  }
  else if(kind==='bushido')await game.emit('becomesBlocked',{attacker:recipient,blockers:[h.permanent(MTG,game,opponent,'Grizzly Bears')]});
  else if(kind==='afterlife')await game.move(recipient,'graveyard');
- else if(kind==='renown')await game.dealDamage(recipient,opponent,1,true);
+ else if(kind==='renown')await game.combatDamage(controller,attacker.kw('first strike')||attacker.kw('double strike')?'first':'normal');
  else assert.fail('Missing granted mechanic proof '+kind);
  await game.flushTriggers();assert.ok(game.stack.some(row=>row.srcCard===recipient&&grants.some(t=>t.run===row.run)),'granted trigger uses recipient as its source');await h.resolveAll(game);
  if(kind==='exalted'||kind==='prowess-v10')assert.ok(attacker.power>=power+1);

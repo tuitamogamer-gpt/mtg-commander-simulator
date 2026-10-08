@@ -6,7 +6,7 @@
   const suspended=g=>g._entryReplacementPhase||g._battlefieldEntryEvents||g._simultaneousLeaveSources?.length||g._damageEventQueue||g._graveyardEnterBatch||g._graveyardLeaveBatch;
   const outstanding=(g,source,ability)=>[g.pendingTriggers,g._placingTriggers,g.stack,g._resolvingStateTriggers].some(list=>(list||[]).some(row=>
     row.oracleStateTrigger===ability.stateTest&&(row.src||row.srcCard)===source&&(row.sourceZoneVersion??row.ctx?.sourceZoneVersion)===source.zoneVersion));
-  const conditionKinds=new Set(['life','opponent-life','count-comparison','filtered-permanent-count','hand-count','source-quality','not','all','any','state-chosen-color-absence-v8']);
+  const conditionKinds=new Set(['life','opponent-life','count-comparison','filtered-permanent-count','hand-count','source-quality','not','all','any','state-chosen-color-absence-v8','empty-hand-player-v44']);
   const validCondition=condition=>condition&&conditionKinds.has(condition.kind)&&!/("event-|"turn-|"X")/.test(JSON.stringify(condition))&&
     (condition.kind!=='not'||validCondition(condition.condition))&&
     (!['all','any'].includes(condition.kind)||condition.conditions?.every(validCondition))&&

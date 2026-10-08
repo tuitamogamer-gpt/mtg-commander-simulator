@@ -12,22 +12,22 @@ CSV files are UTF-8, sorted by card name without locale-specific collation, and 
 
 ## Current inventory
 
-Generic Oracle import state: **2026-10-03T02:47:47.042Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
+Generic Oracle import state: **2026-10-08T02:57:50.959Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 26,799 |
-| Generic Oracle imports (228 batches of 100) | 22,800 |
+| Runtime card definitions | 27,799 |
+| Generic Oracle imports (238 batches of 100) | 23,800 |
 | Dedicated/manual Oracle imports | 65 |
 | Legacy definitions | 3,934 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 26,798 |
+| Definitions allowed in arbitrary deck imports | 27,798 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
-| Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 26,734 |
-| Source Oracle IDs still absent from the runtime | 4,050 |
-| Of those: parser-eligible but not imported | 5 |
-| Of those: deferred by the current semantic compiler | 4,045 |
+| Paper, Commander-legal source Oracle IDs | 31,070 |
+| Source Oracle IDs represented by a runtime name or face alias | 27,754 |
+| Source Oracle IDs still absent from the runtime | 3,316 |
+| Of those: parser-eligible but not imported | 3 |
+| Of those: deferred by the current semantic compiler | 3,313 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -35,37 +35,38 @@ Generic Oracle import state: **2026-10-03T02:47:47.042Z**. The counts below incl
 
 ## What “remaining” means
 
-The comparison universe is exactly `games.includes('paper') && legalities.commander === 'legal'` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has 38,627 source rows and 36,495 rows marked for paper.
+The comparison universe is exactly `games.includes('paper') && legalities.commander === 'legal'` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has 38,708 source rows and 36,792 rows marked for paper.
 
-Recorded Oracle IDs take precedence. An Oracle batch identity missing from its pinned source is an error; native precon cards released after the snapshot retain their recorded IDs and are explicitly marked as unmatched. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 36 runtime names without a pinned-source match, and 27 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Recorded Oracle IDs take precedence. An Oracle batch identity missing from its pinned source is an error; native precon cards released after the snapshot retain their recorded IDs and are explicitly marked as unmatched. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 26 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
-Current parser-eligible, unimported names: `Zealous Display`, `Zenith Chronicler`, `Zimone and Dina`, `Zoetic Glyph`, `Zombie Boa`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
+Current parser-eligible, unimported names: `Guardian Naga // Banishing Coils`, `Gwen Stacy // Ghost-Spider`, `Sheoldred // The True Scriptures`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 1,883 |
-| `noncreature-needs-explicit-semantics` | 1,009 |
-| `spell-needs-explicit-semantics` | 714 |
+| `oracle-needs-explicit-semantics` | 1,494 |
+| `noncreature-needs-explicit-semantics` | 854 |
+| `spell-needs-explicit-semantics` | 549 |
 | `double-faced-card-needs-complete-front-semantics` | 150 |
-| `land-needs-explicit-semantics` | 51 |
-| `double-faced-card-needs-complete-back-semantics` | 48 |
+| `double-faced-card-needs-complete-back-semantics` | 46 |
+| `land-needs-explicit-semantics` | 41 |
 | `saga-chapter-needs-complete-semantics-v21` | 26 |
-| `adventure-needs-complete-face-semantics` | 24 |
-| `unbound-event-reference` | 20 |
+| `adventure-needs-complete-face-semantics` | 22 |
 | `split-needs-complete-face-semantics` | 19 |
 | `complex-layout` | 18 |
-| `unbound-object-reference-v10` | 12 |
+| `unbound-event-reference` | 11 |
 | `gift-needs-complete-branches-v21` | 9 |
 | `room-door-needs-complete-semantics` | 9 |
+| `prepare-needs-complete-face-semantics` | 8 |
 | `class-level-needs-complete-semantics-v21` | 7 |
-| `unbound-event-amount` | 6 |
-| `overload-body-needs-complete-semantics` | 5 |
-| `requires-import-and-executable-proof` | 5 |
+| `unbound-object-reference-v10` | 7 |
+| `unbound-event-amount` | 5 |
 | `mana-ability-needs-explicit-semantics` | 4 |
+| `overload-body-needs-complete-semantics` | 4 |
 | `unbound-target-damage-source` | 4 |
 | `unsupported-mana-cost` | 4 |
 | `dynamic-power-toughness` | 3 |
 | `flip-needs-complete-back-semantics` | 3 |
+| `requires-import-and-executable-proof` | 3 |
 | `backup-grant-needs-semantics` | 2 |
 | `case-rules-need-complete-semantics` | 2 |
 | `class-base-needs-complete-semantics-v21` | 2 |
@@ -74,7 +75,6 @@ Current parser-eligible, unimported names: `Zealous Display`, `Zenith Chronicler
 | `backup-other-rules-unsupported` | 1 |
 | `conflicting-hand-abilities` | 1 |
 | `flip-needs-complete-front-semantics` | 1 |
-| `prepare-needs-complete-face-semantics` | 1 |
 | `spell-zone-trigger-needs-complete-spell-body-v20` | 1 |
 | `unbound-linked-acquisition-v25` | 1 |
 | `unbound-target-X` | 1 |
@@ -85,26 +85,26 @@ These are compiler queue reasons, not a claim that each card is impossible to im
 
 - Provider: Scryfall `oracle_cards` bulk feed.
 - Bulk ID: `27bf3214-1271-490b-bdfe-c0be6c23d02e`.
-- Pinned update: **2026-08-30T09:01:56.964+00:00**.
-- Compressed source SHA-256: `a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528`.
-- Current semantic compiler: **v30**.
+- Pinned update: **2026-10-07T09:01:59.955+00:00**.
+- Compressed source SHA-256: `53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b`.
+- Current semantic compiler: **v56**.
 
 The original compressed snapshot is intentionally not committed. Use the same archived `.jsonl.gz` file and hash. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests.
 
 ```sh
 node scripts/export-card-catalog.mjs \
   --source-file=/absolute/path/to/oracle-pinned.jsonl.gz \
-  --source-sha256=a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528
+  --source-sha256=53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b
 
 # Recompute and fail if any committed catalog artifact is stale:
 node scripts/export-card-catalog.mjs \
   --source-file=/absolute/path/to/oracle-pinned.jsonl.gz \
-  --source-sha256=a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528 \
+  --source-sha256=53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b \
   --check
 ```
 
 The exporter writes this document and `docs/catalog/*.csv` / `summary.json`; `--check` writes nothing. It fingerprints the runtime, compiler scripts, and import manifests, and records CSV hashes. It never writes engine data or imports a card. Regenerate after card imports or changes to the classifier; validate source provenance and execute the relevant gameplay tests before release.
 
-The first classification pass can take several minutes. Successful exports keep a local cache under ignored `output/card-catalog/`, keyed to the exact source SHA-256 and compiler-file hashes. Each run still validates the compressed source and rebuilds the runtime inventory. Unchanged whole-card classifications may reuse that cache; `--fresh` forces every remaining card through the compiler again. Cache checksums detect accidental corruption, and the cache is not committed or needed to regenerate from scratch.
+The first classification pass can take several minutes. Successful exports keep a local cache under ignored `output/card-catalog/`, keyed to the exact source SHA-256 and compiler-file hashes. Exact source rows can also reuse versioned compiler results under `output/oracle-classifier/`, including unchanged predecessor descriptors. Each run still validates the compressed source and rebuilds the runtime inventory. `--fresh` bypasses both caches and forces every remaining card through the compiler again; `--check` does not write either cache. Cache checksums detect accidental corruption, and the caches are not committed or needed to regenerate from scratch.
 
 The generic import implementation is [import-oracle-batch.mjs](../scripts/import-oracle-batch.mjs), its state is [state.json](../reports/oracle-import/state.json), and the runtime eligibility rules are in [oracle-catalog.js](../src/modules/oracle-catalog.js). Historical reports elsewhere in the repository describe their dated cohorts; this generated inventory is the current catalog index.

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {verifyOracleSemanticRepairs} from '../scripts/oracle-semantic-repairs.mjs';
+import {verifySemanticRepairsBySnapshot, parseProvenanceArgs} from '../scripts/verify-oracle-batch-provenance.mjs';
 import {moduleSource} from '../scripts/import-oracle-batch.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -17,6 +18,16 @@ function fixture(){
 test('all eight exact source repairs preserve original bytes outside semantic fields and recompile fully with compiler8',()=>{
  const input=fixture(),rows=verifyOracleSemanticRepairs(input);assert.equal(rows.size,8);assert.equal([...rows.values()].filter(row=>row.repair.originalCompilerVersion===5).length,4);assert.equal([...rows.values()].filter(row=>row.repair.originalCompilerVersion===6).length,1);
  assert.equal(input.manifests[0].repairs.length,8,'verification does not mutate the manifest');
+});
+test('advancing the import snapshot still verifies every older repair against its original source',()=>{
+ const old=fixture(),current={...old,sourceCards:[],bulk:{...old.bulk,sha256:'0'.repeat(64),updated_at:'2026-10-07'}};
+ assert.throws(()=>verifySemanticRepairsBySnapshot(current),/Missing pinned repair source/);
+ const historicalSources=new Map([[old.bulk.sha256,{sourceCards:old.sourceCards,bulk:old.bulk}]]);
+ assert.deepEqual(verifySemanticRepairsBySnapshot({...current,historicalSources}),verifyOracleSemanticRepairs(old));
+ historicalSources.get(old.bulk.sha256).sourceCards=old.sourceCards.slice(1);
+ assert.throws(()=>verifySemanticRepairsBySnapshot({...current,historicalSources}),/unique pinned Oracle object/);
+ const args=parseProvenanceArgs(['--source-file=/current.gz','--source-sha256='+'0'.repeat(64),'--repair-source-file=/archived.gz']);
+ assert.equal(args.repairSourceFile,'/archived.gz');
 });
 test('a repair rejects changed pinned rules, source metadata, compiler claims, and old semantic hashes',()=>{
  for(const mutate of [

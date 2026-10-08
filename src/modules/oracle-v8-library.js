@@ -168,7 +168,7 @@
     const requested = effect.n === 'all' ? candidates.length : Math.max(0, Math.floor(helpers.amount(effect.n, ctx)));
     const maximum = Math.min(candidates.length, requested), minimum = effect.upTo || !effect.unrestricted ? 0 : maximum;
     const versions=new Map(candidates.map(card=>[card,card.zoneVersion]));
-    const picked = maximum ? await chooser.controller.decide(ctx.g, {type: 'chooseCards', from: candidates, min: minimum, max: maximum,
+    const picked = maximum && execution.selectCards ? await execution.selectCards(candidates, minimum, maximum) : maximum ? await chooser.controller.decide(ctx.g, {type: 'chooseCards', from: candidates, min: minimum, max: maximum,
       search: true, prompt: 'Search your library', aiHint: {kind: effect.filter?.what === 'land' ? 'searchBasic' : 'recur'}}) : [];
     if (!Array.isArray(picked) || picked.length < minimum || picked.length > maximum || new Set(picked).size !== picked.length ||
         picked.some(card => !candidates.includes(card)||card.zone!=='library'||card.zoneVersion!==versions.get(card)||!owner.library.includes(card)) || effect.differentNames && new Set(picked.map(card => card.name)).size !== picked.length) {
@@ -204,7 +204,8 @@
     for (const item of assignments.filter(item => item.placement.destination === 'exile')) for (const entry of item.entries) if (present(entry)) await ctx.g.move(entry.card, 'exile');
     await ctx.g.withBattlefieldEntryBatch(async () => {
       for (const item of assignments.filter(item => item.placement.destination === 'battlefield')) for (const entry of item.entries) if (present(entry)) {
-        await ctx.g.putPermanentOntoBattlefield(entry.card, effect.ownerSearch?owner:ctx.you, {tapped: !!item.placement.tapped});
+        if(execution.placeBattlefield)await execution.placeBattlefield(entry.card,effect.ownerSearch?owner:ctx.you,item.placement);
+        else await ctx.g.putPermanentOntoBattlefield(entry.card, effect.ownerSearch?owner:ctx.you, {tapped: !!item.placement.tapped});
       }
     });
     const top = assignments.filter(item => item.placement.destination === 'top')

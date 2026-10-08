@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   const MTG = globalThis.MTG;
-  const kinds = new Set(['required-block', 'source-block', 'defender-permission', 'assign-unblocked','assign-toughness']);
+  const kinds = new Set(['required-block', 'source-block', 'defender-permission', 'assign-unblocked','assign-unblocked-required','assign-toughness']);
   function validate(rule, bound = true) {
     if (!rule || !kinds.has(rule.kind)) return false;
     const fields = rule.kind === 'source-block' ? ['kind','mode',...(bound?['source']:[])] : rule.kind==='assign-toughness'?['kind','requires','defenderPermission']:['kind'];
@@ -24,6 +24,7 @@
     if (rule.kind === 'required-block') card.cur.mustBlock = true;
     else if (rule.kind === 'defender-permission') card.cur.defenderCanAttack = true;
     else if (rule.kind === 'assign-unblocked') card.cur.mayAssignUnblocked = true;
+    else if (rule.kind === 'assign-unblocked-required') card.cur.mustAssignUnblocked = true;
     else if(rule.kind==='assign-toughness'){
       (card.cur.toughnessAssignmentRules||=[]).push(rule);
       if(rule.defenderPermission)card.cur.defenderCanAttack=true;
@@ -53,6 +54,7 @@
     return (blocker.cur.mustBlock ? 1 : 0) + weights.slice(0, capacity).reduce((sum, n) => sum + n, 0);
   }
   async function assignUnblocked(game, attacker, blockers, amount) {
+    if (attacker.cur.mustAssignUnblocked && amount > 0) return true;
     if (!attacker.cur.mayAssignUnblocked || amount <= 0 || !attacker.wasBlocked && !blockers.length) return false;
     const choice = await attacker.ctrl.controller.decide(game, {
       type:'chooseOption',prompt:attacker.name + ': assign combat damage as though unblocked?',

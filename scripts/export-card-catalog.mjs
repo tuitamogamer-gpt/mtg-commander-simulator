@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { fetchOracleCardsFromGzip, semanticClass } from './import-oracle-batch.mjs';
 import { loadEngine } from '../tests/helpers/load-engine.mjs';
 import { matchCatalogSource } from './catalog-source-match.mjs';
+import { createOracleCompilerCache } from './oracle-compiler-cache.mjs';
 
 // A read-only runtime inventory and a reproducible comparison with the pinned
 // Oracle feed. This script never imports cards or grants support certification.
@@ -98,6 +99,13 @@ const classifierFilesSha256 = hash(classifierFiles.map(file => `${file}\t${hash(
 const cacheIdentity = { schemaVersion: 1, sourceSha256: expectedHash, classifierVersion: state.compilerVersion, classifierFilesSha256 };
 const cachePath = path.join(root, 'output/card-catalog', `classifications-${hash(JSON.stringify(cacheIdentity))}.json`);
 const classifications = new Map();
+const rowCache = createOracleCompilerCache({directory: path.join(root, 'output/oracle-classifier'), compilerVersion: state.compilerVersion});
+// Preserve frozen descriptors while reusing exact, versioned predecessors.
+const classificationCaches = new Map(Array.from({length: Math.max(1, state.compilerVersion - 9)}, (_, i) => state.compilerVersion - i)
+  .map(compilerVersion => {
+    const cache = compilerVersion === state.compilerVersion ? rowCache : createOracleCompilerCache({directory: path.join(root, 'output/oracle-classifier'), compilerVersion});
+    return [compilerVersion, check ? {...cache, set() {}} : cache];
+  }));
 if (!fresh && fs.existsSync(cachePath)) {
   const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
   assert.deepEqual(cache.identity, cacheIdentity, 'Classification cache identity mismatch');
@@ -115,10 +123,11 @@ const reasons = new Map();
 const absent = universe.filter(card => !represented.has(card.oracle_id)).sort((left, right) => compare(left.name, right.name) || compare(left.oracle_id, right.oracle_id));
 let cacheHits = 0;
 for (const card of absent) {
-  const cached = classifications.get(card.oracle_id);
-  const compiled = cached || semanticClass(card, { compilerVersion: state.compilerVersion });
+  const cached = classifications.get(card.oracle_id) || (!fresh && rowCache.get(card));
+  const compiled = cached || semanticClass(card, { compilerVersion: state.compilerVersion, classificationCaches: fresh ? undefined : classificationCaches });
   if (cached) cacheHits += 1;
-  else classifications.set(card.oracle_id, { oracleId: card.oracle_id, semanticClass: compiled.semanticClass || null, reason: compiled.semanticClass ? null : compiled.reason });
+  else if (!check) rowCache.set(card, compiled);
+  classifications.set(card.oracle_id, { oracleId: card.oracle_id, semanticClass: compiled.semanticClass || null, reason: compiled.semanticClass ? null : compiled.reason });
   const status = compiled.semanticClass ? 'parser-eligible-unimported' : 'deferred';
   const reason = compiled.semanticClass ? 'requires-import-and-executable-proof' : compiled.reason;
   assert.ok(reason, `${card.name}: remaining card needs an explicit reason`);
@@ -284,7 +293,7 @@ node scripts/export-card-catalog.mjs \\
 
 The exporter writes this document and \`docs/catalog/*.csv\` / \`summary.json\`; \`--check\` writes nothing. It fingerprints the runtime, compiler scripts, and import manifests, and records CSV hashes. It never writes engine data or imports a card. Regenerate after card imports or changes to the classifier; validate source provenance and execute the relevant gameplay tests before release.
 
-The first classification pass can take several minutes. Successful exports keep a local cache under ignored \`output/card-catalog/\`, keyed to the exact source SHA-256 and compiler-file hashes. Each run still validates the compressed source and rebuilds the runtime inventory. Unchanged whole-card classifications may reuse that cache; \`--fresh\` forces every remaining card through the compiler again. Cache checksums detect accidental corruption, and the cache is not committed or needed to regenerate from scratch.
+The first classification pass can take several minutes. Successful exports keep a local cache under ignored \`output/card-catalog/\`, keyed to the exact source SHA-256 and compiler-file hashes. Exact source rows can also reuse versioned compiler results under \`output/oracle-classifier/\`, including unchanged predecessor descriptors. Each run still validates the compressed source and rebuilds the runtime inventory. \`--fresh\` bypasses both caches and forces every remaining card through the compiler again; \`--check\` does not write either cache. Cache checksums detect accidental corruption, and the caches are not committed or needed to regenerate from scratch.
 
 The generic import implementation is [import-oracle-batch.mjs](../scripts/import-oracle-batch.mjs), its state is [state.json](../reports/oracle-import/state.json), and the runtime eligibility rules are in [oracle-catalog.js](../src/modules/oracle-catalog.js). Historical reports elsewhere in the repository describe their dated cohorts; this generated inventory is the current catalog index.
 `;

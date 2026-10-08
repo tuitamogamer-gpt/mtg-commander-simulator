@@ -22,7 +22,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }
   const oldFaceCosts=G.faceUpCosts;
   G.faceUpCosts=function(c){const costs=oldFaceCosts.call(this,c);return c.meta?.faceDownKind==='c14FaceDown'?costs.filter(x=>x.kind!=='mana cost'):costs;};
-  G.c14LoyaltyInstant=function(p,c,a){return a?.loyalty!==undefined&&c.is('Planeswalker')&&c.ctrl===p&&p.emblems.some(e=>e.c14Teferi);};
+  G.c14LoyaltyInstant=function(p,c,a){return a?.loyalty!==undefined&&c.is('Planeswalker')&&c.ctrl===p&&(p.emblems.some(e=>e.c14Teferi)||c.hasSub('Jace')&&p.turnState.jaceTimingV45===this.turnNo);};
   G.canLoseGame=function(p){return !this.bf().some(c=>live(c)&&c.def.c14Persecutor&&c.ctrl!==p);};
   G.canWinGame=function(p){return !this.bf().some(c=>live(c)&&c.def.c14Persecutor&&c.ctrl===p);};
   const canSacrifice=G.canSacrifice;

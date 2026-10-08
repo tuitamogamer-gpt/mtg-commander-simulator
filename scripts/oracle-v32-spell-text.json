@@ -1,0 +1,21 @@
+{
+  "Blow Your House Down": "Up to three target creatures can't block this turn. Destroy any of them that are Walls.",
+  "Baleful Stare": "Target opponent reveals their hand. You draw a card for each Mountain and red card in it.",
+  "Withering Gaze": "Target opponent reveals their hand. You draw a card for each Forest and green card in it.",
+  "Whirlwind Denial": "For each spell and ability your opponents control, counter it unless its controller pays {4}.",
+  "Split the Party": "Choose target player. Return half the creatures they control to their owner's hand, rounded up.",
+  "Eunuchs' Intrigues": "Target opponent chooses a creature they control. Other creatures they control can't block this turn.",
+  "Goblin War Cry": "Target opponent chooses a creature they control. Other creatures they control can't block this turn.",
+  "Book Burning": "Any player may have Book Burning deal 6 damage to them. If no one does, target player mills six cards.",
+  "Coalition Victory": "You win the game if you control a land of each basic land type and a creature of each color.",
+  "Worldfire": "Exile all permanents. Exile all cards from all hands and graveyards. Each player's life total becomes 1.",
+  "Kaervek's Hex": "Kaervek's Hex deals 1 damage to each nonblack creature and an additional 1 damage to each green creature.",
+  "Planar Overlay": "Each player chooses a land they control of each basic land type. Return those lands to their owners' hands.",
+  "Global Ruin": "Each player chooses from the lands they control a land of each basic land type, then sacrifices the rest.",
+  "Broadcast Takeover": "Gain control of all artifacts your opponents control until end of turn. Untap them. They gain haste until end of turn.",
+  "Tune Up": "Return target artifact card from your graveyard to the battlefield. If it's a Vehicle, it becomes an artifact creature.",
+  "Blightning": "Blightning deals 3 damage to target player or planeswalker. That player or that planeswalker's controller discards two cards.",
+  "Consign to Dream": "Return target permanent to its owner's hand. If that permanent is red or green, put it on top of its owner's library instead.",
+  "Sweep Away": "Return target creature to its owner's hand. If that creature is attacking, you may put it on top of its owner's library instead.",
+  "Light of Judgment": "Light of Judgment deals 6 damage to target creature. Destroy up to one Equipment attached to that creature."
+}

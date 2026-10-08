@@ -283,6 +283,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run:async(ctx,capture)=>{
           const choice=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay echo '+operation.cost+'?',options:[{key:'yes',label:'Pay '+operation.cost},{key:'no',label:'Do not pay'}],aiHint:{kind:'pay',cost:operation.cost}});
           const paid=choice==='yes'&&await ctx.g.payMana(ctx.you,MTG.parseCost(operation.cost),{card:ctx.src});
+          if(paid)await ctx.g.emit('echoPaidV44',{card:ctx.src,player:ctx.you,sourceZoneVersionV44:capture.source.zoneVersion});
           if(!paid&&sameBattlefieldObject(ctx.g,ctx.src,capture.source)&&ctx.src.ctrl===ctx.you)await ctx.g.sacrifice(ctx.you,ctx.src);
         }},()=>[]));return true;
     }
@@ -326,6 +327,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(kind==='split-second') {script.splitSecond=true;return true;}
     if(kind==='jump-start') {script.jumpstart={altCostStr:operation.cost};return true;}
     if(kind==='fading'||kind==='vanishing') {
+      if(kind==='fading')script.oracleFadingV42=true;
       const counter=kind==='fading'?'fade':'time';
       if(operation.n!==undefined)chainAsEnters(script,async(game,card)=>game.addCounters(card,counter,number(operation),false,card.ctrl));
       push(script,'triggers',captureTriggerObjects({on:'upkeep',desc:kind,
@@ -351,6 +353,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay cumulative upkeep for '+n+' age counters?',
             options:[{key:'yes',label:'Pay '+operation.cost+' × '+n},{key:'no',label:'Sacrifice'}],aiHint:{kind:'pay',cost}});
           const paid=answer==='yes'&&await ctx.g.payMana(ctx.you,cost,{card:ctx.src});
+          if(paid)await ctx.g.emit('cumulativeUpkeepPaidV44',{card:ctx.src,player:ctx.you,sourceZoneVersionV44:capture.source.zoneVersion});
           if(!paid&&sameBattlefieldObject(ctx.g,ctx.src,capture.source)&&ctx.src.ctrl===ctx.you)await ctx.g.sacrifice(ctx.you,ctx.src);
         }},()=>[]));return true;
     }
@@ -559,7 +562,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // the original entrant's LKI if it left, never a later blink object.
           if (!compared || compared.timestamp !== identity.timestamp) return;
           if (compared.power > ctx.src.power || compared.toughness > ctx.src.toughness) {
+            const before=ctx.src.counters['+1/+1']||0;
             plusCounter(ctx.g, ctx.src, 1, ctx.you);
+            if((ctx.src.counters['+1/+1']||0)>before)await ctx.g.emit('evolvedV44',{card:ctx.src,player:ctx.you,sourceZoneVersionV44:capture.source.zoneVersion});
           }
         },
       }, (game, self, data) => ({ entering: objectIdentity(data.card) })));

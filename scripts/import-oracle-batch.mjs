@@ -6,35 +6,25 @@ import { Readable } from 'node:stream';
 import { createGunzip } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { extractRawData } from './source-audit.mjs';
+import { createOracleCompilerCache } from './oracle-compiler-cache.mjs';
 import { parseOracleSpellV4 } from './oracle-spell-v4.mjs';
 import { extensionEffect as v5Effect, extensionLine as v5Line, characteristicOperation as v5Characteristic } from './oracle-extensions-v5.mjs';
 import { extensionEffect as v6Effect, extensionLine as v6Line, characteristicOperation as v6Characteristic, extensionCost as v6Cost, modifierOperation as v6Modifier, modalOperation as v6Modal } from './oracle-extensions-v6.mjs';
 import * as v7 from './oracle-extensions-v7.mjs';
 import * as v8 from './oracle-extensions-v8.mjs';
 import * as v9 from './oracle-extensions-v9.mjs';
-import * as v10 from './oracle-extensions-v10.mjs';
-import * as v11 from './oracle-extensions-v11.mjs';
-import * as v12 from './oracle-extensions-v12.mjs';
-import * as v13 from './oracle-extensions-v13.mjs';
-import * as v14 from './oracle-extensions-v14.mjs';
-import * as v15 from './oracle-extensions-v15.mjs';
-import * as v16 from './oracle-extensions-v16.mjs';
-import * as v17 from './oracle-extensions-v17.mjs';
-import * as v18 from './oracle-extensions-v18.mjs';
-import * as v19 from './oracle-extensions-v19.mjs';
-import * as v20 from './oracle-extensions-v20.mjs';
-import * as v21 from './oracle-extensions-v21.mjs';
-import * as v22 from './oracle-extensions-v22.mjs';
-import * as v23 from './oracle-extensions-v23.mjs';
-import * as v24 from './oracle-extensions-v24.mjs';
-import * as v25 from './oracle-extensions-v25.mjs';
-import * as v26 from './oracle-extensions-v26.mjs';
-import * as v27 from './oracle-extensions-v27.mjs';
-import * as v28 from './oracle-extensions-v28.mjs';
-import * as v29 from './oracle-extensions-v29.mjs';
-import * as v30 from './oracle-extensions-v30.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
+
+// Compiler modules are additive and versioned. Discovering a later module does
+// not change the code or cache identity of any earlier compiler version.
+const compilerDirectory = path.dirname(fileURLToPath(import.meta.url));
+const compilerVersions = fs.readdirSync(compilerDirectory)
+  .map(name => /^oracle-extensions-v(\d+)\.mjs$/.exec(name))
+  .filter(match => match && Number(match[1]) >= 10).map(match => Number(match[1])).sort((a,b) => a-b);
+const compilerGrammars = new Map(await Promise.all(compilerVersions.map(async version =>
+  [version, await import(`./oracle-extensions-v${version}.mjs`)])));
+export const LATEST_SEMANTIC_COMPILER_VERSION = Math.max(...compilerVersions);
 
 // Parsing is synchronous. Preserve existing v4 descriptors verbatim before
 // trying the additive grammar, so an extension cannot rewrite old manifests.
@@ -2138,13 +2128,22 @@ function semanticClassCore(card) {
   return { reason: 'noncreature-needs-explicit-semantics' };
 }
 
-export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
-  if ([10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30].includes(compilerVersion)) {
-    const grammar = compilerVersion === 30 ? v30 : compilerVersion === 29 ? v29 : compilerVersion === 28 ? v28 : compilerVersion === 27 ? v27 : compilerVersion === 26 ? v26 : compilerVersion === 25 ? v25 : compilerVersion === 24 ? v24 : compilerVersion === 23 ? v23 : compilerVersion === 22 ? v22 : compilerVersion === 21 ? v21 : compilerVersion === 20 ? v20 : compilerVersion === 19 ? v19 : compilerVersion === 18 ? v18 : compilerVersion === 17 ? v17 : compilerVersion === 16 ? v16 : compilerVersion === 15 ? v15 : compilerVersion === 14 ? v14 : compilerVersion === 13 ? v13 : compilerVersion === 12 ? v12 : compilerVersion === 11 ? v11 : v10;
-    const frozen = semanticClass(card, {compilerVersion: compilerVersion - 1, memoize});
-    if (frozen.semanticClass) return frozen;
+export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true, classificationCaches } = {}) {
+  const cache = classificationCaches?.get(compilerVersion);
+  const cached = cache?.get(card);
+  if (cached) return cached;
+  const result = semanticClassUncached(card, {compilerVersion, memoize, classificationCaches});
+  cache?.set(card, result);
+  return result;
+}
+
+function semanticClassUncached(card, {compilerVersion, memoize, classificationCaches}) {
+  if (compilerGrammars.has(compilerVersion)) {
+    const grammar = compilerGrammars.get(compilerVersion);
+    const frozen = semanticClass(card, {compilerVersion: compilerVersion - 1, memoize, classificationCaches});
+    if (frozen.semanticClass) return grammar.repairFrozenCompilation?.(card, frozen, {stripReminderText}) ?? frozen;
     const normalized = grammar.normalizeCard(card);
-    let result = grammar.compileWholeCard?.(normalized,{compile:part=>semanticClass(part,{compilerVersion,memoize}),compileCurrent:part=>v8.withAdditionalGrammar(grammar,()=>semanticClass(grammar.normalizeCard(part),{compilerVersion:8,memoize})),stripReminderText,raw:rawCard})
+    let result = grammar.compileWholeCard?.(normalized,{compile:part=>semanticClass(part,{compilerVersion,memoize,classificationCaches}),compileCurrent:part=>v8.withAdditionalGrammar(grammar,()=>semanticClass(grammar.normalizeCard(part),{compilerVersion:8,memoize})),stripReminderText,raw:rawCard})
       || v8.withAdditionalGrammar(grammar, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
     if(compilerVersion>=21&&result.semanticClass)result=grammar.finalizeCompilation?.(card,result)||result;
     // Normalization supplies executable grammar; the physical faces keep the
@@ -2563,10 +2562,10 @@ export function validateLimit(value) {
 // source rows and compiler versions, and clone descriptors so callers cannot
 // mutate a later plan through an earlier report.
 const planSemanticCache=new WeakMap();
-function planSemantics(card,compilerVersion){
+function planSemantics(card,compilerVersion,classificationCaches){
   const fingerprint=JSON.stringify(card),cached=planSemanticCache.get(card);
   if(cached?.fingerprint===fingerprint&&cached.compilerVersion===compilerVersion)return structuredClone(cached.result);
-  const result=semanticClass(card,{compilerVersion});
+  const result=semanticClass(card,{compilerVersion,classificationCaches});
   planSemanticCache.set(card,{fingerprint,compilerVersion,result:structuredClone(result)});
   return result;
 }
@@ -2583,7 +2582,9 @@ export function createImportPlan({
   expectedSnapshot = '',
   generatedAt = new Date().toISOString(),
   compilerVersion = SEMANTIC_COMPILER_VERSION,
+  classificationCacheDirectory,
 }) {
+  const classificationCaches=classificationCacheDirectory?new Map([compilerVersion,compilerVersion-1].filter(version=>version>=10).map(version=>[version,createOracleCompilerCache({directory:classificationCacheDirectory,compilerVersion:version})])):null;
   const selectedLimit = validateLimit(limit);
   const currentState = state || {
     schemaVersion: 1,
@@ -2653,7 +2654,7 @@ export function createImportPlan({
       addReason(deferredByReason, deferredExamples, 'already-imported-batch', card);
       continue;
     }
-    const semantics = planSemantics(card,compilerVersion);
+    const semantics = planSemantics(card,compilerVersion,classificationCaches);
     if (!semantics.semanticClass) {
       addReason(deferredByReason, deferredExamples, semantics.reason, card);
       continue;
@@ -2802,7 +2803,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
   const outputStatePath = path.join(outputReportDir, 'state.json');
   const selectedLimit = validateLimit(argValue(args, 'limit', String(DEFAULT_LIMIT)));
   const compilerVersion=Number(argValue(args,'compiler-version',String(SEMANTIC_COMPILER_VERSION)));
-  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>30)throw new Error('Oracle compiler version must be an integer from 1 to 30.');
+  if(!Number.isInteger(compilerVersion)||compilerVersion<1||compilerVersion>LATEST_SEMANTIC_COMPILER_VERSION)throw new Error('Oracle compiler version must be an integer from 1 to '+LATEST_SEMANTIC_COMPILER_VERSION+'.');
   const state = readState(outputStatePath, io);
   const sequence = batchNumberFrom(state, args);
   const id = batchId(sequence);
@@ -2856,6 +2857,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
     expectedSnapshot: argValue(args, 'expected-snapshot', ''),
     generatedAt,
     compilerVersion,
+    classificationCacheDirectory: argValue(args, 'classification-cache', '') || undefined,
   });
   const logger = dependencies.console || console;
   logger.log(`Source: ${bulk.name} updated ${bulk.updated_at}`);

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-08",
+  "scope": "Final focused regressions for Oracle batches 0229\u20130238; this is not the full repository suite.",
+  "passed": 1147,
+  "failed": 0,
+  "runs": [
+    {
+      "suite": "focus-v56",
+      "summary": {
+        "tests": 293,
+        "pass": 293,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "outputSha256": "e725a46919dacb0c69a99d698ca98b78bfb6de32b70c1033905f0b6e96bc2564"
+    },
+    {
+      "suite": "regression-final",
+      "summary": {
+        "tests": 679,
+        "pass": 679,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "outputSha256": "f26c005b3bbe08ad5af3d6b57abe7e043e984df6c6b9d5443a8ed1f0d693d2b3"
+    },
+    {
+      "suite": "regression-final-boundaries",
+      "summary": {
+        "tests": 68,
+        "pass": 68,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "outputSha256": "c5ce4f2f7476441f99c00b68dc4deac5203d73ec1636ae93106064253d243558"
+    },
+    {
+      "suite": "catalog-regression-final",
+      "summary": {
+        "tests": 107,
+        "pass": 107,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "outputSha256": "fc13454e61628321665bc60e4bde2ec58a67edda32dbac2a0efe981298862636"
+    }
+  ]
+}

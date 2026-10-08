@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "url": "http://127.0.0.1:43981",
+  "minBatch": 230,
+  "lastBatch": 230,
+  "deck": "Oracle 230-230 browser QA",
+  "cohortCardsInDeck": [
+    "Liliana the Faultless",
+    "Silent Gravestone",
+    "Teyo, Lightshield Expert",
+    "The Echoverse Fulcrum",
+    "Unflinching Hortimancer",
+    "Zenith Chronicler",
+    "Rescue Girl, First Responder",
+    "Shatterwing Pegasus",
+    "Thran Spider",
+    "Yoshimaru, Beloved Companion",
+    "Thalia, the Survivor",
+    "Traxos, Scourge Eternal",
+    "Saheeli, Consul of Oversight"
+  ],
+  "catalogCount": 26999,
+  "checks": [
+    "Root returns HTTP 200",
+    "26999 catalog cards and 230 complete generic batches load",
+    "The 100-card cohort deck passes the real paste/check UI",
+    "Save to My Library opens spotlight without starting a game",
+    "Guest deck survives reload and revalidation",
+    "My Library selection opens Deck spotlight without auto-start",
+    "Review preserves the selected opponents and hard difficulty",
+    "Reviewed guest pod reaches the real opening-hand mulligan",
+    "Human cohort spell and AI spell resolve through real costs, choices and Stack into a stable main phase",
+    "At least one new-cohort human permanent resolves after paying mana",
+    "Human cohort and AI spells were observed on the Stack",
+    "Local hard AI makes real decisions without fallback",
+    "No unresolved Stack objects or entry triggers remain",
+    "Gameplay has no horizontal overflow",
+    "Guest QA makes no remote mutations",
+    "No browser console or page errors"
+  ],
+  "errors": [],
+  "writes": [],
+  "screenshots": [
+    "01-saved-spotlight",
+    "02-reloaded-library",
+    "03-pod",
+    "04-review",
+    "05-mulligan",
+    "08-ai-stack",
+    "06-human-land",
+    "07-human-cohort-stack",
+    "09-settled-gameplay"
+  ],
+  "humanCohortResolved": [
+    {
+      "name": "Thalia, the Survivor",
+      "iid": 12,
+      "human": true,
+      "batch": 230,
+      "turn": 21,
+      "manaSpent": 4,
+      "zone": "battlefield",
+      "countered": false,
+      "fizzled": false
+    }
+  ],
+  "seed": 42261522,
+  "artifacts": "output/playwright/oracle-0230-retry/",
+  "priorAttempt": {
+    "artifacts": "output/playwright/oracle-0230/",
+    "result": "Timed out without drawing a new-cohort card; no console or page errors."
+  }
+}

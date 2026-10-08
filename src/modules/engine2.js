@@ -213,7 +213,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return ordered.length === steps.length ? ordered : null;
   }
 
-  function manaActivationResourcePlan(game, player, steps, fixedAssignments, protectedSacrifices = [], excludedTaps = [], reservedCounters = []) {
+  function manaActivationResourcePlan(game, player, steps, fixedAssignments, protectedSacrifices = [], excludedTaps = [], reservedCounters = [], reservedMill = 0) {
     const reserved = new Set(protectedSacrifices);
     const tapped = new Set();
     const tapGroups = [];
@@ -225,7 +225,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const n=(kinds.get(row.kind)||0)+row.n;if(n>(row.card.counters[row.kind]||0))return null;kinds.set(row.kind,n);
     }
     const sacrificeGroups = [];
-    let milled = 0,pomExilesNeeded=0;
+    let milled = Math.max(0,Number(reservedMill)||0),pomExilesNeeded=0;
+    if(milled>player.library.length)return null;
 
     for (const step of steps) {
       const source = step.src;
@@ -358,7 +359,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { assignments, tapAssignments, orderedSteps, v20ManaAssignments };
   }
 
-  async function chooseManaActivationResources(game, player, steps, suggestedPlan, protectedSacrifices = [], excludedTaps = [], reservedCounters = []) {
+  async function chooseManaActivationResources(game, player, steps, suggestedPlan, protectedSacrifices = [], excludedTaps = [], reservedCounters = [], reservedMill = 0) {
     const assignments = new Map(),pomExileAssignments=new Map();
     const reserved = new Set(steps.filter(step => step.src && step.src.extraCost && step.src.extraCost.sacSelf)
       .map(step => step.src.card).concat(protectedSacrifices));
@@ -396,7 +397,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (cost.sacType && !await choose(step, 1,
         candidate => candidate.hasSub(cost.sacType), cost.sacType)) return null;
     }
-    const result=manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices, excludedTaps, reservedCounters);
+    const result=manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices, excludedTaps, reservedCounters, reservedMill);
     if(result){
       result.pomExileAssignments=pomExileAssignments;
       if(MTG.OracleV20Costs){result.v20ManaAssignments=await MTG.OracleV20Costs.choose(game,player,steps,[...reserved]);if(!result.v20ManaAssignments)return null;}
@@ -1385,7 +1386,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               if (payment.remaining.length || payment.generic > 0) continue;
               const step = Object.assign({}, baseStep, { consumePayment: payment.spendTrace || [] });
               const nextPlan = planAcc.concat([step]);
-              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters)) continue;
+              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill)) continue;
               const nextPool = clonePoolState(payment);
               nextPool.meta.push(...(allocation.c1719BonusMeta || []));
               for (const color of COLORS.concat('C')) {
@@ -1651,9 +1652,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Validate all shared activation resources before tapping, milling,
     // sacrificing, spending life, or changing the pool. This keeps a failed
     // payment observationally atomic and gives each source a distinct sacrifice.
-    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters);
+    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill);
     if (!suggestedResources) return false;
-    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters);
+    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill);
     if (!activationResources) return false;
     const steps = activationResources.orderedSteps;
     const requiredLife = steps.reduce((total, step) => {
@@ -1740,6 +1741,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(c.cur?.activationDisabled&&!s.m?.viaConvoke||c.cur?.abilitiesDisabled&&!s.m?.viaConvoke&&!s.grantedBy&&!(c.cur.extraMana||[]).includes(s.m))return false;
     if(s.grantedBy&&(s.grantedBy.cur?.abilitiesDisabled||c.cur?.oracleAbilityLossTimestamp>s.grantedBy.timestamp))return false;
     const sourceZoneVersion=c.zoneVersion;
+    const activationSourceSnapshotV44=!s.m?.viaConvoke?this.snapshot(c):null;
     const snowSource = !s.m?.viaConvoke && !!c.cur?.super?.includes('Snow');
     const sourceCreatureV20=!s.m?.viaConvoke&&c.is('Creature');
     const producedRestrictionV20=s.m.freezeRestrictV20?.(this,c)||s.m.restrict;
@@ -1749,6 +1751,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       removeManaCount>(c.counters[cost.removeManaCounters.kind]||0)))return false;
     if(cost.counter&&!this.canPutCountersV18(c,cost.counter))return false;
     if (cost.mill && p.library.length < cost.mill) return false;
+    if(cost.topHandV56&&p.hand.length<cost.topHandV56)return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
     let sacrificeTargets = preparedCost && Array.isArray(preparedCost.sacrificeTargets)
       ? preparedCost.sacrificeTargets.slice() : [];
@@ -1837,6 +1840,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.rmCounter) this.removeCounters(c, cost.rmCounter.kind || cost.rmCounter, cost.rmCounter.n || 1);
     if (cost.removeManaCounters && removeManaCount) this.removeCounters(c, cost.removeManaCounters.kind, removeManaCount);
     if (s.m.oncePerTurn) c.meta['_mana_' + (s.m.key || 0)] = this.turnNo;
+    if(!s.m?.viaConvoke)await this.emit('abilityActivated',{player:p,card:c,isMana:true,ability:{...s.m,cost},sourceZoneVersionV44:sourceZoneVersion,sourceSnapshotV44:activationSourceSnapshotV44});
     if(s.m.c21Donation&&!forSpell){await MTG.C21Rules.donateMana(this,c,p,s.m.c21Donation);return true;}
     if(preparedCost?.handPlanV20?.rows.length)await this.revealToHuman({cards:preparedCost.handPlanV20.rows.map(r=>r.card),ctrl:p,source:c,kind:'reveal',includeLands:true});
     if (s.m.onProduce) await s.m.onProduce(this, c, p, chosen, forSpell);
@@ -3741,6 +3745,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       p.bloodcasterAlternative = null;
     }
     so.treasureUsed = !!paySpell.treasureUsed;
+    so.treasureManaV48=paySpell.pomTreasureMana||0;
     so.artifactManaSpent = paySpell.artifactManaSpent || 0;
     so.foundrySource = paySpell.foundrySource || null;
     so.convokedCards = (paySpell.convokedCards || []).slice();
@@ -3861,7 +3866,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ? U.colorsOfCost(castOpts.altCostStr)
             : d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || ''),
       paidTimes, squadN: paidTimes, pomSquad:so.pomSquad||0,
-      manaSpent: so.manaSpent,
+      manaSpent: so.manaSpent,treasureManaV48:so.treasureManaV48||0,
       castPhase: this.phase,
       artifactManaSpent: so.artifactManaSpent,
       grantedSunburstColors: so.grantedSunburstColors,
@@ -4279,8 +4284,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const seen = new Set();
       const isInstantSorcery = this.isInstantSorcerySpell(so);
       for (const target of (copy.targets || []).flat().filter(Boolean)) {
-        if (!(target instanceof MTG.CardInst) || seen.has(target.iid)) continue;
-        seen.add(target.iid);
+        if (!(target instanceof MTG.CardInst || target instanceof MTG.Player || target.kind === 'spell' && target.card instanceof MTG.CardInst) || seen.has(target)) continue;
+        seen.add(target);
         await this.emit('targeted', {
           card: target, byPlayer: ctrl, src: so.card, isSpell: true, isInstantSorcery, so: copy,
         });
@@ -4368,8 +4373,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!targetsWereRepicked) {
       const seen = new Set();
       for (const target of (copy.targets || []).flat().filter(Boolean)) {
-        if (!(target instanceof MTG.CardInst) || seen.has(target.iid)) continue;
-        seen.add(target.iid);
+        if (!(target instanceof MTG.CardInst || target instanceof MTG.Player || target.kind === 'spell' && target.card instanceof MTG.CardInst) || seen.has(target)) continue;
+        seen.add(target);
         await this.emit('targeted', {
           card: target, byPlayer: ctrl, src: so.srcCard, isSpell: false, isInstantSorcery: false,
           isActivatedAbility: so.kind === 'ability', isTriggeredAbility: so.kind === 'trigger',
@@ -4905,7 +4910,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(cost.craftV20)return MTG.OracleV20Costs.craftFeasible(this,p,source,cost.craftV20,manaCost,ability);
       if(cost.discardAlternativeV20&&p.hand.length>=cost.discardAlternativeV20&&this.canPayMana(p,this.abilityManaCost(p,source,'{0}',{ability}),{card:source,isAbility:true,ability}))return true;
       const options = {excludeCards: cost.tap || cost.rmCounter ? [source] : [],
-        artifactAbilityAlreadyUsed: source.is('Artifact'), reservedEnergy: cost.energy || 0};
+        artifactAbilityAlreadyUsed: source.is('Artifact'), reservedMill: cost.mill || 0, reservedEnergy: cost.energy || 0, reservedLife: cost.life || 0};
       const fixed = cost.sacSelf ? [source] : [];
       const payable = picks => this.canPayMana(p, manaCost, {card: source, isAbility: true, ability, cdkCostHasX:!!manaCost.x,waterbendV10:cost.waterbendV10},
         {...options, protectedSacrifices: fixed.concat(picks)});
@@ -4938,10 +4943,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // loyalty countera da plati trošak (CR 606.5a).
         if (a.loyalty < 0 && (c.counters.loyalty || 0) < -a.loyalty) return;
         const cost = {...a.cost};
+        if(cost.lifeHalfV56)cost.life=Math.max(0,Math.ceil(p.life/2));
         if(!cost.mana&&!cost.manaFromTarget&&(MTG.CWW?.abilityTax(this,p)||this.abilityManaCost(p,c,'{0}',{ability:a}).generic>0))cost.mana='{0}';
         if (cost.counter&&!this.canPutCountersV18(c,cost.counter)) return;
         if(a.loyalty>0&&!this.canPutCountersV18(c,'loyalty'))return;
         if (cost.mill && p.library.length < cost.mill) return;
+        if(cost.topHandV56&&p.hand.length<cost.topHandV56)return;
         if (cost.tap && (c.tapped)) return;
         if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return;
         if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c)) return;
@@ -5103,7 +5110,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const manaCost = this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, {isMana:true});
         if (!this.canPayMana(p, manaCost, { card: c, isAbility: true, ability:source.m }, {
           excludeCards: cost.tap ? [c] : [],
-          reservedEnergy: cost.energy || 0,
+          reservedMill: cost.mill || 0, reservedEnergy: cost.energy || 0, reservedLife: cost.life || 0,
           artifactAbilityAlreadyUsed: c.is('Artifact'),
         })) continue;
       }
@@ -5206,6 +5213,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const gyTargets=typeof a.targets==='function'?a.targets(this,c,{player:p}):a.targets;
       if(gyTargets?.some(spec=>this.legalTargets(spec,c,p).length<(spec.min??(spec.upTo?0:spec.count??1))))continue;
       const gyExtra = a.extraCost || {};
+      if(gyExtra.mill&&p.library.length<gyExtra.mill)continue;
       if(gyExtra.tapPermanents&&this.bf().filter(card=>card.ctrl===p&&!card.tapped&&gyExtra.tapPermanents.filter(this,card,c,p)).length<gyExtra.tapPermanents.n)continue;
       if(gyExtra.discard){const info=gyExtra.discard,n=typeof info==='object'?info.n:info;if(p.hand.filter(card=>!info.filter||info.filter(this,card,c,p)).length<n)continue;}
       if(gyExtra.exileFromGY){const info=gyExtra.exileFromGY,n=typeof info==='object'?info.n:info;if(p.graveyard.filter(card=>!info.filter||info.filter(this,card,c,p)).length<n)continue;}
@@ -5220,7 +5228,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (gyExtra.sacGroups && !canMatchPermanentCostGroups(this, p, c, gyExtra.sacGroups)) continue;
       const mc = this.abilityManaCost(p, c, typeof a.cost === 'function' ? a.cost(this, c) : a.cost);
-      if (!this.canPayMana(p, mc, { card: c, isAbility: true, ability: a }, { artifactAbilityAlreadyUsed: c.is('Artifact') })) continue;
+      if (!this.canPayMana(p, mc, { card: c, isAbility: true, ability: a }, { artifactAbilityAlreadyUsed: c.is('Artifact'),reservedMill:gyExtra.mill||0 })) continue;
       out.push({ card: c, gyAbility: true, gyAbilityOverride: a, grantSource });
     }
     if (p.channelUntilTurn === this.turnNo && p.life > 0 && p.channelSource) {
@@ -5278,7 +5286,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           protectedSacrifices:v20ManaRows.map(row=>row.card).concat((handPlanV20?.rows||[]).map(r=>r.card),(activationCtxV20?.oracleActivationPlanV20?.rows||[]).map(r=>r.card)),
           ...(activationCtxV20?{prepareOnlyV20:true}:{}),
           validateExtraV20:()=>!handPlanV20||MTG.OracleV20Costs.validateHandMana(this,p,source,handPlanV20),
-          reservedEnergy: cost.energy || 0,
+          reservedMill: cost.mill || 0, reservedEnergy: cost.energy || 0, reservedLife: cost.life || 0,
           artifactAbilityAlreadyUsed: c.is('Artifact'),
         });
         if (!paid) return false;
@@ -5302,7 +5310,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.markAbilityActivated(p, c);
       this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name} — ${entry.label}.`, 'mana');
       if (await this.activateManaSource(p, source, chosen, null, [], true, source.m.costsV20||handPlanV20||activationCtxV20 ? {v20ManaRows,v20Only:true,handPlanV20,activationCtxV20} : undefined) === false) return false;
-      await this.emit('abilityActivated', { player: p, card: c, isMana: true });
       this.note('mana', { p });
       return true;
     }
@@ -5617,7 +5624,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(a.sorcery&&(this.turnPlayer!==p||this.stack.length||!['main1','main2'].includes(this.phase)))return false;
       if(a.cond&&!a.cond(this,c,p))return false;
       const targetSpecs=typeof a.targets==='function'?(a.targets(this,c,{player:p})||[]):(a.targets||[]);
-      const gctx={g:this,src:c,you:p,targets:[],sourceZoneVersion:c.zoneVersion,isActivatedAbility:true,ability:a};
+      const gctx={g:this,src:c,you:p,targets:[],sourceZone:abilityZoneV20,sourceZoneVersion:c.zoneVersion,isActivatedAbility:true,ability:a};
       if(a.oracleEncore)gctx.oracleEncoreSourceDefinition=c.def;
       if(a.oracleEternalize)gctx.oracleEternalizeSourceDefinition=c.def;
       if(targetSpecs.length&&!await this.pickTargets(gctx,targetSpecs,c,p))return false;
@@ -5628,6 +5635,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let pickedSacrifices = [];
       let pickedReturns = [];
       const extra = a.extraCost || {};
+      if(extra.mill&&p.library.length<extra.mill)return false;
       if(extra.additionalCostV20&&!await MTG.OracleV20Costs.prepareActivation(gctx,extra))return false;
       if(extra.energy&&(p.counters.energy||0)<extra.energy)return false;
       const selections={};
@@ -5685,7 +5693,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ok = await this.payMana(p, mc, graveyardPayment, {
         artifactAbilityAlreadyUsed: c.is('Artifact'),
         excludeCards: extra.allowMana ? [] : reserved,
-        reservedEnergy:extra.energy||0,
+        reservedMill:extra.mill||0,reservedEnergy:extra.energy||0,
         protectedSacrifices: [c, ...(selections.exileFromGY || []),...(selections.exileHandV20||[]),...(selections.discard||[]),...(gctx.oracleActivationPlanV20?.rows||[]).map(r=>r.card)],
         ...(extra.additionalCostV20?{prepareOnlyV20:true,validateExtraV20:()=>MTG.OracleV20Costs.validateActivation(gctx,extra)}:{}),
         ...(abilityZoneV20==='exile'?{prepareOnlyV20:true,validateExtraV20:()=>!c.faceDown&&c.zone==='exile'&&c.zoneVersion===gctx.sourceZoneVersion&&c.owner===p&&p.exile.includes(c)&&a===c.def.oracleExileAbilityV20}:{}),
@@ -5694,6 +5702,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(abilityZoneV20==='exile'&&(!ok.valid()||!await ok.commit()))return false;
       if(extra.additionalCostV20&&(!ok.valid()||!MTG.OracleV20Costs.validateActivation(gctx,extra)||!await ok.commit()||!await MTG.OracleV20Costs.commitActivation(gctx,extra)))return false;
       gctx.pomCopyMana = graveyardPayment.pomCopyMana || 0;
+      if(extra.mill)await this.mill(p,extra.mill);
       if(extra.energy&&!MTG.OracleV8Energy.spend(this,p,extra.energy,c))return false;
       for(const card of selections.tapPermanents||[])this.tap(card);
       if(selections.discard)await this.discard(p,selections.discard,{noReplacement:true});
@@ -5772,10 +5781,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (a.oncePerObject && c.meta['_abo_' + (a.oracleUseKeyV20||entry.idx)] === c.zoneVersion)) return false;
     if(a.maxEachTurnV10){const use=c.meta['_oracleAbLimitV10_'+(a.oracleUseKeyV20||entry.idx)];if(use?.turn===this.turnNo&&use.version===c.zoneVersion&&use.n>=a.maxEachTurnV10)return false;}
     const cost = {...a.cost};
+        if(cost.lifeHalfV56)cost.life=Math.max(0,Math.ceil(p.life/2));
     if(!cost.mana&&!cost.manaFromTarget&&(MTG.CWW?.abilityTax(this,p)||this.abilityManaCost(p,c,'{0}',{ability:a}).generic>0))cost.mana='{0}';
     if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return false;
     if(cost.counter&&!this.canPutCountersV18(c,cost.counter))return false;
     if (cost.mill && p.library.length < cost.mill) return false;
+    if(cost.topHandV56&&p.hand.length<cost.topHandV56)return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
     if (cost.discardRandom && p.hand.length < cost.discardRandom) return false;
     if (cost.sacSelf && !this.canSacrifice(c)) return false;
@@ -5898,8 +5909,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Fixed hand/graveyard payments are selected before any cost is spent.
     // An invalid controller selection must not leave a paid mana cost behind.
-    let plannedDiscard=null,plannedExile=null,plannedHandExile=null;
-    for(const [key,zone,kind]of [['discard','hand','addlDiscard'],['exileFromGY','graveyard','delve'],['exileHandV20','hand','delve']])if(cost[key]){
+    let plannedDiscard=null,plannedExile=null,plannedHandExile=null,plannedHandTop=null;
+    for(const [key,zone,kind]of [['discard','hand','addlDiscard'],['exileFromGY','graveyard','delve'],['exileHandV20','hand','delve'],['topHandV56','hand','bestCard']])if(cost[key]){
       const info=cost[key],configured=typeof info==='object'?info.n:info;
       if(configured==='X')continue;
       const n=configured==='all'?p[zone].length:configured||1,filter=typeof info==='object'?info.filter:null;
@@ -5908,9 +5919,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(pool.length<n)return false;
       rememberCostPool(pool);
       const picked=configured==='all'?pool.slice():await p.controller.decide(this,{type:'chooseCards',from:pool,min:n,max:n,
-        prompt:key==='discard'?'Odbaci:':'Exile from graveyard:',aiHint:{kind,card:c,keepTargets:(ctx.targets||[]).flat(Infinity)}});
+        prompt:key==='discard'?'Odbaci:':key==='topHandV56'?'Put a card from your hand on top of your library:':'Exile from graveyard:',aiHint:{kind,card:c,keepTargets:(ctx.targets||[]).flat(Infinity)}});
       if(!Array.isArray(picked)||picked.length!==n||new Set(picked).size!==n||picked.some(card=>!pool.includes(card)||!currentCostObject(card)))return false;
-      if(key==='discard')plannedDiscard=picked;else if(key==='exileFromGY')plannedExile=picked;else plannedHandExile=picked;
+      if(key==='discard')plannedDiscard=picked;else if(key==='exileFromGY')plannedExile=picked;else if(key==='topHandV56')plannedHandTop=picked;else plannedHandExile=picked;
     }
     const resolvedManaCost = cost.mana ?
       this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, {
@@ -6049,7 +6060,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const nsac = cost.c1516TargetSacrifice ? cost.sacN : cost.sacN === 'X' ? null : (cost.sacN || 1);
       const canPayRemaining = picks => !resolvedManaCost || this.canPayMana(p, resolvedManaCost,
         {card: c, isAbility: true}, {xVal: nsac === null ? picks.length : ctx.x || 0,
-          reservedEnergy: cost.energy || 0, artifactAbilityAlreadyUsed: c.is('Artifact'),
+          reservedMill: cost.mill || 0, reservedEnergy: cost.energy || 0, reservedLife: cost.life || 0, artifactAbilityAlreadyUsed: c.is('Artifact'),
           excludeCards: (cost.tap || cost.rmCounter ? [c] : []).concat(tapPermanents),
           protectedSacrifices: returnPermanents.concat(picks, cost.sacSelf ? [c] : [], (plannedCounters || []).map(row => row.card)),
           reservedCounters: plannedCounters ? MTG.OracleV8CounterCosts.reservations(plannedCounters) : []});
@@ -6073,13 +6084,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(cost.c1516Unattach&&!c.attachedTo)return false;
     if(cost.sacSelf&&!this.canSacrifice(c))return false;
     if(MTG.POM&&!MTG.POM.validateAbility(ctx))return false;
-    const destructive=[...(ctx.pomCostRows||[]).map(r=>r.card),...(cost.sacSelf?[c]:[]),...(sacPicked||[]),...returnPermanents,...(plannedDiscard||[]),...(plannedExile||[]),...(plannedHandExile||[])];
+    const destructive=[...(ctx.pomCostRows||[]).map(r=>r.card),...(cost.sacSelf?[c]:[]),...(sacPicked||[]),...returnPermanents,...(plannedDiscard||[]),...(plannedExile||[]),...(plannedHandExile||[]),...(plannedHandTop||[])];
     if(new Set(destructive).size!==destructive.length)return false;
     if(returnPermanents.some(card=>!currentCostObject(card)||card.ctrl!==p||!this.bf().includes(card)||cost.returnPermanents.filter&&!cost.returnPermanents.filter(this,card,c,p)))return false;
     if(tapPermanents.some(card=>!currentCostObject(card)||card.ctrl!==p||card.tapped||!this.bf().includes(card)||!cost.tapPermanents.filter(this,card,c,p)))return false;
     if(cost.tapPermanents?.saddleV10&&tapPermanents.reduce((sum,card)=>sum+MTG.oracleSaddlePowerV10(card),0)<cost.tapPermanents.totalPower)return false;
     if((sacPicked||[]).some(card=>!currentCostObject(card)||card.ctrl!==p||!this.canSacrifice(card)||(cost.sacCreature?!card.is('Creature'):!cost.sac(this,card,c))))return false;
-    for(const [key,zone,picked]of [['discard','hand',plannedDiscard],['exileFromGY','graveyard',plannedExile],['exileHandV20','hand',plannedHandExile]])if(picked){
+    for(const [key,zone,picked]of [['discard','hand',plannedDiscard],['exileFromGY','graveyard',plannedExile],['exileHandV20','hand',plannedHandExile],['topHandV56','hand',plannedHandTop]])if(picked){
       const filter=typeof cost[key]==='object'?cost[key].filter:null;
       if(picked.some(card=>!currentCostObject(card)||!p[zone].includes(card)||filter&&!filter(this,card,c,p)))return false;
     }
@@ -6108,10 +6119,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const abilityPayment={card:c,isAbility:true,ability:a,cdkCostHasX:!!mc.x,waterbendV10:cost.waterbendV10};
       const ok = await this.payMana(p, mc, abilityPayment, {
         xVal: ctx.x || 0,
-        reservedEnergy:cost.energy||0,
+        reservedMill:cost.mill||0,reservedEnergy:cost.energy||0,reservedLife:cost.life||0,
         artifactAbilityAlreadyUsed: c.is('Artifact'),
         excludeCards: manaExclude,
-        protectedSacrifices: returnPermanents.concat((ctx.pomCostRows||[]).map(r=>r.card),sacPicked||[],cost.sacSelf?[c]:[],(plannedCounters||[]).map(row=>row.card),plannedDiscard||[],plannedExile||[],plannedHandExile||[]),
+        protectedSacrifices: returnPermanents.concat((ctx.pomCostRows||[]).map(r=>r.card),sacPicked||[],cost.sacSelf?[c]:[],(plannedCounters||[]).map(row=>row.card),plannedDiscard||[],plannedExile||[],plannedHandExile||[],plannedHandTop||[]),
         reservedCounters:plannedCounters?MTG.OracleV8CounterCosts.reservations(plannedCounters):[],
         ...(cost.additionalCostV20?{prepareOnlyV20:true,protectedSacrifices:[...(cost.sacSelf?[c]:[]),...ctx.oracleActivationPlanV20.rows.map(r=>r.card)],validateExtraV20:()=>MTG.OracleV20Costs.validateActivation(ctx,cost)}:{}),
         ...(cost.craftV20?{prepareOnlyV20:true,protectedSacrifices:[c,...ctx.oracleCraftPlanV20.map(r=>r.card)],validateExtraV20:()=>MTG.OracleV20Costs.validateCraft(ctx,cost.craftV20)}:{}),
@@ -6144,6 +6155,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(!await MTG.OracleV8Exert.exert(this,p,c))return false;
     }
     for(const permanent of tapPermanents)this.tap(permanent);
+    if(cost.tapPermanents?.saddleV10)await this.emit('oracleSaddledByV48',{card:c,cards:tapPermanents.slice(),player:p});
     if(returnPermanents.length){
       if(returnPermanents.some(card=>card.zone!=='battlefield'||card.ctrl!==p))return false;
       ctx.pomReturnedNonbasic=returnPermanents.some(c=>(MTG.POM?.nonbasicLandTypes||[]).some(t=>c.hasSub(t)));
@@ -6171,6 +6183,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.sacd = sacPicked.map(x => this.snapshot(x));
       for (const x of sacPicked) if (this.canSacrifice(x)) await this.sacrifice(p, x);
     }
+    if(plannedHandTop)for(const card of plannedHandTop)await this.move(card,'library');
     if (plannedDiscard) {
       ctx.discardedCards=plannedDiscard.slice();
       ctx.discardedSnapshots=plannedDiscard.map(card=>this.snapshot(card));
@@ -6668,20 +6681,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.emit(precombat?'precombatMain':'postcombatMain',{player,ordinal:player.turnState.mainPhaseCount,...(additional?{additional:true}:{})});
   };
 
-  G.scheduleExtraTurn = function(player){
+  G.scheduleExtraTurn = function(player,options){
     if(!this.players.includes(player)||player.lost)return;
-    (this.extraTurns||(this.extraTurns=[])).unshift(player);
+    (this.extraTurns||(this.extraTurns=[])).unshift(options?{player,options}:player);
   };
 
   G.advanceTurnPlayer = function(finished){
     while(this.extraTurns?.length){
-      const player=this.extraTurns.shift();
+      const queued=this.extraTurns.shift(),player=queued?.player||queued;
       if(!player||!this.players.includes(player))continue;
       if(player.lost){this.departedPlayerTurnWouldBegin(player);continue;}
       if (this.bf().some(card => card.ctrl !== player && card.def.preventsOpponentExtraTurns && !card.cur.abilitiesDisabled)) {
         this.lg(`${player.name} skips the extra turn (Trouble in Pairs).`);
         continue;
       }
+      this._pendingExtraTurnV48=queued?.options?{player,options:queued.options}:null;
       this._extraTurnAnchor=this._extraTurnAnchor||finished;
       this.extraTurnDepth=(this.extraTurnDepth||0)+1;
       this.turnPlayer=player;this.lg(`⏰ ${player.name} takes an EXTRA turn!`);return;
@@ -6773,8 +6787,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     p.landsPlayed++;
     if(fromZone==='exile'&&card.meta)delete card.meta.adventureExiled;
-    this.remove(card);
-    card.zone = 'nowhere';
     const landName = oracleFace ? MTG.OracleV8Faces.faceDefinition(card.oracleFaces, oracleFace).name : card.name;
     this.lg(`${U.playerVerb(p, 'play', 'plays')} a land: ${landName}.`, 'land');
     await this.pace(p.isAI ? 700 : 0);
@@ -6926,10 +6938,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.runTurn = async function () {
     const p = this.turnPlayer;
-    if(this.oracleShouldSkipV10?.(p,'turn')){this.advanceTurnPlayer(p);return;}
+    if(this.oracleShouldSkipV10?.(p,'turn')){this._pendingExtraTurnV48=null;this.advanceTurnPlayer(p);return;}
     if (this.diplomacyRefresh) this.diplomacyRefresh();
     this.turnNo++;
     p.turnsStarted++;
+    const extraV48=this._pendingExtraTurnV48;this._pendingExtraTurnV48=null;
+    if(extraV48?.player===p){const options=extraV48.options;if(options.skipUntap)p.skipUntapOnce=true;if(options.lose){const turn=this.turnNo;this.delayed.push({on:'endStep',once:true,src:options.src,ctrl:p,name:options.src.name+' — lose the game',filter:(g,d)=>g.turnNo===turn&&d.player===p,run:ctx=>ctx.g.playerLoses(p,'Extra turn delayed trigger')});}}
     this.bomMonarchAtTurnStart=this.monarch?.idx??null;
     this.diedThisTurn = [];
     this._trigsThisTurn = 0;
@@ -7624,12 +7638,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     };
     if (!legalWithoutSpecificAttack(target)) return false;
-    const forcedPlayer = c.meta && c.meta.mustAttackPlayer;
-    if (forcedPlayer && target !== forcedPlayer && legalWithoutSpecificAttack(forcedPlayer)) return false;
-    const forcedByEffect = this.untilEffects.find(e => e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
-      (e.combat === undefined || e.combat === this.afcCombatId) &&
-      (e.timestamp === undefined || e.timestamp === c.timestamp) && e.targetPlayer && !e.targetPlayer.lost);
-    if (forcedByEffect && target !== forcedByEffect.targetPlayer && legalWithoutSpecificAttack(forcedByEffect.targetPlayer)) return false;
+    const forcedPlayers = [c.meta && c.meta.mustAttackPlayer,
+      ...this.untilEffects.filter(e => e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
+        (e.combat === undefined || e.combat === this.afcCombatId) &&
+        (e.timestamp === undefined || e.timestamp === c.timestamp) &&
+        (e.zoneVersion === undefined || e.zoneVersion === c.zoneVersion)).map(e => e.targetPlayer)]
+      .filter(player => player && !player.lost && legalWithoutSpecificAttack(player));
+    if (forcedPlayers.length) {
+      const counts = new Map();
+      for (const player of forcedPlayers) counts.set(player, (counts.get(player) || 0) + 1);
+      if ((counts.get(target) || 0) < Math.max(...counts.values())) return false;
+    }
     return true;
   };
 
@@ -7692,7 +7711,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (e.kind === 'mustAttack' && e.who === c.ctrl) return true;
       if (e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
         (e.combat === undefined || e.combat === this.afcCombatId) &&
-        (e.timestamp === undefined || e.timestamp === c.timestamp) && e.targetPlayer &&
+        (e.timestamp === undefined || e.timestamp === c.timestamp) && (e.zoneVersion === undefined || e.zoneVersion === c.zoneVersion) && e.targetPlayer &&
         this.canAttackTarget(c, e.targetPlayer)) return true;
       if (e.kind === 'goadCard' && e.iid === c.iid && (e.zoneVersion===undefined||e.zoneVersion===c.zoneVersion)) return true;
     }
@@ -7725,7 +7744,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.canBlock = function (blocker, attacker) {
     const bounds = this.blockerBounds(attacker);
     if (bounds.min > bounds.max) return false;
-    if (blocker.tapped || blocker.cur.cantBlock) return false;
+    if (blocker.tapped && !blocker.cur.tappedCanBlockV43 || blocker.cur.cantBlock) return false;
     if(blocker.cur.cantBlockCreature?.(this,attacker))return false;
     if (blocker.cur.blockOnlyFlying && !attacker.kw('flying')) return false;
     if (this.isProtectedFrom(attacker, blocker)) return false;

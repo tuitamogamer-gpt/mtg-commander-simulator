@@ -2,10 +2,10 @@
 ((M)=>{
  const creatureTypes=card=>new Set([...M.CREATURE_SUBTYPES].filter(type=>card.hasSub(type)));
  const departures=new WeakMap();
- const snapshot=card=>({name:card.name,mv:card.mv,types:creatureTypes(card)});
+ const snapshot=card=>({name:card.name,mv:card.mv,types:creatureTypes(card),controller:card.ctrl});
  const move=M.Game.prototype.move;
  M.Game.prototype.move=async function(card,to,opts){
-  const version=card.zoneVersion,old=card.zone==='graveyard'?snapshot(card):null;
+  const version=card.zoneVersion,old=['graveyard','battlefield'].includes(card.zone)?snapshot(card):null;
   if(old){let history=departures.get(card);if(!history){history=new Map();departures.set(card,history);}history.set(version,old);}
   const result=await move.call(this,card,to,opts);
   return result;
@@ -15,6 +15,8 @@
   if(states.some(row=>!row))return false;
   if(rule.test==='total-mana-value')return states.reduce((sum,row)=>sum+row.mv,0)<=rule.max;
   if(rule.test==='different-names')return new Set(states.map(row=>row.name)).size===states.length;
+  if(rule.test==='same-controller')return states.length<2||states.every(row=>row.controller===states[0].controller);
+  if(rule.test==='no-shared-creature-type')return states.every((row,i)=>states.slice(i+1).every(other=>![...row.types].some(type=>other.types.has(type))));
   if(rule.test==='different-mana-values')return new Set(states.map(row=>row.mv)).size===states.length;
   if(rule.test==='shared-creature-type')return states.length<2||[...states[0].types].some(type=>states.every(row=>row.types.has(type)));
   throw Error('Unknown v22 spell target group');

@@ -44,24 +44,25 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 
 ### Current catalog
 
-Repository inventory checked on **7 October 2026**:
+Repository inventory checked on **8 October 2026**:
 
 | Measure | Available |
 | --- | ---: |
 | Built-in precon decks | **175**, each with 100 cards |
-| Runtime card definitions | **26,799** |
-| Definitions eligible for deck import | **26,798** |
-| Generic Oracle batches | **228**, containing 22,800 definitions |
+| Runtime card definitions | **27,799** |
+| Definitions eligible for deck import | **27,798** |
+| Generic Oracle batches | **238**, containing 23,800 definitions |
 | Dedicated commander videos | **28**, across the original 27 decks |
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
 
-Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **30 August 2026**, with later native additions recorded separately. The seven manual Commander staples below are included in that export.
+Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **7 October 2026**, with native additions and older import snapshots recorded separately. The seven manual Commander staples below are included in that export.
 
 ### Recent additions
 
+- **Another 1,000 Oracle cards added:** batches 0229–0238, including complete rules, pinned source records and human/local-AI execution checks. The catalog now has 27,799 definitions. [Validation report](reports/oracle-import/validation-0238.md)
 - **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. All source fields are verified against the SHA-256-pinned Scryfall snapshot, and images use the recorded print IDs. Underworld Breach supports split halves, Room doors, Adventures and nonland modal faces; Necropotence permits paying the last life point. [Provenance](reports/oracle-import/commander-staples-cards.json)
-- **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The requested 1,000-card expansion is complete. [Latest validation report](reports/oracle-import/validation-0228.md)
+- **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The previous requested 1,000-card expansion is complete. [Validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
 - **1,000 more Oracle cards:** batches 0209–0218, with executable rules, recorded source provenance, and human/local-AI verification. [Validation report](reports/oracle-import/validation-0209-0218.md)
@@ -714,7 +715,8 @@ These reports describe their dated imports and checks. Use the [generated catalo
 | [Oracle 0225](reports/oracle-import/validation-0225.md) | Oracle batch 0225; 700 of the requested 1,000 cards imported so far. |
 | [Oracle 0226](reports/oracle-import/validation-0226.md) | Oracle batch 0226; 800 of the requested 1,000 cards imported so far. |
 | [Oracle 0227](reports/oracle-import/validation-0227.md) | Oracle batch 0227; 900 of the requested 1,000 cards imported so far. |
-| [Oracle 0228](reports/oracle-import/validation-0228.md) | Oracle batch 0228; 1,000 of the requested 1,000 cards imported and verified. |
+| [Oracle 0228](reports/oracle-import/validation-0228.md) | Oracle batch 0228; the previous requested 1,000 cards imported and verified. |
+| [Oracle 0229–0238](reports/oracle-import/validation-0238.md) | Completed expansion: all 1,000 additional cards imported with source, execution and browser evidence. |
 | [Oracle 0209–0218](reports/oracle-import/validation-0209-0218.md) | Oracle batches 0209–0218; 1,000 cards. |
 | [Oracle 0199–0208](reports/oracle-import/validation-0199-0208.md) | Oracle batches 0199–0208; 1,000 cards. |
 | [Oracle 0189–0198](reports/oracle-import/validation-0189-0198.md) | Oracle batches 0189–0198; 1,000 cards. |

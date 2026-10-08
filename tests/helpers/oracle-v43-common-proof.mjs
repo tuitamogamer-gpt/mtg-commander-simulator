@@ -1,0 +1,79 @@
+import strict from 'node:assert/strict';
+import {context,settle} from './oracle-v8-fixtures.mjs';
+import {fund,total,def,put,permanent,choose} from './oracle-v30-permanents-proof.mjs';
+import {assertGameStateInvariants} from './game-state-invariants.mjs';
+export const names=['Hexhaven Dueling Arena','Attentive Skywarden','Elvish Vatkeeper','Seedpod Caretaker','See Double','Toymaker','Fathom Fleet Swordjack','Swat Away','Bubble Smuggler','Chain Assassination','Common Cause','Eligeth, Crossroads Augur','Experimental Frenzy','Frodo Baggins','Giant Turtle','Guardian of the Ages','Halls of Mist','Kenessos, Priest of Thassa','Masako the Humorless','Peerless Samurai','Rootwater Shaman','Senator Peacock','Starting Town'];
+export async function proveCommonV43(M,name,role,positive=true,h,assert=strict){
+ const f=h?h.gameFor(M,[h.decision(),h.decision()],{ai:role==='ai'}):context(M,role),{game:g,a,b}=f;
+ for(const p of g.players){fund(p);while(p.library.length<50)put(M,p,'Forest');}
+ g.spotlight=async()=>{};g.reviewCombatWithHuman=async()=>{};
+ let targets=[],cards=[],choice=positive?'yes':'no',scryN=0;
+ choose(a,q=>{
+  if(q.type==='scry')scryN=q.cards.length;
+  if(q.type==='chooseTargets'&&targets.length){const picked=[targets.shift()].flat();assert.ok(picked.every(c=>q.candidates.includes(c)));return {...q,candidates:picked,min:picked.length,max:picked.length};}
+  if(q.type==='chooseCards'&&cards.length){const picked=cards.shift();assert.ok(picked.every(c=>q.from.includes(c)));return {...q,from:picked,min:picked.length,max:picked.length};}
+  if(q.type==='chooseOption'&&q.options.some(o=>o.key===choice))return {...q,options:q.options.filter(o=>o.key===choice)};
+  return null;
+ });
+ const donor=(p=a,extra={})=>permanent(M,g,p,def('V43 witness',['Creature'],{power:'3',toughness:'20',...extra}));
+ const harmless=(extra={})=>def('V43 paid spell',['Instant'],{cost:'{3}',resolve:async()=>{},...extra});
+ const cast=async(n=name,{aim=[],card,alt,from='hand'}={})=>{targets=aim.slice();card ||=put(M,a,n,from);const before=total(a);assert.equal(await g.castSpell(a,card,{from,...(alt?{alt}:{})}),true,typeof n==='string'?n:n.name);assert.ok(total(a)<before,'mana was paid');await settle(g);card.sick=false;return card;};
+ const play=async()=>{const c=put(M,a,name,'hand');assert.equal(await g.playLand(a,c),true);await settle(g);return c;};
+ const cleanup=async()=>{g.mainPhase=async()=>{};g.combatPhase=async()=>{};await g.runTurn();await settle(g);fund(a);};
+ const attack=async(c,defender=b)=>{g.phase='combat';g.step='attackers';c.attacking=defender;c.meta._attackedTurn=g.turnNo;c.blockedBy=[];c.wasBlocked=false;g.combat={attackers:[c],declaredAttackTargets:[defender]};g.recordCombatObjectEvent(c,'attacks');await g.emit('attackersDeclared',{player:a,attackers:[c]});await g.emit('attacks',{player:a,card:c,defender});await settle(g);};
+ if(name==='Hexhaven Dueling Arena'){
+  const c=await play(),host=await cast('Abigale, Poet Laureate // Heroic Stanza');assert.equal(!!host.meta.prepared,false);assert.equal(g.legalTargets(c.def.abilities[0].targets[0],c,a).includes(host),false);if(positive){await attack(host);g.phase='main2';}else g.turnPlayer=b;
+  const ability=c.def.abilities[positive?0:1];targets=[host];const row=g.activatableList(a).find(r=>r.card===c&&r.ability===ability),before=total(a);assert.ok(row);assert.equal(await g.activateAbility(a,row),true);await settle(g);assert.equal(total(a),before-(positive?2:4));assert.equal(host.meta.prepared,true);const copy=g.byIid(host.meta.preparedCopy);assert.ok(copy);assert.equal(copy.zone,'exile');assert.equal(copy.isCopySpell,true);assert.equal(copy.owner.idx,a.idx);assert.equal(c.meta.prepared,undefined);
+  g.turnPlayer=a;g.phase='main2';const offered=g.castableList(a).find(r=>r.card===copy);assert.ok(offered);const mana=total(a);assert.equal(await g.castSpell(a,copy,{from:'exile',...(offered.alt?{alt:offered.alt}:{})}),true);await settle(g);assert.ok(total(a)<mana);assert.equal(host.meta.prepared,false);
+ }else if(['Attentive Skywarden','Elvish Vatkeeper','Seedpod Caretaker'].includes(name)){
+  let token,c;if(name==='Elvish Vatkeeper'){c=await cast();token=g.bf().find(c=>c.isToken&&c.hasSub('Incubator'));}else{const witness=donor();await M.BOM.incubate({g,src:witness,you:a},2);token=g.bf().find(c=>c.isToken&&c.hasSub('Incubator'));if(name==='Seedpod Caretaker'){choice=positive?'1':'0';c=await cast(name,{aim:[token]});}else c=await cast();}
+  assert.ok(token);if(name==='Elvish Vatkeeper'){targets=[token];const row=g.activatableList(a).find(r=>r.card===c&&!r.manaAbility),before=total(a);assert.ok(row);assert.equal(await g.activateAbility(a,row),true);await settle(g);assert.equal(total(a),before-5);assert.equal(token.counters['+1/+1'],4);assert.equal(g.legalTargets(c.def.abilities[0].targets[0],c,a).includes(token),false);}
+  if(name==='Attentive Skywarden'){await attack(c);targets=[positive?[token]:[]];await g.combatDamage(a,'normal');await settle(g);}
+  const transformed=name==='Elvish Vatkeeper'||positive;assert.equal(token.is('Creature'),transformed);assert.equal(token.is('Artifact'),true);assert.equal(token.counters['+1/+1'],name==='Elvish Vatkeeper'?4:name==='Seedpod Caretaker'&&!positive?3:2);if(transformed){assert.equal(token.hasSub('Phyrexian'),true);assert.equal(token.power,token.counters['+1/+1']);}
+ }else if(name==='See Double'){
+  let resolved=0;const original=put(M,a,harmless({resolve:async()=>{resolved++;}}),'hand');assert.equal(await g.castSpell(a,original,{from:'hand'}),true);const originalSo=g.stack.find(row=>row.card===original),creature=donor(b);for(let i=0;i<(positive?8:7);i++)put(M,b,'Forest','graveyard');choice=positive?'2':'1';targets=positive?[originalSo,creature]:[creature];
+  choose(a,q=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='mode'){assert.equal(q.options.some(o=>o.key==='2'),positive,'both modes need an opponent with eight graveyard cards');}return null;});
+  const c=put(M,a,name,'hand'),before=total(a);assert.equal(await g.castSpell(a,c,{from:'hand'}),true);assert.equal(total(a),before-4);const so=g.stack.find(row=>row.card===c);assert.equal(await g.copySpell(so,a,{mayNewTargets:true}),null);await settle(g);assert.equal(resolved,positive?2:1);assert.equal(g.bf().filter(c=>c.isToken&&c.name===creature.name).length,1);
+ }else if(name==='Toymaker'){
+  const c=await cast(),artifact=permanent(M,g,a,M.DEFS['Sol Ring']),already=donor(a,{types:['Artifact','Creature']}),discard=put(M,a,'Forest','hand');assert.equal(g.legalTargets(c.def.abilities[0].targets[0],c,a).includes(already),false);cards=[[discard]];targets=[artifact];const row=g.activatableList(a).find(r=>r.card===c&&!r.manaAbility),before=total(a);assert.ok(row);assert.equal(await g.activateAbility(a,row),true);await settle(g);assert.equal(total(a),before-1);assert.equal(discard.zone,'graveyard');assert.equal(c.tapped,true);assert.equal(artifact.is('Creature'),true);assert.equal(artifact.power,artifact.mv);assert.equal(artifact.toughness,artifact.mv);assert.equal(g.manaSources(a).some(r=>r.card===artifact),true);await cleanup();assert.equal(artifact.is('Creature'),false);
+ }else if(name==='Fathom Fleet Swordjack'){
+  donor(a,{types:['Artifact']});donor(a,{types:['Artifact']});donor(b,{types:['Artifact']});const c=await cast();let defender=b;if(!positive){defender=donor(b,{types:['Planeswalker'],loyalty:'20'});g.addCounters(defender,'loyalty',20);}const before=positive?b.life:defender.counters.loyalty;await attack(c,defender);assert.equal(positive?b.life:defender.counters.loyalty,before-2);
+ }else if(name==='Swat Away'){
+  let target,physical,resolved=false;if(positive){physical=donor(b);physical.attacking=a;target=physical;}else{physical=put(M,b,harmless({resolve:async()=>{resolved=true;}}),'hand');assert.equal(await g.castSpell(b,physical,{from:'hand'}),true);target=g.stack.find(row=>row.card===physical);}
+  choose(b,q=>q.type==='chooseOption'&&q.options.some(o=>o.key==='bottom')?{...q,options:q.options.filter(o=>o.key==='bottom')}:null);
+  const spell=put(M,a,name,'hand'),printed=M.parseCost(spell.def.cost),cost=g.spellCost(a,spell);assert.equal(cost.generic,printed.generic-(positive?2:0));await cast(name,{card:spell,aim:[target]});assert.equal(physical.zone,'library');assert.equal(b.library[0].iid,physical.iid);assert.equal(resolved,false);
+ }else if(name==='Common Cause'){
+  const first=donor(a,{colorsOverride:['W','U']}),second=donor(b,{colorsOverride:['W','B']}),artifact=donor(b,{types:['Artifact','Creature'],colorsOverride:[]});await cast();assert.equal(first.power,5);assert.equal(second.power,5);assert.equal(artifact.power,3);const other=donor(b,{colorsOverride:positive?['W']:[]});assert.equal(first.power,positive?5:3);await g.move(other,'exile');assert.equal(first.power,5);
+ }else if(name==='Experimental Frenzy'){
+  const c=await cast(),held=put(M,a,harmless(),'hand'),land=put(M,a,'Forest','hand');assert.equal(g.canCastTiming(a,held,{}),false);assert.equal(await g.castSpell(a,held,{from:'hand'}),false);assert.equal(g.playableLands(a).includes(land),false);assert.equal(await g.playLand(a,land),false);const top=put(M,a,harmless(),'library');await cast(top.def,{card:top,from:'library'});const row=g.activatableList(a).find(r=>r.card===c&&!r.manaAbility);assert.ok(row);const before=total(a);assert.equal(await g.activateAbility(a,row),true);await settle(g);assert.equal(total(a),before-4);assert.equal(c.zone,'graveyard');assert.equal(g.canCastTiming(a,held,{}),true);assert.equal(g.playableLands(a).includes(land),true);
+ }else if(name==='Masako the Humorless'){
+  const ally=donor(),enemy=donor(b);g.tap(ally);const c=await cast();assert.equal(g.canBlock(ally,enemy),true);assert.equal(ally.tapped,true);await g.move(c,'exile');assert.equal(g.canBlock(ally,enemy),false);
+ }else if(name==='Rootwater Shaman'){
+  const ally=donor(),c=await cast();g.turnPlayer=b;g.phase='main1';const aura=put(M,a,'Pacifism','hand'),landAura=put(M,a,'Fertile Ground','hand');assert.equal(g.canCastTiming(a,aura,{}),true);assert.equal(g.canCastTiming(a,landAura,{}),false);await cast('Pacifism',{card:aura,aim:[ally]});assert.equal(aura.attachedTo,ally.iid);await g.move(c,'exile');const other=put(M,a,'Pacifism','hand');assert.equal(g.canCastTiming(a,other,{}),false);
+ }else if(name==='Senator Peacock'){
+  const artifact=donor(a,{types:['Artifact'],subtypes:['Equipment']}),enemy=donor(b,{types:['Artifact']}),ally=donor(),c=await cast();assert.equal(artifact.hasSub('Clue'),true);assert.equal(artifact.hasSub('Equipment'),true);assert.equal(enemy.hasSub('Clue'),false);targets=[ally];const row=g.activatableList(a).find(r=>r.card===artifact&&!r.manaAbility);assert.ok(row);const before=total(a),hand=a.hand.length;assert.equal(await g.activateAbility(a,row),true);await settle(g);assert.equal(total(a),before-2);assert.equal(artifact.zone,'graveyard');assert.equal(a.hand.length,hand+1);assert.equal(ally.cur.unblockable,true);await cleanup();assert.equal(ally.cur.unblockable,false);const next=donor(a,{types:['Artifact']});await g.move(c,'exile');assert.equal(next.hasSub('Clue'),false);
+ }else if(name==='Bubble Smuggler'){
+  const source=put(M,a,name,'hand'),alt=g.castableList(a).find(r=>r.card===source&&r.alt?.faceDownCast==='disguise').alt,c=await cast(name,{card:source,alt});assert.equal(c.faceDown,true);assert.equal(c.counters['+1/+1']||0,0);const row=g.activatableList(a).find(r=>r.card===c&&r.turnFaceUp);assert.ok(row);const before=total(a);assert.equal(await g.activateAbility(a,row),true);assert.equal(total(a),before-6);assert.equal(c.faceDown,false);assert.equal(c.counters['+1/+1'],4);assert.equal(g.stack.length,0,'replacement creates no trigger');await g.move(c,'exile');await g.putPermanentOntoBattlefield(c,a);assert.equal(c.counters['+1/+1']||0,0);
+ }else if(name==='Starting Town'){
+  a.turnsStarted=positive?3:4;const c=await play();assert.equal(c.tapped,!positive);await g.move(c,'exile');g.turnPlayer=b;await g.putPermanentOntoBattlefield(c,a);assert.equal(c.tapped,true,'outside your own turn it enters tapped');
+ }else if(name==='Frodo Baggins'){
+  const c=put(M,a,name,'hand');cards=[[c]];await cast(name,{card:c});assert.equal(c.meta.ringBearer,true);assert.equal(c.cur.mustBeBlocked,true);const ally=donor();cards=[[ally]];await M.E7.ringTempts(g,a);await settle(g);assert.equal(c.meta.ringBearer,false);assert.equal(c.cur.mustBeBlocked,false);
+ }else if(name==='Guardian of the Ages'){
+  const c=await cast(),enemy=donor(b);enemy.attacking=positive?a:b;await g.emit('attacks',{player:b,card:enemy,defender:enemy.attacking});await settle(g);assert.equal(c.kw('defender'),!positive);assert.equal(c.kw('trample'),positive);await cleanup();assert.equal(c.kw('trample'),positive);
+ }else if(name==='Eligeth, Crossroads Augur'||name==='Kenessos, Priest of Thassa'){
+  const c=await cast(),before=a.hand.length;await M.E.scry(g,a,2);await settle(g);assert.equal(a.hand.length,before+(name.startsWith('Eligeth')?2:0));assert.equal(scryN,name.startsWith('Eligeth')?0:3);await g.move(c,'exile');scryN=0;await M.E.scry(g,a,2);assert.equal(scryN,2);
+  const draw=permanent(M,g,a,M.DEFS['Eligeth, Crossroads Augur']),more=permanent(M,g,a,M.DEFS['Kenessos, Priest of Thassa']);choice=String((positive?more:draw).iid);const hand=a.hand.length;await M.E.scry(g,a,2);await settle(g);assert.equal(a.hand.length,hand+(positive?3:2),'affected player chooses replacement order');
+ }else if(name==='Giant Turtle'||name==='Halls of Mist'){
+  const c=name==='Halls of Mist'?await play():await cast(),attacker=name==='Halls of Mist'?donor():c;a.turnsStarted=2;await attack(attacker);a.turnsStarted=3;g.recalc();assert.equal(attacker.cur.cantAttack,true);if(!positive){await g.move(attacker,'exile');await g.putPermanentOntoBattlefield(attacker,a);assert.equal(attacker.cur.cantAttack,false);}a.turnsStarted=4;g.recalc();assert.equal(attacker.cur.cantAttack,false);
+ }else if(name==='Peerless Samurai'){
+  const c=await cast();await attack(c);g.phase='main2';const spell=put(M,a,harmless(),'hand');assert.equal(g.spellCost(a,spell).generic,2);if(!positive)await cleanup();const before=total(a);await cast(spell.def,{card:spell});assert.equal(total(a),before-(positive?2:3));const next=put(M,a,harmless(),'hand');assert.equal(g.spellCost(a,next).generic,3);
+ }else if(name==='Chain Assassination'){
+  const enemy=donor(b),other=donor(b);if(positive)await g.destroy(other);const before=a.hand.length;await cast(name,{aim:[enemy]});assert.equal(enemy.zone,'graveyard');assert.equal(a.hand.length,before+(positive?1:0));
+ }else throw Error('Missing v43 proof '+name);
+ assertGameStateInvariants(g);assert.equal(a.controller instanceof M.AIController,role==='ai');return f;
+}
+export async function operationProofV43(M,entry,op,role,h){
+ if(!names.includes(entry.raw.name))return null;
+ const native=['common-rule-v43','face-up-counters-v43'].includes(op.kind)||entry.raw.name==='Rootwater Shaman'&&op.kind==='flash-permission-v8'||entry.raw.name==='Starting Town'&&op.kind==='conditional-enters-tapped'||['Guardian of the Ages','Peerless Samurai'].includes(entry.raw.name)&&op.kind==='generic-trigger'||entry.raw.name==='Chain Assassination'&&op.kind==='spell-generic'||entry.raw.name==='Swat Away'&&['spell-generic','cost-modifier'].includes(op.kind);if(!native&&!(['Hexhaven Dueling Arena','Attentive Skywarden','Elvish Vatkeeper','Seedpod Caretaker'].includes(entry.raw.name)&&['generic-trigger','generic-ability'].includes(op.kind))&&!(entry.raw.name==='See Double'&&op.kind==='uncopyable-v41')&&!(entry.raw.name==='Toymaker'&&op.kind==='generic-ability')&&!(entry.raw.name==='Fathom Fleet Swordjack'&&op.kind==='generic-trigger'))return null;
+ let count=0;const assert=Object.fromEntries(['ok','equal'].map(k=>[k,(...args)=>{count++;strict[k](...args);} ]));for(const positive of[true,false])await proveCommonV43(M,entry.raw.name,role,positive,h,assert);return count;
+}

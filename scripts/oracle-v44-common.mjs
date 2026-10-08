@@ -1,0 +1,24 @@
+const body=(effects,targets=[])=>({effects,targets,optional:false});
+const effect=(mode,extra={})=>({action:'common-effects-v44',mode,...extra});
+const trigger=(event,eventFilter,b,extra={})=>b&&({kind:'generic-trigger',event,eventFilter,...b,...extra,contract:'generic-trigger-effect'});
+const bundle=operations=>operations.every(Boolean)?{kind:'operation-bundle',operations,contract:'closed-permanent-clauses'}:null;
+export function extensionLine(card,line,h){
+  const state=/^When (an opponent controls a creature with power 4 or greater|a player has no cards in hand), if this permanent is an enchantment, (?:it|this enchantment|this creature) becomes a 4\/4 (Beast|Crocodile) creature\.$/.exec(line);
+  if(state){const b=h.effect(card,`This permanent becomes a 4/4 ${state[2]} creature.`),condition=h.condition('this permanent is an enchantment');if(b&&condition)return {kind:'state-trigger-v8',state:state[1].startsWith('an opponent')?h.condition(state[1]):{kind:'empty-hand-player-v44'},trigger:trigger('state','self',b,{condition}),contract:'state-trigger-v8'};}
+  if(/^When an opponent plays a nonbasic land, if this permanent is an enchantment, (?:it|this enchantment|this creature) becomes a 3\/3 Beast creature\.$/.test(line)){const base=h.line(card,'Whenever an opponent plays a land, draw a card.'),b=h.effect(card,'This permanent becomes a 3/3 Beast creature.');if(base&&b)return {...base,...b,condition:h.condition('this permanent is an enchantment'),eventTestV44:'nonbasic-land'};}
+  if(line==='Whenever a creature with flying dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.'){const base=h.line(card,'Whenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.');return base&&{...base,eventFilter:{...base.eventFilter,target:{...base.eventFilter.target,withKeyword:'flying'}}};}
+  if(line==='Whenever you attack with creatures with total power 12 or greater for the first time each turn, untap all attacking creatures. After this phase, there is an additional combat phase.'){const base=h.line(card,'Whenever you attack, draw a card.'),b=h.effect(card,'Untap all attacking creatures. After this phase, there is an additional combat phase.');if(base&&b)return {...base,...b,eventTestV44:'attacking-power-twelve',onceEachTurn:true};}
+  if(line==='Whenever this creature becomes blocked by a creature, gain control of that creature at end of combat.'){const base=h.line(card,'Whenever this creature becomes blocked by a creature, draw a card.');if(base)return {...base,...body([effect('delayed-control',{target:'event-card'})])};}
+  if(line==="When this creature's echo cost is paid, each opponent may draw up to three cards.")return trigger('echoPaidV44','self',body([effect('opponent-draw-up-to-three')]));
+  if(line==="Whenever you pay this enchantment's cumulative upkeep, you may search your library for a creature card with mana value equal to the number of age counters on this enchantment, put it onto the battlefield, then shuffle.")return trigger('cumulativeUpkeepPaidV44','self',h.effect(card,'You may search your library for a creature card with mana value equal to the number of age counters on this enchantment, put it onto the battlefield, then shuffle.'));
+  if(line==='Whenever this creature evolves, put a +1/+1 counter on each other creature you control with a +1/+1 counter on it.')return trigger('evolvedV44','self',h.effect(card,'Put a +1/+1 counter on each other creature you control with a +1/+1 counter on it.'));
+  if(line==='When a Faerie is championed with this creature, tap all lands target player controls.')return trigger('championedV44','self',h.effect(card,'Tap all lands target player controls.'),{eventTestV44:'same-source-version'});
+  if(line==='Whenever this creature phases out, discard a card.')return trigger('oraclePhasedOutV44','self',h.effect(card,'Discard a card.'));
+  const artifact={
+    "Whenever an artifact becomes tapped or a player activates an artifact's ability without {T} in its activation cost, this enchantment deals 1 damage to that artifact's controller.":{who:'any',n:1},
+    "Whenever enchanted artifact becomes tapped or a player activates an ability of enchanted artifact without {T} in its activation cost, this enchantment deals 2 damage to that artifact's controller.":{who:'enchanted',n:2},
+    "Whenever an artifact an opponent controls becomes tapped or an opponent activates an artifact's ability without {T} in its activation cost, you gain 1 life.":{who:'opponent',life:1},
+  }[line];
+  if(artifact){const b=artifact.life?h.effect(card,'You gain 1 life.'):body([effect('artifact-controller-damage',{n:artifact.n})]);return bundle(['becameTapped','abilityActivated'].map(event=>trigger(event,'each-upkeep',b,{artifactEventV44:{...artifact,event}})));}
+  return null;
+}

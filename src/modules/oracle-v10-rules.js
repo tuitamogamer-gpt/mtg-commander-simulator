@@ -46,6 +46,7 @@
   M.oraclePlayerRestrictedV10=restricted;
   G.oracleShouldSkipV10=function(player,phase){
     if(restricted(this,player,'skip-'+phase))return true;
+    if(phase==='combat'&&this.untilEffects.some(row=>row.kind==='oracleSkipCombatsV36'&&row.player===player&&player.turnsStarted===row.after+1))return true;
     const pending=this.untilEffects.find(row=>row.kind==='oracleSkipV10'&&row.player===player&&row.phase===phase&&row.n>0);
     if(!pending)return false;
     if(--pending.n===0)this.untilEffects.splice(this.untilEffects.indexOf(pending),1);

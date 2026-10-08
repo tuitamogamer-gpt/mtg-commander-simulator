@@ -7,7 +7,8 @@ export async function enterChosenColorSource(MTG,ctx,entry,source,h){
   if(!entry.implementation.some(row=>row.kind==='chosen-color-entry-v8'))return;
   if(source.zone==='battlefield')await ctx.game.move(source,'hand');
   h.fund(ctx.a,100);
-  assert.equal(await ctx.game.castSpell(ctx.a,source,{from:'hand'}),true,source.name+': paid entry establishes the chosen color');
+  const entered=source.is('Land')?await ctx.game.playLand(ctx.a,source):await ctx.game.castSpell(ctx.a,source,{from:'hand'});
+  assert.equal(entered,true,source.name+': legal entry establishes the chosen color');
   await h.resolveAll(ctx.game);
   assert.ok(['W','U','B','R','G'].includes(source.meta.oracleChosenColor));
   ctx.chosenColorV10=source.meta.oracleChosenColor;

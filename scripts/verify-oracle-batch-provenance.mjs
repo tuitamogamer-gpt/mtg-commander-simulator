@@ -47,12 +47,30 @@ function catalogHash(rows) {
   return sha256(rows.map(row => `${row.oracleId}\t${row.raw.name}`).sort().join('\n'));
 }
 
+// Older semantic migrations keep their original pinned source when a later
+// import advances the feed. Every repair is still recompiled, never skipped.
+export function verifySemanticRepairsBySnapshot({manifests = [], sourceCards, bulk, historicalSources = new Map(), ...inputs}) {
+  unique(manifests.map(manifest => manifest.id), 'semantic repair manifests');
+  const result = new Map();
+  for (const digest of new Set(manifests.map(manifest => manifest.source.bulkSha256))) {
+    const snapshot = digest === bulk.sha256 ? {sourceCards, bulk} : historicalSources.get(digest);
+    assert.ok(snapshot, `Missing pinned repair source ${digest}; supply --repair-source-file`);
+    assert.equal(snapshot.bulk.sha256, digest, 'Historical repair source hash');
+    const rows = verifyOracleSemanticRepairs({...inputs, ...snapshot, manifests: manifests.filter(manifest => manifest.source.bulkSha256 === digest)});
+    for (const [key, value] of rows) {
+      assert.equal(result.has(key), false, 'No duplicate row migration across source snapshots');
+      result.set(key, value);
+    }
+  }
+  return result;
+}
+
 // Pure verifier: all comparison data is supplied by the caller. This does not
 // fetch, write, repair, reselect, or silently skip an unsupported manifest row.
 // The CLI first hashes the compressed pinned source before calling this.
 export function verifyOracleBatchProvenance({
   sourceCards, bulk, reports, manualReports = [], legacyCards = {}, state,
-  runtimeSources, appSource, repairManifests = [], reportSources = new Map(), first = 27, last = 46, batchSize = 100,
+  runtimeSources, appSource, repairManifests = [], reportSources = new Map(), historicalSources = new Map(), first = 27, last = 46, batchSize = 100,
   expectedCards = (last - first + 1) * batchSize,
 }) {
   assert.ok(Number.isInteger(first) && first > 0 && Number.isInteger(last) && last >= first,
@@ -62,7 +80,7 @@ export function verifyOracleBatchProvenance({
   assert.match(bulk.sha256 || '', /^[a-f0-9]{64}$/, 'verified pinned source SHA-256 is required');
   assert.equal(bulk.type, 'oracle_cards');
   assert.ok(bulk.id && bulk.updated_at, 'pinned bulk metadata is required');
-  const semanticRepairs=verifyOracleSemanticRepairs({manifests:repairManifests,sourceCards,bulk,reports,runtimeSources,reportSources});
+  const semanticRepairs=verifySemanticRepairsBySnapshot({manifests:repairManifests,sourceCards,bulk,historicalSources,reports,runtimeSources,reportSources});
 
   const allReports = [...reports].sort((left, right) => left.sequence - right.sequence);
   unique(allReports.map(report => report.id), 'generic report ids');
@@ -197,7 +215,7 @@ export function verifyOracleBatchProvenance({
 export function parseProvenanceArgs(args) {
   const values = new Map();
   for (const argument of args) {
-    const match = /^--(source-file|source-sha256|first|last|expected-cards)=(.+)$/.exec(argument);
+    const match = /^--(source-file|source-sha256|repair-source-file|first|last|expected-cards)=(.+)$/.exec(argument);
     assert.ok(match, `unknown or incomplete argument: ${argument}`);
     assert.equal(values.has(match[1]), false, `duplicate argument: --${match[1]}`);
     values.set(match[1], match[2]);
@@ -209,7 +227,8 @@ export function parseProvenanceArgs(args) {
   const expectedCards = Number(values.get('expected-cards') ?? (last - first + 1) * 100);
   assert.ok(Number.isInteger(first) && first > 0 && Number.isInteger(last) && last >= first, 'invalid batch range');
   assert.equal(expectedCards, (last - first + 1) * 100, 'expected-cards must cover every complete 100-card batch');
-  return { sourceFile: values.get('source-file'), sourceSha256: values.get('source-sha256').toLowerCase(), first, last, expectedCards };
+  return { sourceFile: values.get('source-file'), sourceSha256: values.get('source-sha256').toLowerCase(), first, last, expectedCards,
+    ...(values.has('repair-source-file') ? {repairSourceFile: values.get('repair-source-file')} : {}) };
 }
 
 export async function runProvenanceVerification(args = process.argv.slice(2)) {
@@ -235,10 +254,23 @@ export async function runProvenanceVerification(args = process.argv.slice(2)) {
   const repairDirectory=path.join(reportDir,'repairs');
   const repairFiles=fs.existsSync(repairDirectory)?fs.readdirSync(repairDirectory).filter(file=>file.endsWith('.json')).sort():[];
   const repairManifests=repairFiles.map(file=>JSON.parse(fs.readFileSync(path.join(repairDirectory,file),'utf8')));
+  const historicalSources = new Map();
+  if (options.repairSourceFile) {
+    const older = repairManifests.filter(manifest => manifest.source.bulkSha256 !== bulk.sha256);
+    const digests = new Set(older.map(manifest => manifest.source.bulkSha256));
+    assert.equal(digests.size, 1, '--repair-source-file requires one historical repair snapshot');
+    const metadata = older[0].source;
+    const repairedReport = reports.find(report => report.id === older[0].repairs[0].batch);
+    const archived = await fetchOracleCardsFromGzip(options.repairSourceFile, {
+      type: repairedReport.source.bulkType, id: repairedReport.source.bulkId,
+      updated_at: metadata.bulkUpdatedAt, description: repairedReport.source.bulkDescription,
+    }, metadata.bulkSha256);
+    historicalSources.set(metadata.bulkSha256, {sourceCards: archived.cards, bulk: archived.bulk});
+  }
   const runtimeSources = new Map(reports
     .map(report => [report.id, fs.readFileSync(path.join(workspaceRoot, 'src', 'oracle-batches', `${batchFile(report.sequence)}.js`), 'utf8')]));
   const result = verifyOracleBatchProvenance({
-    sourceCards: cards, bulk, reports, manualReports, runtimeSources,repairManifests,
+    sourceCards: cards, bulk, reports, manualReports, runtimeSources,repairManifests,historicalSources,
     reportSources:new Map(reports.map(report=>[report.id,fs.readFileSync(path.join(reportDir,`${batchFile(report.sequence)}.json`),'utf8')])),
     legacyCards: extractRawData(fs.readFileSync(path.join(workspaceRoot, 'src', 'data.js'), 'utf8')).cards,
     state: JSON.parse(fs.readFileSync(path.join(reportDir, 'state.json'), 'utf8')),
@@ -253,6 +285,12 @@ export async function runProvenanceVerification(args = process.argv.slice(2)) {
     .concat(['scripts/oracle-extensions-v28.mjs', 'scripts/oracle-v28-common.mjs', 'scripts/oracle-v28-permanents.mjs', 'scripts/oracle-v28-spells.mjs'])
     .concat(['scripts/oracle-extensions-v29.mjs', 'scripts/oracle-v29-permanents.mjs', 'scripts/oracle-v29-spells.mjs', 'scripts/oracle-v29-layouts.mjs'])
     .concat(['scripts/oracle-extensions-v30.mjs', 'scripts/oracle-v30-permanents.mjs', 'scripts/oracle-v30-spells.mjs', 'scripts/oracle-v30-layouts.mjs'])
+    .concat(['scripts/oracle-extensions-v31.mjs', 'scripts/oracle-v31-common.mjs', 'scripts/oracle-compiler-cache.mjs'])
+    .concat(['scripts/oracle-extensions-v32.mjs', 'scripts/oracle-v32-spells.mjs', 'scripts/oracle-v32-spell-text.json'])
+    .concat(['scripts/oracle-extensions-v37.mjs','scripts/oracle-v37-events.mjs','scripts/oracle-extensions-v38.mjs','scripts/oracle-v38-common.mjs','scripts/oracle-extensions-v39.mjs','scripts/oracle-v39-common.mjs'])
+    .concat(['scripts/oracle-extensions-v33.mjs', 'scripts/oracle-v33-common.mjs', 'scripts/oracle-extensions-v34.mjs', 'scripts/oracle-v34-combat.mjs', 'scripts/oracle-extensions-v35.mjs', 'scripts/oracle-v35-common.mjs', 'scripts/oracle-extensions-v36.mjs', 'scripts/oracle-v36-spells.mjs', 'scripts/oracle-v36-spell-text.json'])
+    .concat(['scripts/oracle-extensions-v40.mjs','scripts/oracle-v40-common.mjs','scripts/oracle-extensions-v41.mjs','scripts/oracle-v41-common.mjs','scripts/oracle-extensions-v42.mjs','scripts/oracle-v42-common.mjs'])
+    .concat(['scripts/oracle-extensions-v43.mjs', 'scripts/oracle-v43-common.mjs', 'scripts/oracle-extensions-v44.mjs', 'scripts/oracle-v44-common.mjs', 'scripts/oracle-extensions-v45.mjs', 'scripts/oracle-v45-common.mjs', 'scripts/oracle-extensions-v46.mjs', 'scripts/oracle-v46-common.mjs', 'scripts/oracle-extensions-v47.mjs', 'scripts/oracle-v47-common.mjs','scripts/oracle-extensions-v48.mjs','scripts/oracle-v48-common.mjs','scripts/oracle-extensions-v49.mjs','scripts/oracle-v49-common.mjs','scripts/oracle-extensions-v50.mjs','scripts/oracle-v50-common.mjs','scripts/oracle-extensions-v51.mjs','scripts/oracle-v51-common.mjs','scripts/oracle-extensions-v52.mjs','scripts/oracle-v52-common.mjs','scripts/oracle-extensions-v53.mjs','scripts/oracle-v53-common.mjs','scripts/oracle-extensions-v54.mjs','scripts/oracle-v54-common.mjs','scripts/oracle-extensions-v55.mjs','scripts/oracle-v55-common.mjs','scripts/oracle-extensions-v56.mjs','scripts/oracle-v56-common.mjs'])
     .map(file => [file, sha256(fs.readFileSync(path.join(workspaceRoot, file)))]));
   result.compilerSha256 = sha256(Object.entries(result.compilerFiles).map(([file, digest]) => `${file}\t${digest}`).join('\n'));
   return result;

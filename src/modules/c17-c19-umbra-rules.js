@@ -24,7 +24,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  }
  async function applyDestructionPreventions(g,actions){for(const {kind,card:c}of actions){
   if(kind==='shield'){g.removeCounters(c,'shield',1);await g.emit('shieldRemoved',{card:c});}
-  else{c.damage=0;c.deathtouched=false;if(kind==='regen'){c.regenShield=Math.max(0,c.regenShield-1);c.tapped=true;if(g.combat)g.removeFromCombat(c);}}
+  else{c.damage=0;c.deathtouched=false;if(kind==='regen'){c.regenShield=Math.max(0,c.regenShield-1);c.tapped=true;if(g.combat)g.removeFromCombat(c);await M.oracleRegeneratedV56?.(g,c);}}
  }}
  Object.assign(C,{hasArmor:(g,c)=>armorFor(g,c).length>0,planDestruction,applyDestructionPreventions});
 })();

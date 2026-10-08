@@ -7,11 +7,26 @@ const M=fixtureEngine([
  ['Entry Watch','Whenever a creature you control enters this turn, put a +1/+1 counter on it and it gains haste until end of turn.','Instant'],
  ['Next Watch','When you next cast a creature spell this turn, you gain 2 life.','Instant'],
  ['Owned Watch','{1}: Whenever a creature dies this turn, you gain 2 life.'],
+ ['Self Watch','{1}: Until end of turn, whenever this creature deals combat damage to a player, draw two cards.'],
  ['Watch Body',''],
  ['Block Watch','Destroy target creature or planeswalker.\nWhenever a creature blocks this turn, its controller loses 1 life.','Sorcery'],
  ['Paragraph Watch','Whenever a creature you control enters this turn, put a +1/+1 counter on it and it gains haste until end of turn.\nLearn.','Instant'],
 ]);
 for(const role of ['human','ai']){
+ test(`${role}: a delayed source trigger follows its captured incarnation and controller`,async()=>{
+  const ctx=context(M,role),{game,a,b}=ctx,source=put(M,game,a,'Self Watch');
+  a.pool.C=1;assert.equal(await game.activateAbility(a,game.activatableList(a).find(row=>row.card===source)),true);await settle(game);
+  const oldHand=a.hand.length,otherHand=b.hand.length;
+  const hit=async(card,defender)=>{card.attacking=defender;game.combat={attackers:[card],defenders:new Map()};await game.combatDamage(card.ctrl,'normal');card.attacking=null;};
+  await hit(put(M,game,a,'Watch Body'),b);await settle(game);assert.equal(a.hand.length,oldHand);
+  await game.damageBatch([{src:source,target:b,n:2}]);await settle(game);assert.equal(a.hand.length,oldHand);
+  M.OracleV8Control.gain(game,source,b);game.recalc();
+  await hit(source,a);
+  assert.ok(game.pendingTriggers.length||game.stack.some(row=>row.kind==='trigger'));assert.equal(a.hand.length,oldHand);
+  await settle(game);assert.equal(a.hand.length,oldHand+2);assert.equal(b.hand.length,otherHand);
+  await game.move(source,'exile');await game.putPermanentOntoBattlefield(source,a);
+  await hit(source,b);await settle(game);assert.equal(a.hand.length,oldHand+2);
+ });
  test(`${role}: a resolved spell leaves a repeatable future trigger with real Stack and expiry`,async()=>{
   const ctx=context(M,role),{game,a,b}=ctx,source=await paidCast(M,ctx,'V8 Delayed Death Watch'),life=a.life;assert.equal(source.zone,'graveyard');
   for(let n=0;n<2;n++){const creature=put(M,game,b,'Watch Body');await game.destroy(creature);assert.equal(game.pendingTriggers.length,1);assert.equal(a.life,life+2*n);await game.flushTriggers();assert.equal(game.stack.at(-1).kind,'trigger');await settle(game);assert.equal(a.life,life+2*(n+1));}
