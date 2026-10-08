@@ -239,7 +239,7 @@ Generic Oracle import state: **${state.updatedAt}**. The counts below include al
 | Measure | Count |
 | --- | ---: |
 | Runtime card definitions | ${number(imported.length)} |
-| Generic Oracle imports (${runtimeGeneric.length} batches of 100) | ${number(state.importedNames.length)} |
+| Generic Oracle imports (${runtimeGeneric.length} batches; ${[...new Set(runtimeGeneric.map(batch => batch.cards.length))].sort((a,b) => a-b).map(size => `${runtimeGeneric.filter(batch => batch.cards.length === size).length} × ${size}`).join(", ")} cards) | ${number(state.importedNames.length)} |
 | Dedicated/manual Oracle imports | ${number(summary.counts.manualOracleCards)} |
 | Legacy definitions | ${number(summary.counts.legacyDefinitions)} |
 | Of those: individually reviewed for deck import | ${number(summary.counts.individuallyReviewedLegacyDefinitions)} |

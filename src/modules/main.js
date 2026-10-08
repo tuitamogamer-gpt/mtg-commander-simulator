@@ -4388,7 +4388,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       g.untilEffects.push({ kind: 'tokenDouble', who: ui.me, expires: 'eot', label: 'Kaya, Geist Hunter' });
       place(opponent, "Progenitor's Icon", { chosenType: 'Wizard' });
       place(opponent, 'Outpost Siege', { siegeMode: 'dragons' });
-      opponent.noMaxHandForever = true;
+      g.grantNoMaximumHandSizeV74(opponent);
       g.recalc();
       ui.playerSheet = new URLSearchParams(window.location.search).get('smokePlayer') === 'human' ? ui.me : opponent;
       ui.render();

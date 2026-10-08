@@ -25,7 +25,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   SC['Haunted Fengraf']={mana:{cost:{tap:true},produce:[{C:1}]},abilities:[{label:'Return a random creature from your graveyard',cost:{mana:'{3}',tap:true,sacSelf:true},run:async ctx=>{
     const cards=ctx.you.graveyard.filter(c=>c.is('Creature'));if(cards.length)await ctx.g.move(cards[Math.floor(ctx.g.rnd()*cards.length)],'hand');
   },aiScore:()=>4}]};
-  SC["Praetor's Counsel"]={resolve:async ctx=>{for(const c of ctx.you.graveyard.slice())await ctx.g.move(c,'hand');if(!ctx.so.isCopy&&ctx.src.zone==='stack')await ctx.g.move(ctx.src,'exile');ctx.you.noMaxHandForever=true;}};
+  SC["Praetor's Counsel"]={resolve:async ctx=>{for(const c of ctx.you.graveyard.slice())await ctx.g.move(c,'hand');if(!ctx.so.isCopy&&ctx.src.zone==='stack')await ctx.g.move(ctx.src,'exile');ctx.g.grantNoMaximumHandSizeV74(ctx.you);}};
   SC['Siege Behemoth']={statics:[{apply:(g,c,bf)=>{if(c.attacking)for(const x of bf)if(x.ctrl===c.ctrl&&x.is('Creature'))x.cur.mayAssignUnblocked=true;}}]};
   const dryads={kind:'v8-land-types',types:['Forest'],retain:false,attached:true,contract:'continuous-basic-land-types'};
   SC['Song of the Dryads']={auraTarget:[T.permanent(()=>true)],statics:[{phase:1,oracleBasicLandTypes:true,oracleOperation:dryads,affects:(g,c,h)=>h.iid===c.attachedTo,apply:(g,c,bf)=>{

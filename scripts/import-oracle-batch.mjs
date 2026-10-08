@@ -2584,9 +2584,16 @@ export function createImportPlan({
   generatedAt = new Date().toISOString(),
   compilerVersion = SEMANTIC_COMPILER_VERSION,
   classificationCacheDirectory,
+  selectedNames,
 }) {
-  const classificationCaches=classificationCacheDirectory?new Map([compilerVersion,compilerVersion-1].filter(version=>version>=10).map(version=>[version,createOracleCompilerCache({directory:classificationCacheDirectory,compilerVersion:version})])):null;
+  const classificationCaches=classificationCacheDirectory?new Map(Array.from({length:Math.max(0,compilerVersion-9)},(_,i)=>compilerVersion-i).map(version=>[version,createOracleCompilerCache({directory:classificationCacheDirectory,compilerVersion:version})])):null;
   const selectedLimit = validateLimit(limit);
+  if (selectedNames !== undefined && (!Array.isArray(selectedNames) ||
+      selectedNames.length !== selectedLimit || selectedNames.some(name => typeof name !== 'string' || !name.trim()) ||
+      new Set(selectedNames).size !== selectedNames.length)) {
+    throw new Error('Explicit selection must contain exactly --limit distinct, nonempty canonical card names.');
+  }
+  const requestedNames = selectedNames === undefined ? null : new Set(selectedNames);
   const currentState = state || {
     schemaVersion: 1,
     strategy: 'commander-legal-paper-semantic-queue-v2',
@@ -2655,6 +2662,10 @@ export function createImportPlan({
       addReason(deferredByReason, deferredExamples, 'already-imported-batch', card);
       continue;
     }
+    if(requestedNames&&!requestedNames.has(card.name)){
+      addReason(deferredByReason,deferredExamples,'outside-reviewed-cohort',card);
+      continue;
+    }
     const semantics = planSemantics(card,compilerVersion,classificationCaches);
     if (!semantics.semanticClass) {
       addReason(deferredByReason, deferredExamples, semantics.reason, card);
@@ -2665,10 +2676,15 @@ export function createImportPlan({
 
   supported.sort((left, right) => left.card.name.localeCompare(right.card.name, 'en', { sensitivity: 'base' }) ||
     left.card.oracle_id.localeCompare(right.card.oracle_id));
-  const chosen = supported.slice(0, selectedLimit);
+  const chosen = requestedNames ? supported.filter(entry => requestedNames.has(entry.card.name)) : supported.slice(0, selectedLimit);
   if (chosen.length !== selectedLimit) {
+    if (requestedNames) {
+      const ready = new Set(chosen.map(entry => entry.card.name));
+      throw new Error('Requested cards are absent, already imported, ineligible, or unsupported: ' + selectedNames.filter(name => !ready.has(name)).join(', '));
+    }
     throw new Error(`Only ${chosen.length} cards match the certified semantic subset; requested ${selectedLimit}.`);
   }
+  const chosenIds = new Set(chosen.map(entry => entry.card.oracle_id));
 
   const report = {
     schemaVersion: 1,
@@ -2696,6 +2712,7 @@ export function createImportPlan({
       ],
       note: 'Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.',
       compilerVersion,
+      ...(requestedNames ? { requestedNames: chosen.map(entry => entry.card.name) } : {}),
     },
     catalogSummary: {
       oracleRows: (cards || []).length,
@@ -2710,7 +2727,8 @@ export function createImportPlan({
       }, {})).sort()),
       deferredByReason: Object.fromEntries(Object.entries(deferredByReason).sort()),
       deferredExamples: Object.fromEntries(Object.entries(deferredExamples).sort()),
-      nextReadyNames: supported.slice(selectedLimit, selectedLimit + 12).map(entry => entry.card.name),
+      nextReadyNames: supported.filter(entry => !chosenIds.has(entry.card.oracle_id)).slice(0, 12).map(entry => entry.card.name),
+      ...(requestedNames?{classificationScope:'reviewed-source-cohort',consideredOracleRows:requestedNames.size,readyCountScope:'reviewed-source-cohort-only'}:{}),
     },
     cards: chosen.map(({ card, semantics }, index) => ({
       position: index + 1,
@@ -2846,6 +2864,8 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
   loader ||= fetchOracleCards;
   const { bulk, cards } = await loader();
   const generatedAt = dependencies.now ? dependencies.now() : new Date().toISOString();
+  const namesFile = argValue(args, 'names-file', '');
+  const selectedNames = namesFile ? JSON.parse(io.readFileSync(path.resolve(workspaceRoot, namesFile), 'utf8')) : undefined;
   const plan = createImportPlan({
     cards,
     bulk,
@@ -2859,6 +2879,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
     generatedAt,
     compilerVersion,
     classificationCacheDirectory: argValue(args, 'classification-cache', '') || undefined,
+    selectedNames,
   });
   const logger = dependencies.console || console;
   logger.log(`Source: ${bulk.name} updated ${bulk.updated_at}`);

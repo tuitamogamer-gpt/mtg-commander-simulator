@@ -116,6 +116,25 @@ function allFiles(directory) {
   return found;
 }
 
+test('explicit cohort selection cannot substitute earlier ready cards or bypass semantic and identity safeguards', () => {
+  const cards = [oracleCard('A ready card', 'a'), oracleCard('B ready card', 'b'),
+    oracleCard('C unsupported card', 'c', { oracle_text: 'Perform an unsupported action.' })];
+  const selected = plan({ cards, selectedNames: ['B ready card'] });
+  assert.deepEqual(selected.report.cards.map(row => row.raw.name), ['B ready card']);
+  assert.deepEqual(selected.report.selectionPolicy.requestedNames, ['B ready card']);
+  assert.deepEqual(selected.report.catalogSummary.nextReadyNames, []);
+  assert.equal(selected.report.catalogSummary.classificationScope,'reviewed-source-cohort');
+  assert.equal(selected.report.catalogSummary.readyForThisCompiler,1);
+  assert.equal(selected.report.catalogSummary.deferredByReason['outside-reviewed-cohort'],2);
+  for (const name of ['Unknown card', 'C unsupported card']) {
+    assert.throws(() => plan({ cards, selectedNames: [name] }), /absent, already imported, ineligible, or unsupported/);
+  }
+  assert.throws(() => plan({ cards, selectedNames: ['B ready card'], state: state({ importedNames: ['B ready card'] }) }), /already imported/);
+  for (const selectedNames of [[], [''], 'B ready card', ['B ready card', 'B ready card']]) {
+    assert.throws(() => plan({ cards, selectedNames }), /distinct, nonempty canonical card names/);
+  }
+});
+
 function importerWorkspace() {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'oracle-import-wrapper-'));
   const sourceDirectory = path.join(directory, 'src');

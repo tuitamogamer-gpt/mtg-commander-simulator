@@ -488,7 +488,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!entry) return 'Activate';
       const card = entry.card, def = card && card.def || {};
       if (entry.turnFaceUp || entry.manaAbility) return entry.label || 'Activate';
-      if (entry.handAbility) return (def.handAbility && def.handAbility.label) || 'Ability from your hand';
+      if (entry.handAbility) return (entry.handAbilityOverride || def.handAbility)?.label || 'Ability from your hand';
       if (entry.gyAbility) return ((entry.gyAbilityOverride || def.gyAbility) || {}).label || 'Ability from your graveyard';
       if (entry.cycling) return entry.label || 'Cycling';
       if (entry.plot) return `Plot ${U.costStr(U.parseCost(def.plot))}`;
@@ -2697,7 +2697,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     libraryTopSources(g, player) {
       if (g.onlinePresentation) return (player.presentation.libraryTopSources || []).map(id => g.ref(id)).filter(Boolean);
       return [...new Set([...g.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,g,source) || source.ctrl === player &&
-        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,g,source) || player === this.me && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,g,source)))),...(player===this.me?MTG.oracleLibraryTopSourcesV67?.(g,player)||[]:[])])];
+        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,g,source) || player === this.me && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,g,source)))),...(player===this.me?MTG.oracleLibraryTopSourcesV67?.(g,player)||[]:[]),...(MTG.oracleLibraryTopSourcesV73?.(g,player)||[])])];
     }
 
     visibleLibraryTop(g, player) {

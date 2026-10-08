@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryAsOfImportState": "2026-10-08T16:47:22.363Z",
+  "inventoryAsOfImportState": "2026-10-08T21:49:56.887Z",
   "source": {
     "provider": "Scryfall",
     "endpoint": "https://api.scryfall.com/bulk-data",
@@ -19,51 +19,46 @@
     "oracleIds": 31070
   },
   "counts": {
-    "runtimeDefinitions": 29799,
-    "genericOracleCards": 25800,
-    "genericBatches": 258,
+    "runtimeDefinitions": 30115,
+    "genericOracleCards": 26116,
+    "genericBatches": 259,
     "manualOracleCards": 65,
     "legacyDefinitions": 3934,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 29798,
+    "deckImportEligibleDefinitions": 30114,
     "deckImportRestrictedDefinitions": 1,
-    "representedUniverseOracleIds": 29754,
-    "remainingUniverseOracleIds": 1316,
-    "parserEligibleUnimported": 2,
-    "deferred": 1314,
+    "representedUniverseOracleIds": 30070,
+    "remainingUniverseOracleIds": 1000,
+    "parserEligibleUnimported": 1,
+    "deferred": 999,
     "runtimeEntriesWithoutSnapshotMatch": 17,
     "runtimeEntriesOutsideComparisonUniverse": 26
   },
   "remainingByReason": {
     "adventure-needs-complete-face-semantics": 1,
-    "backup-other-rules-unsupported": 1,
     "class-base-needs-complete-semantics-v21": 1,
     "class-level-needs-complete-semantics-v21": 3,
     "complex-layout": 18,
-    "conflicting-hand-abilities": 1,
     "double-faced-card-needs-complete-back-semantics": 17,
     "double-faced-card-needs-complete-front-semantics": 80,
     "double-faced-card-needs-face-transition-semantics": 2,
     "dynamic-power-toughness": 2,
     "flip-needs-complete-front-semantics": 1,
-    "land-needs-explicit-semantics": 9,
+    "land-needs-explicit-semantics": 8,
     "mana-ability-needs-explicit-semantics": 1,
-    "noncreature-needs-explicit-semantics": 213,
-    "oracle-needs-explicit-semantics": 772,
-    "overload-body-needs-complete-semantics": 1,
-    "requires-import-and-executable-proof": 2,
+    "noncreature-needs-explicit-semantics": 151,
+    "oracle-needs-explicit-semantics": 596,
+    "requires-import-and-executable-proof": 1,
     "room-door-needs-complete-semantics": 1,
     "saga-chapter-needs-complete-semantics-v21": 7,
-    "spell-needs-explicit-semantics": 175,
+    "spell-needs-explicit-semantics": 103,
     "spell-zone-trigger-needs-complete-spell-body-v20": 1,
     "split-needs-complete-face-semantics": 2,
-    "unbound-event-amount": 1,
     "unbound-event-reference": 1,
     "unbound-target-damage-source": 3
   },
   "parserEligibleUnimportedNames": [
-    "Cephalid Snitch",
-    "Teachings of the Kirin // Kirin-Touched Orochi"
+    "Cephalid Snitch"
   ],
   "runtimeNamesWithoutSnapshotMatch": [
     "Aggro Amalgam",
@@ -337,12 +332,12 @@
     "Trouble in Pairs",
     "Vow of Lightning"
   ],
-  "classifierVersion": 69,
-  "classifierFilesSha256": "e030d4c3b767febcd7a272076ccc77d268293a639bb62e011795aad21c1a0370",
-  "inputFilesSha256": "5c3ea317930478f9b4af678f4c3052851f5a2d04b895a68f419e74474f770cd4",
+  "classifierVersion": 74,
+  "classifierFilesSha256": "bc60e124adb0f8f68034ad4823eb9da0bf20f10db603ed376d32c9145f11d7f6",
+  "inputFilesSha256": "5ff80f4eb4b3c6d871ab6494153552a5b2d05be8e536c04b1b30f168ffd2063a",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "73bc90573d85fd8bbeafed16e7cb0014f4547bd5c6c9d68b3ea96c985fce6f1a",
-    "docs/catalog/remaining-cards.csv": "bb714e6dd2ed4769b091fa5d5c1a95a5c88b81e3a048269f5601ee9d0670b4cc"
+    "docs/catalog/imported-cards.csv": "786b5d0be7078acd560b1c29f7a35b9097c52d107d478826dececdd849b9ec5b",
+    "docs/catalog/remaining-cards.csv": "68372c018d82190f605d7fd55fc1032626a3ff777af651c6b6bc5e6702a77bb0"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

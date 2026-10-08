@@ -48,7 +48,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   };
   if(!state){const key=undercity?'undercity':await choose(Object.entries(dungeons).filter(([,d])=>!d.initiativeOnly).map(([key,d])=>({key,label:d.name})),'choose a dungeon',{kind:'dungeon'});state=p.afcDungeon={id:(p.afcDungeonSerial=(p.afcDungeonSerial||0)+1),key,room:dungeons[key].start,path:[dungeons[key].start]};roomKey=state.room;}
   else{const next=dungeons[state.key].rooms[state.room].next;roomKey=next.length===1?next[0]:await choose(next.map(key=>({key,label:dungeons[state.key].rooms[key].name})),'choose the next room',{kind:'room',key:state.key,room:state.room,path:(state.path||[state.room]).slice()});state.path=[...(state.path||[state.room]),roomKey];state.room=roomKey;}
-  const dungeon=dungeons[state.key],r=dungeon.rooms[roomKey],n=1+this.bf().filter(c=>C.live(c)&&c.ctrl===p&&c.def.afcHama).length;
+  const dungeon=dungeons[state.key],r=dungeon.rooms[roomKey],n=1+this.bf().filter(c=>C.live(c)&&c.ctrl===p&&c.def.afcHama).length+(M.oracleDungeonRoomsV73?.(this,p)||0);
   this.lg(p.name+' enters '+dungeon.name+' — '+r.name+'.','info');this.note('dungeon',{player:p,dungeon:dungeon.name,room:r.name});
   for(let i=0;i<n;i++)this.queueTrigger({src:null,ctrl:p,name:dungeon.name+' — '+r.name,data:{afcDungeonId:state.id,afcDungeonPlayer:p.idx},targets:r.targets,run:ctx=>r.run({...ctx,src:{name:dungeon.name,ctrl:p}})});
  };

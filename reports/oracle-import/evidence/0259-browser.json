@@ -1,0 +1,1131 @@
+{
+  "passed": true,
+  "url": "http://127.0.0.1:39133",
+  "minBatch": 259,
+  "lastBatch": 259,
+  "deck": "Oracle 259-259 browser QA",
+  "cohortCardsInDeck": [
+    "Market Gnome",
+    "Enlightened Confidant",
+    "Livio, Oathsworn Sentinel",
+    "Magnetic Web",
+    "Noble Heritage",
+    "Phelia, Exuberant Shepherd",
+    "Sacred Ground",
+    "Suncleanser",
+    "Sungold Sentinel",
+    "Tax Collector",
+    "Temporal Aperture",
+    "Tomik, Distinguished Advokist",
+    "Tomik, Orzhov Lawmage",
+    "Ballot Broker",
+    "Brago's Representative",
+    "Captain America, Super-Soldier",
+    "Lavabrink Venturer",
+    "Riftmarked Knight",
+    "Biblioplex Tomekeeper",
+    "Charmed Pendant",
+    "Damping Engine",
+    "Fight or Flight",
+    "Greymond, Avacyn's Stalwart",
+    "Historian's Boon",
+    "Kongming's Contraptions",
+    "Phyrexian Vindicator",
+    "Sworn Defender",
+    "Imperial Mask",
+    "Knight-Errant of Eos",
+    "Lich's Mirror",
+    "Lieutenants of the Guard",
+    "Auratouched Mage",
+    "Council Guardian",
+    "Echoes of Eternity",
+    "Pyramids",
+    "Boonweaver Giant",
+    "Deceiver of Form",
+    "Void Winnower"
+  ],
+  "catalogCount": 30115,
+  "batches": [
+    {
+      "id": "oracle-0001",
+      "count": 100
+    },
+    {
+      "id": "oracle-0002",
+      "count": 100
+    },
+    {
+      "id": "oracle-0003",
+      "count": 100
+    },
+    {
+      "id": "oracle-0004",
+      "count": 100
+    },
+    {
+      "id": "oracle-0005",
+      "count": 100
+    },
+    {
+      "id": "oracle-0006",
+      "count": 100
+    },
+    {
+      "id": "oracle-0007",
+      "count": 100
+    },
+    {
+      "id": "oracle-0008",
+      "count": 100
+    },
+    {
+      "id": "oracle-0009",
+      "count": 100
+    },
+    {
+      "id": "oracle-0010",
+      "count": 100
+    },
+    {
+      "id": "oracle-0011",
+      "count": 100
+    },
+    {
+      "id": "oracle-0012",
+      "count": 100
+    },
+    {
+      "id": "oracle-0013",
+      "count": 100
+    },
+    {
+      "id": "oracle-0014",
+      "count": 100
+    },
+    {
+      "id": "oracle-0015",
+      "count": 100
+    },
+    {
+      "id": "oracle-0016",
+      "count": 100
+    },
+    {
+      "id": "oracle-0017",
+      "count": 100
+    },
+    {
+      "id": "oracle-0018",
+      "count": 100
+    },
+    {
+      "id": "oracle-0019",
+      "count": 100
+    },
+    {
+      "id": "oracle-0020",
+      "count": 100
+    },
+    {
+      "id": "oracle-0021",
+      "count": 100
+    },
+    {
+      "id": "oracle-0022",
+      "count": 100
+    },
+    {
+      "id": "oracle-0023",
+      "count": 100
+    },
+    {
+      "id": "oracle-0024",
+      "count": 100
+    },
+    {
+      "id": "oracle-0025",
+      "count": 100
+    },
+    {
+      "id": "oracle-0026",
+      "count": 100
+    },
+    {
+      "id": "oracle-0027",
+      "count": 100
+    },
+    {
+      "id": "oracle-0028",
+      "count": 100
+    },
+    {
+      "id": "oracle-0029",
+      "count": 100
+    },
+    {
+      "id": "oracle-0030",
+      "count": 100
+    },
+    {
+      "id": "oracle-0031",
+      "count": 100
+    },
+    {
+      "id": "oracle-0032",
+      "count": 100
+    },
+    {
+      "id": "oracle-0033",
+      "count": 100
+    },
+    {
+      "id": "oracle-0034",
+      "count": 100
+    },
+    {
+      "id": "oracle-0035",
+      "count": 100
+    },
+    {
+      "id": "oracle-0036",
+      "count": 100
+    },
+    {
+      "id": "oracle-0037",
+      "count": 100
+    },
+    {
+      "id": "oracle-0038",
+      "count": 100
+    },
+    {
+      "id": "oracle-0039",
+      "count": 100
+    },
+    {
+      "id": "oracle-0040",
+      "count": 100
+    },
+    {
+      "id": "oracle-0041",
+      "count": 100
+    },
+    {
+      "id": "oracle-0042",
+      "count": 100
+    },
+    {
+      "id": "oracle-0043",
+      "count": 100
+    },
+    {
+      "id": "oracle-0044",
+      "count": 100
+    },
+    {
+      "id": "oracle-0045",
+      "count": 100
+    },
+    {
+      "id": "oracle-0046",
+      "count": 100
+    },
+    {
+      "id": "oracle-0047",
+      "count": 100
+    },
+    {
+      "id": "oracle-0048",
+      "count": 100
+    },
+    {
+      "id": "oracle-0049",
+      "count": 100
+    },
+    {
+      "id": "oracle-0050",
+      "count": 100
+    },
+    {
+      "id": "oracle-0051",
+      "count": 100
+    },
+    {
+      "id": "oracle-0052",
+      "count": 100
+    },
+    {
+      "id": "oracle-0053",
+      "count": 100
+    },
+    {
+      "id": "oracle-0054",
+      "count": 100
+    },
+    {
+      "id": "oracle-0055",
+      "count": 100
+    },
+    {
+      "id": "oracle-0056",
+      "count": 100
+    },
+    {
+      "id": "oracle-0057",
+      "count": 100
+    },
+    {
+      "id": "oracle-0058",
+      "count": 100
+    },
+    {
+      "id": "oracle-0059",
+      "count": 100
+    },
+    {
+      "id": "oracle-0060",
+      "count": 100
+    },
+    {
+      "id": "oracle-0061",
+      "count": 100
+    },
+    {
+      "id": "oracle-0062",
+      "count": 100
+    },
+    {
+      "id": "oracle-0063",
+      "count": 100
+    },
+    {
+      "id": "oracle-0064",
+      "count": 100
+    },
+    {
+      "id": "oracle-0065",
+      "count": 100
+    },
+    {
+      "id": "oracle-0066",
+      "count": 100
+    },
+    {
+      "id": "oracle-0067",
+      "count": 100
+    },
+    {
+      "id": "oracle-0068",
+      "count": 100
+    },
+    {
+      "id": "oracle-0069",
+      "count": 100
+    },
+    {
+      "id": "oracle-0070",
+      "count": 100
+    },
+    {
+      "id": "oracle-0071",
+      "count": 100
+    },
+    {
+      "id": "oracle-0072",
+      "count": 100
+    },
+    {
+      "id": "oracle-0073",
+      "count": 100
+    },
+    {
+      "id": "oracle-0074",
+      "count": 100
+    },
+    {
+      "id": "oracle-0075",
+      "count": 100
+    },
+    {
+      "id": "oracle-0076",
+      "count": 100
+    },
+    {
+      "id": "oracle-0077",
+      "count": 100
+    },
+    {
+      "id": "oracle-0078",
+      "count": 100
+    },
+    {
+      "id": "oracle-0079",
+      "count": 100
+    },
+    {
+      "id": "oracle-0080",
+      "count": 100
+    },
+    {
+      "id": "oracle-0081",
+      "count": 100
+    },
+    {
+      "id": "oracle-0082",
+      "count": 100
+    },
+    {
+      "id": "oracle-0083",
+      "count": 100
+    },
+    {
+      "id": "oracle-0084",
+      "count": 100
+    },
+    {
+      "id": "oracle-0085",
+      "count": 100
+    },
+    {
+      "id": "oracle-0086",
+      "count": 100
+    },
+    {
+      "id": "oracle-0087",
+      "count": 100
+    },
+    {
+      "id": "oracle-0088",
+      "count": 100
+    },
+    {
+      "id": "oracle-0089",
+      "count": 100
+    },
+    {
+      "id": "oracle-0090",
+      "count": 100
+    },
+    {
+      "id": "oracle-0091",
+      "count": 100
+    },
+    {
+      "id": "oracle-0092",
+      "count": 100
+    },
+    {
+      "id": "oracle-0093",
+      "count": 100
+    },
+    {
+      "id": "oracle-0094",
+      "count": 100
+    },
+    {
+      "id": "oracle-0095",
+      "count": 100
+    },
+    {
+      "id": "oracle-0096",
+      "count": 100
+    },
+    {
+      "id": "oracle-0097",
+      "count": 100
+    },
+    {
+      "id": "oracle-0098",
+      "count": 100
+    },
+    {
+      "id": "oracle-0099",
+      "count": 100
+    },
+    {
+      "id": "oracle-0100",
+      "count": 100
+    },
+    {
+      "id": "oracle-0101",
+      "count": 100
+    },
+    {
+      "id": "oracle-0102",
+      "count": 100
+    },
+    {
+      "id": "oracle-0103",
+      "count": 100
+    },
+    {
+      "id": "oracle-0104",
+      "count": 100
+    },
+    {
+      "id": "oracle-0105",
+      "count": 100
+    },
+    {
+      "id": "oracle-0106",
+      "count": 100
+    },
+    {
+      "id": "oracle-0107",
+      "count": 100
+    },
+    {
+      "id": "oracle-0108",
+      "count": 100
+    },
+    {
+      "id": "oracle-0109",
+      "count": 100
+    },
+    {
+      "id": "oracle-0110",
+      "count": 100
+    },
+    {
+      "id": "oracle-0111",
+      "count": 100
+    },
+    {
+      "id": "oracle-0112",
+      "count": 100
+    },
+    {
+      "id": "oracle-0113",
+      "count": 100
+    },
+    {
+      "id": "oracle-0114",
+      "count": 100
+    },
+    {
+      "id": "oracle-0115",
+      "count": 100
+    },
+    {
+      "id": "oracle-0116",
+      "count": 100
+    },
+    {
+      "id": "oracle-0117",
+      "count": 100
+    },
+    {
+      "id": "oracle-0118",
+      "count": 100
+    },
+    {
+      "id": "oracle-0119",
+      "count": 100
+    },
+    {
+      "id": "oracle-0120",
+      "count": 100
+    },
+    {
+      "id": "oracle-0121",
+      "count": 100
+    },
+    {
+      "id": "oracle-0122",
+      "count": 100
+    },
+    {
+      "id": "oracle-0123",
+      "count": 100
+    },
+    {
+      "id": "oracle-0124",
+      "count": 100
+    },
+    {
+      "id": "oracle-0125",
+      "count": 100
+    },
+    {
+      "id": "oracle-0126",
+      "count": 100
+    },
+    {
+      "id": "oracle-0127",
+      "count": 100
+    },
+    {
+      "id": "oracle-0128",
+      "count": 100
+    },
+    {
+      "id": "oracle-0129",
+      "count": 100
+    },
+    {
+      "id": "oracle-0130",
+      "count": 100
+    },
+    {
+      "id": "oracle-0131",
+      "count": 100
+    },
+    {
+      "id": "oracle-0132",
+      "count": 100
+    },
+    {
+      "id": "oracle-0133",
+      "count": 100
+    },
+    {
+      "id": "oracle-0134",
+      "count": 100
+    },
+    {
+      "id": "oracle-0135",
+      "count": 100
+    },
+    {
+      "id": "oracle-0136",
+      "count": 100
+    },
+    {
+      "id": "oracle-0137",
+      "count": 100
+    },
+    {
+      "id": "oracle-0138",
+      "count": 100
+    },
+    {
+      "id": "oracle-0139",
+      "count": 100
+    },
+    {
+      "id": "oracle-0140",
+      "count": 100
+    },
+    {
+      "id": "oracle-0141",
+      "count": 100
+    },
+    {
+      "id": "oracle-0142",
+      "count": 100
+    },
+    {
+      "id": "oracle-0143",
+      "count": 100
+    },
+    {
+      "id": "oracle-0144",
+      "count": 100
+    },
+    {
+      "id": "oracle-0145",
+      "count": 100
+    },
+    {
+      "id": "oracle-0146",
+      "count": 100
+    },
+    {
+      "id": "oracle-0147",
+      "count": 100
+    },
+    {
+      "id": "oracle-0148",
+      "count": 100
+    },
+    {
+      "id": "oracle-0149",
+      "count": 100
+    },
+    {
+      "id": "oracle-0150",
+      "count": 100
+    },
+    {
+      "id": "oracle-0151",
+      "count": 100
+    },
+    {
+      "id": "oracle-0152",
+      "count": 100
+    },
+    {
+      "id": "oracle-0153",
+      "count": 100
+    },
+    {
+      "id": "oracle-0154",
+      "count": 100
+    },
+    {
+      "id": "oracle-0155",
+      "count": 100
+    },
+    {
+      "id": "oracle-0156",
+      "count": 100
+    },
+    {
+      "id": "oracle-0157",
+      "count": 100
+    },
+    {
+      "id": "oracle-0158",
+      "count": 100
+    },
+    {
+      "id": "oracle-0159",
+      "count": 100
+    },
+    {
+      "id": "oracle-0160",
+      "count": 100
+    },
+    {
+      "id": "oracle-0161",
+      "count": 100
+    },
+    {
+      "id": "oracle-0162",
+      "count": 100
+    },
+    {
+      "id": "oracle-0163",
+      "count": 100
+    },
+    {
+      "id": "oracle-0164",
+      "count": 100
+    },
+    {
+      "id": "oracle-0165",
+      "count": 100
+    },
+    {
+      "id": "oracle-0166",
+      "count": 100
+    },
+    {
+      "id": "oracle-0167",
+      "count": 100
+    },
+    {
+      "id": "oracle-0168",
+      "count": 100
+    },
+    {
+      "id": "oracle-0169",
+      "count": 100
+    },
+    {
+      "id": "oracle-0170",
+      "count": 100
+    },
+    {
+      "id": "oracle-0171",
+      "count": 100
+    },
+    {
+      "id": "oracle-0172",
+      "count": 100
+    },
+    {
+      "id": "oracle-0173",
+      "count": 100
+    },
+    {
+      "id": "oracle-0174",
+      "count": 100
+    },
+    {
+      "id": "oracle-0175",
+      "count": 100
+    },
+    {
+      "id": "oracle-0176",
+      "count": 100
+    },
+    {
+      "id": "oracle-0177",
+      "count": 100
+    },
+    {
+      "id": "oracle-0178",
+      "count": 100
+    },
+    {
+      "id": "oracle-0179",
+      "count": 100
+    },
+    {
+      "id": "oracle-0180",
+      "count": 100
+    },
+    {
+      "id": "oracle-0181",
+      "count": 100
+    },
+    {
+      "id": "oracle-0182",
+      "count": 100
+    },
+    {
+      "id": "oracle-0183",
+      "count": 100
+    },
+    {
+      "id": "oracle-0184",
+      "count": 100
+    },
+    {
+      "id": "oracle-0185",
+      "count": 100
+    },
+    {
+      "id": "oracle-0186",
+      "count": 100
+    },
+    {
+      "id": "oracle-0187",
+      "count": 100
+    },
+    {
+      "id": "oracle-0188",
+      "count": 100
+    },
+    {
+      "id": "oracle-0189",
+      "count": 100
+    },
+    {
+      "id": "oracle-0190",
+      "count": 100
+    },
+    {
+      "id": "oracle-0191",
+      "count": 100
+    },
+    {
+      "id": "oracle-0192",
+      "count": 100
+    },
+    {
+      "id": "oracle-0193",
+      "count": 100
+    },
+    {
+      "id": "oracle-0194",
+      "count": 100
+    },
+    {
+      "id": "oracle-0195",
+      "count": 100
+    },
+    {
+      "id": "oracle-0196",
+      "count": 100
+    },
+    {
+      "id": "oracle-0197",
+      "count": 100
+    },
+    {
+      "id": "oracle-0198",
+      "count": 100
+    },
+    {
+      "id": "oracle-0199",
+      "count": 100
+    },
+    {
+      "id": "oracle-0200",
+      "count": 100
+    },
+    {
+      "id": "oracle-0201",
+      "count": 100
+    },
+    {
+      "id": "oracle-0202",
+      "count": 100
+    },
+    {
+      "id": "oracle-0203",
+      "count": 100
+    },
+    {
+      "id": "oracle-0204",
+      "count": 100
+    },
+    {
+      "id": "oracle-0205",
+      "count": 100
+    },
+    {
+      "id": "oracle-0206",
+      "count": 100
+    },
+    {
+      "id": "oracle-0207",
+      "count": 100
+    },
+    {
+      "id": "oracle-0208",
+      "count": 100
+    },
+    {
+      "id": "oracle-0209",
+      "count": 100
+    },
+    {
+      "id": "oracle-0210",
+      "count": 100
+    },
+    {
+      "id": "oracle-0211",
+      "count": 100
+    },
+    {
+      "id": "oracle-0212",
+      "count": 100
+    },
+    {
+      "id": "oracle-0213",
+      "count": 100
+    },
+    {
+      "id": "oracle-0214",
+      "count": 100
+    },
+    {
+      "id": "oracle-0215",
+      "count": 100
+    },
+    {
+      "id": "oracle-0216",
+      "count": 100
+    },
+    {
+      "id": "oracle-0217",
+      "count": 100
+    },
+    {
+      "id": "oracle-0218",
+      "count": 100
+    },
+    {
+      "id": "oracle-0219",
+      "count": 100
+    },
+    {
+      "id": "oracle-0220",
+      "count": 100
+    },
+    {
+      "id": "oracle-0221",
+      "count": 100
+    },
+    {
+      "id": "oracle-0222",
+      "count": 100
+    },
+    {
+      "id": "oracle-0223",
+      "count": 100
+    },
+    {
+      "id": "oracle-0224",
+      "count": 100
+    },
+    {
+      "id": "oracle-0225",
+      "count": 100
+    },
+    {
+      "id": "oracle-0226",
+      "count": 100
+    },
+    {
+      "id": "oracle-0227",
+      "count": 100
+    },
+    {
+      "id": "oracle-0228",
+      "count": 100
+    },
+    {
+      "id": "oracle-0229",
+      "count": 100
+    },
+    {
+      "id": "oracle-0230",
+      "count": 100
+    },
+    {
+      "id": "oracle-0231",
+      "count": 100
+    },
+    {
+      "id": "oracle-0232",
+      "count": 100
+    },
+    {
+      "id": "oracle-0233",
+      "count": 100
+    },
+    {
+      "id": "oracle-0234",
+      "count": 100
+    },
+    {
+      "id": "oracle-0235",
+      "count": 100
+    },
+    {
+      "id": "oracle-0236",
+      "count": 100
+    },
+    {
+      "id": "oracle-0237",
+      "count": 100
+    },
+    {
+      "id": "oracle-0238",
+      "count": 100
+    },
+    {
+      "id": "oracle-0239",
+      "count": 100
+    },
+    {
+      "id": "oracle-0240",
+      "count": 100
+    },
+    {
+      "id": "oracle-0241",
+      "count": 100
+    },
+    {
+      "id": "oracle-0242",
+      "count": 100
+    },
+    {
+      "id": "oracle-0243",
+      "count": 100
+    },
+    {
+      "id": "oracle-0244",
+      "count": 100
+    },
+    {
+      "id": "oracle-0245",
+      "count": 100
+    },
+    {
+      "id": "oracle-0246",
+      "count": 100
+    },
+    {
+      "id": "oracle-0247",
+      "count": 100
+    },
+    {
+      "id": "oracle-0248",
+      "count": 100
+    },
+    {
+      "id": "oracle-0249",
+      "count": 100
+    },
+    {
+      "id": "oracle-0250",
+      "count": 100
+    },
+    {
+      "id": "oracle-0251",
+      "count": 100
+    },
+    {
+      "id": "oracle-0252",
+      "count": 100
+    },
+    {
+      "id": "oracle-0253",
+      "count": 100
+    },
+    {
+      "id": "oracle-0254",
+      "count": 100
+    },
+    {
+      "id": "oracle-0255",
+      "count": 100
+    },
+    {
+      "id": "oracle-0256",
+      "count": 100
+    },
+    {
+      "id": "oracle-0257",
+      "count": 100
+    },
+    {
+      "id": "oracle-0258",
+      "count": 100
+    },
+    {
+      "id": "oracle-0259",
+      "count": 316
+    }
+  ],
+  "checks": [
+    "Root returns HTTP 200",
+    "30115 catalog cards and 259 complete generic batches load",
+    "The 100-card cohort deck passes the real paste/check UI",
+    "Save to My Library opens spotlight without starting a game",
+    "Guest deck survives reload and revalidation",
+    "My Library selection opens Deck spotlight without auto-start",
+    "Review preserves the selected opponents and hard difficulty",
+    "Reviewed guest pod reaches the real opening-hand mulligan",
+    "Human cohort spell and AI spell resolve through real costs, choices and Stack into a stable main phase",
+    "At least one new-cohort human permanent resolves after paying mana",
+    "Human cohort and AI spells were observed on the Stack",
+    "Local hard AI makes real decisions without fallback",
+    "No unresolved Stack objects or entry triggers remain",
+    "Gameplay has no horizontal overflow",
+    "Guest QA makes no remote mutations",
+    "No browser console or page errors"
+  ],
+  "errors": [],
+  "writes": [],
+  "screenshots": [
+    "01-saved-spotlight",
+    "02-reloaded-library",
+    "03-pod",
+    "04-review",
+    "05-mulligan",
+    "06-human-land",
+    "08-ai-stack",
+    "07-human-cohort-stack",
+    "09-settled-gameplay"
+  ],
+  "humanCohortResolved": [
+    {
+      "name": "Suncleanser",
+      "iid": 9,
+      "human": true,
+      "batch": 259,
+      "turn": 7,
+      "manaSpent": 2,
+      "zone": "battlefield",
+      "countered": false,
+      "fizzled": false
+    }
+  ],
+  "seed": 281665144
+}

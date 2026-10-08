@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T17:04:17.409Z",
+  "generatedAt": "2026-10-08T21:51:57.594Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
   "oracleBatches": [
     {
@@ -1551,6 +1551,12 @@
       "sourceUpdatedAt": "2026-10-07T09:01:59.955+00:00"
     },
     {
+      "id": "oracle-0259",
+      "sequence": 259,
+      "count": 316,
+      "sourceUpdatedAt": "2026-10-07T09:01:59.955+00:00"
+    },
+    {
       "id": "manual-commander-staples",
       "sequence": "manual-001",
       "count": 7,
@@ -1571,13 +1577,13 @@
     "uniqueCards": 6474,
     "uniquePassed": 6474,
     "uniqueFailed": 0,
-    "rawCards": 29799,
-    "rawPassed": 29799,
+    "rawCards": 30115,
+    "rawPassed": 30115,
     "rawFailed": 0,
-    "inactiveRawCards": 23325,
-    "inactiveRawPassed": 23325,
+    "inactiveRawCards": 23641,
+    "inactiveRawPassed": 23641,
     "inactiveRawFailed": 0,
-    "oracleBatchCards": 25865
+    "oracleBatchCards": 26181
   },
   "decks": [
     {
@@ -91119,6 +91125,12 @@
       "issues": []
     },
     {
+      "name": "Abstruse Appropriation",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Abstruse Interference",
       "active": false,
       "status": "PASS",
@@ -93387,6 +93399,12 @@
       "issues": []
     },
     {
+      "name": "All Will Be One",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "All-Fates Scroll",
       "active": false,
       "status": "PASS",
@@ -93394,6 +93412,12 @@
     },
     {
       "name": "All-Fates Stalker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "All-Out Assault",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -93634,6 +93658,12 @@
     },
     {
       "name": "Alpine Meadow",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alpine Moon",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -94017,6 +94047,12 @@
       "issues": []
     },
     {
+      "name": "Amzu, Swarm's Hunger",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "An Unexpected Party // At the Door",
       "active": false,
       "status": "PASS",
@@ -94222,6 +94258,12 @@
     },
     {
       "name": "Ancient Brontodon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ancient Bronze Dragon",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -95031,6 +95073,12 @@
       "issues": []
     },
     {
+      "name": "Aphetto Dredging",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Aphetto Exterminator",
       "active": false,
       "status": "PASS",
@@ -95325,6 +95373,12 @@
       "issues": []
     },
     {
+      "name": "Arachnus Spinner",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Arachnus Web",
       "active": false,
       "status": "PASS",
@@ -95338,6 +95392,12 @@
     },
     {
       "name": "Aragorn and Arwen, Wed",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aragorn, Company Leader",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -95421,6 +95481,12 @@
       "issues": []
     },
     {
+      "name": "Arbiter of the Ideal",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Arbor Armament",
       "active": false,
       "status": "PASS",
@@ -95446,6 +95512,12 @@
     },
     {
       "name": "Arboretum Elemental",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Arboria",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -95578,6 +95650,12 @@
     },
     {
       "name": "Arcane Teachings",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Arcanum Wings",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -96513,6 +96591,12 @@
       "issues": []
     },
     {
+      "name": "Arna Kennerüd, Skycaptain",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Arni Brokenbrow",
       "active": false,
       "status": "PASS",
@@ -96742,6 +96826,12 @@
     },
     {
       "name": "Arwen's Gift",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Arwen, Mortal Queen",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -97653,6 +97743,12 @@
       "issues": []
     },
     {
+      "name": "Auratouched Mage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Aurelia's Fury",
       "active": false,
       "status": "PASS",
@@ -97827,6 +97923,12 @@
       "issues": []
     },
     {
+      "name": "Autumn's Veil",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Autumnal Gloom // Ancient of the Equinox",
       "active": false,
       "status": "PASS",
@@ -97984,6 +98086,12 @@
     },
     {
       "name": "Avatar of the Resolute",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Avatar's Wrath",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -98397,6 +98505,12 @@
       "issues": []
     },
     {
+      "name": "Awesome Presence",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Axebane Beast",
       "active": false,
       "status": "PASS",
@@ -98620,6 +98734,12 @@
     },
     {
       "name": "Azula, On the Hunt",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Azure Beastbinder",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -98985,6 +99105,12 @@
       "issues": []
     },
     {
+      "name": "Ballot Broker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Ballroom",
       "active": false,
       "status": "PASS",
@@ -99136,6 +99262,12 @@
     },
     {
       "name": "Bane's Invoker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bane, Lord of Darkness",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -100539,6 +100671,12 @@
       "issues": []
     },
     {
+      "name": "Become Anonymous",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Become Brutes",
       "active": false,
       "status": "PASS",
@@ -101181,6 +101319,12 @@
       "issues": []
     },
     {
+      "name": "Bewitching Leechcraft",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Beyeen Veil // Beyeen Coast",
       "active": false,
       "status": "PASS",
@@ -101218,6 +101362,12 @@
     },
     {
       "name": "Biblioplex Kraken",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Biblioplex Tomekeeper",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -101541,6 +101691,12 @@
       "issues": []
     },
     {
+      "name": "Bite of the Black Rose",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Biting Rain",
       "active": false,
       "status": "PASS",
@@ -101560,6 +101716,12 @@
     },
     {
       "name": "Bitter Chill",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bitter Ordeal",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -101823,6 +101985,12 @@
       "issues": []
     },
     {
+      "name": "Blade of the Swarm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Blade-Blizzard Kitsune",
       "active": false,
       "status": "PASS",
@@ -101842,6 +102010,12 @@
     },
     {
       "name": "Bladebrand",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bladecoil Serpent",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -102022,6 +102196,12 @@
     },
     {
       "name": "Blazing Crescendo",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blazing Effigy",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -102208,6 +102388,12 @@
     },
     {
       "name": "Blessing of Belzenlok",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blessing of Frost",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -102868,6 +103054,12 @@
     },
     {
       "name": "Blood Speaker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blood Sun",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -104223,6 +104415,12 @@
       "issues": []
     },
     {
+      "name": "Bonehoard Dracosaur",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Boneknitter",
       "active": false,
       "status": "PASS",
@@ -104380,6 +104578,12 @@
     },
     {
       "name": "Boon-Bringer Valkyrie",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Boonweaver Giant",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -104853,6 +105057,12 @@
       "issues": []
     },
     {
+      "name": "Brago's Representative",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Braid of Fire",
       "active": false,
       "status": "PASS",
@@ -105153,6 +105363,12 @@
       "issues": []
     },
     {
+      "name": "Brazen Cannonade",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Brazen Collector",
       "active": false,
       "status": "PASS",
@@ -105256,6 +105472,12 @@
     },
     {
       "name": "Break of Day",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Break the Ice",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -106053,6 +106275,12 @@
       "issues": []
     },
     {
+      "name": "Brothers Yamazaki",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Brought Back",
       "active": false,
       "status": "PASS",
@@ -106594,6 +106822,12 @@
     },
     {
       "name": "Burning-Fist Minotaur",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Burning-Rune Demon",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -107739,7 +107973,19 @@
       "issues": []
     },
     {
+      "name": "Capital Punishment",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Caprichrome",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Capricious Hellraiser",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -107776,6 +108022,12 @@
     },
     {
       "name": "Captain America, Steve Rogers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Captain America, Super-Soldier",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -107932,6 +108184,12 @@
     },
     {
       "name": "Captured by Lagacs",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Captured by the Consulate",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -108184,6 +108442,12 @@
     },
     {
       "name": "Cartel Aristocrat",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Carth the Lion",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -108675,6 +108939,12 @@
       "issues": []
     },
     {
+      "name": "Caustic Bronco",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Caustic Caterpillar",
       "active": false,
       "status": "PASS",
@@ -108844,6 +109114,12 @@
     },
     {
       "name": "Caverns of Despair",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Caves of Chaos Adventurer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -109348,6 +109624,12 @@
     },
     {
       "name": "Chain of Plasma",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Chain of Silence",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -110187,6 +110469,12 @@
       "issues": []
     },
     {
+      "name": "Charmed Pendant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Charmed Sleep",
       "active": false,
       "status": "PASS",
@@ -110278,6 +110566,12 @@
     },
     {
       "name": "Cheerful Osteomancer // Raise Dead",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cheering Crowd",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -110571,6 +110865,12 @@
       "issues": []
     },
     {
+      "name": "Choco, Seeker of Paradise",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Choco-Comet",
       "active": false,
       "status": "PASS",
@@ -110656,6 +110956,12 @@
     },
     {
       "name": "Chord of Calling",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Choreographed Sparks",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -111370,6 +111676,12 @@
     },
     {
       "name": "Claws of Valakut",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Clay Champion",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -112467,6 +112779,12 @@
       "issues": []
     },
     {
+      "name": "Colossal Skyturtle",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Colossapede",
       "active": false,
       "status": "PASS",
@@ -112606,6 +112924,12 @@
     },
     {
       "name": "Command the Dreadhorde",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Command the Stage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -112972,6 +113296,12 @@
     },
     {
       "name": "Conduit of Storms // Conduit of Emrakul",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cone of Cold",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -113769,6 +114099,12 @@
       "issues": []
     },
     {
+      "name": "Corpse Appraiser",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Corpse Blockade",
       "active": false,
       "status": "PASS",
@@ -114070,6 +114406,12 @@
     },
     {
       "name": "Costume Closet",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Council Guardian",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -114484,6 +114826,12 @@
     },
     {
       "name": "Crackling Cyclops",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Crackling Emergence",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -115467,6 +115815,12 @@
       "issues": []
     },
     {
+      "name": "Cry of the Carnarium",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Cryoclasm",
       "active": false,
       "status": "PASS",
@@ -115582,6 +115936,12 @@
     },
     {
       "name": "Cryptic Command",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cryptic Cruiser",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -116151,6 +116511,12 @@
       "issues": []
     },
     {
+      "name": "Cursecloth Wrappings",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Cursed Courtier",
       "active": false,
       "status": "PASS",
@@ -116650,6 +117016,12 @@
     },
     {
       "name": "Dampening Pulse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Damping Engine",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -118305,6 +118677,12 @@
       "issues": []
     },
     {
+      "name": "Deceiver of Form",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Deception",
       "active": false,
       "status": "PASS",
@@ -118390,6 +118768,12 @@
     },
     {
       "name": "Decorated Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Decorum Dissertation",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -118528,6 +118912,12 @@
     },
     {
       "name": "Deeproot Champion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deeproot Pilgrimage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -118906,6 +119296,12 @@
     },
     {
       "name": "Deity of Scars",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Delay",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -119374,6 +119770,12 @@
     },
     {
       "name": "Depth Charge Colossus",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Depth Defiler",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -120591,6 +120993,12 @@
       "issues": []
     },
     {
+      "name": "Disciple of Deceit",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Disciple of Freyalise // Garden of Freyalise",
       "active": false,
       "status": "PASS",
@@ -120616,6 +121024,12 @@
     },
     {
       "name": "Disciple of Malice",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Disciple of Perdition",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -120700,6 +121114,12 @@
     },
     {
       "name": "Disease Carriers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Diseased Vermin",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -121749,6 +122169,12 @@
       "issues": []
     },
     {
+      "name": "Doomskar Warrior",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Door to Nothingness",
       "active": false,
       "status": "PASS",
@@ -121780,6 +122206,12 @@
     },
     {
       "name": "Doppelgang",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Doran, Besieged by Time",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -122020,6 +122452,12 @@
     },
     {
       "name": "Dowsing Shaman",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dr. Eggman",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -123081,6 +123519,12 @@
       "issues": []
     },
     {
+      "name": "Dreamshaper Shaman",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Dreamspoiler Witches",
       "active": false,
       "status": "PASS",
@@ -123597,6 +124041,12 @@
       "issues": []
     },
     {
+      "name": "Druid of the Emerald Grove",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Druid of the Spade",
       "active": false,
       "status": "PASS",
@@ -123868,6 +124318,12 @@
     },
     {
       "name": "Dungeon Crawler",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dungeon Delver",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -124323,6 +124779,12 @@
       "issues": []
     },
     {
+      "name": "Dwarven Sea Clan",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Dwarven Shortsword",
       "active": false,
       "status": "PASS",
@@ -124617,6 +125079,12 @@
       "issues": []
     },
     {
+      "name": "Earth Rumble",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Earth Rumble Wrestlers",
       "active": false,
       "status": "PASS",
@@ -124654,6 +125122,12 @@
     },
     {
       "name": "Earth-Origin Yak",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Earthbender Ascension",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -124750,6 +125224,12 @@
     },
     {
       "name": "Earthshaking Si",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Earthshape",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -124917,6 +125397,18 @@
       "issues": []
     },
     {
+      "name": "Echocasting Symposium",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Echoes of Eternity",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Echoes of the Kin Tree",
       "active": false,
       "status": "PASS",
@@ -125061,6 +125553,12 @@
       "issues": []
     },
     {
+      "name": "Edgar, King of Figaro",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Edgar, Moonlit Sovereign",
       "active": false,
       "status": "PASS",
@@ -125110,6 +125608,12 @@
     },
     {
       "name": "Eel-Hounds",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Eelectrocute",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -125326,6 +125830,12 @@
     },
     {
       "name": "Elder Auntie",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elder Brain",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -126843,6 +127353,12 @@
       "issues": []
     },
     {
+      "name": "Endless Whispers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Endless Wurm",
       "active": false,
       "status": "PASS",
@@ -127096,6 +127612,12 @@
     },
     {
       "name": "Enlightened Ascetic",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Enlightened Confidant",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -128043,7 +128565,19 @@
       "issues": []
     },
     {
+      "name": "Etched Host Doombringer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Etched Monstrosity",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Etched Slith",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -128308,6 +128842,12 @@
     },
     {
       "name": "Everdream",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Evereth, Viceroy of Plunder",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -128901,6 +129441,12 @@
       "issues": []
     },
     {
+      "name": "Expose the Culprit",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Expose to Daylight",
       "active": false,
       "status": "PASS",
@@ -128908,6 +129454,12 @@
     },
     {
       "name": "Expressive Firedancer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Expropriate",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -128998,6 +129550,12 @@
     },
     {
       "name": "Extraction Specialist",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Extraordinary Journey",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -129525,6 +130083,12 @@
       "issues": []
     },
     {
+      "name": "Faith's Shield",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Faithbearer Paladin",
       "active": false,
       "status": "PASS",
@@ -129645,6 +130209,12 @@
       "issues": []
     },
     {
+      "name": "Fall of Cair Andros",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Fall of Gil-galad",
       "active": false,
       "status": "PASS",
@@ -129754,6 +130324,12 @@
     },
     {
       "name": "False Cure",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "False Dawn",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -130018,6 +130594,12 @@
     },
     {
       "name": "Faramir, Field Commander",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Faramir, Prince of Ithilien",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -130341,6 +130923,12 @@
       "issues": []
     },
     {
+      "name": "Faunsbane Troll",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Favor of Jukai",
       "active": false,
       "status": "PASS",
@@ -130624,6 +131212,12 @@
     },
     {
       "name": "Feather of Flight",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Feather, the Redeemed",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -131523,6 +132117,12 @@
       "issues": []
     },
     {
+      "name": "Fight or Flight",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Fight to the Death",
       "active": false,
       "status": "PASS",
@@ -132117,6 +132717,12 @@
       "issues": []
     },
     {
+      "name": "Fires of Mount Doom",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Fires of Undeath",
       "active": false,
       "status": "PASS",
@@ -132694,6 +133300,12 @@
     },
     {
       "name": "Flash Counter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Flash Foliage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -133665,6 +134277,12 @@
       "issues": []
     },
     {
+      "name": "Font of Agonies",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Font of Fortunes",
       "active": false,
       "status": "PASS",
@@ -133702,6 +134320,12 @@
     },
     {
       "name": "Font of Vigor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Food Chain",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -135291,6 +135915,12 @@
       "issues": []
     },
     {
+      "name": "Fumble",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Fume Spitter",
       "active": false,
       "status": "PASS",
@@ -135772,6 +136402,12 @@
     },
     {
       "name": "Gaea's Skyfolk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gaea's Will",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -136269,6 +136905,12 @@
       "issues": []
     },
     {
+      "name": "Garruk's Harbinger",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Garruk's Horde",
       "active": false,
       "status": "PASS",
@@ -136438,6 +137080,12 @@
     },
     {
       "name": "Gather Courage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gather Specimens",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -136821,6 +137469,12 @@
       "issues": []
     },
     {
+      "name": "Generous Plunderer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Generous Pup",
       "active": false,
       "status": "PASS",
@@ -136905,6 +137559,12 @@
       "issues": []
     },
     {
+      "name": "Genku, Future Shaper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Geological Appraiser",
       "active": false,
       "status": "PASS",
@@ -136978,6 +137638,12 @@
     },
     {
       "name": "Germinating Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Germination Practicum",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -137541,6 +138207,12 @@
       "issues": []
     },
     {
+      "name": "Giant Albatross",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Giant Ambush Beetle",
       "active": false,
       "status": "PASS",
@@ -138087,6 +138759,12 @@
       "issues": []
     },
     {
+      "name": "Gilgamesh, Master-at-Arms",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Gilt-Blade Prowler",
       "active": false,
       "status": "PASS",
@@ -138154,6 +138832,12 @@
     },
     {
       "name": "Gimli, Counter of Kills",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gimli, Mournful Avenger",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -139672,6 +140356,12 @@
     },
     {
       "name": "Goblin Furrier",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Game",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -141891,6 +142581,12 @@
       "issues": []
     },
     {
+      "name": "Greymond, Avacyn's Stalwart",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Grid Monitor",
       "active": false,
       "status": "PASS",
@@ -142066,6 +142762,12 @@
     },
     {
       "name": "Grim Reaper, Lethal Legionnaire",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Grim Reminder",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -142492,6 +143194,12 @@
     },
     {
       "name": "Grub's Command",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Grudge Keeper",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -143433,6 +144141,12 @@
       "issues": []
     },
     {
+      "name": "Haktos the Unscarred",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Halam Djinn",
       "active": false,
       "status": "PASS",
@@ -143578,6 +144292,12 @@
     },
     {
       "name": "Hallowed Healer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Hallowed Moonlight",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -143812,6 +144532,12 @@
     },
     {
       "name": "Hanna's Custody",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Hans Eriksson",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -144052,6 +144778,12 @@
     },
     {
       "name": "Harmonic Convergence",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Harmonious Emergence",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -144640,6 +145372,12 @@
     },
     {
       "name": "Head of the Homestead",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Head of the Hunt",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -145336,6 +146074,12 @@
     },
     {
       "name": "Hell-Bent Raider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Hellcarver Demon",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -146487,6 +147231,12 @@
       "issues": []
     },
     {
+      "name": "Historian's Boon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Historian's Wisdom",
       "active": false,
       "status": "PASS",
@@ -146541,6 +147291,12 @@
       "issues": []
     },
     {
+      "name": "Hiveheart Shaman",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Hivespine Wolverine",
       "active": false,
       "status": "PASS",
@@ -146584,6 +147340,12 @@
     },
     {
       "name": "Hoarder's Overflow",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Hoarding Broodlord",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -148287,6 +149049,12 @@
       "issues": []
     },
     {
+      "name": "Hydra Trainer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Hydra's Growth",
       "active": false,
       "status": "PASS",
@@ -149049,6 +149817,12 @@
       "issues": []
     },
     {
+      "name": "Illusion of Choice",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Illusionary Armor",
       "active": false,
       "status": "PASS",
@@ -149157,6 +149931,12 @@
       "issues": []
     },
     {
+      "name": "Imaginary Threats",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Imaryll, Elfhame Elite",
       "active": false,
       "status": "PASS",
@@ -149236,6 +150016,12 @@
     },
     {
       "name": "Immolation Shaman",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Immortal Coil",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -149362,6 +150148,12 @@
     },
     {
       "name": "Imperial Lancer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Imperial Mask",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -149530,6 +150322,12 @@
     },
     {
       "name": "Impromptu Raid",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Improvisation Capstone",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -151155,6 +151953,12 @@
       "issues": []
     },
     {
+      "name": "Invasion Plans",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Invasion Reinforcements",
       "active": false,
       "status": "PASS",
@@ -151312,6 +152116,12 @@
     },
     {
       "name": "Invoke Despair",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Invoke Justice",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -152103,6 +152913,12 @@
       "issues": []
     },
     {
+      "name": "Jabari's Influence",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Jace Reawakened",
       "active": false,
       "status": "PASS",
@@ -152487,6 +153303,12 @@
       "issues": []
     },
     {
+      "name": "Jasmine Boreal of the Seven",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Jasmine Dragon Tea Shop",
       "active": false,
       "status": "PASS",
@@ -152518,6 +153340,18 @@
     },
     {
       "name": "Jaws of Stone",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Jaws, Relentless Predator",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Jaxis, the Troublemaker",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -153681,6 +154515,12 @@
       "issues": []
     },
     {
+      "name": "Kain, Traitorous Dragoon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Kairi, the Swirling Sky",
       "active": false,
       "status": "PASS",
@@ -153694,6 +154534,12 @@
     },
     {
       "name": "Kaito's Pursuit",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Kaito, Bane of Nightmares",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -154090,6 +154936,12 @@
     },
     {
       "name": "Karn, Scion of Urza",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Karn, the Great Creator",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -154845,6 +155697,12 @@
       "issues": []
     },
     {
+      "name": "Kellan, the Kid",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Kelpie Guide",
       "active": false,
       "status": "PASS",
@@ -155068,6 +155926,12 @@
     },
     {
       "name": "Kheru Goldkeeper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Kheru Lich Lord",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -155697,6 +156561,12 @@
       "issues": []
     },
     {
+      "name": "Kitnap",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Kitsa, Otterball Elite",
       "active": false,
       "status": "PASS",
@@ -156033,6 +156903,12 @@
       "issues": []
     },
     {
+      "name": "Knight-Errant of Eos",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Knighted Myr",
       "active": false,
       "status": "PASS",
@@ -156165,6 +157041,12 @@
       "issues": []
     },
     {
+      "name": "Kogla and Yidaro",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Kogla, the Titan Ape",
       "active": false,
       "status": "PASS",
@@ -156268,6 +157150,12 @@
     },
     {
       "name": "Konda, Lord of Eiganjo",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Kongming's Contraptions",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -156466,6 +157354,12 @@
     },
     {
       "name": "Koth, the Geomancer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Kotis, the Fangkeeper",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -157317,6 +158211,12 @@
       "issues": []
     },
     {
+      "name": "Lae'zel's Acrobatics",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Lagac Lizard",
       "active": false,
       "status": "PASS",
@@ -157480,6 +158380,12 @@
     },
     {
       "name": "Land Cap",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Land Grant",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -157930,6 +158836,12 @@
     },
     {
       "name": "Lavaborn Muse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lavabrink Venturer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -158895,6 +159807,18 @@
       "issues": []
     },
     {
+      "name": "Lich's Mastery",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lich's Mirror",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Lich's Relic",
       "active": false,
       "status": "PASS",
@@ -158931,6 +159855,12 @@
       "issues": []
     },
     {
+      "name": "Liege of the Hollows",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Liege of the Pit",
       "active": false,
       "status": "PASS",
@@ -158944,6 +159874,12 @@
     },
     {
       "name": "Lieutenant Kirtar",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lieutenants of the Guard",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -159363,6 +160299,12 @@
       "issues": []
     },
     {
+      "name": "Lightning, Army of One",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Lightning, Security Sergeant",
       "active": false,
       "status": "PASS",
@@ -159669,6 +160611,12 @@
       "issues": []
     },
     {
+      "name": "Linvala, Shield of Sea Gate",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Lion Heart",
       "active": false,
       "status": "PASS",
@@ -159724,6 +160672,12 @@
     },
     {
       "name": "Lithobraking",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lithoform Blight",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -159855,6 +160809,12 @@
       "issues": []
     },
     {
+      "name": "Living Inferno",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Living Lectern",
       "active": false,
       "status": "PASS",
@@ -159910,6 +160870,12 @@
     },
     {
       "name": "Living Tsunami",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Livio, Oathsworn Sentinel",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -159976,6 +160942,12 @@
     },
     {
       "name": "Llanowar Envoy",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Llanowar Greenwidow",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -160684,6 +161656,12 @@
     },
     {
       "name": "Lost in Space",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lost in Thought",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -162027,6 +163005,12 @@
       "issues": []
     },
     {
+      "name": "Magmatic Hellkite",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Magmatic Sinkhole",
       "active": false,
       "status": "PASS",
@@ -162070,6 +163054,12 @@
     },
     {
       "name": "Magnetic Theft",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Magnetic Web",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -162771,6 +163761,12 @@
       "issues": []
     },
     {
+      "name": "Mangara's Blessing",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Mangara's Equity",
       "active": false,
       "status": "PASS",
@@ -163372,6 +164368,12 @@
     },
     {
       "name": "Market Festival",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Market Gnome",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -164218,6 +165220,12 @@
     },
     {
       "name": "Meat Locker // Drowned Diner",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Meathook Massacre II",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -165105,6 +166113,12 @@
       "issues": []
     },
     {
+      "name": "Messenger Jays",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Messenger's Speed",
       "active": false,
       "status": "PASS",
@@ -165148,6 +166162,12 @@
     },
     {
       "name": "Metalworker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Metamorphic Alteration",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -165915,6 +166935,12 @@
       "issues": []
     },
     {
+      "name": "Mindbender Spores",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Mindblaze",
       "active": false,
       "status": "PASS",
@@ -166305,6 +167331,12 @@
       "issues": []
     },
     {
+      "name": "Minthara, Merciless Soul",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Mintstrosity",
       "active": false,
       "status": "PASS",
@@ -166570,6 +167602,12 @@
     },
     {
       "name": "Mirror of Life Trapping",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Mirror-Mad Phantasm",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -169095,6 +170133,12 @@
       "issues": []
     },
     {
+      "name": "Murktide Regent",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Murky Sewer",
       "active": false,
       "status": "PASS",
@@ -169617,6 +170661,12 @@
       "issues": []
     },
     {
+      "name": "Mystic Reflection",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Mystic Repeal",
       "active": false,
       "status": "PASS",
@@ -169714,6 +170764,12 @@
     },
     {
       "name": "Mythos of Brokkos",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Mythos of Illuna",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -170644,6 +171700,12 @@
     },
     {
       "name": "Nefarious Imp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Nefarious Lich",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -171717,6 +172779,12 @@
       "issues": []
     },
     {
+      "name": "Nine-Fingers Keene",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Nine-Lives Familiar",
       "active": false,
       "status": "PASS",
@@ -172012,6 +173080,12 @@
     },
     {
       "name": "Noble Benefactor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Noble Heritage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -173079,6 +174153,12 @@
       "issues": []
     },
     {
+      "name": "Obsidian Fireheart",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Obsidian Giant",
       "active": false,
       "status": "PASS",
@@ -173290,6 +174370,12 @@
     },
     {
       "name": "Ogre Gatecrasher",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ogre Geargrabber",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -174339,6 +175425,12 @@
       "issues": []
     },
     {
+      "name": "Orchard Elemental",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Orchard Spirit",
       "active": false,
       "status": "PASS",
@@ -174682,6 +175774,12 @@
     },
     {
       "name": "Oriss, Samite Guardian",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ormos, Archive Keeper",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -175371,6 +176469,12 @@
       "issues": []
     },
     {
+      "name": "Ovinomancer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Oviya Pashiri, Sage Lifecrafter",
       "active": false,
       "status": "PASS",
@@ -175749,6 +176853,12 @@
       "issues": []
     },
     {
+      "name": "Pale Moon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Pale Recluse",
       "active": false,
       "status": "PASS",
@@ -176092,6 +177202,12 @@
     },
     {
       "name": "Pardic Collaborator",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Pardic Dragon",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -176470,6 +177586,12 @@
     },
     {
       "name": "Peace Strider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Peace Talks",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -177387,6 +178509,12 @@
       "issues": []
     },
     {
+      "name": "Phelia, Exuberant Shepherd",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Phenax, God of Deception",
       "active": false,
       "status": "PASS",
@@ -177772,6 +178900,12 @@
     },
     {
       "name": "Phyrexian Vault",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Phyrexian Vindicator",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -179715,6 +180849,12 @@
       "issues": []
     },
     {
+      "name": "Premature Burial",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Prepare // Fight",
       "active": false,
       "status": "PASS",
@@ -180039,6 +181179,12 @@
       "issues": []
     },
     {
+      "name": "Primal Prayers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Primal Rage",
       "active": false,
       "status": "PASS",
@@ -180136,6 +181282,18 @@
     },
     {
       "name": "Primordial Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Prince of Thralls",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Princess Yue",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -180597,6 +181755,12 @@
       "issues": []
     },
     {
+      "name": "Prophetic Titan",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Prosperity Tycoon",
       "active": false,
       "status": "PASS",
@@ -180616,6 +181780,12 @@
     },
     {
       "name": "Prosthetic Injector",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Protean Hulk",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -180927,6 +182097,12 @@
       "issues": []
     },
     {
+      "name": "Psychic Rebuttal",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Psychic Spear",
       "active": false,
       "status": "PASS",
@@ -181036,6 +182212,12 @@
     },
     {
       "name": "PuPu UFO",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Public Enemy",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -181551,6 +182733,12 @@
       "issues": []
     },
     {
+      "name": "Pyramids",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Pyre Charger",
       "active": false,
       "status": "PASS",
@@ -181821,6 +183009,12 @@
       "issues": []
     },
     {
+      "name": "Qasali Ambusher",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Qilin's Blessing",
       "active": false,
       "status": "PASS",
@@ -181870,6 +183064,12 @@
     },
     {
       "name": "Quake, Agent of S.H.I.E.L.D.",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Quakebringer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -181978,6 +183178,12 @@
     },
     {
       "name": "Queen Brahne",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Queen Kayla bin-Kroog",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -182511,6 +183717,12 @@
       "issues": []
     },
     {
+      "name": "Radagast the Brown",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Radha's Firebrand",
       "active": false,
       "status": "PASS",
@@ -182596,6 +183808,12 @@
     },
     {
       "name": "Radiant, Serra Archangel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Radiate",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -182781,6 +183999,12 @@
       "issues": []
     },
     {
+      "name": "Raggadragga, Goreguts Boss",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Ragged Playmate",
       "active": false,
       "status": "PASS",
@@ -182859,6 +184083,12 @@
       "issues": []
     },
     {
+      "name": "Raging River",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Raging Spirit",
       "active": false,
       "status": "PASS",
@@ -182926,6 +184156,12 @@
     },
     {
       "name": "Rain of Filth",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rain of Gore",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -183231,6 +184467,12 @@
       "issues": []
     },
     {
+      "name": "Ral Zarek, Guest Lecturer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Ral and the Implicit Maze",
       "active": false,
       "status": "PASS",
@@ -183370,6 +184612,12 @@
     },
     {
       "name": "Rallying Roar",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rambling Possum",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -183633,6 +184881,12 @@
       "issues": []
     },
     {
+      "name": "Rangers of Ithilien",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Rangers' Aetherhive",
       "active": false,
       "status": "PASS",
@@ -183736,6 +184990,12 @@
     },
     {
       "name": "Rapid Decay",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rapid Fire",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -184029,6 +185289,12 @@
       "issues": []
     },
     {
+      "name": "Ravenloft Adventurer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Ravenous Amulet",
       "active": false,
       "status": "PASS",
@@ -184126,6 +185392,12 @@
     },
     {
       "name": "Ravenous Trap",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ravenous Tyrannosaurus",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -185247,6 +186519,12 @@
       "issues": []
     },
     {
+      "name": "Reed Richards, Smartest Man",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Reef Pirates",
       "active": false,
       "status": "PASS",
@@ -185260,6 +186538,12 @@
     },
     {
       "name": "Reef Shaman",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Reenact the Crime",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -185284,6 +186568,12 @@
     },
     {
       "name": "Reflective Golem",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Reflector Mage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -185583,6 +186873,12 @@
       "issues": []
     },
     {
+      "name": "Relentless Dead",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Relentless Hunter",
       "active": false,
       "status": "PASS",
@@ -185794,6 +187090,12 @@
     },
     {
       "name": "Remove",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Remove Enchantments",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -186267,6 +187569,12 @@
       "issues": []
     },
     {
+      "name": "Reservoir Kraken",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Reservoir Walker",
       "active": false,
       "status": "PASS",
@@ -186544,6 +187852,12 @@
     },
     {
       "name": "Restoration Magic",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Restoration Seminar",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -186951,6 +188265,12 @@
       "issues": []
     },
     {
+      "name": "Reverent Silence",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Reversal of Fortune",
       "active": false,
       "status": "PASS",
@@ -187215,6 +188535,12 @@
       "issues": []
     },
     {
+      "name": "Rhystic Cave",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Rhystic Circle",
       "active": false,
       "status": "PASS",
@@ -187359,6 +188685,12 @@
       "issues": []
     },
     {
+      "name": "Riders of the Mark",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Ridge Rannet",
       "active": false,
       "status": "PASS",
@@ -187420,6 +188752,12 @@
     },
     {
       "name": "Riftburst Hellion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Riftmarked Knight",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -188535,6 +189873,12 @@
       "issues": []
     },
     {
+      "name": "Rocco, Street Chef",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Rock Badger",
       "active": false,
       "status": "PASS",
@@ -188542,6 +189886,12 @@
     },
     {
       "name": "Rock Basilisk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rock Jockey",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -189063,6 +190413,12 @@
       "issues": []
     },
     {
+      "name": "Rootwater Matriarch",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Rootwater Mystic",
       "active": false,
       "status": "PASS",
@@ -189076,6 +190432,12 @@
     },
     {
       "name": "Rootwater Thief",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rootweaver Druid",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -189190,6 +190552,12 @@
     },
     {
       "name": "Rotfeaster Maggot",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rotisserie Elemental",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -189388,6 +190756,12 @@
     },
     {
       "name": "Rowen",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Roxanne, Starfall Savant",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -190461,6 +191835,12 @@
       "issues": []
     },
     {
+      "name": "Sacred Ground",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Sacred Guide",
       "active": false,
       "status": "PASS",
@@ -191451,6 +192831,12 @@
       "issues": []
     },
     {
+      "name": "Sandstalker Moloch",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Sandsteppe Mastodon",
       "active": false,
       "status": "PASS",
@@ -191877,6 +193263,12 @@
       "issues": []
     },
     {
+      "name": "Sarulf, Realm Eater",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Saruli Caretaker",
       "active": false,
       "status": "PASS",
@@ -192088,6 +193480,12 @@
     },
     {
       "name": "Savage Smash",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Savage Summoning",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -192813,6 +194211,12 @@
       "issues": []
     },
     {
+      "name": "Scion of Halaster",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Scion of Stygia",
       "active": false,
       "status": "PASS",
@@ -193185,6 +194589,12 @@
       "issues": []
     },
     {
+      "name": "Scrap Welder",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Scrapbasket",
       "active": false,
       "status": "PASS",
@@ -193276,6 +194686,12 @@
     },
     {
       "name": "Screaming Fury",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Screaming Nemesis",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -193587,6 +195003,12 @@
       "issues": []
     },
     {
+      "name": "Scythecat Cub",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Scytheclaw Raptor",
       "active": false,
       "status": "PASS",
@@ -193624,6 +195046,12 @@
     },
     {
       "name": "Sea Gate Restoration // Sea Gate, Reborn",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sea Gate Stormcaller",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -193948,6 +195376,12 @@
     },
     {
       "name": "Seasoned Consultant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Seasoned Cryomancer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -194529,6 +195963,12 @@
       "issues": []
     },
     {
+      "name": "Selective Snare",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Selesnya Cluestone",
       "active": false,
       "status": "PASS",
@@ -194745,6 +196185,12 @@
       "issues": []
     },
     {
+      "name": "Sengir Nosferatu",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Sengir Vampire",
       "active": false,
       "status": "PASS",
@@ -194812,6 +196258,12 @@
     },
     {
       "name": "Sentinel Tower",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sentinel of Lost Lore",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -195418,6 +196870,12 @@
     },
     {
       "name": "Sewerdreg",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sewers of Estark",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -196492,6 +197950,12 @@
     },
     {
       "name": "Shifting Woodland",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Shifty Doppelganger",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -197613,6 +199077,12 @@
       "issues": []
     },
     {
+      "name": "Sigarda, Host of Herons",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Sigardian Paladin",
       "active": false,
       "status": "PASS",
@@ -197997,6 +199467,12 @@
       "issues": []
     },
     {
+      "name": "Silvan Reveler",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Silvanus's Invoker",
       "active": false,
       "status": "PASS",
@@ -198052,6 +199528,12 @@
     },
     {
       "name": "Silver Seraph",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Silver Surfer, Cosmic Voyager",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -198442,6 +199924,12 @@
     },
     {
       "name": "Sinking Feeling",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sins of the Past",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -199000,6 +200488,12 @@
     },
     {
       "name": "Skoa, Embermage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Skophos Maze-Warden",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -199564,6 +201058,12 @@
     },
     {
       "name": "Skyshroud Condor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Skyshroud Cutter",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -201027,6 +202527,12 @@
       "issues": []
     },
     {
+      "name": "Sol'Kanar the Tainted",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Sol'kanar the Swamp King",
       "active": false,
       "status": "PASS",
@@ -201735,6 +203241,12 @@
       "issues": []
     },
     {
+      "name": "Soul Partition",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Soul Ransom",
       "active": false,
       "status": "PASS",
@@ -201868,6 +203380,12 @@
     },
     {
       "name": "Soul of Ravnica",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Soul of Shandalar",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -202174,6 +203692,12 @@
     },
     {
       "name": "Sovereign's Bite",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sovereigns of Lost Alara",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -203175,6 +204699,12 @@
       "issues": []
     },
     {
+      "name": "Spider-Verse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Spider-Woman, Secret Agent",
       "active": false,
       "status": "PASS",
@@ -203290,6 +204820,12 @@
     },
     {
       "name": "Spikefield Hazard // Spikefield Cave",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Spikeshell Harrier",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -203949,6 +205485,12 @@
       "issues": []
     },
     {
+      "name": "Split Decision",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Split Up",
       "active": false,
       "status": "PASS",
@@ -204201,6 +205743,12 @@
       "issues": []
     },
     {
+      "name": "Springheart Nantuko",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Springing Tiger",
       "active": false,
       "status": "PASS",
@@ -204352,6 +205900,12 @@
     },
     {
       "name": "Squall, SeeD Mercenary",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Squandered Resources",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -204807,6 +206361,12 @@
       "issues": []
     },
     {
+      "name": "Stand or Fall",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Standardize",
       "active": false,
       "status": "PASS",
@@ -204999,6 +206559,12 @@
       "issues": []
     },
     {
+      "name": "Starnheim Unleashed",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Starport Security",
       "active": false,
       "status": "PASS",
@@ -205078,6 +206644,12 @@
     },
     {
       "name": "Starved Rusalka",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Starving Revenant",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -205965,6 +207537,12 @@
       "issues": []
     },
     {
+      "name": "Stolen Uniform",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Stolen Vitality",
       "active": false,
       "status": "PASS",
@@ -206343,6 +207921,12 @@
       "issues": []
     },
     {
+      "name": "Storm Herald",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Storm King's Thunder",
       "active": false,
       "status": "PASS",
@@ -206619,6 +208203,12 @@
       "issues": []
     },
     {
+      "name": "Storrev, Devkarin Lich",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Story Circle",
       "active": false,
       "status": "PASS",
@@ -206632,6 +208222,12 @@
     },
     {
       "name": "Storyteller Pixie",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Storyweave",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -207957,6 +209553,12 @@
       "issues": []
     },
     {
+      "name": "Suncleanser",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Suncrusher",
       "active": false,
       "status": "PASS",
@@ -208048,6 +209650,12 @@
     },
     {
       "name": "Sungold Barrage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sungold Sentinel",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -208347,6 +209955,12 @@
       "issues": []
     },
     {
+      "name": "Super-Soldier Serum",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Superior Numbers",
       "active": false,
       "status": "PASS",
@@ -208491,6 +210105,12 @@
       "issues": []
     },
     {
+      "name": "Surge Engine",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Surge Mare",
       "active": false,
       "status": "PASS",
@@ -208629,6 +210249,12 @@
       "issues": []
     },
     {
+      "name": "Surtland Flinger",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Surtland Frostpyre",
       "active": false,
       "status": "PASS",
@@ -208702,6 +210328,12 @@
     },
     {
       "name": "Survivors' Encampment",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Suspend",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -209247,6 +210879,12 @@
       "issues": []
     },
     {
+      "name": "Swordsman, Sharp Scoundrel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Swordsworn Cavalier",
       "active": false,
       "status": "PASS",
@@ -209260,6 +210898,12 @@
     },
     {
       "name": "Sworn Companions",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sworn Defender",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -209781,6 +211425,12 @@
       "issues": []
     },
     {
+      "name": "Tainted Specter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Tainted Strike",
       "active": false,
       "status": "PASS",
@@ -209823,7 +211473,19 @@
       "issues": []
     },
     {
+      "name": "Tajuru Paragon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Tajuru Pathwarden",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tajuru Preserver",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -210585,6 +212247,12 @@
       "issues": []
     },
     {
+      "name": "Taunt",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Taunting Arbormage",
       "active": false,
       "status": "PASS",
@@ -210639,6 +212307,12 @@
       "issues": []
     },
     {
+      "name": "Tax Collector",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Taxi Driver",
       "active": false,
       "status": "PASS",
@@ -210669,6 +212343,12 @@
       "issues": []
     },
     {
+      "name": "Teachings of the Kirin // Kirin-Touched Orochi",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Team Avatar",
       "active": false,
       "status": "PASS",
@@ -210694,6 +212374,12 @@
     },
     {
       "name": "Teardrop Kami",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tears of Rage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -210736,6 +212422,12 @@
     },
     {
       "name": "Tectonic Rift",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tectonic Split",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -210838,6 +212530,12 @@
     },
     {
       "name": "Teferi's Sentinel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Teferi's Talent",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -211047,6 +212745,12 @@
       "issues": []
     },
     {
+      "name": "Tellah, Great Sage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Teller of Tales",
       "active": false,
       "status": "PASS",
@@ -211162,6 +212866,12 @@
     },
     {
       "name": "Temporal Adept",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Temporal Aperture",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -211336,6 +213046,12 @@
     },
     {
       "name": "Tenacious Tomeseeker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tenacious Underdog",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -211761,6 +213477,12 @@
       "issues": []
     },
     {
+      "name": "Tetsuo, Imperial Champion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Tetzimoc, Primal Death",
       "active": false,
       "status": "PASS",
@@ -212128,6 +213850,12 @@
     },
     {
       "name": "The Apprentice's Folly",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "The Archimandrite",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -212536,6 +214264,12 @@
     },
     {
       "name": "The Gold Saucer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "The Great Aurora",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -213231,6 +214965,12 @@
       "issues": []
     },
     {
+      "name": "Thelon of Havenwood",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Thelon's Chant",
       "active": false,
       "status": "PASS",
@@ -213640,6 +215380,12 @@
     },
     {
       "name": "Thornling",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Thornmantle Striker",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -214527,6 +216273,12 @@
       "issues": []
     },
     {
+      "name": "Thunderblade Charge",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Thunderblust",
       "active": false,
       "status": "PASS",
@@ -215086,6 +216838,12 @@
     },
     {
       "name": "Tilonalli's Skinshifter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tilonalli's Summoner",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -215751,7 +217509,19 @@
       "issues": []
     },
     {
+      "name": "Tomik, Distinguished Advokist",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Tomik, Izzet Sparkmage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tomik, Orzhov Lawmage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -216226,6 +217996,12 @@
     },
     {
       "name": "Touch of Invisibility",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Touch of Moonglove",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -217275,6 +219051,12 @@
       "issues": []
     },
     {
+      "name": "Triad of Fates",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Trial of Agony",
       "active": false,
       "status": "PASS",
@@ -217521,6 +219303,12 @@
       "issues": []
     },
     {
+      "name": "Triton Tactics",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Triton Wavebreaker",
       "active": false,
       "status": "PASS",
@@ -217666,6 +219454,12 @@
     },
     {
       "name": "Trove Tracker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Trove of Temptation",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -217894,6 +219688,12 @@
     },
     {
       "name": "Tuktuk Rubblefort",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Tuktuk Scrapper",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -218602,6 +220402,12 @@
     },
     {
       "name": "Uchbenbak, the Great Mistake",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ugin's Binding",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -221391,6 +223197,12 @@
       "issues": []
     },
     {
+      "name": "Veil of Summer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Veilborn Ghoul",
       "active": false,
       "status": "PASS",
@@ -221758,6 +223570,12 @@
     },
     {
       "name": "Venser's Sliver",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Venser, Corpse Puppet",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -223311,6 +225129,12 @@
       "issues": []
     },
     {
+      "name": "Vivien's Talent",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Vivien, Monsters' Advocate",
       "active": false,
       "status": "PASS",
@@ -223467,6 +225291,12 @@
       "issues": []
     },
     {
+      "name": "Vohar, Vodalian Desecrator",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Voice of Duty",
       "active": false,
       "status": "PASS",
@@ -223582,6 +225412,12 @@
     },
     {
       "name": "Void Stalker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Void Winnower",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -225147,6 +226983,12 @@
       "issues": []
     },
     {
+      "name": "War's Toll",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "War-Name Aspirant",
       "active": false,
       "status": "PASS",
@@ -226407,6 +228249,12 @@
       "issues": []
     },
     {
+      "name": "Weftwalking",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Wei Ambush Force",
       "active": false,
       "status": "PASS",
@@ -226593,6 +228441,12 @@
       "issues": []
     },
     {
+      "name": "Wernog, Rider's Chaplain",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "West Wind Avatar",
       "active": false,
       "status": "PASS",
@@ -226642,6 +228496,12 @@
     },
     {
       "name": "Wheel and Deal",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Wheel of Misfortune",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -227919,6 +229779,12 @@
       "issues": []
     },
     {
+      "name": "Winter, Misanthropic Guide",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Winter, Team Player",
       "active": false,
       "status": "PASS",
@@ -228909,6 +230775,12 @@
       "issues": []
     },
     {
+      "name": "Worms of the Earth",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Wormwood Dryad",
       "active": false,
       "status": "PASS",
@@ -229293,6 +231165,12 @@
       "issues": []
     },
     {
+      "name": "Xathrid Gorgon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Xathrid Slyblade",
       "active": false,
       "status": "PASS",
@@ -229306,6 +231184,12 @@
     },
     {
       "name": "Xenograft",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Xira, the Golden Sting",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -229869,6 +231753,12 @@
       "issues": []
     },
     {
+      "name": "Yurlok of Scorch Thrash",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Yuyan Archers",
       "active": false,
       "status": "PASS",
@@ -230289,6 +232179,12 @@
       "issues": []
     },
     {
+      "name": "Zilortha, Strength Incarnate",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Zimone and Dina",
       "active": false,
       "status": "PASS",
@@ -230524,6 +232420,12 @@
     },
     {
       "name": "Zoyowa Lava-Tongue",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Zoyowa's Justice",
       "active": false,
       "status": "PASS",
       "issues": []

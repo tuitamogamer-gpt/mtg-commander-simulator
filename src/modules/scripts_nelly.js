@@ -494,12 +494,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const votes = new Map();
       const revealed = [];
       for (const q of g.apnapFrom(g.turnPlayer)) {
+        const ballotCount=await MTG.OracleV74Extra?.voteCount(ctx,q)??1;
+        for(let ballot=0;ballot<ballotCount;ballot++){
         const cands = g.alivePlayers().filter(x => x !== q);
         const v = await MTG.RestrictedLegacy.choosePlayer(ctx, q, cands, 'Mob Verdict: secretly vote for another player');
         if (!v) continue;
         votes.set(v, (votes.get(v) || 0) + 1);
         votes['_by_' + q.idx] = String(v.idx);
+        MTG.OracleV74Extra?.record(votes,q,String(v.idx));
         revealed.push({voter: q, player: v});
+        }
       }
       for (const {voter, player} of revealed) g.lg(`${voter.name} votes against ${player.name}.`);
       await g.emit('voteEnd', {src: ctx.src, by: you, votes, secret: true,

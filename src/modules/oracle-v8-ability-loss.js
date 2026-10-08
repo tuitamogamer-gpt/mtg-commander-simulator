@@ -77,6 +77,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
         if(row.descriptor)row.descriptor.applied.add(row.source.cur);
         for(const card of row.cards){
           const cur=card.cur;
+          cur.oraclePreserveManaAbilitiesV73=cur.oraclePreserveManaAbilitiesV73!==false&&!!row.effect.preserveManaV73;
           cur.abilitiesDisabled=true;cur.oracleAbilityLossTimestamp=Math.max(cur.oracleAbilityLossTimestamp??-Infinity,row.timestamp);
         }
       }
@@ -86,7 +87,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
         if(loss!==undefined){
           for(const [key,stamp]of state.stamps)if(stamp<loss)state.del.call(cur.kw,key);
           cur.wardCost=null;cur.hexproof=false;cur.shroud=false;
-          for(const key of arrayKeys)cur[key]=cur[key].filter(value=>(state.grants.get(value)??-Infinity)>=loss);
+          for(const key of arrayKeys)if(key!=='extraMana'||!cur.oraclePreserveManaAbilitiesV73)cur[key]=cur[key].filter(value=>(state.grants.get(value)??-Infinity)>=loss);
         }
         for(const key of arrayKeys){const list=cur[key],push=list.push;Object.defineProperty(list,'push',{configurable:true,value:function(...values){return timestamp>=(cur.oracleAbilityLossTimestamp??-Infinity)?push.apply(this,values):this.length;}});state.arrays.push(list);}
         for(const key of ['hexproof','shroud','wardCost']){let value=cur[key];Object.defineProperty(cur,key,{configurable:true,enumerable:true,get:()=>value,set:next=>{if(!next||timestamp>=(cur.oracleAbilityLossTimestamp??-Infinity))value=next;}});state.flags.push(key);}

@@ -49,6 +49,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.ORACLE_INTERACTION_CONTRACTS = Object.freeze({
+    'ordered-coin-replacement': {mechanics:['coin replacement'],path:'first coin-flip event each turn → active printed replacement makes the coins heads and wins those flips → later flips use the native coin engine'},
+    'entry-choice-continuous-effect': {mechanics:['entry choice','continuous effect'],path:'actual controller chooses two distinct printed abilities as the permanent enters → bind choices to that incarnation → live filtered permanents gain the chosen abilities → reentry chooses again'},
     'entry-tapped-replacement': {mechanics:['entry replacement'],path:'complete closed entry rule → actual pre-entry controller choices and printed payments → apply its battlefield entry replacement'},
     'permanent-enduring-story-v68': {mechanics:['Storied'],path:'control a permanent with Storied → observe three artifacts, legendary permanents or Sagas → retain the enduring story for the rest of the game'},
     'as-enters-named-mode-v66': {mechanics:['entry-choice'],path:'as-enters replacement → actual controller chooses between the two exact printed modes → incarnation-bound mode enables its complete printed clauses → reentry chooses again'},

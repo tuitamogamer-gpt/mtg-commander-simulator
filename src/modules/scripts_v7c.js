@@ -617,6 +617,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const votes = new Map();
       for (const q of g.apnapFrom(you)) {
         if (q.lost) continue;
+        const ballotCount=await MTG.OracleV74Extra?.voteCount(ctx,q)??1;
+        for(let ballot=0;ballot<ballotCount;ballot++){
         const cands = g.bf().filter(c => !c.is('Land') && c.ctrl !== q);
         if (!cands.length) continue;
         const pick = await q.controller.decide(g, {
@@ -625,13 +627,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (pick[0]) {
           votes.set(pick[0], (votes.get(pick[0]) || 0) + 1);
           votes['_by_' + q.idx] = pick[0];
+          MTG.OracleV74Extra?.record(votes,q,pick[0]);
           g.lg(`${q.name} votes: ${pick[0].name}.`);
         }
+        }
       }
+      await g.emit('voteEnd', { src: ctx.src, by: you, votes });
       let best = 0;
       for (const n of votes.values()) best = Math.max(best, n);
       for (const [c, n] of votes) if (n === best && c.zone === 'battlefield') await g.exileCard(c);
-      await g.emit('voteEnd', { src: ctx.src, by: you, votes });
     },
   };
   SC['Hex'] = {
@@ -1006,11 +1010,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'etb', desc: 'Secret council: fellowship/aid', filter: etbSelf,
       run: async ctx => {
         const g = ctx.g;
-        const { votes, picks } = await E7.secretVote(g, ctx.you, ctx.src, [
+        const { votes, ballots } = await E7.secretVote(g, ctx.you, ctx.src, [
           { key: 'fellowship', label: '🤝 Fellowship (give a creature)' },
           { key: 'aid', label: '⚔️ Aid (counters on Elrond)' },
         ]);
-        for (const [q, k] of picks) {
+        for (const {player:q,key:k} of ballots) {
           if (k === 'fellowship') {
             const cs = g.creatures(q);
             if (cs.length) {
@@ -1085,15 +1089,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'voteEnd', desc: 'Voting reward', filter: (g, self, d) => true,
       run: async ctx => {
         const votes = ctx.data.votes;
-        const mine = votes && votes['_by_' + ctx.you.idx];
+        const ballots = votes?.ballots || ctx.g.players.filter(p => votes?.['_by_' + p.idx] !== undefined)
+          .map(player => ({player, key: votes['_by_' + player.idx]}));
+        const mine = new Set(ballots.filter(ballot => ballot.player === ctx.you).map(ballot => ballot.key));
         let differed = 0;
-        if (votes && mine !== undefined) {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) {
-            const theirs = votes['_by_' + o.idx];
-            if (theirs === undefined) continue;
-            if (theirs === mine) await ctx.g.makeTokens('treasure', o);
-            else differed++;
-          }
+        for (const o of E.eachOpp(ctx.g, ctx.you)) {
+          const theirs = ballots.filter(ballot => ballot.player === o).map(ballot => ballot.key);
+          if (theirs.some(key => mine.has(key))) await ctx.g.makeTokens('treasure', o);
+          if (theirs.some(key => !mine.has(key))) differed++;
         }
         if (differed) await E.scry(ctx.g, ctx.you, differed);
         await ctx.g.draw(ctx.you, 1);
@@ -1423,21 +1426,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const q of g.alivePlayers()) {
         const cands = g.bf().filter(c => c.is('Creature') && c.ctrl !== ctx.you);
         if (!cands.length) break;
+        const ballotCount=await MTG.OracleV74Extra?.voteCount(ctx,q)??1;
+        for(let ballot=0;ballot<ballotCount;ballot++){
         const pick = await q.controller.decide(g, {
           type: 'chooseCards', from: cands, min: 1, max: 1, prompt: 'Secret vote: stun for...', aiHint: { kind: 'voteExile' },
         });
         if (pick[0]) {
           votes.set(pick[0], (votes.get(pick[0]) || 0) + 1);
           votes['_by_' + q.idx] = pick[0];
+          MTG.OracleV74Extra?.record(votes,q,pick[0]);
+        }
         }
       }
+      await g.emit('voteEnd', { src: ctx.src, by: ctx.you, votes });
       for (const [c, n] of votes) {
         if (c.zone !== 'battlefield') continue;
         ctx.g.addCounters(c, 'stun', n);
         c.tapped = true;
         g.lg(`${c.name}: ${n} stun counters + tap.`);
       }
-      await g.emit('voteEnd', { src: ctx.src, by: ctx.you, votes });
     },
   };
   SC['Windswift Slice'] = {
@@ -1633,9 +1640,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'voteEnd', desc: 'Scry 2 for matching votes', filter: (g, self, d) => !!d.votes,
       run: async ctx => {
         const votes = ctx.data.votes;
-        const mine = votes['_by_' + ctx.you.idx];
-        if (mine === undefined) return;
-        const eligible = [ctx.you, ...E.eachOpp(ctx.g, ctx.you).filter(player => votes['_by_' + player.idx] === mine)];
+        const ballots = votes.ballots || ctx.g.players.filter(p => votes['_by_' + p.idx] !== undefined)
+          .map(player => ({player, key: votes['_by_' + player.idx]}));
+        const mine = new Set(ballots.filter(ballot => ballot.player === ctx.you).map(ballot => ballot.key));
+        const eligible = [ctx.you, ...E.eachOpp(ctx.g, ctx.you).filter(player =>
+          ballots.some(ballot => ballot.player === player && mine.has(ballot.key)))];
         for (const player of eligible) {
           const use = await player.controller.decide(ctx.g, {
             type: 'chooseOption', prompt: `Model of Unity: ${player.name} — scry 2?`,

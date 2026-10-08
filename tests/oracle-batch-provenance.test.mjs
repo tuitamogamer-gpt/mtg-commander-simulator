@@ -179,13 +179,32 @@ test('entire runtime bytes, snapshot identity, summary counts, and every request
 test('read-only CLI requires a pinned digest, exact cohort and known options, with no network/write fallback', () => {
   const args = ['--source-file=/tmp/pinned.jsonl.gz', `--source-sha256=${PIN}`];
   assert.deepEqual(parseProvenanceArgs(args), {
-    sourceFile: '/tmp/pinned.jsonl.gz', sourceSha256: PIN, first: 27, last: 46, expectedCards: 2000,
+    sourceFile: '/tmp/pinned.jsonl.gz', sourceSha256: PIN, first: 27, last: 46, batchSize:100, expectedCards: 2000,
   });
   for (const invalid of [
     [], [args[0]], [args[1]], [...args, '--write'], [...args, '--network'],
     [...args, '--first=27.5'], [...args, '--first=47'], [...args, '--expected-cards=1999'],
+    [...args, '--batch-size=0'], [...args, '--batch-size=501'], [...args, '--batch-size=1.5'],
     [...args, args[0]], ['--source-file=/tmp/pinned.jsonl.gz', '--source-sha256=invalid'],
   ]) assert.throws(() => parseProvenanceArgs(invalid));
+  assert.equal(parseProvenanceArgs([...args,'--first=259','--last=259','--batch-size=316','--expected-cards=316']).expectedCards,316);
+});
+
+test('mixed historical batch sizes retain exact requested cohort and state checks',()=>{
+  const input=fixture(),extra=sourceCard('Extra Fixture');input.sourceCards.push(extra);
+  const plan=createImportPlan({cards:input.sourceCards,bulk:BULK,state:input.state,
+    baseNames:new Set(Object.keys(input.legacyCards)),reservations:collectReservedOracleCards(input.manualReports),
+    limit:1,sequence:29,selectedNames:[extra.name]});
+  input.reports.push(plan.report);input.state=plan.nextState;
+  input.runtimeSources.set(plan.report.id,moduleSource(plan.report));
+  input.appSource+="\nimport './oracle-batches/batch-0029.js';";
+  Object.assign(input,{first:29,last:29,batchSize:1,expectedCards:1});
+  assert.equal(verifyOracleBatchProvenance(input).verifiedRows,1);
+  Object.assign(input,{first:27,last:28,batchSize:2,expectedCards:4});
+  input.sourceCards.pop(); // Earlier cohort's own pinned source snapshot.
+  assert.equal(verifyOracleBatchProvenance(input).verifiedRows,4);
+  input.reports[2].cards=[];
+  assert.throws(()=>verifyOracleBatchProvenance(input),/complete batch/);
 });
 
 test('Time Lord compatibility is explicit, source-bound, and preserves strict frozen bytes and every unrelated field', () => {

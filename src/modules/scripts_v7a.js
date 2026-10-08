@@ -168,6 +168,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       : new Map();
     for (const q of order) {
       if (q.lost) continue;
+      const ballotCount=await MTG.OracleV74Extra?.voteCount({g,you,src},q)??1;
+      for(let ballot=0;ballot<ballotCount;ballot++){
       const bargain = bargains.get(q.idx);
       const picked = bargain ? bargain.key : await q.controller.decide(g, {
           type: 'chooseOption', prompt: `${src.name}: vote`, options,
@@ -188,7 +190,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : bargain && bargain.campaignPosition ? ' (public campaign position)' : '';
       g.lg(`${q.name} votes for: ${opt ? opt.label : k}.${politicalSuffix}`);
       votes['_by_' + q.idx] = k;
+      MTG.OracleV74Extra?.record(votes,q,k);
       if (bargain && bargain.contractId && g.diplomacyRecordPublicChoice) g.diplomacyRecordPublicChoice(bargain.contractId, q, k);
+      }
     }
     await g.emit('voteEnd', { src, by: you, votes, options });
     return votes;
@@ -202,23 +206,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // tajno glasanje — svi biraju bez uvida
   E7.secretVote = async (g, you, src, options) => {
     const picks = new Map();
+    const ballots=[];
     for (const q of g.alivePlayers()) {
+      const ballotCount=await MTG.OracleV74Extra?.voteCount({g,you,src},q)??1;
+      for(let ballot=0;ballot<ballotCount;ballot++){
       const k = await q.controller.decide(g, {
         type: 'chooseOption', prompt: `${src.name}: secret vote`, options,
         // Secret council namjerno ne prosljeđuje tuđe trenutne izbore.
         aiHint: { kind: 'vote', src, options, voter: q, forWhom: you, secret: true },
       });
       picks.set(q, k);
+      ballots.push({player:q,key:k});
+      }
     }
     const votes = new Map();
-    for (const [q, k] of picks) {
+    votes.ballots=ballots;
+    for (const {player:q,key:k} of ballots) {
       votes.set(k, (votes.get(k) || 0) + 1);
       const opt = options.find(o => o.key === k);
       g.lg(`${q.name} voted: ${opt ? opt.label : k}.`);
       votes['_by_' + q.idx] = k;
     }
     await g.emit('voteEnd', { src, by: you, votes, options, secret: true, picks });
-    return { votes, picks };
+    return { votes, picks, ballots };
   };
   // ============================================================
   // THE RING — emblem koji stoji uz komandera i napreduje svaki put

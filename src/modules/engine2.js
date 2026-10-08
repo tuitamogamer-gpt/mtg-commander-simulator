@@ -4193,7 +4193,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.tap(harmonizeCreature);
     }
     for (const c of paidAddl.discarded) await this.discard(p, [c], { noReplacement: true });
-    if (paidAddl.life) await this.loseLife(p, paidAddl.life, card.name);
+    if (paidAddl.life) await this.loseLife(p, paidAddl.life, {paying:true,source:card});
     if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p);
     so.additionalLifePaid = paidAddl.life;
     so.additionalBlightPaid = paidAddl.blightN;
@@ -5377,6 +5377,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return visit(0, []);
     };
     const offerAbility=(c,a,ai,flags={})=>{
+        const loyaltyCostV74=typeof a.loyalty==='number'?a.loyalty+(this.oracleLoyaltyAdjustmentV74?.(p,c,a)||0):a.loyalty;
         if(a.activationControllerV66&&a.activationControllerV66(this,c,p)!==true)return;
         if (a.manaAbilityOnly) return;
         if (a.sorcery && !this.c14LoyaltyInstant?.(p,c,a) && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
@@ -5388,7 +5389,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (a.loyalty !== undefined && !this.canActivateLoyalty(c)) return;
         // Minus sposobnost se ne smije nuditi ako planeswalker nema dovoljno
         // loyalty countera da plati trošak (CR 606.5a).
-        if (a.loyalty < 0 && (c.counters.loyalty || 0) < -a.loyalty) return;
+        if (loyaltyCostV74 < 0 && (c.counters.loyalty || 0) < -loyaltyCostV74) return;
         const cost = {...a.cost};
         if(a.dynamicManaCostV66)cost.mana=(game,source)=>a.dynamicManaCostV66(game,source,p);
         if(cost.lifeHalfV56)cost.life=Math.max(0,Math.ceil(p.life/2));
@@ -5396,7 +5397,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(!lifeCostAllowed(this,p,cost.life,{isMana:false,isAbility:true,isSpell:false}))return;
         if(!cost.mana&&!cost.manaFromTarget&&(MTG.CWW?.abilityTax(this,p)||this.abilityManaCost(p,c,'{0}',{ability:a}).generic>0))cost.mana='{0}';
         if (cost.counter&&!this.canPutCountersV18(c,cost.counter)) return;
-        if(a.loyalty>0&&!this.canPutCountersV18(c,'loyalty'))return;
+        if(loyaltyCostV74>0&&!this.canPutCountersV18(c,'loyalty'))return;
         if (cost.mill && p.library.length < cost.mill) return;
         if(cost.topHandV56&&p.hand.length<cost.topHandV56)return;
         if (cost.tap && (c.tapped)) return;
@@ -5596,8 +5597,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // hand: cycling etc.
     for (const c of p.hand) {
       const d = c.def;
-      if (d.handAbility) {
-        const a = d.handAbility;
+      for (const [handIndex,a] of (d.oracleHandAbilitiesV74||[d.handAbility]).entries()) {
+        if(!a)continue;
         const handTimingLegal = !a.sorcery || this.turnPlayer === p && !this.stack.length && ['main1','main2'].includes(this.phase);
         const mc = this.abilityManaCost(p, c, handAbilityMana(this,c,a),{ability:a});
         const handReturn=a.cost?.returnPermanents;
@@ -5606,7 +5607,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           (!a.oracleForecastTap||forecastTapPool(this,p,c,a).length>=a.oracleForecastTap.n)&&
           (a.targets||[]).every(spec=>spec.upTo||this.legalTargets(spec,c,p).length>=(spec.min??spec.count??1));
         if (handTimingLegal && forecastLegal && (!a.cond || a.cond(this, c, p)) && this.canPayMana(p, mc, { card: c, isAbility: true },
-          { artifactAbilityAlreadyUsed: c.is('Artifact') })) out.push({ card: c, handAbility: true });
+          { artifactAbilityAlreadyUsed: c.is('Artifact') })) out.push({ card: c, handAbility: true,...(d.oracleHandAbilitiesV74?{handAbilityOverride:a,idx:'hand'+handIndex,label:a.label}: {}) });
       }
       for (const option of this.cyclingOptions(p,c)) {
         const cost = this.cyclingManaCost(p,c,option),cycling=option.definition;
@@ -5723,14 +5724,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Loyalty je trošak. Provjeri ga prije biranja meta i plaćanja drugih
     // troškova, a oznaku korištenja postavi tek kada je aktivacija legalna.
     const loyaltyAbility = entry.ability && entry.ability.loyalty !== undefined ? entry.ability : null;
-    if (loyaltyAbility && (!this.canActivateLoyalty(c) || loyaltyAbility.loyalty>0&&!this.canPutCountersV18(c,'loyalty') ||
-      (loyaltyAbility.loyalty < 0 && (c.counters.loyalty || 0) < -loyaltyAbility.loyalty))) return false;
+    const loyaltyCostV74=typeof loyaltyAbility?.loyalty==='number'?loyaltyAbility.loyalty+(this.oracleLoyaltyAdjustmentV74?.(p,c,loyaltyAbility)||0):loyaltyAbility?.loyalty;
+    if (loyaltyAbility && (!this.canActivateLoyalty(c) || loyaltyCostV74>0&&!this.canPutCountersV18(c,'loyalty') ||
+      (loyaltyCostV74 < 0 && (c.counters.loyalty || 0) < -loyaltyCostV74))) return false;
     if (entry.manaAbility) {
       const source = entry.manaSource;
       const cost = source?.extraCost || {};
       const manaSourceZoneV67=c.zone,manaSourceVersionV67=c.zoneVersion;
       if(cost.energy&&(MTG.OracleV8Energy?.count(p)||0)<cost.energy)return false;
-      if (!source || (source.fromV20 ? c.zone!==source.fromV20||c.owner!==p : c.zone !== 'battlefield' || !MTG.oracleManaActivationControllerV66(this,p,source)) || c.cur && (c.cur.abilitiesDisabled || c.cur.activationDisabled)) return false;
+      if (!source || (source.fromV20 ? c.zone!==source.fromV20||c.owner!==p : c.zone !== 'battlefield' || !MTG.oracleManaActivationControllerV66(this,p,source)) || c.cur && (c.cur.abilitiesDisabled && !c.cur.extraMana?.includes(source.m) || c.cur.activationDisabled)) return false;
       if (cost.tap && c.tapped) return false;
       if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c) &&
         !source.m.creatureOK && !source.m.ignoreSickness) return false;
@@ -5757,7 +5759,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(cost.removeManaCounters&&(manaOptionAmount(chosen)-(cost.removeManaCounters.baseV18||0)<0||manaOptionAmount(chosen)-(cost.removeManaCounters.baseV18||0)>(c.counters[cost.removeManaCounters.kind]||0)))return false;
       const validManualManaActivationV67=()=>c.zone===manaSourceZoneV67&&c.zoneVersion===manaSourceVersionV67&&!c.phasedOut&&
         (source.fromV20?c.owner===p:MTG.oracleManaActivationControllerV66(this,p,source))&&
-        !(c.cur?.abilitiesDisabled||c.cur?.activationDisabled)&&MTG.oracleManaAbilityAllowedV66(this,p,source)&&
+        !(c.cur?.abilitiesDisabled&&!c.cur.extraMana?.includes(source.m)||c.cur?.activationDisabled)&&MTG.oracleManaAbilityAllowedV66(this,p,source)&&
         (!cost.tap||!c.tapped)&&(!cost.tap||!c.is('Creature')||!c.sick||c.kw('haste')||MTG.C21Rules?.abilityHaste(this,c)||source.m.creatureOK||source.m.ignoreSickness)&&
         (!handPlanV20||MTG.OracleV20Costs.validateHandMana(this,p,source,handPlanV20))&&
         (!activationCtxV20||MTG.OracleV20Costs.validateActivation(activationCtxV20,cost));
@@ -5792,7 +5794,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.handAbility) {
-      const a = c.def.handAbility;
+      const a = entry.handAbilityOverride||c.def.handAbility;
+      if(entry.handAbilityOverride&&!c.def.oracleHandAbilitiesV74?.includes(a))return false;
       if (!a || c.zone !== 'hand' || c.owner !== p || a.oracleForecast&&!forecastAvailable(this,p,c) || a.cond && !a.cond(this,c,p) ||
         a.sorcery && (this.turnPlayer !== p || this.stack.length || !['main1','main2'].includes(this.phase))) return false;
       const handVersion=c.zoneVersion;
@@ -6331,6 +6334,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.rmCounter && (c.counters[cost.rmCounter.kind || cost.rmCounter] || 0) < (cost.rmCounter.n || 1)) return false;
     const ctx = {
       g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a, sourceZone:c.zone,
+      oracleLoyaltyAdjustmentV74:a.loyalty!==undefined?(this.oracleLoyaltyAdjustmentV74?.(p,c,a)||0):0,
       c1719TextChanges:(c.meta.c1719TextChanges||[]).map(r=>({...r})),
       sourceZoneVersion: c.zoneVersion, sourceUntapEpoch:c.meta.oracleUntapEpoch||0, sourcePhaseEpoch:c.meta.oraclePhaseEpoch||0, sourceDurationControlEpoch:c.meta.oracleDurationControl?.epoch||0, sourceCopyEpoch: c.copyEpoch||0, sourceCopying:!!c.isCopyOf,
     };
@@ -6354,9 +6358,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if(a.cdkTapX){const pool=this.bf().filter(x=>x.ctrl===p&&!x.tapped&&(!cost.tap||x!==c)&&cost.tapPermanents.filter(this,x,c,p));const manaX=cost.mana?this.abilityManaCost(p,c,cost.mana,{ability:a}):null,max=manaX?.x?Math.min(pool.length,this.maxAffordableX(p,manaX,c,{excludeCards:[c],forSpell:{card:c,isAbility:true,ability:a,cdkCostHasX:true}})):pool.length;ctx.x=await p.controller.decide(this,{type:'chooseX',min:0,max,card:c,prompt:c.name+': choose X permanents to tap',aiHint:{kind:'chooseX',card:c}});if(!Number.isInteger(ctx.x)||ctx.x<0||ctx.x>max)return false;}
     if(a.loyalty==='-X'){
-      const max=Math.max(0,c.counters.loyalty||0);
-      const chosen=await p.controller.decide(this,{type:'chooseX',min:0,max,card:c,prompt:`Loyalty X for ${c.name}?`,aiHint:{kind:'chooseX',card:c}});
-      if(!Number.isInteger(chosen)||chosen<0||chosen>max)return false;
+      const max=Math.max(0,(c.counters.loyalty||0)+ctx.oracleLoyaltyAdjustmentV74),min=this.canPutCountersV18(c,'loyalty')?0:ctx.oracleLoyaltyAdjustmentV74;
+      const chosen=await p.controller.decide(this,{type:'chooseX',min,max,card:c,prompt:`Loyalty X for ${c.name}?`,aiHint:{kind:'chooseX',card:c}});
+      if(!Number.isInteger(chosen)||chosen<min||chosen>max)return false;
       ctx.x=chosen;
     }
     if(a.oracleTargetX&&ctx.x===undefined){
@@ -6738,7 +6742,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.bounceMany(returnPermanents);
     }
     if (cost.life) await this.loseLife(p, cost.life, 'cost');
-    if (cost.mill) await this.mill(p, cost.mill);
+    if (cost.mill) {
+      ctx.milledCostSnapshots = p.library.slice(-cost.mill).reverse().map(card => this.snapshot(card));
+      await this.mill(p, cost.mill);
+    }
     if(cost.c1516Unattach)MTG.C1516.detach(this,c);
     if(cost.wlmBottomSelf)await this.move(c,'library',{toBottom:true});
     if (cost.returnSelf) {
@@ -6824,14 +6831,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // loyalty
     if (a.loyalty !== undefined) {
       if (!this.canActivateLoyalty(c)) return false;
-      if (a.loyalty > 0) this.addCounters(c, 'loyalty', a.loyalty, true);
+      const loyaltyPaymentV74=typeof a.loyalty==='number'?a.loyalty+ctx.oracleLoyaltyAdjustmentV74:a.loyalty;
+      if (loyaltyPaymentV74 > 0) {if(!this.canPutCountersV18(c,'loyalty'))return false;this.addCounters(c, 'loyalty', loyaltyPaymentV74, true);}
       else if (a.loyalty === '-X') {
-        if(!Number.isInteger(ctx.x)||ctx.x<0||(c.counters.loyalty||0)<ctx.x)return false;
-        this.removeCounters(c,'loyalty',ctx.x);
+        const delta=ctx.oracleLoyaltyAdjustmentV74-ctx.x;
+        if(!Number.isInteger(ctx.x)||ctx.x<0||(c.counters.loyalty||0)<-delta||delta>0&&!this.canPutCountersV18(c,'loyalty'))return false;
+        if(delta>0)this.addCounters(c,'loyalty',delta,true);else if(delta<0)this.removeCounters(c,'loyalty',-delta);
       }
-      else if (a.loyalty < 0) {
-        if ((c.counters['loyalty'] || 0) < -a.loyalty) return false;
-        this.removeCounters(c, 'loyalty', -a.loyalty);
+      else if (loyaltyPaymentV74 < 0) {
+        if ((c.counters['loyalty'] || 0) < -loyaltyPaymentV74) return false;
+        this.removeCounters(c, 'loyalty', -loyaltyPaymentV74);
       }
       this.recordLoyaltyActivation(c);
       c.meta._loyUsed = this.turnNo;
@@ -7923,6 +7932,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.pruneAttackCompanions(attackers);
     // Check the complete cost before any tap triggers or mana payments. A
     // rejected declaration never briefly taps an illegal lone attacker.
+    MTG.OracleV74Static?.pruneAttackers(this,attackers);
     const attackTax = c => this.c21AttackTax(c,c.attacking);
     const annexTax = c => this.bomAnnexTax?.(c,c.attacking)||0;
     const reserved = () => attackers.filter(card => !card.kw('vigilance'));
@@ -8083,7 +8093,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!potential.length) continue;
       // Odric: napadač bira blokove umjesto branioca. Čovjek dobije izbor;
       // AI bira "bez blokova", što je za napadača praktično uvijek ispravno.
-      const chooser = this.untilEffects.find(e => e.kind === 'chooseBlocksFor' && e.who !== dp);
+      const replacementChooserV73 = MTG.oracleBlockingChooserV73?.(this);
+      const chooser = this.untilEffects.find(e => e.kind === 'chooseBlocksFor' && e.who !== dp) ||
+        (replacementChooserV73 ? {who: replacementChooserV73} : null);
       let blocks;
       if (chooser) {
         this.lg(`${chooser.who.name} chooses blockers for ${dp.name} (Odric).`);
@@ -8379,7 +8391,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.blockerCapacity = function (blocker) {
     return blocker.cur.blockAnyNumber ? Infinity : 1 + (blocker.cur.additionalBlocks || 0);
   };
-  G.assignBlockerDamage = function (blocker, attackers, amount, stats = card => ({toughness: card.toughness, damage: card.damage})) {
+  G.assignBlockerDamage = function (blocker, attackers, amount, stats = card => ({toughness: this.lethalDamageThreshold(card), damage: card.damage})) {
     const ordered = [...new Set(attackers)].sort((a, b) => stats(a).toughness - stats(a).damage - stats(b).toughness + stats(b).damage || a.iid - b.iid);
     const assigned = []; let remaining = Math.max(0, amount);
     for (const [index, attacker] of ordered.entries()) {
@@ -8559,12 +8571,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // ne nanosi ništa; sa trampleom sve ide branioc.
       let rem = amt;
       if (blockers.length) {
-        const ordered = blockers.slice().sort((x, y) => (x.cur.toughness - x.damage) - (y.cur.toughness - y.damage));
+        const ordered = blockers.slice().sort((x, y) => (this.lethalDamageThreshold(x) - x.damage) - (this.lethalDamageThreshold(y) - y.damage));
         for (let i = 0; i < ordered.length; i++) {
           const b = ordered[i];
           // CR 510.1c: lethal damage counts damage already marked this turn, so
           // a blocker that is already lethally damaged absorbs nothing more.
-          const remainingLethal = Math.max(0, b.cur.toughness - b.damage);
+          const remainingLethal = Math.max(0, this.lethalDamageThreshold(b) - b.damage);
           const lethal = a.kw('deathtouch') ? Math.min(1, remainingLethal) : remainingLethal;
           let assign = (i === ordered.length - 1 && !a.kw('trample')) ? rem : Math.min(rem, lethal);
           if (a.kw('trample')) assign = Math.min(rem, lethal);

@@ -9,13 +9,13 @@ import {fileURLToPath} from 'node:url';
 // nested physical faces otherwise repeat historical rejection across suites.
 export function fixtureCompiler(compilerVersion){
   const classificationCaches=new Map();
-  const frozenVersion=compilerVersion>63?63:56;
-  const frozen=compilerVersion>frozenVersion?createOracleCompilerCache({directory:fileURLToPath(new URL('../../output/oracle-classifier',import.meta.url)),compilerVersion:frozenVersion}):null;
+  const frozenVersions=compilerVersion>69?[63,69]:[compilerVersion>63?63:56];
+  const frozen=new Map(frozenVersions.filter(version=>compilerVersion>version).map(version=>[version,createOracleCompilerCache({directory:fileURLToPath(new URL('../../output/oracle-classifier',import.meta.url)),compilerVersion:version})]));
   for(let version=10;version<=compilerVersion;version++){
     const values=new Map();
     classificationCaches.set(version,{
-      get(card){const result=values.get(JSON.stringify(card))||(version===frozenVersion?frozen?.get(card):undefined);return result&&structuredClone(result);},
-      set(card,result){values.set(JSON.stringify(card),structuredClone(result));if(version===frozenVersion)frozen?.set(card,result);},
+      get(card){const result=values.get(JSON.stringify(card))||frozen.get(version)?.get(card);return result&&structuredClone(result);},
+      set(card,result){values.set(JSON.stringify(card),structuredClone(result));frozen.get(version)?.set(card,result);},
     });
   }
   return card=>{
