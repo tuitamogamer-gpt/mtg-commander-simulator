@@ -500,7 +500,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             card !== self && card.is('Creature') && !!card.attacking && card.power < self.power,
           aiHint: { goal: 'buff' },
         }],
-        run: async ctx => plusCounter(ctx.g, ctx.targets[0], 1, ctx.you),
+        run: async ctx => {
+          const target=ctx.targets[0];
+          if(!target||target.zone!=='battlefield')return;
+          const targetZoneVersion=target.zoneVersion,before=target.counters['+1/+1']||0;
+          plusCounter(ctx.g,target,1,ctx.you);
+          if(target.zone==='battlefield'&&target.zoneVersion===targetZoneVersion&&(target.counters['+1/+1']||0)>before)
+            await ctx.g.emit('oracleMentoredV67',{player:ctx.you,card:ctx.src,target,sourceZoneVersion:ctx.sourceZoneVersion??ctx.src.zoneVersion,targetZoneVersion});
+        },
       });
       return true;
     }
@@ -518,6 +525,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (kind === 'riot') {
       if (script.etbCounters && script.etbCounters.kind !== '+1/+1') return false;
       chainAsEnters(script, async (game, card) => {
+        if (MTG.OracleV8AbilityLoss.entryCharacteristics(game,card).abilityLossTimestamp>-Infinity) return;
         const choice = await card.ctrl.controller.decide(game, {
           type: 'chooseOption', prompt: `${card.name} — Riot`,
           options: [{ key: 'counter', label: '+1/+1 counter' }, { key: 'haste', label: 'Haste' }],

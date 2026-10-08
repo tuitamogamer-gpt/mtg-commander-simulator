@@ -27,10 +27,10 @@
   const frame=frames.get(game);if(!frame||frame.player!==player||frame.id!==options.oracleImmediateCast)return false;
   if(options.free!==frame.free||options.asThoughAnyColor!==frame.anyColor||options.speed!=='instant'||options.faceDownCast||options.bestow||options.overloaded||options.oracleAlternativeCost)return false;
   return offers(game,player).some(entry=>entry.card===card&&entry.from===(options.from||card.zone)&&
-   ['oraclePrototypeV10','bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
+   ['oraclePrototypeV10','bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','oracleBottomOnGraveyardV67','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
  }
  function openFrame(ctx,cards,effect,helpers){
-  const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{})};
+  const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{}),...(effect.bottomAfter===true?{oracleBottomOnGraveyardV67:true}:{})};
   const filter=effect.filter?helpers.target(effect.filter,[],0,{...ctx.data,oracleX:ctx.so?.x??ctx.x??0,oracleSourceCapture:ctx.oracleSourceCapture||{zoneVersion:ctx.sourceZoneVersion??ctx.src.zoneVersion}}).filter:null;
   const frame={id,player:ctx.you,source:ctx.src,free:effect.free,anyColor:base.asThoughAnyColor,filter,entries:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion,alternatives:alternatives(ctx.g,card,base).map(alt=>effect.exileAfter&&effect.exileTypes?.some(type=>ctx.g.castHasType(card,alt,type))?{...alt,oracleExileOnGraveyard:true}:alt)}))};
   // A paid immediate cast still allows printed alternatives such as Snuff

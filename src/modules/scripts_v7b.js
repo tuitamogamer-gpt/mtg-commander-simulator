@@ -492,7 +492,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         targets: [T.opponent({ prompt: 'To whom?', aiHint: { goal: 'drain' } })],
         run: async ctx => {
           const o = ctx.targets[0];
-          if (!o) return;
+          if (!o||!ctx.g.canPutPlayerCountersV66(o,'poison')) return;
           o.poison = Math.max(o.poison || 0, 9);
           ctx.g.lg(`${o.name} has ${o.poison} poison counters!`);
           if (o.poison >= 10) { o.lost = true; ctx.g.lg(`${o.name} loses (poison)!`); await ctx.g.checkSBA(); }

@@ -42,16 +42,9 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   };
   const prohibitedAbility=(g,p,c)=>g.bf().some(s=>live(s)&&s.def.c14Abolisher&&s.ctrl!==p&&g.turnPlayer===s.ctrl)&&['Artifact','Creature','Enchantment'].some(t=>c?.is?.(t));
   const manaSources=G.manaSources,activateMana=G.activateManaSource;
-  G.manaSources=function(p,...args){return manaSources.call(this,p,...args).filter(e=>!e.card||!prohibitedAbility(this,p,e.card)).map(s=>{
-    if(!s.card?.is('Land'))return s;
-    const hooks=this.bf().filter(c=>live(c)&&c.ctrl===p&&(c.def.c14Sun||c.def.c14Ghast));if(!hooks.length)return s;
-    const bases=s.produce.flatMap(o=>o.ANY?['W','U','B','R','G'].map(color=>({[color]:o.n||1})): [o]);
-    const produce=bases.map(o=>{const next={...o};for(const c of hooks){if(c.def.c14Ghast&&s.card.hasSub('Swamp'))next.B=(next.B||0)+1;if(c.def.c14Sun&&o[c.meta.c14Color]>0)next[c.meta.c14Color]++;}return next;});
-    return {...s,produce,c14BaseMana:bases};
-  });};
+  G.manaSources=function(p,...args){return manaSources.call(this,p,...args).filter(e=>!e.card||!prohibitedAbility(this,p,e.card));};
   G.activateManaSource=function(p,s,chosen,...args){
     if(s.card&&prohibitedAbility(this,p,s.card))return Promise.resolve(false);
-    if(s.c14BaseMana){const i=s.produce.findIndex(o=>['W','U','B','R','G','C','ANY','n'].every(k=>o[k]===chosen?.[k]));if(i<0)return Promise.resolve(false);chosen=s.c14BaseMana[i];s={...s,produce:s.c14BaseMana};}
     return activateMana.call(this,p,s,chosen,...args);
   };
   const castSpell=G.castSpell;
@@ -59,9 +52,10 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   const activatable=G.activatableList,activate=G.activateAbility;
   G.activatableList=function(p,...args){const out=activatable.call(this,p,...args).filter(e=>e.turnFaceUp||!prohibitedAbility(this,p,e.card));
     if(!this.hasSplitSecond()&&!p.lost)for(const emblem of p.emblems)if(emblem.c14Ob&&this.creatures(p).some(c=>this.canSacrifice(c))&&this.canPayMana(p,M.parseCost('{1}{B}'),{card:emblem.source,isAbility:true}))out.push({card:emblem.source,ability:emblem.source.def.abilities[0],idx:0,c14Emblem:emblem});
-    return out;
+    return out.filter(entry=>(M.OracleV20?.handlers||[]).every(handler=>handler.canActivateAbility?.(this,p,entry)!==false));
   };
   G.activateAbility=async function(p,entry,...args){
+    if((M.OracleV20?.handlers||[]).some(handler=>handler.canActivateAbility?.(this,p,entry)===false))return false;
     if(!entry.turnFaceUp&&prohibitedAbility(this,p,entry.card))return false;
     if(!entry.c14Emblem)return activate.call(this,p,entry,...args);
     const emblem=entry.c14Emblem;if(!p.emblems.includes(emblem)||!emblem.c14Ob||entry.card!==emblem.source||entry.ability!==emblem.source.def.abilities[0]||p.lost||this.hasSplitSecond())return false;

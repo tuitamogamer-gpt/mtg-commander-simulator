@@ -49,5 +49,16 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const manaSources=G.manaSources;G.manaSources=function(p,...a){const out=manaSources.call(this,p,...a),n=sources(this,p,'cwwMonument').length;if(!n)return out;return out.map(s=>s.card&&s.m.cost?.tap&&!s.m.viaConvoke?{...s,produce:s.produce.map(o=>o.C>0?{...o,C:o.C+n}:o),cwwMonument:n}:s);};
  const mana=G.activateManaSource;G.activateManaSource=async function(p,s,...a){const r=await mana.call(this,p,s,...a);if(r&&s.card?.def.cwwClocktower)C.add({g:this,you:p},s.card,'time');return r;};
  const attached=G.attach;G.attach=async function(c,h,...args){if(c.def.cwwPaper){const ctx={g:this,src:c,you:c.ctrl};c.meta.cwwPaperType=await C.chooseType(ctx);const names=Object.values(M.DEFS).filter(d=>d.types.includes('Creature')).map(d=>d.name).sort();c.meta.cwwPaperName=await C.option(ctx,names.map(key=>({key,label:key})),'Choose a creature card name');}return attached.call(this,c,h,...args);};
- C.forceFaceUp=async(ctx,c)=>{if(!c.faceDown||!c.meta.faceDownDef)return;const d=c.meta.faceDownDef;c.def=d;c.faceDown=false;delete c.meta.faceDownDef;delete c.meta.faceDownKind;if(d.asTurnFaceUp)await d.asTurnFaceUp(ctx.g,c);ctx.g.recalc();await ctx.g.emit('turnedFaceUp',{card:c,player:c.ctrl,x:0});};
+ C.forceFaceUp=async(ctx,c,expectedZoneVersion)=>{
+  const g=ctx.g,identity=(ctx.targetIdentities||[]).flat().find(row=>row?.kind==='card'&&row.iid===c?.iid),version=expectedZoneVersion===undefined?identity?.zoneVersion??c?.zoneVersion:expectedZoneVersion;
+  if(!g.players.includes(ctx.you)||!c||c.zone!=='battlefield'||!g.battlefield.includes(c)||c.zoneVersion!==version||c.phasedOut||!c.faceDown||!c.meta.faceDownDef)return false;
+  if((M.OracleV20?.handlers||[]).some(handler=>handler.canTurnFaceUp?.(g,c.ctrl,c)===false))return false;
+  const definition=c.mutateState?.faceUpDefinition||c.meta.faceDownDef;
+  if(definition.types.some(type=>type==='Instant'||type==='Sorcery')||M.Mutate?.canTurnFaceUp(c)===false){
+   const parts=c.mutateState?.components||[{card:c,def:definition}],cards=parts.map(row=>Object.assign(Object.create(row.card),{def:row.def,cur:null,faceDown:false,ctrl:c.ctrl}));
+   await g.revealToHuman({cards,kind:'reveal',ctrl:c.ctrl,includeLands:true});
+   return false;
+  }
+  return g.turnFaceUpFromEffectV65(ctx.you,c,version);
+ };
 })();

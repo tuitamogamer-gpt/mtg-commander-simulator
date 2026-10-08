@@ -1272,6 +1272,7 @@ MTG.parseCost = function (str) {
     else if (t.length === 2 && t[1] === 'P') cost.pips.push([t[0], 'PHY']); // phyrexian
     else if (t.length === 2 && COLORS.includes(t[0]) && COLORS.includes(t[1])) cost.pips.push([t[0], t[1]]); // hybrid
     else if (/^2\/[WUBRG]$/.test(t)) cost.pips.push([t[2], 'TWO']);
+    else if (/^[WUBRG]\/[WUBRG]\/P$/.test(t)) cost.pips.push(t.split('/').map(part=>part==='P'?'PHY':part));
     else if (t.includes('/')) {
       const parts = t.split('/');
       if (parts.includes('P')) cost.pips.push([parts[0], 'PHY']);
@@ -1293,7 +1294,7 @@ MTG.costStr = function (cost, xVal) {
   if (cost.x) parts.push(xVal !== undefined ? `X=${xVal}` : '{X}'.repeat(cost.x));
   if (cost.generic) parts.push('{' + cost.generic + '}');
   for (const p of cost.pips) {
-    if (p[1] === 'PHY') parts.push('{' + p[0] + '/P}');
+    if (p.includes('PHY')) parts.push('{' + p.map(part=>part==='PHY'?'P':part).join('/') + '}');
     else if (p.includes('TWO')) parts.push('{2/' + p.find(symbol => COLORS.includes(symbol)) + '}');
     else parts.push('{' + p.join('/') + '}');
   }

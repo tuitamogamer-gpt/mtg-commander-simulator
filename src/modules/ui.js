@@ -2696,8 +2696,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     libraryTopSources(g, player) {
       if (g.onlinePresentation) return (player.presentation.libraryTopSources || []).map(id => g.ref(id)).filter(Boolean);
-      return g.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,g,source) || source.ctrl === player &&
-        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,g,source) || player === this.me && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,g,source))));
+      return [...new Set([...g.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,g,source) || source.ctrl === player &&
+        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,g,source) || player === this.me && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,g,source)))),...(player===this.me?MTG.oracleLibraryTopSourcesV67?.(g,player)||[]:[])])];
     }
 
     visibleLibraryTop(g, player) {

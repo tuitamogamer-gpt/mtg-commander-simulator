@@ -1,0 +1,96 @@
+{
+  "schema": "oracle-source-readonly-audit/v1",
+  "ok": true,
+  "range": {
+    "first": 249,
+    "last": 258,
+    "batches": 10,
+    "rows": 1000
+  },
+  "recordedAt": "2026-10-08T17:31:15.789031+00:00",
+  "evidenceOrigin": {
+    "method": "Exact executed stdin inputs and verbatim completed stdout copied from tool history after execution; no audit rerun.",
+    "originalFilesCreatedDuringExecution": false,
+    "sourceRepairExecution": {
+      "nativeSessionId": 37700,
+      "exitCode": 0
+    },
+    "faceRulesExecution": {
+      "nativeSessionId": 17643,
+      "exitCode": 0
+    },
+    "cwd": "/workspace/mtg-commander-simulator",
+    "invocation": "node --input-type=module - < retained .stdin.mjs artifact"
+  },
+  "source": {
+    "path": "/workspace/scratch/mtg-import/oracle-current-20261007090159.jsonl.gz",
+    "sha256": "53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b",
+    "rows": 38708,
+    "hashMethod": "Actual compressed archive bytes streamed and hashed during completed source/repair audit."
+  },
+  "historicalSource": {
+    "path": "/workspace/scratch/mtg-import/oracle-pinned-20260830090156.jsonl.gz",
+    "sha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "rows": 38627,
+    "hashMethod": "Actual compressed archive bytes streamed and hashed during completed source/repair audit."
+  },
+  "sourceRepairResult": {
+    "readOnly": true,
+    "sourceSha256": "53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b",
+    "sourceRows": 38708,
+    "rawSourceRows": 1000,
+    "faceCards": 112,
+    "sourceFaces": 224,
+    "nestedRawFaces": 169,
+    "runtimeParity": 10,
+    "historicalRepairs": 8,
+    "historicalSourceSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "historicalSourceRows": 38627,
+    "semanticHashes": 16,
+    "printedHashes": 8,
+    "fileHashes": 32,
+    "errors": 0
+  },
+  "faceRulesResult": {
+    "readOnly": true,
+    "multiFaceRulesCoreRows": 112,
+    "completePrintedFaceRules": 224,
+    "normalization": "remove reminder text and recognized ability words only",
+    "differences": []
+  },
+  "methods": [
+    "All 1000 published main raw rows deep-equal production rawCard on unique full pinned source objects; Scryfall IDs and paper/Commander eligibility match.",
+    "All 169 nested raw face representations deep-equal production rawCard(face); generated colorsOverride excluded, and flip faces share printed front mana cost as native layout requires.",
+    "All 112 multiface rulesCore strings equal the complete 224 printed face rules after production reminder-text and recognized ability-word normalization only.",
+    "All ten runtime module bytes equal production moduleSource(report).",
+    "Eight listed historical rows match installed after semantics and original raw source; 16 before/after semantic hashes and eight source oracle-text hashes match manifest.",
+    "All eight historical report/module pairs match 16 after byte hashes; reconstruction changing only listed semantic rows matches 16 before byte hashes."
+  ],
+  "artifacts": {
+    "readonly-source-repair-audit-0258.stdin.mjs": {
+      "path": "/workspace/scratch/mtg-import/next1000-v70/readonly-source-repair-audit-0258.stdin.mjs",
+      "sha256": "f5034747243e30f0e1e4acbcee6d32809379e03bee846e9b154e782d813ab84a",
+      "bytes": 4757
+    },
+    "readonly-source-repair-audit-0258.captured-stdout.json": {
+      "path": "/workspace/scratch/mtg-import/next1000-v70/readonly-source-repair-audit-0258.captured-stdout.json",
+      "sha256": "e4b8550722309ad64dfbbcb5b9b7320975ddd4593eeed4e5d8b8e4b8b18df6bd",
+      "bytes": 422
+    },
+    "readonly-face-rules-audit-0258.stdin.mjs": {
+      "path": "/workspace/scratch/mtg-import/next1000-v70/readonly-face-rules-audit-0258.stdin.mjs",
+      "sha256": "95f70f55fbc14e89c6437965ee278fa27c9cec3436f7ecaf9d9cd150470ce870",
+      "bytes": 1357
+    },
+    "readonly-face-rules-audit-0258.captured-stdout.json": {
+      "path": "/workspace/scratch/mtg-import/next1000-v70/readonly-face-rules-audit-0258.captured-stdout.json",
+      "sha256": "e9899353b315d5d807b10763ab789d244cd503e54375ed19cc772fafc6b382cb",
+      "bytes": 168
+    }
+  },
+  "limitations": [
+    "This is a completed read-only source, face-representation, runtime/report-byte parity and historical-hash audit; it does not execute canonical semantic recompilation or runtime card proofs.",
+    "Official cold canonical provenance remains separate and pending at receipt recording time; no classification cache or duplicate provenance job was launched.",
+    "Captured stdout files preserve actual completed tool output; they are not original process log files."
+  ]
+}

@@ -188,6 +188,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       colorIdentity: (player.colorIdentity || []).slice(),
       ...(player.wlmClaraColor?{wlmClaraColor:player.wlmClaraColor}:{}),
       cityBlessing: !!player.cityBlessing,
+      enduringStory: !!player.enduringStory,
+      maximumHandSizeReductionV64: player.maximumHandSizeReductionV64||0,
+      spellsCastThisGameV64: player.spellsCastThisGameV64??null,
       lcGollumDamaged: !!player.lcGollumDamaged,
       afcDungeon: player.afcDungeon?plainMeta(player.afcDungeon):null, afcDungeonSerial: player.afcDungeonSerial||0, afcCompletedDungeons: player.afcCompletedDungeons||0,
       skipUntapOnce: !!player.skipUntapOnce,
@@ -233,7 +236,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // These kinds are applied only to the battlefield object with their exact
   // iid and zone version.
   const OBJECT_BOUND_KINDS = new Set(['oracleGrantedOperation', 'oracleSourcePump', 'oracleCombatRestriction',
-    'oracleAnimation', 'oracleCharacteristics', 'oracleBasePT', 'oracleLandTypes', 'oracleCopy', 'wlmType', 'cwwFlag']);
+    'oracleAnimation', 'oracleCharacteristics', 'oracleBasePT', 'oracleLandTypes', 'oracleCopy', 'oracleZoneReplacementV64', 'wlmType', 'cwwFlag']);
   // Zone versions only increase, so once that object has moved on or ceased
   // to exist (a dead token), the entry is history, not state, and must not
   // block every later save in the game. Same for a card-specific attack
@@ -284,8 +287,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   // A keyword granted for as long as a permanent stays (token copies that gain
-  // haste, Grave Upheaval). Granted abilities carry compiled closures and
-  // still block a save.
+  // haste, Grave Upheaval). Self death replacements are plain descriptors;
+  // other granted abilities carry compiled closures and still block a save.
   const GRANTED_KEYWORD_FIELDS = new Set(['kind', 'expires', 'iid', 'zoneVersion', 'timestamp', 'field', 'grants', 'keywords', 'oracleLayerTimestamp']);
   function isPlainGrantedKeywords(effect) {
     return !!effect && effect.kind === 'oracleGrantedOperation' && Object.keys(effect).every(key => GRANTED_KEYWORD_FIELDS.has(key)) &&
@@ -294,15 +297,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       Number.isSafeInteger(effect.zoneVersion) && effect.zoneVersion >= 0 &&
       (effect.timestamp === undefined || Number.isSafeInteger(effect.timestamp) && effect.timestamp > 0 &&
         effect.timestamp <= MTG.MAX_RESTORED_TIMESTAMP) &&
-      ['extraAbilities', 'extraTriggers', 'extraMana'].includes(effect.field) &&
-      Array.isArray(effect.grants) && effect.grants.length === 0 &&
+      ['extraAbilities', 'extraTriggers', 'extraMana', 'extraZoneReplacements'].includes(effect.field) &&
+      Array.isArray(effect.grants) && (effect.grants.length === 0 || effect.field==='extraZoneReplacements' &&
+        effect.grants.length<=32 && effect.grants.every(grant=>{
+          if(grant?.scope!=='self'||grant.from!=='battlefield'||grant.to!=='exile'||grant.creatureOnly!==true)return false;
+          try{return MTG.OracleV8ZoneReplacements.compile(grant)===grant;}catch{return false;}
+        })) &&
       Array.isArray(effect.keywords) && effect.keywords.length <= 32 &&
       effect.keywords.every(keyword => typeof keyword === 'string' && keyword.length <= 64);
   }
-  const captureGrantedKeywords = effect => ({...effect, grants: [], keywords: effect.keywords.slice()});
+  const captureGrantedKeywords = effect => ({...effect, grants: effect.grants.map(grant=>({...grant})), keywords: effect.keywords.slice()});
   function currentGrantedKeywords(game) {
     const versions = new Map(game.battlefield.map(card => [card.iid, card.zoneVersion]));
     return game.untilEffects.filter(effect => isPlainGrantedKeywords(effect) && versions.get(effect.iid) === effect.zoneVersion);
+  }
+
+  const OBJECT_ZONE_FIELDS=new Set(['kind','iid','zoneVersion','replacement','expires','timestamp','oracleLayerTimestamp']);
+  function isPlainObjectZoneReplacement(effect){
+    return !!effect&&effect.kind==='oracleZoneReplacementV64'&&Object.keys(effect).every(key=>OBJECT_ZONE_FIELDS.has(key))&&
+      effect.replacement==='leave'&&effect.expires==='object'&&Number.isSafeInteger(effect.iid)&&effect.iid>0&&
+      Number.isSafeInteger(effect.zoneVersion)&&effect.zoneVersion>=0&&validLayerTimestamp(effect)&&
+      (effect.timestamp===undefined||Number.isSafeInteger(effect.timestamp)&&effect.timestamp>0&&effect.timestamp<=MTG.MAX_RESTORED_TIMESTAMP)&&
+      (effect.timestamp!==undefined||effect.oracleLayerTimestamp!==undefined);
+  }
+  function currentObjectZoneReplacements(game){
+    const versions=new Map(game.battlefield.map(card=>[card.iid,card.zoneVersion]));
+    return game.untilEffects.filter(effect=>isPlainObjectZoneReplacement(effect)&&versions.get(effect.iid)===effect.zoneVersion);
   }
 
   const BASE_PT_FIELDS = new Set(['kind', 'iid', 'zoneVersion', 'timestamp', 'expires', 'power', 'toughness', 'keywords', 'temporary']);
@@ -358,12 +378,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
     const versions = cardVersions(game);
     const grantedKeywords = new Set(currentGrantedKeywords(game));
+    const objectZoneReplacements=new Set(currentObjectZoneReplacements(game));
     const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect) && !isPlainLandTypes(effect) &&
-      !isPlainEnchantmentReturn(effect) && !isPlainAttackRestriction(effect) && !grantedKeywords.has(effect) && !isInertEffect(effect, versions));
+      !isPlainEnchantmentReturn(effect) && !isPlainAttackRestriction(effect) && !grantedKeywords.has(effect) && !objectZoneReplacements.has(effect) && !isInertEffect(effect, versions));
     if (lasting.length) blockers.push(`${lasting.length} lasting effect(s)`);
     if (currentBasePTEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many base power/toughness effects');
     if (currentLandTypeEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many land type effects');
     if (currentEnchantmentReturns(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many enchantment return effects');
+    if(objectZoneReplacements.size>MAX_BASE_PT_EFFECTS)blockers.push('too many object zone replacements');
     if (game.delayed.length) blockers.push(`${game.delayed.length} delayed trigger(s)`);
     const emblems = game.players.reduce((sum, player) => sum + (player.emblems || []).length, 0);
     if (emblems) blockers.push(`${emblems} emblem(s)`);
@@ -446,6 +468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       enchantmentReturns: currentEnchantmentReturns(game).map(captureEnchantmentReturn),
       attackRestrictions: currentAttackRestrictions(game).map(captureAttackRestriction),
       grantedKeywords: currentGrantedKeywords(game).map(captureGrantedKeywords),
+      objectZoneReplacements: currentObjectZoneReplacements(game).map(effect=>({...effect})),
       cards,
     };
   }
@@ -501,6 +524,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const grantedKeywords = snapshot.grantedKeywords ?? [];
     assert(Array.isArray(grantedKeywords) && grantedKeywords.length <= MAX_BASE_PT_EFFECTS &&
       grantedKeywords.every(isPlainGrantedKeywords), 'invalid granted keywords.');
+    const objectZoneReplacements=snapshot.objectZoneReplacements??[];
+    assert(Array.isArray(objectZoneReplacements)&&objectZoneReplacements.length<=MAX_BASE_PT_EFFECTS&&
+      objectZoneReplacements.every(isPlainObjectZoneReplacement),'invalid object zone replacements.');
     // Leave ample exact-integer headroom for future cards/effects. A malformed
     // save must never poison the process-wide clock near MAX_SAFE_INTEGER.
     assert(Array.isArray(snapshot.cards) && snapshot.cards.every(card => card.timestamp === undefined ||
@@ -618,6 +644,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = byIid.get(effect.iid);
       if (card?.zone === 'battlefield' && card.zoneVersion === effect.zoneVersion) game.untilEffects.push(captureGrantedKeywords(effect));
     }
+    for(const effect of objectZoneReplacements){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push({...effect});}
 
     for (const [index, saved] of snapshot.players.entries()) {
       const player = game.players[index];
@@ -634,6 +661,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.colorIdentity = (saved.colorIdentity || []).slice();
       if(saved.wlmClaraColor)player.wlmClaraColor=saved.wlmClaraColor;
       player.cityBlessing = saved.cityBlessing;
+      player.enduringStory = !!saved.enduringStory;
+      player.maximumHandSizeReductionV64 = Number.isSafeInteger(saved.maximumHandSizeReductionV64)&&saved.maximumHandSizeReductionV64>=0?saved.maximumHandSizeReductionV64:0;
+      // Earlier snapshots did not retain whole-game casting history. Keep
+      // that unknown state distinct from a verified zero first-spell count.
+      player.spellsCastThisGameV64 = Number.isSafeInteger(saved.spellsCastThisGameV64)&&saved.spellsCastThisGameV64>=0?saved.spellsCastThisGameV64:null;
       player.lcGollumDamaged=!!saved.lcGollumDamaged;
       player.afcDungeon=saved.afcDungeon||null; player.afcDungeonSerial=saved.afcDungeonSerial||0; player.afcCompletedDungeons=saved.afcCompletedDungeons||0;
       player.skipUntapOnce = saved.skipUntapOnce;
@@ -693,7 +725,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       active: game.turnPlayer ? game.turnPlayer.idx : null,
       monarch: game.monarch ? game.monarch.idx : null,
       players: game.players.map(player => ({
-        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, rad: player.counters?.rad || 0, lost: !!player.lost,
+        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, rad: player.counters?.rad || 0, lost: !!player.lost, enduringStory: !!player.enduringStory, maximumHandSizeReductionV64: player.maximumHandSizeReductionV64||0, spellsCastThisGameV64: player.spellsCastThisGameV64??null,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
         zones: ['library', 'hand', 'graveyard', 'exile', 'command'].map(zone =>
           player[zone].map(card => `${card.name}#${card.iid}`).sort().join(',')),
@@ -713,6 +745,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       enchantmentReturns: currentEnchantmentReturns(game).map(captureEnchantmentReturn),
       attackRestrictions: currentAttackRestrictions(game).map(captureAttackRestriction).map(effect => JSON.stringify(effect)).sort(),
       grantedKeywords: currentGrantedKeywords(game).map(captureGrantedKeywords),
+      objectZoneReplacements: currentObjectZoneReplacements(game).map(effect=>({...effect})),
     });
   };
 })();

@@ -1,5 +1,5 @@
 ((M)=>{
- const keywordKinds=new Set(['flying','first strike','double strike','deathtouch','lifelink','menace','reach','trample','vigilance','hexproof','indestructible']);
+ const keywordKinds=new Set(['flying','first strike','double strike','deathtouch','lifelink','menace','reach','trample','vigilance','hexproof','indestructible','decayed']);
  const kinds=new Set(['+1/+1','-1/-1','divinity','crystal','charge',...keywordKinds]);
  const cast=card=>card.castMeta?.wasCast?card.castMeta:null;
  function manaColors(card){return new Set((cast(card)?.paymentColors||[]).filter(color=>'WUBRG'.includes(color))).size;}

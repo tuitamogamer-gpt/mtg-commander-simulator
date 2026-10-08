@@ -39,6 +39,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return [...legalTargets.call(this,{...clean,zone:'battlefield',what:'permanent'},src,p,opts),...legalTargets.call(this,{...clean,what:'player'},src,p,opts)];
   };
   const playerCounter=async(ctx,p,kind)=>{
+    if(!ctx.g.canPutPlayerCountersV66(p,kind))return;
     if(kind==='energy')await M.OracleV8Energy.gain(ctx.g,p,1,ctx.src);
     else if(kind==='poison')p.poison+=M.POM?.playerCounterBonus(ctx.g,p,1)||1;
     else p.counters[kind]=(p.counters[kind]||0)+(M.POM?.playerCounterBonus(ctx.g,p,1)||1);

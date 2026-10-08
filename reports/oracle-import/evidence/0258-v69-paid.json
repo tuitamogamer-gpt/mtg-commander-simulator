@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "payload": {
+    "schemaVersion": 1,
+    "status": "passed",
+    "stage": "V69 actual installed canonical paid whole-card rules",
+    "started": "2026-10-08T17:16:50.491Z",
+    "completed": "2026-10-08T17:17:11.936Z",
+    "compilerVersion": 69,
+    "compilerFingerprint": "5716bfe4c254a56f5a57d6950f24ed55cc655005b9b8621656c2f95a12e7482c",
+    "physicalCards": 160,
+    "installedPhysicalCards": 159,
+    "surplusSourceNames": [
+      "Teachings of the Kirin // Kirin-Touched Orochi"
+    ],
+    "tests": 640,
+    "passed": 640,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "counts": {
+      "human": {
+        "positive": 160,
+        "negative": 160
+      },
+      "ai": {
+        "positive": 160,
+        "negative": 160
+      }
+    },
+    "assertions": 15890,
+    "canonicalInstalledEquivalence": [
+      "oracleId",
+      "scryfallId",
+      "semanticClass",
+      "raw",
+      "catalog",
+      "implementedKeywords",
+      "oracleContracts",
+      "implementation"
+    ],
+    "log": "v69-current-installed-640.log",
+    "logSha256": "093bf07e09252d5b22c536cdee95203dd3c141da69f7ff79ab4ebc790b14c1c5",
+    "files": {
+      "compiler": "2458dab26ee7736a66e23c023bf7a52e791914062437ab9c507d864e51514a17",
+      "fixture": "6c337cff69f34aa5b4b11b58e9fd3c6a0f8da5e1459c47297346c3fa41c36019",
+      "runtime": "5fbd13a497097088027f3da6e613f8f236492134b21b43270282d5473867dec0",
+      "proof": "dd8cc5ee967ac4e8e2c62d197cd1dfec2acda0e15587d5f5ed95906a0a0f613e",
+      "test": "995c8d4e8bb3e8987b0d6b7f563f845879f2904b9c979508b273d5cc1a6facc7"
+    },
+    "failures": []
+  },
+  "sha256": "eb60abcd97b451846187a20849c8b597ba95a4357ffd8d844435c3f60354665f"
+}

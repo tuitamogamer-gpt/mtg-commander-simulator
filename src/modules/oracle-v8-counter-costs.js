@@ -2,7 +2,7 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  function compile(info,filter){
-  if(MTG.OracleV8VariableCounterCosts?.variable(info))return MTG.OracleV8VariableCounterCosts.compile(info);
+  if(MTG.OracleV8VariableCounterCosts?.variable(info))return MTG.OracleV8VariableCounterCosts.compile(info,filter);
   if(Object.keys(info).some(key=>!['n','kinds','self','among','filter'].includes(key))||!Number.isInteger(info.n)||info.n<1||info.n>10||typeof info.self!=='boolean'||typeof info.among!=='boolean'||info.self&&info.among||!info.self&&typeof filter!=='function'||
    info.kinds!==null&&(!Array.isArray(info.kinds)||!info.kinds.length||info.kinds.some(kind=>typeof kind!=='string'||!kind)))throw Error('Unsupported Oracle counter payment');
   return{...info,filter};

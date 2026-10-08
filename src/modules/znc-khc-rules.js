@@ -29,6 +29,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     Object.assign(card.meta, {foretold: true, foretoldTurn: this.turnNo, foretoldZoneVersion: card.zoneVersion});
     if (extra.granted) card.meta.zkForetell = {version: card.zoneVersion};
     if (!extra.granted) p.turnState.zkForetold = (p.turnState.zkForetold || 0) + 1;
+    this.recalc();
     return true;
   };
   // Exiling several objects in one instruction gives Ranar one trigger.

@@ -94,7 +94,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     invariant(cost.randomV18===undefined||cost.kind==='discard'&&cost.randomV18===true&&(cost.quantity?.min===1&&cost.quantity?.max===1||cost.quantity?.xV19===true),`${cost.id} invalid random discard cost`);
     if(cost.object?.qualifier) {
       const q=cost.object.qualifier;
-      invariant(q && typeof q==='object' && !Array.isArray(q) && Object.keys(q).every(key=>['subtypes','colors','notTypes','supertypes','nontoken','tapped','unblockedAttacker','bargainV10'].includes(key)), `${cost.id} unsupported cost qualifier`);
+      invariant(q && typeof q==='object' && !Array.isArray(q) && Object.keys(q).every(key=>['subtypes','colors','notTypes','supertypes','nontoken','tapped','unblockedAttacker','bargainV10','minimumPowerV64','topBlackV64'].includes(key)), `${cost.id} unsupported cost qualifier`);
+      invariant(q.minimumPowerV64===undefined||Number.isSafeInteger(q.minimumPowerV64)&&q.minimumPowerV64>=0&&cost.kind==='sacrifice'&&cost.object.kind==='permanent'&&cost.object.types?.length===1&&cost.object.types[0]==='Creature',`${cost.id} invalid minimum power sacrifice qualifier`);
+      invariant(q.topBlackV64===undefined||q.topBlackV64===3&&cost.kind==='exileGraveyard'&&cost.object.kind==='card'&&cost.quantity?.min===3&&cost.quantity?.max===3&&q.colors?.length===1&&q.colors[0]==='B',`${cost.id} invalid top black graveyard qualifier`);
       invariant(q.bargainV10===undefined||q.bargainV10===true&&cost.kind==='sacrifice',`${cost.id} invalid bargain qualifier`);
       for(const key of ['subtypes','colors','notTypes','supertypes'])if(q[key]!==undefined)
         invariant(Array.isArray(q[key]) && q[key].length>0 && q[key].every(value=>typeof value==='string'&&value.length) && new Set(q[key]).size===q[key].length, `${cost.id} invalid ${key}`);
@@ -611,6 +613,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const q=object.qualifier;
     if(q) {
       if(q.bargainV10&&!card.isToken&&!card.is('Artifact')&&!card.is('Enchantment'))return false;
+      if(q.minimumPowerV64!==undefined&&!(card.power>=q.minimumPowerV64))return false;
+      if(q.topBlackV64!==undefined&&(card.zone!=='graveyard'||!card.owner?.graveyard.filter(candidate=>candidate.colors.includes('B')).slice(-q.topBlackV64).includes(card)))return false;
       if(q.subtypes && !q.subtypes.every(type=>card.hasSub(type)))return false;
       if(q.colors && !q.colors.every(color=>card.colors.includes(color)))return false;
       if(q.notTypes?.some(type=>card.is(type)))return false;

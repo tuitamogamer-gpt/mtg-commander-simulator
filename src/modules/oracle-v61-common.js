@@ -22,8 +22,8 @@
  async function number(ctx,p,max,prompt,min=0){const n=await p.controller.decide(ctx.g,{type:'chooseX',min,max,prompt:ctx.src.name+': '+prompt,aiHint:{kind:'maxX',src:ctx.src}});if(!Number.isInteger(n)||n<min||n>max)throw Error('Invalid v61 number');return n;}
  const previousAdditional=M.OracleV20Permanents.additionalTriggers;
  const collect=M.Game.prototype.collectTriggers;M.Game.prototype.collectTriggers=function(event,data,...rest){const rows=collect.call(this,event,data,...rest);if(!['etb','landfall'].includes(event)||!data.card)return rows;const sources=this.bf().filter(c=>!c.cur?.abilitiesDisabled&&c.def.oracleEntrySuppressionV61);return rows.filter(r=>!(r.history||r.card.zone==='battlefield')||!sources.some(s=>s.ctrl!==(r.history?.ctrl||r.card.ctrl)));};
- M.OracleV20Permanents.additionalTriggers=function(g,card,event,data,history){
-  const n=previousAdditional.call(this,g,card,event,data,history);
+ M.OracleV20Permanents.additionalTriggers=function(g,card,event,data,history,trigger){
+  const n=previousAdditional.call(this,g,card,event,data,history,trigger);
   const departed=(c,snap)=>snap||c?.battlefieldLKI?.get(c.zoneVersion-1);
   const creatureDeath=event==='dies'&&(data.snap?.types||[]).includes('Creature')||event==='lto'&&data.died&&(data.snap?.types||[]).includes('Creature')||event==='c14EnteredGraveyard'&&data.card?.meta.oracleGraveEntryV22?.fromBattlefield&&(departed(data.card)?.types||[]).includes('Creature')||event==='cardsToGraveyard'&&(data.cards||[]).some((c,i)=>(data.froms?.[i]||data.from)==='battlefield'&&(departed(c)?.types||[]).includes('Creature'));
   const attack=['attacks','attackersDeclared'].includes(event);

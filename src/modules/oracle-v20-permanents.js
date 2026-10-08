@@ -127,7 +127,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
    const prior=script.asEnters,filter=h.genericTargetSpec(op.filter,[],0).filter;script.asEnters=async(game,source)=>{if(prior)await prior(game,source);const from=game.bf().filter(card=>filter(game,card,source.ctrl,source)),versions=new Map(from.map(card=>[card,card.zoneVersion])),choice=await source.ctrl.controller.decide(game,{type:'chooseCards',from,min:op.optional?0:Math.min(1,from.length),max:Math.min(1,from.length),prompt:source.name+': choose a nonland permanent',aiHint:{kind:'exile',goal:'removal',src:source}});if(!Array.isArray(choice)||choice.length>1||choice.some(card=>!from.includes(card)||card.zoneVersion!==versions.get(card)))throw Error('Invalid chosen permanent');if(choice.length)source.meta.oracleChosenObjectV20={version:source.zoneVersion,iid:choice[0].iid,objectVersion:choice[0].zoneVersion};};return true;
   }
   if(op.kind==='generic-trigger'&&op.permanentDuringCombatV20){const trigger=h.compileGenericTrigger(op),prior=trigger.filter;trigger.filter=(game,source,data)=>game.phase==='combat'&&prior(game,source,data);h.triggers.push(trigger);return true;}
-  if(op.kind==='permanent-combat-tax-v20'){h.statics.push({oracleOperation:op,apply(game,source){(source.cur.oracleCombatTaxesV20||=[]).push(op);}});return true;}
+  if(op.kind==='permanent-combat-tax-v20'){h.statics.push({oracleOperation:op,apply(game,source){if(!op.condition||h.genericCondition(game,source,op.condition,source.ctrl))(source.cur.oracleCombatTaxesV20||=[]).push(op);}});return true;}
   if(op.kind==='permanent-choose-card-type-v20'){
    const prior=script.asEnters;script.asEnters=async(game,source)=>{
     if(prior)await prior(game,source);
@@ -175,7 +175,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }
   if(op.kind==='permanent-trigger-doubler-v20'){
    const filter=op.filter&&h.genericTargetSpec(op.filter,[],0).filter,entryFilter=op.entryFilter&&h.genericTargetSpec(op.entryFilter,[],0).filter;
-   (script.oracleTriggerDoublersV20||=[]).push((game,self,card,event,data)=>card.ctrl===self.ctrl&&live(card)&&(!op.other||card.iid!==self.iid)&&(op.attached?self.attachedTo===card.iid:entryFilter?['etb','landfall'].includes(event)&&!!data.card&&entryFilter(game,data.card,self.ctrl,self):filter(game,card,self.ctrl,self)));return true;
+   (script.oracleTriggerDoublersV20||=[]).push((game,self,card,event,data)=>(!op.condition||h.genericCondition(game,self,op.condition,self.ctrl))&&card.ctrl===self.ctrl&&live(card)&&(!op.other||card.iid!==self.iid)&&(op.attached?self.attachedTo===card.iid:entryFilter?['etb','landfall'].includes(event)&&!!data.card&&entryFilter(game,data.card,self.ctrl,self):filter(game,card,self.ctrl,self)));return true;
   }
   if(op.kind==='permanent-counter-replacement-v20'){
    const previous=script.plusCountersAdjust,filter=op.filter&&h.genericTargetSpec(op.filter,[],0).filter;
@@ -235,7 +235,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   if(name==='dies')return [data.snap,...(game._simultaneousLeaveSources||[]).map(row=>row.snap)].some(s=>s&&!s.abilitiesDisabled&&s.def.oracleCreatureEventSuppressionV20);
   return false;
  }
- function additionalTriggers(game,card,event,data,history){
+ function additionalTriggers(game,card,event,data,history,trigger){
   const observed=asSnapshot(card,history),sources=new Map(game.bf().map(c=>[c.iid,{card:c}]));
   if(departureEvents.has(event)){
    for(const row of game._simultaneousLeaveSources||[])sources.set(row.card.iid,row);
@@ -244,7 +244,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   let count=0;
   for(const row of sources.values()){
    const self=asSnapshot(row.card,row.snap);if(!active(self))continue;
-   for(const match of self.def.oracleTriggerDoublersV20||[])if(match(game,self,observed,event,data))count++;
+   for(const match of self.def.oracleTriggerDoublersV20||[])if(match(game,self,observed,event,data,trigger))count++;
   }
   return count;
  }
@@ -302,7 +302,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   // manufacturing another ability on every recalculation.
   while(pending.length){const independent=pending.filter(row=>!pending.some(other=>other!==row&&other.receivers.some(card=>row.donors.includes(card))));const row=(independent.length?independent:pending).sort((a,b)=>a.source.timestamp-b.source.timestamp)[0];pending.splice(pending.indexOf(row),1);
    const grants=row.donors.map(donor=>({donor,...borrowableAbilities(donor)}));
-   for(const receiver of row.receivers)inAbilityLayer(row.source.timestamp,()=>{for(const {donor,abilities,mana}of grants){if(donor===receiver)continue;receiver.cur.extraAbilities.push(...abilities.filter(ability=>!row.op.excludeLoyalty||ability.loyalty===undefined).map((ability,i)=>borrowedAbility(ability,row.source,receiver,donor,i,'ability',row.op.once)));if(!row.op.excludeMana)receiver.cur.extraMana.push(...mana.map((ability,i)=>borrowedAbility(ability,row.source,receiver,donor,i,'mana',row.op.once)));}});
+   for(const receiver of row.receivers)inAbilityLayer(row.source.timestamp,()=>{for(const {donor,abilities,mana}of grants){if(donor===receiver)continue;receiver.cur.extraAbilities.push(...abilities.filter(ability=>(!row.op.excludeLoyalty||ability.loyalty===undefined)&&(!row.op.onlyLoyaltyV69||ability.loyalty!==undefined)).map((ability,i)=>borrowedAbility(ability,row.source,receiver,donor,i,'ability',row.op.once)));if(!row.op.excludeMana)receiver.cur.extraMana.push(...mana.map((ability,i)=>borrowedAbility(ability,row.source,receiver,donor,i,'mana',row.op.once)));}});
   }
  }
  function discardReplacements(game,card,to,snap,opts){

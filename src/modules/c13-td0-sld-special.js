@@ -66,8 +66,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const costs = G.faceUpCosts;
   G.faceUpCosts = function (c) {const out = costs.call(this, c); return c.meta.faceDownKind === 'c13Mask' ? out.filter(r => r.kind !== 'mana cost') : out;};
   C.maskReveal = (g, c) => {
-    if (!c?.faceDown || c.meta.faceDownKind !== 'c13Mask' || c.zone !== 'battlefield') return false;
+    if (!c?.faceDown || c.meta.faceDownKind !== 'c13Mask' ||
+      !g.canTurnFaceUpFromEffectV65(c.ctrl, c, c.zoneVersion) || M.Mutate?.prepareFaceUp(g, c) === false) return false;
     const def = c.meta.faceDownDef; c.def = def; c.faceDown = false; delete c.meta.faceDownDef; delete c.meta.faceDownKind;
+    M.Mutate?.finishFaceUp(c);
     g.recalc();
     const pending = (async () => {if (def.asTurnFaceUp) await def.asTurnFaceUp(g, c); await g.emit('turnedFaceUp', {card: c, player: c.ctrl, x: 0});})();
     (g._pendingRuleEvents ||= []).push(pending.then(() => null, error => ({error})));

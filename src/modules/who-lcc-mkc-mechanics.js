@@ -29,7 +29,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  C.reanimationAuraLegal=(g,a,h)=>{
   if(!a.def.wlmAnimate&&!a.def.wlmNecromancy)return undefined;
   const r=a.meta.wlmReanimated;if(!r)return a.def.wlmAnimate?!!h&&h.zone==='graveyard'&&h.is('Creature'):undefined;
-  return !!h&&h.iid===r.iid&&h.zoneVersion===r.version&&h.zone==='battlefield'&&h.is('Creature')&&!a.is('Creature')&&!g.isProtectedFrom(h,a);
+  return !!h&&h.iid===r.iid&&h.zoneVersion===r.version&&h.zone==='battlefield'&&h.is('Creature')&&!a.is('Creature')&&!g.isProtectedFrom(h,a,{attachmentCheckV66:true});
  };
  const attach=G.attach;G.attach=async function(a,h,...args){if(a.def.wlmAnimate||a.def.wlmNecromancy){if(!C.reanimationAuraLegal(this,a,h))return false;M.C1516.detach(this,a);a.attachedTo=h.iid;if(!h.attachments.includes(a.iid))h.attachments.push(a.iid);this.recalc();return true;}return attach.call(this,a,h,...args);};
  const entry=M.C14.entry;M.C14.entry=async(g,c,opts)=>{

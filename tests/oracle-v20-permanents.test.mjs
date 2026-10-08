@@ -7,9 +7,11 @@ import {context,put,settle} from './helpers/oracle-v8-fixtures.mjs';
 import {assertGameStateInvariants} from './helpers/game-state-invariants.mjs';
 const rows=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v20-permanents.json',import.meta.url),'utf8'));
 const M=loadEngine(),absent=rows.filter(c=>!M.DEFS[c.name]);
-const plan=createImportPlan({cards:absent,bulk:{type:'oracle_cards'},sequence:9946,limit:absent.length,compilerVersion:20});
-assert.equal(plan.report.cards.length,absent.length,absent.filter(c=>!plan.report.cards.some(r=>r.raw.name===c.name)).map(c=>[c.name,semanticClass(c,{compilerVersion:20})]));
-M.registerOracleBatch(plan.report);M.initData(M.RAW_DATA);
+if(absent.length){
+ const plan=createImportPlan({cards:absent,bulk:{type:'oracle_cards'},sequence:9946,limit:absent.length,compilerVersion:20});
+ assert.equal(plan.report.cards.length,absent.length,absent.filter(c=>!plan.report.cards.some(r=>r.raw.name===c.name)).map(c=>[c.name,semanticClass(c,{compilerVersion:20})]));
+ M.registerOracleBatch(plan.report);M.initData(M.RAW_DATA);
+}
 const choose=(p,fn)=>{const prior=p.controller.decide.bind(p.controller);p.controller.decide=(g,q)=>fn(g,q)??prior(g,q);};
 const fund=p=>{for(const c of ['W','U','B','R','G','C'])p.pool[c]=30;};
 const sturdy=(f,p,name='Grizzly Bears')=>{const c=put(M,f.game,p,name);c.def={...c.def,toughness:'30'};f.game.recalc();return c;};
@@ -18,7 +20,7 @@ test('v20 permanent source rows remain exact and unknown trailing rules reject t
 });
 for(const role of ['human','ai']){
  test(role+': graveyard return triggers preserve cast origin and recheck an intervening sole-creature condition',async()=>{
-  const f=context(M,role),{game,a}=f;fund(a);const source=put(M,game,a,'Prized Amalgam','graveyard'),crawler=put(M,game,a,'Gravecrawler','graveyard');put(M,game,a,'Walking Corpse');assert.equal(await game.castSpell(a,crawler,{from:'graveyard'}),true);await settle(game);assert.equal(crawler.zone,'battlefield');assert.equal(crawler.meta._enteredFromZone,'stack');assert.equal(source.zone,'graveyard');assert.equal(game.delayed.length,1,'casting a creature from your graveyard is independently sufficient');await game.emit('endStep',{player:a});await settle(game);assert.equal(source.zone,'battlefield');assert.equal(source.tapped,true);
+  const f=context(M,role),{game,a}=f;fund(a);const source=put(M,game,a,'Prized Amalgam','graveyard'),crawler=put(M,game,a,'Gravecrawler','graveyard');put(M,game,a,'Walking Corpse');const castOffer=game.castableList(a).find(row=>row.card===crawler&&row.from==='graveyard');assert.ok(castOffer,'the live Zombie grants a native paid graveyard cast');assert.equal(await game.castSpell(a,crawler,castOffer),true);await settle(game);assert.equal(crawler.zone,'battlefield');assert.equal(crawler.meta._enteredFromZone,'stack');assert.equal(source.zone,'graveyard');assert.equal(game.delayed.length,1,'casting a creature from your graveyard is independently sufficient');await game.emit('endStep',{player:a});await settle(game);assert.equal(source.zone,'battlefield');assert.equal(source.tapped,true);
   const nether=put(M,game,a,'Nether Spirit','graveyard');await game.emit('upkeep',{player:a});await game.flushTriggers();assert.ok(game.stack.some(row=>row.srcCard===nether));await game.move(crawler,'graveyard');await settle(game);assert.equal(nether.zone,'graveyard','a second creature arriving before resolution stops the return');await game.move(crawler,'exile');await game.emit('upkeep',{player:a});await settle(game);assert.equal(nether.zone,'battlefield');assertGameStateInvariants(game);
  });
  test(role+': Ichorid can decline the graveyard exile without moving either card',async()=>{

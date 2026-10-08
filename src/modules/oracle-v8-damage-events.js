@@ -1,8 +1,13 @@
 ((M)=>{
+ M.oracleDamageSourceSnapshotV66=(game,source,snap)=>{
+  if(!snap)return snap;let colors=snap.colors||source?.colors||[];
+  for(const handler of M.OracleV20?.handlers||[]){const next=handler.damageSourceColors?.(game,source,{...snap,colors});if(next!==undefined){if(!Array.isArray(next)||next.some(color=>!'WUBRG'.includes(color)))throw Error('Invalid damage source colors');colors=next.slice();}}
+  return colors===snap.colors?snap:{...snap,colors};
+ };
  function snapshot(game,object){
   if(!(object instanceof M.CardInst))return null;
   const snap=game.snapshot(object,false);
-  return{...snap,zone:object.zone,owner:object.owner,attachedTo:object.attachedTo,modified:game.isModified?.(object)??(Object.values(object.counters||{}).some(n=>n>0)||(object.attachments||[]).some(iid=>{const c=game.byIid(iid);return c?.hasSub('Equipment')||c?.hasSub('Aura')&&c.ctrl===object.ctrl;})),basePower:object.cur?.basePower??object.def.power};
+  return{...snap,zone:object.zone,owner:object.owner,attachedTo:object.attachedTo,damage:object.damage,modified:game.isModified?.(object)??(Object.values(object.counters||{}).some(n=>n>0)||(object.attachments||[]).some(iid=>{const c=game.byIid(iid);return c?.hasSub('Equipment')||c?.hasSub('Aura')&&c.ctrl===object.ctrl;})),basePower:object.cur?.basePower??object.def.power};
  }
  function view(object,snap){
   if(!snap)return object;
@@ -23,6 +28,7 @@
    const types=['Artifact','Battle','Creature','Enchantment','Instant','Sorcery','Land','Planeswalker','Kindred','Tribal'].filter(type=>game.castHasType(captured,cast,type));
    sourceSnap={...sourceSnap,ctrl:spell.ctrl,types,subtypes:adventure?[cast.omen?'Omen':'Adventure']:game.castSubtypesV16(captured,cast),super:adventure?[]:definition.super||[],colors:adventure?M.colorsOfCost(adventure.cost||adventure.altCostStr||''):definition.colorsOverride||src.castMeta?.spellColors||M.colorsOfCost(definition.cost||''),mv:game.stackSpellManaValue({...spell,card:captured})};
   }
+  sourceSnap=M.oracleDamageSourceSnapshotV66(game,src,sourceSnap);
   return{src,target,n,combat:!!opts.combat,monarchAtDamage:opts._damageBatch?opts._damageBatch.monarch:game.monarch,sourceSnap,targetSnap,spell:!!spell||src?.zone==='stack',sourceVersion:sourceSnap?.zoneVersion??src?.zoneVersion,targetVersion:target?.zoneVersion};
  }
  async function emit(game,hits){

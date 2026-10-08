@@ -71,6 +71,7 @@
   }
 
   function setFace(card, key) {
+    if(card.zone==='battlefield'&&card.cur?.cantTransformV66&&key!==card.oracleFace)return false;
     const def = faceDefinition(physical(card), key);
     if (!def) return false;
     card.oracleFace = key;
@@ -158,8 +159,9 @@
     return playableFaces(faces).filter(face => {
       if (!face.def.types.includes('Land')) return false;
       const candidate = view(card, face.key);
+      if((M.OracleV20?.handlers||[]).some(handler=>handler.canPlayLand?.(game,player,card,{oracleFace:face.key,definition:face.def,opts:{oracleFace:face.key}})===false))return false;
       if (from === 'hand') return mine && player.hand.includes(card);
-      if (from === 'graveyard') return mine && player.graveyard.includes(card) && (M.oracleGravePlayV60?.(game,player,card)||game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && (source.def.playLandsFromGraveyard || game.turnPlayer === player && source.def.grantsGraveyardPermanentTypes && !(player.turnState.gravePermanentTypesUsed || []).includes('Land'))));
+      if (from === 'graveyard') return mine && player.graveyard.includes(card) && (M.oracleGravePlayV60?.(game,player,card)||game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && ((typeof source.def.playLandsFromGraveyard==='function'?source.def.playLandsFromGraveyard(game,source,player):source.def.playLandsFromGraveyard) || game.turnPlayer === player && source.def.grantsGraveyardPermanentTypes && !(player.turnState.gravePermanentTypesUsed || []).includes('Land'))));
       if (from === 'exile') return card.owner.exile.includes(card) && (mine || card.meta.playableBy === player) && !card.meta.spellsOnly && game.hasExilePlayPermission(player, card) && (!card.meta.playableCondition || card.meta.playableCondition(game, player, candidate));
       if (from === 'library') return mine && player.library.at(-1) === card && game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && source.def.playTop?.(game, source, candidate, player));
       return false;

@@ -38,7 +38,7 @@
   const resolvedPermanent=selected.spell&&src?.zone==='battlefield'&&version===selected.version+1&&src.meta?._enteredFromZone==='stack';
   if(src?.iid!==selected.card.iid||version!==selected.version&&!resolvedPermanent)return false;
   if(shield.target&&(data.target!==shield.target||data.target.zoneVersion!==shield.targetVersion))return false;
-  const snap=src?._oracleDamageSnapshot||data.sourceSnapshot||selected.card.battlefieldLKI?.get(version);
+  const snap=data.sourceSnapshot||src?._oracleDamageSnapshot||selected.card.battlefieldLKI?.get(version);
   return qualifies(sourceView(src,version,snap),shield.effect.quality)&&(!shield.effect.half||data.n>1);
  }
  async function prevent(game,shield,data){

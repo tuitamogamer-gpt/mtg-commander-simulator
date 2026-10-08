@@ -37,6 +37,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   E.suspect = function (g, c) {
     if (!c || c.zone !== 'battlefield') return;
+    if((MTG.OracleV20?.handlers||[]).some(handler=>handler.canSuspect?.(g,c)===false))return;
     c.meta.suspected = true;
     g.recalc();
     g.lg(`🕵️ ${c.name} is SUSPECTED (menace, can't block).`);
@@ -754,7 +755,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'upkeep', desc: 'Lightning Rager', filter: () => true,
       run: async ctx => {
-        const made = await ctx.g.makeTokens('lightningRager', ctx.data.player, { noReplace: ctx.data.player !== ctx.you });
+        const made = await ctx.g.makeTokens('lightningRager', ctx.data.player);
         for (const m of made) {
           ctx.g.untilEffects.push({ kind: 'cantAttackPlayerCard', iid: m.iid, notPlayer: ctx.you, expires: 'never' });
         }

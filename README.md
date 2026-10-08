@@ -49,9 +49,9 @@ Repository inventory checked on **8 October 2026**:
 | Measure | Available |
 | --- | ---: |
 | Built-in precon decks | **175**, each with 100 cards |
-| Runtime card definitions | **27,799** |
-| Definitions eligible for deck import | **27,798** |
-| Generic Oracle batches | **238**, containing 23,800 definitions |
+| Runtime card definitions | **29,799** |
+| Definitions eligible for deck import | **29,798** |
+| Generic Oracle batches | **258**, containing 25,800 definitions |
 | Dedicated commander videos | **28**, across the original 27 decks |
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
@@ -60,7 +60,9 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
-- **Another 1,000 Oracle cards added:** batches 0229–0238, including complete rules, pinned source records and human/local-AI execution checks. The catalog now has 27,799 definitions. [Validation report](reports/oracle-import/validation-0238.md)
+- **1,000 additional Oracle cards:** batches 0249–0258, bringing the installed catalog to 29,799 definitions. Complete source records, native rules, and human/local hard-AI execution evidence are retained in the [validation report](reports/oracle-import/validation-0258.md).
+- **Previous 1,000-card expansion:** batches 0239–0248, verified against the October pinned source. [Validation report](reports/oracle-import/validation-0248.md)
+- **Another 1,000 Oracle cards added:** batches 0229–0238, including complete rules, pinned source records and human/local-AI execution checks. That expansion brought the catalog to 27,799 definitions. [Validation report](reports/oracle-import/validation-0238.md)
 - **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. All source fields are verified against the SHA-256-pinned Scryfall snapshot, and images use the recorded print IDs. Underworld Breach supports split halves, Room doors, Adventures and nonland modal faces; Necropotence permits paying the last life point. [Provenance](reports/oracle-import/commander-staples-cards.json)
 - **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The previous requested 1,000-card expansion is complete. [Validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
@@ -716,6 +718,8 @@ These reports describe their dated imports and checks. Use the [generated catalo
 | [Oracle 0226](reports/oracle-import/validation-0226.md) | Oracle batch 0226; 800 of the requested 1,000 cards imported so far. |
 | [Oracle 0227](reports/oracle-import/validation-0227.md) | Oracle batch 0227; 900 of the requested 1,000 cards imported so far. |
 | [Oracle 0228](reports/oracle-import/validation-0228.md) | Oracle batch 0228; the previous requested 1,000 cards imported and verified. |
+| [Oracle 0249–0258](reports/oracle-import/validation-0258.md) | 1,000 additional cards; current expansion with exact source, human/local hard-AI execution, and browser evidence. |
+| [Oracle 0239–0248](reports/oracle-import/validation-0248.md) | Previous complete 1,000-card expansion with source, execution, and browser evidence. |
 | [Oracle 0229–0238](reports/oracle-import/validation-0238.md) | Completed expansion: all 1,000 additional cards imported with source, execution and browser evidence. |
 | [Oracle 0209–0218](reports/oracle-import/validation-0209-0218.md) | Oracle batches 0209–0218; 1,000 cards. |
 | [Oracle 0199–0208](reports/oracle-import/validation-0199-0208.md) | Oracle batches 0199–0208; 1,000 cards. |

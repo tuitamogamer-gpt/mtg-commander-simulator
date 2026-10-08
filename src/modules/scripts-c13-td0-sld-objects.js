@@ -2,6 +2,7 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const M = MTG, C = M.C13, S = M.SCRIPTS, T = M.T;
+  const springjackMana=new WeakMap();
   S['Crawlspace'] = {statics: [{apply: (g, c, bf) => {for (const card of bf) if (card.is('Creature')) (card.cur.attackGroupRestrictions ||= []).push(cards => cards.filter(a => a.attacking === c.ctrl).length <= 2);}}]};
   const artifactEnchant = T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'));
   S['Act of Authority'] = {triggers: [C.enterTrigger('Exile an artifact or enchantment', ctx => ctx.g.move(ctx.targets[0], 'exile'), {opt: true, targets: [artifactEnchant]}),
@@ -33,8 +34,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }, {filter: C.curseAttack}));
   S['Springjack Pasture'] = {mana: C.mana(), abilities: [{label: 'Create a Goat', cost: {mana: '{4}', tap: true}, run: ctx => C.make(ctx, C.goat)}], statics: [{grantsSelfActivatedAbility: true, apply: (g, c, bf) => {
     const goats = bf.filter(card => card.ctrl === c.ctrl && card.hasSub('Goat') && g.canSacrifice(card)).length;
-    for (let n = 1; n <= goats; n++) c.cur.extraMana.push({cost: {tap: true, sac: (g, card) => card.hasSub('Goat'), sacN: n},
-      produce: C.colors.map(color => ({[color]: n})), afterProduce: (g, source, p) => g.gainLife(p, n, source)});
+    let cache=springjackMana.get(c);if(!cache||cache.version!==c.zoneVersion){cache={version:c.zoneVersion,rows:new Map()};springjackMana.set(c,cache);}
+    for (let n = 1; n <= goats; n++) {
+      if(!cache.rows.has(n))cache.rows.set(n,{cost: {tap: true, sac: (g, card) => card.hasSub('Goat'), sacN: n},
+        produce: C.colors.map(color => ({[color]: n})), afterProduce: (g, source, p) => g.gainLife(p, n, source)});
+      c.cur.extraMana.push(cache.rows.get(n));
+    }
   }}]};
   S["Surveyor's Scope"] = {abilities: [{label: 'Exile: search for basics for opponents with two more lands', cost: {tap: true, exileSelf: true}, run: ctx => {
     const n = ctx.you.opponents(ctx.g).filter(p => ctx.g.lands(p).length >= ctx.g.lands(ctx.you).length + 2).length;

@@ -95,7 +95,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.oracleV8RecordConditionEntry=function(game,card){
     if(game._battlefieldEntryEvents)return;
     const rows=card.ctrl.turnState.oraclePermanentEntries||(card.ctrl.turnState.oraclePermanentEntries=[]);
-    rows.push({iid:card.iid,version:card.zoneVersion,types:card.cur.types.slice(),subtypes:card.cur.subtypes.slice(),changeling:hasAllCreatureTypes(card)});
+    rows.push({iid:card.iid,version:card.zoneVersion,types:card.cur.types.slice(),subtypes:card.cur.subtypes.slice(),colors:card.colors.slice(),changeling:hasAllCreatureTypes(card)});
     if(needsHistoryRecalc(game,'entry-turn'))game.recalc();
   };
   MTG.oracleV8FinishConditionEntryBatch=function(game,batch){
@@ -106,7 +106,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const snap=card.zone==='battlefield'&&card.zoneVersion===version?null:card.battlefieldLKI?.get(version);
       if(!snap&&!(card.zone==='battlefield'&&card.zoneVersion===version))continue;
       const controller=snap?.ctrl||card.ctrl,rows=controller.turnState.oraclePermanentEntries||(controller.turnState.oraclePermanentEntries=[]);
-      rows.push({iid:card.iid,version,types:(snap?.types||card.cur.types).slice(),subtypes:(snap?.subtypes||card.cur.subtypes).slice(),changeling:snap?!!snap.changeling:hasAllCreatureTypes(card)});
+      rows.push({iid:card.iid,version,types:(snap?.types||card.cur.types).slice(),subtypes:(snap?.subtypes||card.cur.subtypes).slice(),colors:(snap?.colors||card.colors).slice(),changeling:snap?!!snap.changeling:hasAllCreatureTypes(card)});
     }
     if(needsHistoryRecalc(game,'entry-turn'))game.recalc();
     for(const event of batch)if(event.name==='countersPlaced')MTG.oracleV8RecordConditionEvent(game,event.name,event.data);
@@ -165,7 +165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function bestowAttachmentLegal(game, card, host) {
     const spec = card?.meta?.oracleBestowTarget || card?.def?.bestowTarget?.[0];
     return !!(isBestowed(card) && spec && host instanceof MTG.CardInst && host.zone === 'battlefield' &&
-      (!spec.filter || spec.filter(game, host, card.ctrl, card)) && !game.isProtectedFrom(host, card));
+      (!spec.filter || spec.filter(game, host, card.ctrl, card)) && !game.isProtectedFrom(host, card,{attachmentCheckV66:true}));
   }
 
   // Zone permissions such as "play the top card" may inspect a card's types.

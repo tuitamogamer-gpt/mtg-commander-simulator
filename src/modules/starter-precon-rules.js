@@ -128,7 +128,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (![first, second].every(c => c?.zone === 'battlefield' && c.is('Creature') && !c.phasedOut)) return false;
     const rows = [first, second].map(card => ({card, version: card.zoneVersion, ctrl: card.ctrl, power: Math.max(0, card.power)}));
     for(const row of rows)await this.emit('fight', {card:row.card,cards:[row]});
-    const dealt=await this.damageBatch([{src: first, target: second, n: rows[0].power}, {src: second, target: first, n: rows[1].power}], {deferSBA: true});
+    const dealt=await this.damageBatch([{src: first, target: second, n: rows[0].power}, {src: second, target: first, n: rows[1].power}], {deferSBA: true,...(opts.damageResults?{damageResults:opts.damageResults}:{})});
     if(!opts.deferSBA)await this.checkSBA();
     return dealt;
   };

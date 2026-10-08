@@ -16,6 +16,12 @@
       effect.zones.some(zone=>!['library','graveyard','hand'].includes(zone))||!effect.zones.includes('library')||
       !Array.isArray(effect.clauses)||!effect.clauses.length||effect.clauses.length>2||effect.clauses.some(clause=>clause.n!==1||(!clause.name===!clause.filter))||
       effect.chooseClauses!==(effect.clauses.length>1)||!['hand','battlefield'].includes(effect.destination)||typeof effect.reveal!=='boolean'||typeof effect.tapped!=='boolean')throw new Error('Unsupported own-zone search');
+    if(effect.additionalCountersV64!==undefined&&(!Array.isArray(effect.additionalCountersV64)||!effect.additionalCountersV64.length||effect.destination!=='battlefield'||
+      effect.additionalCountersV64.some(row=>!row||Object.keys(row).some(key=>!['kind','n'].includes(key))||row.kind!=='+1/+1'||row.n!=='X'&&(!Number.isSafeInteger(row.n)||row.n<0))||
+      new Set(effect.additionalCountersV64.map(row=>row.kind)).size!==effect.additionalCountersV64.length))throw Error('Unsupported search entry counters');
+    const additionalCounters=effect.additionalCountersV64&&Object.fromEntries(effect.additionalCountersV64.map(row=>{
+      const n=helpers.amount(row.n,ctx);if(!Number.isSafeInteger(n)||n<0)throw Error('Invalid search entry counter amount');return [row.kind,n];
+    }));
     const owner=ctx.you,filters=effect.clauses.map(clause=>clause.filter&&helpers.target({...clause.filter,zone:'graveyard',controller:'any'},[],0,ctx.data).filter);
     const matches=(card,index)=>effect.clauses[index].name?card.name===effect.clauses[index].name:filters[index](ctx.g,card,owner,ctx.src);
     const clauseIndexes=effect.clauses.map((_,index)=>index);
@@ -36,7 +42,7 @@
     }
     if(effect.reveal&&selected.length)await ctx.g.revealToHuman({cards:selected.map(entry=>entry.card),ctrl:owner,kind:'reveal'});
     const move=async()=>{for(const entry of selected)if(present(entry)){
-      if(effect.destination==='battlefield')await ctx.g.putPermanentOntoBattlefield(entry.card,owner,{tapped:effect.tapped});
+      if(effect.destination==='battlefield')await ctx.g.putPermanentOntoBattlefield(entry.card,owner,{tapped:effect.tapped,...(additionalCounters?{additionalCounters,additionalCounterBy:owner}:{})});
       else await ctx.g.move(entry.card,'hand');
     }};
     if(effect.destination==='battlefield')await ctx.g.withBattlefieldEntryBatch(move);else await move();

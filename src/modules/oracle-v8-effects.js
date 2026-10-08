@@ -282,7 +282,7 @@
       const players = effect.who === 'each-player' ? ctx.g.apnapFrom(ctx.g.turnPlayer || ctx.you)
         : effect.who === 'each-opponent' ? ctx.g.apnapFrom(ctx.g.turnPlayer || ctx.you).filter(player => player !== ctx.you) : helpers.subjects(ctx, effect.who);
       const placed = [];
-      for (const player of new Set(players)) if (player instanceof MTG.Player && !player.lost && n > 0) {
+      for (const player of new Set(players)) if (player instanceof MTG.Player && !player.lost && n > 0&&ctx.g.canPutPlayerCountersV66(player,'poison')) {
         const before = player.poison || 0;const actual=MTG.POM?.playerCounterBonus(ctx.g,player,n)||n; player.poison = before + actual;
         placed.push({ player, kind: 'poison', n:actual, before, after: player.poison, by: ctx.you, source: ctx.src });
       }

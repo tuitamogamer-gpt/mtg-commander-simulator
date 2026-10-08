@@ -82,7 +82,8 @@ function issuesFor(name) {
   if (/legend rule.{0,20}doesn.t apply to creatures you control/i.test(oracle) && !def.ignoreLegendRuleCreatures) {
     issues.push('Izuzetak od legend rule nije povezan sa SBA provjerom');
   }
-  if (/look at the top card of your library any time/i.test(oracle) && !def.revealOwnTop) {
+  const equippedPrivateTop = def.oracleGlowcapV67 === true && typeof MTG.oracleLibraryTopSourcesV67 === 'function';
+  if (/look at the top card of your library any time/i.test(oracle) && !def.revealOwnTop && !equippedPrivateTop) {
     issues.push('Nema privatni prikaz vršne karte biblioteke');
   }
   if (/first activated ability of an artifact/i.test(oracle) && !def.firstArtifactAbilityDiscount) {

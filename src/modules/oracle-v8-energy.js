@@ -3,7 +3,7 @@
  const count=player=>Number(player.counters?.energy)||0;
  function validate(n){if(!Number.isSafeInteger(n)||n<0)throw new Error('Invalid energy amount');}
  async function gain(game,player,n,source){
-  validate(n);if(!n||player.lost)return 0;
+  validate(n);if(!n||player.lost||game.canPutPlayerCountersV66(player,'energy')===false)return 0;
   const before=count(player);validate(before+n);player.counters||={};player.counters.energy=before+n;
   game.lg(player.name+' gets '+n+' energy.');game.note('gameEffect',{kind:'playerCounter',counterKind:'energy',player,amount:n});
   await game.emit('energyGained',{player,n,before,after:player.counters.energy,src:source});return n;

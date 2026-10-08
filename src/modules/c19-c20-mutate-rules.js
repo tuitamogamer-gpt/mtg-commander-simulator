@@ -86,7 +86,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   return {...(hidden?{name:'Hidden card'}:describe(r.def)),iid:r.card.iid,hidden,faceDown:!!r.faceDown,commander:r.commander,token:r.isToken};
  });
  async function transform(g,c){
-  const state=c.mutateState;if(!state||c.faceDown)return false;let changed=false;
+  const state=c.mutateState;if(!state||c.faceDown||c.cur?.cantTransformV66)return false;let changed=false;
   for(const r of state.components)if(['transform','modal_dfc'].includes(r.oracleFaces?.layout)&&!r.faceDown){const face=r.oracleFace==='back'?'front':'back',definition=M.OracleV8Faces.faceDefinition(r.oracleFaces,face);if(!definition||definition.types.some(type=>['Instant','Sorcery'].includes(type)))continue;r.oracleFace=face;r.copiableDef=definition;changed=true;}
   if(!changed)return false;
   const defs=state.components.map(r=>r.faceDown?g.faceDownCreatureDef('morph'):r.copiableDef),definition=defs.slice(1).reduce(aggregate,defs[0]);state.faceUpDefinition=definition;
@@ -99,13 +99,20 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
    if(part!==c){part.zoneVersion++;part.faceDown=false;part.counters={};part.cur=null;part.ctrl=part.owner;if(part.oracleFaces)M.OracleV8Faces.setFace(part,'front');part.zone=part.isToken?'ceased':'exile';if(!part.isToken)part.owner.exile.push(part);}
   }
  }
- M.Mutate={aggregate,components,follow,deathObjects,moveDeath,targetSpec,resolve,present,transform,departed};
+ const canTurnFaceUp=c=>!c.mutateState?.components.some(r=>r.def.types.some(type=>type==='Instant'||type==='Sorcery'));
+ const prepareFaceUp=(g,c)=>{
+  if(!canTurnFaceUp(c))return false;
+  if(c.mutateState&&c.faceDown){const definition=c.mutateState.faceUpDefinition,layer=g.untilEffects.filter(e=>e.c1920Merge&&e.iid===c.iid&&e.zoneVersion===c.zoneVersion).at(-1);if(layer)layer.definition=definition;c.meta.faceDownDef=definition;}
+  return true;
+ };
+ const finishFaceUp=c=>{if(!c.faceDown&&c.mutateState)for(const record of c.mutateState.components)record.faceDown=false;};
+ M.Mutate={aggregate,components,follow,deathObjects,moveDeath,targetSpec,resolve,present,transform,departed,canTurnFaceUp,prepareFaceUp,finishFaceUp};
  const down=C.faceDown;
  C.faceDown=(g,c)=>{if(c.oracleFaces||c.mutateState?.components.some(r=>r.oracleFaces))return;if(c.mutateState)for(const r of c.mutateState.components)r.faceDown=true;return down(g,c);};
  M.C14.faceDown=M.C1516.faceDown=M.C1719.faceDown=C.faceDown;
  const upCosts=G.faceUpCosts;G.faceUpCosts=function(c){if(c.mutateState?.components.some(r=>r.def.types.some(t=>t==='Instant'||t==='Sorcery')))return [];return upCosts.call(this,c);};
  const up=G.turnFaceUp;G.turnFaceUp=async function(p,c,cost,kind){
-  if(c.mutateState&&c.faceDown){if(!this.faceUpCosts(c).length)return false;const layer=this.untilEffects.filter(e=>e.c1920Merge&&e.iid===c.iid&&e.zoneVersion===c.zoneVersion).at(-1);if(layer){layer.definition=c.mutateState.faceUpDefinition;c.meta.faceDownDef=layer.definition;}}
-  const result=await up.call(this,p,c,cost,kind);if(result&&!c.faceDown&&c.mutateState)for(const r of c.mutateState.components)r.faceDown=false;return result;
+  if(c.mutateState&&c.faceDown){if(!this.faceUpCosts(c).length||!prepareFaceUp(this,c))return false;}
+  return up.call(this,p,c,cost,kind);
  };
 })();

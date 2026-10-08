@@ -7,6 +7,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
   const etbSelf = (g, self, d) => d.card === self;
   const isOutlaw = E7.isOutlaw;
+  const discreetRetreatManaRestriction=(g,action)=>action&&action.card&&action.card.is('Creature')&&isOutlaw(action.card);
   const partnerWith = otherName => ({
     on: 'etb', desc: `Partner with ${otherName}`, filter: etbSelf,
     targets: [T.player({ prompt: `Who may search for ${otherName}?`, aiHint: { goal: 'gift' } })],
@@ -796,7 +797,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!land) return;
         land.cur.extraMana.push({
           cost: { tap: true }, produce: [{ ANY: true, n: 2 }], restrictAbilities: true,
-          restrict: (g2, action) => action && action.card && action.card.is('Creature') && isOutlaw(action.card),
+          restrict: discreetRetreatManaRestriction,
+          oracleNativeManaGrantV67:{sourceIid:self.iid,sourceVersion:self.zoneVersion,operation:'discreet-retreat'},
         });
       },
     }],

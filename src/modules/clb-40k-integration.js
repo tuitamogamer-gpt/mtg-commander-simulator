@@ -3,7 +3,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.CDK,G=M.Game.prototype,SC=M.SCRIPTS;
  const sources=(g,key,p)=>g.bf().filter(c=>C.live(c)&&c.def[key]&&(!p||c.ctrl===p));
- G.searchableLibrary=function(chooser,owner=chooser){if(this.canSearchLibrary?.(chooser)===false)return [];return sources(this,'cdkMindcensor').some(c=>c.ctrl!==chooser)?owner.library.slice(-4):owner.library.slice();};
+ G.searchableLibrary=function(chooser,owner=chooser){if(this.canSearchLibrary?.(chooser,owner)===false)return [];return sources(this,'cdkMindcensor').some(c=>c.ctrl!==chooser)?owner.library.slice(-4):owner.library.slice();};
  SC['Archelos, Lagoon Mystic'].replace=[{event:'etbTapped',applies:(g,c,s)=>c!==s,run:(g,c,s)=>{c.tapped=s.tapped;}}];
  SC['Plague Drone'].replace=[{event:'lifegain',opponents:true,applies:(g,n,p,s)=>p!==s.ctrl,run:async(g,n,p,s)=>{await g.loseLife(p,n,s.name);return 0;}}];
  SC['Khârn the Betrayer'].replace=[{event:'damage',applies:(g,d,s)=>d.target===s,run:async(g,d,s)=>{const p=await C.choosePlayer({g,src:s,you:s.ctrl},s.ctrl.opponents(g),'choose who gains control');if(p)C.control(g,s,p,false);return d.preventionAllowed?0:d.n;}}];

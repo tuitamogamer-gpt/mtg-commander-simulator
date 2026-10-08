@@ -2154,7 +2154,7 @@ function semanticClassUncached(card, {compilerVersion, memoize, classificationCa
       preserve(result.implementation);
     }
     if(result.semanticClass&&/"(?:chosenColorV10)":true|"kind":"chosen-color-v10"/.test(JSON.stringify(result.implementation))&&!JSON.stringify(result.implementation).includes('"kind":"chosen-color-entry-v8"'))return {reason:'unbound-chosen-color-v10'};
-    if(compilerVersion>=16&&result.semanticClass&&JSON.stringify(result.implementation).includes('"kind":"chosen-subtype-v16"')&&!JSON.stringify(result.implementation).includes('"kind":"chosen-subtype-entry-v16"'))return {reason:'unbound-chosen-subtype-v16'};
+    if(compilerVersion>=16&&result.semanticClass&&JSON.stringify(result.implementation).includes('"kind":"chosen-subtype-v16"')&&!JSON.stringify(result.implementation).includes('"kind":"chosen-subtype-entry-v16"')&&!(compilerVersion>=65&&JSON.stringify(result.implementation).includes('"kind":"casting-creature-type-v65"')))return {reason:'unbound-chosen-subtype-v16'};
     if(compilerVersion>=14&&result.semanticClass&&/"flag":"oracleOptionalCostV14"/.test(JSON.stringify(result.implementation))&&!JSON.stringify(result.implementation).includes('"kind":"mechanic-optional-cost-v14"'))return {reason:'unbound-optional-cost-v14'};
     if (result.semanticClass && normalized !== card) result.rulesCore = v8.normalizeAbilityWords(card.card_faces?.length?card.card_faces.map(face=>face.name+': '+stripReminderText(face.oracle_text||'')).join('\n'):stripReminderText(card.oracle_text || ''));
     return result;
@@ -2318,7 +2318,8 @@ function semanticClassUncached(card, {compilerVersion, memoize, classificationCa
         if(operation.grantedOperation)return xTargetsBound(operation.grantedOperation);
         const printedX=/\{X\}/.test(card.mana_cost||'')||v8.allowsBindingScopesV15()&&operations.some(op=>op.kind==='mechanic-additional-costs'&&(op.lifeX||op.costs?.some(cost=>cost.quantity?.xV19)));
         const allowed=['spell-generic','spell-modal-generic'].includes(operation.kind)?printedX:
-          operation.kind==='generic-ability'?((!operation.from||operation.from==='hand')&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&(operation.cost?.oracleCounterPayment?.n==='X'||operation.loyalty==='-X'||operation.cost?.sacN==='X'||operation.cost?.tapN==='X'&&!!operation.cost.tapFilter)):
+          operation.kind==='adventure-face'&&operation.adventurePaidXV69===true?/\{X\}/.test(operation.cost||''):
+          operation.kind==='generic-ability'?((!operation.from||operation.from==='hand'||operation.from==='graveyard'&&operation.graveyardPaidXV65===true)&&/\{X\}/.test(operation.cost?.mana||'')||!operation.from&&(operation.cost?.oracleCounterPayment?.n==='X'||operation.loyalty==='-X'||operation.cost?.sacN==='X'||operation.cost?.tapN==='X'&&!!operation.cost.tapFilter)):
           operation.kind==='generic-trigger'&&operation.eventFilter==='self'&&(operation.event==='etb'&&printedX||v8.preservesPrintedParagraphs()&&operation.event==='cycled'&&operations.some(op=>op.kind==='cycling'&&/\{X\}/.test(op.cost))||operation.event==='monstrous'&&operations.some(upgrade=>upgrade.kind==='generic-ability'&&upgrade.effects?.some(effect=>effect.action==='monstrosity-v8'&&effect.n==='X')&&/\{X\}/.test(upgrade.cost?.mana||'')));
         const checkBody=body=>{
           const {targets=[],...other}=body;

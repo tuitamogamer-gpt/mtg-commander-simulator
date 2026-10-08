@@ -27,12 +27,12 @@
   M.oracleToxicValueV10=card=>(card?._oracleLKI?card.toxic||0:(!(card?.zone==='battlefield'&&card.cur?.abilitiesDisabled)?Math.max(0,Number(card?.def?.toxic)||0):0)+(card?.zone==='battlefield'?(card.cur?.oracleNumericKeywordsV10||[]).filter(row=>row.kind==='toxic').reduce((sum,row)=>sum+row.n,0):0));
   M.oracleGrantToxicV10=(game,cards,n)=>{for(const card of cards)if(card.zone==='battlefield')game.untilEffects.push({kind:'oracleCombatRestriction',iid:card.iid,zoneVersion:card.zoneVersion,controller:card.ctrl.idx,expires:'eot',restriction:{toxicV10:n}});game.recalc();};
   // CR 115.7 and 115.9a: retain announced target counts and damage division.
-  G.oracleRetargetSingleV10=async function(object,chooser){
+  G.oracleRetargetSingleV10=async function(object,chooser,forcedTarget=null){
     if(!this.stack.includes(object)||(object.targets||[]).flat().filter(Boolean).length!==1)return false;
     const source=object.card||object.srcCard,previous=object.targets.flat().find(Boolean),specs=object.targetSpecs||this.spellTargetSpecs(source,object.castOpts,object.ctrl);
     if(!specs?.length)return false;
     const locked=specs.map((spec,i)=>{const n=[object.targets[i]].flat().filter(Boolean).length;return {...spec,min:n,count:n,upTo:false,chooseByOpponent:false};});
-    const ctx={g:this,src:source,you:object.ctrl,so:object,decisionPlayer:chooser,suppressTargetEvents:true,targetChoiceFilter:card=>card!==previous};
+    const ctx={g:this,src:source,you:object.ctrl,so:object,decisionPlayer:chooser,suppressTargetEvents:true,targetChoiceFilter:card=>card!==previous&&(!forcedTarget||card===forcedTarget)};
     if(!await this.pickTargets(ctx,locked,source,object.ctrl)||(ctx.targets||[]).flat().filter(Boolean).length!==1)return false;
     object.targets=ctx.targets;object.targetIdentities=this.captureTargetIdentities(ctx.targets);
     if(object.ctx){object.ctx.targets=object.targets;object.ctx.targetIdentities=object.targetIdentities;}
@@ -57,7 +57,7 @@
   G.playableLands=function(player){return restricted(this,player,'no-land')?[]:lands.call(this,player);};
   G.playLand=function(player,...args){return restricted(this,player,'no-land')?Promise.resolve(false):playLand.call(this,player,...args);};
   const search=G.canSearchLibrary;
-  G.canSearchLibrary=function(player){return !restricted(this,player,'no-search')&&search.call(this,player);};
+  G.canSearchLibrary=function(player,owner=player,context=this.c1516Resolving){return !restricted(this,player,'no-search')&&M.oracleCanSearchLibraryV69?.(this,player,owner,context)!==false&&search.call(this,player,owner,context);};
   const lose=G.canLoseGame,win=G.canWinGame;
   G.canLoseGame=function(player){return !restricted(this,player,'no-lose-win')&&lose.call(this,player);};
   G.canWinGame=function(player){return !player.opponents(this).some(opponent=>restricted(this,opponent,'no-lose-win'))&&win.call(this,player);};

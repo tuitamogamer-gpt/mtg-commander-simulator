@@ -42,14 +42,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? [...((subject.poison||0)>0?['poison']:[]),...Object.keys(subject.counters || {}).filter(kind => kind!=='speed'&&subject.counters[kind] > 0)]
           : Object.entries(subject.counters || {}).filter(([, n]) => n > 0).map(([kind]) => kind),
       }));
+      for(const row of additions)row.kinds=row.kinds.filter(kind=>row.target instanceof MTG.Player?g.canPutPlayerCountersV66(row.target,kind):g.canPutCountersV18(row.target,kind));
       for (const subject of chosen) {
         if (subject instanceof MTG.Player) {
-          if ((subject.poison || 0) > 0) {
+          if ((subject.poison || 0) > 0&&g.canPutPlayerCountersV66(subject,'poison')) {
             subject.poison+=MTG.POM?.playerCounterBonus(g,subject,1)||1;
             g.lg(`${subject.name}: poison ${subject.poison}.`);
           }
           if((subject.counters?.energy||0)>0)await MTG.OracleV8Energy.gain(g,subject,1,null);
-          for (const kind of Object.keys(subject.counters || {})) if (kind !== 'energy' && kind !== 'speed' && subject.counters[kind] > 0) {
+          for (const kind of Object.keys(subject.counters || {})) if (kind !== 'energy' && kind !== 'speed' && subject.counters[kind] > 0&&g.canPutPlayerCountersV66(subject,kind)) {
             subject.counters[kind]+=MTG.POM?.playerCounterBonus(g,subject,1)||1;
             g.note('counter', {p: subject, kind});
           }

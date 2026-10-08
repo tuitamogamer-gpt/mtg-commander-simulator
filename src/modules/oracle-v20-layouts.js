@@ -30,9 +30,14 @@
    }else if(key==='oracleCastPermissionsV20'){
     (script[key]||=[]).push(...value.map(rule=>({...rule,activeV20:(g,c,p)=>active(g,c)&&(!rule.activeV20||rule.activeV20(g,c,p))})));
    }else if(key==='replace'){
-    (script.replace||=[]).push(...value.map(rule=>({...rule,applies:(g,d,c)=>active(g,c)&&(!rule.applies||rule.applies(g,d,c))})));
+    (script.replace||=[]).push(...value.map(rule=>({...rule,applies:(g,...args)=>{
+     const source=['createToken','lifegain'].includes(rule.event)?args[2]:args[1];
+     return active(g,source)&&(!rule.applies||rule.applies(g,...args));
+    }})));
    }else if(key==='costMods'){
     (script.costMods||=[]).push(...value.map(fn=>(g,c,...args)=>active(g,c)?fn(g,c,...args):0));
+   }else if(key==='abilityCostReduction'){
+    const previous=script[key];script[key]=(g,c,...args)=>(typeof previous==='function'?previous(g,c,...args):previous||0)+(active(g,c)?typeof value==='function'?value(g,c,...args):value||0:0);
    }else if(key==='playTop'){
     const previous=script.playTop;script.playTop=(g,c,...args)=>!!previous?.(g,c,...args)||active(g,c)&&value(g,c,...args);
    }else if(['revealOwnTop','revealAllTop','oracleRevealAllLibrariesV17'].includes(key)){

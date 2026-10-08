@@ -6,7 +6,7 @@
  }
  function maximum(game,player){
   if(player.lost||player.noMaxHandForever)return Infinity;
-  let n=7;
+  let n=7-(player.maximumHandSizeReductionV64||0);
   for(const source of game.bf()){
    if(source.cur?.abilitiesDisabled)continue;
    if(source.ctrl===player&&(typeof source.def.noMaxHand==='function'?source.def.noMaxHand(game,source):source.def.noMaxHand))return Infinity;
@@ -20,4 +20,5 @@
  }
  M.OracleV8HandSize={apply,maximum};
  M.Game.prototype.maximumHandSize=function(player){return maximum(this,player);};
+ M.Game.prototype.reduceMaximumHandSizeV64=function(player,n){if(!Number.isSafeInteger(n)||n<0)throw Error('Invalid maximum hand size reduction');player.maximumHandSizeReductionV64=(player.maximumHandSizeReductionV64||0)+n;};
 })(globalThis.MTG||={});

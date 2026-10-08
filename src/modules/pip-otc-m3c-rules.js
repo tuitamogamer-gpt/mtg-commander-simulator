@@ -7,7 +7,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const energy=(ctx,n,p=ctx.you)=>M.OracleV8Energy.gain(ctx.g,p,n,ctx.src);
  const payEnergy=async(ctx,n)=>M.OracleV8Energy.count(ctx.you)>=n&&await C.yes(ctx,'Pay '+n+' energy?')&&M.OracleV8Energy.spend(ctx.g,ctx.you,n,ctx.src);
  const energyX=async(ctx,min=0)=>{const max=count(ctx.you,'energy');if(max<min)return 0;const n=await ctx.you.controller.decide(ctx.g,{type:'chooseX',min:0,max,card:ctx.src,prompt:'Choose energy to pay',aiHint:{kind:'chooseX'}});if(!Number.isSafeInteger(n)||n<0||n>max||n&&n<min)throw Error('Invalid energy payment');if(n&&!M.OracleV8Energy.spend(ctx.g,ctx.you,n,ctx.src))throw Error('Energy payment failed');return n;};
- const rad=async(ctx,p,n)=>{if(!n||p.lost)return;const add=n+sources(ctx.g,p,'pomConstrictor').length;p.counters.rad=count(p,'rad')+add;ctx.g.lg(p.name+' gets '+add+' rad counters.');ctx.g.note('counter',{p,kind:'rad',n:add});await ctx.g.emit('radGained',{player:p,n:add,src:ctx.src});};
+ const rad=async(ctx,p,n)=>{if(!n||p.lost||!ctx.g.canPutPlayerCountersV66(p,'rad'))return;const add=n+sources(ctx.g,p,'pomConstrictor').length;p.counters.rad=count(p,'rad')+add;ctx.g.lg(p.name+' gets '+add+' rad counters.');ctx.g.note('counter',{p,kind:'rad',n:add});await ctx.g.emit('radGained',{player:p,n:add,src:ctx.src});};
  const allRad=async(ctx,n)=>{for(const p of ctx.g.alivePlayers())await rad(ctx,p,n);};
  const mill=async(ctx,n,p=ctx.you)=>ctx.g.mill(p,Math.max(0,n));
  const both=(desc,run,extra={})=>[C.enterTrigger(desc,run,extra),C.attack(desc,run,extra)];

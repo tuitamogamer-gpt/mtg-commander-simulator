@@ -119,8 +119,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const enc = encoder(game, viewer);
     const card = object => { enc.encode(object); return enc.objects.get(token(object)); };
     const players = game.players.map(player => {
-      const topSources = game.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,game,source) || source.ctrl === player &&
-        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,game,source) || player === viewer && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,game,source))));
+      const topSources = [...new Set([...game.bf().filter(source => !source.cur?.abilitiesDisabled && (MTG.oracleLibraryFlagV20(source.def.oracleRevealAllLibrariesV17,game,source) || source.ctrl === player &&
+        (MTG.oracleLibraryFlagV20(source.def.revealAllTop,game,source) || player === viewer && MTG.oracleLibraryFlagV20(source.def.revealOwnTop,game,source)))),...(player===viewer?MTG.oracleLibraryTopSourcesV67?.(game,player)||[]:[])])];
       const top = topSources.length ? player.library.at(-1) : null;
       const visibleTop = top ? U.onlineCardPresentation(top, viewer, true) : null;
       if (visibleTop) enc.objects.set(token(top), visibleTop);

@@ -49,6 +49,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.ORACLE_INTERACTION_CONTRACTS = Object.freeze({
+    'entry-tapped-replacement': {mechanics:['entry replacement'],path:'complete closed entry rule → actual pre-entry controller choices and printed payments → apply its battlefield entry replacement'},
+    'permanent-enduring-story-v68': {mechanics:['Storied'],path:'control a permanent with Storied → observe three artifacts, legendary permanents or Sagas → retain the enduring story for the rest of the game'},
+    'as-enters-named-mode-v66': {mechanics:['entry-choice'],path:'as-enters replacement → actual controller chooses between the two exact printed modes → incarnation-bound mode enables its complete printed clauses → reentry chooses again'},
+    'native-equip-alternative-v68': {mechanics:['Equip'],path:'live first-equip permission → choose printed cost or {0} → apply activation taxes → validate and pay → record the actual equip activation'},
+    'card-draw-prohibition': {mechanics:['draw prohibition'],path:'check live draw prohibitions before proposing replacement effects or drawing each card'},
+    'player-counter-prohibition-v68': {mechanics:['counter prohibition'],path:'live controller poison prohibition → native infect, toxic, player effects and proliferate reject new poison counters → source departure restores normal counter placement'},
     'adventure-casting': {mechanics:['adventure'],path:'paid Adventure cast → spell Stack → exile permission → paid permanent cast'},
     'creature-casting': { mechanics: ['creature'], path: 'cast spell → stack → permanent' },
     'permanent-casting': { mechanics: ['artifact', 'enchantment', 'planeswalker'], path: 'cast spell → stack → permanent' },

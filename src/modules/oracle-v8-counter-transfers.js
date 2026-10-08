@@ -23,8 +23,10 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
    const available=Math.max(0,Number(donor.counters[kind])||0);let n=effect.n==='all'?available:effect.n==='chosen'?await ctx.you.controller.decide(ctx.g,{type:'chooseX',min:0,max:available,card:ctx.src,prompt:'How many '+kind+' counters to move?',aiHint:{kind:'counterMove',card:ctx.src,donor,recipient,counter:kind}}):1;
    n=Number(n);if(!valid()||!Number.isSafeInteger(n)||n<1||n>available)continue;
    // CR122.5: both operations must be possible before removing anything.
+   if(!ctx.g.canPutCountersV18(recipient,kind))continue;
    if(kind==='+1/+1'&&recipient.is('Creature')&&ctx.g.adjustPlusCounters(recipient,n)<=0)continue;
-   ctx.g.removeCounters(donor,kind,n);ctx.g.addCounters(recipient,kind,n,false,ctx.you);
+   const before=donor.counters[kind]||0;ctx.g.removeCounters(donor,kind,n);
+   const moved=Math.max(0,before-(donor.counters[kind]||0));if(moved)ctx.g.addCounters(recipient,kind,moved,false,ctx.you);
   }
  }
  function targetValue(player,card,query){

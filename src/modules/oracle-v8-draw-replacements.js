@@ -7,7 +7,8 @@
   return operation;
  }
  const firstDraw=(game,p)=>game.phase==='draw'&&game.turnPlayer===p&&!p.turnState._firstDrawDone;
- function candidates(game,p,used){
+ const canDraw=(game,p,source,opts)=>(M.OracleV20?.handlers||[]).every(handler=>handler.canDraw?.(game,p,source,opts)!==false);
+ function candidates(game,p,used,sourceCard,opts){
   const rows=[];const add=(key,source,operation,extra={})=>{if(!used.has(key))rows.push({key,src:source,label:source?.name||'Draw replacement',operation,...extra});};
   for(const card of game.bf()){
    if(card.cur?.abilitiesDisabled)continue;
@@ -21,7 +22,7 @@
    }
   }
   for(const effect of game.untilEffects)if(effect.kind==='oracleDrawReplacement'&&effect.playerSeat===p.idx&&!effect.consumed)add(effect,effect.sourceCard,effect,{controller:game.players[effect.controllerSeat],temporary:effect});
-  for(const handler of M.OracleV20?.handlers||[])for(const row of handler.drawReplacements?.(game,p)||[])add(row.key,row.src,row.operation,{controller:row.src.ctrl});
+  for(const handler of M.OracleV20?.handlers||[])for(const row of handler.drawReplacements?.(game,p,{sourceCard,opts})||[])add(row.key,row.src,row.operation,{controller:row.src.ctrl});
   for(const card of p.graveyard){const n=Number(card.def.dredge?.n??card.def.dredge);if(n>0&&p.library.length>=n)add('dredge:'+card.iid+':'+card.zoneVersion,card,{mode:'dredge',n,optional:true});}
   return rows;
  }
@@ -45,9 +46,10 @@
   for(const card of ordered)await game.move(card,'library',{toBottom:true});
  }
  async function unit(game,p,srcCard,opts,used,physicalDraw,root){
+  if(!canDraw(game,p,srcCard,opts))return 0;
   if(p.turnState.drewThisTurn>=1&&game.bf().some(card=>!card.cur?.abilitiesDisabled&&card.def.oracleRulesV18?.includes('draw-limit')))return 0;
   if(p.lost||game.gameOver)return 0;
-  const choices=candidates(game,p,used);if(!choices.length){const card=await physicalDraw(p,srcCard,opts);if(card&&opts.oracleUnreplacedDrawsV15)opts.oracleUnreplacedDrawsV15.push({card,version:card.zoneVersion,player:p});return card?Number(p===root):0;}
+  const choices=candidates(game,p,used,srcCard,opts);if(!choices.length){const card=await physicalDraw(p,srcCard,opts);if(card&&opts.oracleUnreplacedDrawsV15)opts.oracleUnreplacedDrawsV15.push({card,version:card.zoneVersion,player:p});return card?Number(p===root):0;}
   const row=await game.chooseReplacement(p,choices,'draw',1),nextUsed=new Set(used);nextUsed.add(row.key);
   if(row.operation.optional&&!await optional(game,p,row))return unit(game,p,srcCard,opts,nextUsed,physicalDraw,root);
   // CR 614.11b: actions referring to the drawn card do not follow a replaced
@@ -95,9 +97,14 @@
    const selected=[];for(const player of game.apnapFrom(game.turnPlayer).filter(player=>!player.lost)){const from=game.bf().filter(card=>card.ctrl===player);if(!from.length)continue;const chosen=await selectedCards(game,player,from,"Choose a permanent to return to its owner's hand");selected.push({card:chosen[0],version:chosen[0].zoneVersion});}
    for(const {card,version}of selected)if(card.zone==='battlefield'&&!card.phasedOut&&card.zoneVersion===version)await game.move(card,'hand');return 0;
   }
+  for(const handler of M.OracleV20?.handlers||[]){
+   const result=await handler.applyDrawReplacement?.({g:game,player:p,src,controller,operation:op,sourceCard:srcCard,opts,draw:who=>unit(game,who,srcCard,opts,new Set(nextUsed),physicalDraw,root)});
+   if(result!==undefined)return result;
+  }
   throw new Error('Unsupported draw replacement mode');
  }
  async function group(game,p,n,source,opts,used,physicalDraw,root){
+  if(!canDraw(game,p,source,opts))return 0;
   // CR 121.2a: replace a multi-card instruction before choosing any
   // single-card draw replacement. Carry used effects into every descendant.
   if(n>1){const choices=game.bf().filter(c=>c.ctrl!==p&&!c.cur.abilitiesDisabled&&c.def.c1719Alms).map(src=>({src,key:'alms:'+src.iid+':'+src.zoneVersion,label:src.name,operation:{mode:'alms'}})).filter(r=>!used.has(r.key));
@@ -113,5 +120,5 @@
   const players=effect.who==='you'?[ctx.you]:h.subjects(ctx,effect.who);
   for(const p of players)ctx.g.untilEffects.push({kind:'oracleDrawReplacement',expires:'eot',mode:effect.mode,allTurn:!!effect.allTurn,playerSeat:p.idx,controllerSeat:ctx.you.idx,sourceCard:ctx.src,sourceVersion:ctx.sourceZoneVersion,consumed:false});
  }
- M.OracleV8DrawReplacements={compile,draw,run};
+ M.OracleV8DrawReplacements={compile,draw,run,canDraw};
 })(globalThis.MTG||={});
