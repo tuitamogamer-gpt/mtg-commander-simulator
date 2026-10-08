@@ -2984,17 +2984,89 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card.is('Creature') && (card.kw('indestructible') || Number(card.regenShield || 0) > 0);
   }
 
+  function sweepBoardImpact(game, player, removes) {
+    let mineLoss = 0, theirsLoss = 0;
+    const opponents = new Map();
+    for (const card of game.bf().filter(removes)) {
+      // Even a mana rock or a token costs a card/board slot to replace.
+      const value = permanentGameValue(game, card, player) + 1.6;
+      if (card.ctrl === player) mineLoss += value;
+      else {
+        theirsLoss += value;
+        opponents.set(card.ctrl, (opponents.get(card.ctrl) || 0) + value);
+      }
+    }
+    // A Commander pod is not one opposing team. Wiping three smaller boards
+    // must not look like falling behind a single army three times our size.
+    const largestLoss = Math.max(0, ...opponents.values());
+    const opponentBenefit = largestLoss + (theirsLoss - largestLoss) * 0.25;
+    return { removes, mineLoss, theirsLoss, opponentBenefit, netBenefit: opponentBenefit - mineLoss * 1.25 };
+  }
+
+  function wipeCombatLoss(game, player, removes) {
+    let blockers = game.creatures(player).filter(card => !removes(card) && !card.tapped && !card.cur.cantBlock);
+    let position = { life: player.life, poison: player.poison || 0, commanderDamage: { ...player.commanderDamage }, freshTurn: true };
+    const seat = game.players.indexOf(player);
+    const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
+    for (const opponent of ordered.filter(row => !row.lost && row !== player)) {
+      const attackers = game.creatures(opponent).filter(card => !removes(card) && !card.cur.cantAttack &&
+        game.canAttackAtAll(card) && game.canAttackTarget(card, player) &&
+        !(card.tapped && (Number(card.counters.stun || 0) > 0 || card.def.doesntUntap || card.cur.cantUntap)));
+      const { outcome } = survivalBlocks(game, player, attackers, blockers, position);
+      if (outcome.lethal) return true;
+      blockers = blockers.filter(card => !outcome.dead.has(card) && !outcome.removed.has(card));
+      position = { life: outcome.life, poison: outcome.poison, commanderDamage: outcome.commanderDamage, freshTurn: true };
+    }
+    return false;
+  }
+
+  function wipePreventsCombatLoss(game, player, impact, threatened) {
+    if (typeof impact.preventsCombatLoss === 'boolean') return impact.preventsCombatLoss;
+    return impact.theirsLoss > 0 && (threatened ?? wipeCombatLoss(game, player, () => false)) &&
+      !wipeCombatLoss(game, player, impact.removes);
+  }
+
+  function sweepModeImpact(game, player, matchers, threatened) {
+    const impact = sweepBoardImpact(game, player, card => matchers.some(matcher => matcher?.(card)));
+    impact.preventsCombatLoss = wipePreventsCombatLoss(game, player, impact, threatened);
+    impact.modeScore = impact.netBenefit + (impact.preventsCombatLoss ? 1000 : 0);
+    return impact;
+  }
+
+  function farewellModeRemoves(option) {
+    const type = ['Artifact', 'Creature', 'Enchantment'][Number(option.key)];
+    return type ? card => card.is(type) : null;
+  }
+
   // Only model sweeps whose affected set is unambiguous. Restricted or
   // conditional sweep text must not be mistaken for "all creatures" when
   // deciding whether a new permanent would survive our next spell.
   function boardWipeImpact(game, player, action) {
     const source = action.card;
     if (!source || !(source.is('Instant') || source.is('Sorcery'))) return null;
-    // Required combinations with restricted modes (e.g. Austere Command)
-    // need the existing mode evaluator; a partial text match would miss the
-    // creature modes and incorrectly label a useful wipe as empty.
-    if (source.def.modes && source.def.modes.pick !== 'any') return null;
-    const oracle = textOf(source.def);
+    if (source.def.modes) {
+      const modes = source.def.modes;
+      const matchers = modes.list.map((option, index) => modes.aiHint?.kind === 'farewellModes'
+        ? farewellModeRemoves({ key: index }) : modeSweepRemoves(game, player, { ...option, ...option.aiMeta }));
+      // A mixed draw/removal spell is not a mandatory wipe. Keep its ordinary
+      // spell evaluator unless all modes are understood (graveyard exile is
+      // harmless to the battlefield and can accompany Farewell's modes).
+      if (matchers.some((matcher, i) => !matcher && !/exile all graveyards/i.test(modes.list[i].label))) return null;
+      const min = modes.pick === 'any' ? (modes.min || 1) : Number(modes.pick);
+      const max = modes.pick === 'any' ? matchers.length : min;
+      if (!Number.isFinite(min) || matchers.length > 8) return null;
+      const threatened = wipeCombatLoss(game, player, () => false);
+      let best = null;
+      for (let mask = 1; mask < (1 << matchers.length); mask++) {
+        const chosen = matchers.filter((_, i) => mask & (1 << i));
+        if (chosen.length < min || chosen.length > max) continue;
+        const impact = sweepModeImpact(game, player, chosen, threatened);
+        if (!best || impact.modeScore > best.modeScore) best = impact;
+      }
+      return best;
+    }
+    // Cycling triggers are a different action from casting the spell.
+    const oracle = textOf(source.def).split(/\n(?:cycling\b|when you cycle\b)/)[0];
     const effects = [];
     const noRegen = /can(?:not|'t) be regenerated/.test(oracle);
     for (const match of oracle.matchAll(/\b(destroy|exile) all (creatures|artifacts|enchantments|nonland permanents|permanents)( you (?:don't|do not) control)?\./g)) {
@@ -3017,22 +3089,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const shrink = /\ball creatures get -([0-9]+)\/-([0-9]+) until end of turn\./.exec(oracle);
     if (shrink) effects.push(card => card.is('Creature') && diesAfterGlobalPump(card, card.toughness - Number(shrink[2])));
     if (!effects.length) return null;
-    // Optional modes are only planned when their current board swing is
-    // useful. An artifact-only Farewell must not delay unrelated creatures.
-    const relevant = source.def.modes ? effects.filter(effect => {
-      let net = 0;
-      for (const card of game.bf().filter(effect)) net += permanentGameValue(game, card, player) * (card.ctrl === player ? -1.35 : 1);
-      return net > 3;
-    }) : effects;
-    const removes = card => relevant.some(effect => effect(card));
-    let mineLoss = 0, theirsLoss = 0;
-    for (const card of game.bf().filter(removes)) {
-      const value = permanentGameValue(game, card, player);
-      if (card.ctrl === player) mineLoss += value; else theirsLoss += value;
-    }
-    return { removes, mineLoss, theirsLoss };
+    return sweepBoardImpact(game, player, card => effects.some(effect => effect(card)));
   }
   MTG.botBoardWipeImpact = boardWipeImpact;
+  MTG.botWipePreventsCombatLoss = wipePreventsCombatLoss;
 
   function wipeSequencingPenalty(game, player, action, score, plans) {
     if (action.kind !== 'cast' || !action.card.is('Creature')) return 0;
@@ -3054,7 +3114,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const entry of q.casts || []) {
       const action = { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from };
       const impact = boardWipeImpact(game, player, action);
-      if (!impact || impact.theirsLoss < 4 || impact.theirsLoss < impact.mineLoss + 3) continue;
+      if (!impact || impact.theirsLoss < 4 || impact.netBenefit < 3) continue;
       const score = quickScoreAction(view, action, profile, q).total;
       if (score > hold + 2) plans.push({ action, impact, score });
     }
@@ -3224,8 +3284,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const base = baseTargetValue(game, player, target, q);
     // Nema smisla plaćati ward za metu koju ionako ne želimo pogoditi.
     if (base <= 0) return base;
-    return base + wardTargetAdjustment(game, player, target, q);
+    const value = base + wardTargetAdjustment(game, player, target, q);
+    // Reusing an already covered enemy wastes the copy, but remains better
+    // than destroying our own creature when no useful fresh target exists.
+    return target instanceof U.CardInst && q.aiHint?.copyTargetPolicy === 'spread' &&
+      (q.aiHint.copyUsedTargetIids || []).includes(target.iid) ? Math.min(0, value) : value;
   }
+
+  MTG.shouldRetargetSpellCopy = function (game, player, query) {
+    const hint = query.aiHint || {}, original = hint.so;
+    const source = original && (original.card || original.srcCard);
+    const targets = original && (original.targets || original.ctx?.targets) || [];
+    const specs = original && (original.targetSpecs || original.card &&
+      game.spellTargetSpecs(original.card, original.castOpts || {}, player));
+    if (!source || !specs) return false;
+    if (!game.targetsStillOk(targets, specs, source, player,
+      original.targetIdentities || original.ctx?.targetIdentities || null)) return true;
+    // Damage copies must keep adding to the original hit until enough damage
+    // is assigned; a nonlethal single hit is not the value of the whole stack.
+    if (hint.copyTargetPolicy === 'focus' && original.ctrl === player) return false;
+    return specs.some((spec, index) => {
+      const current = [targets[index]].flat().filter(Boolean);
+      if (!current.length) return false;
+      const aiHint = hint.copyTargetHints?.[index] || Object.assign({}, spec.aiHint || {},
+        hint.copyTargetPolicy === 'spread' ? { copyTargetPolicy: 'spread', copyUsedTargetIids: hint.copyUsedTargetIids } : {});
+      const q = { src: source, so: { ...original, ctrl: player, isCopy: true }, spec, aiHint };
+      const lowestCurrent = Math.min(...current.map(target => targetValue(game, player, target, q)));
+      return game.legalTargets(spec, source, player).some(target =>
+        !current.includes(target) && targetValue(game, player, target, q) > Math.max(0, lowestCurrent) + 0.01);
+    });
+  };
 
   function oracleBasePTTargetValue(game, player, target, q) {
     if (!(target instanceof U.CardInst) || typeof q.aiHint?.basePT !== 'function') return -1000;
@@ -3251,9 +3339,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function baseTargetValue(game, player, target, q) {
     if(target instanceof U.CardInst&&q.aiHint?.oracleTargetTapped!==undefined&&target.tapped!==q.aiHint.oracleTargetTapped)return -1000;
     if (q && q.aiHint && q.aiHint.avoidCostSource && target === q.src) return -1000;
-    const avoidedCopyTargets = q && q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
-      ? q.aiHint.copyUsedTargetIids || [] : [];
-    if (target instanceof U.CardInst && avoidedCopyTargets.includes(target.iid)) return -1000;
     const hint = q.aiHint && q.aiHint.goal || '';
     if (q.aiHint?.deathReturn && target instanceof U.CardInst) return MTG.deathReturnTargetValue(game, player, target);
     if (target instanceof U.Player) {
@@ -4618,8 +4703,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.pickBotVoteOption = function (game, voter, q) {
     const options = (q && q.options || []).slice();
     if (!options.length) return null;
-    return options.map(option => ({ option, score: tacticalVoteScore(game, voter, option, q) }))
-      .sort((a, b) => b.score - a.score || String(a.option.key).localeCompare(String(b.option.key)))[0].option.key;
+    const ranked = options.map(option => ({ option, score: tacticalVoteScore(game, voter, option, q) }))
+      .sort((a, b) => b.score - a.score || String(a.option.key).localeCompare(String(b.option.key)));
+    const view = MTG.createBotPlayerView(game, voter.idx, q);
+    return pickWeightedVote(ranked, defaultSeed(game, view, voter.idx)).chosen.option.key;
   };
 
   // Kad je pobjeda već na stolu, svaka dodatna kopija, token ili "value" potez
@@ -4698,33 +4785,61 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Vrijednost masovnog moda = ono što odnosi protivnicima minus ono što odnosi
   // meni. Mod koji ne pogađa ništa vrijedi nula, pa gubi od svakog korisnog.
-  function modeSweepValue(game, player, option) {
+  function modeSweepRemoves(game, player, option) {
     const label = String(option && option.label || '');
     const meta = option || {};
+    // Native modal labels can omit "target" even though the mode carries
+    // target specs (e.g. Destroy Evil or Casualties of War).
+    if (typeof meta.targets === 'function' || meta.targets?.length) return null;
     let matcher = destroyKindMatcher(meta.destroyKind);
     if (!matcher) {
       const sweepVerb = /\b(destroy|exile|sacrifice|bounce|wipe|return)\b/i.test(label);
       const singleTarget = /\btarget\b/i.test(label);
-      if (!sweepVerb || singleTarget) return null;
+      const group = /\b(?:all|each|creatures|artifacts|enchantments|planeswalkers|dragons|tokens|lands)\b/i.test(label);
+      if (!sweepVerb || singleTarget || !group) return null;
       const entry = MODE_SWEEP_TYPES.find(([pattern]) => pattern.test(label));
       if (!entry) return null;
       matcher = entry[1];
     }
     const mvFilter = modeManaValueFilter(label);
-    let value = 0, theirs = 0, mine = 0;
-    for (const permanent of game.bf()) {
-      if (!matcher(permanent)) continue;
-      if (mvFilter && !mvFilter(permanent)) continue;
-      if (permanent.kw('indestructible') && /destroy/i.test(label)) continue;
-      const worth = permanentGameValue(game, permanent, player);
-      if (permanent.ctrl === player) { value -= worth * 1.35; mine++; } else { value += worth; theirs++; }
-    }
-    // Sam broj pogođenih permanenata nosi težinu: mana rock je po vrijednosti
-    // sitan, ali mod koji čisti četiri protivnička mora jasno pobijediti mod
-    // koji ne pogađa ništa.
-    return value + theirs * 1.6 - mine * 1.6;
+    return permanent => matcher(permanent) && (!mvFilter || mvFilter(permanent)) &&
+      !(/\bnontoken\b/i.test(label) && permanent.isToken) &&
+      !(/\btokens?\b/i.test(label) && !/\bnontoken\b/i.test(label) && !permanent.isToken) &&
+      !(/you (?:don't|do not) control/i.test(label) && permanent.ctrl === player) &&
+      !(/destroy/i.test(label) && (permanent.kw('indestructible') || permanent.counters?.shield > 0 ||
+        (permanent.regenShield > 0 && !/can(?:not|'t) be regenerated/i.test(label))));
+  }
+
+  function modeSweepValue(game, player, option) {
+    const removes = modeSweepRemoves(game, player, option);
+    return removes ? sweepModeImpact(game, player, [removes]).modeScore : null;
   }
   MTG.botModeSweepValue = modeSweepValue;
+  MTG.botChooseSweepModes = function (game, player, q) {
+    const options = q.options || [];
+    if (!options.length || options.length > 8 || q.repeats) return null;
+    const farewell = q.aiHint?.kind === 'farewellModes';
+    const matchers = options.map(option => farewell ? farewellModeRemoves(option) : modeSweepRemoves(game, player, option));
+    const graveyardMode = option => farewell ? Number(option.key) === 3 : /exile all graveyards/i.test(option.label);
+    if (matchers.some((matcher, i) => !matcher && !graveyardMode(options[i]))) return null;
+    const min = q.type === 'chooseOption' ? 1 : (q.min ?? 1);
+    const max = q.type === 'chooseOption' ? 1 : (q.max ?? 1);
+    const threatened = wipeCombatLoss(game, player, () => false);
+    let best = null;
+    for (let mask = 1; mask < (1 << options.length); mask++) {
+      const indices = options.map((_, i) => i).filter(i => mask & (1 << i));
+      if (indices.length < min || indices.length > max) continue;
+      let score = sweepModeImpact(game, player, indices.map(i => matchers[i]), threatened).modeScore;
+      if (indices.some(i => graveyardMode(options[i]))) {
+        const own = player.graveyard.reduce((sum, card) => sum + cardDefinitionValue(card.def), 0);
+        const enemy = player.opponents(game).reduce((sum, opponent) => sum +
+          opponent.graveyard.reduce((s, card) => s + cardDefinitionValue(card.def), 0), 0);
+        score += enemy - own * 1.4;
+      }
+      if (!best || score > best.score) best = { score, keys: indices.map(i => options[i].key) };
+    }
+    return best?.keys || null;
+  };
 
   function manaColorsForDevelopment(card) {
     const colors = new Set(card.def.producesColors || []);
@@ -4762,6 +4877,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const privateData = PRIVATE_VIEWS.get(view);
     const game = privateData.game, player = privateData.player;
     const breakdown = { base: 0, timing: 0, threat: 0, synergy: 0, safety: 0, resources: 0, combat: 0, choice: 0 };
+    let unfavorableWipe = false;
     const phase = game.phase;
     if (action.kind === 'land') {
       breakdown.base = 6.5;
@@ -5162,11 +5278,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const value = permanentGameValue(game, permanent, player);
           if (permanent.ctrl === player) mineLoss += value; else theirsLoss += value;
         }
-        breakdown.threat += (theirsLoss - mineLoss) * 0.45;
-        if (theirsLoss < mineLoss + 3) breakdown.timing -= 20;   // gubim više nego protivnici
+        const netBenefit = impact ? impact.netBenefit : theirsLoss - mineLoss * 1.25;
+        breakdown.threat += netBenefit * 0.65;
+        const savesFromCombat = impact && netBenefit < 3 && wipePreventsCombatLoss(game, player, impact);
+        if (netBenefit < 3) breakdown.timing -= 20;
         if (theirsLoss < 4) breakdown.timing -= 8;               // nema se šta počistiti
-        const evalNow = MTG.evaluateState(view, player.idx, profile);
-        if (evalNow.immediateLossRisk > 40 && theirsLoss > 0) breakdown.safety += 35;
+        // Low life alone is not a reason to destroy our blockers. Award the
+        // emergency reset only when the affected set actually prevents lethal.
+        if (savesFromCombat) breakdown.safety += 45;
+        unfavorableWipe = !!impact && netBenefit < 3 && !savesFromCombat;
       }
       // X spellovi: vrijednost raste sa stvarno dostupnim X. Bacanje damage/draw
       // X spella dok je X sitno je trošenje karte.
@@ -5824,31 +5944,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice = Number.isFinite(best) ? best : -20;
         }
       } else if (hintKind === 'newTargets') {
-        const stackObject = q.aiHint && q.aiHint.so;
-        const source = stackObject && (stackObject.card || stackObject.srcCard);
-        const currentTargets = stackObject && (stackObject.targets || stackObject.ctx && stackObject.ctx.targets) || [];
-        const targetSpecs = stackObject && (stackObject.targetSpecs ||
-          stackObject.card && game.spellTargetSpecs(stackObject.card, stackObject.castOpts || {}, player));
-        const currentTargetsLegal = !stackObject || !targetSpecs || game.targetsStillOk(
-          currentTargets, targetSpecs, source, player,
-          stackObject.targetIdentities || stackObject.ctx && stackObject.ctx.targetIdentities || null);
-        const spread = q.aiHint.copyTargetPolicy === 'spread';
-        if (!currentTargetsLegal) {
-          breakdown.choice = action.value === 'yes' ? 100 : -100;
-        } else if (action.value === 'yes') breakdown.choice = spread
-          ? (q.aiHint.hasUnusedTarget ? 20 : -8)
-          : 0;
-        else breakdown.choice = spread && q.aiHint.hasUnusedTarget ? -8 : 4;
+        const redo = MTG.shouldRetargetSpellCopy(game, player, q);
+        breakdown.choice = action.value === (redo ? 'yes' : 'no') ? 30 : -20;
       } else if (hintKind === 'freeCast') {
         const freeCard = q.aiHint.card;
         if (action.value === 'yes' && freeCard) {
           breakdown.choice = cardDefinitionValue(freeCard.def) + 2;
           const sem = inferCardSemantics(freeCard.def);
           if (sem.roles.includes('board-wipe')) {
-            const mine = boardValueFor(game, player);
-            const theirs = player.opponents(game).reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
-            breakdown.choice += (theirs - mine) * 0.4;
-            if (mine > theirs) breakdown.safety -= 14;
+            const impact = boardWipeImpact(game, player, { kind: 'cast', card: freeCard });
+            if (impact) {
+              const savesFromCombat = impact.netBenefit < 3 && wipePreventsCombatLoss(game, player, impact);
+              breakdown.choice += impact.netBenefit * 0.65 + (savesFromCombat ? 45 : 0);
+              unfavorableWipe = impact.netBenefit < 3 && !savesFromCombat;
+            } else {
+              const mine = boardValueFor(game, player);
+              const theirs = player.opponents(game).reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
+              breakdown.choice += (theirs - mine) * 0.4;
+              if (mine > theirs) breakdown.safety -= 14;
+            }
           }
         } else if (action.value === 'no') breakdown.choice = 0;
       } else if (hintKind === 'conduitCast') {
@@ -5902,6 +6016,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (tapCosts.length < extra) breakdown.safety -= 1000;
         else breakdown.choice -= tapCosts.reduce((sum, value) => sum + value * 0.22, 0);
       } else if (q && q.aiHint && q.aiHint.kind === 'farewellModes') {
+        // Stable printed mode keys survive translated or abbreviated labels.
+        const matchers = (action.options || []).map(farewellModeRemoves).filter(Boolean);
+        breakdown.choice += sweepModeImpact(game, player, matchers).modeScore;
         for (const option of action.options || []) {
           const index = Number(option.key);
           if (index === 3) {
@@ -5910,12 +6027,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               opponent.graveyard.reduce((s, card) => s + cardDefinitionValue(card.def), 0), 0);
             breakdown.choice += enemy - own * 1.4;
             continue;
-          }
-          const type = ['Artifact', 'Creature', 'Enchantment'][index];
-          if (!type) continue;
-          for (const card of game.bf().filter(permanent => permanent.is(type))) {
-            const value = permanentGameValue(game, card, player);
-            breakdown.choice += card.ctrl === player ? -value * 1.4 : value;
           }
         }
       } else if (q && q.aiHint && q.aiHint.kind === 'blackMarketConnections') {
@@ -5952,11 +6063,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice += theirs * 0.8 - own;
         }
       } else {
+        const sweepMatchers = (action.options || []).map(option => modeSweepRemoves(game, player, option)).filter(Boolean);
+        // Count an artifact creature once even when two selected modes remove
+        // it. This is the same union used when deciding whether to cast.
+        if (sweepMatchers.length) breakdown.choice += sweepModeImpact(game, player, sweepMatchers).modeScore * 0.5;
         breakdown.choice = (action.options || []).reduce((sum, option) => {
-          const sweep = modeSweepValue(game, player, option);
-          if (sweep !== null) return sum + sweep * 0.5;
+          if (modeSweepRemoves(game, player, option)) return sum;
           return sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3);
-        }, 0);
+        }, breakdown.choice);
       }
     } else if (action.kind === 'chooseX') {
       if(q?.aiHint?.kind==='entryNumber'){
@@ -6107,6 +6221,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     applyStyleSkillScore(view, action, profile, q, breakdown);
     let total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+    if (unfavorableWipe && total > -12) {
+      // Personality, mana value and generic draw/synergy bonuses must not
+      // turn a known losing reset into the default main-phase play.
+      breakdown.wipePreservation = -12 - total;
+      total = -12;
+    }
     if (q?.type === 'main' && action.kind === 'cast' && action.card.is('Creature')) {
       const penalty = wipeSequencingPenalty(game, player, action, total, plannedBoardWipes(view, profile, q));
       if (penalty) { breakdown.sequencing = -penalty; total -= penalty; }
@@ -6473,6 +6593,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { chosen: band[0], tieBreak: true };
   }
 
+  function pickWeightedVote(ranked, seed) {
+    if (ranked.length < 2) return { chosen: ranked[0] || null, tieBreak: false };
+    // A council should sometimes split even when every opponent has the same
+    // tactical preference. Keep that preference, but give every legal ballot
+    // a chance: a small score gap yields roughly 20–30% for the alternative,
+    // while a clearly costly two-option vote still gets about 9%. Equal
+    // choices are equally likely. Use the normal decision seed so replays do
+    // not consume gameplay RNG or change their outcome on reevaluation.
+    const weights = ranked.map(candidate => Math.max(0.1, 1 / (1 + Math.max(0, ranked[0].score - candidate.score) * 2)));
+    const rnd = U.mulberry32((Number(seed) || 1) >>> 0);
+    let pick = rnd() * weights.reduce((sum, weight) => sum + weight, 0);
+    for (let i = 0; i < ranked.length; i++) {
+      pick -= weights[i];
+      if (pick <= 0) return { chosen: ranked[i], tieBreak: true };
+    }
+    return { chosen: ranked[ranked.length - 1], tieBreak: true };
+  }
+
   const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
 
   MTG.chooseBotAction = async function (params) {
@@ -6524,17 +6662,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       searched.push({ score: candidate.quick.total, rootAction: candidate.action, depth: 0, breakdown: candidate.quick.breakdown });
     }
     searched.sort((a, b) => b.score - a.score || actionKey(a.rootAction).localeCompare(actionKey(b.rootAction)));
-    // Glasovi nisu kozmetički modovi: i mala evaluacijska razlika može značiti
-    // ekstra potez ili cijelu vojsku countera za protivnika. Zato se seedovani
-    // "malo slabiji potez" ne primjenjuje na vote prozore.
     // Izbor moda nije kozmetika: "uništi sva stvorenja" i "uništi sve artefakte"
     // se razlikuju za cijelu partiju, pa se seedovani "malo slabiji potez" ovdje
-    // ne primjenjuje, isto kao ni na glasanju.
-    const strictChoice = q && q.aiHint && (['vote', 'mode', 'modes'].includes(q.aiHint.kind) ||
+    // ne primjenjuje. Glasanje ima vlastitu, taktički ponderisanu slučajnost.
+    const voteChoice = q?.type === 'chooseOption' && q.aiHint?.kind === 'vote';
+    const strictChoice = q && q.aiHint && (['mode', 'modes'].includes(q.aiHint.kind) ||
       q.aiHint.kind === 'ward' && q.aiHint.payment === 'blight') &&
       (q.type === 'chooseOption' || q.type === 'chooseMulti');
     const tieTolerance = strictChoice ? 0 : config.tieTolerance;
-    let selection = pickNearTie(searched, seed, tieTolerance, difficulty === 'easy');
+    let selection = voteChoice ? pickWeightedVote(searched, seed)
+      : pickNearTie(searched, seed, tieTolerance, difficulty === 'easy');
     if (!selection.chosen) {
       fallback = true;
       const safe = legalActions.find(action => action.kind === 'pass' || action.kind === 'done') || legalActions[0];

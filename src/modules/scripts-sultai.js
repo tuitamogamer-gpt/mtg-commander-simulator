@@ -556,23 +556,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const creatures = player.graveyard.filter(isCreature).slice();
       exiled.set(player, await ctx.g.moveGraveyardBatch(creatures, 'exile'));
     }
-    const allCreatures = ctx.g.creatures().slice();
-    const previous = ctx.g._simultaneousLeaveSources;
-    const batch = allCreatures.map(card => ({ card, ctrl: card.ctrl }));
-    ctx.g._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
-    try {
-      await ctx.g.withGraveyardEntryBatch(async () => {
-        for (const card of allCreatures) if (ctx.g.canSacrifice(card)) {
-          const controller = card.ctrl;
-          ctx.g.lg(`${controller.name} sacrifices ${card.name}.`, 'sac');
-          await ctx.g.move(card, 'graveyard');
-          await ctx.g.emit('sacrificed', { player: controller, card });
-        }
-      });
-    } finally {
-      ctx.g._simultaneousLeaveSources = previous;
-      await ctx.g.returnOracleExiles();
-    }
+    await ctx.g.sacrificeMany(null, ctx.g.creatures().slice());
     const returns = [];
     for (const player of ctx.g.players) for (const card of exiled.get(player) || []) {
       if (card.zone === 'exile') returns.push({ card, opts: { ctrl: player } });

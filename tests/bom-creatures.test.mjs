@@ -29,7 +29,7 @@ test('Vishgraz creates three toxic artifact Mites and counts all opponents’ po
  const f=setup();f.b.poison=3;const c=await play(f,'Vishgraz, the Doomhive');assert.equal(c.power,6);const mites=f.game.creatures(f.a).filter(c=>c.hasSub('Mite'));assert.equal(mites.length,3);assert.ok(mites.every(c=>c.is('Artifact')));await f.game.damagePlayer(mites[0],f.b,1,{combat:true});assert.equal(f.b.poison,4);
 });
 test('Sidar command-zone eminence draws then discards once for the whole Knight attack',async()=>{
- const f=setup(),sidar=card(f,'Sidar Jabari of Zhalfir','command');sidar.commander=true;const knight=card(f,'Syr Elenora, the Discerning');card(f,'Forest','library');await event(f,'attackersDeclared',{player:f.a,attackers:[{card:knight,target:f.b}]});assert.equal(f.a.hand.length,0);assert.equal(f.a.graveyard.length,1);
+ const f=setup(),sidar=card(f,'Sidar Jabari of Zhalfir','command');sidar.commander=true;const knight=card(f,'Syr Elenora, the Discerning');card(f,'Forest','library');knight.attacking=f.b;await event(f,'attackersDeclared',{player:f.a,attackers:[knight]});assert.equal(f.a.hand.length,0);assert.equal(f.a.graveyard.length,1);
 });
 test('Kasla observes convoke on a paid spell even when no creatures are used to pay',async()=>{
  const f=setup();card(f,'Kasla, the Broken Halo');card(f,'Forest','library');card(f,'Forest','library');await play(f,'Wildfire Awakener');assert.ok(f.a.hand.length>=1);assert.equal(f.game.creatures(f.a).filter(c=>c.hasSub('Elemental')).length,3);

@@ -498,7 +498,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Rapid Hybridization'] = {
-    targets: [T.creature({ prompt: 'Destroy (3/3 Frog)', aiHint: { goal: 'removal' } })],
+    targets: [T.creature({ prompt: 'Destroy (3/3 Frog)', aiHint: { goal: 'removal', removalKind: 'destroy' } })],
     resolve: async ctx => {
       const t = ctx.targets[0], c2 = t.ctrl;
       await ctx.g.destroy(t, { noRegen: true });

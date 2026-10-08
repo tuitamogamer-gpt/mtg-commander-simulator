@@ -749,7 +749,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (MTG.botBoardWipeImpact) for (const e of q.casts) {
         const action = { kind: 'cast', card: e.card, alt: e.alt, from: e.from };
         const impact = MTG.botBoardWipeImpact(g, p, action);
-        if (impact && impact.theirsLoss >= 4 && impact.theirsLoss >= impact.mineLoss + 3 && this.castScore(g, e) > 2) {
+        if (impact && impact.theirsLoss >= 4 && impact.netBenefit >= 3 && this.castScore(g, e) > 2) {
           wipes.push({ action, impact });
         }
       }
@@ -787,8 +787,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (/counter target spell/.test(o)) return -1; // never main-phase counterspells
         if (/destroy target|exile target|damage/.test(o) && this.r(g) < 0.7) v -= 2.5;
       }
-      // board wipes: only when behind
-      if (/destroy all creatures|deals? \d+ damage to each creature|13 damage/.test(o)) {
+      // Share the effect-aware multiplayer evaluation with the main planner.
+      const wipeImpact = MTG.botBoardWipeImpact?.(g, p, { kind: 'cast', card: c, alt: e.alt, from: e.from });
+      if (wipeImpact) {
+        const savesFromCombat = wipeImpact.netBenefit < 3 && MTG.botWipePreventsCombatLoss?.(g, p, wipeImpact);
+        if (wipeImpact.netBenefit < 3 && !savesFromCombat) return -1;
+        v += Math.max(0, wipeImpact.netBenefit) * 0.3 + P.wipeBias + (savesFromCombat ? 12 : 0);
+      } else if (/destroy all creatures|deals? \d+ damage to each creature|13 damage/.test(o)) {
         const myPow = g.creatures(p).reduce((s, x) => s + x.power, 0);
         const oppPow = g.bf().filter(x => x.is('Creature') && x.ctrl !== p).reduce((s, x) => s + x.power, 0);
         if (oppPow < myPow + 6 - P.wipeBias * 2 || oppCreatures < 3) return -1;
@@ -1070,8 +1075,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (avoidedCopyTargets && avoidedCopyTargets.size) {
         const unused = cands.filter(target =>
           !(target instanceof MTG.CardInst) || !avoidedCopyTargets.has(target.iid));
+        const hostile = /removal|destroy|exile|bounce|tap/.test(goal) && goal !== 'untap';
+        const useful = unused.filter(target => !(target instanceof MTG.CardInst) ||
+          (hostile ? target.ctrl !== this.p && !(q.aiHint.removalKind === 'destroy' && target.kw('indestructible'))
+            : goal === 'untap' ? target.ctrl === this.p : true));
         const min = q.min !== undefined ? q.min : 1;
-        if (unused.length >= min) cands = unused;
+        if (useful.length >= min) cands = useful;
       }
       if (q.spec && q.spec.distinctCtrl) {
         // najviše jedna meta po kontroloru — zadrži najprijeteću po svakom
@@ -1516,6 +1525,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseOption(g, q) {
       const kitt = MTG.kittKantoAIAction(g, this.p, q);
       if (kitt) return kitt.value;
+      const sweepModes = MTG.botChooseSweepModes?.(g, this.p, { ...q, type: 'chooseOption' });
+      if (sweepModes) return sweepModes[0];
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
@@ -1731,7 +1742,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (threat && keys.includes('2')) return '2';
           return keys.includes('0') ? '0' : keys[0];
         }
-        case 'freeCast': return 'yes';
+        case 'freeCast': {
+          const card = q.aiHint.card;
+          const impact = card && MTG.botBoardWipeImpact?.(g, this.p, { kind: 'cast', card });
+          if (impact && impact.netBenefit < 3 && !MTG.botWipePreventsCombatLoss?.(g, this.p, impact)) return 'no';
+          return 'yes';
+        }
         case 'conduitCast': return keys.includes('yes') ? 'yes' : keys[0];
         case 'nyamiTop': {
           const card = q.aiHint && q.aiHint.card;
@@ -1749,6 +1765,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'kicker': return 'yes';
         case 'offspring': return 'yes';
         case 'newTargets': {
+          if (MTG.shouldRetargetSpellCopy) return MTG.shouldRetargetSpellCopy(g, this.p, q) ? 'yes' : 'no';
           const so = q.aiHint && q.aiHint.so;
           if (q.aiHint && q.aiHint.copyTargetPolicy === 'spread' &&
               q.aiHint.hasUnusedTarget && keys.includes('yes')) return 'yes';
@@ -1815,6 +1832,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     chooseMulti(g, q) {
       const min = q.min ?? 1, max = Math.min(q.max ?? 1, q.options.length);
+      const sweepModes = MTG.botChooseSweepModes?.(g, this.p, q);
+      if (sweepModes) return sweepModes;
       const keys = q.options.map(o => o.key);
       if (q.aiHint && q.aiHint.kind === 'prismariCommand') {
         const scores = new Map(keys.map(key => [key, 0]));

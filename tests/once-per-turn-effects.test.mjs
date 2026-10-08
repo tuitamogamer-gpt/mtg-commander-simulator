@@ -265,8 +265,9 @@ test('Ainok Strike Leader triggers once for the attack group and again in anothe
   const { game, a, b } = context(M);
   const source = put(M, game, a, 'Ainok Strike Leader');
   const commander = put(M, game, a, 'Grizzly Bears'); commander.commander = true;
+  source.attacking = commander.attacking = b;
   for (let combat = 1; combat <= 2; combat++) {
-    await game.emit('attackersDeclared', { player: a, attackers: [{ card: source, target: b }, { card: commander, target: b }] });
+    await game.emit('attackersDeclared', { player: a, attackers: [source, commander] });
     await settle(game);
     assert.equal(game.creatures(a).filter(c => c.isToken && c.hasSub('Goblin')).length, combat);
   }

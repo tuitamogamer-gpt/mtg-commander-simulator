@@ -273,7 +273,9 @@
     border-radius: 10px;
     background: var(--ds-panel);
   }
-  #game.command-table .ct-mobile-combat-head { flex: 0 0 auto; padding: 10px 12px 8px; }
+  #game.command-table .ct-mobile-combat-head { flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; padding: 10px 12px 8px; }
+  #game.command-table .ct-mobile-combat-head > .ct-combat-instruction { flex-basis: 100%; }
+  #game.command-table .ct-mobile-combat-life { margin-left: auto; color: var(--ds-copy); font: 500 12px var(--ds-font-mono); }
   #game.command-table .ct-mobile-combat-head h2 { margin: 0 0 5px; font: 650 18px var(--ds-font-body); color: #f5deca; }
   #game.command-table .ct-mobile-combat .ct-combat-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
   #game.command-table .ct-mobile-combat .ct-combat-copy b { font-size: 13px; }
@@ -284,6 +286,20 @@
   #game.command-table .ct-mobile-combat .ct-defender-choice { flex: 0 0 190px; min-height: 76px; white-space: normal; }
   #game.command-table .ct-mobile-combat .ct-defender-identity b { font-size: 13px; }
   #game.command-table .ct-mobile-combat .ct-defender-allocation { font-size: 11px; }
+  #game.command-table .ct-mobile-combat-defense { padding: 0 10px 8px; }
+  #game.command-table .ct-mobile-combat-defense h3 { margin: 0 0 3px; color: var(--ds-copy); font: 600 12px var(--ds-font-body); }
+  #game.command-table .ct-mobile-combat-defense-player { border-top: 1px solid var(--ds-line); }
+  #game.command-table .ct-mobile-combat-defense-player > summary { min-height: 44px; padding: 6px 0; color: var(--ds-text); cursor: pointer; font: 500 12px/1.4 var(--ds-font-body); overflow-wrap: anywhere; }
+  #game.command-table .ct-mobile-combat-defense-player > summary span { display: block; color: var(--ds-copy); font-family: var(--ds-font-mono); }
+  #game.command-table .ct-mobile-combat-defense-player > summary:focus-visible { outline: 2px solid var(--ds-accent-bright); outline-offset: -2px; }
+  #game.command-table .ct-mobile-combat-defense-cards { display: flex; gap: 6px; padding: 0 0 8px; overflow-x: auto; scrollbar-width: thin; }
+  #game.command-table .ct-mobile-combat .ct-mobile-combat-defense-card { flex: 0 0 210px; max-width: 100%; gap: 6px; padding: 6px; background: var(--ds-panel-raised); }
+  #game.command-table .ct-mobile-combat-defense-card .ct-mobile-combat-art { flex-basis: 36px; width: 36px; }
+  #game.command-table .ct-mobile-combat-defense-card .ct-mobile-combat-art img { width: 36px; height: 50px; }
+  #game.command-table .ct-mobile-combat-defense-card .ct-mobile-combat-unit-copy { gap: 2px; }
+  #game.command-table .ct-mobile-combat-defense-card .ct-mobile-combat-unit-copy b { font-size: 12px; }
+  #game.command-table .ct-mobile-combat-defense-card .ct-mobile-combat-unit-copy strong { font-size: 14px; }
+  #game.command-table .ct-mobile-combat-defense-cards > p { margin: 4px 0; color: var(--ds-copy); font: 12px/1.4 var(--ds-font-body); }
   #game.command-table .ct-mobile-combat-roster,
   #game.command-table .ct-mobile-combat-history { flex: 1 1 0; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
   #game.command-table .ct-mobile-combat-roster-title { margin: 0 0 2px; color: #b8d4e4; font: 600 12px var(--ds-font-body); }
@@ -295,6 +311,7 @@
   #game.command-table .ct-mobile-combat-unit-copy b { font-size: 13px; overflow-wrap: anywhere; }
   #game.command-table .ct-mobile-combat-unit-copy strong { font: 650 16px var(--ds-font-mono); }
   #game.command-table .ct-mobile-combat-unit-copy small { font-size: 11px; color: #b6c9d2; line-height: 1.4; }
+  #game.command-table .ct-mobile-combat :is(.ct-mobile-combat-unit-copy, .ct-battle-copy) .ct-mobile-combat-damage { color: var(--ds-danger); font: 500 12px/1.4 var(--ds-font-mono); }
   #game.command-table .ct-mobile-combat-assignment { color: #ebbb8f; font-size: 12px; overflow-wrap: anywhere; }
   #game.command-table .ct-mobile-combat-unit:has(.ct-combat-selected) { border-color: #dfac78; }
   #game.command-table .ct-mobile-combat-card.ct-combat-selected { background: #302b23; box-shadow: none; outline: 0; }
@@ -309,6 +326,7 @@
   #game.command-table .ct-mobile-combat-incoming { display: flex; min-width: 0; }
   #game.command-table .ct-mobile-combat-incoming .ct-battle-attacker { flex: 1; width: auto; min-width: 0; }
   #game.command-table .ct-mobile-combat .ct-battle-copy b { font-size: 12px; }
+  #game.command-table .ct-mobile-combat .ct-battle-copy small { font-size: 12px; line-height: 1.4; }
   #game.command-table .ct-mobile-combat .ct-battle-copy .ct-mobile-combat-pick-hint { color: #ebbb8f; }
   #game.command-table .ct-mobile-combat-blockers { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 6px 0 0 12px; border-left: 2px solid #527c85; margin-left: 8px; }
   #game.command-table .ct-mobile-combat .ct-battle-blocks { max-height: none; overflow: visible; flex-wrap: nowrap; }

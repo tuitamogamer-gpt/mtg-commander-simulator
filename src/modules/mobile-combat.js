@@ -12,8 +12,24 @@ const button = (label, action, cls = '') => {
   return item;
 };
 const inspect = (ui, card) => { ui.sheet = { card }; ui.render(); };
-const keywords = card => ['flying', 'reach', 'menace', 'trample', 'deathtouch', 'first strike', 'double strike', 'lifelink']
+const keywords = card => ['flying', 'reach', 'menace', 'trample', 'deathtouch', 'first strike', 'double strike', 'lifelink', 'vigilance', 'indestructible', 'infect', 'wither']
   .filter(key => card.kw(key)).join(' · ');
+const defenderText = (ui, target) => target?.iid != null
+  ? `${target.name} · ${target.counters.loyalty || 0} loyalty · ${target.ctrl.name}, ${target.ctrl.life} life`
+  : `${target === ui.me ? 'You' : target?.name || 'Defender'} · ${target?.life ?? '—'} life`;
+function cardDetails(ui, card, copy, showTapped = false) {
+  const abilities = keywords(card);
+  if (abilities) copy.append(node('small', 'ct-mobile-combat-keywords', abilities));
+  const state = [showTapped ? card.tapped ? 'Tapped' : 'Untapped' : '', card.cur.unblockable ? "Can't be blocked" : '',
+    card.cur.cantBlock ? "Can't block" : ''].filter(Boolean);
+  if (state.length) copy.append(node('small', 'ct-mobile-combat-card-state', state.join(' · ')));
+  const damage = ui.markedDamageState(card);
+  if (damage) {
+    const marked = node('small', 'ct-mobile-combat-damage', `${damage.amount} damage marked`);
+    marked.title = damage.detail;
+    copy.append(marked);
+  }
+}
 const face = card => {
   const art = node('span', 'ct-mobile-combat-art');
   art.innerHTML = globalThis.MTG.cardArtHTML(card);
@@ -32,8 +48,7 @@ function blockerCards(ui, attacker, blockers, pd = null) {
     card.setAttribute('aria-label', `Inspect ${blocker.name}, blocking ${attacker.name}`);
     const copy = node('span', 'ct-mobile-combat-unit-copy');
     copy.append(node('b', '', blocker.name), node('strong', '', `${blocker.power}/${blocker.toughness}`));
-    const abilities = keywords(blocker);
-    if (abilities) copy.append(node('small', '', abilities));
+    cardDetails(ui, blocker, copy);
     card.append(face(blocker), copy);
     row.append(card);
     if (pd) {
@@ -48,6 +63,47 @@ function blockerCards(ui, attacker, blockers, pd = null) {
   return list;
 }
 
+// Public creatures only. Untapped is a board fact, not a promise that a
+// creature can block every attacker (or that all blocks are legal together).
+function defendingCreatures(ui, game, pd) {
+  const section = node('section', 'ct-mobile-combat-defense');
+  section.setAttribute('aria-label', 'Defending creatures');
+  section.append(node('h3', '', 'Defending creatures'));
+  const offered = pd.q.attackTargets || pd.q.opponents || [];
+  const players = [...new Set(offered.map(target => target.iid != null ? target.ctrl : target))];
+  const focused = pd.attackTarget || pd.sel.at(-1)?.target;
+  const focusedPlayer = focused?.iid != null ? focused.ctrl : focused;
+  pd.mobileDefenseOpen ||= {};
+  for (const player of players) {
+    const creatures = game.creatures(player);
+    const group = node('details', 'ct-mobile-combat-defense-player');
+    group.dataset.defensePlayer = String(player.idx);
+    group.open = pd.mobileDefenseOpen[player.idx] ?? (player === focusedPlayer);
+    group.ontoggle = () => {
+      if (group.isConnected && ui.pending === pd) pd.mobileDefenseOpen[player.idx] = group.open;
+    };
+    const summary = node('summary', '');
+    summary.append(node('b', '', defenderText(ui, player)),
+      node('span', '', `${creatures.filter(card => !card.tapped).length}/${creatures.length} untapped creatures`));
+    group.append(summary);
+    const list = node('div', 'ct-mobile-combat-defense-cards');
+    for (const creature of [...creatures].sort((a, b) => Number(a.tapped) - Number(b.tapped))) {
+      const card = button('', () => inspect(ui, creature), 'ct-mobile-combat-card ct-mobile-combat-defense-card');
+      card.dataset.defenseCard = String(creature.iid);
+      const copy = node('span', 'ct-mobile-combat-unit-copy');
+      copy.append(node('b', '', creature.faceDown ? 'Face-down creature' : creature.name), node('strong', '', `${creature.power}/${creature.toughness}`));
+      cardDetails(ui, creature, copy, true);
+      card.setAttribute('aria-label', `Inspect ${[...copy.children].map(item => item.textContent).join(', ')}`);
+      card.append(face(creature), copy);
+      list.append(card);
+    }
+    if (!creatures.length) list.append(node('p', '', 'No creatures on the battlefield.'));
+    group.append(list);
+    section.append(group);
+  }
+  return section;
+}
+
 export function createMobileCombat(ui, game, root, pd) {
   const pane = node('section', 'ct-mobile-combat');
   pane.setAttribute('aria-label', 'Combat');
@@ -55,6 +111,7 @@ export function createMobileCombat(ui, game, root, pd) {
   const title = pd?.q.type === 'attackers' ? 'Declare attackers' : pd?.q.type === 'blockers' ? 'Assign blockers'
     : pd ? 'Review attack' : game.phase === 'combat' ? 'Combat in progress' : 'Combat';
   head.append(node('h2', '', title));
+  head.append(node('span', 'ct-mobile-combat-life', `You · ${ui.me.life} life`));
   const targets = node('div', 'ct-mobile-combat-targets');
   pane.append(head, targets);
   const roster = node('div', 'ct-mobile-combat-roster');
@@ -74,8 +131,7 @@ export function createMobileCombat(ui, game, root, pd) {
     pick.dataset.iid = String(card.iid);
     const copy = node('span', 'ct-mobile-combat-unit-copy');
     copy.append(node('b', '', card.name), node('strong', '', `${card.power}/${card.toughness}`));
-    const abilities = keywords(card);
-    if (abilities) copy.append(node('small', '', abilities));
+    cardDetails(ui, card, copy);
     const assigned = pd.q.type === 'attackers' ? pd.sel.find(entry => entry.card === card)?.target : null;
     const blocked = blocks.filter(pair => pair.blocker === card).map(pair => pair.attacker.name);
     const waiting = (pd.attackPending || []).includes(card) || (pd.blockPending || []).includes(card);
@@ -116,9 +172,10 @@ export function createMobileCombat(ui, game, root, pd) {
       const afterBlocks = ['firstStrike', 'damage', 'endCombat'].includes(game.step)
         || game.step === 'blockers' && (ui.pending?.q.type === 'priority' || ui.react?.q.type === 'priority');
       copy.append(node('b', '', attacker.name), node('strong', '', `${attacker.power}/${attacker.toughness}`),
-        node('span', 'ct-mobile-combat-assignment', `→ ${attacker.attacking === ui.me ? 'You' : attacker.attacking.name}`),
+        node('span', 'ct-mobile-combat-assignment', `→ ${defenderText(ui, attacker.attacking)}`),
         node('small', 'ct-mobile-combat-block-status', blockers.length ? `Blocked by ${blockers.length} creature${blockers.length === 1 ? '' : 's'}`
           : attacker.wasBlocked ? 'Blocked · blocker left combat' : afterBlocks ? 'Unblocked' : 'Awaiting blocks'));
+      cardDetails(ui, attacker, copy);
       card.append(face(attacker), copy);
       group.append(card);
       if (blockers.length) group.append(blockerCards(ui, attacker, blockers));
@@ -137,9 +194,16 @@ export function createMobileCombat(ui, game, root, pd) {
 export function finishMobileCombat(ui, root, pd, pane, heading, actions, prompt) {
   const targets = pane.querySelector('.ct-mobile-combat-targets');
   const defenders = heading.querySelector('.ct-defender-choices');
-  if (defenders) targets.append(defenders);
+  if (defenders) targets.append(defenders, defendingCreatures(ui, ui.game, pd));
   const incoming = root.querySelector('.ct-battle-line');
   if (incoming) {
+    [...incoming.querySelectorAll('.ct-battle-pair')].forEach((pair, index) => {
+      const attacker = pd.q.attackers[index];
+      const copy = pair.querySelector('.ct-battle-copy');
+      copy.querySelector('small').textContent = `→ ${defenderText(ui, attacker.attacking)}`;
+      copy.querySelector('.ct-combat-keywords')?.remove();
+      cardDetails(ui, attacker, copy);
+    });
     if (pd.q.type === 'blockers') [...incoming.querySelectorAll('.ct-battle-pair')].forEach((pair, index) => {
       const attacker = pd.q.attackers[index];
       const row = node('div', 'ct-mobile-combat-incoming');

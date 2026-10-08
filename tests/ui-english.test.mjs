@@ -34,6 +34,13 @@ test('localization preserves hyphenated card names inside translated prompts', (
   assert.equal(MTG.uiText('Ti biraš Yuan-Ti Fang-Blade'), 'You choose Yuan-Ti Fang-Blade');
 });
 
+test('localization preserves Leonardo da Vinci while translating surrounding words', () => {
+  assert.equal(MTG.uiText('Leonardo da Vinci'), 'Leonardo da Vinci');
+  assert.equal(MTG.uiText('Ti biraš Leonardo da Vinci'), 'You choose Leonardo da Vinci');
+  assert.equal(MTG.uiText('da Leonardo da Vinci'), 'to Leonardo da Vinci');
+  assert.equal(MTG.uiText('da uđe untapped?'), 'so it enters untapped?');
+});
+
 test('browser text-state mirrors the English presentation used by the visible UI', () => {
   const mainSource = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   assert.match(mainSource, /prompt: pending\.prompt \? MTG\.uiText\(pending\.prompt\) : null/);

@@ -422,7 +422,7 @@ test('Elven Council protivnici taktički umanjuju korist vlasnika vote efekta', 
     aiHint: { kind: 'vote', src: galadriel, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
   };
   const galadrielDecision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 182, actionWindow: galadrielVote });
-  assert.equal(MTG.unwrapBotDecisionAction(galadrielDecision.action), 'guidance');
+  assert.equal(galadrielDecision.consideredActions[0].action, 'Choose Guidance (karta)');
 
   const plea = addCard(game, human, MTG.DEFS['Plea for Power'], 'graveyard');
   const pleaVote = {
@@ -434,7 +434,7 @@ test('Elven Council protivnici taktički umanjuju korist vlasnika vote efekta', 
     aiHint: { kind: 'vote', src: plea, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
   };
   const pleaDecision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 183, actionWindow: pleaVote });
-  assert.equal(MTG.unwrapBotDecisionAction(pleaDecision.action), 'knowledge');
+  assert.equal(pleaDecision.consideredActions[0].action, 'Choose Knowledge (3 karte)');
 });
 
 test('Elrond glas zavisi od stvarne cijene Fellowshipa', async () => {
@@ -450,12 +450,12 @@ test('Elrond glas zavisi od stvarne cijene Fellowshipa', async () => {
   });
   game.recalc();
   const noCreature = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 185, actionWindow: vote() });
-  assert.equal(MTG.unwrapBotDecisionAction(noCreature.action), 'fellowship');
+  assert.equal(noCreature.consideredActions[0].action, 'Choose Fellowship (daš stvorenje)');
 
   addCard(game, bot, MTG.DEFS['Blood Artist']);
   game.recalc();
   const withCreature = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 186, actionWindow: vote() });
-  assert.equal(MTG.unwrapBotDecisionAction(withCreature.action), 'aid');
+  assert.equal(withCreature.consideredActions[0].action, 'Choose Aid (counteri Elrondu)');
 });
 
 test('Cirdan, Sail i Travel glasovi koriste vlastite i javne resurse', async () => {
@@ -468,7 +468,7 @@ test('Cirdan, Sail i Travel glasovi koriste vlastite i javne resurse', async () 
     aiHint: { kind: 'vote', src: cirdan, voter: bot, forWhom: human, secret: true },
   };
   const cirdanDecision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 190, actionWindow: cirdanVote });
-  assert.equal(MTG.unwrapBotDecisionAction(cirdanDecision.action), String(bot.idx), 'bez bombe bot osigurava sebi kartu');
+  assert.equal(cirdanDecision.consideredActions[0].action, `Choose ${bot.name}`, 'bez bombe bot preferira osigurati sebi kartu');
 
   const sail = addCard(game, human, MTG.DEFS['Sail into the West'], 'graveyard');
   const sailVote = () => ({
@@ -477,12 +477,12 @@ test('Cirdan, Sail i Travel glasovi koriste vlastite i javne resurse', async () 
     aiHint: { kind: 'vote', src: sail, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
   });
   const emptyBot = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 191, actionWindow: sailVote() });
-  assert.equal(MTG.unwrapBotDecisionAction(emptyBot.action), 'embark', 'prazna ruka želi novu ruku');
+  assert.equal(emptyBot.consideredActions[0].action, 'Choose Embark', 'prazna ruka želi novu ruku');
   addCard(game, bot, MTG.DEFS['Blood Artist'], 'graveyard');
   addCard(game, bot, MTG.DEFS['Darksteel Reactor'], 'graveyard');
   for (let i = 0; i < 7; i++) addCard(game, bot, syntheticDef(`Solidna ruka ${i}`, { cost: '{4}', oracle: 'Draw a card.' }), 'hand');
   const graveBot = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 192, actionWindow: sailVote() });
-  assert.equal(MTG.unwrapBotDecisionAction(graveBot.action), 'return', 'puna ruka i jako groblje žele povrat');
+  assert.equal(graveBot.consideredActions[0].action, 'Choose Return', 'puna ruka i jako groblje žele povrat');
 
   const travel = addCard(game, human, MTG.DEFS['Travel Through Caradhras'], 'graveyard');
   const travelVote = () => ({
@@ -491,12 +491,12 @@ test('Cirdan, Sail i Travel glasovi koriste vlastite i javne resurse', async () 
     aiHint: { kind: 'vote', src: travel, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
   });
   const noHumanGrave = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 193, actionWindow: travelVote() });
-  assert.equal(MTG.unwrapBotDecisionAction(noHumanGrave.action), 'mines', 'prazno protivničko groblje čini Mines praznim glasom');
+  assert.equal(noHumanGrave.consideredActions[0].action, 'Choose Mines of Moria', 'prazno protivničko groblje čini Mines praznim glasom');
   addCard(game, human, MTG.DEFS['Blood Artist'], 'graveyard');
   for (let i = 0; i < 8; i++) addPlains(game, human);
   game.recalc();
   const valuableHumanGrave = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 194, actionWindow: travelVote() });
-  assert.equal(MTG.unwrapBotDecisionAction(valuableHumanGrave.action), 'pass', 'kasni basic je manja pomoć od vraćanja jakog enginea');
+  assert.equal(valuableHumanGrave.consideredActions[0].action, 'Choose Redhorn Pass', 'kasni basic je manja pomoć od vraćanja jakog enginea');
   assert.ok(other);
 });
 

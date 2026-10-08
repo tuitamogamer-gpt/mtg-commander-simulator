@@ -278,7 +278,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Opt'] = { resolve: async ctx => { await E.scry(ctx.g, ctx.you, 1); await ctx.g.draw(ctx.you, 1); } };
   SC['Pongify'] = {
-    targets: [T.creature({ prompt: 'Destroy (3/3 Ape)', aiHint: { goal: 'removal' } })],
+    targets: [T.creature({ prompt: 'Destroy (3/3 Ape)', aiHint: { goal: 'removal', removalKind: 'destroy' } })],
     resolve: async ctx => {
       const t = ctx.targets[0], c2 = t.ctrl;
       await ctx.g.destroy(t, { noRegen: true });

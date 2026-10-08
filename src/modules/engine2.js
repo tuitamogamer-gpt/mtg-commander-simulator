@@ -4624,7 +4624,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           .map(target => target.iid))];
         const damageOperation = operations.find(operation => operation.kind === 'spell-damage' &&
           operation.n !== 'X' && Number(operation.n) > 0 && operation.what !== 'each opponent');
-        let copyTargetPolicy = operations.some(operation => spreadKinds.has(operation.kind))
+        // Handwritten cards such as Pongify have target hints, but no imported
+        // Oracle operations. Their removal copies still need separate victims.
+        const spreadGoals = new Set(['removal', 'destroy', 'exile', 'bounce', 'recur', 'reanimate', 'bestGyCast', 'tap', 'untap']);
+        const spreadsSpec = spec => spreadGoals.has(spec.aiHint?.goal) &&
+          !spec.aiHint?.dmg && !spec.aiHint?.amount && !spec.aiHint?.n;
+        let copyTargetPolicy = operations.some(operation => spreadKinds.has(operation.kind)) || specs.some(spreadsSpec)
           ? 'spread' : 'focus';
         let copyUsedTargetIids = allUsedTargetIids;
         if (damageOperation) {
@@ -4646,13 +4651,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }).map(([iid]) => iid);
           copyTargetPolicy = copyUsedTargetIids.length ? 'spread' : 'focus';
         }
-        const hasUnusedTarget = copyTargetPolicy === 'spread' && specs.some(spec =>
+        const copyTargetHints = specs.map(spec => Object.assign({}, spec.aiHint || {},
+          copyTargetPolicy === 'spread' && (spreadsSpec(spec) || damageOperation || !spec.aiHint?.goal)
+            ? { copyTargetPolicy, copyUsedTargetIids } : {}));
+        const hasUnusedTarget = copyTargetPolicy === 'spread' && specs.some((spec, index) =>
+          copyTargetHints[index].copyTargetPolicy === 'spread' &&
           this.legalTargets(spec, so.card, ctrl).some(target =>
             target instanceof MTG.CardInst && !copyUsedTargetIids.includes(target.iid)));
         const redo = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Kopija ${so.name}: nove mete?`,
           options: [{ key: 'no', label: 'Iste mete' }, { key: 'yes', label: 'Nove mete' }],
-          aiHint: { kind: 'newTargets', so, copyTargetPolicy, copyUsedTargetIids, hasUnusedTarget },
+          aiHint: { kind: 'newTargets', so, copyTargetPolicy, copyUsedTargetIids, copyTargetHints, hasUnusedTarget },
         });
         if (redo === 'yes') {
           // Kopija zadržava broj targeta iz originalnog spella. "May choose new
@@ -4660,9 +4669,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const copyTargetSpecs = specs.map((spec, index) => {
             const current = so.targets[index];
             const count = Array.isArray(current) ? current.filter(Boolean).length : (current ? 1 : 0);
-            const aiHint = copyTargetPolicy === 'spread'
-              ? Object.assign({}, spec.aiHint || {}, { copyTargetPolicy, copyUsedTargetIids })
-              : spec.aiHint;
+            const aiHint = copyTargetHints[index];
             return Object.assign({}, spec, { count, min: count, upTo: false, aiHint });
           });
           const ctx = { g: this, src: so.card, you: ctrl, so: copy };

@@ -1194,6 +1194,8 @@ const UI_ENGLISH_COMPILED_RULES = [
   let source = pattern.source.replace(/\\b/g, '');
   if (source === 'Nema') source = 'Nema(?! Siltlurker)';
   if (source === uiWord('Tri').source) source = uiWord('Tri(?!-Sentinel)').source;
+  // Escape name spaces to keep this single-word rule after complete phrases.
+  if (source === uiWord('da').source) source = uiWord('da(?!(?<=Leonardo\\x20da)\\x20Vinci(?![\\p{L}\\p{N}_-]))').source;
   const whitespaceRule = source.startsWith('(\\s)');
   const rightBoundary = source.includes('(?=\\d)') ? '' : '(?![\\p{L}\\p{N}_-])';
   const bounded = whitespaceRule ? source : `(?<![\\p{L}\\p{N}_-])(?:${source})${rightBoundary}`;

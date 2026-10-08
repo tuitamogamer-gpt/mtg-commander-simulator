@@ -16,6 +16,15 @@ function makePod({ enabled = true, decideHuman, allAI = false } = {}) {
     player.controller = isAI
       ? new MTG.AIController(player, { difficulty: 'normal', style: 'balanced' })
       : { decide: async (g, q) => decideHuman ? decideHuman(g, q, player) : q.options?.[0]?.key ?? null };
+    if (isAI) {
+      // These rules tests require an exact ballot split. Keep normal bargain
+      // decisions, but fix free ballots to the highest tactical preference;
+      // seeded ballot variation has its own integration tests.
+      const decide = player.controller.decide.bind(player.controller);
+      player.controller.decide = (g, q) => q.aiHint?.kind === 'vote'
+        ? q.options.slice().sort((a, b) => MTG.scoreBotVoteOption(g, player, b, q) - MTG.scoreBotVoteOption(g, player, a, q))[0].key
+        : decide(g, q);
+    }
     return player;
   });
   game.turnPlayer = players[0];

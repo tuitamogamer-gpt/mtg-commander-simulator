@@ -34,7 +34,16 @@ test('Spellskite changes a legal target, while an illegal target stays unchanged
 test('Kharn prevents damage, changes controller, and draws for the former controller',async()=>{const f=setup(),k=card(f,'Khârn the Betrayer'),b=body(f,f.b);const n=f.a.hand.length;await f.game.damageAny(b,k,2);await settle(f.game);assert.equal(k.damage,0);assert.notEqual(k.ctrl,f.a);assert.equal(f.a.hand.length,n+2);});
 test('Stomp forbids damage prevention and does its two damage',async()=>{const f=setup(),k=card(f,'Khârn the Betrayer','battlefield',f.b),b=card(f,'Bonecrusher Giant','hand');targets(f,k);await cast(f,b,{adventure:true,...b.def.adventure});await settle(f.game);assert.equal(k.zone,'graveyard');assert.equal(b.zone,'exile');});
 test('Verrak copies an ability only after paying its life cost again',async()=>{const f=setup();card(f,'Verrak, Warped Sengir');const forge=card(f,'Mystic Forge');const n=f.a.library.length;await activate(f,forge);assert.equal(f.a.life,38);assert.equal(f.a.library.length,n-2);});
-test('Toxicrene removes printed land abilities and grants rainbow mana',()=>{const f=setup(),ring=card(f,'Sol Ring'),land=card(f,'Temple of the False God');card(f,'Toxicrene');const sources=f.game.manaSources(f.a).filter(e=>e.card===land);assert.equal(sources.length,1);assert.deepEqual(JSON.parse(JSON.stringify(sources[0].produce)),[{ANY:true}]);assert.ok(f.game.manaSources(f.a).some(e=>e.card===ring));});
+test('Toxicrene removes printed land abilities and grants rainbow mana',async()=>{
+ const f=setup(),ring=card(f,'Sol Ring'),land=card(f,'Temple of the False God');card(f,'Toxicrene');
+ const sources=f.game.manaSources(f.a).filter(e=>e.card===land);assert.equal(sources.length,1);assert.equal(sources[0].produce.length,1);assert.equal(sources[0].produce[0].ANY,true);assert.equal(sources[0].produce[0].n??1,1);
+ for(const color of ['W','U','B','R','G']){
+  f.game.untap(land);f.decide=(p,q)=>q.aiHint?.kind==='manaColor'?color:undefined;
+  const source=f.game.manaSources(f.a).find(e=>e.card===land);
+  assert.equal(await f.game.activateManaSource(f.a,source,source.produce[0]),true);assert.equal(f.a.pool[color],1);assert.equal(land.tapped,true);
+ }
+ assert.equal(f.a.pool.C,0);assert.ok(f.game.manaSources(f.a).some(e=>e.card===ring));
+});
 test('Sludge Monster changes non-Horrors with slime and restores their abilities when it leaves',async()=>{const f=setup(),s=card(f,'Sludge Monster'),b=card(f,'Wind Drake');f.game.addCounters(b,'slime',1);assert.equal(b.power,2);assert.equal(b.toughness,2);assert.equal(b.kw('flying'),false);await f.game.move(s,'exile');assert.equal(b.kw('flying'),true);assert.equal(b.toughness,2);});
 test('Helbrute graveyard cast exiles another creature; hand cast does not',async()=>{const f=setup(),h=card(f,'Helbrute','graveyard'),b=card(f,'Grizzly Bears','graveyard');fuel(f.a);const e=f.game.castableList(f.a).find(e=>e.card===h);assert.ok(e);await cast(f,h,e.alt);await settle(f.game);assert.equal(h.zone,'battlefield');assert.equal(b.zone,'exile');const hand=card(f,'Helbrute','hand');await cast(f,hand);});
 test('Dusk Mangler pays its additional cost and makes every opponent sacrifice, discard, lose life',async()=>{const f=setup(),victims=f.others.map(p=>body(f,p));for(const p of f.others)card(f,'Forest','hand',p);const own=body(f);await play(f,'Dusk Mangler');assert.equal(own.zone,'graveyard');assert.ok(victims.every(c=>c.zone==='graveyard'));assert.ok(f.others.every(p=>p.life===36&&p.hand.length===0));});
