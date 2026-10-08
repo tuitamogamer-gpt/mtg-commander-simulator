@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-10-08T03:01:24.631Z
+Generisano: 2026-10-08T09:45:00.054Z
 
 Aktivni deckovi: **175** · stvarno jedinstvenih karata: **6474** · card/deck provjere: **14566**
 
 Jedinstvene karte — PASS: **6474** · FAIL: **0** · card/deck pojave — PASS: **14566** · FAIL: **0**
 
-Cijela raw baza — PASS: **27799/27799** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **21325** karata. Cijeli katalog sadrži **23865** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **28799/28799** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **22325** karata. Cijeli katalog sadrži **24865** certifikovanih Oracle batch karata.
 
 Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.
 
@@ -15861,11 +15861,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Absolver Thrull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Absolving Lammasu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Absorb Vis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Absorbing Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Absorbing Man and Titania | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abstergo Entertainment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abstract Paintmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abstruse Interference | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abu Ja'far | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Abuelo's Awakening | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abuelo, Ancestral Echo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abuna Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abuna's Chant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15960,12 +15962,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Adventurous Eater // Have a Bite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adventurous Impulse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adverse Conditions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Advice from the Fae | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Advocate of the Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adéwalé, Breaker of Chains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aegis of Honor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis of the Gods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis of the Heavens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis of the Meek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15981,11 +15985,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Aerial Modification | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerial Predation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerial Volley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aerid Konstrari | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Auxiliary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Bowmasters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Ouphes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Worshippers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerith Gainsborough | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aerith Rescue Mission | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aeromoeba | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aeromunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aeronaut Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16006,6 +16012,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Aether Meltdown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aether Membrane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aether Poisoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aether Revolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aether Rift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aether Shockwave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aether Spike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16082,6 +16089,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Agonizing Syphon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Agony Warp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Agoraphobia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Agrus Kos, Spirit of Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Agrus Kos, Wojek Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ahn-Crop Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ahn-Crop Crasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16115,6 +16123,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ajani Fells the Godsire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani Goldmane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani Resolute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ajani Unrelenting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani Vengeant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani's Aid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani's Anguish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16132,6 +16141,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ajani, Outland Chaperone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani, Valiant Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani, Wise Counselor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ajani, the Greathearted | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Akal Pakal, First Among Equals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Akawalli, the Seething Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Akki Avalanchers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16180,6 +16190,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Alaborn Grenadier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alaborn Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alaborn Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Alacrian Armory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alacrian Jaguar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aladdin's Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alania's Pathmaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16204,6 +16215,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Alhammarret, High Arbiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ali Baba | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aliban's Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Alien Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alien Symbiosis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aligned Hedron Network | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alirios, Enraptured | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16223,6 +16235,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Allied Teamwork | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Allies at Last | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Allosaurus Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Allosaurus Shepherd | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alloy Animist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alloy Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alloy Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16254,6 +16267,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Altac Bloodseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altanak, the Thrice-Called | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Altar of Bhaal // Bone Offering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar of Bone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar of Dementia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar of Shadows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16261,6 +16275,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Altar of the Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar of the Wretched // Wretched Bonemass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar's Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Amalia Benavides Aguirre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Amarant Coral | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amaranthine Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amareth, the Lustrous | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amass the Components | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16305,6 +16321,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Amulet of Safekeeping | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amulet of Unmaking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amulet of Vigor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Amy Rose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | An Unexpected Party // At the Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | An-Havva Constable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | An-Havva Inn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16322,12 +16339,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Anathemancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anavolver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anax and Cymede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Anax, Hardened in the Forge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestor Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestor's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestor's Prophet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestral Anger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestral Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestral Katana | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ancestral Knowledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestral Memories | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestral Reminiscence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancestral Statue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16356,6 +16375,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ancient Tomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Vendetta | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Andradite Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Andúril, Flame of the West | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Andúril, Narsil Reforged | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anep, Vizier of Hazoret | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angel of Condemnation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16393,6 +16413,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Angelic Page | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Purge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Quartermaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Angelic Renewal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Skirmisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16403,6 +16424,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Angrath's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angrath's Rampage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angrath, Captain of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Angrath, Minotaur Pirate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angrath, the Flame-Chained | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angry Rabble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anim Pakal, Thousandth Moon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16444,8 +16466,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Antagonize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anthem of Champions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anthem of Rakdos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Anthousa, Setessan Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anthropede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anthroplasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Anti-Magic Aura | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anti-Venom, Horrifying Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anticausal Vestige | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anticipate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16471,6 +16495,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Aphetto Vulture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aphotic Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Apocalypse Chime | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16511,6 +16536,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Arachnoform | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arachnoid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arachnoid Adaptation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arachnus Web | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aradara Express | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aragorn and Arwen, Wed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aragorn, Hornburg Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16549,6 +16575,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Arcane Investigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Laboratory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Omens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arcane Proxy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Spyglass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Subtraction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Teachings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16570,13 +16597,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Arcbound Slith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcbound Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcbound Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arcbound Wanderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcbound Whelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcbound Worker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archaeological Dig | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archaeomender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Archangel Elspeth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archangel of Wrath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archangel's Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archdemon of Unx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Archdruid's Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archenemy's Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archers of Qarsi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archers' Parapet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16591,6 +16621,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Architects of Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archive Arbiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archive Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Archive Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archivist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archivist of Oghma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archmage of Runes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16616,7 +16647,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Arctic Treeline | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arctic Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcum's Astrolabe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arcum's Sleigh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcum's Weathervane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arcus Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ardent Dustspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ardent Electromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ardent Elementalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16626,6 +16659,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ardenvale Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ardenvale Tactician // Dizzying Swoop | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ardoz, Cobbler of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ardyn, the Usurper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arena | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arena Athlete | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arena Rector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arena Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16647,11 +16682,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Argothian Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arguel's Blood Fast // Temple of Aclazotz | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aria of Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arid Archway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arid Mesa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arisen Gorgon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ark of Blight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arlinn's Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arlinn, Voice of the Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arm the Cathars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arm with Aether | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armada Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armageddon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16659,6 +16696,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Armament Corps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armament Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armament Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Armament of Nyx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armasaur Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armed // Dangerous | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armed Assailant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16689,6 +16727,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Arms of Hadar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Army Ants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Army of Allah | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arni Brokenbrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arni Slays the Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arni, Humble Scribe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arni, Renowned Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16739,6 +16778,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ash, Party Crasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Asha's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashcoat Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ashcoat of the Shadow Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashe, Princess of Dalmasca | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashen Firebeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashen Monstrosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16754,6 +16794,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ashiok's Forerunner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashiok's Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashiok's Skulker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ashiok, Nightmare Muse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashiok, Sculptor of Fears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashling's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashling, Flame Dancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16773,6 +16814,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Aspect of Lamprey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aspect of Manticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aspect of Mongoose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aspect of Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Asphodel Wanderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Asphyxiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aspirant's Ascent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16798,9 +16840,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Assimilate Essence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assure // Assemble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astarion's Thirst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Astarion, the Decadent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astelli Reclaimer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astonishing Spider-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astor, Bearer of Blades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Astral Confrontation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astral Steel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astral Wingspan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | At Knifepoint | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16808,6 +16852,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Atarka Efreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atarka Pummeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atarka's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Atemsis, All-Seeing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atlantean Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atlantean Skirmisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atlantis Attacks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16815,12 +16860,15 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Atmosphere Surgeon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atmospheric Greenhouse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atogatog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Atomic Microsizer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atomwheel Acrobats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atraxa's Fall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atraxa, Grand Unifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Atreus, Impulsive Son | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atris, Oracle of Half-Truths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atrocious Experiment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Attack-in-the-Box | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Attempted Murder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Attendant of Vraska | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Attended Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Attended Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16836,7 +16884,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Audacious Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Audacity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Audience with Trostani | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Auditore Ambush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auger Spree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Augmenter Pugilist // Echoing Equation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Augmenting Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Augur il-Vec | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Augur of Skulls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16846,6 +16896,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Auntie Blyte, Bad Influence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auntie's Hovel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auntie's Sentence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Auntie's Snitch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aura Barbs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aura Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aura Extraction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16858,8 +16909,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Auramancer's Guise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auratog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aurelia's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aurelia, Exemplar of Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aurelia, the Law Above | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aurelia, the Warleader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aurification | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auriok Bladewarden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auriok Edgewright | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Auriok Glaivemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16885,10 +16938,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Automatic Librarian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Autonomous Assembler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Autumnal Gloom // Ancient of the Equinox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Auxiliary Boosters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avabruck Caretaker // Hollowhenge Huntmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avacyn's Collar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avacyn's Memorial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avacyn, Angel of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Avacynian Missionaries // Lunarch Inquisitors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avacynian Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avalanche | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avalanche Caller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16903,6 +16958,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Avatar Roku, Firebender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avatar of Burgeoning Echoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avatar of Discord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Avatar of Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avatar of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avatar of Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avatar of Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16938,12 +16994,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Aven Tactician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Trooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aven Warcraft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Warhawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Wind Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Wind Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Windreader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven of Enduring Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avenger en-Dal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Avenger of the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avengers Disassembled | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avengers Hangar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Avengers: Under Siege | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16972,6 +17030,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Awe Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Awe for the Guilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axebane Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Axebane Ferox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axebane Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axegrinder Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axgard Armory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17010,6 +17069,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Azusa, Lost but Seeking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ba Sing Se | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baboon Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Back for More | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Back on Track | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Back to Basics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Back to Nature | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17039,6 +17099,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Balamb Garden, SeeD Academy // Balamb Garden, Airborne | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balamb T-Rexaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balance of Power | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Balancing Act | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Atrocity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Barbarians | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17065,6 +17126,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ballyrush Banneret | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balm of Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balmor, Battlemage Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Baloth Cage Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baloth Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baloth Null | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baloth Pup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17095,6 +17157,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Banishing Slash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Banishment Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bankrupt in Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Banner of Kinship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bannerhide Krushok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Banners Raised | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Banshee's Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17117,6 +17180,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Barbed Battlegear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbed Bloodletter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbed Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Barbed Foliage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbed Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbed Servitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbed Shocker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17159,14 +17223,18 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Barrier Breach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrier of Bones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrin's Codex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Barrin's Spite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Barrin's Unmaking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrin, Master Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrin, Tolarian Archmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Barroom Brawl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrow Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrow Naughty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrow Witches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barrow-Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bartered Cow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bartizan Bats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bartz and Boko | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baru, Fist of Krosa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baru, Wurmspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basal Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17187,6 +17255,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Basking Broodscale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basking Capybara | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basking Rootwalla | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Basri Ket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basri's Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basri's Aegis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basri's Lieutenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17261,6 +17330,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Bazaar Krovod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bazaar Trademage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bazaar Trader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bazaar of Wonders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beacon Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beacon Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beacon of Creation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17291,8 +17361,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Beastbreaker of Bala Ged | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beastcaller Savant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beastie Beatdown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Beastmaster's Magemark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beastrider Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beasts of Bogardan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Beatrix, Loyal General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bebop & Rocksteady | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bebop, Warthog Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beck // Call | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17345,6 +17417,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Beloved Beggar // Generous Soul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beloved Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beloved Princess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Beluna Grandsquall // Seek Thrills | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beluna's Gatekeeper // Entry Denied | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ben-Ben, Akki Hermit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benalish Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17359,6 +17432,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Benalish Missionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benalish Sleeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benalish Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bend or Break | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bender's Waterskin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beneath the Sands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benefaction of Rhonas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17372,9 +17446,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Benthic Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benthic Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benthicore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Beorn the Fierce | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beorn's Hospitality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beorn, Reluctant Host // Till and Tend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bequeathal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bereaved Survivor // Dauntless Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bereavement | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Berserk Murlodont | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Berserkers of Blood Ridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17469,8 +17545,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Black Panther, Claws of Bast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Panther, Most Dangerous | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Panther, Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Black Panther, Wakandan King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Poplar Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Black Sun's Twilight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Tom Cassidy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Waltz No. 3 | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17513,6 +17591,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blaring Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blaring Recruiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blasphemous Edict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blast of Genius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blaster Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blastfire Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blasting Station | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17537,6 +17616,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blech, Loafing Pest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bleed Dry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bleeding Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bleeding Effect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bleeding Woods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blessed Alliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blessed Breath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17573,6 +17653,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blighted Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blighted Steppe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blightreaper Thallid // Blightsower Thallid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blightsoil Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blightspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blightsteel Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17615,6 +17696,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blitz Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blitz Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blitz of the Thunder-Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blitzball | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blitzball Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blizzard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blizzard Brawl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17649,6 +17731,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blood Moon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Oath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blood Operative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Pet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Petal Celebrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Price | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17660,6 +17743,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blood Tithe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Vassal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood for Bones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blood on the Snow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood-Chin Fanatic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood-Chin Rager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood-Cursed Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17737,18 +17821,21 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Blossom Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blossom Prancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blossom-Blessed Angel // Seed Suture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blossombind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blossoming Calm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blossoming Tortoise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blossoming Wreath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blot Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blot Out the Sky | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blow Your House Down | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blue Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blue Elemental Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blue Mana Battery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blue Marvel, Adam Brashear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blue Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blue Sun's Twilight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blue Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blue, Loyal Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blunt the Assault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blur of Blades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17763,6 +17850,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Boartusk Liege | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bob, Reluctant HYDRA Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Body Dropper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Body Launderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Body Snatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Body of Jukai | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Body of Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17785,6 +17873,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Bog Wraith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Wreckage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog-Strider Ash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bogardan Dragonheart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogardan Firefiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogardan Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogardan Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17806,6 +17895,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Bogslither's Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogstomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogwater Lumaret | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bohn, Beguiling Balladeer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boilerbilges Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boiling Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17909,6 +17999,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Born to Drive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Borne Upon a Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boromir, Warden of the Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boros Battleshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Challenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Fury-Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17933,6 +18024,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Botanical Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bothersome Noisemaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bottle Golems | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bottled Cloister | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bottomless Pit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bottomless Vault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boughside Wanderers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17947,6 +18039,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Bound in Gold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bound in Silence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boundary Lands Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bounding Felidar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bounding Krasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bounding Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boundless Realms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18015,6 +18108,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Brazen Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bre of Clan Stoutarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breach the Multiverse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breaching Hippocamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Break Asunder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Break Down the Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18022,16 +18116,19 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Break Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Break Through the Line | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Break Ties | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Break Under Pressure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Break of Day | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Break the Spell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breaker of Armies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breaker of Creation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breaking // Entering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breaking Point | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breaking Wave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breaking of the Fellowship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breakneck Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breakneck Rider // Neck Breaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breakthrough | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breath of Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breath of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breathe Your Last | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breathstealer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18053,6 +18150,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Briarpack Alpha | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Briber's Purse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bribery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bride's Gown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bridge from Below | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bridgeworks Battle // Tanglespan Bridgeworks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bridled Bighorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18068,11 +18166,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Brightspear Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brightwood Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brigid's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brigid, Clachan's Heart // Brigid, Doun's Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brigid, Hero of Kinsbaile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brigone, Soldier of Meletis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brilliance Unleashed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brilliant Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brilliant Spectrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brilliant Ultimatum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brilliant Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brimstone Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brimstone Roundup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brimstone Trebuchet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18092,6 +18193,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Bringer of the Black Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bringer of the Blue Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bringer of the Green Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bringer of the Red Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bringer of the White Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brink of Disaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brink of Madness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18116,6 +18218,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Brokers Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brokers Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brontotherium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bronze Cudgels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Sable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Walrus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18126,6 +18229,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Brood Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brood Monitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brood Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brood of Cockroaches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broodguard Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broodheart Engine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broodhunter Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18191,6 +18295,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Buoyancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burden of Greed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burden of Guilt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Burden of Proof | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burdened Aerialist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burdened Stoneback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bureau Headmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18204,6 +18309,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Burn Down the House | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burn Trail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burn at the Stake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Burn from Within | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burn the Accursed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burn the Impure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burn, Burn, Tree and Fern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18270,6 +18376,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cabal Executioner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cabal Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cabal Inquisitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cabal Interrogator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cabal Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cabal Patriarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cabal Pit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18300,6 +18407,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cadaverous Bloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cadaverous Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cadira, Caller of the Small | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Caduceus, Staff of Hermes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caelorna, Coral Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caged Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cagemail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18316,7 +18424,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Caldera Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Calibrated Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caligo Skin-Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Call Damage Control | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Call Forth the Tempest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call In a Professional | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Call a Surprise Witness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call for Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call of the Conclave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call of the Death-Dweller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18336,6 +18447,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Call to the Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call to the Grave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call to the Kindred | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Callaphe, Beloved of the Sea | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caller of Gales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Callous Bloodmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Callous Deceiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18350,6 +18462,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Camellia, the Seedmiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Camera Launcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Campaign of Vengeance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Campfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Campus Composer // Aqueous Aria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Campus Crier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Campus Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18424,6 +18537,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Captivating Glance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Captivating Gyre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Captivating Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Captive Audience | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Captive Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Captive Weird // Compleated Conjurer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Capture Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18434,6 +18548,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Carapace Forger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caravan Escort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caravan Hurda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Caravan Vigil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Carbonize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Careening Mine Cart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Carefree Swinemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18478,6 +18593,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cartouche of Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cartouche of Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cartouche of Zeal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Casal, Lurkwood Pathfinder // Casal, Pathbreaker Owlbear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cascade Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Case of the Burning Masks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Case of the Crimson Pulse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18517,6 +18633,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Catalog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catalyst Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catalyst Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Catapult Fodder // Catapult Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catapult Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catapult Squad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catastrophe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18534,6 +18651,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cathar's Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catharsis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cathartic Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cathartic Parting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cathedral Sanctifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cathedral of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caught Red-Handed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18569,6 +18687,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cavern Stomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cavern Thoctar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cavern of Souls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cavernous Maw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cease // Desist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cease-Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ceaseless Searblades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18585,6 +18704,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Celestial Messenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Celestial Prism | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Celestial Purge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Celestial Regulator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Celestial Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Celestus Sanctifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cellar Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18615,6 +18735,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Center Soul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Aristocrat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Broker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cephalid Constable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Illusionist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Inkmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Inkshrouder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18623,10 +18744,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cephalid Retainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cephalid Shrine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalid Vandal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cephalopod Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cerebral Confiscation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cerebral Download | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cerebral Eruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cerebral Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ceremonial Groundbreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ceremonial Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18644,6 +18767,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cetavolver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chain Assassination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chain Devil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chain Stasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chain of Acid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chain of Plasma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chain of Smog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chain to Memory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chainbreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chained Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18651,6 +18778,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Chained to the Rocks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chainer's Edict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chainer's Torment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chainer, Dementia Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chainflail Centipede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chainflinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chainsaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18683,6 +18811,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Chancellor of the Spires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chancellor of the Tangle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra Ablaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra Nalaar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Defeat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Embercat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Emberling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18701,10 +18831,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Chandra's Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Acolyte of Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Bold Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra, Chill of Compliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Fire Artisan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Flame's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra, Flameshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra, Heart of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Hope's Beacon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Novice Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra, Pyrogenius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, Spark Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra, the Firebrand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Change of Fortune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18756,6 +18890,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Charging War Boar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chariot of Victory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chariot of the Sun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Charisma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Charismatic Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Charitable Levy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Charity Extractor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18781,6 +18916,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cheering Fanatic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chelonian Tackle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chemister's Trick | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chevill, Bane of Monsters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chief Warg's Company | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chief of the Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chief of the Scale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18829,6 +18965,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Chocobo Camp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chocobo Kick | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chocobo Racetrack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Choice of Damnations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Choke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Choking Fumes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Choking Miasma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18843,6 +18980,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Chorus of the Tides | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chosen by Heliod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chosen of Markov // Markov's Servant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chromatic Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chromatic Orrery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chromatic Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chromatic Star | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18941,6 +19079,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Clarion Conqueror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clarion Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clarion Ultimatum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Clash of Elements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clash of Realities | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clash of Wills | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clash of the Eikons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18970,7 +19109,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cleaver Riot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cleaving Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cleaving Skyrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Clement, the Worrywort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cleon, Merry Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cleopatra, Exiled Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clergy en-Vec | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cleric of Chill Depths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cleric of Life's Bond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18987,6 +19128,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cling to Dust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clinging Anemones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clinging Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Clinging Mists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clinquant Skymage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clip Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clive's Hideaway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19047,6 +19189,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cloudstone Curio | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clout of the Dominus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloven Casting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Clown Car | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clowning Around | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clutch of Currents | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clutch of Undeath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19063,6 +19206,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Coastal Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coastal Hornclaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coastal Piracy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Coastal Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coastline Chimera | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coastline Marauders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coat with Venom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19072,6 +19216,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cobbled Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cobbled Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cockatrice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cocoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Code of Constraint | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Codecracker Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Codespell Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19086,6 +19231,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cogwork Assembler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cogwork Wrestler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cogworker's Puzzleknot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Coiling Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Coiling Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coiling Woodworm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coils of the Medusa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cold Case Cracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19093,6 +19240,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cold Storage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cold-Water Snapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colfenor's Plans | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Colfenor, the Last Yew | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coliseum Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collapsing Borders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collar the Culprit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19134,6 +19282,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Combat Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Combat Thresher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Combat Tutorial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Combine Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Combo Attack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Combust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Combustion Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19208,6 +19357,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Conflagrate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conflux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Confound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Confounding Conundrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Confounding Riddle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Confront the Past | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Confront the Unknown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19222,6 +19372,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Conquering Manticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conqueror's Pledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conscripted Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Consecrate // Consume | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Consecrate Land | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consecrated Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consecrated by Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conservator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19249,8 +19401,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Consuming Ashes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consuming Blob | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consuming Bonfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Consuming Ferocity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consuming Fervor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consuming Sinkhole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Consuming Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consuming Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consumptive Goo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Contact Other Plane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19318,6 +19472,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Core Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cori Mountain Monastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cori Mountain Stalwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cori-Steel Cutter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cornered Crook | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cornered by Black Mages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coronation of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19339,6 +19494,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Corpulent Corpse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corridor Monitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corroding Dragonstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Corrosion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corrosive Gale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corrosive Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corrosive Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19354,6 +19510,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Corrupted Shapeshifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corrupted Zendikon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corrupting Licid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Corruption of Towashi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coruscation Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosi's Ravager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosi's Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19361,6 +19518,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cosmic Epiphany | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosmic Hunger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosmic Larva | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cosmic Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosmic Spider-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosmium Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cosmium Confluence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19393,6 +19551,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Courier Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Courier Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Courier Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Courier of Comestibles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Courier's Briefcase | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Courier's Capsule | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coursers' Accord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19401,15 +19560,19 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Court Homunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court Street Denizen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court of Ambition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Court of Ardenvale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court of Bounty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Court of Cunning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court of Embereth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court of Garenbrig | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Court of Vantress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Courtly Provocateur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covenant of Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covenant of Minds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cover of Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covert Cutpurse // Covetous Geist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covert Operative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Covert Technician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coveted Peacock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coveted Prize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covetous Castaway // Ghostly Castigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19485,10 +19648,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Creeping Chill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Corrosion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Crystal Coating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Creeping Dread | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Mold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Peeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creepy Doll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Creepy Puppeteer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cremate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crenellated Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crescent Island Temple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19497,6 +19662,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cresting Mosasaurus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crevasse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crew Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crime // Punishment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crime Novelist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crimestopper Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Criminal Enterprise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19512,6 +19678,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Crippling Blight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crippling Chill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crippling Fatigue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Critical Hit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Croaking Counterpart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crocanura | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crocodile of the Crossing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19542,6 +19709,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Crowd's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crown of Ascension | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crown of Awe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crown of Convergence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crown of Empires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crown of Flames | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crown of Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19555,6 +19723,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Crude Rampart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cruel Administrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cruel Alliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cruel Calculations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cruel Deceiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cruel Edict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cruel Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19592,6 +19761,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cryotheory Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypsis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crypt Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Cobra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Feaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19608,6 +19778,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cryptic Gateway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptic Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptid Inspector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cryptolith Fragment // Aurora of Emrakul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptolith Rite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptoplasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptwailing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19636,14 +19807,17 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Culling Sun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culling the Weak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culmination of Studies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cult Conscript | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cult Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cult Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cult of the Waxing Moon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cultbrand Cinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cultist of the Absolute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cultist's Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cultural Exchange | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culvert Ambusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cumber Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cunning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cunning Advisor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cunning Bandit // Azamuki, Treachery Incarnate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cunning Breezedancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19662,6 +19836,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Curio Vendor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curiosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curious Cadaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Curious Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curious Farm Animals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curious Forager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curious Homunculus // Voracious Reader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19672,15 +19847,19 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Curse of Bloodletting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Chains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Death's Hold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Curse of Echoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Exhaustion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Marit Lage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Obsession | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Curse of Shaken Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Stalked Prey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Curse of Surveillance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Thirst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of Wizardry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse of the Bloody Tome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Curse of the Pierced Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curse-Marred Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursebreak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursecatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19688,9 +19867,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cursed Land | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Monstrosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cursed Recording | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Ronin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Totem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Windbreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cursed Wombat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curtain of Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Custodian of the Trove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Custody Battle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19730,6 +19911,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Cytospawn Shambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | D'Avenant Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | D'Avenant Trapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dack Fayden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dack's Duplicate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daemogoth Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daemogoth Woe-Eater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19749,6 +19931,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Daily Bugle Newspaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daily Bugle Reporters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daily Regimen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dakkon, Shadow Slayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19769,6 +19952,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dance of the Tumbleweeds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dance with Devils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dancing Scimitar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dancing Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dancing from Dark to Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dandân | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dangerous Wager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19779,7 +19963,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dapper Shieldmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daraja Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darba | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Daredevil Dragster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daredevil's Billy Club | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Daretti, Ingenious Iconoclast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Daretti, Rocketeer Engineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darigaaz's Attendant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darigaaz's Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darigaaz, the Igniter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19798,6 +19985,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dark Bargain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Confidant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dark Dabbling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Deal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Deed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Endurance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19883,6 +20071,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dawn of a New Age | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawn of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawn's Light Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dawn-Blessed Pennant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnbringer Charioteers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnbringer Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnfeather Eagle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19943,6 +20132,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Deadlock Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Alliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Allure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deadly Complication | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Derision | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Designs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19964,6 +20154,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Death Cultist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Denied | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Frenzy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Death Match | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Pit Offering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Pulse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Rattle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19971,6 +20162,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Death Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death in the Family | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death of a Thousand Stings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Death or Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death to Our Enemies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death's Approach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death's Caress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19989,6 +20181,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Deathcap Marionette | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathcult Rogue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathcurse Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deathforge Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathgaze Cockatrice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathgazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathgreeter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20003,6 +20196,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Deathmark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathmark Prelate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathmask Nezumi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deathpact Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathrender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathrite Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathspore Thallid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20029,11 +20223,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Decode Transmissions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decommission | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decompose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Decomposition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deconstruct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deconstruction Hammer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decorated Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decorated Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decoy Ploy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Decree of Annihilation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decree of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dedicated Commons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dedicated Martyr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20080,6 +20276,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Defenestrate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defenestrated Phantom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defense Grid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Defense of the Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defensive Maneuvers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defensive Stance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20111,6 +20308,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Delighted Halfling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Delightful Discovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Delirium Skeins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deliver Unto Evil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Delivery Moogle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Delney, Streetwise Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Delraich | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20143,6 +20341,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Demonic Appetite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demonic Bargain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demonic Collusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Demonic Counsel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demonic Dread | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demonic Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demonic Gifts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20185,10 +20384,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Deranged Whelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Derelict Attic // Widow's Walk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Descendant of Kiyomaro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Descendant of Masumaro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Descendant of Soramaro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Descendant of Storms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Descent into Avernus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Descent of the Dragons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desculpting Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecrated Earth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecrated Tomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecration Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20202,7 +20403,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Deserted Temple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deserter's Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deserter's Quarters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desertion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desiccated Naga | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desmond Miles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desolation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desolation Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desolation Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20210,8 +20413,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Desperate Bloodseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Castaways | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Farmer // Depraved Harvester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desperate Futurescribe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Lunge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Measures | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desperate Plea | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20236,10 +20441,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Detainment Spell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Detective's Satchel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Detention Chariot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Detention Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Detritivore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deus of Calamity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devastate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devastating Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Devastating Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devastating Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devastating Summons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deviant Glee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20257,6 +20464,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Devoted Retainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devotee of Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devour Flesh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Devour Intellect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devour in Flames | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devour in Shadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devourer of Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20266,7 +20474,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Devouring Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devouring Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devouring Strossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Devouring Sugarmaw // Have for Dinner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devouring Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Devouring Tendrils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devout Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devout Harpist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devout Invocation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20289,6 +20499,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dictate of Karametra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Didact Echo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Didn't Say Please | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Die Young | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dig Site Inventory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dig Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dig Up the Body | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20340,6 +20551,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Direct Current | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Escort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Diregraf Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Scavenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diresight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20370,6 +20582,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Discombobulate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Discordant Dirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Discordant Piper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Discordant Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Disease Carriers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Disembowel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Disempower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20477,6 +20690,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Djinn of the Fountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Djinn of the Lamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Djinni Windseer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Do or Die | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doc Ock's Henchmen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doc Ock's Tentacles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doc Ock, Evil Inventor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20486,6 +20700,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dockworker Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doctor Doom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doctor Doom, Unrivaled | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Doctor Jane Foster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doctor Octopus, Master Planner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doctor Spectrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doctor Strange, Surgeon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20501,6 +20716,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dolmen Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Domesticated Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Domestication | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dominaria's Judgment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dominating Licid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dominating Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dominator Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20509,6 +20725,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Domri's Ambush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Domri's Nodorog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Domri, City Smasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Don & Leo, Problem Solvers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Don't Make a Sound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Don't Move | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Donald Blake, Guise of Thor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20525,10 +20742,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Doom Foretold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doom Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doom's Servo-Guards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Doombot Harbinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomed Dissenter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomed Traveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomfall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomgape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Doomsday | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Doomsday Excruciator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Doomsday Specter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomskar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomskar Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doomskar Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20540,6 +20761,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Doran, the Siege Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dori, Bearer of Friends | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dormant Gomazoa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dormant Grove // Gnarled Grovestrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dormant Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dorothea, Vengeful Victim // Dorothea's Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dosan the Falling Leaf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20558,11 +20780,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Douse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Douse in Gloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Douser of Lights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dovescape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dovin Baan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dovin's Acuity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dovin's Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dovin's Dismissal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dovin's Veto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dovin, Architect of Law | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dovin, Hand of Control | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Down // Dirty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Down in the Valley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Down, Down to Goblin-town | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20609,11 +20834,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dragon Sniper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Throne of Tarkir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Trainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragon Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Whisperer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon's Claw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon's Desire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragon's Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon's Eye Savants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon's Eye Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon's Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20629,6 +20856,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dragonborn Looter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonbroods' Relic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonclaw Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragonfire Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonfly Suit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonfly Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonlair Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20641,7 +20869,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dragonscale Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonscale General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonsguard Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragonshift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonsoul Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragonspark Reactor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragonstorm Forecaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20687,6 +20917,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dread Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dread Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dread Slag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dread Slaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dread Specter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dread Statuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dread Wanderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20715,6 +20946,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dream Fighter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Fracture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dream Leash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Salvage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Seizer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Spoilers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20722,6 +20954,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dream Strix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Thrush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dream Tides | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Trawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Twist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream's Grip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20754,6 +20987,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Drider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drift of Phantasms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drifter il-Dal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Driftgloom Coyote | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drifting Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drifting Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drill Bit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20765,6 +20999,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dripping-Tongue Zubera | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Driven // Despair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Driver of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Drivnod, Carnage Dominus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drix Fatemaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drizzt Do'Urden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drogskol Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20838,6 +21073,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Dub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dubious Delicacy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duct Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Due Diligence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Due Respect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duel Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duel for Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20886,6 +21122,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Duskmourn's Domination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duskrider Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duskrider Peregrine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Duskwalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duskwatch Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duskwatch Recruiter // Krallenhorde Howler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duskwielder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20989,6 +21226,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Earth-Origin Yak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthbending Lesson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthbending Student | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Earthbind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthblighter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthbrawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthcraft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21007,6 +21245,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | East-Mark Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Easterling Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eastern Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eastfarthing Farmer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Easy Prey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eat to Extinction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eaten Alive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21019,6 +21258,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ebony Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ebony Owl Netsuke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ebony Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eccentric Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Echo Circlet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Echo Inspector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Echo Tracer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21036,6 +21276,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Eclipsed Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eclipsed Kithkin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eclipsed Merrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eclipsed Realms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ecological Appreciation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ecologist's Terrarium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ecstatic Awakener // Awoken Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21043,6 +21284,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Eddymurk Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eddytrail Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edea, Possessed Sorceress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eden, Seat of the Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgar's Awakening | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgar, Ancient Bloodlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgar, Charmed Groom // Edgar Markov's Coffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21050,6 +21292,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Edge Rover | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edge of the Divinity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgewalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Edgewall Inn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgewall Innkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgewall Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edifice of Authority | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21065,6 +21308,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Efreet Weaponmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ego Drain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ego Erasure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Egon, God of Death // Throne of Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eidolon of Astral Winds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eidolon of Inspiration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eidolon of Obstruction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21096,6 +21340,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Elder of Laurels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elderfang Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elderleaf Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elderscale Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Aggressor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Devastator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Linebreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21136,8 +21381,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Elephant-Mandrill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elephant-Rat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elesh Norn, Grand Cenobite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elesh Norn, Mother of Machines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elf Replica | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elfhame Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elfhame Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elfhame Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elfsworn Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elgaud Inquisitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21156,10 +21403,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Elite Javelineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elite Skirmisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elite Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elixir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elixir of Vitality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ellie and Alan, Paleontologists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ellie, Vengeful Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ellyn Harbreeze, Busybody | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ellywick Tumblestrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elmar, Ulvenwald Informant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elminster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elminster's Simulacrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elrond, Lord of Rivendell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elrond, Moon-Reader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21171,12 +21422,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Elspeth's Smite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elspeth's Talent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elspeth, Knight-Errant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elspeth, Storm Slayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elspeth, Sun's Nemesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elspeth, Undaunted Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elturel Survivors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elturgard Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elusive Krasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elusive Spellfist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elusive Tormentor // Insidious Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elven Bow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elven Chorus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elven Fortress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21198,6 +21451,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Elvish Dreadlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Eulogist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elvish Guidance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Handservant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Harbinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21206,6 +21460,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Elvish Hydromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Lyrist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elvish Mariner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Pathcutter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Pioneer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Reclaimer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21238,6 +21493,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Emberhorn Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embermage Goblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embermaw Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Embermouth Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embersmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emberstrike Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emberwilde Augur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21255,6 +21511,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Embrace Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embrace the Paradox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emerald Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Emerald Dragon // Dissonant Wave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emerald Dragonfly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emerald Oryx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emerge Unscathed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21314,6 +21571,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | End the Festivities | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endbringer's Revel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endemic Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Endless Horizons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endless Scream | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endless Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endless Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21360,6 +21618,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Enlightened Maniac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enlisted Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enlistment Officer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ennis, Debate Moderator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enormous Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enormous Energy Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enrage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21382,11 +21641,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ent's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ent-Draught Basin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Entangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Entangling Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Entangling Vines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the Avatar State | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the Enigma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the Infinite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the Unknown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Enthralling Hold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enthralling Victor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enthusiastic Study | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Entish Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21429,6 +21690,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Erdwal Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Erebor Flamesmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Erebos's Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Erebos's Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Erebos's Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Erebos, God of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Erg Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21480,6 +21742,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Esquire of the King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Essence Backlash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Essence Bottle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Essence Burn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Essence Capture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Essence Channeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Essence Depleter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21514,8 +21777,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Eternal of Harsh Truths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eternity Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eternity Vessel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ether | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ether Well | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ethercaste Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ethereal Absolution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ethereal Ambush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ethereal Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ethereal Elk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21555,6 +21820,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Evil Eye of Urborg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Evil Presence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Evil Reawakened | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Evil's Thrall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Evin, Waterdeep Opportunist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eviscerate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eviscerator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eviscerator's Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21563,6 +21830,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Evolved Sleeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Evolved Spinoderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Evolving Adaptive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Evra, Halcyon Witness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Exalted Sunborn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Exava, Rakdos Blood Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Excalibur II | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21600,6 +21868,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Exotic Disease | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expanded Anatomy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expanding Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Expedited Inheritance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expedition Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expedition Diviner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expedition Envoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21608,6 +21877,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Expedition Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expedition Skulker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Expel from Orazca | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expel the Unworthy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expendable Lackey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expendable Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21635,6 +21905,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Exponential Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expose Evil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expose to Daylight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Expressive Firedancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Exquisite Firecraft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Exquisite Huntmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Extended Absence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21662,6 +21933,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Eye Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eye Gouge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eye Spy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eye of Jace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eye of Malcator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eye of Nowhere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eye of Ramos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21695,6 +21967,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Faceless Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faceless Devourer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faceless Haven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Faces of the Past | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Facet Reader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Facevaulter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fade Away | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21704,6 +21977,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fading Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fae Flight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fae Offering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Faebloom Trick | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Dreamthief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Duelist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Fencing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21714,6 +21988,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Faerie Macabre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Mechanist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Miscreant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Faerie Slumber Party | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Snoop | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Squadron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21737,6 +22012,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Falcon Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Falcon's Wing Harness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Falcon, Joaquin Torres | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Falcon, Winged Wonder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Falconer Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Falkenrath Aristocrat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Falkenrath Celebrants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21794,6 +22070,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fang of Shigeki | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fang of the Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fang, Roku's Companion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fang-Druid Summoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fangblade Brigand // Fangblade Eviscerator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fanged Flames | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fangkeeper's Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21802,10 +22079,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fangren Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fangren Marauder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fangren Pathcutter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fangs of Kalonia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fantastic Bounce | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Far // Away | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Far Fortune, End Boss | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Far Traveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Faramir, Field Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Farbog Boneflinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Farbog Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Farbog Revenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21869,6 +22148,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fear of Exposure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fear of Failed Tests | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fear of Falling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fear of Immobility | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fear of Impostors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fear of Infinity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fear of Isolation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21894,6 +22174,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Feast of Succession | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast of Worms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast of the Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Feast of the Victorious Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast on the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast or Famine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feaster of Fools | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21918,6 +22199,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Feisty Spikeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feiyi Snake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feldon's Cane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Feldon, Ronom Excavator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Felhide Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Felhide Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Felhide Petrifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21995,6 +22277,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Festering Gulch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Festering March | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Festering Mummy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Festering Newt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Festering Wound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Festerleech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Festival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22009,6 +22292,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Feudkiller's Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fever Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fevered Convulsions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fevered Visions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feywild Caretaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feywild Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feywild Visitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22021,6 +22305,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Field Trip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field of Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field of Reality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Field of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fieldmist Borderpost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiend Artisan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiend Binder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22029,6 +22314,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fierce Invocation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fierce Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fierce Witchstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fiery Annihilation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Bombardment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Cannonade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Conclusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22044,6 +22330,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fight to the Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fight with Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fighting Chance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Figure of Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Filigree Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Filigree Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Filigree Fracture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22072,6 +22359,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Find the Path | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Finishing Blow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Finneas, Ace Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Firbolg Flutist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Firdoch Core | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Ants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Bowman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22150,6 +22438,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | First Sliver's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | First Volley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | First-Time Flyer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fishing Gear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fishing Pole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fishliver Oil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fisk Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fissure Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22184,6 +22474,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Flame-Kin War Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flame-Kin Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flameblade Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flameblade Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flameborn Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flameborn Viron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamebreak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22198,6 +22489,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Flamekin Spitfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flames of the Blood Hand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flames of the Firebrand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flames of the Raze-Boar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flameshot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamespeaker Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamespeaker's Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22216,6 +22508,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Flare of Duplication | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flare of Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flare of Fortitude | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flare of Malice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flaring Cinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flaring Flame-Kin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flaring Pain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22283,6 +22576,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Flip the Switch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flitterstep Eidolon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flitterwing Nuisance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flitting Guerrilla | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Floating Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Floating-Dream Zubera | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flock Impostor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22295,10 +22590,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Floodfarm Verge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Floodgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Floodhound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Floodpits Drowner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Floodwaters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flopsie, Bumi's Buddy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flora Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Floral Spuzzem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flourishing Bloom-Kin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flourishing Fox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flourishing Grapple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flourishing Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flourishing Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flow State | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22379,6 +22678,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Font of Return | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Font of Vigor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Food Coma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Food Fight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fool's Tome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foolish Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foot Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22394,12 +22694,15 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Foratog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foray of Orcs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forbidden Friendship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Forbidden Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forbidding Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force Away | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Force Bubble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force Spike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force Void | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force of Despair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force of Negation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Force of Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force of Savagery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force of Vigor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force of Virtue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22413,6 +22716,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Forcemage Advocate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forebear's Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foreboding Fruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Foreboding Statue // Forsaken Thresher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forecasting Fortune Teller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forensic Gadgeteer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forensic Researcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22481,6 +22785,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Foul Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foul-Tongue Invocation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foul-Tongue Shriek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Found Footage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Founding of Omashu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foundry Assembler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foundry Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22502,6 +22807,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fractal Mascot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fractal Summoning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fractalize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fractured Loyalty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fracturing Gust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fragmentize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frantic Confrontation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22595,6 +22901,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Frostfist Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frostling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frostpeak Yeti | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Frostpyre Arcanist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frostveil Ambush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frostwalk Bastion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frostwalla | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22683,6 +22990,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Fynn, the Fangbearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fíli and Kíli, Joyous | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | G'raha Tia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gaddock Teeg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gadget Technician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gadwick's First Duel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gadwick, the Wizened | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22706,6 +23014,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Galadhrim Bow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galadhrim Brigade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galadhrim Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Galadriel of Lothlórien | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galadriel's Dismissal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galadriel, Gift-Giver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galadriel, Light of Valinor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22715,11 +23024,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Galestrike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galewind Moose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galina's Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Galion, Elvenking's Butler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Citizen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Fowlknight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Pie-Wielder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gallia of the Endless Dance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallia, the Merrymaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galloping Lizrog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallowbraid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22743,9 +23054,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gamma Grotesque | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ganax, Astral Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf the Grey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gandalf's Sanction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Friend of the Shire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Goblins' Bane // Flameshape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Party Guest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gandalf, Shadow's Foe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Spark Starter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Wandering Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, White Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22762,6 +23075,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gargantuan Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gargos, Vicious Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gargoyle Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Garland, Knight of Cornelia // Chaos, the Endless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garna, Bloodfist of Keld | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garnet, Princess of Alexandria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garrison Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22773,9 +23087,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Garruk's Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garruk's Warsteed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garruk, Caller of Beasts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Garruk, Curse Breaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Garruk, Savage Herald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garruk, Unleashed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garrulous Sycophant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garza Zol, Plague Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Garza's Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gas Guzzler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gaseous Form | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gastal Blockbuster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22805,6 +23122,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gathering of Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gatstaf Arsonists // Gatstaf Ravagers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gatstaf Shepherd // Gatstaf Howler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gauntlet of Power | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gauntlets of Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gavony Dawnguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gavony Ironwright | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22850,6 +23168,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | General Ferrous Rokiric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Kudro of Drannith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Marhault Elsdragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | General Tazri | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Thunderbolt Ross | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Traag, Heart of Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General's Kabuto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22862,6 +23181,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Genesis Chamber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genesis Ultimatum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genghis Frog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Genji Glove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genju of the Cedars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genju of the Falls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genju of the Fens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22895,6 +23215,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Getaway Car | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geth's Grimoire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geth's Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gev, Scaled Scorch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geyser Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geyser Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geyser Leaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22943,6 +23264,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ghost-Lit Redeemer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghost-Lit Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghost-Lit Warder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ghost-Spider, Gwen Stacy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostfire Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostfire Slice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23007,6 +23329,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gibbering Fiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gibbering Hyenas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gibbering Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon Blackblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon of the Trials | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon the Oathless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gideon's Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gideon's Battle Cry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gideon's Company | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23017,6 +23342,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gideon's Phalanx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gideon's Reproach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gideon's Resolve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon's Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon, Ally of Zendikar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon, Martial Paragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gideon, the Oathsworn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Compleation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Fangs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Granite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23026,6 +23355,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gift of Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Tusks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Wrath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gift of the Deity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of the Gargantuan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of the Viper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of the Woods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23066,6 +23396,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gird for Battle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Girder Goons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gisa's Bidding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gisa's Favorite Shovel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gisa, Glorious Resurrector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gisa, the Hellraiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gishath, Sun's Avatar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23073,6 +23404,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gitaxian Probe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gitaxian Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Githzerai Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Give // Take | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Give In to Violence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Give No Ground | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Giver of Runes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23097,10 +23429,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gladewalker Ritualist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gladiolus Amicitia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glaive of the Guildpact | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glamdring, Foe-hammer // Gleam of Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glamer Gifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glamer Spinners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glamermite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glamorous Grapplers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glamorous Outlaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glarb, Calamity's Augur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glare of Heresy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glare of Subdual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23127,6 +23461,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gleeful Sabotage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glen Elendra Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glen Elendra Pranksters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glen Elendra's Answer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glidedive Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glider Kids | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glider Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23185,6 +23520,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gloomshrieker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gloomwidow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gloomwidow's Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glorfindel, Dauntless Rescuer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorifier of Dusk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorifier of Suffering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorious Anthem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23203,6 +23539,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Glowering Rogon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glowing Anemone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glowrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glowspore Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gluttonous Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gluttonous Guest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gluttonous Slime | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23313,14 +23650,17 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Goblin Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Javelineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Kites | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Legionnaire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Locksmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Lore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Lyre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Machinist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Maskmaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Masons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Morningstar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Motivator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Mountaineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Offensive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23329,6 +23669,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Goblin Picker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Piker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Piledriver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Plate Mail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Rabblemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Racketeer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23396,8 +23737,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gold Rush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gold-Forged Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gold-Forged Thopteryx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goldberry, River-Daughter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goldbug, Humanity's Ally // Goldbug, Scrappy Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Golden Argosy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golden Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Golden Demise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golden Egg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golden Hind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golden Urn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23431,7 +23775,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Golgari Longlegs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golgari Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golgari Rotwurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Golgothian Sylex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goliath Hatchery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23466,6 +23812,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Goring Ceratops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goring Warplow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gorion, Wise Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gorm the Great | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gornog, the Red Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goro-Goro and Satoru | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goro-Goro, Disciple of Ryusei | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23484,6 +23831,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Graceful Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Graceful Reprieve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Graceful Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Graceful Takedown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Graduation Day | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Graf Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Graf Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23502,6 +23850,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Grand Ball Guest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grand Entryway // Elegant Rotunda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grand Melee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grand Warlord Radha | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Granger Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Granite Grip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Granite Shard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23584,6 +23933,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Great Gilded Boat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Goblin, Foul-Hearted | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Hall of Starnheim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Great Hall of the Biblioplex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Hall of the Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Hart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Sable Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23593,6 +23943,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Great Whale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great-Horn Krushok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greataxe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Greatbow Doyen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greater Auramancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greater Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greater Forgeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23631,9 +23982,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Greenwood Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gregor, Shrewd Magistrate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gremlin Infestation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gremlin Mine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gremlin Tamer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grendel, Spawn of Knull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grenzo's Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grenzo's Rebuttal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grenzo's Ruffians | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grenzo, Dungeon Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greta, Sweettooth Scourge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gretchen Titchwillow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23677,6 +24031,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Grimdancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grimgrin, Corpse-Born | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grimoire Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grind // Dust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grindclock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grinding Station | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grinning Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23706,6 +24061,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Groffskithur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grollub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grond, the Gatebreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Groom's Finery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grotag Bug-Catcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grotag Night-Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grotag Siege-Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23731,6 +24087,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Growth Curve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Growth Cycle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Growth-Chamber Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grozoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grub's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gruesome Deformity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gruesome Discovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gruesome Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23764,6 +24122,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Guardian Idol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian Kirin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian Lions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guardian Naga // Banishing Coils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian Seraph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian Shield-Bearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian Sunmare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23793,7 +24152,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Guerrilla Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guided Passage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guided Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guidelight Matrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guidelight Optimizer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guidelight Pathmaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guidelight Synergist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guiding Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guiding Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23843,10 +24204,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Gutwrencher Oni | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guul Draz Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guul Draz Mucklord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guul Draz Overseer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guul Draz Specter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guul Draz Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guy in the Chair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gwaihir the Windlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gwen Stacy // Ghost-Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gwenna, Eyes of Gaea | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gyre Engineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gysahl Greens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23878,6 +24241,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hakoda, Selfless Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halam Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halana and Alena, Partners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Halana, Kessig Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halberdier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halcyon Glaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Half-Elf Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23888,6 +24252,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Haliya, Guided by Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hall Monitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hall of Echoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hall of Storm Giants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hall of Tagsin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hall of Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hall of the Bandit Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23903,6 +24269,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Halo Hopper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halo Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halo Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Halo-Charged Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halsin, Emerald Archdruid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halt Order | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hamato Guardian Stance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23931,6 +24298,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hand to Hand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hands of Binding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hangar Scrounger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hankyu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hanna's Custody | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hansk, Slayer Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hanweir Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23938,6 +24306,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hanweir Watchkeep // Bane of Hanweir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hapatra's Mark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hapatra, the Desert Fang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Haphazard Bombardment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hapless Researcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Happy Hogan, Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Happy Hogan, Dauntless Driver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23988,6 +24357,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Harrowing Journey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harsh Annotation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harsh Deceiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Harsh Judgment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harsh Scrutiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harsh Sustenance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haru, Hidden Talent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24012,12 +24382,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hateflayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hatred | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunt of the Dead Marshes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Haunt the Network | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Cadaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Crossroads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Hellride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Haunted Plate Mail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunted Screen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunter of Nightveil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunting Apparition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24029,6 +24401,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Havengul Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havengul Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havenwood Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Havi, the All-Father | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havoc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havoc Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havoc Devils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24054,9 +24427,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hazerider Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazoret the Fervent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazoret's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hazoret's Undying Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazoret, Godseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazy Homunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | He Who Hungers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Head Games | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Head of the Homestead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Headhunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Headless Horseman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24090,6 +24465,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Heartfire Immolator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartflame Duelist // Heartflame Slash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hearth Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hearth Elemental // Stoke Genius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hearth Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hearthborn Battler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hearthcage Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24106,6 +24482,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Heartstone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartstring Puller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartwarming Redemption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heartwood Crafter // Soul Tether | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartwood Shard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartwood Storyteller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24125,6 +24502,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Heckling Fiends | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hecteyes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hedge Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hedge Shredder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hedge Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hedge Whisperer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hedgewitch's Mask | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24182,6 +24560,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hellspur Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hellspur Posse Boss | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Helm of Awakening | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Helm of Kaldra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Helm of Possession | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Helm of the Ghastlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Helm of the Gods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24201,6 +24580,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Herald of Dromoka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Hadar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Herald of Ilharg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Kozilek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Serra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Torment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24242,6 +24622,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Heroes' Reunion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroic Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroic Defiance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heroic Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroic Teamwork | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heron of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heron-Blessed Geist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24256,6 +24637,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hexgold Slith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hexhaven Battalion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hexhaven Dueling Arena | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hexhaven Invigorator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hexing Squelcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hexplate Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hibernation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hibernation's End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24275,8 +24658,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hidden Path | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hidden Predators | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hidden Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hidden Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hidden Stockpile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hidden Strings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hide // Seek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hide in Plain Sight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hide on the Ceiling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hideous End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24346,6 +24731,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hit-Monkey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hitchclaw Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hithlain Knots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hive Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hive Stirrings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hivespine Wolverine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hivestone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24368,9 +24754,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hobgoblin Dragoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hobgoblin, Mantled Marauder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hog-Monkey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hog-Monkey Rampage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hokori, Dust Drinker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold at Bay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold for Questioning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hold for Ransom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold the Gates | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold the Line | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Holistic Wisdom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24394,6 +24782,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Homarid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Homarid Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Homarid Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Homarid Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Homesickness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Homestead Courage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Homicidal Seclusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24488,6 +24877,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Horses of the Bruinen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Horseshoe Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Host of the Hereafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hostile Investigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hostile Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hostile Realm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hostile Takeover | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24496,6 +24886,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hot Springs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hotfoot Gnome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hotheaded Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hotshot Investigators | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hotshot Mechanic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hound Tamer // Untamed Pup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hound of Griselbrand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24538,6 +24929,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Huatli's Spurring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Huatli, Dinosaur Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Huatli, Radiant Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Huatli, Warrior Poet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Huatli, the Sun's Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hubris | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Huddle Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24550,6 +24942,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hulking Bugbear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulking Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulking Devil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hulking Metamorph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulking Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulkling, Burgeoning Bruiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulkling, Young Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24572,6 +24965,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hundroog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hunger of the Howlpack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hunger of the Nim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hungering Puppetbeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hungering Yeti | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hungry Flames | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hungry Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24612,6 +25006,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Hurly-Burly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hurr Jackal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hurricane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hurska Sweet-Tooth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hushbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hushwood Verge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24656,6 +25051,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Icatian Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Icatian Store | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ice Cage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ice Cave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ice Cream Kitty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ice Flan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ice Magic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24676,6 +25072,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Icetill Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Icewind Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Icewind Stalwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ich-Tekik, Salvage Splicer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ichneumon Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ichor Drinker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ichor Explosion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24695,6 +25092,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Identity Echo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idle Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idol of Endurance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Idol of False Gods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idol of the Deep King // Sovereign's Macuahuitl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idyllic Grange | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idyllic Tutor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24719,6 +25117,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ill-Gotten Inheritance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ill-Tempered Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ill-Tempered Loner // Howlpack Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ill-Timed Explosion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Illegitimate Business | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Illicit Masquerade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Illicit Shipment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24823,6 +25222,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | In the Trenches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | In the Web of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inaction Injunction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iname as One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iname, Death Aspect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iname, Life Aspect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incandescent Aria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24842,6 +25242,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Increasing Savagery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incremental Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incriminate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Incriminating Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incubation Sac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incubator Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incurable Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24873,8 +25274,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Infected Defector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infected Vermin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infectious Bite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Infectious Bloodlust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infectious Horror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infectious Host | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Infectious Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infernal Captor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infernal Caretaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infernal Contract | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24895,6 +25298,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Inferno | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inferno Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inferno Fist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Inferno Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inferno Jet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infestation Expert // Infested Werewolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infestation Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24904,7 +25308,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Infiltration Lens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infiltrator il-Kor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infiltrator's Magemark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Infinite Coursework | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infinite Guideline Station | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Infinite Hourglass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infinite Obliteration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infinity Formula | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infirmary Healer // Stream of Life | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24920,6 +25326,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ingenious Artillerist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ingenious Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ingenious Leonin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ingenious Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ingenious Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ingenious Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ingenuity Engine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25008,7 +25415,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Instigator Gang // Wildblood Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Instill Furor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Instill Infection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Instrument of the Bards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Instruments of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Insubordination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Insufferable Balladeer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Insult // Injury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Integrity // Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25016,6 +25425,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Intercessor's Arrest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interdimensional Web Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interdisciplinary Mascot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Interface Ace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interjection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interpret the Signs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intervene | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25030,6 +25440,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Into the Core | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Into the Fae Court | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Into the Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Into the Flood Maw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Into the Fray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Into the Maw of Hell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Into the Night | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25116,6 +25527,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Iron Lance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron League Steed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Maiden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron Man Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron Man, Bleeding Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Man, Futurist Paragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Man, Master of Machines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Man, Modern Marvel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25134,6 +25547,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ironclad Krovod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ironclad Revolutionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ironclaw Buzzardiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ironclaw Curse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ironfist Crusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ironheart, Clever Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ironhoof Boar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25154,6 +25568,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Isengard Unleashed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ishgard, the Holy See // Faith & Grief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ishi-Ishi, Akki Crackshot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Isildur's Fateful Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Island Fish Jasconius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isleback Spawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isochron Scepter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25163,6 +25578,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Isolation at Orthanc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isperia the Inscrutable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isperia's Skywatch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Isshin, Two Heavens as One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | It Doesn't Add Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | It That Heralds the End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | It of the Horrid Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25187,6 +25603,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ixalli's Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ixidor's Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ixidor, Reality Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iymrith, Desert Doom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Izzet Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Izzet Cluestone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Izzet Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25194,6 +25611,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Izzet Staticaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | J. Jonah Jameson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jabari's Banner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jace Reawakened | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jace's Defeat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jace's Erasure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jace's Ingenuity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25212,6 +25630,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Jace, Unraveler of Secrets | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jace, Wielder of Mysteries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jace, the Living Guildpact | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jace, the Mind Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jace, the Perfected Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jack-o'-Lantern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jackal Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jackal Pup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jackal, Genius Geneticist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25227,6 +25648,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Jade Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jade Orb of Dragonkind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jade Seedstones // Jadeheart Attendant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jade Statue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jade-Cast Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jadecraft Artisan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaded Analyst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25237,6 +25659,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Jadzi, Steward of Fate // Oracle's Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jagged Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jagged Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jagged Poppet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jagwasp Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaheira's Respite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaheira, Friend of the Forest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25260,18 +25683,22 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Jaya Ballard, Task Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaya's Firenado | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaya's Greeting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jaya, Fiery Negotiator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaya, Venerated Firemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jayemdae Tome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jecht, Reluctant Guardian // Braska's Final Aeon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jedit Ojanen, Mercenary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jedit's Dragoons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jeering Homunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jeering Instigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jelenn Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jem Lightfoote, Sky Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jennika's Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jennika, Bad Apple Big Sister | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jenova, Ancient Calamity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jeong Jeong's Deserters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jeong Jeong, the Deserter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jeska, Thrice Reborn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jeska, Warrior Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jeskai Ascendancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jeskai Banner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25319,6 +25746,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Jin-Gitaxias, Core Augur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jin-Gitaxias, Progress Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jinxed Choker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jinxed Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jirina, Dauntless General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jiwari, the Earth Aflame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25353,11 +25781,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Joraga Treespeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Joraga Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jori En, Ruin Diver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jorn, God of Winter // Kaldring, the Rimestaff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jorubai Murk Lurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Joshua, Phoenix's Dominant // Phoenix, Warden of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Journey for the Elixir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Journey of Discovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Journey to Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Journeyer's Kite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Joust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Joust Through | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jousting Dummy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jousting Lance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25402,6 +25833,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Juntu Stakes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jushi Apprentice // Tomoya the Revealer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Just the Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Justice Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Justice, Vance Astrovik | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Justiciar's Portal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25413,6 +25845,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Jwari Shapeshifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jötun Owl Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | K'un-Lun Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ka-Zar of the Savage Land | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kaalia, Zenith Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kabira Evangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kabira Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25430,6 +25863,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kaito Shizuki | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kaito's Pursuit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kaito, Cunning Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kalain, Reclusive Painter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kalakscion, Hunger Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kalastria Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kalastria Highborn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25466,6 +25900,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kami of the Palace Fields | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kami of the Tended Garden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kami of the Waning Moon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kami's Flare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kangee, Aerie Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kapow! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kapsho Kitefins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25487,9 +25922,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Karn, Argent Defender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karn, Gilded Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karn, Legacy Reforged | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Karn, Scion of Urza | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karok Wrangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karolina Dean, Runaway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karona's Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Karona, False God | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karoo Meerkat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karplusan Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karplusan Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25534,8 +25971,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kavu Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kavu Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kavu Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kaya the Inexorable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kaya's Ghostform | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kaya's Guile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kaya's Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kaya, Ghost Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kaya, Intangible Slayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kaya, Orzhov Usurper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kayla's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kayla's Reconstruction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kazandu Blademaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25563,7 +26005,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Keeper of Keys | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keeper of Kookus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keeper of Tresserhorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Keeper of the Beasts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keeper of the Cadence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Keeper of the Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Keeper of the Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Keeper of the Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keeper of the Nine Gales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keeper of the Quiet Hour | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keepers of the Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25585,6 +26031,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Keldon Warcaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keleth, Sunmane Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kelinore Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kellan Joins Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kellan's Lightblades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kellan, Inquisitive Prodigy // Tail the Suspect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kellan, the Fae-Blooded // Birthright Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25593,6 +26040,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kelsinko Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kemba's Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kemba's Skyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kemba, Kha Enduring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kemuri-Onna | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kenessos, Priest of Thassa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kenku Artificer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25622,6 +26070,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kheru Dreadmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kheru Goldkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Khorvath Brightflame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Khorvath's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kibo, Uktabi Prince | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kickoff Celebrations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kiki-Jiki, Mirror Breaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kiku's Shadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25645,6 +26095,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kinbinding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindercatch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kindle the Carnage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindle the Inner Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindled Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindled Heroism | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25652,6 +26103,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kindly Ancestor // Ancestor's Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindly Customer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kindly Stranger // Demon-Possessed Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kindred Judgment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kinetic Augur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | King Cheetah | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | King Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25679,6 +26131,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kiora's Dambreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kiora's Dismissal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kiora, Behemoth Beckoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kiora, Master of the Depths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kiora, the Crashing Wave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kiora, the Rising Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kira, Great Glass-Spinner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kird Ape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25733,6 +26187,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kjeldoran War Cry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Klaw, Sonic Subjugator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Klothys's Design | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Klothys, God of Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knacksaw Clique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knife | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight Errant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25758,6 +26213,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Knight of Wundagore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of the Ebon Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of the Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight of the Mists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of the New Coalition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of the Pilgrim's Road | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of the Reliquary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25797,10 +26253,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Koma, World-Eater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Komodo Rhino | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kona, Rescue Beastie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Konda's Banner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Konda's Hatamoto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Konda, Lord of Eiganjo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Konstrari Annex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Konstrari Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Konstrari Improviser // Soul Tether | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kookus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kor Aeronaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kor Blademaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kor Bladewhirl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25824,6 +26283,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Korvold and the Noble Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Koskun Falls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Koskun Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Koth of the Hammer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Koth of the Homestead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Koth's Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Koth, Fire of Resistance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25854,6 +26314,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Krasis Incubation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kratos, God of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Foragers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kraul Harpooner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25884,6 +26345,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Krotiq Nestguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Elementalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Krovikan Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Rot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Scoundrel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Whispers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25922,6 +26384,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kuro, Pitlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kutzil, Malamet Exemplar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kwende, Pride of Femeref | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kwia Vigorbloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kykar, Zephyr Awakener | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kyodai, Soul of Kamigawa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kyoki, Sanity's Eclipse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25939,6 +26402,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Kyren Toy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kyscu Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kytheon's Irregulars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kytheon's Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Laboratory Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Laboratory Maniac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Labyrinth Adversary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25953,6 +26417,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lacerate Flesh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lady Octopus, Inspired Inventor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lady Spider, Maybelle Reilly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lady Sun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lady Zhurong, Warrior Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lady of Laughter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lagac Lizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -25966,6 +26431,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lairwatch Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lake-town | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lake-town Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lake-town Mariners // Gone Fishing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lake-town Toymaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lakeshore Apothecary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lakeside Shack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26023,6 +26489,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Last March of the Ents | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Last One Standing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Last Rites | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Last Stand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Last Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Last Word | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Last-Ditch Effort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26035,6 +26502,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lattice-Blade Mantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Latulla's Orders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Latulla, Keldon Overseer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Laughing Jasper Flint | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Launch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Launch Party | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lava Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26058,6 +26526,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lavaspur Boots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lavastep Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lavinia of the Tenth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lavinia, Azorius Renegade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lavinia, Foil to Conspiracy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Law-Rune Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lawbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26129,10 +26598,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lembas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lena, Selfless Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lens Flare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lens of Clarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leo's Guidance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leonardo's Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leonardo, Big Brother | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leonardo, Cutting Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leonardo, Leader in Blue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leonardo, Worldly Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leonin Abunas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leonin Armorguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26154,6 +26625,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Leonin of the Lost Pride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leopard-Spotted Jiao | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leshrac's Rite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leshrac's Sigil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lesser Gargadon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lesser Masticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Let's Play a Game | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26167,9 +26639,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Levitating Statue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Levitation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ley Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ley Line | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ley Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leyline Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leyline Binding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leyline Immersion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leyline Invocation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leyline Phantom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Leyline of Abundance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26193,6 +26667,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Liberator, Urza's Battlethopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Library | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Library Larcenist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Library of Lat-Nam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Library of Leng | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lich Lord of Unx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lich's Caress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26205,10 +26680,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Liege of the Pit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liesa, Forgotten Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lieutenant Kirtar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Life // Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life Burst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life Finds a Way | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life Goes On | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life Matrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Life and Limb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life of Toshiro Umezawa // Memory of Toshiro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life's Finale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lifebane Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26237,6 +26714,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Light of the Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Light the Way | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightfoot Rogue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightfoot Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lighthouse Chronologist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightless Evangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26245,6 +26723,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lightning Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Cloud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Coils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Crafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Dart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Diadem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26254,6 +26733,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lightning Javelin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Mare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Mauler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Prowess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightning Reflexes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26274,9 +26754,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lightshell Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightshield Parry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightwalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightwheel Enhancements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lightwielder Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Likeness Looter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana Vess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Liliana of the Dark Realms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Liliana of the Veil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana the Faultless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana the Repentant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana's Caress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26293,12 +26776,15 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Liliana's Talent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana's Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana, Death Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Liliana, Dreadhorde General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana, Waker of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana, the Last Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Liliana, the Necromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lilting Refrain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lilypad Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lilysplash Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lim-Dûl's Hex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lim-Dûl's Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Limestone Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liminal Hold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Limits of Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26321,6 +26807,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lita, Mechanical Engineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithatog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithobraking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lithomancer's Focus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithomantic Barrage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithophage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Littjara Glade-Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26334,7 +26821,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Livewire Lash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Living Airship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Living Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Living Artifact | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Living Brain, Mechanical Marvel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Living Conundrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Living Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Living History | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Living Hive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26370,6 +26859,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lluwen, Exchange Student // Pest Friend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lluwen, Imperfect Naturalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lo and Li, Royal Advisors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lo and Li, Twin Tutors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loafing Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loam Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loam Dweller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26404,6 +26894,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Logic Knot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loki Laufeyson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loki, God of Mischief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loki, Lord of Misrule | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lolth, Spider Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Missionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Rider // It That Rides as One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26412,6 +26904,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Long Feng, Grand Secretariat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Long Goodbye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Long Lake Nuisance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Long Rest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Long Road Home | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Long-Bodied Grey Dog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Long-Finned Skywhale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26422,6 +26915,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Longhorn Sharpshooter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Longshot Squad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Longshot, Rebel Bowman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Longstalk Brawl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Longtusk Cub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lonis, Genetics Expert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lookout's Dispersal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26429,7 +26923,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Looming Hoverguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Looming Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Looming Spires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loot, the Key to Everything | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loot, the Nexus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loot, the Pathfinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loporrit Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loran's Escape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loran, Disciple of History | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26438,6 +26934,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lord Skitter's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord Skitter's Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord Skitter, Sewer King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lord Xander, the Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of Atlantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of Shatterskull Pass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of the Pit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26450,6 +26947,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lorehold Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lorehold Excavation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lorehold Pledgemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lorehold, the Historian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Los Diablos Missile Base | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lose Calm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lose Focus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26457,6 +26955,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lost Auramancers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost Days | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost Hours | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lost Isle Calling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost Jitte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost Legacy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26465,6 +26964,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lost in Memories | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost in Space | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost in a Labyrinth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lost in the Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost in the Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lost in the Spirit World | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lothlórien Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26504,6 +27004,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Loyal Fire Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loyal Gryff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loyal Gyrfalcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loyal Inventor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loyal Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loyal Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loyal Tutor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26517,10 +27018,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ludevic's Test Subject // Ludevic's Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Luke Cage, Hero for Hire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Luke Cage, Power Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lukka, Coppercoat Outcast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lullmage Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lullmage's Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lulu, Loyal Hollyphant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lumaret's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lumbering Battlement | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lumbering Satyr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lumbering Worldwagon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26560,6 +27063,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Lure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lure of Prey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurebound Scarecrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurking Arynx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurking Chupacabra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurking Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26577,6 +27081,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Luxa River Shrine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Luxknight Breacher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Luxurious Libation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Luxurious Locomotive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lydia Frye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lyev Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lyev Skyknight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26596,6 +27101,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Maalfeld Twins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mabel's Mettle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mabel, Bitter Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mabel, Heir to Cragflame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mabel, Valley Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Macabre Mockery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Macabre Reconstruction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26622,6 +27128,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Madrush Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maelstrom Artisan // Rocket Volley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maelstrom Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maelstrom Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maelstrom Muse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maelstrom of the Spirit Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maestros Ascendancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maestros Diabolist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26670,6 +27178,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Magmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnetic Flux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnetic Mine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Magnetic Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnetic Snuffler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnetic Theft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnificent End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26726,6 +27235,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Malamet Scythe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malamet Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malamet War Scribe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Malboro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malcator's Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malcator, Purity Overseer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malcolm, the Eyes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26741,6 +27251,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Malicious Eclipse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malicious Intent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malicious Malfunction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Malignant Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malignus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mammoth Bellow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mammoth Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26749,6 +27260,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mammoth Umbra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Breach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Chains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mana Clash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Confluence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Cylix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mana Drain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26833,6 +27345,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | March of Swirling Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | March of Wretched Sorrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | March of the Drowned | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | March of the Machines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | March of the Returned | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | March of the World Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marchesa's Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26857,6 +27370,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mardu Skullhunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Warshrieker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Woe-Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marina Vendrell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marina Vendrell's Grimoire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marionette Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marisi's Twinclaws | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26924,12 +27438,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mary Jane Watson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mary Read and Anne Bonny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Masako the Humorless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mascot Exhibition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mascot Interception | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mask of Immolation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mask of Intolerance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mask of Law and Grace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mask of the Jadecrafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mask of the Mimic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Masked Bandits | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Masked Blackguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Masked Gorgon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Masked Meower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26962,6 +27478,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Master's Guide-Mural // Master's Manufactory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Master's Rebuke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Masterful Flourish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mastermind Plum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Masumaro, First to Live | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Matca Rioters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Match the Odds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26977,6 +27494,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mauhúr, Uruk-hai Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maul Splicer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maulfist Doorbuster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maulfist Revolutionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maulfist Squad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mausoleum Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mausoleum Harpy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -26998,6 +27516,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Maze Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maze Skullbomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maze of Ith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maze's Mantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Meadowboon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Measure of Wickedness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Meat Locker // Drowned Diner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27095,6 +27614,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mercurial Kite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mercurial Pretender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mercurial Spelldancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mercurial Transformation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mercy Killing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Branchwalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27150,6 +27670,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Metalworker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metamorphic Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metamorphic Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Metamorphose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metamorphosis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metastatic Evangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metathran Aerostat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27197,6 +27718,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Midsummer Revel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Midvast Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might Beyond Reason | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Might Makes Right | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might of Alara | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might of Murasa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27232,8 +27754,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Miming Slime | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Minamo Scrollkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Minamo Sightbender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Minamo's Meddling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Minamo, School at Water's Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Minas Morgul, Dark Fortress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Minas Tirith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Minas Tirith Garrison | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Bomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Burst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Carver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27243,6 +27768,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mind Extraction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Funeral | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Games | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mind Grind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Harness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Knives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Maggots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27262,7 +27788,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mind Transfer Protocol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Unbound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Warp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mind Whip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind into Matter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mindblaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindbreak Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindclaw Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindculling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27355,13 +27883,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mirri's Guile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirrodin Avenged | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirrodin's Core | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mirror Box | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Gallery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Image | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Mockery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Sheen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mirror Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mirror of Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror of Life Trapping | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror-Sigil Sergeant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirrorform | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27383,8 +27914,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Misers' Cage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misery Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misery's Shadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Misfortune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misguided Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mishra's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Domination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Foundry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Helix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27393,18 +27926,21 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mishra's Research Desk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Self-Replicator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra, Excavation Prodigy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mishra, Tamer of Mak Fawa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misleading Motes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misshapen Fiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misstep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mist Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mist Intruder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mist Leopard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mist of Stagnation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mist-Cloaked Herald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mist-Syndicate Naga | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mistbind Clique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mistblade Shinobi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mistbreath Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mistcutter Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mister Hyde, Monster Within | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mister Immortal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mister Negative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mistfire Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27445,8 +27981,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mizzium Tank | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mizzium Transreliquat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mjölnir's Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mjölnir, Storm Hammer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mm'menon, Uthros Exile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mm'menon, the Right Hand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mnemonic Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mnemonic Deluge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mnemonic Nexus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moaning Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moaning Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27478,6 +28017,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mogg Toady | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moggcatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogis's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mogis's Marauder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogis's Warhound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moku, Meandering Drummer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mold Adder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27557,6 +28097,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Monomania | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monoskelion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mons's Goblin Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monsoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monster Manual // Zoological Study | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monster Mashup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monstrify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27567,11 +28108,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Monstrous Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monstrous Step | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monstrous Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monstrous War-Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monument to Endurance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monumental Corruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monumental Henge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moodmark Painter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moogles' Valor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moon Girl and Devil Dinosaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moon Heron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moon Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moon-Boy, Dino Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27596,8 +28139,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Moonmist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonrager's Slash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonring Island | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moonring Mirror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonrise Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonshadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moonshae Pixie // Pixie Dust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonsnare Prototype | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonsnare Specialist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moonstone Harbinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27609,6 +28154,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Moorland Inquisitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morality Shift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moratorium Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morbid Bloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morbid Curiosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morbid Hunger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27619,6 +28165,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mordenkainen's Polymorph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mordor Muster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mordor Trebuchet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mordor on the March | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morgue Burst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morgue Theft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morgue Thrull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27634,6 +28181,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Morkrut Necropod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morlun, Devourer of Spiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morningtide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mornsong Aria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moroii | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morphic Pool | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Morsel Theft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27655,6 +28203,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Moss Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moss Monster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moss Viper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moss-Pit Skeleton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mossbeard Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mossborn Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mosscoat Goriak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27706,6 +28255,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mudbutton Torchrunner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mudflat Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mudhole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Muerra, Trash Tactician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mugging | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mukotai Ambusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mukotai Soulripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27716,6 +28266,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Multani's Presence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Multani, Maro-Sorcerer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Multiform Wonder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Multiple Choice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Multiply by Zero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Multiversal Incursion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Multiversal Passage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27732,11 +28283,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Murasa Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murasa Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murasa Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Murasa Sproutling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murder Investigation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderer's Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderous Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderous Cut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderous Redcap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Murderous Spoils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murdock's Crusade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murk Dwellers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murk Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27751,6 +28304,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Museum Nightwatch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mushroom Watchdogs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Muster the Departed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mutable Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mutagen Connoisseur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mutagen Man, Living Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mutagenic Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27773,15 +28327,19 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mycosynth Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Blooming Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Cleansing Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myojin of Cryptic Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myojin of Grim Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Infinite Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Life's Web | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Night's Reach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myojin of Roaring Blades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Seeing Winds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myojin of Towering Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Adapter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Custodian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Galvanizer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myr Incubator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Kinsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Landshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Matrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27795,7 +28353,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Myr Servitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Turbine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Welder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myrel, Shield of Argive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myrkul's Edict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myrkul's Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myrkul, Lord of Bones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mysidian Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mysteries of the Deep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mysterio's Mirage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27834,6 +28395,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Mythic Proportions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mythos of Brokkos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mythos of Nethroi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mythos of Snapdax | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mythos of Vadrok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naban, Dean of Iteration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nacatl Hunt-Pride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27850,9 +28412,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Nagao, Bound by Honor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nagging Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nahiri's Binding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nahiri's Lithoforming | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nahiri's Machinations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nahiri's Stoneblades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nahiri's Wrath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nahiri, Heir of the Ancients | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nahiri, Storm of Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naiad of Hidden Coves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Najal, the Storm Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nakaya Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27880,6 +28445,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Narnam Cobra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Narnam Renegade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Narrow Escape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Narset Transcendent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Narset's Rebuke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Narset, Jeskai Waymaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Narstad Scrapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27889,6 +28455,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Nath's Buffoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nath's Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Affinity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Natural Balance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Emergence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Obsolescence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27898,6 +28465,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Natural State | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naturalize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nature's Chant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nature's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nature's Claim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nature's Cloak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nature's Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27918,6 +28486,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Naya Battlemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naya Hushblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naya Sojourners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nazar, the Velvet Fang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nazgûl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Near-Death Experience | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nearheath Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27937,6 +28506,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Necrogen Censer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrogen Communion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrogen Mists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Necrogen Rotpriest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrogen Scudder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrogen Spellbomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromancer's Assistant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -27974,6 +28544,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Nefarious Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nefarox, Overlord of Grixis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nefashu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Neglected Heirloom // Ashmouth Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neglected Manor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neheb, the Worthy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neighborhood Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28058,6 +28629,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Niblis of the Urn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nico Minoru, Runaway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nicol Bolas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nicol Bolas, God-Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nicol Bolas, Planeswalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nicol Bolas, the Deceiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night // Day | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Clubber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28109,8 +28682,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Nightwing Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nihilistic Glee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nikko-Onna | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Niko Aris | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nikya of the Old Ways | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nim Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nim Deathmantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nim Devourer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nim Grotesque | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nim Lasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28150,16 +28725,24 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Nirkana Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nishoba Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa Revane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa of Shadowed Boughs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa's Defeat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa's Encouragement | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa's Judgment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa's Revelation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa's Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa's Zendikon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa, Ascended Animist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa, Genesis Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa, Nature's Artisan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa, Resurgent Animist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa, Vital Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa, Voice of Zendikar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nissa, Who Shakes the World | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nissa, Worldwaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Niv-Mizzet Reborn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Niv-Mizzet, Supreme | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Niv-Mizzet, Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Niveous Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nivix Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28172,6 +28755,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | No Mercy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | No More Lies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | No One Left Behind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | No Quarter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | No Rest for the Wicked | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | No Way Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | No Witnesses | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28246,6 +28830,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Noxious Newt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Toad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Vapors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Noyan Dar, Roil Shaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nuisance Engine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Null Brooch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Null Caller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28267,9 +28852,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Nurturing Bristleback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nurturing Licid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nurturing Peatland | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nurturing Pixie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nurturing Presence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nut Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nutrient Block | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nyla, Shirshu Sleuth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea's Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea's Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea's Forerunner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28303,17 +28890,24 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Oakhame Adversary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oakhame Ranger // Bring Back | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oakheart Dryads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oakhollow Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oakshade Stalker // Moonlit Ambusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oashra Cultivator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oasis Gardener | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oasis Ritualist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of Ajani | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of Chandra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oath of Ghouls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of Kaya | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oath of Lieges | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of Liliana | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oath of Lim-Dûl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oath of Mages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of Nissa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oath of Scholars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of the Ancient Wood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oath of the Grey Host | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oathkeeper, Takeno's Daisho | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oathsworn Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oathsworn Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ob Nixilis's Cruelty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28331,6 +28925,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Oboro Breezecaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oboro Envoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oboro, Palace in the Clouds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Obscura Ascendancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obscura Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Observant Alseid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsessive Astronomer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28354,6 +28949,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Oculus Whelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Odious Trow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Odric's Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Odric, Blood-Cursed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Odunos River Trawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Odylic Wraith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Of One Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28408,6 +29004,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Oko's Accomplices | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oko's Hospitality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oko, Thief of Crowns | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oko, the Ringleader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oko, the Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Okoye, Dora Milaje Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old Fat Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28420,6 +29017,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Old-Growth Dryads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old-Growth Educator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oliphaunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Olivia Voldaren | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Olivia's Attendants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Olivia's Bloodsworn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Olivia's Dragoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28429,6 +29027,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Oltec Archaeologists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oltec Cloud Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oltec Matterweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Olórin's Searing Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Omashu City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Omega Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Omen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28483,13 +29082,17 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ooze Garden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ooze Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ooze Spill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Opal Acrolith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal Caryatid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Opal Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal Lake Gatekeepers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Opal Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opal-Eye, Konda's Yojimbo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Opalescence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opaline Bracers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opaline Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Opaline Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28550,6 +29153,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ordeal of Thassa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Order of Yawgmoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Order of the Golden Cricket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Order of the Mirror // Order of the Alabaster Host | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Order of the Sacred Bell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Order of the Stars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ordered Migration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28615,6 +29219,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Otarian Juggernaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otawara, Soaring City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oteclan Landmark // Oteclan Levitator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Othelm, Sigardian Outcast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otherworld Atlas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otherworldly Journey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otherworldly Outburst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28639,13 +29244,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Outmaneuver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Outmuscle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Outnumber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Outpace Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Outrage Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Outrageous Robbery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Outrider of Jhess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Outwit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ovalchase Daredevil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ovalchase Dragster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Over the Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Over the Top | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Overabundance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overbeing of Myth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overblaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overburden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28717,6 +29325,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pain Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pain Magnification | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pain Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pain's Reward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Painbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Painful Lesson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Painful Memories | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28724,6 +29333,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Painsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Painter's Studio // Defaced Gallery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Painwracker Oni | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pair o' Dice Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paired Tactician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Palace Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Palace Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28759,6 +29369,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Paperfin Rascal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paradigm Shift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paradise Mantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Paradox Shaper // Omit Variables | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paradox Surveyor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paradoxical Outcome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paragon of Eternal Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28767,6 +29378,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Paragon of New Dawns | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paragon of Open Graves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paragon of the Amesha | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Parallax Dementia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parallax Inhibitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parallax Nexus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parallax Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28774,6 +29386,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Parallel Evolution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parallel Lives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paralyzing Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Paramecia Coloniex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paranoid Delusions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paranoid Parish-Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parapet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28822,6 +29435,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pathfinding Axejaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathmaker Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathrazer of Ulamog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pathway Arrows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patient Instructor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patient Naturalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patient Rebuilding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28842,6 +29456,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Paupers' Cage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pause for Reflection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pawpatch Formation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pawpatch Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pay No Heed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Peace Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Peace and Quiet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -28951,6 +29566,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Petrified Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrified Hamlet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrified Plating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Petrified Wood-Kin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrifying Meddler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pewter Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29005,6 +29621,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Phosphorescent Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Photon Blast Barrage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Photon, Lady of Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Phylactery Lich | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phylath, World Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyresis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyrexian Altar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29023,6 +29640,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Phyrexian Driver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyrexian Espionage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyrexian Etchings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Phyrexian Fleshgorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyrexian Furnace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyrexian Gremlins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phyrexian Grimoire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29057,6 +29675,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Phytohydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phytotitan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pia Nalaar, Consul of Revival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pia's Revolution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pia, Aether Ascetic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pia, Determined Rebuilder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pianna, Nomad Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29086,6 +29705,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pillage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pillage the Bog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pillar Launch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pillar Tombs of Aku | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pillar of Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pillar of Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pillar of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29115,6 +29735,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pippin's Bravery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pippin, Guard of the Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pipsqueak, Rebel Strongarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pir's Whim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Piracy Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Piranha Fly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Piranha Marsh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29164,6 +29785,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Plague Wight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plague of Vermin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plaguebearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plagued Rusalka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plan the Heist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29186,6 +29808,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Planeswalker's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planeswalker's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planeswalker's Mirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Planeswalker's Mischief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planeswalker's Scorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planewide Celebration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plant Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29211,6 +29834,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Play with Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Playful Shove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plea for Guidance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pledge of Loyalty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pledge of Unity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plover Knights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plow Through | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29263,9 +29887,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Porcelain Legionnaire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Porcelain Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pore Over the Pages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Porphyry Nodes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Port Inspector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portable Hole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portal of Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Portal to Phyrexia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Portcullis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portcullis Vine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portent of Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Possessed Aven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29292,11 +29919,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Power Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Boost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Depot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Power Leak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Matrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Power Plant Worker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Surge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Taint | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Word Kill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Power of Persuasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerbalance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerful Broker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerleech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29304,9 +29934,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Powerstone Fracture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerstone Minefield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerstone Shard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pox Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Practical Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Practiced Offense | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Practiced Scrollsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Practiced Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Praetor's Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prahv, Spires of Order | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prakhata Club Security | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prakhata Pillar-Bug | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29334,8 +29967,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Predatory Urge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predatory Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predictive Preparations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Preeminent Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Preemptive Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Preening Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Preferred Selection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prehistoric Pet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prehistoric Turtlesaurus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prepare // Fight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29357,6 +29992,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Price of Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Price of Freedom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Price of Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Price of Loyalty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Price of Progress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prickleboar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prickly Boggart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29392,6 +30028,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Primal Surge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Visitation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Whisperer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primal Witchstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primalcrux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prime Speaker Vannifar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29404,10 +30041,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Primordial Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primordial Pachyderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primordial Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prishe's Wanderings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prism Array | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prism Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prismabasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismari Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismari Pledgemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prismari, the Inspiration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismatic Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismatic Circle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismatic Ending | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29418,6 +30058,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Prismatic Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismwake Merrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prison Barricade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prison Break | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prison Realm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prison Sentence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29434,6 +30075,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Probe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Proclamation of Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Procrastinate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Proctor of Potential | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Proctor's Gaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prodigal Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prodigal Sorcerer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29451,7 +30093,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Professor's Warning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Profit // Loss | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Profound Journey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Proft's Eidetic Memory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Proft, Consulting Detective | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Proft, Sinister Mastermind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Progenitor Exarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Progenitus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prohibit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29463,6 +30107,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Promising Duskmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Promising Vein | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prompto Argentum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Propagator Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Propeller Pioneer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Proper Burial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prophecy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29527,11 +30172,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Psychic Spear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Spiral | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Psychic Surgery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Symbiont | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Trance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Transfer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychic Whorl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Psychogenic Probe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychotic Episode | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychotic Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Psychotic Haze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29539,6 +30186,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pterafractyl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pterodon Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pteron Ghost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | PuPu UFO | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Public Execution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Public Thoroughfare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Puca's Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29573,6 +30221,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Punishing Punch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Punk Frogs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Puppet Conjurer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Puppet Crafting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Puppet Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Puppet Strings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Puppet's Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Puppeteer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29582,6 +30232,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Puresight Merrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purgatory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purge the Profane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Purging Scythe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purging Stormbrood // Absorb Essence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purifying Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29622,11 +30273,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pyre Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyre Spawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyre Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyre of Heroes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyre-Sledge Arsonist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyreheart Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyretic Prankster // Glistening Goremonger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyretic Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyretic Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyrewild Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrewood Gearhulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyric Salamander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrite Spellbomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29638,6 +30291,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pyroclastic Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyroconvergence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrokinesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyromancer Ascension | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyromancer's Assault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyromancer's Gauntlet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyromancer's Swath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29653,6 +30307,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Pyrrhic Revival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrrhic Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Python | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyxis of Pandemonium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Qal Sisma Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Qala, Ajani's Pridemate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Qarsi High Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29660,6 +30315,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Qarsi Sadist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Qilin's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Qiqirn Merchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quag Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quag Sickness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quag Vampires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quagmire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29684,6 +30340,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Queen Brahne | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Queen of Ice // Rage of Winter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Queen's Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Queen's Bay Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Queen's Bay Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Queen's Commission | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quench | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29698,6 +30355,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Questing Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Questing Druid // Seek the Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Queza, Augur of Agonies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quick Draw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quick Study | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quick-Draw Dagger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quick-Draw Katana | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29733,6 +30391,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Quina, Qu Gourmet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quinjet Technician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quintessential Katana | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quintorius Kand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Beastcaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29793,6 +30452,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ragamuffyn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ragavan, Nimble Pilferer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Extractor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rage Forger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Nimbus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Reflection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Thrower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29819,10 +30479,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Raging Redcap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raging Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ragost, Deft Gastronaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rags // Riches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raid Bombardment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raiders' Spoils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raiders' Wake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raiding Nightstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raiding Schemes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Railway Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rain of Blades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rain of Embers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29859,10 +30521,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rakdos Shred-Freak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakdos Trumpeter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakdos's Return | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rakdos, Patron of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakdos, the Showstopper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raking Canopy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raking Claws | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakish Crew | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rakish Revelers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakish Scoundrel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakka Mar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rakshasa Deathdealer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29876,6 +30540,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ral's Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ral's Staticaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ral, Caller of Storms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ral, Crackling Wit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ral, Izzet Viceroy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ral, Storm Conduit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally Maneuver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29884,6 +30550,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rally the Ancestors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Forces | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Galadhrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rally the Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Monastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Peasants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Ranks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29907,6 +30574,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rampaging Classmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Geoderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rampaging Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Hippo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Rendhorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29962,6 +30630,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rat Colony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rat King, Verminister | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rat Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ratadrabik of Urborg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ratcatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ratcatcher Trainee // Pest Problem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ratchet Bomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -29980,6 +30649,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Raucous Theater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raugrin Triome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravaged Highlands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ravager Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravager's Mace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravaging Blaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravaging Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30010,6 +30680,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ravenous Robots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Sailback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ravenous Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravine Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raving Oni-Slave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30093,8 +30764,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Reave Soul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reaver Ambush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reaver Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rebbec, Architect of Ascension | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rebel Informer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rebel Salvo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rebellion of the Flamekin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rebellious Captives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rebellious Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reborn Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30106,6 +30779,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rebuke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rebuking Ceremony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Recalibrate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Recantation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reciprocate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Abandon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Air Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30117,8 +30791,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Reckless Bushwhacker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Cohort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reckless Crew | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Detective | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Embermage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reckless Handling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Impulse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Lackey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30135,6 +30811,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Reckless Velocitaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Waif // Merciless Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckless Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reckoner Bankbuster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckoner Shakedown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckoner's Bargain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reclaim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30164,6 +30841,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Red Mana Battery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Red Room Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Red Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Red Sun's Twilight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Red Sun's Zenith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Red Tiger Mechan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Red Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30179,6 +30857,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Redshift, Rocketeer Chief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redtooth Genealogist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redtooth Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reduce // Rubble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reduce in Stature | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reduce to Ashes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reduce to Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30210,6 +30889,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Regeneration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Regenesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Regent's Authority | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Regna's Sanction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Regna, the Redeemer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Regress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Regrowth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30219,6 +30899,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Reigning Victor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reinforced Bulwark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reinforced Ronin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reins of the Vinesteed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reiterate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reiterating Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reito Lantern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30257,8 +30938,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Relic's Roar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relief Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reliquary Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Relive the Past | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relm's Sketching | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reluctant Dounguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reluctant Role Model | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rem Karolus, Stalwart Slayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Remand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Remedy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30332,6 +31015,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Repurposed Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Repurposing Bay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reputable Merchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Requiem Monolith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Requiting Hex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reroute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reroute Systems | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30405,6 +31089,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Retaliate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retaliation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retaliator Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Retched Wretch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rethink | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retraced Image | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retract | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30421,6 +31106,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Return Triumphant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Return from Extinction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Return from the Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Return of the Mole Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Return of the Nightstalkers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Return to Action | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Return to Battle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30445,6 +31131,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Revenge of the Hunted | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revenge of the Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reverberating Summons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reverberation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revered Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revered Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revered Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30453,6 +31140,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Reverent Howl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reverent Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reverent Mantra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reversal of Fortune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reverse Damage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reverse Polarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revitalize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30479,6 +31167,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rhino, Terrible Trampler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhizome Lurcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhonas's Last Stand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rhonas's Stalwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhovanion Rampager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30491,6 +31180,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rhox Pummeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox War Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rhys, the Evermore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhystic Deluge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhystic Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhystic Scrying | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30590,13 +31280,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Riptide Laboratory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riptide Mangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riptide Pilferer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riptide Replicator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riptide Shapeshifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riptide Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise Again | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise from the Tides | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rise from the Wreck | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise of Eagles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise of Extus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise of the Ants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rise of the Deathbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise of the Dread Marn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise of the Hobgoblins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rise of the Varmints | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30629,6 +31322,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rite of Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rite of Passage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rite of Renewal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rite of Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rite of Undoing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rite of the Dragoncaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rite of the Moth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30669,6 +31363,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Riverwalk Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riverwheel Aerialists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riverwheel Sweep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riveteers Ascendancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riveteers Decoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riveteers Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riveteers Requisitioner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30710,6 +31405,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rock Soldiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rockalanche | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rockcaster Platoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rocket Launcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rocket-Powered Goblin Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rocketeer Boostbuggy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rockface Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30721,6 +31417,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rocky Roads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rod of Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rodeo Pyromancers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rodolf Duskbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rofellos's Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rograkh, Son of Rohgahh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rogue Elephant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30737,6 +31434,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Roiling Dragonstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roiling Horror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roiling Terrain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Roiling Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roiling Waters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roilmage's Trick | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roku's Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30789,6 +31487,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rootwater Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rootwater Mystic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rootwater Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rootwater Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rootwire Amalgam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rootwise Survivor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30858,6 +31557,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rubblebelt Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruby Leech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruby, Daring Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rude Awakening | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rufus Shinra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rug of Smothering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruham Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30866,6 +31566,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ruin Processor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruin Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruin Rat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ruin in Their Wake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruin-Lurker Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruination Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruination Rioter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30880,6 +31581,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rumble Arena | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Aftershocks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rumbling Crescendo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Rockslide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30926,12 +31628,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Runed Stalactite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Runeflare Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Runes of the Deus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Runescale Stormbrood // Chilling Screech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Runewing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Runic Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Runner's Bane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rupture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rural Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruric Thar, Biomagus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ruric Thar, Magecrusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruric Thar, the Unbowed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rush of Adrenaline | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rush of Battle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30942,6 +31646,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Rush of Vitality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rush the Room | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rushblade Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rushed Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rushing River | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rushing-Tide Zubera | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rushwood Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -30980,6 +31685,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Ruthless Sniper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruthless Waterbender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rydia's Return | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rydia, Summoner of Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | S.H.I.E.L.D. Deployment Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | S.H.I.E.L.D. Flying Car | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | S.H.I.E.L.D. Helicarrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31035,6 +31741,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sage of Ancient Lore // Werewolf of Ancient Hunger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of Days | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of Epityr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sage of Hours | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of Lat-Nam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of Mysteries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of Shaila's Claim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31047,6 +31754,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sage's Knowledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage's Row Denizen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage's Row Savant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sage-Eye Avengers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage-Eye Harrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sages of the Anima | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sagittars' Volley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31058,6 +31766,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Saheeli's Lattice // Mastercraft Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saheeli's Silverwing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saheeli, Consul of Oversight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Saheeli, Filigree Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saheeli, Jewel of Avishkar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saheeli, the Sun's Brilliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sai of the Shinobi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31119,6 +31828,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Samut, the Driving Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Samut, the Tested | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Samwise Gamgee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Samwise the Stouthearted | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanar, Unfinished Genius // Wild Idea | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctified Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctifier of Souls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31126,12 +31836,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sanctimony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctuary Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctuary Smasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sanctuary Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Custodian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Lurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Plowbeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Prelate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sanctum of All | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Calm Waters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Fruitful Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Shattered Heights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31150,7 +31862,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sandblast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandcrafter Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandman's Quicksand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sandman, Shifting Scoundrel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sands of Delirium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sands of Time | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandskin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandskitter Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandsower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31211,6 +31925,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sarinth Steelseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan Unbroken | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan Vol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sarkhan the Mad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan's Catharsis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan's Dragonfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan's Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31254,6 +31969,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Savage Land Dinosaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Mansion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Offensive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Savage Punch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Silhouette | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Smash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Surge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31273,9 +31989,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Savor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savor the Moment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savra, Queen of the Golgari | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Saw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawback Manticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawblade Scamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawblade Skinripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sawblade Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawtooth Loon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawtooth Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawtooth Thresher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31312,6 +32030,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Scapeshift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scarab Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scarab of the Unseen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scarblade Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scarblade Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scarblade's Malice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31338,6 +32057,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Scavenged Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scavenged Weaponry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scavenger Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scavenger Regent // Exude Toxin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scavenging Harpy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scavenging Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scene of the Crime | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31356,12 +32076,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Scheming Symmetry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Schismotivate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scholar of Athreos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scholar of Combustion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scholar of Stars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scholar of the Ages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scholar of the Lost Trove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | School Daze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | School of Piranha | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | School of the Unseen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scientist Supreme of A.I.M. | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scion Summoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scion of Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scion of Draco | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31424,6 +32146,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Scouting Trek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrabbling Skullcrab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scragnoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scrambleverse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrap Compactor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrapbasket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31471,8 +32194,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Scrounging Bandar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrounging Skyray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scryb Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scrying Glass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrying Sheets | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sculpted Perfection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sculpted Sunburst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sculptor of Winter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scurrid Colony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scurrilous Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31489,6 +32214,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Scuzzback Scrounger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scythe Leopard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scythe Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scythe of the Wretched | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scytheclaw Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Eagle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31563,6 +32289,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Second Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Second Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secret Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Secret Identity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secret Passage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secret Salvage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secret Tunnel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31656,6 +32383,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Selfcraft Mechan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Selfless Cathar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Selfless Exorcist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Selfless Glyphweaver // Deadly Vanity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Selfless Police Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Selfless Safewright | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Selfless Samurai | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31689,6 +32417,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sentinel Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sentinel Totem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sentinel Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sentinel of the Eternal Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sentinel of the Nameless City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sentinel of the Pearl Trident | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31706,6 +32435,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Seraph of New Capenna // Seraph of New Phyrexia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seraph of the Scales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seraph of the Suns | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seraphic Greatsword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seraphic Steed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serendib Efreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serene Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31728,6 +32458,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Serpentine Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serpentine Curve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serpentine Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Serpentine Spike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra Advocate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra Inquisitors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31735,10 +32466,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Serra Redeemer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Serra the Benevolent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra's Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra's Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra's Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Serra's Liturgy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serra's Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serrated Arrows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Serrated Biskelion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31770,6 +32503,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Seton, Krosan Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Settle Beyond Reality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Settle the Score | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Settle the Wreckage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Settlement Blacksmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seven Dwarves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seven-Tail Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31784,6 +32518,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sewerdreg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sewn-Eye Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seymour Flux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shackle Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shade of Trokair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shade's Breath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shade's Form | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31799,6 +32534,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shadow Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadow of Doubt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadow of Mortality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shadow of the Enemy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shadow of the Goblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadow of the Grave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadow-Rite Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadowbeast Sighting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31810,16 +32547,19 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shadowfeed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadowheart, Dark Justiciar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadows of the Past | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shadows' Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadowstorm Vizier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shadowy Backstreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shady Informant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shady Traveler // Stalking Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shagrat, Loot Bearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shah of Naar Isle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shake the Foundations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shakedown Heavy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shalai's Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shaleskin Bruiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shaleskin Plower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shallow Grave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shaman of Forgotten Ways | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shaman of Spring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shaman of the Great Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31868,6 +32608,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shattered Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shattered Ego | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shattered Perception | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shattered Seraph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shattered Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shattering Blow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shattering Pulse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31880,6 +32621,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shatterwing Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shauku's Minion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shauku, Endbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shay Cormac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | She-Hulk, Attorney-at-Law | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | She-Hulk, Jade Defender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | She-Hulk, Jennifer Walters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31894,6 +32636,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shelob's Ambush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shelter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheltered Aerie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sheltered Valley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheltering Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheltering Boughs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheltering Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31901,6 +32644,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sheltering Prayers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheltering Word | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shenanigans | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sheoldred // The True Scriptures | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheoldred's Edict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheoldred's Headcleaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sheoldred's Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31908,6 +32652,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sheoldred, the Apocalypse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherd of Heroes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherd of Rot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shepherd of the Clouds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherd of the Cosmos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherd of the Flock // Usher to Safety | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherd of the Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31919,6 +32664,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shield Mate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield of Duty and Reason | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shield of Kaldra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shield of the Avatar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield of the Oversoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield of the Realm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield of the Righteous | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -31947,6 +32694,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shimmering Mirage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmering Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmerscale Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shimmerwilds Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmerwing Chimera | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shinechaser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shinen of Fear's Chill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32011,6 +32759,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shoulder to Shoulder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shoving Match | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Show and Tell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Show of Confidence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Show of Valor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shower of Arrows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shower of Coals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32052,6 +32801,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shrivel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shriveling Rot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shroofus Sproutsire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shrouded Lore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrouded Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrouded Shepherd // Cleave Shadows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shroudstomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32064,6 +32814,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Shuko | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shuri, Vibranium Technologist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shuri, Wakandan Inventor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Siani, Eye of the Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sibling Rivalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sibsig Appraiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32100,8 +32851,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Siegehorn Ceratops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sif's Spearmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sift Through Sands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sifter Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigarda's Imprisonment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sigarda's Splendor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigarda's Summons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigarda, Champion of Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigarda, Font of Blessings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32126,6 +32879,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sigiled Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigiled Skink | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Signal Pest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Signal the Clans | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Signature Slam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Signpost Scarecrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigrid, God-Favored | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sigurd, Jarl of Ravensthorpe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32198,6 +32953,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Silverquill Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silverquill Pledgemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silverquill Silencer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silverquill, the Disputant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silverskin Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silverstorm Samurai | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silverstrike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32256,6 +33012,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sisters of the Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sivvi's Ruse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sivvi's Valor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Six | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Six-Sided Die | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sixth Sense | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sizzle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sizzling Barrage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32276,6 +33034,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Skeletal Grimace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skeletal Kathari | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skeletal Snake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skeletal Swarming | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skeletal Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skeleton Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skeleton Key | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32368,6 +33127,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Skybeast Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skybind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyblade of the Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyblade's Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyblinder Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skybox Ferry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skybridge Towers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32409,6 +33169,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Skyseer's Chariot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyserpent Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyship Buccaneer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyship Weatherlight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyshooter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyshroud Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyshroud Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32490,6 +33251,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Slickshot Vault-Buster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slime Molding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slimebind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slimefoot and Squee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slimefoot's Survey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slimefoot, the Stowaway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slimy Dualleech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slimy Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32500,6 +33263,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Slinking Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slinking Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slinking Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slinza, the Spiked Stampede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slip On the Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slip Out the Back | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slippery Bogle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32534,6 +33298,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Slumbering Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slumbering Keepguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slumbering Tora | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slumbering Trudge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sly Requisitioner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smallpox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32544,6 +33309,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Smaug the Impenetrable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smaug the Magnificent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smaug's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Smaug, Wicked Worm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smaug, the Great Calamity // Spew Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smell Fear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smellerbee, Rebel Fighter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32615,6 +33381,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Snow-Covered Plains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snow-Covered Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snow-Covered Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snowblind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snowhorn Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snowmelt Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snowslope Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32628,12 +33395,15 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Soaring Show-Off | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soaring Stoneglider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Social Climber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Social Snub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soilshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sojourner's Companion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokenzan Bruiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sokenzan Renegade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokenzan Smelter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokenzan Spellblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokenzan, Crucible of Defiance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sokka and Suki | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokka's Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokka's Haiku | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sokka's Sword Training | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32686,6 +33456,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Somberwald Vigilante | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Something Worth Saving | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Somnomancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Somnophore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sonar Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Song of Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Song of Creation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32721,11 +33492,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Soratami Rainshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soratami Savant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soratami Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soraya the Falconer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerer of the Fang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerer's Broom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerer's Strongbox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerer's Wand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorceress Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sorceress's Schemes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerous Sight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerous Spyglass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorcerous Squall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32738,7 +33511,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sorin, Imperious Bloodlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorin, Solemn Visitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sorin, Vampire Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sorin, Vengeful Bloodlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sosuke's Summons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sosuke, Son of Seshiro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Bleed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Channeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32800,6 +33575,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Soulmender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soulquake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soulreaper of Mogis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Souls of the Faultless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Souls of the Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soulscour | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soulshriek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32817,6 +33593,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | South Wind Avatar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Southern Air Temple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Southern Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sovereign Okinec Ahau | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sovereign's Bite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sower of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sowing Mycospawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32824,7 +33601,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sozin's Comet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Space-Time Anomaly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spaceshift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spara's Adjudicators | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spara's Headquarters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spare Dagger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spare Supplies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spare from Evil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spark Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32833,6 +33612,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Spark Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spark Spray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spark Trooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spark of Creativity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparkcaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparkhunter Masticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparkmage Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32855,6 +33635,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Spawnbinder Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spawnbroker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spawning Breath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spawning Pool | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Speakeasy Server | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spear Spewer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spear of Heliod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32868,8 +33649,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Spectacular Spider-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectacular Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Specter of the Fens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Specter's Shriek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Specter's Shroud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Specter's Wail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spectra Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectral Cloak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectral Denial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectral Flight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32908,13 +33691,17 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Spellgorger Barbarian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellgorger Weird | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellgyre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spelljack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellkeeper Weird | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellrune Painter // Spellrune Howler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spellshift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellstutter Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spelltithe Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellweaver Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spellweaver Eternal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spelunking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sphere of Annihilation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sphere of Duty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sphere of Grace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sphere of Law | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32938,6 +33725,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sphinx's Herald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sphinx's Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sphinx's Tutelage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sphinx-Bone Wand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spicy Oatmeal Pizza | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider Climb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider Food | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32947,15 +33735,18 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Spider-Byte, Web Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Girl, Legacy Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Gwen, Free Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spider-Ham, Peter Porker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Islanders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man 2099, Miguel O'Hara | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man India | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man No More | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spider-Man Noir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, Brooklyn Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, Hometown Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, Miles Morales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, New Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, Peter Parker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spider-Man, To the Rescue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, Web-Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Man, Web-Spinner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Mobile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -32964,7 +33755,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Spider-Slayer, Hatred Honed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Suit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-UK | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spider-Woman, Secret Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spider-Woman, Stunning Savior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spiders-Man, Heroic Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spidersilk Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spidersilk Net | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spiderwig Boggart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33089,12 +33882,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Splinter, Radical Rat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Split Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Split the Party | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Split the Spoils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Split-Tail Miko | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Splitskin Doll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Splitting Headache | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Splitting Slime | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Splitting the Powerstone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spoils of Evil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spoils of the Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spoils of the Vault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spontaneous Artist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spontaneous Combustion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33142,6 +33937,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sprouting Renewal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spur Grappler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spurred Wolverine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spy Network | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spyglass Siren | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spymaster's Vault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squad Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33166,6 +33962,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Squire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squire's Devotion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squire's Lightblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Squirming Emergence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squirming Mass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squirrel Mob | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squirrel Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33180,6 +33977,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Stadium Tidalmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stadium Vendors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Staff of Domination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Staff of Eden, Vault's Key | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Staff of Titania | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Staff of the Ages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Staff of the Death Magus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33233,6 +34031,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Star of Extinction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Star-Crowned Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starbreach Whale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stardew Valley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starfall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starfield Shepherd | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starfield Vocalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33244,6 +34043,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Starlight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlight Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlight Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Starlight Spectacular | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starling, Aerial Ally | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlit Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlit Mantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33259,6 +34059,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Starting Column | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starting Town | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Startle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Startled Awake // Persistent Nightmare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Startled Relic Sloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Startling Development | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starved Rusalka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33296,6 +34097,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Steal Artifact | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steal Enchantment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steal Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steal the Show | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stealer of Secrets | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stealth Mission | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steam Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33353,6 +34155,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Stew the Coneys | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steward of Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steward of Valeron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stick, Fearless Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stickytongue Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stifle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stigma Lasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33360,12 +34163,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Stillmoon Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stiltzkin, Moogle Merchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stimulus Package | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sting, the Glinting Dagger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sting-Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stingblade Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stingcaster Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stingerback Terror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stingerquill Annex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stingerquill Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stingerquill Voxmancer // Vicious Verse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stinging Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stinging Cave Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stinging Hivemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33401,6 +34206,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Stoic Rebuttal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stoic Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stolen Stark Tech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stolen Vitality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomp and Howl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomped by the Foot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomper Cub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33472,6 +34278,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Storm the Festival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Storm the Seedcore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Storm the Vault // Vault of Catlacan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Storm, Force of Nature | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Storm, Shaker of Skies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormbeacon Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormbind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33553,17 +34360,20 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Strength of the Coalition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strength of the Harvest // Haven of the Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strength of the Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Strength-Testing Hammer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stress Dream | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strider Harness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strider, Ranger of the North | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strife Scholar // Awaken the Ages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strike It Rich | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | String of Disappearances | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strip Bare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Striped Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Striped Riverwinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strix Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strix Serenade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Strixhaven Skycoach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Strixhaven Stadium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stromgald Crusader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stromkirk Bloodthief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stromkirk Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33583,9 +34393,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Stronghold Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stronghold Taskmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stronghold Zeppelin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Structural Assault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Structural Collapse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Structural Distortion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Struggle for Skemfar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stubborn Burrowfiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stubborn Denial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stuck in Summoner's Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Student of Elements // Tobita, Master of Winds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33727,7 +34539,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sundering Vitae | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sundial, Dawn Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunfire Balm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sunfire Torch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunflare Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sunglasses of Urza | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sungold Barrage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sungrace Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sungrass Egg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33787,6 +34601,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Supply Runners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supply-Line Cranes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supportive Parents | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Suppress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Suppression Bonds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Suppression Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supreme Exemplar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33801,6 +34616,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Surge Mare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surge Node | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surge of Righteousness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Surge of Salvation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surge of Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surge of Thoughtweft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surge of Zeal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33823,6 +34639,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Surtland Frostpyre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surtr, Fiery Jötun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surveillance Monitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Surveillance Phantasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surveillance Room | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Surveilling Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Survey Mechan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33832,6 +34649,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Survivor of the Unseen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Survivors' Bond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Survivors' Encampment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Suspend Aggression | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Suspension Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Suspicious Detonation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Suspicious Shambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33862,6 +34680,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Swarm of Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swarm, Being of Bees | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swarmborn Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swarming Goblins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swarming of Moria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swashbuckler's Whip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swashbuckling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33869,6 +34688,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Swat Away | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swathcutter Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sway of Illusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sway of the Stars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sweatworks Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sweep Away | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sweep the Skies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33911,6 +34731,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Sword of Truth and Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sword of War and Peace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sword of Wealth and Power | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sword of the Meek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sword-Point Diplomacy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swordsman's Steel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swordsworn Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -33975,6 +34796,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | TVA Bureaucrat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tabaxi Toucaneers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tablet of Compleation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tablet of Discovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tablet of the Guilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taborax, Hope's Demise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tackle Artist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tah-Crop Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34047,13 +34870,18 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Talruum Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Talruum Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Talruum Piper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talus Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tam's Resistance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tam, Mindful First-Year | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tam, Observant Sequencer // Deep Sight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tam, the Possibility | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tamanoa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tameshi, Reality Architect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tamiyo's Compleation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tamiyo's Epiphany | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tamiyo's Immobilizer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tamiyo's Journal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tamiyo, the Moon Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tandem Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tandem Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tandem Takedown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34061,9 +34889,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tangle Asp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Hulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tangle Kelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Mantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Tumbler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tangle Wire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tanglebloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangleclaw Werewolf // Fibrous Entangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangled Colony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34087,8 +34917,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Taranika, Akroan Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tarfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Targ Nar, Demon-Fang Gnoll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tariff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tarkir Duneshaper // Burnished Dunestomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tarmogoyf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tarnation Vista | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tarnished Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tarox Bladewing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tarpan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34097,10 +34929,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tasigur's Cruelty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Task Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Task Mage Assembly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Taskmaster, Mercenary Mimic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tasseled Dromedary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taste for Mayhem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taste of Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taste of Paradise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tatsumasa, the Dragon's Fang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tatsunari, Toad Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tattered Apparition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tattered Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tattered Haunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34110,6 +34945,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tattermunge Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tattermunge Maniac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tattermunge Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tattoo Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tatyova, Steward of Tides | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taunting Arbormage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taunting Challenge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34150,13 +34986,21 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Teferi's Moat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Protege | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Puzzle Box | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Realm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Response | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Time Twist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Tutelage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Veil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Wavecaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi, Hero of Dominaria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi, Mage of Zhalfir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi, Master of Time | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi, Temporal Pilgrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi, Time Raveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi, Timebender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi, Timeless Voyager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi, Who Slows the Sunset | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tel-Jilad Archers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tel-Jilad Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34200,6 +35044,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Temple Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Temporal Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Temporal Cascade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Temporal Distortion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Temporal Eddy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Temporal Firestorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Temporal Fissure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34240,6 +35085,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tenth District Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tenured Concocter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tenured Oilcaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tenured Tethermage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tephraderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terashi's Cry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terashi's Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34273,6 +35119,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Territory Forge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror Ballista | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Terror of Towashi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror of the Fairgrounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrus Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Test of Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34285,13 +35132,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tethermage's Advantage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tethmos High Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tetsuko Umezawa, Pursuer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tevesh Szat, Doom of Fools | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Textbook Tabulator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teyo's Lightshield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teyo, Diamondblade Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teyo, Lightshield Expert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teyo, the Shieldmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teysa Karlov | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teysa, Opulent Oligarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teysa, Orzhov Scion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tezzeret the Schemer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tezzeret the Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tezzeret's Ambition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tezzeret's Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34302,7 +35152,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tezzeret, Agent of Bolas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tezzeret, Artifice Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tezzeret, Cruel Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tezzeret, Cruel Machinist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tezzeret, Master of Metal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tezzeret, Master of the Bridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thada Adel, Acquisitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thalakos Deceiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thalakos Dreamsower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thalakos Mistfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34321,6 +35174,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thassa's Bounty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thassa's Devourer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thassa's Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thassa's Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thassa's Ire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thassa's Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thassa's Rebuff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34342,8 +35196,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Balrog, Flame of Udûn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Bath Song | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Battle of Bywater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Belligerent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Biblioplex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Birth of Meletis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Black Arrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Black Breath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Blackstaff of Waterdeep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Bloodsky Massacre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34372,6 +35228,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Duke, Rebel Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Eagles Are Coming! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Earth Crystal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Earth King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Echoverse Fulcrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Elderspell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34380,8 +35237,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Fabulous Frog-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Fair Basilica | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Falcon, Sam Wilson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Fall of Kroog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Fifteenth Doctor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Filigree Sylex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Final Days | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Fire Crystal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Fire Nation Drill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The First Eruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The First Iroan Games | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The First Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34391,6 +35252,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Grey Havens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Haunt of Hightower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Hive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Howling Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Howling Commandos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Hunter Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Huntsman's Redemption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34398,12 +35260,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Immortal Weapons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Jolly Balloon Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Last Ride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Last Ronin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Last Ronin's Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Legend of Kuruk // Avatar Kuruk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Legend of Roku // Avatar Roku | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Lion-Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Lonely Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Lord of the Eagles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Lunar Whale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Magic Mirror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Mana Rig | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Mary Janes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34423,6 +35287,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Notary Hobbits | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The One Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Ozolith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Prima Vista | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Princess Takes Flight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Queen of Dale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34433,14 +35298,19 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Restoration of Eiganjo // Architect of Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Revelations of Ezio | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Ring Goes South | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Rollercrusher Ride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Royal Scions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Sackville-Bagginses | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Scarlet Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Seedcore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Sentry, Golden Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Seriema | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Serpent Society | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Shattered States Era // Nameless Conqueror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Shire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Sibsig Ceremony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Space Family Goblinson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Spear of Leonidas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Speed Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Spirit Oasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Spot's Portal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34458,12 +35328,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Three Seasons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Torment of Gollum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Triumph of Anax | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Unagi of Kyoshi Island | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Unbeatable Squirrel Girl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Underworld Cookbook | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Unspeakable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Vision | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Vision and Scarlet Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Walls of Ba Sing Se | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Wandering Emperor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Wandering Rescuer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Wasp, Janet Van Dyne | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Watcher in the Water | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34471,7 +35343,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | The Whizzer, Classic Speedster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Wind Crystal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Witch's Vanity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Wondrous Wasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The World Spell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thelon's Chant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thelon's Curse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thelonite Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Themberchaud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Theoretical Necromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34480,6 +35355,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Theorix Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Theorix Metamage // Omit Variables | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thermal Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thermal Flux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thermal Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thermal Navigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thermopod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34489,11 +35365,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thief of Existence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thief of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thief's Knife | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thieves' Auction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thieves' Fortune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thieves' Guild Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thieves' Tools | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thieving Magpie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thieving Otter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thieving Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thing Swing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thing in the Ice // Awoken Horror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Think Tank | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34502,6 +35380,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thirst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thirst for Discovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thirst for Identity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thirsting Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thirsting Bloodlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thirsting Roots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thirsting Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34513,6 +35392,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thopter Arrest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thopter Mechanic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thor Odinson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thor, Guardian of Midgard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorin's Last Stand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorin, Company's Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorin, King of Durin's Folk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34546,6 +35426,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thought Distortion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thought Eater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thought Erasure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thought Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thought Harvester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thought Hemorrhage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thought Nibbler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34555,6 +35436,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thought-Knot Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thought-Stalker Warlock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thoughtbind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thoughtbound Primoc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thoughtcutter Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thoughtflare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thoughtlace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34570,6 +35452,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thoughtweft Trio | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thousand Moons Crackshot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thousand Moons Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thousand-Year Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thousand-legged Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thraben Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thraben Exorcism | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34598,6 +35481,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thran Weaponry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thranduil the Strategist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thranduil's Company | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thranduil's Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thranduil, Sindarin Liege // Silvan Rally | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thranduil, the Elvenking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrash // Threat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34612,10 +35496,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Threads of Disloyalty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Threaten | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Threats Around Every Corner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Threats Undetected | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Blind Mice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Steps Ahead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Tragedies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Three Tree City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Tree Mascot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Tree Rootweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Three Tree Scribe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34689,6 +35575,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thundermare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderous Debut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderous Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thunderous Orator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderous Snapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderous Velocipede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderous Wrath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34699,6 +35586,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Thundersong Trumpeter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thundersteel Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thundertrap Trainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thunderwave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thurid, Mare of Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thwart the Enemy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34706,13 +35594,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tiamat's Fanatics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tibalt's Rager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tibalt, Rakish Instigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tibalt, the Fiend-Blooded | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tibor and Lumia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ticked Off | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ticket Booth // Tunnel of Hate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ticket Tortoise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ticking Gnomes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tidal Bore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tidal Control | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tidal Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tidal Flats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tidal Influence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tidal Kraken | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tidal Surge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34762,11 +35653,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Time Spiral | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Time Stretch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Time Warp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Time and Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Time of Heroes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Time of Ice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Time of Need | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Time to Feed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Time to Reflect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Timebender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Timecrafting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Timeline Inquiry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Timely Hordemate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Timely Interference | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34781,6 +35675,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tinder Farm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tine Shrike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tinker's Tote | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tinybones Joins Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tinybones, Pocket Nuisance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tinybones, Trinket Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tinybones, the Pickpocket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34802,9 +35697,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Titanium Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titanium Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titans' Nest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tithe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tithebearer Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tithing Blade // Consuming Sepulcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tivadar of Thorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tizerus Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | To Arms! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | To the Slaughter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Toadstool Admirer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34817,6 +35714,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Toil // Trouble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Toil to Renown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Toils of Night and Day | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tokka & Rahzar, Terrible Twos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tolaria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tolarian Contempt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tolarian Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tolarian Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tolarian Entrancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34830,12 +35730,15 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Toll of the Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tolls of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tolsimir Wolfblood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tolsimir, Friend to Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Toluz, Clever Conductor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tom, Bert, and William | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomakul Honor Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomakul Scrapsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomb Hex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomb Robber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomb Trawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tomb of Urami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tombfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tombstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tome Anima | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34878,6 +35781,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Torch Gauntlet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Torch Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Torch Song | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Torch the Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Torch the Witness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Torens, Fist of the Angels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tori D'Avenant, Fury Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34926,6 +35830,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Touchstone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tough Cookie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tourach's Canticle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tourach's Chant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tourach's Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tourach, Dread Cantor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tournament Grounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Towashi Songshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34973,6 +35879,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Trail of Crumbs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trail of Evidence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Trailblazer's Torch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trailblazing Historian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Train of Thought | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trained Arynx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -34998,6 +35905,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tranquil Path | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tranquilize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Transcendence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Transcendent Archaic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Transcendent Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Transcendent Message | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Transdimensional Bovine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35039,6 +35947,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Treacherous Greed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treacherous Link | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treacherous Pit-Dweller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Treacherous Urge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treacherous Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treacherous Werewolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treachery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35085,6 +35994,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Treva's Attendant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treva's Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treva, the Renewer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Trial of Agony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trial of Ambition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trial of Knowledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trial of Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35136,6 +36046,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Trollhide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trolls of Tel-Jilad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tromp the Domains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Troop of Ponies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trophy Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trophy Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tropical Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35173,6 +36084,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Trystan's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trystan, Callous Cultivator // Trystan, Penitent Culler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tsabo Tavoc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tsabo's Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tsabo's Web | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tui and La, Moon and Ocean | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tuinvale Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tuinvale Treefolk // Oaken Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35181,6 +36094,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tuktuk Rubblefort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tumble Magnet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tumbleweed Rising | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tundra Fumarole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tundra Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tundra Tank | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tundra Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35188,6 +36102,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tune Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tune the Narrative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tunnel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tunnel Ignus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tunnel Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tunnel Surveyor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tunnel Tipster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35208,16 +36123,20 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Turn to Dust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turn to Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turn to Slag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Turnabout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turntimber Ascetic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turntimber Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turntimber Grove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Turntimber Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turntimber Symbiosis // Turntimber, Serpentine Wood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turret Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turtle Blimp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turtle Power! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turtle Tracks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Turtle Van | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turtle-Duck | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turtle-Seals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Turtles in Time | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turtleshell Changeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tusked Colossodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tuskeri Firewalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35244,6 +36163,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Twinscroll Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Twinshot Sniper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Twinstrike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Twist Allegiance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Twist Reality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Twisted Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Twisted Experiment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35278,12 +36198,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Tyrranax | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrranax Atrocity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrranax Rex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tyvar Kell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tyvar, Jubilant Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyvar, the Pummeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | U.S.Agent, John Walker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ubul Sar Gatekeepers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Uchbenbak, the Great Mistake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin's Conjurant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin's Construct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin's Labyrinth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ugin, Eye of the Storms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin, the Spirit Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Uglúk of the White Hand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Uktabi Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35403,6 +36327,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Underworld Hermit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Underworld Rage-Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Underworld Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Undiscovered Paradise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Undo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Undulating Witness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Undying Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35419,6 +36344,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Unesh, Criosphinx Sovereign | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unexpected Assistance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unexpected Fangs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unexpected Request | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unexpected Results | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unexplained Disappearance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unexplained Vision | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35465,6 +36391,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Unmoored Ego | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unnatural Aggression | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unnatural Endurance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unnatural Hunger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unnatural Moonrise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unnatural Predation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unnatural Selection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35481,6 +36408,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Unruly Mob | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unscrupulous Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unscrupulous Contractor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unscythe, Killer of Kings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unseal the Necropolis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unseen Walker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unsettling Twins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35601,9 +36529,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Valeron Wardens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valgavoth's Faithful | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valgavoth's Lair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Valgavoth's Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valiant Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valiant Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valkyrie Aerial Unit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Valkyrie's Call | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valkyrie's Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valkyrior Skyrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Valley Dasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35719,7 +36649,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Veil of Birds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veil of Secrecy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veilborn Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Veiled Apparition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veiled Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Veiled Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Veiled Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veiled Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veiling Oddity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veilstone Amulet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35755,6 +36688,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Vengeful Townsfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vengeful Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vengeful Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vengeful Villagers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vengeful Warchief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vengevine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35777,10 +36711,12 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Venser, Shaper Savant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venser, the Sojourner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vent Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ventifact Bottle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venus, Torn Between Worlds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verazol, the Split Current | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Verdant Crescendo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Eidolon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Haven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35820,9 +36756,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Veteran Swordsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veteran Warleader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veteran of the Depths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Veteran's Armaments | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veteran's Powerblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veteran's Reflexes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Veteran's Sidearm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Veteran's Voice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vexing Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vexing Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35916,9 +36854,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Vincent Valentine // Galian Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vindictive Flamestoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vindictive Mob | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vindictive Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vindictive Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vindictive Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vine Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vine Gecko | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vine Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vine Mare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vine Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -35952,13 +36892,16 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Viridian Revel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Viridian Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtual Assistant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Virtue of Courage // Embereth Blaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtue of Knowledge // Vantress Visions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtue of Loyalty // Ardenvale Fealty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtue of Persistence // Locthwain Scorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Virtue of Strength // Garenbrig Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtue's Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtuous Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtuous Variant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtus the Veiled | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Virtus's Maneuver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virulent Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virulent Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virulent Silencer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36009,6 +36952,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Vivien's Arkbow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vivien's Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vivien's Grizzly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vivien's Invocation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vivien's Jaguar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vivien, Nature's Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vivify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36019,6 +36963,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Vizier of the True | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vizkopa Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vizzerdrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vnwxt, Verbose Host | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voda Sea Scavenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vodalian Arcanist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vodalian Hexcatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36043,6 +36988,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Voice of the Vermin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voiceless Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voices from the Void | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Void | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Void Extrapolator // Omit Variables | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Void Grafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Void Helix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36056,6 +37002,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Voidmage Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voidmage Husher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voidmage Prodigy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Voidpouncer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voidslime | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voidstone Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voidwalk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36091,6 +37038,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Volley of Boulders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Volo, Guide to Monsters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Volrath the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Volrath's Dungeon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Volrath's Gardens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Volshe Tideturner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Volt Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36102,6 +37050,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Voltaic Whip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voltstorm Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Volunteer Militia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vona's Hunger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voracious Brood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voracious Cobra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voracious Greatshark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36126,6 +37075,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Vow to Erebor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voyage Home | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voyage's End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Voyager Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voyager Glidecar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voyager Quickwelder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Voyager Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36143,6 +37093,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Vraska, Relic Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vraska, Scheming Gorgon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vraska, Soul of Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vraska, Swarm's Eminence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vraska, the Cutting Glare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vren, the Relentless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vrock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vryn Wingmare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36175,6 +37127,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wake of Destruction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wake of Vultures | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wake the Reflections | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wake to Slaughter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wakedancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Waker of Waves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wakeroot Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36224,6 +37177,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wall of Putrid Flesh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Razors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Resistance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wall of Resurgence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Runes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Shards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Spears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36231,6 +37185,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wall of Swords | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Tanglecord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Tears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wall of Tombstones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Torches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Vapor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wall of Vines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36240,6 +37195,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wall of Wood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wallop | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Walltop Sentries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wan Shi Tong, Librarian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wand of Denial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wand of Vertebrae | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wand of the Elements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36272,6 +37228,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wanted Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wanted Scoundrels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Balloon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | War Barge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Chariot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Dance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36309,6 +37266,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Warden of the Chained | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warden of the Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warden of the First Tree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Warden of the Grove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warden of the Inner Sky | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warden of the Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warden of the Woods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36332,6 +37290,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Warmaker Gunship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warmind Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warmonger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Warmonger's Chariot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warmth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warpath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warpath Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36350,6 +37309,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Warren Weirding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warren-Scourge Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warrior Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Warrior's Blades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warrior's Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warrior's Honor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Warrior's Oath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36366,6 +37326,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wary Okapi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wary Thespian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wary Watchdog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wash Away | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wasp Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wasp of the Bitter End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wasp, Shrinking Savior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36463,8 +37424,10 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Weather the Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weathered Bodyguards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weathered Runestone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Weatherlight Compleated | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weatherseed Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weatherseed Faeries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Weatherseed Totem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weatherseed Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weave Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Weaver of Blossoms // Blossom-Clad Werewolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36515,7 +37478,9 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Well-Laid Plans | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Well-Worn Spatula | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wellgabber Apothecary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wellspring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Werefox Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Werewolf Pack Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Western Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Westfold Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Westgate Regent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36561,22 +37526,26 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | White Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Lotus Hideout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Lotus Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | White Lotus Tile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Mage's Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Mana Battery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Plume Adventurer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Shield Crusader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Tiger, Amulet Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | White Tiger, Ava Ayala | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Widow, Free Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | White Widow, Yelena Belova | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Whitesun's Passage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Whoosh! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wiccan, Young Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wick's Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wick, the Whorled Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wicked Akuba | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wicked Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wicked Reward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wicked Slumber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wicked Visitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wicked Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wicker Warcrawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36593,6 +37562,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wild Ceratok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Colos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Defiance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wild Dogs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Elephant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Guess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36602,11 +37572,13 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wild Jhovall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Leotau | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Magic Surge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wild Mammoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Nacatl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Pack Squad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Roads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wild Shape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Slash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Swing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wild Unraveling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36623,6 +37595,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wildfire Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wildfire Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wildfire Eternal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wildfire Howl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wildfire Wickerfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wildgrowth Walker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wildheart Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36695,6 +37668,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wingnut, Bat on the Belfry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wingrattle Scarecrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wings of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wings of Hubris | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wings of Velis Vel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wings of the Cosmos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wings of the Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36703,12 +37677,14 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wingsteed Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winnow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winnower Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Winnowing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winota, Joiner of Forces | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter Eladrin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter Moon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter Orb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter Sky | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter Soldier, Bucky Barnes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Winter Soldier, Icy Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter's Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter's Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winter's Rest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36732,6 +37708,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wirewood Symbiote | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wisdom of Ages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wisecrack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wishclaw Talisman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wishcoin Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wishful Merfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wishmonger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36782,6 +37759,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wizard Replica | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wizard's Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wizard's Retort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wizard's Rockets | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wizard's Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wizards of Thay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wizards' School | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36799,6 +37777,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wolf Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wolf's Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wolf-Skull Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wolfbat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wolfbitten Captive // Krallenhorde Killer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wolfhunter's Quiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wolfir Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36811,6 +37790,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wolverine, Claws Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wondrous Revival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodborn Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Woodcaller Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodcloaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodcutter's Grit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wooded Foothills | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36834,9 +37814,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Woodripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodvine Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodweaver's Puzzleknot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Woodwork Prodigy // Soul Tether | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodwraith Corrupter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woodwraith Strangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woolly Loxodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Woolly Razorback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Woolly Thoctar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Word of Binding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Word of Blasting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36857,6 +37839,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Worldly Counsel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worldly Tutor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worldpurge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Worlds Within Worlds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worldslayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worldsoul Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worldwalker Helm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36867,6 +37850,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Wormfang Newt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wormfang Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wormhole Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Wormwood Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worry Beads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Worst Fears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36930,6 +37914,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Xathrid Slyblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Xavier Sal, Infested Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Xenograft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Xu-Ifit, Osteoharmonist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Xun Yu, Wei Advisor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yahenni's Expertise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yamabushi's Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36941,6 +37926,8 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Yargle, Goliath of Otaria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yarok's Fenlurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yarok's Wavecrasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Yasova Dragonclaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Yathan Roadwatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yathan Tombguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yavimaya Barbarian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Yavimaya Gnats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -36990,6 +37977,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | You Find the Villains' Lair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | You Happen On a Glade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | You Hear Something on Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | You Look Upon the Tarrasque | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | You Meet in a Tavern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | You See a Guard Approach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | You See a Pair of Goblins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37025,13 +38013,18 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zahid, Djinn of the Lamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zahur, Glory's Past | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zalto, Fire Giant Duke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zameck Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zamriel, Seraph of Steel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zanam Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zanarkand, Ancient Metropolis // Lasting Fayth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zanikev Locust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zar Ojanen, Scion of Efrava | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zarda, the Power Princess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zarichi Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zariel, Archduke of Avernus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zask, Skittering Swarmlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zealot il-Vec | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zealot of the God-Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zealot's Conviction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zealots en-Dal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37059,6 +38052,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zephyr Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zephyr Winder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zerapa Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zero Point Ballad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Decoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37068,6 +38062,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zhang Liao, Hero of Hefei | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhao Zilong, Tiger General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhao, Ruthless Admiral | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zhao, the Moon Slayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhao, the Seething Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhentarim Bandit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhou Yu, Chief Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37077,6 +38072,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zhur-Taa Swine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ziatora's Proving Ground | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zimone and Dina | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zimone's Experiment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zimone, Paradox Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zirilan of the Claw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zo-Zu the Punisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37091,6 +38087,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zodiac Rooster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zodiac Snake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zodiac Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zodiark, Umbral God | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zoetic Glyph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zof Consumption // Zof Bloodbog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zof Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37112,6 +38109,7 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zookeeper Mechan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zoologist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zopandrel, Hunger Dominus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zoraline, Cosmos Caller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zuberi, Golden Feather | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zuko's Conviction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zuko's Exile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -37124,9 +38122,11 @@ Commander: **Ghalta, Primal Hunger** · 100 karata · 69 jedinstvenih · PASS 69
 | PASS | Zulaport Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zuo Ci, the Mocking Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zur the Enchanter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Zur, Eternal Schemer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zuran Enchanter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zuran Orb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zurgo Bellstriker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zurgo's Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Éomer of the Riddermark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Éomer, Marshal of Rohan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Éowyn, Lady of Rohan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |

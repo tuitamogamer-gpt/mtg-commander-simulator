@@ -729,7 +729,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // during a simultaneous batch. A co-entrant never supplies an extra effect.
   MTG.oracleV8ApplyEntryState = async function (game, card) {
     const candidates = game.replacers('etbTapped');
-    for(const effect of game.untilEffects)if(effect.kind==='entryTappedV18')candidates.push({key:'entry-tapped-v18:'+effect.timestamp,run:()=>{card.tapped=true;}});
+    for(const effect of game.untilEffects)if(effect.kind==='entryTappedV18'&&(!effect.controllerV57||card.ctrl===effect.controllerV57)&&(!effect.landsOnlyV57||card.is('Land')))candidates.push({key:'entry-tapped-v18:'+effect.timestamp,run:()=>{card.tapped=true;}});
     for (const source of game.bf()) {
       if (source.cur?.abilitiesDisabled) continue;
       if (source !== card && source.ctrl === card.ctrl && source.def.landsEnterUntapped && card.is('Land')) {

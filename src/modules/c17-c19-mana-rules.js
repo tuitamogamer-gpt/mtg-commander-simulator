@@ -12,10 +12,14 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   let result=rows.map(r=>({...r,c1719BonusExcess:{},c1719BonusMeta:[],c1719BonusChoices:[]}));
   for(const source of s.c1719ManaBonuses){const next=[];
    for(const old of result){const underlying=s.c14BaseMana?.[s.produce.indexOf(base)]||base,produced=underlying.ANY?countColors(old.anyColors):underlying;
-    for(const choice of options(source,produced))for(const b of branch(old.pips,old.generic,choice,false,true,true,!!source.cur?.super?.includes('Snow'))){
+    for(const choice of options(source,produced)){
+     const zeroBonus=!choice.ANY&&Object.entries(choice).every(([color,n])=>[...colors,'C'].includes(color)&&Number.isFinite(n)&&n===0);
+     const branches=zeroBonus?[{pips:old.pips,generic:old.generic,excess:{},anyColors:[]}]:branch(old.pips,old.generic,choice,false,true,true,!!source.cur?.super?.includes('Snow'));
+     for(const b of branches){
      const excess={...old.c1719BonusExcess};for(const [col,n]of Object.entries(b.excess))excess[col]=(excess[col]||0)+n;
      const meta=old.c1719BonusMeta.concat(source.cur?.super?.includes('Snow')?Object.entries(b.excess).filter(([,n])=>n>0).map(([color,n])=>({color,n,source,c13Snow:true})):[]);
      next.push({...old,pips:b.pips,generic:b.generic,c1719BonusExcess:excess,c1719BonusMeta:meta,c1719BonusChoices:[...old.c1719BonusChoices,{source:source.iid,version:source.zoneVersion,choice,colors:b.anyColors}]});
+    }
     }
    }
    const unique=new Map();for(const r of next){const k=JSON.stringify([r.pips,r.generic,r.excess,r.c1719BonusExcess,r.c1719BonusMeta.map(row=>[row.color,row.n,row.source.iid]),r.anyColors]);if(!unique.has(k))unique.set(k,r);}result=[...unique.values()];

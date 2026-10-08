@@ -1,3 +1,10 @@
+import * as commonV63Proof from './helpers/oracle-v63-common-proof.mjs';
+import * as commonV62Proof from './helpers/oracle-v62-common-proof.mjs';
+import * as commonV61Proof from './helpers/oracle-v61-common-proof.mjs';
+import * as commonV60Proof from './helpers/oracle-v60-common-proof.mjs';
+import * as commonV59Proof from './helpers/oracle-v59-common-proof.mjs';
+import * as commonV58Proof from './helpers/oracle-v58-common-proof.mjs';
+import * as commonV57Proof from './helpers/oracle-v57-common-proof.mjs';
 import * as commonV56Proof from './helpers/oracle-v56-common-proof.mjs';
 import * as commonV55Proof from './helpers/oracle-v55-common-proof.mjs';
 import * as commonV54Proof from './helpers/oracle-v54-common-proof.mjs';
@@ -732,6 +739,11 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   if(context.exploitDonor&&JSON.stringify(target.threshold||{}).includes('event-card-stat')){
     assert.deepEqual(JSON.parse(JSON.stringify(target.threshold)),{kind:'sum',values:[{kind:'event-card-stat',stat:'toughness'},-1]});
     return stageGenericTarget(MTG,context,{...target,threshold:context.exploitDonor.toughness-1},index,effect);
+  }
+  if(JSON.stringify(target.threshold||{}).includes('event-card-stat')){
+    const result=stageGenericTarget(MTG,context,{...target,threshold:2},index,effect);
+    (context.eventStatThresholdTargets||=[]).push({cards:[result].flat(),filter:target});
+    return result;
   }
   if(typeof target.threshold==='object'){
     stageCount(MTG,context,target.threshold,v5Helpers());
@@ -2889,6 +2901,7 @@ async function fireGenericEvent(MTG,context,source,operation){
     else if(event==='lifeLost'){if(filter.first)a.turnState.lifeLossEvents=0;await game.loseLife(a,1,'proof');}
     else if(event==='monarchChanged'){game.monarch=null;await game.becomeMonarch(a);}
     else if(event==='postcombatMain'){a.turnState.mainPhaseCount=1;game.phase='main2';await game.emitMainPhase(a);}
+    else if(event==='precombatMain'){a.turnState.mainPhaseCount=0;game.phase='main1';await game.emitMainPhase(a,{precombat:true});}
     else assert.fail('Unknown observed player event '+event);
     return;
   }
@@ -2984,7 +2997,14 @@ async function fireGenericEvent(MTG,context,source,operation){
   }
   if(filter?.kind==='filtered-object'){
     context.batchAmountV9=1;
-    const card=stageGenericTarget(MTG,context,event==='turnedFaceUp'&&filter.target.what==='permanent'?{...filter.target,what:'creature'}:filter.target,0);if(event==='combatDamageToPlayer'&&filter.target.stat!=='power'){card.def.power='2';game.recalc();}context.eventCardStats={power:card.power,toughness:card.toughness};
+    const card=stageGenericTarget(MTG,context,event==='turnedFaceUp'&&filter.target.what==='permanent'?{...filter.target,what:'creature'}:filter.target,'event-object');
+    if(context.eventStatThresholdTargets?.length){
+      const encoded=JSON.stringify(context.eventStatThresholdTargets.map(row=>row.filter.threshold));
+      if(encoded.includes('"stat":"mv"')&&card.mv<3)card.def={...card.def,cost:'{4}'};
+      if(encoded.includes('"stat":"toughness"')&&card.toughness<3)card.def={...card.def,toughness:'4'};
+      game.recalc();
+    }
+    if(event==='combatDamageToPlayer'&&filter.target.stat!=='power'){card.def.power='2';game.recalc();}context.eventCardStats={power:card.power,toughness:card.toughness,mv:card.mv};
     for(const effect of effectNodes(operation.effects))if(effect.conditionTarget==='event-card'){
       const driver=effect.elseEffects&&operation.proofBranch===false?stageFalseCondition:stageCondition;driver(MTG,context,effect.condition,card,v5Helpers());
     }
@@ -5181,7 +5201,7 @@ async function attachmentOperationProof(MTG,entry,op,role){
 }
 
 async function operationProof(MTG, entry, operation, role = 'human') {
-  for(const proof of [commonV56Proof.operationProofV56,commonV55Proof.operationProofV55,commonV54Proof.operationProofV54,commonV53Proof.operationProofV53,commonV52Proof.operationProofV52,commonV51Proof.operationProofV51,commonV50Proof.operationProofV50,commonV49Proof.operationProofV49,commonV48Proof.operationProofV48,commonV47Proof.operationProofV47,commonV46Proof.operationProofV46,commonV45Proof.operationProofV45,commonV44Proof.operationProofV44,commonV43Proof.operationProofV43,commonV42Proof.operationProofV42,commonV41Proof.operationProofV41,commonV40Proof.operationProofV40,commonV39Proof.operationProofV39,commonV38Proof.operationProofV38,eventV37Proof.operationProofV37,spellV36Proof.operationProofV36,commonV35Proof.operationProofV35,combatV34Proof.operationProofV34,commonV33Proof.operationProofV33,spellV32Proof.operationProofV32,spellV30Proof.operationProofV30,permanentV30Proof.operationProofV30,layoutV30Proof.operationProofV30,spellV29Proof.operationProofV29,permanentV29Proof.operationProofV29,layoutV29Proof.operationProofV29,permanentV28Proof.operationProofV28,spellV28Proof.operationProofV28,commonV28Proof.operationProofV28,layoutV27Proof.operationProofV27,permanentV27Proof.operationProofV27,spellV27Proof.operationProofV27,commonV27Proof.operationProofV27,layoutV26Proof.operationProofV26,spellV26Proof.operationProofV26,permanentV26Proof.operationProofV26,commonV26Proof.operationProofV26,commonV25Proof.operationProofV25,permanentV25Proof.operationProofV25,spellV25Proof.operationProofV25,layoutV25Proof.operationProofV25,permanentV24Proof.operationProofV24,commonV24Proof.operationProofV24,layoutV24Proof.operationProofV24,spellV24Proof.operationProofV24,commonV23Proof.operationProofV23,spellV23Proof.operationProofV23,permanentV23Proof.operationProofV23,layoutV23Proof.operationProofV23,commonV22Proof.operationProofV22,spellV22Proof.operationProofV22,layoutV22Proof.operationProofV22,permanentV22Proof.operationProofV22,spellV21Proof.operationProofV21,layoutV21Proof.operationProofV21,permanentV21Proof.operationProofV21,costsProofV20,spellsProofV20,permanentsProofV20,layoutsProofV20,damageProofV20,rulesProofV20]){
+  for(const proof of [commonV63Proof.operationProofV63,commonV62Proof.operationProofV62,commonV61Proof.operationProofV61,commonV60Proof.operationProofV60,commonV59Proof.operationProofV59,commonV58Proof.operationProofV58,commonV57Proof.operationProofV57,commonV56Proof.operationProofV56,commonV55Proof.operationProofV55,commonV54Proof.operationProofV54,commonV53Proof.operationProofV53,commonV52Proof.operationProofV52,commonV51Proof.operationProofV51,commonV50Proof.operationProofV50,commonV49Proof.operationProofV49,commonV48Proof.operationProofV48,commonV47Proof.operationProofV47,commonV46Proof.operationProofV46,commonV45Proof.operationProofV45,commonV44Proof.operationProofV44,commonV43Proof.operationProofV43,commonV42Proof.operationProofV42,commonV41Proof.operationProofV41,commonV40Proof.operationProofV40,commonV39Proof.operationProofV39,commonV38Proof.operationProofV38,eventV37Proof.operationProofV37,spellV36Proof.operationProofV36,commonV35Proof.operationProofV35,combatV34Proof.operationProofV34,commonV33Proof.operationProofV33,spellV32Proof.operationProofV32,spellV30Proof.operationProofV30,permanentV30Proof.operationProofV30,layoutV30Proof.operationProofV30,spellV29Proof.operationProofV29,permanentV29Proof.operationProofV29,layoutV29Proof.operationProofV29,permanentV28Proof.operationProofV28,spellV28Proof.operationProofV28,commonV28Proof.operationProofV28,layoutV27Proof.operationProofV27,permanentV27Proof.operationProofV27,spellV27Proof.operationProofV27,commonV27Proof.operationProofV27,layoutV26Proof.operationProofV26,spellV26Proof.operationProofV26,permanentV26Proof.operationProofV26,commonV26Proof.operationProofV26,commonV25Proof.operationProofV25,permanentV25Proof.operationProofV25,spellV25Proof.operationProofV25,layoutV25Proof.operationProofV25,permanentV24Proof.operationProofV24,commonV24Proof.operationProofV24,layoutV24Proof.operationProofV24,spellV24Proof.operationProofV24,commonV23Proof.operationProofV23,spellV23Proof.operationProofV23,permanentV23Proof.operationProofV23,layoutV23Proof.operationProofV23,commonV22Proof.operationProofV22,spellV22Proof.operationProofV22,layoutV22Proof.operationProofV22,permanentV22Proof.operationProofV22,spellV21Proof.operationProofV21,layoutV21Proof.operationProofV21,permanentV21Proof.operationProofV21,costsProofV20,spellsProofV20,permanentsProofV20,layoutsProofV20,damageProofV20,rulesProofV20]){
     const result=await proof(MTG,entry,operation,role,{gameFor,decision,fund,fillLibrary,permanent,zoneCard,fixtureDefinition,resolveAll,stageGenericTarget,assertControllerRole,operationProof,genericRuntimeOperationProof,v8Helpers,trackProofGame:game=>activeProofGames?.push(game),stageCondition:(...args)=>stageCondition(...args,v5Helpers())});
     if(result!==null&&result!==undefined&&result!==false)return result;
   }
@@ -6249,7 +6269,7 @@ async function operationProof(MTG, entry, operation, role = 'human') {
       await game.combatPhase(a);
       a.controller.decide = decide;
       assert.equal(b.life, before, `${name}: the printed blocking requirement is enforced`);
-      assert.equal(source.damage, operation.kind === 'lure' ? 2 : 1,
+      assert.equal(source.damage, operation.kind === 'lure' ? 2 : Math.max(1, game.blockerBounds(source).min),
         `${name}: exactly the required number of blockers is forced in`);
       return 1;
     }
@@ -6494,6 +6514,12 @@ async function keywordProof(MTG, entry, rawKeyword, role = 'human') {
 
   for(const op of entry.implementation||[])if(op.kind==='generic-static'&&op.defenderCanAttack&&op.condition){
     if(op.condition.kind==='creature-upgrade-state-v8'){fund(a,100);await activateUpgrade(MTG,context,source);await resolveAll(game);}
+    else if(op.condition.kind==='scried-or-surveilled-v58'){
+      assert.equal(!!source.cur.defenderCanAttack,false);
+      await MTG.E.scry(game,b,1);game.recalc();assert.equal(!!source.cur.defenderCanAttack,false,'opponent scry does not enable attacking');
+      await MTG.E.scry(game,a,0);game.recalc();assert.equal(!!source.cur.defenderCanAttack,false,'scry zero does not enable attacking');
+      await MTG.E.scry(game,a,1);game.recalc();assert.equal(!!source.cur.defenderCanAttack,true,'actual own scry enables attacking');
+    }
     else stageCondition(MTG,{game,a,b},op.condition,source,v5Helpers());
   }
   if(source.cur.cantAttack||source.cur.cantBlock)for(const op of entry.implementation||[])if(op.kind==='generic-static'&&(op.cantAttack||op.cantBlock)&&op.condition?.kind==='not')stageCondition(MTG,{game,a,b},op.condition.condition,source,v5Helpers());

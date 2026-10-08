@@ -20,7 +20,7 @@
  }
  async function onDraw(game,player,card){
   if(game.turnNo<=0||player.turnState.drewThisTurn!==1)return;
-  const options=[...(card.def.oracleMiracle?[{cost:card.def.miracle}]:[]),...(M.BDF?.miracleOptions?.(game,player,card)||[])];
+  const options=[...(card.def.oracleMiracle?[{cost:card.def.miracle}]:[]),...(M.BDF?.miracleOptions?.(game,player,card)||[]),...(M.OracleV20?.handlers||[]).flatMap(handler=>handler.miracleOptions?.(game,player,card)||[])];
   if(!options.length)return;
   const record={iid:card.iid,version:card.zoneVersion,owner:player.idx,cost:options.map(o=>o.cost).join(' / '),options};
   const choice=await player.controller.decide(game,{type:'chooseOption',prompt:`Reveal ${card.name} for Miracle ${record.cost}?`,

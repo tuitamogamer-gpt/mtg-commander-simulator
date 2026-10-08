@@ -285,11 +285,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.scry = async function (g, p, n) {
-    if (!p.library.length || n <= 0) return;
+    if (n <= 0) return;
     const top = p.library.slice(-n).reverse();
-    const keep = await p.controller.decide(g, {
+    const keep = top.length ? await p.controller.decide(g, {
       type: 'scry', cards: top, prompt: `Scry ${n}`, player: p,
-    });
+    }) : {top: [], bottom: []};
     // keep: {top:[cards in order], bottom:[cards]}
     for (const c of top) p.library.splice(p.library.indexOf(c), 1);
     for (const c of keep.bottom) c.zone = 'library';
@@ -297,6 +297,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of keep.top.slice().reverse()) { c.zone = 'library'; p.library.push(c); }
     if (keep.bottom.length) g.lg(`${p.name} scry ${n}: ${keep.bottom.length} to the bottom.`);
     else g.lg(`${p.name} scry ${n}.`);
+    p.turnState.scryEvents = (p.turnState.scryEvents || 0) + 1;
     await g.emit('scry', { player: p, n: top.length, cards: top.slice() });
   };
 

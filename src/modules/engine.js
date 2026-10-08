@@ -1389,6 +1389,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await MTG.VN?.riotEntry?.(this,card);
       const additionalEntryCounters = {...opts.additionalCounters};
       if(card.is('Creature'))for(const [kind,n]of Object.entries(opts.oracleCreatureEntryCountersV25||{}))additionalEntryCounters[kind]=(additionalEntryCounters[kind]||0)+n;
+      if(card.is('Creature'))for(const handler of MTG.OracleV20?.handlers||[])for(const [kind,n]of Object.entries(handler.entryCounters?.(this,card)||{}))additionalEntryCounters[kind]=(additionalEntryCounters[kind]||0)+n;
       const pomEntryBonus=MTG.POM?.entryCounters(this,card)||0;if(pomEntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+pomEntryBonus;
       if(card.castMeta?.cdkBiophagus&&card.is('Creature'))additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.castMeta.cdkBiophagus;
       if (card.castMeta?.opalPalaceMana && card.commander) {
@@ -1587,7 +1588,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const spec = card.def.auraTarget?.[0] || (card.def.bestowCost ? card.def.bestowTarget?.[0] : null);
         return !!spec && (!spec.filter || spec.filter(this, host, controller, card));
       }
-      if (card.hasSub('Equipment')) return host.is('Creature') && (host.cur.abilitiesDisabled || !host.def.oracleCantEquipV20);
+      if (card.hasSub('Equipment')) return host.is('Creature') && (host.cur.abilitiesDisabled || !host.def.oracleCantEquipV20) && (!card.def.oracleAttachmentLegendaryOnlyV60 || card.cur?.abilitiesDisabled || host.cur.super.includes('Legendary'));
       if (card.hasSub('Fortification')) return host.is('Land');
       return false;
     }
@@ -2971,7 +2972,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const sorted = bf.slice().sort((a, b) => a.timestamp - b.timestamp);
       const abilityLayers=MTG.OracleV8AbilityLoss?.begin(this,bf,MTG.OracleV8LandTypes?.hasReplacements(this,bf));
       const inAbilityLayer=(timestamp,run)=>abilityLayers?abilityLayers.at(timestamp,run):run();
-      const animations=this.untilEffects.filter(effect=>['oracleAnimation','oracleCharacteristics'].includes(effect.kind)&&bf.some(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion));
+      const animations=this.untilEffects.filter(effect=>{
+        if(!['oracleAnimation','oracleCharacteristics'].includes(effect.kind))return false;
+        const card=bf.find(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion);
+        if(!card||effect.closedCounterDurationV60)return false;
+        if(effect.requiresCounterV60&&!(card.counters[effect.requiresCounterV60]>0)){
+          effect.closedCounterDurationV60=true;
+          return false;
+        }
+        return true;
+      });
       // Older printed scripts combine type/ability changes and base P/T in
       // phase 1. Capture their assignments so layer 7b can replay just P/T in
       // timestamp order alongside a resolving animation, without rerunning a
@@ -3013,6 +3023,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if(c.addSuperV20)card.cur.super=[...new Set(card.cur.super.concat(c.addSuperV20))];
           if(c.removeSuperV42)card.cur.super=card.cur.super.filter(type=>!c.removeSuperV42.includes(type));
           card.cur.subtypes=c.retainTypes?[...new Set(card.cur.subtypes.filter(type=>c.retainAllSubtypes||!(c.replaceCreatureSubtypes||c.subtypes.length&&c.types.includes('Artifact'))||!MTG.CREATURE_SUBTYPES.has(type)).concat(c.subtypes))]:c.subtypes.slice();
+          if(c.removeSubtypesV60)card.cur.subtypes=card.cur.subtypes.filter(type=>!c.removeSubtypesV60.includes(type));
           if(c.removeTypesV56?.includes('Artifact')&&!card.cur.types.includes('Artifact'))card.cur.subtypes=card.cur.subtypes.filter(type=>!MTG.OracleV8Copies.artifactTypes.has(type));
           if(!c.retainAllSubtypes&&(c.replaceCreatureSubtypes||!c.retainTypes||c.subtypes.length&&c.types.includes('Artifact'))){
             card.cur.allCreatureTypes=false;card.cur.allCreatureTypesFromOtherEffects=false;card.cur.suppressPrintedChangeling=true;
@@ -3190,7 +3201,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // se kontrolor čita uživo pri pozivu.
       this._toughnessCombatSources = bf.filter(card => card.def.toughnessCombatAll || card.def.toughnessCombatYours);
       const observesOracleDamage=trigger=>[].concat(trigger.on).some(event=>/^oracleDamage/.test(event));
-      this._oracleDamageWatch=bf.some(card=>!card.cur.abilitiesDisabled&&(card.def.triggers||[]).concat(card.cur.extraTriggers||[]).some(observesOracleDamage))||
+      this._oracleDamageWatch=bf.some(card=>!card.cur.abilitiesDisabled&&(card.def.triggers||[]).concat(card.cur.extraTriggers||[]).some(observesOracleDamage))||this.players.some(player=>player.emblems.some(emblem=>(emblem.triggers||[]).some(observesOracleDamage)))||
         this.players.some(player=>['graveyard','exile','command','hand','library'].some(zone=>player[zone].some(card=>(card.def.triggers||[]).some(trigger=>trigger.zone===zone&&observesOracleDamage(trigger)))));
       if(newlyBlessed)this.recalc();
       MTG.StateTriggers?.refresh(this);
@@ -3259,6 +3270,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      if(name==='searchedLibrary'&&data?.player)data.player.turnState.oracleSearchedLibraryV57=true;
       MTG.OracleV20Permanents?.record(this,name,data);
       if(name==='blocks'&&data?.attacker&&data?.blocker){
         const remember=(card,other,key)=>{if(card.meta.oracleBlockHistoryV19?.turn!==this.turnNo||card.meta.oracleBlockHistoryV19.version!==card.zoneVersion)card.meta.oracleBlockHistoryV19={turn:this.turnNo,version:card.zoneVersion,blocks:[],blockedBy:[]};const snap=this.snapshot(other,false);card.meta.oracleBlockHistoryV19[key].push({iid:other.iid,version:other.zoneVersion,subtypes:snap.subtypes,super:snap.super,colors:snap.colors,changeling:snap.changeling});};
@@ -3594,7 +3606,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (ctrl !== p && this.untilEffects.some(effect => effect.kind === 'playerHexproof' && effect.who === p)) return false;
           return true;
         }
-        if(c.zone==='battlefield'&&c.cur?.oracleTargetRestrictionsV18?.some(test=>test(src,ctrl)))return false;
+        if(c.zone==='battlefield'&&c.cur?.oracleTargetRestrictionsV18?.some(test=>test(src,ctrl,{...opts,targetSpec:spec,isSpell:spec.oracleTargetActionV20==='spell'})))return false;
         if (zone === 'battlefield' && c.zone === 'battlefield' && c.ctrl !== ctrl) {
           if (c.cur.hexproof || c.kw('hexproof')) return false;
           if(c.cur.oracleHexproofV10?.some(test=>test(this,src)))return false;
@@ -3720,6 +3732,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const castColors=casting?(castOptions.faceDownCast?[]:castOptions.adventure&&castDefinition.adventure?U.colorsOfCost(castDefinition.adventure.cost||castDefinition.adventure.altCostStr||''):castDefinition.devoid?[]:MTG.C1920?.castColors(this,src,castOptions)||src.colors):null;
       ctx.boundTargetSpecs=specs.map(spec=>({...(typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec),oracleTargetActionV20:casting?'spell':'ability',...(casting?{oracleTargetColorsV20:castColors}: {})}));
       for (const [specIndex, spec] of ctx.boundTargetSpecs.entries()) {
+        // A copied ability may choose a different opponent when it chooses
+        // new targets. Start from the printed filter before binding that choice.
+        if(spec.ownByDecisionPlayerV60&&spec.oracleDecisionPlayerBaseFilterV60)spec.filter=spec.oracleDecisionPlayerBaseFilterV60;
         let cands = this.legalTargets(spec, src, ctrl, { allowForced: !!ctx.diplomacyForcedTargeting });
         if (ctx.targetChoiceFilter) cands = cands.filter(candidate => ctx.targetChoiceFilter(candidate, ctx.targets.length));
         if (typeof spec.dependentFilter === 'function') {
@@ -3741,6 +3756,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const targetHint=spec.aiHint?.goal==='counterTransferRecipient'?{...spec.aiHint,counterTransferSource:spec.aiHint.counterSourceTarget==='self'?src:[ctx.targets[spec.aiHint.counterSourceTarget]].flat()[0]}:spec.aiHint;
         const decisionPlayer=typeof spec.decisionPlayer==='function'?spec.decisionPlayer(this,ctx):spec.chooseByOpponent?await MTG.E.chooseOpponent(this,ctrl,{source:src,prompt:'Choose an opponent to choose '+(spec.prompt||'this target')}):(ctx.decisionPlayer||ctrl);
         if(!decisionPlayer)return false;
+        if(spec.ownByDecisionPlayerV60){
+          const printedFilter=spec.filter;
+          spec.oracleDecisionPlayerBaseFilterV60=printedFilter;
+          spec.filter=(game,candidate,controller,source)=>candidate.ctrl===decisionPlayer&&(!printedFilter||printedFilter(game,candidate,controller,source));
+          cands=cands.filter(candidate=>candidate.ctrl===decisionPlayer);if(cands.length<min)return false;
+        }
         const decision = await decisionPlayer.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, so: ctx.so || null, prompt: spec.prompt || 'Izaberi metu',
@@ -4033,7 +4054,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(card.attachedTo&&!['Aura','Equipment','Fortification'].some(type=>subs.includes(type)))detach.push(card);
         if (subs.includes('Equipment') && card.attachedTo) {
           const host = this.byIid(card.attachedTo);
-          if (card.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature') || (!host.cur.abilitiesDisabled && host.def.oracleCantEquipV20) || this.isProtectedFrom(host, card)) detach.push(card);
+          if (card.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature') || (!host.cur.abilitiesDisabled && host.def.oracleCantEquipV20) || (card.def.oracleAttachmentLegendaryOnlyV60&&!card.cur.abilitiesDisabled&&!host.cur.super.includes('Legendary')) || this.isProtectedFrom(host, card)) detach.push(card);
         }
         if (card.def.saga && (card.counters.lore || 0) >= card.def.saga.length && !this.sagaHasPendingChapter(card) && this.canSacrifice(card)) moves.set(card, 'sacrifice');
       }
@@ -4050,6 +4071,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (list.length < 2) continue;
         if(battlefield.some(card=>!card.cur?.abilitiesDisabled&&card.def.oracleRulesV18?.includes('legend')))continue;
         const controller = list[0].ctrl;
+        if(this.untilEffects.some(effect=>effect.kind==='oracleLegendRuleOffV60'&&effect.who===controller))continue;
+        if(battlefield.some(card=>card.ctrl===controller&&!card.phasedOut&&!card.cur?.abilitiesDisabled&&card.def.oracleControllerLegendRuleOffV60))continue;
         if (list[0].is('Creature') && battlefield.some(card => card.ctrl === controller && card.def.ignoreLegendRuleCreatures)) continue;
         if(list.every(c=>c.hasSub('Sliver'))&&battlefield.some(c=>c.ctrl===controller&&c.def.lcGravemother&&!c.cur.abilitiesDisabled))continue;
         const worth = card => (card.isToken ? 0 : 1000) + (card.commander ? 500 : 0) +

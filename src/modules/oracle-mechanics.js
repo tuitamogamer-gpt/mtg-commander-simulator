@@ -80,7 +80,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // CR 702.171: saddle is a sorcery-speed activated ability; summoning
   // sickness does not prevent another creature paying its tap cost.
-  MTG.oracleSaddlePowerV10 = card => (Number(card.power)||0)+(card.cur?.abilitiesDisabled?0:Number(card.def.oracleSaddleBonusV10)||0);
+  MTG.oracleSaddlePowerV10 = card => (Number(!card.cur?.abilitiesDisabled&&card.def.oracleSaddleToughnessV58?card.toughness:card.power)||0)+(card.cur?.abilitiesDisabled?0:Number(card.def.oracleSaddleBonusV10)||0);
   MTG.oracleIsSaddledV10 = (game,card) => card?.zone==='battlefield'&&game.bf().includes(card)&&game.untilEffects.some(effect=>effect.kind==='oracleSaddledV10'&&effect.iid===card.iid&&effect.zoneVersion===card.zoneVersion);
   MTG.applyOracleMechanic = function (script, operation) {
     if (!script || !operation || typeof operation.kind !== 'string') return false;
@@ -88,7 +88,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
     if(kind==='saddle-crew-power-v10'){
-      if(operation.toughness){script.oracleCrewToughnessV10=true;return true;}
+      if(operation.toughness){script.oracleCrewToughnessV10=true;if(operation.saddle)script.oracleSaddleToughnessV58=true;return true;}
       if(!Number.isSafeInteger(operation.bonus)||operation.bonus<0)return false;
       script.oracleCrewBonusV10=operation.bonus;if(operation.saddle)script.oracleSaddleBonusV10=operation.bonus;return true;
     }

@@ -54,6 +54,11 @@ function relationReference(engine, relation) {
 function amount(value, engine, context, before) {
   if (typeof value === 'number') return Math.max(0, value);
   if (value === 'X') return Math.max(0, engine.x ?? engine.src?.castMeta?.x ?? 0);
+  if (value?.kind === 'event-amount') {
+    const observed = engine.oracleSourceCapture?.eventAmount ?? engine.data?.n;
+    assert.ok(Number.isFinite(observed), 'event amount comes from the resolving event');
+    return Math.max(0, observed) * (value.multiply ?? 1);
+  }
   if (value?.kind === 'sum') return value.values.reduce((sum, child) => sum + amount(child, engine, context, before), 0);
   if(['source-stat','explicit-source-stat'].includes(value?.kind)){
     const source=engine.src,version=engine.sourceZoneVersion??engine.oracleSourceCapture?.zoneVersion;

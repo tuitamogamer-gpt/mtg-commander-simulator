@@ -159,7 +159,7 @@
       if (!face.def.types.includes('Land')) return false;
       const candidate = view(card, face.key);
       if (from === 'hand') return mine && player.hand.includes(card);
-      if (from === 'graveyard') return mine && player.graveyard.includes(card) && game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && (source.def.playLandsFromGraveyard || game.turnPlayer === player && source.def.grantsGraveyardPermanentTypes && !(player.turnState.gravePermanentTypesUsed || []).includes('Land')));
+      if (from === 'graveyard') return mine && player.graveyard.includes(card) && (M.oracleGravePlayV60?.(game,player,card)||game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && (source.def.playLandsFromGraveyard || game.turnPlayer === player && source.def.grantsGraveyardPermanentTypes && !(player.turnState.gravePermanentTypesUsed || []).includes('Land'))));
       if (from === 'exile') return card.owner.exile.includes(card) && (mine || card.meta.playableBy === player) && !card.meta.spellsOnly && game.hasExilePlayPermission(player, card) && (!card.meta.playableCondition || card.meta.playableCondition(game, player, candidate));
       if (from === 'library') return mine && player.library.at(-1) === card && game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && source.def.playTop?.(game, source, candidate, player));
       return false;

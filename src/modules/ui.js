@@ -3271,7 +3271,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!c || !c.faceDown || !this.me) return !c || !c.faceDown;
       const meta = c.meta || {};
       return !!(c.ctrl === this.me && meta.faceDownDef) || meta.revealedTo === 'all' ||
-        Array.isArray(meta.revealedTo) && meta.revealedTo.includes(this.me.idx);
+        Array.isArray(meta.revealedTo) && meta.revealedTo.includes(this.me.idx) ||
+        !!MTG.oracleMayLookFaceDownV60?.(this.game,this.me,c);
     }
 
     visibleFaceDownDef(c) {

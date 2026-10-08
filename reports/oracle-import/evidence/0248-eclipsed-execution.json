@@ -1,0 +1,26 @@
+{
+  "schema": "oracle-execution-evidence/v1",
+  "cards": [
+    {
+      "name": "Eclipsed Realms",
+      "oracleId": "5715ed43-395c-4877-99a7-8e28e7bf9dce",
+      "batch": "oracle-0241",
+      "passed": true,
+      "operationKinds": [
+        "chosen-subtype-entry-v16",
+        "mana-source",
+        "mana-source"
+      ],
+      "keywords": [],
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "checkedGames": 12,
+      "failures": []
+    }
+  ],
+  "stateInvariantGames": 12,
+  "failures": [],
+  "limitation": "Controlled scenarios and state invariants; not exhaustive Oracle interpretation or all card combinations."
+}

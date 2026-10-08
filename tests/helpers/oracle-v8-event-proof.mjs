@@ -58,6 +58,15 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
       ...(f.damageSourceController?{zone:'battlefield'}:{}),controller},'v8-event');
   }
   if(card){
+    if(ctx.eventStatThresholdTargets?.length){
+      // A printed event-relative threshold needs a real positive-value donor.
+      // Keep the independently staged target below that donor, rather than
+      // inventing an event value before the event has happened.
+      const encoded=JSON.stringify(ctx.eventStatThresholdTargets.map(row=>row.filter.threshold));
+      if(encoded.includes('"stat":"mv"')&&card.mv<3)card.def={...card.def,cost:'{4}'};
+      if(encoded.includes('"stat":"toughness"')&&card.toughness<3)card.def={...card.def,toughness:'4'};
+      game.recalc();
+    }
     if(f.subject==='attached'&&!card.def.oracleImplementation&&/"kind":"event-card-stat"/.test(JSON.stringify(operation.effects||[]))){
       // Generic defensive fixtures have enormous power/toughness so ordinary
       // removal probes survive. A host-stat token/library ability must instead

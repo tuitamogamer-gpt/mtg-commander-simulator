@@ -2,7 +2,11 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
   const M=MTG,SC=M.SCRIPTS,C=M.VN,T=M.T,E=M.E,G=M.Game.prototype;
-  G.vehicleCrewCost=function(c){return c.cur?.vnCrew??(c.cur?.abilitiesDisabled?undefined:c.def.crew);};
+  G.vehicleCrewCost=function(c){
+    const used=c.meta.crewOnceV60;
+    if(c.def.crewOnceV60&&used?.turn===this.turnNo&&used.version===c.zoneVersion)return undefined;
+    return c.cur?.vnCrew??(c.cur?.abilitiesDisabled?undefined:c.def.crew);
+  };
   G.vehicleCrewPower=function(c){const live=C.live(c);return (Number(live&&c.def.oracleCrewToughnessV10?c.toughness:c.power)||0)+(live?(c.def.vnPilot?2:0)+(Number(c.def.oracleCrewBonusV10)||0):0);};
   const pilot={...C.token('Pilot',['Pilot'],1,1,[]),tokenImageName:'NEC Pilot',vnPilot:true,oracle:'This token crews Vehicles as though its power were 2 greater.'};
   M.TOKENS.vnPilot=pilot;

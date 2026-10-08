@@ -14,7 +14,7 @@
   }
   return protectedFrom.call(this,target,source,options);
  };
- const lifeRules=(game,player,kind)=>[...game.bf().flatMap(source=>source.cur?.abilitiesDisabled?[]:(source.def.oracleLifeRulesV20||[]).filter(rule=>rule.rule===kind&&(rule.who==='you'?source.ctrl===player:source.ctrl!==player)&&(!rule.yourTurn||game.turnPlayer===source.ctrl)&&(!rule.condition||H.genericCondition(game,source,rule.condition,source.ctrl))).map(rule=>({source,rule}))),...game.untilEffects.filter(effect=>effect.kind==='oracleLifeRuleV20'&&effect.rule===kind&&effect.player===player)];
+ const lifeRules=(game,player,kind)=>[...[...game.bf(),...game.players.flatMap(owner=>owner.emblems)].flatMap(source=>source.cur?.abilitiesDisabled?[]:(source.def?.oracleLifeRulesV20||[]).filter(rule=>rule.rule===kind&&(rule.who==='you'?source.ctrl===player:source.ctrl!==player)&&(!rule.yourTurn||game.turnPlayer===source.ctrl)&&(!rule.condition||H.genericCondition(game,source,rule.condition,source.ctrl))).map(rule=>({source,rule}))),...game.untilEffects.filter(effect=>effect.kind==='oracleLifeRuleV20'&&effect.rule===kind&&effect.player===player)];
  V.handlers.push({compile(op,script){if(op.kind!=='life-rule-v20')return false;(script.oracleLifeRulesV20||=[]).push(op);return true;},async effect(ctx,op){
   if(op.action==='life-rule-v20'){for(const player of H.genericEffectSubjects(ctx,op.who))if(player instanceof M.Player)ctx.g.untilEffects.push({kind:'oracleLifeRuleV20',expires:'eot',player,rule:op.rule,source:ctx.src});return true;}
   if(op.action==='lose-game-v20'){for(const player of H.genericEffectSubjects(ctx,op.who))if(player instanceof M.Player)await ctx.g.playerLoses(player,'Oracle instruction');return true;}return false;

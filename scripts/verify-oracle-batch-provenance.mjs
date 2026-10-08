@@ -291,6 +291,10 @@ export async function runProvenanceVerification(args = process.argv.slice(2)) {
     .concat(['scripts/oracle-extensions-v33.mjs', 'scripts/oracle-v33-common.mjs', 'scripts/oracle-extensions-v34.mjs', 'scripts/oracle-v34-combat.mjs', 'scripts/oracle-extensions-v35.mjs', 'scripts/oracle-v35-common.mjs', 'scripts/oracle-extensions-v36.mjs', 'scripts/oracle-v36-spells.mjs', 'scripts/oracle-v36-spell-text.json'])
     .concat(['scripts/oracle-extensions-v40.mjs','scripts/oracle-v40-common.mjs','scripts/oracle-extensions-v41.mjs','scripts/oracle-v41-common.mjs','scripts/oracle-extensions-v42.mjs','scripts/oracle-v42-common.mjs'])
     .concat(['scripts/oracle-extensions-v43.mjs', 'scripts/oracle-v43-common.mjs', 'scripts/oracle-extensions-v44.mjs', 'scripts/oracle-v44-common.mjs', 'scripts/oracle-extensions-v45.mjs', 'scripts/oracle-v45-common.mjs', 'scripts/oracle-extensions-v46.mjs', 'scripts/oracle-v46-common.mjs', 'scripts/oracle-extensions-v47.mjs', 'scripts/oracle-v47-common.mjs','scripts/oracle-extensions-v48.mjs','scripts/oracle-v48-common.mjs','scripts/oracle-extensions-v49.mjs','scripts/oracle-v49-common.mjs','scripts/oracle-extensions-v50.mjs','scripts/oracle-v50-common.mjs','scripts/oracle-extensions-v51.mjs','scripts/oracle-v51-common.mjs','scripts/oracle-extensions-v52.mjs','scripts/oracle-v52-common.mjs','scripts/oracle-extensions-v53.mjs','scripts/oracle-v53-common.mjs','scripts/oracle-extensions-v54.mjs','scripts/oracle-v54-common.mjs','scripts/oracle-extensions-v55.mjs','scripts/oracle-v55-common.mjs','scripts/oracle-extensions-v56.mjs','scripts/oracle-v56-common.mjs'])
+    .concat(fs.readdirSync(path.join(workspaceRoot, 'scripts')).filter(file => {
+      const version = /-v(\d+)(?:[.-]|$)/.exec(file);
+      return version && Number(version[1]) >= 57 && /\.(?:mjs|json)$/.test(file);
+    }).sort().map(file => `scripts/${file}`))
     .map(file => [file, sha256(fs.readFileSync(path.join(workspaceRoot, file)))]));
   result.compilerSha256 = sha256(Object.entries(result.compilerFiles).map(([file, digest]) => `${file}\t${digest}`).join('\n'));
   return result;

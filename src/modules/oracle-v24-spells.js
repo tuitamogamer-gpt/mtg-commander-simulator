@@ -30,7 +30,7 @@
   const selected=[];
   for(let i=0;i<costs.length;i++){
    const extra=M.parseCost(costs[i]),combined={...mana,generic:mana.generic+extra.generic,pips:mana.pips.concat(extra.pips)};
-   if(!g.canPayMana(you,preview(combined,mana),{card:src,castOpts:opts},{xVal:x}))continue;
+   if(!g.canPayMana(you,preview(combined,mana,{kicked:true}),{card:src,castOpts:opts},{xVal:x}))continue;
    const choice=await you.controller.decide(g,{type:'chooseOption',prompt:src.name+': pay its '+costs[i]+' kicker?',options:[{key:'yes',label:'Pay '+costs[i]+' kicker'},{key:'no',label:'Do not pay'}],aiHint:{kind:'kicker',card:src}});
    if(!['yes','no'].includes(choice))return null;
    if(choice==='yes'){selected.push(i);mana.generic=combined.generic;mana.pips=combined.pips;}

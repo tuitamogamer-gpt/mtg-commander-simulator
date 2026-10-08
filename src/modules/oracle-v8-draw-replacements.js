@@ -21,6 +21,7 @@
    }
   }
   for(const effect of game.untilEffects)if(effect.kind==='oracleDrawReplacement'&&effect.playerSeat===p.idx&&!effect.consumed)add(effect,effect.sourceCard,effect,{controller:game.players[effect.controllerSeat],temporary:effect});
+  for(const handler of M.OracleV20?.handlers||[])for(const row of handler.drawReplacements?.(game,p)||[])add(row.key,row.src,row.operation,{controller:row.src.ctrl});
   for(const card of p.graveyard){const n=Number(card.def.dredge?.n??card.def.dredge);if(n>0&&p.library.length>=n)add('dredge:'+card.iid+':'+card.zoneVersion,card,{mode:'dredge',n,optional:true});}
   return rows;
  }

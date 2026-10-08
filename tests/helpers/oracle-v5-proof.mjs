@@ -351,6 +351,9 @@ export function countValue(ctx,source,node,snapshot=null){
   if(node?.kind==='v8-permanent-count')return permanentCountValue(ctx,source,node,snapshot);
  const castingValue=castingRuleCountValue(ctx,source,node);if(castingValue!==undefined)return castingValue;
   if(typeof node==='number')return node;
+  if(node.kind==='one-less-v55')return countValue(ctx,source,node.value,snapshot)-1;
+  if(node.kind==='event-card-stat')return Number(ctx.eventCardStats?.[node.stat]??ctx.eventCardBefore?.[node.stat]??ctx.eventCard?.[node.stat])||0;
+  if(node.kind==='event-amount')return Number(ctx.eventAmount)||0;
   if(node.kind==='signed')return node.sign*countValue(ctx,source,node.value,snapshot);
   if(node.kind==='bound-x-v10')return 0; // Captured by the actual resolving instruction, never fabricated during staging.
   if(node.kind==='cast-mana-spent-v10')return Math.max(0,Number(source?.castMeta?.manaSpent)||0);
@@ -465,6 +468,7 @@ export function stageCount(MTG,ctx,node,helpers){
  if(node?.kind==='sacrificed-count-v19'){ctx.a.turnState.oracleSacrificedV19=3;return;}
  if(['bound-x-v10','event-spell-mv-v10','event-mana-spent-v10','cast-mana-spent-v10'].includes(node?.kind))return;
  if(node?.kind==='difference-v10'){stageCount(MTG,ctx,node.left,helpers);stageCount(MTG,ctx,node.right,helpers);return;}
+ if(node?.kind==='one-less-v55'){stageCount(MTG,ctx,node.value,helpers);return;}
  if(stagePermanentCount(MTG,ctx,node,helpers))return;
  if(stageCastingRuleCount(MTG,ctx,node,helpers))return;
   if(typeof node!=='object'||node===null)return;
