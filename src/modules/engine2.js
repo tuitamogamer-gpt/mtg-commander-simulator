@@ -7239,6 +7239,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       sacrificeHasPriorityPayoff(g, entry, me));
     const relevantQuestion = { ...q, acts };
     const canAct = casts.length > 0 || acts.length > 0;
+    // Ninjutsu needs an unblocked attacker during combat. Even ACTIONS must
+    // offer this activation before advancing to damage and losing that play.
+    if (acts.some(entry => entry.ninjutsu)) return false;
     const top = g.stack[g.stack.length - 1];
     if (top) {
       // SVAKA protivnikova odigrana karta staje — i kad nemam čime da odgovorim.

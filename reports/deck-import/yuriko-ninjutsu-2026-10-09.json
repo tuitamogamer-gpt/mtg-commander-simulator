@@ -1,0 +1,254 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "fixtureCards": 100,
+  "baseline": {
+    "profile": "end",
+    "blockersPriorityExisted": true,
+    "genericWindowOnly": true,
+    "discoverableCommanderNinjutsu": false
+  },
+  "scenarios": [
+    {
+      "scenario": {
+        "label": "command-end",
+        "mode": "end",
+        "zone": "command"
+      },
+      "stepBeforeActivation": "blockers",
+      "abilityCost": "{U}{B}",
+      "nativeBotBlocks": [
+        {
+          "name": "AI Dragon",
+          "potential": [
+            "Grizzly Bears"
+          ],
+          "blocks": 0
+        }
+      ],
+      "entered": {
+        "zone": "battlefield",
+        "tapped": true,
+        "attacking": "AI Dragon",
+        "step": "blockers",
+        "inCombat": true
+      },
+      "returned": {
+        "zone": "hand",
+        "step": "blockers"
+      },
+      "commanderCasts": 3,
+      "paidLands": [
+        {
+          "name": "Island",
+          "tapped": true
+        },
+        {
+          "name": "Swamp",
+          "tapped": true
+        }
+      ],
+      "damage": [
+        {
+          "name": "Yuriko, the Tiger's Shadow",
+          "player": "AI Dragon",
+          "amount": 1
+        }
+      ],
+      "reveals": [
+        {
+          "name": "Temporal Trespass",
+          "manaValue": 11,
+          "kind": "reveal"
+        }
+      ],
+      "revealedCard": {
+        "name": "Temporal Trespass",
+        "manaValue": 11,
+        "zone": "hand"
+      },
+      "finalLife": [
+        {
+          "name": "You",
+          "life": 40
+        },
+        {
+          "name": "AI Dragon",
+          "life": 28
+        },
+        {
+          "name": "AI Wolf",
+          "life": 29
+        },
+        {
+          "name": "AI Raven",
+          "life": 29
+        }
+      ],
+      "fallback": false,
+      "error": null
+    },
+    {
+      "scenario": {
+        "label": "command-off",
+        "mode": "off",
+        "zone": "command"
+      },
+      "stepBeforeActivation": "blockers",
+      "abilityCost": "{U}{B}",
+      "nativeBotBlocks": [
+        {
+          "name": "AI Dragon",
+          "potential": [
+            "Grizzly Bears"
+          ],
+          "blocks": 0
+        }
+      ],
+      "entered": {
+        "zone": "battlefield",
+        "tapped": true,
+        "attacking": "AI Dragon",
+        "step": "blockers",
+        "inCombat": true
+      },
+      "returned": {
+        "zone": "hand",
+        "step": "blockers"
+      },
+      "commanderCasts": 3,
+      "paidLands": [
+        {
+          "name": "Island",
+          "tapped": true
+        },
+        {
+          "name": "Swamp",
+          "tapped": true
+        }
+      ],
+      "damage": [
+        {
+          "name": "Yuriko, the Tiger's Shadow",
+          "player": "AI Dragon",
+          "amount": 1
+        }
+      ],
+      "reveals": [
+        {
+          "name": "Temporal Trespass",
+          "manaValue": 11,
+          "kind": "reveal"
+        }
+      ],
+      "revealedCard": {
+        "name": "Temporal Trespass",
+        "manaValue": 11,
+        "zone": "hand"
+      },
+      "finalLife": [
+        {
+          "name": "You",
+          "life": 40
+        },
+        {
+          "name": "AI Dragon",
+          "life": 28
+        },
+        {
+          "name": "AI Wolf",
+          "life": 29
+        },
+        {
+          "name": "AI Raven",
+          "life": 29
+        }
+      ],
+      "fallback": false,
+      "error": null
+    },
+    {
+      "scenario": {
+        "label": "hand-off",
+        "mode": "off",
+        "zone": "hand"
+      },
+      "stepBeforeActivation": "blockers",
+      "abilityCost": "{U}{B}",
+      "nativeBotBlocks": [
+        {
+          "name": "AI Dragon",
+          "potential": [
+            "Grizzly Bears"
+          ],
+          "blocks": 0
+        }
+      ],
+      "entered": {
+        "zone": "battlefield",
+        "tapped": true,
+        "attacking": "AI Dragon",
+        "step": "blockers",
+        "inCombat": true
+      },
+      "returned": {
+        "zone": "hand",
+        "step": "blockers"
+      },
+      "commanderCasts": 3,
+      "paidLands": [
+        {
+          "name": "Island",
+          "tapped": true
+        },
+        {
+          "name": "Swamp",
+          "tapped": true
+        }
+      ],
+      "damage": [
+        {
+          "name": "Yuriko, the Tiger's Shadow",
+          "player": "AI Dragon",
+          "amount": 1
+        }
+      ],
+      "reveals": [
+        {
+          "name": "Temporal Trespass",
+          "manaValue": 11,
+          "kind": "reveal"
+        }
+      ],
+      "revealedCard": {
+        "name": "Temporal Trespass",
+        "manaValue": 11,
+        "zone": "hand"
+      },
+      "finalLife": [
+        {
+          "name": "You",
+          "life": 40
+        },
+        {
+          "name": "AI Dragon",
+          "life": 28
+        },
+        {
+          "name": "AI Wolf",
+          "life": 29
+        },
+        {
+          "name": "AI Raven",
+          "life": 29
+        }
+      ],
+      "fallback": false,
+      "error": null
+    }
+  ],
+  "browserErrors": [],
+  "fullMatches": 0
+}

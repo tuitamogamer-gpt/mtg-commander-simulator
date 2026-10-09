@@ -4,7 +4,20 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const M=MTG,G=M.Game.prototype,C=M.C1719,SC=M.SCRIPTS,T=M.T,E=M.E;
  SC['Aeon Engine']={entersTapped:true,abilities:[{label:'Exile to reverse the game turn order',cost:{tap:true,exileSelf:true},run:ctx=>{ctx.g.c1719TurnDirection=-(ctx.g.c1719TurnDirection||1);ctx.g.note('turnOrder',{});},aiScore:()=>2}]};
  SC["Yuriko, the Tiger's Shadow"]={ninjutsu:'{U}{B}',c1719CommanderNinjutsu:true,triggers:[{on:'damageToPlayer',filter:(g,c,d)=>d.combat&&d.src?.ctrl===c.ctrl&&d.src.hasSub(MTG.c1719TextType(g,'Ninja')),desc:'Reveal and take your top card; opponents lose its mana value',run:async ctx=>{const c=ctx.you.library.at(-1);if(!c)return;await ctx.g.revealToHuman({cards:[c],ctrl:ctx.you,kind:'reveal'});const n=c.mv;await ctx.g.move(c,'hand');await ctx.g.loseLifeOpponents(ctx.src,ctx.you,n,ctx.src.name);}}]};
- const activatable=G.activatableList;G.activatableList=function(p,...args){const out=activatable.call(this,p,...args);if(this.combat&&['blockers','firstStrike','damage','endCombat'].includes(this.step)){const attackers=this.combat.attackers.filter(c=>c.ctrl===p&&c.zone==='battlefield'&&c.attacking&&!c.wasBlocked&&!c.blockedBy.length);if(attackers.length)for(const c of p.command)if(c.def.c1719CommanderNinjutsu&&this.canPayMana(p,M.parseCost(c.def.ninjutsu)))out.push({card:c,ninjutsu:true,ninjutsuCost:c.def.ninjutsu,ninjutsuAttackers:attackers});}return out;};
+ const activatable=G.activatableList;
+ G.activatableList=function(p,...args){
+  const out=activatable.call(this,p,...args);
+  if(this.combat&&['blockers','firstStrike','damage','endCombat'].includes(this.step)){
+   const attackers=this.combat.attackers.filter(c=>c.ctrl===p&&c.zone==='battlefield'&&c.attacking&&!c.wasBlocked&&!c.blockedBy.length);
+   if(attackers.length)for(const c of p.command){
+    if(!c.def.c1719CommanderNinjutsu||c.zone!=='command')continue;
+    const ninjutsu=typeof c.def.ninjutsu==='string'?{cost:c.def.ninjutsu}:c.def.ninjutsu;
+    const cost=this.abilityManaCost(p,c,ninjutsu.cost,{ability:{ninjutsu:true}});
+    if(this.canPayMana(p,cost,{card:c,isAbility:true}))out.push({card:c,ninjutsu:true,ninjutsuCost:ninjutsu.cost,ninjutsuAttackers:attackers});
+   }
+  }
+  return out;
+ };
  for(const [name,keywords]of [['Cloudform',['flying','hexproof']],['Lightform',['flying','lifelink']]])SC[name]={auraTarget:[T.creature()],attachGrant:(g,c,h)=>keywords.forEach(k=>h.cur.kw.add(k)),triggers:[C.enterTrigger('Become an Aura, manifest your top card and attach to it',async ctx=>{if(C.same(ctx))ctx.g.addOracleAnimation(ctx.src,{types:['Enchantment'],subtypes:['Aura'],retainTypes:true,retainAllSubtypes:true,temporary:false});const c=await ctx.g.manifestTop(ctx.you);if(c&&C.same(ctx)&&ctx.g.legalEntryAttachment(ctx.src,c,ctx.you))await ctx.g.attach(ctx.src,c);})]};
  SC["Taigam, Sidisi's Hand"]={c1719SkipDraw:true,triggers:[{on:'upkeep',filter:C.own,desc:'Look at three cards, take one and put the rest in your graveyard',run:async ctx=>{const cards=ctx.you.library.slice(-3).reverse(),rows=cards.map(C.row),[chosen]=await C.choose(ctx.g,ctx.you,cards,1,1,'Taigam: choose one card for your hand');await ctx.g.withGraveyardEntryBatch(async()=>{for(const r of rows)if(C.current(r))await ctx.g.move(r.card,r.card===chosen?'hand':'graveyard');});}}],abilities:[{label:'Exile X graveyard cards to give a creature -X/-X',cost:{mana:'{B}',tap:true,exileFromGY:'X'},targets:[T.creature({aiHint:{goal:'removal'}})],run:ctx=>ctx.targets[0]&&E.pumpUntilEOT(ctx.g,ctx.targets[0],-ctx.x,-ctx.x),aiScore:()=>5}]};
  SC['Taigam, Ojutai Master']={uncounterableSpells:(g,c,so)=>C.live(c)&&c.ctrl===so.ctrl&&(g.isInstantSorceryCast(so.card,so.castOpts)||g.castDefinition(so.card,so.castOpts).subtypes.includes(MTG.c1719TextType(g,'Dragon'))||g.castDefinition(so.card,so.castOpts).changeling),triggers:[{on:'cast',filter:(g,c,d)=>d.player===c.ctrl&&d.so.from==='hand'&&g.isInstantSorceryCast(d.card,d.so.castOpts)&&c.meta.c1719AttackedTurn===g.turnNo,desc:'The spell gains rebound',run:ctx=>{if(ctx.g.stack.includes(ctx.data.so)&&(C.same(ctx)?ctx.src.meta:ctx.sourceMeta)?.c1719AttackedTurn===ctx.g.turnNo)ctx.data.so.c1719Rebound=true;}}]};

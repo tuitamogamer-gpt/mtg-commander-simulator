@@ -493,7 +493,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.cycling) return entry.label || 'Cycling';
       if (entry.plot) return `Plot ${U.costStr(U.parseCost(def.plot))}`;
       if (entry.foretell) return 'Foretell ' + (entry.foretellCost || '{2}');
-      if (entry.ninjutsu) return `Ninjutsu ${entry.ninjutsuCost || ''}`.trim();
+      if (entry.ninjutsu) return `${def.c1719CommanderNinjutsu || card?.zone === 'command' ? 'Commander ninjutsu' : 'Ninjutsu'} ${entry.ninjutsuCost || ''}`.trim();
       if (entry.suspend) return `Suspend ${U.costStr(U.parseCost(def.suspend.cost))} — exile with ${def.suspend.n} time counters`;
       if (entry.equip !== undefined) return `Equip ${U.costStr(U.parseCost(def.equip))}`;
       if (entry.crew) {
@@ -3202,17 +3202,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const cmd of me.command) {
           const cz = el('div', 'czcard');
           cz.dataset.iid = String(cmd.iid);
-          const castEntry = this.pending && this.pending.q.casts && this.pending.q.casts.find(e => e.card === cmd);
+          const pending = this.pending;
+          const actionQ = pending && ['main', 'priority'].includes(pending.q.type)
+            ? pending.q : !pending ? this.react?.q : null;
+          const castEntry = actionQ?.casts?.find(e => e.card === cmd);
+          const ninjutsuEntry = actionQ?.acts?.find(e => e.card === cmd && e.ninjutsu);
           const cost = this.game.spellCost(me, cmd, {});
           cz.innerHTML = `
             ${cardArtHTML(cmd)}
             <div class="czinfo">
               <div class="czlabel">${U.icon('crown')} COMMAND ZONE</div>
               <div class="czname">${esc(cmd.name.split(',')[0])}</div>
-              <div class="czcost">Cost: ${costHTML(U.costStr(cost))}${cmd.cmdCasts ? ` <span class="tax">(tax +${2 * cmd.cmdCasts})</span>` : ''}</div>
+              <div class="czcost">${ninjutsuEntry ? `Ninjutsu: ${costHTML(ninjutsuEntry.ninjutsuCost)}` : `Cost: ${costHTML(U.costStr(cost))}${cmd.cmdCasts ? ` <span class="tax">(tax +${2 * cmd.cmdCasts})</span>` : ''}`}</div>
             </div>
-            ${castEntry ? '<div class="czgo">CAST ▶</div>' : ''}`;
-          if (castEntry) cz.classList.add('castable');
+            ${ninjutsuEntry ? '<div class="czgo">NINJUTSU ▶</div>' : castEntry ? '<div class="czgo">CAST ▶</div>' : ''}`;
+          if (castEntry || ninjutsuEntry) cz.classList.add('castable');
+          if (ninjutsuEntry) cz.dataset.action = 'ninjutsu';
           cz.onclick = () => { this.sheet = { card: cmd }; this.render(); };
           this.makeKeyboardButton(cz, `${cmd.name}. Open commander actions.`);
           czRow.appendChild(cz);
@@ -3694,6 +3699,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             bar.appendChild(el('div', 'ptext', canAct
               ? `⚡ <b>${esc(who)}</b>: ${esc(what)}. Do you want to respond?`
               : `⚡ <b>${esc(who)}</b>: ${esc(what)}. You have no response.`));
+          }
+          const ninjutsu = (rq.acts || []).filter(entry => entry.ninjutsu);
+          if (ninjutsu.length) {
+            const abilityRow = el('div', 'btnrow priorityabilities');
+            for (const entry of ninjutsu) {
+              const abilityButton = el('button', 'pbtn primary abilitybtn ninjutsuaction',
+                `${esc(entry.card.name)} — ${esc(this.activationLabel(entry))}`);
+              abilityButton.onclick = () => {
+                if (this.react !== w || this.pending) return;
+                this.takeReactWindow();
+                this.resolvePending({ kind: 'activate', entry });
+              };
+              abilityRow.appendChild(abilityButton);
+            }
+            bar.appendChild(abilityRow);
           }
           const row = el('div', 'btnrow');
           if (canAct) {
