@@ -30,13 +30,13 @@
    ['oraclePrototypeV10','bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','oracleBottomOnGraveyardV67','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
  }
  function openFrame(ctx,cards,effect,helpers){
-  const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{}),...(effect.bottomAfter===true?{oracleBottomOnGraveyardV67:true}:{})};
+  const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(typeof effect.altCostStr==='string'?{altCostStr:effect.altCostStr}:{}),...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{}),...(effect.bottomAfter===true?{oracleBottomOnGraveyardV67:true}:{})};
   const filter=effect.filter?helpers.target(effect.filter,[],0,{...ctx.data,oracleX:ctx.so?.x??ctx.x??0,oracleSourceCapture:ctx.oracleSourceCapture||{zoneVersion:ctx.sourceZoneVersion??ctx.src.zoneVersion}}).filter:null;
   const frame={id,player:ctx.you,source:ctx.src,free:effect.free,anyColor:base.asThoughAnyColor,filter,entries:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion,alternatives:alternatives(ctx.g,card,base).map(alt=>effect.exileAfter&&effect.exileTypes?.some(type=>ctx.g.castHasType(card,alt,type))?{...alt,oracleExileOnGraveyard:true}:alt)}))};
   // A paid immediate cast still allows printed alternatives such as Snuff
   // Out's four life. Do not combine one with a free cast or another face's
   // cost. More complex payment plans retain their own engine routes.
-  if(!effect.free)for(const entry of frame.entries){
+  if(!effect.free&&effect.altCostStr===undefined)for(const entry of frame.entries){
    const simple=(entry.card.def.altCosts||[]).filter(option=>Object.keys(option).every(key=>['label','altCostStr','lifeCost','cond'].includes(key)));
    entry.alternatives=entry.alternatives.flatMap(alt=>[alt,...(!alt.adventure&&!alt.splitHalf&&!alt.oracleFace&&alt.altCostStr===undefined?simple.map(option=>({...alt,...option})):[])]);
   }

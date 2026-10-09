@@ -2666,9 +2666,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return unique.length;
     }
 
+    hasAutomaticRegenerationV82(card) {
+      return card?.zone === 'battlefield' && !card.phasedOut && !card.faceDown &&
+        !!card.def.oracleAutoRegenerateV82 && !card.cur?.abilitiesDisabled;
+    }
+
     async destroy(card, opts = {}) {
       if (card.zone !== 'battlefield' || card.phasedOut) return false;
-      if (MTG.C1719?.hasArmor(this,card)) {
+      if (MTG.C1719?.hasArmor(this,card) || this.hasAutomaticRegenerationV82(card)) {
         const version=card.zoneVersion;
         await this.destroyMany([card],opts);
         return card.zone!=='battlefield'||card.zoneVersion!==version;
@@ -2705,7 +2710,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // permanenata koji su bili zaštićeni u trenutku efekta.
       const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield' && !card.phasedOut);
       const doomed = [];
-      if (unique.some(card=>MTG.C1719?.hasArmor(this,card))) {
+      if (unique.some(card=>MTG.C1719?.hasArmor(this,card) || this.hasAutomaticRegenerationV82(card))) {
         const plan=await MTG.C1719.planDestruction(this,unique,opts);
         doomed.push(...plan.doomed);
         await MTG.C1719.applyDestructionPreventions(this,plan.actions);
@@ -4155,7 +4160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (card.kw('indestructible')) {
               // Marked damage remains until cleanup. Deathtouch only checks
               // damage since the previous SBA check (CR 704.5h).
-            } else if (MTG.C1719?.hasArmor(this,card)) armorDestructions.push(card);
+            } else if (MTG.C1719?.hasArmor(this,card) || this.hasAutomaticRegenerationV82(card)) armorDestructions.push(card);
             else if (card.regenShield > 0 && !MTG.oracleCantRegenerateV15?.(this,card)) preventions.push({card});
             else moves.set(card, 'destroy');
           }
