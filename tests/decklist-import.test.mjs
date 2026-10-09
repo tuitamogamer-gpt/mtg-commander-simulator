@@ -25,7 +25,7 @@ function deckText(commander, extras, basics = ['Plains', 'Island', 'Swamp', 'Mou
   ].join('\n');
 }
 
-test('parser prihvata Moxfield/Arena oznake, dva commandera i ignoriše sideboard', () => {
+test('parser prihvata Moxfield/Arena oznake, dva commandera i zadržava sideboard izvan glavnog decka', () => {
   const MTG = loadEngine();
   const parsed = MTG.parseDeckText(`
 Commanders:
@@ -41,7 +41,7 @@ Sideboard
   assert.equal(parsed.cards.reduce((sum, entry) => sum + entry.n, 0), 100);
   assert.equal(parsed.cards.some(entry => entry.name === 'Sol Ring'), true);
   assert.equal(parsed.cards.some(entry => entry.name === 'Black Lotus'), false);
-  assert.equal(parsed.ignored.length, 1);
+  assert.deepEqual(Array.from(parsed.auxiliaryV87.outsideGame), ['Black Lotus']);
 });
 
 test('pasted Commander deck prolazi tek nakon size, singleton, commander, color i engine gateova', () => {

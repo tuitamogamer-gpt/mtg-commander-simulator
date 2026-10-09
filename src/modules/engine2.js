@@ -2511,6 +2511,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return preview;
   }
   G.spellCost = function (p, card, castOpts = {}) {
+    // Adventure options may carry the printed target-spec generator. Cost
+    // adjustments consume selected target objects, never that definition.
+    if (typeof castOpts.targets === 'function') {
+      const {targets, ...options} = castOpts;
+      castOpts = options;
+    }
     const definition = this.castDefinition(card, castOpts);
     // returns parsed cost with reductions applied
     // "Without paying its mana cost" replaces only the printed/alternative

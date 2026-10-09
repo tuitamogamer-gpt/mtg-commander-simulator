@@ -3069,10 +3069,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const oracle = textOf(source.def).split(/\n(?:cycling\b|when you cycle\b)/)[0];
     const effects = [];
     const noRegen = /can(?:not|'t) be regenerated/.test(oracle);
-    for (const match of oracle.matchAll(/\b(destroy|exile) all (creatures|artifacts|enchantments|nonland permanents|permanents)( you (?:don't|do not) control)?\./g)) {
-      const [, kind, what, opponentsOnly] = match;
+    for (const match of oracle.matchAll(/\b(destroy|exile) all (creatures|artifacts|enchantments|nonland permanents|permanents)( you (?:(?:don't|do not) )?control)?\./g)) {
+      const [, kind, what, controllerScope] = match;
+      const ownOnly = controllerScope === ' you control';
+      const opponentsOnly = !!controllerScope && !ownOnly;
       const type = what.charAt(0).toUpperCase() + what.slice(1, -1);
       effects.push(card => {
+        if (ownOnly && card.ctrl !== player) return false;
         if (opponentsOnly && card.ctrl === player) return false;
         if (what === 'nonland permanents' ? card.is('Land') : what !== 'permanents' && !card.is(type)) return false;
         if (kind === 'exile') return true;
@@ -6261,14 +6264,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const item of value) out.add(cloneGraph(item, seen));
       return out;
     }
-    const out = Object.create(Object.getPrototypeOf(value));
+    const prototype = Object.getPrototypeOf(value);
+    const out = Object.create(prototype);
     seen.set(value, out);
+    // Snapshot facades may inherit from a physical CardInst. Their inherited
+    // identity and definition must belong to the cloned graph as well.
+    if (prototype instanceof MTG.CardInst) Object.setPrototypeOf(out, cloneGraph(prototype, seen));
     for (const ownKey of Reflect.ownKeys(value)) {
       if (ownKey === '_resolutionRecap') continue;
       const descriptor = Object.getOwnPropertyDescriptor(value, ownKey);
       if (!descriptor || !('value' in descriptor)) continue;
       try { out[ownKey] = cloneGraph(descriptor.value, seen, String(ownKey), value); } catch (error) { /* noncritical UI/cache field */ }
     }
+    // Native zone-dependent definitions use accessors whose closures belong
+    // to the original card. Rebuild them around the cloned card and its
+    // unmodified definition instead of dropping them or sharing live state.
+    if (value instanceof MTG.CardInst) MTG.cloneCardDefinitionForSimulation?.(value, out);
     if(value instanceof MTG.Game){
       MTG.initializeContinuousEffects(out,cloneGraph(value.untilEffects,seen,'untilEffects',value));
       // Event-cohort deduplication is a transient identity cache. WeakMap's
@@ -6311,6 +6322,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     clone._nextSimulationIid = game._simulation && Number.isFinite(game._nextSimulationIid) ? game._nextSimulationIid : -1;
     clone._nextSimulationTimestamp = game._simulation && Number.isFinite(game._nextSimulationTimestamp)
       ? game._nextSimulationTimestamp : MTG.currentOracleTimestamp();
+    // A search snapshot has its own resolution loop. Copying the live async
+    // session would suppress priority and leave simulated response spells
+    // unresolved, hiding consequences such as the acting player's loss.
+    clone._prioritySessionActive = false;
+    clone._priorityRestart = null;
+    clone.priorityState = null;
+    clone._stackResolutionDepth = 0;
     clone.paced = false;
     clone.speedFactor = 0;
     clone.onEvent = () => {};

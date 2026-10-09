@@ -1,0 +1,729 @@
+{
+  "generatedAt": "2026-10-09T18:55:51.872Z",
+  "commit": "c23e2d67d1f9cac10e4c0309c2cabd5f60e9772c",
+  "workingTreeDirty": true,
+  "replaysSelectionFrom": "output/random-match-2026-10-09/attempt-01-failed/selection.json",
+  "selection": "Uniform random deck shuffle without replacement using node:crypto.randomInt",
+  "availableDecks": 175,
+  "decks": [
+    "Multiverse Reforged",
+    "Quandrix Unlimited",
+    "Enduring Enchantments",
+    "Peace Offering"
+  ],
+  "seed": 2078951849,
+  "difficulty": "normal",
+  "styles": [
+    "balanced",
+    "balanced",
+    "balanced",
+    "balanced"
+  ],
+  "paced": true,
+  "speedFactor": 0,
+  "maxTurns": 1000,
+  "internalAISearch": "native production beam search enabled",
+  "headless": true,
+  "status": "completed",
+  "durationMs": 348294,
+  "turns": 53,
+  "winner": {
+    "seat": 4,
+    "name": "Bot 2",
+    "deck": "Quandrix Unlimited",
+    "life": 18
+  },
+  "seats": [
+    {
+      "position": 1,
+      "idx": 0,
+      "name": "Bot 1",
+      "deck": "Multiverse Reforged",
+      "commanders": [
+        "Jace, Multiverse Architect"
+      ],
+      "isAI": true,
+      "controller": "AIController",
+      "style": "balanced"
+    },
+    {
+      "position": 2,
+      "idx": 1,
+      "name": "Bot 4",
+      "deck": "Peace Offering",
+      "commanders": [
+        "Ms. Bumbleflower"
+      ],
+      "isAI": true,
+      "controller": "AIController",
+      "style": "balanced"
+    },
+    {
+      "position": 3,
+      "idx": 2,
+      "name": "Bot 3",
+      "deck": "Enduring Enchantments",
+      "commanders": [
+        "Anikthea, Hand of Erebos"
+      ],
+      "isAI": true,
+      "controller": "AIController",
+      "style": "balanced"
+    },
+    {
+      "position": 4,
+      "idx": 3,
+      "name": "Bot 2",
+      "deck": "Quandrix Unlimited",
+      "commanders": [
+        "Zimone, Infinite Analyst"
+      ],
+      "isAI": true,
+      "controller": "AIController",
+      "style": "balanced"
+    }
+  ],
+  "eliminations": [
+    {
+      "turn": 47,
+      "player": 0,
+      "seat": 1,
+      "deck": "Multiverse Reforged",
+      "reason": "life reached 0",
+      "life": -3,
+      "commanderDamage": {}
+    },
+    {
+      "turn": 50,
+      "player": 1,
+      "seat": 2,
+      "deck": "Peace Offering",
+      "reason": "life reached 0",
+      "life": -10,
+      "commanderDamage": {
+        "101": 2,
+        "201": 4
+      }
+    },
+    {
+      "turn": 53,
+      "player": 2,
+      "seat": 3,
+      "deck": "Enduring Enchantments",
+      "reason": "life reached 0",
+      "life": -18,
+      "commanderDamage": {
+        "301": 1
+      }
+    }
+  ],
+  "players": [
+    {
+      "seat": 1,
+      "idx": 0,
+      "name": "Bot 1",
+      "deck": "Multiverse Reforged",
+      "commanders": [
+        "Jace, Multiverse Architect"
+      ],
+      "life": -3,
+      "poison": 0,
+      "lost": true,
+      "turns": 12,
+      "hand": 0,
+      "library": 0,
+      "graveyard": 0,
+      "exile": 0,
+      "command": [],
+      "battlefield": [],
+      "commanderDamage": {}
+    },
+    {
+      "seat": 2,
+      "idx": 1,
+      "name": "Bot 4",
+      "deck": "Peace Offering",
+      "commanders": [
+        "Ms. Bumbleflower"
+      ],
+      "life": -10,
+      "poison": 0,
+      "lost": true,
+      "turns": 13,
+      "hand": 0,
+      "library": 0,
+      "graveyard": 0,
+      "exile": 0,
+      "command": [],
+      "battlefield": [],
+      "commanderDamage": {
+        "101": 2,
+        "201": 4
+      }
+    },
+    {
+      "seat": 3,
+      "idx": 2,
+      "name": "Bot 3",
+      "deck": "Enduring Enchantments",
+      "commanders": [
+        "Anikthea, Hand of Erebos"
+      ],
+      "life": -18,
+      "poison": 0,
+      "lost": true,
+      "turns": 14,
+      "hand": 0,
+      "library": 0,
+      "graveyard": 0,
+      "exile": 0,
+      "command": [],
+      "battlefield": [],
+      "commanderDamage": {
+        "301": 1
+      }
+    },
+    {
+      "seat": 4,
+      "idx": 3,
+      "name": "Bot 2",
+      "deck": "Quandrix Unlimited",
+      "commanders": [
+        "Zimone, Infinite Analyst"
+      ],
+      "life": 18,
+      "poison": 0,
+      "lost": false,
+      "turns": 14,
+      "hand": 8,
+      "library": 48,
+      "graveyard": 20,
+      "exile": 5,
+      "command": [],
+      "battlefield": [
+        {
+          "iid": 169,
+          "name": "Forest",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 199,
+          "name": "Vineglimmer Snarl",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 168,
+          "name": "Flooded Grove",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 198,
+          "name": "Turbulent Wilderness",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 159,
+          "name": "Brass Infiniscope",
+          "creature": false,
+          "land": false,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 173,
+          "name": "Forest",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 163,
+          "name": "Unbound Flourishing",
+          "creature": false,
+          "land": false,
+          "power": 0,
+          "toughness": 0,
+          "tapped": false,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 189,
+          "name": "Rain-Slicked Copse",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 186,
+          "name": "Paradox Gardens",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 192,
+          "name": "Sodden Verdure",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 195,
+          "name": "Temple of Mystery",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 179,
+          "name": "Island",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 191,
+          "name": "Rogue's Passage",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 154,
+          "name": "Sol Ring",
+          "creature": false,
+          "land": false,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        },
+        {
+          "iid": 101,
+          "name": "Zimone, Infinite Analyst",
+          "creature": true,
+          "land": false,
+          "power": 46,
+          "toughness": 50,
+          "tapped": true,
+          "sick": false,
+          "counters": {
+            "+1/+1": 46
+          }
+        },
+        {
+          "iid": 124,
+          "name": "Nyxborn Behemoth",
+          "creature": true,
+          "land": false,
+          "power": 66,
+          "toughness": 66,
+          "tapped": true,
+          "sick": false,
+          "counters": {
+            "+1/+1": 56
+          }
+        },
+        {
+          "iid": 157,
+          "name": "Elementalist's Palette",
+          "creature": false,
+          "land": false,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {
+            "charge": 44
+          }
+        },
+        {
+          "iid": 109,
+          "name": "Hydroid Krasis",
+          "creature": true,
+          "land": false,
+          "power": 58,
+          "toughness": 58,
+          "tapped": false,
+          "sick": false,
+          "counters": {
+            "+1/+1": 58
+          }
+        },
+        {
+          "iid": 182,
+          "name": "Island",
+          "creature": false,
+          "land": true,
+          "power": 0,
+          "toughness": 0,
+          "tapped": true,
+          "sick": false,
+          "counters": {}
+        }
+      ],
+      "commanderDamage": {
+        "201": 4
+      }
+    }
+  ],
+  "botMetrics": [
+    {
+      "seat": 1,
+      "idx": 0,
+      "name": "Bot 1",
+      "deck": "Multiverse Reforged",
+      "turns": 12,
+      "decisionQueries": 171,
+      "queryTypes": {
+        "mulligan": 1,
+        "main": 65,
+        "priority": 68,
+        "chooseCards": 14,
+        "chooseTargets": 1,
+        "attackers": 6,
+        "chooseOption": 12,
+        "blockers": 2,
+        "orderTriggers": 2
+      },
+      "aiDecisions": 171,
+      "aiFallbacks": 0,
+      "searchDecisions": 95,
+      "maxSearchDepth": 3,
+      "searchNodes": 358,
+      "playedLands": 10,
+      "spellsCast": 19,
+      "activations": 14,
+      "rejectedActions": 0,
+      "declaredAttackers": 9,
+      "blocks": 1,
+      "mulligans": 0,
+      "decisionMeanMs": 646,
+      "decisionP95Ms": 1830
+    },
+    {
+      "seat": 2,
+      "idx": 1,
+      "name": "Bot 4",
+      "deck": "Peace Offering",
+      "turns": 13,
+      "decisionQueries": 178,
+      "queryTypes": {
+        "mulligan": 1,
+        "main": 49,
+        "chooseOption": 13,
+        "priority": 101,
+        "attackers": 4,
+        "blockers": 3,
+        "scry": 2,
+        "chooseTargets": 4,
+        "chooseCards": 1
+      },
+      "aiDecisions": 173,
+      "aiFallbacks": 0,
+      "searchDecisions": 31,
+      "maxSearchDepth": 3,
+      "searchNodes": 296,
+      "playedLands": 9,
+      "spellsCast": 13,
+      "activations": 1,
+      "rejectedActions": 2,
+      "declaredAttackers": 5,
+      "blocks": 2,
+      "mulligans": 0,
+      "decisionMeanMs": 220,
+      "decisionP95Ms": 921
+    },
+    {
+      "seat": 3,
+      "idx": 2,
+      "name": "Bot 3",
+      "deck": "Enduring Enchantments",
+      "turns": 14,
+      "decisionQueries": 212,
+      "queryTypes": {
+        "mulligan": 1,
+        "main": 64,
+        "priority": 76,
+        "chooseCards": 9,
+        "attackers": 10,
+        "chooseTargets": 3,
+        "blockers": 7,
+        "orderTriggers": 23,
+        "scry": 3,
+        "chooseOption": 16
+      },
+      "aiDecisions": 212,
+      "aiFallbacks": 0,
+      "searchDecisions": 52,
+      "maxSearchDepth": 3,
+      "searchNodes": 194,
+      "playedLands": 11,
+      "spellsCast": 23,
+      "activations": 3,
+      "rejectedActions": 0,
+      "declaredAttackers": 32,
+      "blocks": 10,
+      "mulligans": 0,
+      "decisionMeanMs": 263,
+      "decisionP95Ms": 1374
+    },
+    {
+      "seat": 4,
+      "idx": 3,
+      "name": "Bot 2",
+      "deck": "Quandrix Unlimited",
+      "turns": 14,
+      "decisionQueries": 177,
+      "queryTypes": {
+        "mulligan": 1,
+        "main": 59,
+        "chooseCards": 5,
+        "attackers": 6,
+        "chooseOption": 9,
+        "priority": 36,
+        "chooseTargets": 43,
+        "chooseX": 6,
+        "orderTriggers": 6,
+        "blockers": 4,
+        "scry": 2
+      },
+      "aiDecisions": 177,
+      "aiFallbacks": 0,
+      "searchDecisions": 61,
+      "maxSearchDepth": 3,
+      "searchNodes": 207,
+      "playedLands": 11,
+      "spellsCast": 20,
+      "activations": 2,
+      "rejectedActions": 0,
+      "declaredAttackers": 5,
+      "blocks": 3,
+      "mulligans": 0,
+      "decisionMeanMs": 268,
+      "decisionP95Ms": 1057
+    }
+  ],
+  "attackMatrix": [
+    [
+      0,
+      1,
+      5,
+      3
+    ],
+    [
+      2,
+      0,
+      3,
+      0
+    ],
+    [
+      8,
+      9,
+      0,
+      15
+    ],
+    [
+      0,
+      1,
+      4,
+      0
+    ]
+  ],
+  "decisions": 733,
+  "totalControllerQueries": 738,
+  "actionCount": 138,
+  "rejectedActions": [
+    {
+      "turn": 38,
+      "player": 1,
+      "kind": "cast",
+      "card": "Octomancer",
+      "result": false
+    },
+    {
+      "turn": 38,
+      "player": 1,
+      "kind": "cast",
+      "card": "Perplexing Test",
+      "result": false
+    }
+  ],
+  "fallbacks": {
+    "ai": 0,
+    "safeDefault": 0
+  },
+  "warnings": [],
+  "invariantChecks": 53,
+  "invariantFailures": [],
+  "finalInvariant": {
+    "cards": 100,
+    "players": 4
+  },
+  "pendingTriggers": 0,
+  "stack": 0,
+  "failure": null,
+  "testedRuntimeFilesSha256": {
+    "src/modules/ai-v2.js": "39b097ef39cff87e9a210387c3f038313c7f19dda53de0ef7e96fe9dce16669a",
+    "src/modules/engine2.js": "c502de69bcd0bcd0b3fffd01abe15fe15cd0b6bc2501ec0e827c7beb81d65560",
+    "src/modules/oracle-v76-common.js": "0bf17dbf923529dceac22ce8608a865b991b796aabada871cdf8e56e62451dec",
+    "src/modules/oracle-v81-common.js": "ca26d09f6f4fde6f04409c08551471125141d3ab07aac0b4ab1045327ada03e5",
+    "src/modules/oracle-v83-common.js": "3636bafafa50066e20e6bc159e8fa8c750dc98e6bc3ed8921c3595fe933882f3",
+    "src/modules/oracle-v88-common.js": "4575960bdedeceb8cf6d2fbb131c39e5d01b13a03ccb232879d03d3e6ce43f1b",
+    "src/modules/oracle-v89-common.js": "494b8a6960eb8958f4f7753d8a29558c5a15ea26372fde9a54c6509bbb29247e",
+    "src/modules/oracle-v91-common.js": "13293c9ae4a3931bcfb402c4989b26615ac24f05aac5bb02bdf22855e7b1e2e4",
+    "src/modules/oracle-v97-paper-gap.js": "17017c145536990dc558ef1682c2c69d571e4fe782f4ca9581c7dbbdffbfbf0d",
+    "scripts/run-random-deck-match.mjs": "6dd18fc8fbc4e5b8c77768143300e998fa14efce76c25fb15ac960a345a38c77"
+  },
+  "releaseCommit": "The Git commit containing this evidence; original base commit and dirty-worktree metadata above describe the recorded run.",
+  "attempts": [
+    {
+      "generatedAt": "2026-10-09T18:03:32.973Z",
+      "status": "failed",
+      "durationMs": 15745,
+      "turns": 168,
+      "winner": null,
+      "failure": {
+        "name": "TypeError",
+        "message": "opts.targets.flat is not a function",
+        "stack": "TypeError: opts.targets.flat is not a function\n    at M.oracleSpellTargetAdjustmentV65 (src/app.js:2214146:294)\n    at G.spellCost (src/app.js:18158:70)\n    at G.spellCost (src/app.js:38856:106)\n    at G.spellCost (src/app.js:40390:51)\n    at G.spellCost (src/app.js:42149:168)\n    at G.spellCost (src/app.js:42254:71)\n    at G.spellCost (src/app.js:43044:72)\n    at M.Game.spellCost (src/app.js:2196135:115)\n    at G.spellCost (src/app.js:2196904:57)\n    at G.spellCost (src/app.js:2197675:51)"
+      },
+      "fallbacks": {
+        "ai": 0,
+        "safeDefault": 0
+      },
+      "invariantChecks": 168,
+      "invariantFailures": [],
+      "archive": "attempt-01-failed"
+    },
+    {
+      "generatedAt": "2026-10-09T18:14:03.713Z",
+      "status": "failed",
+      "durationMs": 15318,
+      "turns": 16,
+      "winner": null,
+      "failure": {
+        "name": "TypeError",
+        "message": "this.activationFeasible is not a function",
+        "stack": "TypeError: this.activationFeasible is not a function\n    at costs.activationFeasible (src/app.js:2211195:39)\n    at A.activationFeasible (src/app.js:2211600:100)\n    at C.activationFeasible [as feasible] (src/app.js:2212394:139)\n    at C.activationFeasible (src/app.js:2212680:133)\n    at C.activationFeasible (src/app.js:2213151:129)\n    at C.activationFeasible (src/app.js:2213344:89)\n    at costs.activationFeasible (src/app.js:2213611:89)\n    at a.cond (src/app.js:2211219:330)\n    at offerAbility (src/app.js:21038:26)\n    at src/app.js:21174:27"
+      },
+      "fallbacks": {
+        "ai": 0,
+        "safeDefault": 0
+      },
+      "invariantChecks": 16,
+      "invariantFailures": [],
+      "archive": "attempt-02-failed"
+    },
+    {
+      "generatedAt": "2026-10-09T18:19:28.129Z",
+      "status": "completed",
+      "durationMs": 358748,
+      "turns": 57,
+      "winner": {
+        "seat": 3,
+        "name": "Bot 3",
+        "deck": "Enduring Enchantments",
+        "life": 15
+      },
+      "failure": null,
+      "fallbacks": {
+        "ai": 0,
+        "safeDefault": 0
+      },
+      "invariantChecks": 57,
+      "invariantFailures": [],
+      "archive": "attempt-03-completed-strategy-bug",
+      "strategyFinding": {
+        "turn": 56,
+        "player": 0,
+        "lifeBeforeAction": -37,
+        "action": "Synthetic Destiny",
+        "result": "Self-exiled Darksteel Angel and immediately lost.",
+        "fix": "Simulation priority reset and accurate self-only wipe scoring; focused search now chooses Pass."
+      }
+    },
+    {
+      "status": "interrupted",
+      "reason": "Execution environment restarted; prior tool process no longer exists and no final result was written.",
+      "observedAt": "2026-10-09T18:55:43.977164+00:00",
+      "lastRecordedTurn": 31,
+      "lastRecordedElapsedSeconds": 79
+    }
+  ],
+  "browserEvidence": "random-match-2026-10-09-browser/evidence.json",
+  "scope": "Same uniformly selected four decks and seed after necessary fixes; no independently selected second match. Final outcome is evidence for this scenario, not a certification of all card interactions or optimal bot strategy.",
+  "review": {
+    "naturalWinnerVerified": true,
+    "allFourBotsProductive": true,
+    "remainingManaPaymentIssue": {
+      "turn": 38,
+      "player": 1,
+      "cards": [
+        "Octomancer",
+        "Perplexing Test"
+      ],
+      "observation": "Engine refused both actions with mana-not-paid logs; bot continued and Perplexing Test succeeded on turn42.",
+      "staticHypothesis": "Ordinary producer excess is planned as untracked, while execution records pool metadata for all mana; converter payment may therefore disagree with its traced-pool requirement. This hypothesis was not dynamically reproduced.",
+      "scope": "No crash or state invariant failure; not a claim of optimal AI or complete payment correctness."
+    },
+    "selfPreservationCoverage": "Final match did not play Darksteel Angel or Synthetic Destiny; their corrected lethal-action rejection is covered by focused native simulation/full-search regressions."
+  }
+}

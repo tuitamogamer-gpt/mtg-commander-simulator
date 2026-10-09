@@ -536,32 +536,92 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return String(value || '').normalize('NFKC')
       .replace(/[\u2018\u2019\u02bc]/g, "'")
       .replace(/[\u2013\u2014]/g, '-')
+      .replace(/\s*\/{1,2}\s*/g, ' // ')
       .replace(/\s+/g, ' ').trim().toLocaleLowerCase('en-US');
   }
 
   let cachedNameCount = -1;
+  let cachedCatalog = null;
+  let cachedDefinitions = null;
+  let cachedPrintingAliases = null;
   let cachedNameIndex = new Map();
+  let cachedCanonicalNames = new Map();
+  let cachedUnavailableIndex = new Map();
+  let cachedAmbiguousNames = new Set();
   function nameIndex() {
     const names = Object.keys(MTG.CARD_CATALOG || MTG.DEFS || {});
-    if (names.length !== cachedNameCount) {
+    if (names.length !== cachedNameCount || cachedCatalog !== MTG.CARD_CATALOG ||
+      cachedDefinitions !== MTG.DEFS || cachedPrintingAliases !== MTG.DECK_CARD_ALIASES) {
       cachedNameCount = names.length;
+      cachedCatalog = MTG.CARD_CATALOG;
+      cachedDefinitions = MTG.DEFS;
+      cachedPrintingAliases = MTG.DECK_CARD_ALIASES;
       cachedNameIndex = new Map();
+      cachedCanonicalNames = new Map();
+      cachedUnavailableIndex = new Map();
+      cachedAmbiguousNames = new Set();
       for (const name of names) {
         const key = nameKey(name);
         if (!cachedNameIndex.has(key)) cachedNameIndex.set(key, name);
-        else cachedNameIndex.set(key, null);
+        else { cachedNameIndex.set(key, null); cachedAmbiguousNames.add(key); }
       }
+      // Canonical names take precedence over an unrelated printing alias.
+      // Aliases shared by distinct identities stay ambiguous and fail closed.
+      const canonicalKeys = new Set(cachedNameIndex.keys());
+      const addAlias = (alias, name) => {
+        const key = nameKey(alias);
+        if (canonicalKeys.has(key)) return;
+        if (!cachedNameIndex.has(key)) cachedNameIndex.set(key, name);
+        else if (cachedNameIndex.get(key) !== name) { cachedNameIndex.set(key, null); cachedAmbiguousNames.add(key); }
+      };
       for(const name of names)for(const alias of MTG.CARD_CATALOG?.[name]?.aliases||[]){
-        const key=nameKey(alias);
-        if(!cachedNameIndex.has(key))cachedNameIndex.set(key,name);
-        else if(cachedNameIndex.get(key)!==name)cachedNameIndex.set(key,null);
+        addAlias(alias,name);
+      }
+      for (const row of MTG.DECK_CARD_ALIASES?.cards || []) {
+        const matchesIdentity = name => {
+          const entry = MTG.CARD_CATALOG?.[name];
+          if (!entry || !MTG.DEFS?.[name]) return false;
+          const native = row.nativeIdentities?.find(identity => identity.name === name);
+          return entry.oracleId ? entry.oracleId === row.oracleId :
+            !!native && entry.name === native.name && entry.manaCost === native.manaCost && entry.typeLine === native.typeLine;
+        };
+        if (!matchesIdentity(row.name)) continue;
+        for (const name of row.runtimeNames || []) if (matchesIdentity(name)) {
+          cachedCanonicalNames.set(name, row.name);
+          cachedNameIndex.set(nameKey(name), row.name);
+        }
+        for (const alias of row.aliases) addAlias(alias, row.name);
+      }
+      for (const row of MTG.DECK_CARD_ALIASES?.unavailable || []) {
+        for (const alias of [row.name, ...row.aliases]) {
+          const key = nameKey(alias);
+          if (canonicalKeys.has(key)) continue;
+          // A source alias colliding with an unavailable identity must not
+          // silently select the one identity whose gameplay happens to exist.
+          if (row.deckCard !== false && cachedNameIndex.has(key)) {
+            cachedNameIndex.set(key, null);
+            cachedAmbiguousNames.add(key);
+          }
+          if (!cachedUnavailableIndex.has(key)) cachedUnavailableIndex.set(key, row);
+          else if (cachedUnavailableIndex.get(key)?.oracleId !== row.oracleId) {
+            const previous = cachedUnavailableIndex.get(key);
+            if (previous?.deckCard === false && row.deckCard !== false) cachedUnavailableIndex.set(key, row);
+            else if (!(previous?.deckCard !== false && row.deckCard === false)) {
+              cachedUnavailableIndex.set(key, null);
+              if (row.deckCard !== false) cachedAmbiguousNames.add(key);
+            }
+          }
+        }
       }
     }
     return cachedNameIndex;
   }
 
   MTG.resolveDeckCardName = function (name) {
-    if ((MTG.CARD_CATALOG && MTG.CARD_CATALOG[name]) || (MTG.DEFS && MTG.DEFS[name])) return name;
+    if ((MTG.CARD_CATALOG && MTG.CARD_CATALOG[name]) || (MTG.DEFS && MTG.DEFS[name])) {
+      if (cachedCatalog !== MTG.CARD_CATALOG || cachedDefinitions !== MTG.DEFS || cachedPrintingAliases !== MTG.DECK_CARD_ALIASES) nameIndex();
+      return cachedCanonicalNames.get(name) || name;
+    }
     return nameIndex().get(nameKey(name)) || null;
   };
 
@@ -731,7 +791,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const resolved = MTG.resolveDeckCardName(entry.name);
       if (!resolved) {
         unresolved.push(entry.name);
-        errors.push(issue('unknown-card', `${entry.name} is not available in the engine catalog.`, entry.name));
+        const known = cachedUnavailableIndex.get(nameKey(entry.name));
+        if (known && (!cachedAmbiguousNames.has(nameKey(entry.name)) || nameKey(known.name) === nameKey(entry.name))) {
+          const legality = known.commanderLegality !== 'legal' ? ` It is ${known.commanderLegality.replace(/_/g, ' ')} in Commander.` : '';
+          errors.push(issue('known-unavailable-card', `${entry.name} is recognized as ${known.name}, but has no available engine definition.${legality}`, entry.name));
+        } else if (cachedAmbiguousNames.has(nameKey(entry.name))) {
+          errors.push(issue('ambiguous-card-name', `${entry.name} matches multiple Oracle identities. Use the complete combined name for a split, double-faced, or Adventure card.`, entry.name));
+        } else errors.push(issue('unknown-card', `${entry.name} is not available in the engine catalog.`, entry.name));
         continue;
       }
       const current = aggregate.get(resolved) || { n: 0, name: resolved, section: entry.section || 'Main' };

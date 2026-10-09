@@ -680,6 +680,7 @@ import './oracle-batches/batch-0266.js';
 import './reviewed-legacy-imports.js';
 import './modules/autoscript.js';
 import './modules/resolution-recap.js';
+import './modules/deck-card-aliases.js';
 import './modules/deck-import.js';
 import './modules/oracle-v87-decks.js';
 import './modules/ai-v2.js';

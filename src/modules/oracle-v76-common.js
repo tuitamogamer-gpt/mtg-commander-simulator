@@ -16,9 +16,9 @@
  // Ignus uses the native mana activation transaction. Its return is paid
  // after mana is committed and before the resulting mana is produced.
  const prepare=M.OracleV20Costs.prepareActivation,validate=M.OracleV20Costs.validateActivation,commit=M.OracleV20Costs.commitActivation;
- M.OracleV20Costs.prepareActivation=async(ctx,cost)=>{if(!cost.v76ReturnSelf)return prepare(ctx,cost);ctx.v76ManaReturn={version:ctx.src.zoneVersion};return alive(ctx.src)&&ctx.src.ctrl===ctx.you;};
- M.OracleV20Costs.validateActivation=(ctx,cost)=>cost.v76ReturnSelf?alive(ctx.src,ctx.v76ManaReturn?.version)&&ctx.src.ctrl===ctx.you:validate(ctx,cost);
- M.OracleV20Costs.commitActivation=async(ctx,cost)=>{if(!cost.v76ReturnSelf)return commit(ctx,cost);if(!M.OracleV20Costs.validateActivation(ctx,cost))return false;await ctx.g.move(ctx.src,'hand');return true;};
+ M.OracleV20Costs.prepareActivation=async function(ctx,cost){if(!cost.v76ReturnSelf)return prepare.call(this,ctx,cost);ctx.v76ManaReturn={version:ctx.src.zoneVersion};return alive(ctx.src)&&ctx.src.ctrl===ctx.you;};
+ M.OracleV20Costs.validateActivation=function(ctx,cost){return cost.v76ReturnSelf?alive(ctx.src,ctx.v76ManaReturn?.version)&&ctx.src.ctrl===ctx.you:validate.call(this,ctx,cost);};
+ M.OracleV20Costs.commitActivation=async function(ctx,cost){if(!cost.v76ReturnSelf)return commit.call(this,ctx,cost);if(!M.OracleV20Costs.validateActivation(ctx,cost))return false;await ctx.g.move(ctx.src,'hand');return true;};
  // A temporary zero-cost flashback is a normal, validated casting permission.
  const newtOffers=(g,p)=>p.graveyard.filter(c=>c.meta.v76Newt?.version===c.zoneVersion&&c.meta.v76Newt.turn===g.turnNo&&c.meta.v76Newt.zero).flatMap(c=>(M.VN?.castVariants?M.VN.castVariants(g,c,{}):[{}]).filter(a=>g.castHasType(c,a,'Instant')||g.castHasType(c,a,'Sorcery')).map(a=>({card:c,from:'graveyard',alt:{...a,starterPermission:'newt-v76',starterCardVersion:c.zoneVersion,flashback:true,altCostStr:'{0}',label:'Flashback {0}'}})));
  const S=M.StarterCasting,prior={offers:S.offers,allowed:S.allowed,prepare:S.prepare,validate:S.validate,commit:S.commit};

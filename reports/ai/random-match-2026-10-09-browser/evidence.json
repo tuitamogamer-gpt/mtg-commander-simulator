@@ -1,0 +1,194 @@
+{
+  "generatedAt": "2026-10-09T18:23:22.862Z",
+  "mode": "paused initial native game presentation fixture; no game.start() and no second match",
+  "seed": 2078951849,
+  "viewport": {
+    "width": 1440,
+    "height": 1024
+  },
+  "checks": [
+    "Native same-seed shuffled identities match complete-match selection; viewer Bot 1 is idx 0.",
+    "Rendered opponent IDs/names map to badges 01=Bot 4, 02=Bot 3, 03=Bot 2; viewer badge 04=YOU.",
+    "Command Table ribbon identities match opponent rows; all desktop opponent rows are rendered without horizontal overflow.",
+    "After marking Bot 3 lost only in presentation preview, survivor identities retain badges 01 and 03; viewer remains 04."
+  ],
+  "nativeSeats": [
+    {
+      "idx": 0,
+      "name": "Bot 1",
+      "deck": "Multiverse Reforged",
+      "onlineSeat": 0,
+      "isAI": true,
+      "commander": [
+        "Jace, Multiverse Architect"
+      ]
+    },
+    {
+      "idx": 1,
+      "name": "Bot 4",
+      "deck": "Peace Offering",
+      "onlineSeat": 3,
+      "isAI": true,
+      "commander": [
+        "Ms. Bumbleflower"
+      ]
+    },
+    {
+      "idx": 2,
+      "name": "Bot 3",
+      "deck": "Enduring Enchantments",
+      "onlineSeat": 2,
+      "isAI": true,
+      "commander": [
+        "Anikthea, Hand of Erebos"
+      ]
+    },
+    {
+      "idx": 3,
+      "name": "Bot 2",
+      "deck": "Quandrix Unlimited",
+      "onlineSeat": 1,
+      "isAI": true,
+      "commander": [
+        "Zimone, Infinite Analyst"
+      ]
+    }
+  ],
+  "initial": {
+    "viewer": {
+      "idx": 0,
+      "name": "Bot 1",
+      "deck": "Multiverse Reforged"
+    },
+    "myBoard": [
+      {
+        "playerId": "0",
+        "badge": "04",
+        "label": "YOU"
+      }
+    ],
+    "opponents": [
+      {
+        "playerId": "1",
+        "seat": "01",
+        "badge": "01",
+        "name": "Bot 4",
+        "headerText": "Bot 4Ms. BumbleflowerCZ",
+        "classes": "opprow seat-1 ct-focused",
+        "bounds": {
+          "x": 5,
+          "y": 72,
+          "width": 710,
+          "height": 366
+        }
+      },
+      {
+        "playerId": "2",
+        "seat": "02",
+        "badge": "02",
+        "name": "Bot 3",
+        "headerText": "Bot 3AniktheaCZ",
+        "classes": "opprow seat-2",
+        "bounds": {
+          "x": 725,
+          "y": 72,
+          "width": 710,
+          "height": 366
+        }
+      },
+      {
+        "playerId": "3",
+        "seat": "03",
+        "badge": "03",
+        "name": "Bot 2",
+        "headerText": "Bot 2ZimoneCZ",
+        "classes": "opprow seat-3",
+        "bounds": {
+          "x": 725,
+          "y": 446,
+          "width": 710,
+          "height": 366
+        }
+      }
+    ],
+    "ribbon": [
+      {
+        "playerId": "1",
+        "name": "Bot 4",
+        "ariaLabel": "Focus Bot 4, 40 life"
+      },
+      {
+        "playerId": "2",
+        "name": "Bot 3",
+        "ariaLabel": "Focus Bot 3, 40 life"
+      },
+      {
+        "playerId": "3",
+        "name": "Bot 2",
+        "ariaLabel": "Focus Bot 2, 40 life"
+      }
+    ],
+    "tableView": "table",
+    "horizontalOverflow": false
+  },
+  "afterPreviewElimination": {
+    "viewer": {
+      "idx": 0,
+      "name": "Bot 1",
+      "deck": "Multiverse Reforged"
+    },
+    "myBoard": [
+      {
+        "playerId": "0",
+        "badge": "04",
+        "label": "YOU"
+      }
+    ],
+    "opponents": [
+      {
+        "playerId": "1",
+        "seat": "01",
+        "badge": "01",
+        "name": "Bot 4",
+        "headerText": "Bot 4Ms. BumbleflowerCZ",
+        "classes": "opprow seat-1 ct-focused",
+        "bounds": {
+          "x": 5,
+          "y": 72,
+          "width": 710,
+          "height": 366
+        }
+      },
+      {
+        "playerId": "3",
+        "seat": "03",
+        "badge": "03",
+        "name": "Bot 2",
+        "headerText": "Bot 2ZimoneCZ",
+        "classes": "opprow seat-3",
+        "bounds": {
+          "x": 725,
+          "y": 72,
+          "width": 710,
+          "height": 366
+        }
+      }
+    ],
+    "ribbon": [
+      {
+        "playerId": "1",
+        "name": "Bot 4",
+        "ariaLabel": "Focus Bot 4, 40 life"
+      },
+      {
+        "playerId": "3",
+        "name": "Bot 2",
+        "ariaLabel": "Focus Bot 2, 40 life"
+      }
+    ],
+    "tableView": "table",
+    "horizontalOverflow": false
+  },
+  "status": "passed",
+  "pageErrors": []
+}
