@@ -183,7 +183,7 @@ try {
   }));
   assert.deepEqual(loaded.names, catalogNames, 'Browser catalog exactly matches current checkout');
   assert.deepEqual(loaded.batches, batches, 'Browser batches exactly match current checkout');
-  check(loaded.batches.every(batch => batch.count === 100), `${catalogNames.length} catalog cards and ${batches.length} complete generic batches load`);
+  check(loaded.batches.every(batch => Number.isSafeInteger(batch.count) && batch.count > 0), `${catalogNames.length} catalog cards and ${batches.length} complete generic batches load`);
   await page.locator('.mainmenu-deckimport-name').fill(deckName);
   await page.locator('.mainmenu-deckimport-text').fill(deckText);
   await page.locator('.mainmenu-deckimport-check').click();

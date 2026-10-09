@@ -426,7 +426,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           prompt: 'Finale of Revelation: untap up to five lands', aiHint: { kind: 'finaleUntap' },
         });
         for (const land of picked.filter(card => lands.includes(card)).slice(0, 5)) land.tapped = false;
-        p.noMaxHandForever = true;
+        g.grantNoMaximumHandSizeV74(p);
         g.lg('FINALE OF REVELATION X≥10: mega mod!');
       } else {
         await g.draw(p, x);

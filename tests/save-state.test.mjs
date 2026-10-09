@@ -96,6 +96,10 @@ test('a snapshot is refused while anything unsaveable is in play', async () => {
   const setup = soloSetup(1, 1700);
   const game = MTG.newGame(setup);
   await game.start();
+  // The completed Elven Council game can leave The Ring in the command
+  // zone. This probe needs a clean baseline before adding its own blockers.
+  for (const participant of game.players) participant.emblems.length = 0;
+  assert.ok(MTG.captureGameState(game), MTG.gameStateSnapshotBlockers(game).join('; '));
   const [player] = game.players;
   game.stack.push({ kind: 'ability', name: 'probe', ctrl: player, targets: [], run: async () => {} });
   assert.equal(MTG.canSnapshotGameState(game), false, 'a non-empty stack blocks a snapshot');

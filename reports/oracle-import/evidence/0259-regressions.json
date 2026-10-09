@@ -1,0 +1,229 @@
+{
+  "schema": "oracle-0259-validation/v1",
+  "batch": "oracle-0259",
+  "cards": 316,
+  "runs": [
+    {
+      "log": "output/next316/v70-all-73-serial-tests.log",
+      "sha256": "99d512a97ebc526c6f526b417fc8baf88560b6cf5eb8636045b794fbec42d52f",
+      "tests": 311,
+      "pass": 311,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v71-canonical46.log",
+      "sha256": "e074ee8444dfc2137168cd1bea3dec0352c291424f73190db84291bff423490c",
+      "tests": 185,
+      "pass": 185,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/canonical-v72-final.txt",
+      "sha256": "3c3e543e594bb8f0ffaf6a264b0bd7afa1e51c43b8c99a0c8475f979afabcf85",
+      "tests": 253,
+      "pass": 253,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v73-common-final.log",
+      "sha256": "3f2597ba1d4442221b4847f356b11e26ea184b4566fa657a0f5cd0197eba27b2",
+      "tests": 105,
+      "pass": 105,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v73-additional-final.log",
+      "sha256": "1f7c0cc09b5cfb10018837a66f27829986babfe8fe9a3bc084349558dbc6a727",
+      "tests": 89,
+      "pass": 89,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v73-extra-final.log",
+      "sha256": "8d64808f47c12c3ca78ba33ec3322cb92ea79676ff552e4fcd80b53b8ad9ff81",
+      "tests": 61,
+      "pass": 61,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v74-tests-final.log",
+      "sha256": "3f7eb67704a2c110e676633e7ef71cc06e794b5aa422d70369aefbea8646a5a5",
+      "tests": 249,
+      "pass": 249,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/extra74-tests.log",
+      "sha256": "ee937bb51e2b066b9fd6787c86b85db810f14917d2e96bf73810118ee8f3dbee",
+      "tests": 33,
+      "pass": 33,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/ready-kirin-final.log",
+      "sha256": "b4328747b761b8916d064017e69c91f959a6826dc3386740d956365272cb53cd",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/core-final.log",
+      "sha256": "ddfd80b4f9340ef99164e050ae1eefcf2e8223743bd67e77d3fe35852edc3ce0",
+      "tests": 168,
+      "pass": 168,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/target-ninjutsu-final.log",
+      "sha256": "75a617c6dd36927470396b4a9600308eee31f1bd7c613c1b8525c99b330e5bed",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/importer-final.log",
+      "sha256": "eb7c3cdadc26441efe3038f3c2226c02f1452996f5c061d472ec64e614433d14",
+      "tests": 43,
+      "pass": 43,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v74-save-zone-regression-final.log",
+      "sha256": "083341b34e57e870b5828bbb8c53bf321c3149faf4af751f2af1d29c31b19618",
+      "tests": 56,
+      "pass": 56,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v74-save-state-probe-final.log",
+      "sha256": "5d890753b7ad29eb42367ffde3520f2014952b9c4ce8ff4f3dc52c2b3f2f4e7f",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v74-hand-size-final.log",
+      "sha256": "cd89bb2f4de3fa32f6714b86c519d616ecc33d0f95c75019abb8cfb482711470",
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/v74-winter-voting-hardening.log",
+      "sha256": "dd7e613037a210c4afc3eba74ff2ef03c40c1d6004e61816ed6e283ffd04e17e",
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "log": "output/next316/mixed-batch-matrix-final.log",
+      "sha256": "7416f43d244b5694b577209babcb4e66d100028f1689acdf6d4ac01f4af17a33",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  ],
+  "notes": [
+    "Runs overlap; their passing counts must not be presented as distinct behavioral checks.",
+    "Cohort compilation runs preceded final contract-ID corrections; installed execution and final cold provenance verify the corrected batch.",
+    "The full save-state suite observed four passes including both simulations and one clean-baseline fixture failure. That test now clears a game-generated Ring emblem; its focused rerun passes. The original raw full-run log was overwritten, so it is excluded from this retained-log tally."
+  ],
+  "mixedBatchChecks": {
+    "changedTests": [
+      "tests/oracle-catalog-integrity.test.mjs",
+      "tests/oracle-interaction-matrix.test.mjs"
+    ],
+    "historicalTestUnchanged": "tests/oracle-batch-import.test.mjs",
+    "verifiedGenericCards": 26116,
+    "verifiedGenericBatches": 259,
+    "latestBatchCount": 316,
+    "batchSizeRange": [
+      1,
+      500
+    ],
+    "explicitExpectedGenericCards": 26116,
+    "passedFinalTests": {
+      "oracle-batch-import.test.mjs": 3,
+      "oracle-catalog-integrity.test.mjs": 1,
+      "oracle-interaction-matrix.test.mjs": 3
+    },
+    "logs": [
+      "output/next316/mixed-batch-catalog-tests.log",
+      "output/next316/mixed-batch-matrix-final.log"
+    ],
+    "note": "The initial combined run exposed the historical Circling Vultures special-action representation. A strict descriptor/native-marker test adapter was added; the affected matrix suite then passed all three tests. Production code was not changed."
+  },
+  "otherReceipts": [
+    {
+      "path": "output/next316/certification-0259.log",
+      "sha256": "301629b4ee3944b163a5eb0dc4a95e9148ab7d5c6ea8c8ab1b9716d2e034d840"
+    },
+    {
+      "path": "output/next316/audit-final.log",
+      "sha256": "74fe76386cabbfe99f1c98b8deb9fcd621f4c2a8267ebc726703d845b1524632"
+    },
+    {
+      "path": "output/next316/syntax-final.log",
+      "sha256": "a2395e640f2e23e1d8ed21916d799f0ab4e6d96bc6674abba74841ddc024b70c"
+    },
+    {
+      "path": "reports/oracle-import/evidence/0259-execution.json",
+      "sha256": "afee0ac061686f4158d5e3f6e361be0fe789e5f3072e09b669546a04c196d367"
+    },
+    {
+      "path": "reports/oracle-import/evidence/0259-browser.json",
+      "sha256": "aaf682f81f7c9cc72e1ab8a7d08ba0d5105be7c07b8be097dc96eaec61ed8f1e"
+    }
+  ]
+}

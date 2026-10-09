@@ -77,6 +77,22 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
     assert.ok(Array.isArray(operation.targets), `${entry.raw.name}: generic trigger has a closed target list`);
     return;
   }
+  // The frozen zero-cost hand descriptor is compiled by v65 into the
+  // printed discard special action. Its priority, no-Stack behavior and
+  // replacement handling are covered by oracle-v65-common-proof.mjs.
+  if (operation.kind === 'generic-ability' && definition.oracleDiscardHandSpecialActionV65) {
+    assert.deepEqual(JSON.parse(JSON.stringify(operation)), {
+      kind: 'generic-ability', cost: {mana: '{0}'}, effects: [], targets: [],
+      optional: false, from: 'hand', contract: 'generic-activated-effect',
+    }, `${entry.raw.name}: exact frozen discard special-action descriptor`);
+    assert.equal(definition.oracleDiscardHandSpecialActionV65, true);
+    assert.equal(definition.handAbility?.oracleDiscardHandSpecialActionV65, true,
+      `${entry.raw.name}: native discard special-action adapter`);
+    assert.equal(definition.handAbility.cost, '{0}');
+    assert.equal(definition.handAbility.label, 'Discard as a special action');
+    return;
+  }
+
   if (operation.kind === 'generic-ability') {
     assert.ok((operation.from==='hand'?[definition.handAbility]:operation.from==='graveyard'?[definition.gyAbility]:definition.abilities || []).some(ability => ability?.oracleCompiled),
       `${entry.raw.name}: generic ability compiled to an engine action`);
@@ -140,10 +156,19 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
   const state = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/state.json', import.meta.url), 'utf8'));
   assert.ok(state.batches.length >= 148, 'the existing catalog is preserved');
   assert.deepEqual(Array.from(batches, batch => batch.id), state.batches.map(batch => batch.id), 'every recorded batch is registered in order');
-  assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
-  assert.equal(entries.length, state.batches.length * 100, 'all recorded generic cards have executable contracts');
+  const recordedCount = state.batches.reduce((total, batch, index) => {
+    assert.ok(Number.isInteger(batch.count) && batch.count >= 1 && batch.count <= 500,
+      `${batch.id}: recorded batch size is from 1 through 500`);
+    assert.equal(batches[index].cards.length, batch.count, `${batch.id}: runtime matches the recorded count`);
+    return total + batch.count;
+  }, 0);
+  assert.equal(state.batchSize, state.batches.at(-1).count, 'state batch size matches its latest batch');
+  assert.equal(entries.length, recordedCount, 'all recorded generic cards have executable contracts');
+  assert.equal(state.importedOracleIds.length, recordedCount, 'state IDs match the sum of batch counts');
+  assert.equal(state.importedNames.length, recordedCount, 'state names match the sum of batch counts');
   const frozenRows = new Map(state.batches.flatMap(batch => {
     const report = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/batch-' + String(batch.sequence).padStart(4, '0') + '.json', import.meta.url), 'utf8'));
+    assert.equal(report.cards.length, batch.count, `${batch.id}: report matches the recorded count`);
     return report.cards.map(entry => [entry.oracleId, entry]);
   }));
   for (const entry of entries) {

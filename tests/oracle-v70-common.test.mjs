@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createFixturePlan,registerCanonicalFixturePlan} from './helpers/oracle-fixture-plan.mjs';
+import {loadEngine} from './helpers/load-engine.mjs';
+import {names,proveCommonV70} from './helpers/oracle-v70-common-proof.mjs';
+const rows=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v70-common.json',import.meta.url)));
+const plan=createFixturePlan(rows,70,9970),M=loadEngine();registerCanonicalFixturePlan(M,plan);
+test('v70 complete canonical spell sources reject appended unknown instructions',()=>{assert.equal(plan.report.cards.length,rows.length);for(const row of rows)assert.equal(plan.classify({...row,oracle_text:row.oracle_text+'\nPerform an unsupported action.'}).semanticClass,undefined,row.name);});
+for(const role of ['human','ai'])for(const row of rows)for(const positive of [true,false])test(`${role}: ${row.name} complete paid rules ${positive}`,()=>proveCommonV70(M,row.name,role,positive));

@@ -197,6 +197,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       turnsStarted: Number(player.turnsStarted) || 0,
       lastTurnSpellsCast: Number(player.lastTurnSpellsCast) || 0,
       noMaxHandForever: !!player.noMaxHandForever,
+      noMaxHandTimestampV74: player.noMaxHandTimestampV74||0,
+      maximumHandSizeEffectsV74: (player.maximumHandSizeEffectsV74||[]).map(e=>({n:e.n,timestamp:e.timestamp})),
       bdfApproaches: Number(player.bdfApproaches)||0,
       // A snapshot is taken between turns, so the pool is empty and the turn
       // state is about to be replaced; both are restored for exactness anyway.
@@ -533,6 +535,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       Number.isSafeInteger(card.timestamp) && card.timestamp >= 0 && card.timestamp <= MTG.MAX_RESTORED_TIMESTAMP),
       'invalid card timestamps.');
 
+    for(const player of snapshot.players){
+      assert(player.noMaxHandTimestampV74===undefined||Number.isSafeInteger(player.noMaxHandTimestampV74)&&player.noMaxHandTimestampV74>=0&&player.noMaxHandTimestampV74<=MTG.MAX_RESTORED_TIMESTAMP,'invalid hand-size timestamp.');
+      assert(player.maximumHandSizeEffectsV74===undefined||Array.isArray(player.maximumHandSizeEffectsV74)&&player.maximumHandSizeEffectsV74.every(e=>e&&Number.isSafeInteger(e.n)&&e.n<=0&&Number.isSafeInteger(e.timestamp)&&e.timestamp>=0&&e.timestamp<=MTG.MAX_RESTORED_TIMESTAMP),'invalid hand-size effects.');
+    }
+
     assert(snapshot.c1719TurnDirection===undefined||[1,-1].includes(snapshot.c1719TurnDirection),'invalid turn direction.');
     for(const p of snapshot.players)for(const key of ['c1719PreviousTurnAttacks','c1719CurrentTurnAttacks'])assert(p[key]===undefined||Array.isArray(p[key])&&p[key].every(i=>Number.isInteger(i)&&i>=0&&i<snapshot.players.length),'invalid attack history.');
     game.c1719TurnDirection=snapshot.c1719TurnDirection||1;
@@ -672,6 +679,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.turnsStarted = saved.turnsStarted;
       player.lastTurnSpellsCast = saved.lastTurnSpellsCast;
       player.noMaxHandForever = saved.noMaxHandForever;
+      player.noMaxHandTimestampV74 = saved.noMaxHandTimestampV74||0;
+      player.maximumHandSizeEffectsV74 = (saved.maximumHandSizeEffectsV74||[]).map(e=>({n:e.n,timestamp:e.timestamp}));
       player.bdfApproaches = Number(saved.bdfApproaches)||0;
       player.pool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, saved.pool);
       player.coloredOnlyPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
@@ -697,7 +706,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     game._nextCardIid = Math.max(Number(snapshot.nextCardIid) || 0, highest + 1);
     // Later layer-setting effects must sort after the saved permanents and
     // effects even when this process started with a fresh timestamp clock.
-    const highestTimestamp = game.battlefield.concat(game.untilEffects).reduce((max, entry) =>
+    const highestTimestamp = game.battlefield.concat(game.untilEffects,game.players.flatMap(p=>[...p.emblems,{timestamp:p.noMaxHandTimestampV74},...(p.maximumHandSizeEffectsV74||[])])).reduce((max, entry) =>
       Math.max(max, ...[entry.timestamp, entry.oracleLayerTimestamp].filter(Number.isSafeInteger)), 0);
     MTG.reserveTimestamp(highestTimestamp);
     // The random stream cannot be captured (it lives in a closure), so a

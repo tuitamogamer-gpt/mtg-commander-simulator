@@ -66,9 +66,14 @@ test('Oracle catalog is a duplicate-free, provenance-preserving union', () => {
     : Number(configuredTotal);
   assert.ok(Number.isInteger(expectedGenericCards) && expectedGenericCards >= 0,
     'ORACLE_EXPECTED_GENERIC_CARDS must be a non-negative integer');
-  assert.equal(expectedGenericCards % 100, 0,
-    'ORACLE_EXPECTED_GENERIC_CARDS must describe complete 100-card batches');
-  const expectedBatchCount = expectedGenericCards / 100;
+  for (const batch of stateBatches) {
+    assert.ok(Number.isInteger(batch.count) && batch.count >= 1 && batch.count <= 500,
+      `${batch.id}: state records a supported batch size from 1 through 500`);
+  }
+  const recordedGenericCards = stateBatches.reduce((total, batch) => total + batch.count, 0);
+  assert.equal(recordedGenericCards, expectedGenericCards,
+    'recorded batch counts match the configured generic card total');
+  const expectedBatchCount = stateBatches.length;
   const expectedSequences = Array.from({ length: expectedBatchCount }, (_, index) => index + 1);
 
   const appOracleImports = [...appSource.matchAll(/import\s+['"]\.\/oracle-batches\/([^'"]+\.js)['"];?/g)]
@@ -98,7 +103,10 @@ test('Oracle catalog is a duplicate-free, provenance-preserving union', () => {
   assert.deepEqual(appGenericSequences, expectedSequences, 'src/app.js imports every generic batch once and in order');
   assert.equal(appOracleImports.filter(file => file === 'sauron-dark-lord.js').length, 1,
     'src/app.js imports the Sauron reservation batch exactly once');
-  assert.equal(state.batchSize, 100, 'state batch size remains 100');
+  assert.ok(Number.isInteger(state.batchSize) && state.batchSize >= 1 && state.batchSize <= 500,
+    'state latest batch size is supported');
+  assert.equal(state.batchSize, stateBatches.at(-1)?.count,
+    'state batch size matches its latest batch');
   assert.equal(reports.length, expectedBatchCount, 'generic report count');
   assert.equal(runtimeGeneric.length, expectedBatchCount, 'runtime generic batch count');
   assert.equal(stateBatches.length, expectedBatchCount, 'state generic batch count');
@@ -112,9 +120,8 @@ test('Oracle catalog is a duplicate-free, provenance-preserving union', () => {
     const stateBatch = stateById.get(report.id);
     assert.ok(runtime, `${report.id}: loaded by runtime`);
     assert.ok(stateBatch, `${report.id}: present in state`);
-    assert.equal(report.cards.length, 100, `${report.id}: report contains exactly 100 cards`);
-    assert.equal(runtime.cards.length, 100, `${report.id}: runtime contains exactly 100 cards`);
-    assert.equal(stateBatch.count, 100, `${report.id}: state records exactly 100 cards`);
+    assert.equal(report.cards.length, stateBatch.count, `${report.id}: report matches the recorded card count`);
+    assert.equal(runtime.cards.length, stateBatch.count, `${report.id}: runtime matches the recorded card count`);
     assert.equal(runtime.generatedAt, report.generatedAt, `${report.id}: runtime generatedAt provenance`);
     assert.equal(stateBatch.generatedAt, report.generatedAt, `${report.id}: state generatedAt provenance`);
     assert.equal(report.source.provider, 'Scryfall', `${report.id}: source provider`);
@@ -153,6 +160,9 @@ test('Oracle catalog is a duplicate-free, provenance-preserving union', () => {
     });
   }
 
+  assert.equal(reportEntries.length, recordedGenericCards, 'report union matches the sum of recorded batch counts');
+  assert.equal(runtimeGeneric.reduce((total, batch) => total + batch.cards.length, 0),
+    recordedGenericCards, 'runtime union matches the sum of recorded batch counts');
   assert.equal(reportEntries.length, expectedGenericCards, 'configured generic card total');
   const genericNames = reportEntries.map(entry => entry.raw.name);
   const genericOracleIds = reportEntries.map(entry => entry.oracleId);

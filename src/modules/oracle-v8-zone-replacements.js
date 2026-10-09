@@ -12,7 +12,7 @@
   function matches(game,operation,source,ctrl,card,snap,from,sourceVersion){
     if(operation.from==='battlefield'&&from!=='battlefield')return false;
     const creature=types(card,snap).includes('Creature');
-    if(operation.creatureOnly&&!creature)return false;
+    if(operation.creatureOnly&&!creature&&!operation.leaveAnyV68)return false;
     if(operation.scope==='self')return source===card;
     if(operation.scope==='opponent-creature')return creature&&snap.ctrl!==ctrl;
     if(operation.scope==='instant-or-sorcery')return !card.isToken&&types(card,snap).some(type=>type==='Instant'||type==='Sorcery');

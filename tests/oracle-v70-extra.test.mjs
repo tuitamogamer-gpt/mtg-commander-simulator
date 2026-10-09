@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createFixturePlan,registerCanonicalFixturePlan} from './helpers/oracle-fixture-plan.mjs';
+import {loadEngine} from './helpers/load-engine.mjs';
+import {names,proveExtraV70} from './helpers/oracle-v70-extra-proof.mjs';
+const rows=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v70-extra.json',import.meta.url)));
+const plan=createFixturePlan(rows,70,9971),M=loadEngine();registerCanonicalFixturePlan(M,plan);
+test('v70 additional spells reject every unknown clause',()=>{assert.equal(plan.report.cards.length,25);for(const row of rows)assert.equal(plan.classify({...row,oracle_text:row.oracle_text+'\nPerform an unsupported action.'}).semanticClass,undefined,row.name);});
+for(const role of ['human','ai'])for(const name of names)for(const positive of [true,false])test(`${role}: ${name} complete paid rules ${positive}`,()=>proveExtraV70(M,name,role,positive));
