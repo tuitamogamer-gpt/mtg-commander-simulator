@@ -1100,6 +1100,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return importedLibrary.entries.find(entry => entry.id === id) || null;
   };
 
+  // Imports create a new record. A reused optional name must not overwrite an
+  // existing list or prevent another build with the same commander being saved.
+  MTG.availableImportedDeckName = function (preferredName) {
+    const base = (String(preferredName || '').trim() || 'Imported Commander deck').slice(0, 80).trimEnd();
+    const occupied = new Set([
+      ...Object.keys(MTG.DECKS || {}),
+      ...importedLibrary.entries.map(entry => entry.name),
+    ].map(nameKey));
+    if (!occupied.has(nameKey(base))) return base;
+    for (let number = 2; ; number += 1) {
+      const suffix = ` (${number})`;
+      const candidate = base.slice(0, 80 - suffix.length).trimEnd() + suffix;
+      if (!occupied.has(nameKey(candidate))) return candidate;
+    }
+  };
+
   // An imported deck is only usable away from the browser that owns it — by a
   // bot seat that must survive a save, or by a live room the host has to build
   // locally — when the saved record travels with it. This is that record.

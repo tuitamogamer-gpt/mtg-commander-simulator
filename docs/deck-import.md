@@ -9,6 +9,8 @@ Bring a text decklist into **My Library**, check it, and use the saved list in S
 3. Enter an optional, unique deck name and paste the complete list, including its commander or legal commander pair.
 4. Click **Check decklist**. Fix every reported error. **Save to My Library** becomes available only after the complete list passes. Editing the list or name requires another check.
 5. Click **Save to My Library**. The game checks the list again, saves it, and opens its deck overview.
+
+Every import saves a new deck. If the name is already in use, the game adds a free suffix such as `(2)` or `(3)` and shows the suggested name under **Save as**. Existing decks keep their names and card lists. The library is refreshed before saving so decks saved on another device also reserve their names.
 6. Click **Build this pod →**, choose 1–3 AI opponents and their decks and [play styles](ai-archetypes.md), then continue to **Review** and start the game.
 
 For later games, open My Library and click **Choose deck**. Choosing a saved deck opens setup; it does not immediately start a match. A new ordinary game uses a fresh shuffle. An explicit replay seed is for reproducing the same setup.

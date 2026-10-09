@@ -148,12 +148,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Validation is intentionally repeated at the persistence boundary. The
     // Check button is informative; it is never authority to save stale text.
     if (!validation || !validation.ok) throw new Error('Check the complete decklist before saving it.');
-    const record = U.createImportedDeckRecord(validation);
+    await ensureImportedLibraryOwner();
+    const library = await refreshImportedDeckLibrary({ force: true });
+    if (library.error) throw new Error(library.error);
+    const namedValidation = {
+      ...validation,
+      deck: { ...validation.deck, name: U.availableImportedDeckName(validation.deck.name) },
+    };
+    const record = U.createImportedDeckRecord(namedValidation);
     const semantic = U.validateImportedDeckRecord(record);
     if (!semantic.ok) throw new Error(semantic.errors[0]?.message || 'This deck is not supported by the current engine.');
     const existingBuiltIn = MTG.DECKS && MTG.DECKS[record.name];
     if (existingBuiltIn && !existingBuiltIn.custom) throw new Error(`A built-in deck is already named ${record.name}.`);
-    await ensureImportedLibraryOwner();
     if (globalThis.MTGAccount?.user) {
       const accountId = globalThis.MTGAccount.user.id;
       const saved = await globalThis.MTGAccount.upsertDeck(record);
@@ -499,7 +505,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         overlay.dataset.inputCards = String(validation.summary.inputCards);
         overlay.dataset.commanders = validation.commanders.join(' + ');
         resultBox.dataset.state = 'ready';
-        resultBox.innerHTML = `<strong>Ready to play</strong><p>${validation.summary.inputCards} cards · ${validation.summary.uniqueCards} unique · ${validation.summary.engineCertified} engine-certified · ${validation.interactions.contracts.length} interaction contracts</p><small>Commander: ${esc(validation.commanders.join(' + '))}</small>`;
+        resultBox.innerHTML = `<strong>Ready to play</strong><p>Save as: <b>${esc(U.availableImportedDeckName(validation.deck.name))}</b></p><p>${validation.summary.inputCards} cards · ${validation.summary.uniqueCards} unique · ${validation.summary.engineCertified} engine-certified · ${validation.interactions.contracts.length} interaction contracts</p><small>Commander: ${esc(validation.commanders.join(' + '))}</small>`;
         saveButton.disabled = false;
       };
 
@@ -542,7 +548,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           validatedDeck = currentValidation;
           overlay.dataset.importState = 'saved';
           resultBox.dataset.state = 'ready';
-          resultBox.innerHTML = `<strong>Saved to My Library</strong><p>${currentValidation.summary.inputCards} cards · ${currentValidation.summary.engineCertified} engine-certified · ready to play without pasting again.</p><small>Commander: ${esc(currentValidation.commanders.join(' + '))}</small>`;
+          resultBox.innerHTML = `<strong>Saved to My Library</strong><p>${esc(saved.name)}</p><p>${currentValidation.summary.inputCards} cards · ${currentValidation.summary.engineCertified} engine-certified · ready to play without pasting again.</p><small>Commander: ${esc(currentValidation.commanders.join(' + '))}</small>`;
           saveButton.textContent = 'Saved';
           renderLibrary();
           if (overlay.isConnected) {
@@ -553,6 +559,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           overlay.dataset.importState = 'error';
           resultBox.dataset.state = 'error';
           resultBox.innerHTML = `<strong>Deck was not saved</strong><p>${esc(error && error.message || 'Unknown import error.')}</p>`;
+          if (/already in your library|saved deck is already named/i.test(error && error.message || '')) {
+            const renameButton = el('button', 'mainmenu-deckimport-rename', 'Change deck name');
+            renameButton.type = 'button';
+            renameButton.onclick = () => {
+              nameInput.focus();
+              nameInput.select();
+              nameInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            };
+            resultBox.appendChild(renameButton);
+          }
           saveButton.textContent = 'Save to My Library';
           saveButton.disabled = !validatedDeck;
         }

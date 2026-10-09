@@ -1,0 +1,31 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "inputCards": 100,
+  "commander": "Yuriko, the Tiger's Shadow",
+  "guest": {
+    "names": [
+      "Imported — Yuriko, the Tiger's Shadow",
+      "Imported — Yuriko, the Tiger's Shadow (2)"
+    ],
+    "distinctIds": true,
+    "originalUnchanged": true,
+    "persistedAfterReload": true
+  },
+  "account": {
+    "names": [
+      "Yuriko cEDH (2)",
+      "Yuriko cEDH",
+      "Imported — Yuriko, the Tiger's Shadow (2)",
+      "Imported — Yuriko, the Tiger's Shadow"
+    ],
+    "distinctIds": true,
+    "originalsUnchanged": true,
+    "persistedAfterReload": true,
+    "guestStorageUnused": true
+  },
+  "browserErrors": [],
+  "gameStarted": false
+}
