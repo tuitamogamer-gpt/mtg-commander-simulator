@@ -5,6 +5,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const U = MTG, E = MTG.E, T = MTG.T, SC = MTG.SCRIPTS, TK = MTG.TOKENS, E7 = MTG.E7;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
+  const spellHasCreatureType = (g, card, castOpts, type) => {
+    const def = g.castDefinition(card, castOpts || {});
+    return def.types.includes('Creature') &&
+      (def.subtypes.includes(type) || def.changeling && MTG.CREATURE_SUBTYPES.has(type));
+  };
   const etbSelf = (g, self, d) => d.card === self;
   const prepareSpell = (g, source, def) => {
     if (source.meta.prepared) return null;
@@ -950,7 +955,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Director Nick Fury'] = {
-    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Hero'))) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && spellHasCreatureType(g, q.card, q.castOpts, MTG.c1719TextType(g,'Hero'))) ? -1 : 0],
     triggers: [{
       on: 'attackersDeclared', desc: 'Search for a Hero', filter: (g, self, d) => d.player === self.ctrl && d.attackers.length > 0,
       run: async ctx => {
@@ -1524,7 +1529,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     asEnters: chooseCreatureType,
     triggers: [{
       on: 'cast', desc: 'Charge',
-      filter: (g, self, d) => d.player === self.ctrl && d.card.is('Creature') && self.meta.chosenType && (d.card.def.subtypes || []).includes(self.meta.chosenType),
+      filter: (g, self, d) => d.player === self.ctrl && self.meta.chosenType && spellHasCreatureType(g, d.card, d.so?.castOpts, self.meta.chosenType),
       run: async ctx => { ctx.g.addCounters(ctx.src, 'charge', 1, false, ctx.you); },
     }],
     statics: [{
@@ -1537,12 +1542,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC["Herald's Horn"] = {
     asEnters: chooseCreatureType,
-    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && self.meta.chosenType && (q.card.def.subtypes || []).includes(self.meta.chosenType)) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && self.meta.chosenType && spellHasCreatureType(g, q.card, q.castOpts, self.meta.chosenType)) ? -1 : 0],
     triggers: [{
       on: 'upkeep', desc: 'Top → hand?', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
         const top = ctx.you.library[ctx.you.library.length - 1];
-        if (top && top.is('Creature') && ctx.src.meta.chosenType && (top.def.subtypes || []).includes(ctx.src.meta.chosenType)) {
+        if (top && top.is('Creature') && ctx.src.meta.chosenType && top.hasSub(ctx.src.meta.chosenType)) {
           const answer = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseOption', prompt: `Herald's Horn: reveal ${top.name} and put it into your hand?`,
             options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
@@ -1598,10 +1603,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'cast', desc: 'Draw (tribal)', oncePerTurn: true,
       filter: (g, self, d) => {
-        if (!d.card.is('Creature')) return false;
+        const def = g.castDefinition(d.card, d.so?.castOpts || {});
+        if (!def.types.includes('Creature')) return false;
         const cmd = g.bf().find(c => c.commander && c.owner === self.owner && c.ctrl === d.player);
         if (!cmd) return false;
-        return (d.card.def.subtypes || []).some(s => cmd.hasSub(s));
+        return (def.changeling ? MTG.RULES_CREATURE_TYPES : def.subtypes)
+          .some(s => MTG.CREATURE_SUBTYPES.has(s) && cmd.hasSub(s));
       },
       controller: (g, self, data) => {
         const commander = g.bf().find(card => card.commander && card.owner === self.owner && card.ctrl === data.player);

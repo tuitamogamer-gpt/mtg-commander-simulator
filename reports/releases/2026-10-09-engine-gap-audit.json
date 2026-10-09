@@ -1,0 +1,636 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-09",
+  "status": "verified",
+  "baselineCommit": "40461f5",
+  "scope": "Bounded native cast routes, special timing, off-zone X payment, effective creature types, dispatch and combat transitions, plus mobile controls.",
+  "findings": [
+    {
+      "id": "effect-free-casting",
+      "problem": "Effect-driven free casting omitted exact temporary face permission for MDFCs and forced the creature half of Adventures.",
+      "result": "Existing immediate casting permission now offers the legal face or Adventure with normal target and choice processing.",
+      "examples": [
+        "Etali, Primal Storm",
+        "Boggart Trawler // Boggart Bog",
+        "Sea Gate Restoration // Sea Gate, Reborn"
+      ]
+    },
+    {
+      "id": "card-copy-casting",
+      "problem": "Legacy copied cards used an unsupported copyspace and printed optional copy casts were forced.",
+      "result": "Temporary native copies enter exile with exact casting permission; unused copies are cleaned up. Optional and mandatory callers keep their printed choice.",
+      "examples": [
+        "Mizzix's Mastery",
+        "Psionic Ritual",
+        "Bloodthirsty Adversary",
+        "Spelltwine"
+      ]
+    },
+    {
+      "id": "temporary-definition-restoration",
+      "problem": "Oracle v89 restored a printed definition even when no temporary Harmonize wrapper had been installed, overwriting resolved face-down, Prototype or copied characteristics.",
+      "result": "Only the exact installed temporary wrapper is restored, including matching stored face-down definitions.",
+      "examples": [
+        "Willbender",
+        "Branch of Vitu-Ghazi",
+        "Sculpting Steel",
+        "Harmonize and Prototype native controls"
+      ]
+    },
+    {
+      "id": "loyalty-timing",
+      "problem": "The final priority filter removed legal instant-speed loyalty activations.",
+      "result": "Teferi and entry-turn Emperor grants survive that filter; ordinary loyalty, once-per-turn limits and activation taxes remain enforced.",
+      "examples": [
+        "Teferi, Master of Time",
+        "The Wandering Emperor",
+        "Jace Beleren with earned Teferi emblem"
+      ]
+    },
+    {
+      "id": "abolisher-zone-scope",
+      "problem": "Grand Abolisher treated creature cards in hand as battlefield creature permanents.",
+      "result": "Its ability prohibition is scoped to battlefield permanents; legal hand Cycling and granted special actions remain usable.",
+      "examples": [
+        "Grand Abolisher",
+        "Drannith Healer",
+        "Krosan Tusker",
+        "Cosmos Charger"
+      ]
+    },
+    {
+      "id": "off-zone-x-cost-context",
+      "problem": "X affordability and actual off-zone payment lost ability/X context, overcounting creature-spell-only mana or rejecting Elementalist’s Palette mana for actual X abilities.",
+      "result": "Hand Channel, Cycling and graveyard payments retain ability metadata and the printed X-cost marker.",
+      "examples": [
+        "Arashi, the Sky Asunder",
+        "Jiwari, the Earth Aflame",
+        "Webstrike Elite",
+        "Shark Typhoon",
+        "Rot-Curse Rakshasa",
+        "Elementalist's Palette"
+      ]
+    },
+    {
+      "id": "outside-zone-type-layers",
+      "problem": "Maskwood Nexus omitted outside-zone creature types; separate Adaptation wrappers ignored Conspiracy timestamps; proposed casts retained replaced Changeling or graveyard-only types. Foreign-owned paid-cast cost preview also omitted the proposed caster’s type effects.",
+      "result": "One timestamp-ordered layer computes outside-card and proposed-spell subtypes and respects the applicable owner/controller and zone. A private, scoped proposed-caster context now applies only during synchronous spell-cost computation; card ownership, permanent control and casting permission remain separate.",
+      "examples": [
+        "Maskwood Nexus",
+        "Arcane Adaptation",
+        "Conspiracy",
+        "Ashes of the Fallen",
+        "Horde of Notions",
+        "Ancient Cellarspawn",
+        "Gonti, Lord of Luxury",
+        "Herald's Horn"
+      ]
+    },
+    {
+      "id": "tribal-consumers",
+      "problem": "Tribal cost and trigger consumers read printed subtype arrays instead of effective spell/card types.",
+      "result": "Herald’s Horn, Door of Destinies, Director Nick Fury and Folk Hero recognize actual Changeling and type changes, including negative tribe replacement controls.",
+      "examples": [
+        "Herald's Horn",
+        "Door of Destinies",
+        "Director Nick Fury",
+        "Folk Hero"
+      ]
+    },
+    {
+      "id": "artifact-ability-target-route",
+      "problem": "Ayesha Tanaka compiled activated-ability targets through the permanent target route and was never offered.",
+      "result": "The native stack-ability filter accepts artifact activations with source LKI while excluding creature abilities and artifact triggers.",
+      "examples": [
+        "Ayesha Tanaka",
+        "Icy Manipulator",
+        "Dispeller's Capsule"
+      ]
+    },
+    {
+      "id": "combat-incarnation-links",
+      "problem": "Departure, blink, control change or losing creature type left stale reciprocal combat membership.",
+      "result": "Combat removal preserves departure snapshots, removes stale links, retains unaffected multi-block assignments and does not unblock a formerly blocked attacker.",
+      "examples": [
+        "Cloudshift",
+        "Act of Treason",
+        "Thassa, God of the Sea",
+        "Palace Guard",
+        "Aurelia, the Warleader"
+      ]
+    },
+    {
+      "id": "first-strike-participation",
+      "problem": "A first striker assigning zero first-step damage could gain a second ordinary damage step after a pump.",
+      "result": "First-step eligibility is recorded before damage assignment, including zero or negative power; current double strike still permits normal damage.",
+      "examples": [
+        "Youthful Knight",
+        "Fencing Ace",
+        "Giant Growth"
+      ]
+    }
+  ],
+  "node": {
+    "cohorts": [
+      {
+        "name": "castRoutes",
+        "file": "tests/cast-route-audit.test.mjs",
+        "cases": 27
+      },
+      {
+        "name": "combatTransitions",
+        "file": "tests/combat-transition-audit.test.mjs",
+        "cases": 26
+      },
+      {
+        "name": "specialTiming",
+        "file": "tests/special-timing-audit.test.mjs",
+        "cases": 18
+      },
+      {
+        "name": "outsideZoneXPayment",
+        "file": "tests/off-zone-x-payment-audit.test.mjs",
+        "cases": 7
+      },
+      {
+        "name": "dispatchBoundaries",
+        "file": "tests/dispatch-boundary-audit.test.mjs",
+        "cases": 7
+      },
+      {
+        "name": "zoneCharacteristics",
+        "file": "tests/zone-characteristic-audit.test.mjs",
+        "cases": 26
+      }
+    ],
+    "baseline": {
+      "commit": "40461f5",
+      "method": "Immutable git archive with exact final 111-case cohort, including corrected native Karador offer and Gonti paid foreign-cast check.",
+      "log": "output/engine-gap-audit-2026-10-09/native-baseline.tap",
+      "tests": 111,
+      "pass": 51,
+      "fail": 60,
+      "cancelled": 0,
+      "skipped": 0,
+      "note": "The 60 failures are reproduced audit cases, not 60 separate production defects."
+    },
+    "existingRuns": [
+      {
+        "log": "output/engine-gap-audit-2026-10-09/cast-route-existing.tap",
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/cast-route-psionic-existing.tap",
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/cast-route-spelltwine-existing.tap",
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/cast-route-adversary-existing.tap",
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/cast-route-prototype-existing.tap",
+        "tests": 8,
+        "pass": 8,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/combat-existing-final.tap",
+        "tests": 89,
+        "pass": 89,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/combat-final-and-types.tap",
+        "tests": 65,
+        "pass": 65,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "includesNewCases": 26,
+        "selectedExistingCases": 39
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/dispatch-existing-stack-lki.tap",
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/off-zone-x-and-existing.tap",
+        "tests": 101,
+        "pass": 101,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "includesNewCases": 7,
+        "selectedExistingCases": 94
+      },
+      {
+        "log": "output/engine-gap-audit-2026-10-09/zone-characteristic-existing.tap",
+        "tests": 20,
+        "pass": 20,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      }
+    ],
+    "aggregation": "Existing selections are disjoint by test file and selected pattern. Repeated display titles in different files count as distinct cases. The 26 native combat and 7 native X cases repeated in mixed regression runs are excluded from the 277 existing total.",
+    "nativeRun": {
+      "log": "output/engine-gap-audit-2026-10-09/native-final.tap",
+      "tests": 111,
+      "pass": 111,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "totalCases": 388,
+    "newCases": 111,
+    "existingCases": 277,
+    "pass": 388,
+    "fail": 0,
+    "skipped": 0,
+    "existingSelections": [
+      {
+        "name": "castRoutes",
+        "cases": 29,
+        "files": [
+          "tests/free-cast-copy-decisions.test.mjs",
+          "tests/adventure-cost-target-preview.test.mjs",
+          "tests/timing-suspend-evoke-regressions.test.mjs"
+        ],
+        "selectedFiles": [
+          {
+            "file": "tests/clb-dmc-40k-rules.test.mjs",
+            "pattern": "Psionic Ritual",
+            "cases": 1
+          },
+          {
+            "file": "tests/c15-c16-more.test.mjs",
+            "pattern": "Spelltwine",
+            "cases": 1
+          },
+          {
+            "file": "tests/deck-audit-sextet.test.mjs",
+            "pattern": "Bloodthirsty Adversary",
+            "cases": 1
+          },
+          {
+            "file": "tests/oracle-v10-casting.test.mjs",
+            "pattern": "Prototype",
+            "cases": 8
+          }
+        ]
+      },
+      {
+        "name": "combat",
+        "cases": 128,
+        "files": [
+          "tests/oracle-v8-control.test.mjs",
+          "tests/oracle-v8-combat-assignment.test.mjs",
+          "tests/oracle-v8-combat-keywords.test.mjs",
+          "tests/combat-action-audit.test.mjs",
+          "tests/yuriko-ninjutsu-window.test.mjs",
+          "tests/oracle-condition-dispatch-audit.test.mjs",
+          "tests/c19-c20-end-combat.test.mjs",
+          "tests/oracle-v8-animation.test.mjs",
+          "tests/oracle-v8-layered-statics.test.mjs"
+        ]
+      },
+      {
+        "name": "XAndMana",
+        "cases": 94,
+        "files": [
+          "tests/x-mana-mechanics.test.mjs",
+          "tests/somberwald-sage-mana.test.mjs",
+          "tests/c19-c20-cycling.test.mjs"
+        ]
+      },
+      {
+        "name": "zoneCharacteristics",
+        "cases": 20,
+        "files": [
+          "tests/changeling-zone-identity.test.mjs",
+          "tests/oracle-v28-common.test.mjs",
+          "tests/oracle-v8-next-effects.test.mjs"
+        ],
+        "pattern": "Changeling|creature type|live creature subtypes|Conspiracy replaces|type spell is applied|type choice preserves"
+      },
+      {
+        "name": "stackSourceLKI",
+        "cases": 6,
+        "files": [
+          "tests/oracle-v8-stack-copy.test.mjs"
+        ],
+        "pattern": "colorless source filtering|creature source selector|sacrificed activation costs"
+      }
+    ]
+  },
+  "browser": {
+    "tests": 11,
+    "pass": 11,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "browserErrors": [],
+    "results": [
+      {
+        "name": "fifth-activation",
+        "source": "Staff of Domination",
+        "target": "Grizzly Bears",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [],
+        "activations": [
+          {
+            "label": "{5}, {T}: Draw a card",
+            "ok": true
+          }
+        ],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "opponent-graveyard",
+        "source": "Scavenging Ooze",
+        "target": "Grizzly Bears",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [],
+        "activations": [
+          {
+            "label": "Exile a graveyard card; grow and gain life for a creature",
+            "ok": true
+          }
+        ],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "sacrifice-target-cost",
+        "source": "Goblin Bombardment",
+        "target": "Llanowar Elves",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [],
+        "activations": [
+          {
+            "label": "Sacrifice a creature: This enchantment deals 1 damage to any target",
+            "ok": true
+          }
+        ],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "monstrosity-x",
+        "source": "Death Kiss",
+        "target": "Grizzly Bears",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [],
+        "activations": [
+          {
+            "label": "Monstrosity X",
+            "ok": true
+          }
+        ],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "explosion-two-targets",
+        "source": "Expansion // Explosion",
+        "target": "Grizzly Bears",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [
+          {
+            "from": "hand",
+            "ok": true,
+            "card": "Expansion // Explosion"
+          }
+        ],
+        "activations": [],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "adventure-exile",
+        "source": "Bonecrusher Giant",
+        "target": "Grizzly Bears",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [
+          {
+            "from": "hand",
+            "ok": true,
+            "card": "Bonecrusher Giant"
+          },
+          {
+            "from": "exile",
+            "ok": true,
+            "card": "Bonecrusher Giant"
+          }
+        ],
+        "activations": [],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "main2",
+        "step": "main"
+      },
+      {
+        "name": "mdfc-land-face",
+        "source": "Valakut Stoneforge",
+        "target": null,
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [],
+        "activations": [],
+        "questionBefore": "main",
+        "reactionBefore": false,
+        "phase": "main1",
+        "step": "main"
+      },
+      {
+        "name": "counter-stack-target",
+        "source": "Counterspell",
+        "target": null,
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [
+          {
+            "from": "hand",
+            "ok": true,
+            "card": "Counterspell"
+          }
+        ],
+        "activations": [],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "teferi-opponent-loyalty",
+        "source": "Teferi, Master of Time",
+        "target": null,
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [],
+        "activations": [
+          {
+            "label": "+1: Draw a card, then discard a card",
+            "ok": true
+          }
+        ],
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "phase": "combat",
+        "step": "blockers"
+      },
+      {
+        "name": "native-megamorph",
+        "source": "Den Protector",
+        "target": "Ponder",
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [
+          {
+            "from": "hand",
+            "ok": true,
+            "card": "Face-down creature"
+          }
+        ],
+        "activations": [
+          {
+            "label": "Okreni licem gore: Den Protector (megamorph: {1}{G})",
+            "ok": true
+          }
+        ],
+        "questionBefore": "main",
+        "reactionBefore": false,
+        "phase": "main1",
+        "step": "main"
+      },
+      {
+        "name": "etali-free-adventure-choice",
+        "source": "Etali, Primal Storm",
+        "target": null,
+        "done": true,
+        "error": null,
+        "fallback": false,
+        "casts": [
+          {
+            "from": "exile",
+            "ok": true,
+            "card": "Bonecrusher Giant"
+          },
+          {
+            "from": "exile",
+            "ok": true,
+            "card": "Grizzly Bears"
+          }
+        ],
+        "activations": [],
+        "questionBefore": "attackers",
+        "reactionBefore": false,
+        "phase": "combat",
+        "step": ""
+      }
+    ],
+    "evidence": "output/engine-gap-audit-2026-10-09/browser/result.json",
+    "decisionFallbacks": 0,
+    "horizontalOverflow": false
+  },
+  "nativeCombat": {
+    "scenarios": 26,
+    "completeAureliaTurns": 1,
+    "fullRandomMatches": 0,
+    "evidence": "output/engine-gap-audit-2026-10-09/combat-transitions.json"
+  },
+  "registryCensus": {
+    "definitions": 32136,
+    "handlers": 131,
+    "callbacks": {
+      "compile": 110,
+      "condition": 45,
+      "target": 60,
+      "amount": 43,
+      "count": 17
+    },
+    "targetDescriptorSmokeFinal": 197,
+    "limitations": "Registry/descriptor census is structural smoke coverage, not proof of every effect or candidate prerequisite."
+  },
+  "catalog": {
+    "runtimeDefinitions": 32136,
+    "deckImportEligibleDefinitions": 32135,
+    "representedUniverseOracleIds": 32115,
+    "remainingUniverseOracleIds": 0,
+    "inputFilesSha256": "14f5d911dbab92ab9767b531814aec010a010170a987bb48a602a50680573b33",
+    "oracleBulkSha256": "0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be",
+    "paperBulkSha256": "d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227",
+    "csvHashes": {
+      "docs/catalog/imported-cards.csv": "a0f0de2f6f4c3690fe653f3d6a840cdd51452662796c17779937b99a407e7834",
+      "docs/catalog/remaining-cards.csv": "f0f380b669bc726e2d421068ede82094fb29b07d1f8560c7393da72253896fec"
+    }
+  },
+  "limits": [
+    "Native controlled positions use actual printed costs, priority, stack and effects without installed proof rules or a replaced priority pipeline.",
+    "One complete native Aurelia turn and bounded combat phases; no full random match.",
+    "Catalog completeness and runtime import markers do not certify all card effects or multiplayer combinations.",
+    "The ordinary-candidate predicate smoke check does not cover every target prerequisite state."
+  ],
+  "checks": {
+    "npmRunCheck": "passed",
+    "newFilesNodeSyntax": 7,
+    "whitespace": "passed",
+    "catalogExport": "passed"
+  }
+}

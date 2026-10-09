@@ -3,16 +3,54 @@
  if(M.OracleV28Common)return;
  const choice=source=>source.meta.oracleEntryLandTypeV28?.version===source.zoneVersion?source.meta.oracleEntryLandTypeV28.types:[];
  const creatureChoice=source=>source.meta.oracleEntryCreatureTypeV28?.version===source.zoneVersion?source.meta.oracleEntryCreatureTypeV28.type:null;
- const outsideEffects=card=>card.zone==='battlefield'?[]:(card.owner.game?.bf()||[]).filter(source=>!source.cur?.abilitiesDisabled&&creatureChoice(source)&&source.def.oracleChosenCreatureTypesV28).sort((a,b)=>a.timestamp-b.timestamp).flatMap(source=>source.def.oracleChosenCreatureTypesV28.filter(op=>op.scope==='graveyard'?card.zone==='graveyard'&&card.owner===source.ctrl:card.zone==='stack'?card.ctrl===source.ctrl:card.owner===source.ctrl).map(op=>({type:creatureChoice(source),retain:op.retain})));
+ const proposedCasters=new WeakMap();
+ // Cost calculation knows the caster before a spell object exists. Keep that
+ // context local to the native synchronous calculation, including nested calls.
+ const spellCost=M.Game.prototype.spellCost;
+ M.Game.prototype.spellCost=function(player,card,...args){
+  const previous=proposedCasters.get(card);proposedCasters.set(card,player);
+  try{return spellCost.call(this,player,card,...args);}
+  finally{if(previous)proposedCasters.set(card,previous);else proposedCasters.delete(card);}
+ };
+ // Creature-card and creature-spell effects share a timestamp-ordered type
+ // layer. Independent wrappers must not re-add an earlier type after Conspiracy.
+ const outsideEffects=(card,{asSpell=false}={})=>{
+  if(card.zone==='battlefield'&&!asSpell)return [];
+  const game=card.owner.game;
+  // Foreign-owned cards retain their owner as CardInst.ctrl on the stack;
+  // the native spell object carries the actual controller (for example Etali).
+  const spell=card.zone==='stack'?game?.stack.find(row=>row.kind==='spell'&&!row.isCopy&&row.card===card):null;
+  const controller=(asSpell||card.zone==='stack')?((asSpell&&proposedCasters.get(card))||spell?.ctrl||card.ctrl):card.owner;
+  return (game?.bf()||[]).filter(source=>!source.cur?.abilitiesDisabled)
+   .sort((a,b)=>a.timestamp-b.timestamp).flatMap(source=>{
+    const effects=[];
+    if(source.ctrl===controller){
+     if(source.def.oracleAllCreatureTypesV28)effects.push({all:true,retain:true});
+     if(source.def.bdfAdaptation&&source.meta.bdfType)effects.push({type:source.meta.bdfType,retain:true});
+    }
+    const type=creatureChoice(source);
+    if(type)for(const op of source.def.oracleChosenCreatureTypesV28||[]){
+     const applies=op.scope==='graveyard'
+      ? !asSpell&&card.zone==='graveyard'&&card.owner===source.ctrl
+      : controller===source.ctrl;
+     if(applies)effects.push({type,retain:op.retain});
+    }
+    return effects;
+   });
+ };
  const nativeHasSub=M.CardInst.prototype.hasSub;
- function outsideSubtypes(card,base=card.def.subtypes){
-  if(!card.is('Creature'))return base.slice();let subs=base.slice(),all=!!card.def.changeling;
-  for(const effect of outsideEffects(card)){if(!effect.retain){subs=subs.filter(type=>!M.CREATURE_SUBTYPES.has(type));all=false;}if(!subs.includes(effect.type))subs.push(effect.type);}
-  return all?[...new Set(subs.concat(M.RULES_CREATURE_TYPES))]:subs;
+ function outsideCharacteristics(card,definition=card.def,options={}){
+  let subs=definition.subtypes.slice(),all=!!definition.changeling,changeling=all;
+  for(const effect of outsideEffects(card,options)){
+   if(!effect.retain){subs=subs.filter(type=>!M.CREATURE_SUBTYPES.has(type));all=false;changeling=false;}
+   if(effect.all)all=true;
+   if(effect.type&&!subs.includes(effect.type))subs.push(effect.type);
+  }
+  return {subtypes:all?[...new Set(subs.concat(M.RULES_CREATURE_TYPES))]:subs,changeling};
  }
- M.CardInst.prototype.hasSub=function(type){return outsideEffects(this).length&&this.is('Creature')?outsideSubtypes(this).includes(type):nativeHasSub.call(this,type);};
- const snapshot=M.Game.prototype.snapshot;M.Game.prototype.snapshot=function(card,...args){const row=snapshot.call(this,card,...args),effects=outsideEffects(card);if(effects.length&&card.is('Creature')){row.subtypes=outsideSubtypes(card);if(effects.some(effect=>!effect.retain))row.changeling=false;}return row;};
- const castDefinition=M.Game.prototype.castDefinition;M.Game.prototype.castDefinition=function(card,...args){const def=castDefinition.call(this,card,...args);return def.types.includes('Creature')&&outsideEffects(card).length?{...def,subtypes:outsideSubtypes(card,def.subtypes)}:def;};
+ M.CardInst.prototype.hasSub=function(type){return this.is('Creature')&&outsideEffects(this).length?outsideCharacteristics(this).subtypes.includes(type):nativeHasSub.call(this,type);};
+ const snapshot=M.Game.prototype.snapshot;M.Game.prototype.snapshot=function(card,...args){const row=snapshot.call(this,card,...args);if(card.is('Creature')&&outsideEffects(card).length)Object.assign(row,outsideCharacteristics(card));return row;};
+ const castDefinition=M.Game.prototype.castDefinition;M.Game.prototype.castDefinition=function(card,...args){const def=castDefinition.call(this,card,...args);return def.types.includes('Creature')&&outsideEffects(card,{asSpell:true}).length?{...def,...outsideCharacteristics(card,def,{asSpell:true})}:def;};
  M.OracleV20.handlers.push({commonV28:true,compile(op,script,entry,h){
   if(op.kind==='entry-creature-type-v28'){
    const prior=script.asEnters;script.asEnters=async(game,source)=>{if(prior)await prior(game,source);const types=M.RULES_CREATURE_TYPES,visible=game.bf().filter(card=>card.ctrl===source.ctrl&&card.is('Creature')).concat(source.ctrl.hand,source.ctrl.graveyard).filter(card=>card.is('Creature')),result=await source.ctrl.controller.decide(game,{type:'chooseOption',prompt:'Choose a creature type',options:types.map(type=>({key:type,label:type,keepValue:visible.filter(card=>card.hasSub(type)).length})),aiHint:{kind:'creatureType',source}});if(!types.includes(result))throw Error('Invalid chosen creature type');source.meta.oracleEntryCreatureTypeV28={version:source.zoneVersion,type:result};};return true;

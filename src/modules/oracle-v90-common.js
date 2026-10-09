@@ -42,7 +42,7 @@
    const etb=(mode=op.mode,targets=[],extra={})=>tr('etb',self,mode,targets,extra),attack=(mode=op.mode,targets=[],extra={})=>tr('attacks',self,mode,targets,extra),combat=(mode=op.mode,targets=[],extra={})=>tr('combatDamageToPlayer',self,mode,targets,extra),a=(cost,mode=op.mode,targets=[],extra={})=>customAbility(h,cost,mode,targets,extra);
    const stat=(apply,phase=5)=>h.statics.push({phase,apply});
    switch(op.mode){
-    case 'Ayesha Tanaka':script.oracleBandingV89=true;stat((g,s)=>s.cur.kw.add('banding'));a({tap:true},'ayesha',[target('ability','any',{zone:'stack',v20:{kind:'artifact-activated-v90'}})]);break;
+    case 'Ayesha Tanaka':script.oracleBandingV89=true;stat((g,s)=>s.cur.kw.add('banding'));a({tap:true},'ayesha',[target('stack-ability','any',{zone:'stack',abilityKinds:['ability'],sourceQuality:'Artifact'})]);break;
     case 'The Celestial Toymaker':attack('toymaker-piles');tr('endStep',null,'toymaker-loss');break;
     case 'Captain Rex Nebula':tr('beginCombat',own,'rex',[target('permanent','you',{excludedTypes:['Land']})]);break;
     case 'Magar of the Magic Strings':a({mana:'{1}{B}{R}'},'magar',[target('card','you',{zone:'graveyard',v20:{kind:'instant-sorcery-v90'}})]);break;

@@ -5681,12 +5681,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const forecastLegal=!a.oracleForecast||forecastAvailable(this,p,c)&&
           (!a.oracleForecastTap||forecastTapPool(this,p,c,a).length>=a.oracleForecastTap.n)&&
           (a.targets||[]).every(spec=>spec.upTo||this.legalTargets(spec,c,p).length>=(spec.min??spec.count??1));
-        if (handTimingLegal && forecastLegal && (!a.cond || a.cond(this, c, p)) && this.canPayMana(p, mc, { card: c, isAbility: true, ability:a },
+        if (handTimingLegal && forecastLegal && (!a.cond || a.cond(this, c, p)) && this.canPayMana(p, mc, { card: c, isAbility: true, ability:a, cdkCostHasX:!!mc.x },
           { artifactAbilityAlreadyUsed: c.is('Artifact') })) out.push({ card: c, handAbility: true,...(d.oracleHandAbilitiesV74?{handAbilityOverride:a,idx:'hand'+handIndex,label:a.label}: {}) });
       }
       for (const option of this.cyclingOptions(p,c)) {
         const cost = this.cyclingManaCost(p,c,option),cycling=option.definition;
-        if(MTG.OracleV8ZoneKeywordCosts.available(this)&&(!cycling.oraclePayment||cycling.oraclePayment.canPayContext({g:this,you:p,src:c,so:{x:0}}))&&this.canPayMana(p,cost,{card:c,isAbility:true}))out.push({card:c,cycling:true,cyclingId:option.cyclingId,label:option.label||cycling.label||'Cycling'});
+        if(MTG.OracleV8ZoneKeywordCosts.available(this)&&(!cycling.oraclePayment||cycling.oraclePayment.canPayContext({g:this,you:p,src:c,so:{x:0}}))&&this.canPayMana(p,cost,{card:c,isAbility:true,ability:cycling,cdkCostHasX:!!cost.x||!!cycling.xCycling}))out.push({card:c,cycling:true,cyclingId:option.cyclingId,label:option.label||cycling.label||'Cycling'});
       }
       if (d.plot && this.turnPlayer === p && !this.stack.length && (this.phase === 'main1' || this.phase === 'main2')) {
         if (this.canPayMana(p, MTG.POM?MTG.POM.plotCost(this,p,c):U.parseCost(d.plot))) out.push({ card: c, plot: true });
@@ -5879,6 +5879,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let handX = 0;
       if (a.xCost || mc.x > 0) {
         let maxX = this.maxAffordableX(p, mc, c, {
+          forSpell: { card: c, isAbility: true, ability:a, cdkCostHasX:!!mc.x },
           artifactAbilityAlreadyUsed: c.is('Artifact'),
         });
         if (typeof a.maxX === 'function') {
@@ -5937,7 +5938,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(a.oracleForecast&&(!forecastAvailable(this,p,c)||c.zoneVersion!==handVersion||
         forecastTaps.some(card=>!forecastTapPool(this,p,c,a).includes(card))))return false;
       mc=this.abilityManaCost(p,c,handAbilityMana(this,c,a),{ability:a,targets:ctx.targets});
-      const handPayment = { card: c, isAbility: true,ability:a };
+      const handPayment = { card: c, isAbility: true,ability:a, cdkCostHasX:!!mc.x };
       const ok = await this.payMana(p, mc, handPayment, {
         xVal: handX,
         artifactAbilityAlreadyUsed: c.is('Artifact'),
@@ -5974,9 +5975,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const d = this.cyclingDefinition(p,c,entry);
       if(!d||c.zone!=='hand'||!p.hand.includes(c)||!MTG.OracleV8ZoneKeywordCosts.available(this))return false;
       const cycleVersion=c.zoneVersion,cost=this.cyclingManaCost(p,c,entry);
+      const cycleCostHasX=!!cost.x||!!d.xCycling;
       let cycleX = 0;
       if (d.xCycling || cost.x>0) {
-        const xSymbols=Math.max(1,cost.x||0),maxX = this.maxAffordableX(p, Object.assign({}, cost, { x: xSymbols }), c);
+        const xSymbols=Math.max(1,cost.x||0),maxX = this.maxAffordableX(p, Object.assign({}, cost, { x: xSymbols }), c,
+          {forSpell:{card:c,isAbility:true,ability:d,cdkCostHasX:cycleCostHasX}});
         cycleX = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: maxX, card: c, prompt: `X for cycling ${c.name}?`, aiHint: { kind: 'chooseX', card: c },
         });
@@ -5996,7 +5999,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(c.zone!=='hand'||c.zoneVersion!==cycleVersion||!this.cyclingDefinition(p,c,entry)||!MTG.OracleV8ZoneKeywordCosts.available(this)||!MTG.validateOracleAdditionalCostPlans(cycleCtx))return false;
       const reservedLife=(cycleCtx.so.oracleCostPlans||[]).reduce((sum,plan)=>sum+plan.life,0);
       const protectedSacrifices=(cycleCtx.so.oracleCostPlans||[]).flatMap(plan=>plan.sacrifices);
-      const cyclePayment = { card: c, isAbility: true };
+      const cyclePayment = { card: c, isAbility: true, ability:d, cdkCostHasX:cycleCostHasX };
       const ok = await this.payMana(p, cost,cyclePayment,{reservedLife,protectedSacrifices});
       if (!ok) return false;
       cycleCtx.pomCopyMana = cyclePayment.pomCopyMana || 0;
@@ -6278,7 +6281,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       const reserved = pickedArtifacts.concat(pickedSacrifices, pickedReturns,selections.tapPermanents||[],selections.discard||[]);
-      const graveyardPayment = { card: c, isAbility: true, ability:a };
+      const graveyardPayment = { card: c, isAbility: true, ability:a, cdkCostHasX:!!graveyardTargetMana.x };
       const ok = await this.payMana(p, mc, graveyardPayment, {
         artifactAbilityAlreadyUsed: c.is('Artifact'),
         excludeCards: extra.allowMana ? [] : reserved,
@@ -7323,7 +7326,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Foretell/Suspend already perform their exact timing checks inside
         // activatableList. Do not discard otherwise-legal special actions
         // merely because this is not an empty-stack main phase.
-        return !(e.ability && e.ability.sorcery) && (!e.equip || this.c1719EquipTiming?.(p)) && !e.plot;
+        return !(e.ability?.sorcery && !this.c14LoyaltyInstant?.(p,e.card,e.ability)) &&
+          (!e.equip || this.c1719EquipTiming?.(p)) && !e.plot;
       }
       return true;
     });
@@ -8653,9 +8657,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ds = c.kw('double strike');
     const fs = c.kw('first strike');
     if (step === 'first' && !(fs || ds)) return 0;
-    // CR 510.5: u normalnom koraku štetu nanosi svako ko je NIJE već nanio u
-    // first strike koraku (plus double strikeri). Stvorenje koje je first strike
-    // dobilo TEK nakon prvog koraka i dalje udara u normalnom.
+    // CR 510.4: normal damage includes creatures without first/double strike
+    // when the first step began, plus creatures that currently have double
+    // strike. Gaining first strike after that step does not lose normal damage.
     if (step === 'normal' && !ds && c.meta._dealtFirstStrike) return 0;
     let byT = c.cur.assignByToughness || MTG.OracleV8CombatRestrictions?.usesToughness(c);
     // "during your turn" toughness assignment (Baldin, Felothar own-ctrl)
@@ -8673,6 +8677,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.step = stepKind === 'first' ? 'firstStrike' : 'damage';
     const cmb = this.combat;
     if (!cmb) return;
+    // CR 510.4: eligibility in the first step, including zero-power creatures
+    // and creatures forbidden to assign damage, determines the second step.
+    // The compatibility flag therefore records participation, not positive
+    // damage. A later pump cannot give a first striker another damage step.
+    if (stepKind === 'first') {
+      const participants = [...new Set(cmb.attackers.flatMap(attacker =>
+        attacker.zone === 'battlefield' && attacker.attacking !== null
+          ? [attacker, ...attacker.blockedBy.filter(blocker => blocker.zone === 'battlefield')]
+          : []))];
+      for (const card of participants) if (card.kw('first strike') || card.kw('double strike')) card.meta._dealtFirstStrike = true;
+    }
     // CR 510.1/510.2: prvo se SVA borbena šteta rasporedi (dok su svi učesnici
     // još na stolu), pa se tek onda nanese ODJEDNOM. Bez toga bloker koji pogine
     // od napadača nikad ne uzvrati — blokiranje nikad ne bi bilo trade.
@@ -8773,8 +8788,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         player, hits, cards: hits.map(hit => hit.card), step: stepKind,
       });
     }
-    // CR 510.5: ko je rasporedio štetu u first strike koraku ne radi to opet u normalnom
-    if (stepKind === 'first') for (const c of dealt) c.meta._dealtFirstStrike = true;
     await this.checkSBA();
     await this.emit('combatDamageDone', { player: p, step: stepKind });
     await this.pace(600);

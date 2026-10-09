@@ -43,7 +43,7 @@
         card.ctrl = state.computed;
         if (!record(game, card, nextController, {legacy: true})) continue;
         card.ctrl = nextController;
-        card.sick = true; card.attacking = null; card.blocking = null;
+        card.sick = true; game.removeFromCombat(card);
         delete card.meta.ringBearer;
         state.computed = card.ctrl;
       }
@@ -117,7 +117,7 @@
         continue;
       }
       if (state.computed !== controller) {
-        card.sick = true; card.attacking = null; card.blocking = null;
+        card.sick = true; game.removeFromCombat(card);
         // The designation ends as soon as another player gains control.
         delete card.meta.ringBearer;
       }

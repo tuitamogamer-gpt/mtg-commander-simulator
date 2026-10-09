@@ -936,6 +936,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (coveredByBoardWipeVisual) delete card.meta._boardWipeVisualTurn;
       }
 
+      // Combat membership belongs to this battlefield incarnation. Preserve
+      // the departure snapshot above before removing reciprocal block links;
+      // a blink must not let the returning object remain a blocker.
+      if (wasBattlefield && toZone !== 'battlefield') this.removeFromCombat(card);
       this.remove(card);
 
       if (wasBattlefield) {
@@ -2820,12 +2824,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     removeFromCombat(card) {
-      if (!this.combat) return;
-      const ci = this.combat.attackers.indexOf(card);
-      if (ci >= 0) this.combat.attackers.splice(ci, 1);
+      const blockers = card.blockedBy.slice();
+      if (this.combat) {
+        const ci = this.combat.attackers.indexOf(card);
+        if (ci >= 0) this.combat.attackers.splice(ci, 1);
+        for (const a of this.combat.attackers) a.blockedBy = a.blockedBy.filter(b => b !== card);
+      }
       card.attacking = null;
-      for (const a of this.combat.attackers) a.blockedBy = a.blockedBy.filter(b => b !== card);
       card.blocking = null;
+      card.blockedBy = [];
+      card.wasBlocked = false;
+      // One blocker can block several attackers. Its scalar field names one
+      // remaining attacker; the authoritative relations stay in blockedBy.
+      for (const blocker of blockers) blocker.blocking = this.combat?.attackers
+        .find(attacker => attacker.blockedBy.includes(blocker))?.iid || null;
     }
 
     tap(card, { deferEvent = false, attackerDeclaration = false } = {}) {
@@ -3320,6 +3332,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       let newlyBlessed=false;
       for(const player of this.alivePlayers())if(!player.cityBlessing&&bf.some(card=>card.ctrl===player&&card.def.oracleAscend&&!card.cur.abilitiesDisabled))newlyBlessed=this.grantCityBlessing(player)||newlyBlessed;
+      // CR 506.4: a permanent that stops being a creature leaves combat.
+      // Check the completed type layers, including devotion and animation,
+      // and remove the reciprocal links without unblocking its former foe.
+      for (const card of bf) if (!card.is('Creature') && (card.attacking || card.blocking !== null)) this.removeFromCombat(card);
       // dmgAmount se u borbi i u AI prognozama poziva desetine hiljada puta;
       // bez ovog spiska je svaki poziv skenirao cijelu tablu. Pamti se samo
       // članstvo (mijenja ga zone promjena, koja uvijek pokreće recalc), dok

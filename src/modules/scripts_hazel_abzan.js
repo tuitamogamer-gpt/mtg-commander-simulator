@@ -767,6 +767,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Maskwood Nexus'] = {
+    oracleAllCreatureTypesV28: true,
     statics: [{
       phase: 1,
       apply: (g, self, bf) => {

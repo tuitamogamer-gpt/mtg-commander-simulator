@@ -57,17 +57,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         for (const c of picked) {
           await g.move(c, 'exile');
-          await E.castCopyFromZone(g, p, c);
+          await E.castCopyFromZone(g, p, c, { optional: true });
         }
       },
     }],
   };
-  E.castCopyFromZone = async function (g, p, card) {
-    // cast a "copy" of a card without moving the original (it stays where it is)
-    const fake = new MTG.CardInst(card.def, p);
-    fake.zone = 'copyspace';
+  E.castCopyFromZone = async function (g, p, card, opts = {}) {
+    // Keep the original in its current zone. The temporary copy receives the
+    // same native casting permission/face choices as a linked-card copy.
+    const fake = new MTG.CardInst(MTG.OracleV8Faces.copyTokenDefinition(card), p);
+    fake.zone = 'exile';
     fake.isCopySpell = true;
-    await g.castSpell(p, fake, { alt: { free: true }, from: 'copy' });
+    p.exile.push(fake);
+    try {
+      if (opts.optional) return await E.mayCastFree(g, p, fake);
+      return !!await MTG.OracleV8PlayPermissions.castOne(
+        { g, you: p, src: card }, [fake],
+        { free: true, selected: true, mandatory: true }, {},
+      );
+    } finally {
+      if (fake.zone === 'exile') {
+        const index = p.exile.indexOf(fake);
+        if (index >= 0) p.exile.splice(index, 1);
+        fake.zone = 'ceased';
+      }
+    }
   };
   SC['Crackling Spellslinger'] = {
     kws: ['flash'],
@@ -454,13 +468,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const all = p.graveyard.filter(c => c.is('Instant') || c.is('Sorcery'));
         for (const c of all.slice()) {
           await g.move(c, 'exile');
-          await E.castCopyFromZone(g, p, c);
+          await E.castCopyFromZone(g, p, c, { optional: true });
         }
       } else {
         const t = ctx.targets[0];
         if (t && t.zone === 'graveyard') {
           await g.move(t, 'exile');
-          await E.castCopyFromZone(g, p, t);
+          await E.castCopyFromZone(g, p, t, { optional: true });
         }
       }
     },

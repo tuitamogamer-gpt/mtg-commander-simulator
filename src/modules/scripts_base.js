@@ -444,7 +444,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiHint: { kind: 'freeCast', card },
     });
     if (yes !== 'yes') return false;
-    return g.castSpell(p, card, { alt: { free: true }, from: card.zone, xVal: opts.xVal });
+    // The resolving effect grants a temporary permission to cast this exact
+    // card, including its legal spell faces. A bare free-cost flag cannot
+    // authorize an MDFC from exile or offer an Adventure instead of its body.
+    return !!await MTG.OracleV8PlayPermissions.castOne(
+      { g, you: p, src: card }, [card], { free: true, selected: true }, {},
+    );
   };
 
   // ============================================================

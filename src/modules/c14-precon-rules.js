@@ -40,7 +40,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     if(name==='lto'&&data.card.zone==='graveyard')data.card.meta.c14GraveEntry={version:data.card.zoneVersion,turn:this.turnNo};
     return emit.call(this,name,data);
   };
-  const prohibitedAbility=(g,p,c)=>g.bf().some(s=>live(s)&&s.def.c14Abolisher&&s.ctrl!==p&&g.turnPlayer===s.ctrl)&&['Artifact','Creature','Enchantment'].some(t=>c?.is?.(t));
+  const prohibitedAbility=(g,p,c)=>c?.zone==='battlefield'&&g.bf().some(s=>live(s)&&s.def.c14Abolisher&&s.ctrl!==p&&g.turnPlayer===s.ctrl)&&['Artifact','Creature','Enchantment'].some(t=>c?.is?.(t));
   const manaSources=G.manaSources,activateMana=G.activateManaSource;
   G.manaSources=function(p,...args){return manaSources.call(this,p,...args).filter(e=>!e.card||!prohibitedAbility(this,p,e.card));};
   G.activateManaSource=function(p,s,chosen,...args){
