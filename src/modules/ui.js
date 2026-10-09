@@ -511,6 +511,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else this.pendings.push(v);
     }
 
+    actionQuestion() {
+      const pending = this.pending;
+      if (pending) return ['main', 'priority'].includes(pending.q.type) ? pending.q : null;
+      return this.react?.q?.type === 'priority' ? this.react.q : null;
+    }
+
+    submitAction(action, expectedQuestion = this.actionQuestion()) {
+      if (!expectedQuestion || this.actionQuestion() !== expectedQuestion) return;
+      this.sheet = null;
+      if (!this.pending) this.takeReactWindow();
+      this.resolvePending(action);
+    }
+
     controllerFor(p) {
       const ui = this;
       const controller = {
@@ -953,8 +966,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (g.gameOver) this.clearGameOverTransients();
       // set of my cards with available activations (for ⚙ badges)
       this.actable = new Set();
-      if (this.pending && (this.pending.q.type === 'main' || this.pending.q.type === 'priority')) {
-        for (const a of (this.pending.q.acts || [])) this.actable.add(a.card.iid);
+      const actionQ = this.actionQuestion();
+      if (actionQ) {
+        for (const a of (actionQ.acts || [])) this.actable.add(a.card.iid);
       }
       root.dataset.phase = g.phase || 'idle';
       root.classList.toggle('human-turn', g.turnPlayer === this.me);
@@ -3123,8 +3137,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const libraryTopSources = this.libraryTopSources(g, me);
       const maySeeLibraryTop = libraryTopSources.length > 0;
       const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
-      const pendingMain = this.pending && (this.pending.q.type === 'main' || this.pending.q.type === 'priority')
-        ? this.pending.q : null;
+      const pendingMain = this.actionQuestion();
       const libraryTopPlayableNow = !!(libraryTop && pendingMain && (
         (pendingMain.lands || []).includes(libraryTop) ||
         (pendingMain.casts || []).some(entry => entry.card === libraryTop)
@@ -3202,9 +3215,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const cmd of me.command) {
           const cz = el('div', 'czcard');
           cz.dataset.iid = String(cmd.iid);
-          const pending = this.pending;
-          const actionQ = pending && ['main', 'priority'].includes(pending.q.type)
-            ? pending.q : !pending ? this.react?.q : null;
+          const actionQ = this.actionQuestion();
           const castEntry = actionQ?.casts?.find(e => e.card === cmd);
           const ninjutsuEntry = actionQ?.acts?.find(e => e.card === cmd && e.ninjutsu);
           const cost = this.game.spellCost(me, cmd, {});
@@ -3332,8 +3343,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     preparedCastEntries(source, spell) {
-      const q = this.pending?.q;
-      return source.ctrl === this.me && spell && q && ['main', 'priority'].includes(q.type)
+      const q = this.actionQuestion();
+      return source.ctrl === this.me && spell && q
         ? (q.casts || []).filter(entry => entry.card === spell) : [];
     }
 
@@ -3345,13 +3356,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         '<p class="preparedspellhint">Casting this spell uses this creature’s preparation. The creature stays on the battlefield.</p>';
       if (source.ctrl !== this.me) return panel;
       const entries = this.preparedCastEntries(source, spell);
+      const question = this.actionQuestion();
       for (const entry of entries) {
         const cost = g.spellCost(this.me, spell, { ...entry.alt, from: entry.from });
         const button = el('button', 'pbtn primary wide preparedcast',
           `Cast prepared · ${esc(spell.name)} ${esc(U.costStr(cost))}${entry.alt?.label ? ' · ' + esc(entry.alt.label) : ''}`);
         button.onclick = () => {
-          this.sheet = null;
-          this.resolvePending({ kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from });
+          this.submitAction({ kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from }, question);
         };
         panel.appendChild(button);
       }
@@ -3419,8 +3430,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const tok = c.isToken ? `<div class="toktag">TOKEN</div>` : '';
       const landCreatureTag = landCreature ? '<div class="landcreaturetag">LAND CREATURE</div>' : '';
       const fd = c.faceDown ? `<div class="facedowntag">${mayLookFaceDown ? 'FACE-DOWN · ' + esc(faceName.split(' // ')[0]) : 'FACE-DOWN'}</div>` : '';
-      const faceUpActions = c.faceDown && c.ctrl === this.me && pd && ['main', 'priority'].includes(pd.q.type)
-        ? (pd.q.acts || []).filter(entry => entry.card === c && entry.turnFaceUp) : [];
+      const actionQ = this.actionQuestion();
+      const faceUpActions = c.faceDown && c.ctrl === this.me && actionQ
+        ? (actionQ.acts || []).filter(entry => entry.card === c && entry.turnFaceUp) : [];
       const faceUpTag = faceUpActions.length ? '<div class="faceupready">TURN FACE UP</div>' : '';
       const prepared = this.preparedSpellFor(g, c);
       const preparedCastable = this.preparedCastEntries(c, prepared).length > 0;
@@ -3496,15 +3508,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       zones.setAttribute('aria-label', 'Revealed and exiled cards');
       const row = el('div', 'hand');
       const pd = this.pending;
+      const actionQ = this.actionQuestion();
       const castable = new Map();
       const suspendReady = new Set();
-      if (pd && (pd.q.type === 'main' || pd.q.type === 'priority')) {
-        for (const e of (pd.q.casts || [])) {
+      if (actionQ) {
+        for (const e of (actionQ.casts || [])) {
           if (!castable.has(e.card)) castable.set(e.card, []);
           castable.get(e.card).push(e);
         }
-        for (const l of (pd.q.lands || [])) castable.set(l, castable.get(l) || []);
-        for (const a of (pd.q.acts || [])) {
+        for (const l of (actionQ.lands || [])) castable.set(l, castable.get(l) || []);
+        for (const a of (actionQ.acts || [])) {
           if ((a.cycling || a.plot || a.foretell || a.suspend || a.ninjutsu || a.handAbility) && a.card.zone === 'hand') {
             if (!castable.has(a.card)) castable.set(a.card, []);
             if (a.suspend) suspendReady.add(a.card);
@@ -3700,16 +3713,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               ? `⚡ <b>${esc(who)}</b>: ${esc(what)}. Do you want to respond?`
               : `⚡ <b>${esc(who)}</b>: ${esc(what)}. You have no response.`));
           }
-          const ninjutsu = (rq.acts || []).filter(entry => entry.ninjutsu);
-          if (ninjutsu.length) {
+          const directActions = (rq.acts || []).filter(entry =>
+            entry.ninjutsu || entry.handAbility || entry.gyAbility || entry.cycling || entry.turnFaceUp || entry.crew || entry.card.zone === 'command');
+          if (directActions.length) {
             const abilityRow = el('div', 'btnrow priorityabilities');
-            for (const entry of ninjutsu) {
-              const abilityButton = el('button', 'pbtn primary abilitybtn ninjutsuaction',
+            for (const entry of directActions.slice(0, 4)) {
+              const abilityButton = el('button', 'pbtn primary abilitybtn' + (entry.ninjutsu ? ' ninjutsuaction' : ''),
                 `${esc(entry.card.name)} — ${esc(this.activationLabel(entry))}`);
               abilityButton.onclick = () => {
                 if (this.react !== w || this.pending) return;
-                this.takeReactWindow();
-                this.resolvePending({ kind: 'activate', entry });
+                this.submitAction({ kind: 'activate', entry }, rq);
               };
               abilityRow.appendChild(abilityButton);
             }
@@ -5453,14 +5466,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const acts = el('div', 'sheetacts');
       if (prepared) acts.appendChild(this.renderPreparedSpell(g, card, prepared));
       const pd = this.pending;
-      const reaction = !pd && this.react?.q.type === 'priority' ? this.react : null;
-      const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : reaction?.q;
-      const submitAction = action => {
-        if (reaction ? this.react !== reaction || this.pending : this.pending !== pd) return;
-        this.sheet = null;
-        if (reaction) this.takeReactWindow();
-        this.resolvePending(action);
-      };
+      const actionQ = this.actionQuestion();
+      const submitAction = action => this.submitAction(action, actionQ);
       let suspendActionOffered = false;
       if (actionQ) {
         const q = actionQ;
@@ -5702,7 +5709,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const judgeReturn = this.zoneBrowse.judgeReturn;
       const lastResort = this.zoneBrowse.lastResort && this.lastResortActive;
       const pd = this.pending;
-      const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : null;
+      const actionQ = this.actionQuestion();
       const choosingTargets = this.targetZoneCandidates(player, zone).length > 0 && !judgeReturn && !lastResort;
       if (choosingTargets) {
         m.classList.add('zonetargetpicker');

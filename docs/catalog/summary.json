@@ -131,7 +131,7 @@
   ],
   "classifierVersion": 97,
   "classifierFilesSha256": "a2d67cdbf1f2810a97edbb1c7ebe0ab201f14374bc7778cfe90fb460575ec00d",
-  "inputFilesSha256": "effbe61a528fa5e8c773d043900f1a3bd3439587c19cd4ddb77521fc12f27227",
+  "inputFilesSha256": "0805523a330f811f8b7ed783e2f933de3ac64452ee158c8f2bdb247617422472",
   "artifactSha256": {
     "docs/catalog/imported-cards.csv": "a0f0de2f6f4c3690fe653f3d6a840cdd51452662796c17779937b99a407e7834",
     "docs/catalog/remaining-cards.csv": "f0f380b669bc726e2d421068ede82094fb29b07d1f8560c7393da72253896fec"

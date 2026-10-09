@@ -183,7 +183,7 @@ test('a granted unrestricted mana ability stays separate from the land’s restr
   assert.ok(unrestricted);
   assert.equal(await f.game.activateAbility(f.player, unrestricted), true);
   assert.equal(f.canPay('{G}', f.put('Cultivate', 'hand')), true);
-  assert.equal(f.player.poolMeta.length, 0);
+  assert.ok(f.player.poolMeta.every(row => !row.restrict), 'source receipts must not restrict Lantern’s granted mana');
 });
 
 test('AI does not float restricted mana when it has nothing to cast', async () => {

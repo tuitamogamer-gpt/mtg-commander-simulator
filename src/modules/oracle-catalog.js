@@ -3003,7 +3003,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function genericCondition(game,self,condition,p=self.ctrl,evidence) {
-    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97)/.test(condition?.kind||''))for(const handler of v20.handlers){const result=handler.condition?.(game,self,condition,p,evidence,v20.helpers);if(result!==undefined)return result;}
+    if(/(?:-v(?:[2-8]\d|9[0-7])|^v(?:[2-8]\d|9[0-7])-)/.test(condition?.kind||''))for(const handler of v20.handlers){const result=handler.condition?.(game,self,condition,p,evidence,v20.helpers);if(result!==undefined)return result;}
     if(condition?.kind==='source-blocked-history-v19'){const history=evidence?evidence.blockHistoryV19:self.meta.oracleBlockHistoryV19;return history?.turn===game.turnNo&&history.blockedBy.length>0;}
     if(condition?.kind==='opponent-cast-v19')return game.players.some(player=>player!==p&&(player.turnState.spellsCastList||[]).some(row=>(!condition.color||row.colors?.includes(condition.color))&&(!condition.type||row.types?.includes(condition.type))));
     if(condition?.kind==='extra-turn-v19')return (game.extraTurnDepth||0)>0;

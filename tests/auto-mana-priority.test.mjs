@@ -82,6 +82,18 @@ test('an artifact converter is considered before falling back to a colored mana 
   assert.equal(dork.tapped, false);
 });
 
+test('a Cave source pays a Signet activation before the resulting mana pays the cost', async () => {
+  const f = setup(), cave = f.put('Hidden Courtyard'), signet = f.put('Azorius Signet');
+  const solution = f.solve('{W}{U}');
+  assert.ok(solution);
+  assert.deepEqual(used(solution), [cave, signet]);
+  assert.equal(await f.pay('{W}{U}'), true);
+  assert.equal(cave.tapped, true);
+  assert.equal(signet.tapped, true);
+  assert.equal(Object.values(f.player.pool).reduce((total, amount) => total + amount, 0), 0);
+  assert.equal(f.player.poolMeta.length, 0);
+});
+
 test('a creature is used when it is the only way to supply a required color', async () => {
   const f = setup();
   const elf = f.put('Llanowar Elves'), mountain = f.put('Mountain');

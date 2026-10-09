@@ -540,10 +540,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(MTG.oracleManaOriginAllowedV88?.(game,entry,forSpell)===false)return false;
     if (!entry.restrict) return true;
     // A restriction such as Somberwald Sage's applies to casting spells only:
-    // its mana cannot pay an activated ability merely because that ability's
-    // source also happens to be a creature. Ability-aware restrictions opt in
-    // explicitly so their predicate can inspect the activated ability.
-    if (forSpell && forSpell.isAbility && !entry.restrictAbilities) return false;
+    // its mana cannot pay abilities or special actions merely because their
+    // source is a creature. Broader restrictions explicitly opt in and their
+    // predicate checks the permitted action (for example foretelling a card).
+    if (forSpell && (forSpell.isAbility || forSpell.isSpecialAction || forSpell.foretellAction || forSpell.turnFaceUp)
+      && !entry.restrictAbilities) return false;
     return !!entry.restrict(game, forSpell, entry.source);
   }
 
@@ -977,6 +978,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           restrictAbilities: !!tracked.restrictAbilities,
           coloredOnly: !!tracked.coloredOnly,
           c13Snow: !!tracked.c13Snow,
+          caveManaV83: !!tracked.caveManaV83,
+          oracleConvokeV80: !!tracked.oracleConvokeV80,
         });
         branches.push(branch);
       }
@@ -1583,12 +1586,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (s.m.coloredOnly && excess) {
                   nextPool.coloredOnly[color] = (nextPool.coloredOnly[color] || 0) + excess;
                 }
-                if ((s.m.restrict || !s.m.viaConvoke&&s.card?.cur?.super?.includes('Snow')) && excess) {
+                // Production retains source receipts for ordinary mana too.
+                // Keep converter spending traces consistent with that pool.
+                if ((s.m.restrict || !s.m.viaConvoke&&s.card?.cur?.super?.includes('Snow') ||
+                  !s.m.viaConvoke&&MTG.oracleRecordManaSpentV86) && excess) {
                   nextPool.meta.push({
                     color, n: excess, restrict: s.m.restrict, viaConvoke:!!s.m.viaConvoke, source: s.card,
                     restrictAbilities: !!s.m.restrictAbilities,
                     coloredOnly: !!s.m.coloredOnly,
                     c13Snow: !s.m.viaConvoke&&!!s.card?.cur?.super?.includes('Snow'),
+                    caveManaV83: !s.m.viaConvoke&&!!s.card?.hasSub('Cave'),
                   });
                 }
               }
@@ -1960,6 +1967,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const cost = s.extraCost;
     const v20ManaRows=MTG.OracleV20Costs?await MTG.OracleV20Costs.prepare(this,p,s,preparedCost?.v20ManaRows):[];
     if(!v20ManaRows)return false;
+    // Recalculation can regenerate a granted descriptor. Refresh its printed
+    // cost decoration before comparing it with the previously selected one.
+    if(originalExtraMana)this.manaSources(p,forSpell,{includeRestricted:true});
     if(c.cur?.activationDisabled&&!s.m?.viaConvoke||c.cur?.abilitiesDisabled&&!s.m?.viaConvoke&&!s.grantedBy&&
       !(c.cur.extraMana||[]).some(m=>m===s.m||originalExtraMana&&sameManaDescriptor(m,s.m)))return false;
     if(s.grantedBy&&(s.grantedBy.cur?.abilitiesDisabled||c.cur?.oracleAbilityLossTimestamp>s.grantedBy.timestamp))return false;
@@ -5667,10 +5677,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const mc = this.abilityManaCost(p, c, handAbilityMana(this,c,a),{ability:a});
         const handReturn=a.cost?.returnPermanents;
         if(handReturn&&this.bf().filter(card=>card.ctrl===p&&(!handReturn.filter||handReturn.filter(this,card,c,p))).length<handReturn.n)continue;
+        if(Array.isArray(a.targets)&&!this.canChooseTargets(a.targets,c,p,{bindTargets:false}))continue;
         const forecastLegal=!a.oracleForecast||forecastAvailable(this,p,c)&&
           (!a.oracleForecastTap||forecastTapPool(this,p,c,a).length>=a.oracleForecastTap.n)&&
           (a.targets||[]).every(spec=>spec.upTo||this.legalTargets(spec,c,p).length>=(spec.min??spec.count??1));
-        if (handTimingLegal && forecastLegal && (!a.cond || a.cond(this, c, p)) && this.canPayMana(p, mc, { card: c, isAbility: true },
+        if (handTimingLegal && forecastLegal && (!a.cond || a.cond(this, c, p)) && this.canPayMana(p, mc, { card: c, isAbility: true, ability:a },
           { artifactAbilityAlreadyUsed: c.is('Artifact') })) out.push({ card: c, handAbility: true,...(d.oracleHandAbilitiesV74?{handAbilityOverride:a,idx:'hand'+handIndex,label:a.label}: {}) });
       }
       for (const option of this.cyclingOptions(p,c)) {
@@ -5683,7 +5694,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Suspend is a special action available whenever this card could begin
       // to be cast from hand. This includes an instant during another
       // player's turn and while another object is already on the stack.
-      if (d.suspend && this.canCastTiming(p, c, null)) {
+      if (d.suspend && this.canCastTiming(p, c, {})) {
         if (this.canPayMana(p, U.parseCost(d.suspend.cost), {card:c,isSpecialAction:true,suspendAction:true}, {xVal:d.c1516SuspendX?1:0})) out.push({ card: c, suspend: true });
       }
       // Foretell is a special action during any priority window on your turn.
@@ -6090,7 +6101,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hasMainAction = this.turnPlayer === p && !this.stack.length &&
         (this.phase === 'main1' || this.phase === 'main2');
       const hasActionWindow = this.priorityState ? this.priorityState.holder === p : hasMainAction;
-      if (c.zone !== 'hand' || !hasActionWindow || !this.canCastTiming(p, c, null)) return false;
+      if (c.zone !== 'hand' || !hasActionWindow || !this.canCastTiming(p, c, {})) return false;
       const suspendCost=U.parseCost(c.def.suspend.cost),version=c.zoneVersion;
       const n=c.def.c1516SuspendX?await p.controller.decide(this,{type:'chooseX',min:1,max:this.maxAffordableX(p,suspendCost,c,{forSpell:{card:c,isSpecialAction:true,suspendAction:true}}),prompt:c.name+': choose positive X for suspend',aiHint:{kind:'chooseX',card:c}}):c.def.suspend.n;
       if(!Number.isInteger(n)||n<1||c.zone!=='hand'||c.zoneVersion!==version)return false;
@@ -7239,9 +7250,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       sacrificeHasPriorityPayoff(g, entry, me));
     const relevantQuestion = { ...q, acts };
     const canAct = casts.length > 0 || acts.length > 0;
-    // Ninjutsu needs an unblocked attacker during combat. Even ACTIONS must
-    // offer this activation before advancing to damage and losing that play.
-    if (acts.some(entry => entry.ninjutsu)) return false;
+    // Timing-limited plays must remain reachable even in ACTIONS and while
+    // our own triggers are waiting to resolve (for example upkeep Forecast).
+    if (acts.some(entry => entry.ninjutsu) || MTG.priorityHasWindowOnlyPlay(relevantQuestion, g, me)) return false;
     const top = g.stack[g.stack.length - 1];
     if (top) {
       // SVAKA protivnikova odigrana karta staje — i kad nemam čime da odgovorim.
@@ -7268,9 +7279,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (mode === 'full') return false;
     if (mode === 'off') return true;
     if (!canAct) return true;                                // nema šta da se odigra
-    // Sposobnost koja postoji samo u ovom prozoru mora dobiti priliku, inače
-    // je karta u praksi neigriva.
-    if (MTG.priorityHasWindowOnlyPlay(relevantQuestion, g, me)) return false;
     // POSLJEDNJI end step prije mog poteza: zadnja prilika da nešto odigram u
     // tuđem potezu (instanti, flash, aktivacije). Uvijek stani — igrač sam
     // odlučuje kad nastavlja, dugmetom "Nastavi na moj potez".
@@ -7315,7 +7323,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Foretell/Suspend already perform their exact timing checks inside
         // activatableList. Do not discard otherwise-legal special actions
         // merely because this is not an empty-stack main phase.
-        return !(e.ability && e.ability.sorcery) && (!e.equip || this.c1719EquipTiming?.(p)) && !e.plot && !(e.crew);
+        return !(e.ability && e.ability.sorcery) && (!e.equip || this.c1719EquipTiming?.(p)) && !e.plot;
       }
       return true;
     });

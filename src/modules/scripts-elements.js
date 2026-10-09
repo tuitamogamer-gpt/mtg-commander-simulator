@@ -577,14 +577,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Abundant Countryside'] = {
     producesColors: COLORS,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
-      cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
+      cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
       restrictLabel: 'only for creature spells',
       restrict: (g, action) => action && !action.isAbility && action.card && g.castHasType(action.card, action.castOpts || {}, 'Creature'),
     }],
     abilities: [{ label: 'Create a changeling', cost: { tap: true, mana: '{6}' },
       run: async ctx => { await ctx.g.makeTokens('elementsShapeshifter11', ctx.you); }, aiScore: () => 2 }],
   };
-  SC['Ancient Ziggurat'] = { producesColors: COLORS, mana: { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
+  SC['Ancient Ziggurat'] = { producesColors: COLORS, mana: { cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
     restrictLabel: 'only for creature spells',
     restrict: (g, action) => action && !action.isAbility && action.card && g.castHasType(action.card, action.castOpts || {}, 'Creature') } };
   SC['Flamekin Village'] = {
@@ -623,7 +623,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => !card.meta.revealedElemental,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
       cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
-      restrict: (g, action) => action && action.card && action.card.hasSub && action.card.hasSub(MTG.c1719TextType(g,'Elemental')),
+      restrict: (g, action) => action && !action.isSpecialAction && !action.foretellAction && !action.turnFaceUp && action.card && action.card.hasSub && action.card.hasSub(MTG.c1719TextType(g,'Elemental')),
     }],
   };
 

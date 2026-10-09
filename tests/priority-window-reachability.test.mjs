@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
 
-// A legal play that the interface never opens a window for does not exist for
-// the player. Stella Lee's copy ability was the first case found by hand; these
-// sweeps prove the whole catalog instead of one card at a time.
+// A legal play that never receives a window is unavailable to the player.
+// These catalog sweeps check action discovery in bounded staged positions;
+// separate native-turn and browser tests exercise paid actions and effects.
 
 const MTG = loadEngine();
 const COLORS = ['W', 'U', 'B', 'R', 'G', 'C'];
@@ -78,6 +78,33 @@ function pushStackObject(game, controller, kind, cardName, targets = []) {
   return object;
 }
 
+async function stagePrintedStackPrerequisite(game, me, rival, card, controller) {
+  if (!["Jester's Scepter", 'Myojin of Cryptic Dreams'].includes(card.name)) return;
+  // Direct battlefield insertion skips the Scepter's linked-card acquisition
+  // and Myojin's conditional hand-cast counter. Exercise those printed entry
+  // paths before asserting that the resulting activation must be available.
+  const previous = { phase: game.phase, step: game.step, turnPlayer: game.turnPlayer,
+    decide: controller.decide };
+  try {
+    game.phase = 'main1'; game.step = ''; game.turnPlayer = me;
+    controller.decide = async (current, question) => {
+      if (question.type === 'chooseTargets') return question.candidates.includes(rival)
+        ? [rival] : question.candidates.slice(0, question.min || 0);
+      if (question.type === 'chooseCards') return question.from.slice(0, question.min || 0);
+      if (question.type === 'orderTriggers') return question.triggers;
+      return { kind: 'pass' };
+    };
+    await game.move(card, 'hand');
+    assert.equal(await game.castSpell(me, card, { from: 'hand' }), true, `${card.name}: native setup cast`);
+    assert.equal(card.zone, 'battlefield');
+    if (card.name === 'Myojin of Cryptic Dreams') assert.equal(card.counters.indestructible, 1);
+    else assert.equal(MTG.OracleV25Permanents.linked(game, card, 'permanent-linked-v25').length, 5);
+  } finally {
+    game.phase = previous.phase; game.step = previous.step; game.turnPlayer = previous.turnPlayer;
+    controller.decide = previous.decide;
+  }
+}
+
 test('svaka karta koja cilja stack ima prozor u kojem se stvarno može odigrati', { timeout: 120_000 }, async () => {
   const cohort = Object.entries(MTG.DEFS).filter(([, def]) => stackSpecSources(def).length);
   assert.ok(cohort.length > 150, `kohorta je sumnjivo mala: ${cohort.length}`);
@@ -116,6 +143,7 @@ test('svaka karta koja cilja stack ima prozor u kojem se stvarno može odigrati'
         for(const operation of def.oracleImplementation||[])if(operation.kind==='enters-with-counters'&&Number.isSafeInteger(operation.n)&&operation.n>0)
           card.counters[operation.counter]=operation.n;
         game.recalc();
+        await stagePrintedStackPrerequisite(game, me, rival, card, controllers[0]);
         const object = pushStackObject(game, stackIsMine ? me : rival, kind, stackCardName);
         game.recalc();
 

@@ -1,0 +1,432 @@
+{
+  "date": "2026-10-09",
+  "baselineCommit": "5d319732e088fd4b6a1e2f0ffff2417c0a19032e",
+  "scope": "Representative native timing, off-zone and combat actions, restricted mana, and mobile reaction control reachability.",
+  "node": {
+    "tests": 288,
+    "pass": 288,
+    "fail": 0,
+    "skipped": 0,
+    "newCases": 98,
+    "existingCases": 190,
+    "runs": [
+      {
+        "log": "output/timing-audit-2026-10-09/native-final.txt",
+        "tests": 97,
+        "pass": 97,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/timing-audit-2026-10-09/existing-final.txt",
+        "tests": 123,
+        "pass": 123,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/timing-audit-2026-10-09/converter-regressions-final.txt",
+        "tests": 62,
+        "pass": 62,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      {
+        "log": "output/timing-audit-2026-10-09/reachability-final.txt",
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      }
+    ],
+    "dedicatedCohorts": {
+      "timedWindows": 46,
+      "combatActions": 14,
+      "conditionAndTargetDispatch": 7,
+      "zoneActions": 23,
+      "stackPrerequisites": 7
+    },
+    "nativeCompletedTurnsInTimedCohort": 44
+  },
+  "browser": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "tests": 6,
+    "pass": 6,
+    "browserErrors": [],
+    "results": [
+      {
+        "name": "forecast-upkeep",
+        "card": "Proclamation of Rebirth",
+        "mode": "off",
+        "phase": "upkeep",
+        "route": "turn",
+        "questionBefore": "priority",
+        "reactionBefore": false,
+        "paidSources": [
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          }
+        ],
+        "sourceAfter": {
+          "iid": 33,
+          "name": "Proclamation of Rebirth",
+          "zone": "hand",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": false,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "targetAfter": {
+          "iid": 40,
+          "name": "Ornithopter",
+          "zone": "battlefield",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "donorAfter": null,
+        "enemyAfter": null,
+        "lifeAfter": [
+          40,
+          40
+        ],
+        "castAttempts": 0,
+        "stalePreparedButtonIgnored": false,
+        "noDecisionFallback": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "name": "dragon-upkeep",
+        "card": "Eternal Dragon",
+        "mode": "off",
+        "phase": "upkeep",
+        "route": "turn",
+        "questionBefore": "priority",
+        "reactionBefore": false,
+        "paidSources": [
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          },
+          {
+            "name": "Plains",
+            "tapped": true
+          }
+        ],
+        "sourceAfter": {
+          "iid": 33,
+          "name": "Eternal Dragon",
+          "zone": "hand",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "targetAfter": null,
+        "donorAfter": null,
+        "enemyAfter": null,
+        "lifeAfter": [
+          40,
+          40
+        ],
+        "castAttempts": 0,
+        "stalePreparedButtonIgnored": false,
+        "noDecisionFallback": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "name": "cycling-combat",
+        "card": "Drannith Healer",
+        "mode": "end",
+        "phase": "combat",
+        "route": "priority",
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "paidSources": [
+          {
+            "name": "Forest",
+            "tapped": true
+          }
+        ],
+        "sourceAfter": {
+          "iid": 33,
+          "name": "Drannith Healer",
+          "zone": "graveyard",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "targetAfter": null,
+        "donorAfter": null,
+        "enemyAfter": null,
+        "lifeAfter": [
+          40,
+          40
+        ],
+        "castAttempts": 0,
+        "stalePreparedButtonIgnored": false,
+        "noDecisionFallback": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "name": "morph-combat",
+        "card": "Zoetic Cavern",
+        "mode": "end",
+        "phase": "combat",
+        "route": "priority",
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "paidSources": [
+          {
+            "name": "Forest",
+            "tapped": true
+          },
+          {
+            "name": "Forest",
+            "tapped": true
+          }
+        ],
+        "sourceAfter": {
+          "iid": 33,
+          "name": "Zoetic Cavern",
+          "zone": "battlefield",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": false,
+          "land": true,
+          "token": false,
+          "haste": false
+        },
+        "targetAfter": null,
+        "donorAfter": null,
+        "enemyAfter": null,
+        "lifeAfter": [
+          40,
+          40
+        ],
+        "castAttempts": 0,
+        "stalePreparedButtonIgnored": false,
+        "noDecisionFallback": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "name": "crew-before-blocks",
+        "card": "Sky Skiff",
+        "mode": "end",
+        "phase": "combat",
+        "route": "combat",
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "paidSources": [],
+        "sourceAfter": {
+          "iid": 33,
+          "name": "Sky Skiff",
+          "zone": "battlefield",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 2,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "targetAfter": null,
+        "donorAfter": {
+          "iid": 34,
+          "name": "Grizzly Bears",
+          "zone": "battlefield",
+          "faceDown": false,
+          "tapped": true,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "enemyAfter": {
+          "iid": 35,
+          "name": "Wind Drake",
+          "zone": "graveyard",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "lifeAfter": [
+          40,
+          40
+        ],
+        "castAttempts": 0,
+        "stalePreparedButtonIgnored": false,
+        "noDecisionFallback": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "name": "prepared-reaction",
+        "card": "Inspired Skypainter",
+        "mode": "end",
+        "phase": "combat",
+        "route": "priority",
+        "questionBefore": "priority",
+        "reactionBefore": true,
+        "paidSources": [
+          {
+            "name": "Island",
+            "tapped": true
+          },
+          {
+            "name": "Mountain",
+            "tapped": true
+          },
+          {
+            "name": "Forest",
+            "tapped": true
+          },
+          {
+            "name": "Forest",
+            "tapped": true
+          },
+          {
+            "name": "Forest",
+            "tapped": true
+          }
+        ],
+        "sourceAfter": {
+          "iid": 33,
+          "name": "Inspired Skypainter",
+          "zone": "battlefield",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "prepared": false,
+          "token": false,
+          "haste": false
+        },
+        "targetAfter": {
+          "iid": 39,
+          "name": "Grizzly Bears",
+          "zone": "battlefield",
+          "faceDown": false,
+          "tapped": false,
+          "blocking": null,
+          "damage": 0,
+          "creature": true,
+          "land": false,
+          "token": false,
+          "haste": false
+        },
+        "donorAfter": null,
+        "enemyAfter": null,
+        "lifeAfter": [
+          40,
+          40
+        ],
+        "castAttempts": 1,
+        "stalePreparedButtonIgnored": true,
+        "noDecisionFallback": true,
+        "noHorizontalOverflow": true
+      }
+    ]
+  },
+  "catalog": {
+    "sourceOracleSha256": "0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be",
+    "sourcePaperSha256": "d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227",
+    "runtimeInputSha256": "0805523a330f811f8b7ed783e2f933de3ac64452ee158c8f2bdb247617422472",
+    "counts": {
+      "runtimeDefinitions": 32136,
+      "genericOracleCards": 28137,
+      "genericBatches": 266,
+      "manualOracleCards": 65,
+      "legacyDefinitions": 3934,
+      "individuallyReviewedLegacyDefinitions": 18,
+      "deckImportEligibleDefinitions": 32135,
+      "deckImportRestrictedDefinitions": 1,
+      "representedUniverseOracleIds": 32115,
+      "remainingUniverseOracleIds": 0,
+      "parserEligibleUnimported": 0,
+      "deferred": 0,
+      "runtimeEntriesWithoutSnapshotMatch": 17,
+      "runtimeEntriesOutsideComparisonUniverse": 2
+    },
+    "artifactSha256": {
+      "docs/catalog/imported-cards.csv": "a0f0de2f6f4c3690fe653f3d6a840cdd51452662796c17779937b99a407e7834",
+      "docs/catalog/remaining-cards.csv": "f0f380b669bc726e2d421068ede82094fb29b07d1f8560c7393da72253896fec"
+    }
+  },
+  "fullMatches": 0,
+  "limits": [
+    "Finite native cohorts and six mobile flows; no exhaustive behavior certification.",
+    "Catalog sweeps check action discovery in staged positions, not every resulting card effect.",
+    "No entire test suite or full random match in this audit.",
+    "Forecast/Cycling direct button labels still omit mana costs; payment and card text verified."
+  ]
+}

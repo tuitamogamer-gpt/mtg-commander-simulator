@@ -764,7 +764,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Haven of the Spirit Dragon'] = {
     producesColors: COLORS,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
-      cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
+      cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
       restrict: (g, action) => action && !action.isAbility && action.card && action.card.is('Creature') && isDragon(action.card),
     }],
     abilities: [{

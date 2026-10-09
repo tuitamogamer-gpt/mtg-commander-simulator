@@ -1826,6 +1826,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   const typedRestrict = (g, forSpell, src) => {
     if (!forSpell || !forSpell.card) return false;
+    if (forSpell.isSpecialAction || forSpell.foretellAction || forSpell.turnFaceUp) return false;
     const t = src && src.meta && src.meta.chosenType;
     if (!t) return true;                    // tip još nije izabran — ne blokiraj
     // Secluded Courtyard vrijedi i za sposobnosti stvorenja tog tipa;
