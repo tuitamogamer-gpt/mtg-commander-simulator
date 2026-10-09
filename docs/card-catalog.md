@@ -1,6 +1,6 @@
 # Card catalog and remaining imports
 
-This inventory is generated from the application runtime and the pinned Scryfall Oracle feed. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
+This inventory is generated from the application runtime and the pinned Scryfall Oracle feed with its pinned paper-printing availability source. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
 
 ## Download the complete lists
 
@@ -12,19 +12,19 @@ CSV files are UTF-8, sorted by card name without locale-specific collation, and 
 
 ## Current inventory
 
-Generic Oracle import state: **2026-10-09T14:47:29.508Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
+Generic Oracle import state: **2026-10-09T17:26:14.708Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 31,115 |
-| Generic Oracle imports (263 batches; 259 × 100, 2 × 200, 1 × 316, 1 × 500 cards) | 27,116 |
+| Runtime card definitions | 32,136 |
+| Generic Oracle imports (266 batches; 1 × 21, 259 × 100, 2 × 200, 1 × 316, 3 × 500 cards) | 28,137 |
 | Dedicated/manual Oracle imports | 65 |
 | Legacy definitions | 3,934 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 31,114 |
+| Definitions allowed in arbitrary deck imports | 32,135 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
-| Paper, Commander-legal source Oracle IDs | 31,070 |
-| Source Oracle IDs represented by a runtime name or face alias | 31,070 |
+| Paper, Commander-legal source Oracle IDs | 32,115 |
+| Source Oracle IDs represented by a runtime name or face alias | 32,115 |
 | Source Oracle IDs still absent from the runtime | 0 |
 | Of those: parser-eligible but not imported | 0 |
 | Of those: deferred by the current semantic compiler | 0 |
@@ -35,9 +35,9 @@ Generic Oracle import state: **2026-10-09T14:47:29.508Z**. The counts below incl
 
 ## What “remaining” means
 
-The comparison universe is exactly `games.includes('paper') && legalities.commander === 'legal'` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has 38,708 source rows and 36,792 rows marked for paper.
+An Oracle ID qualifies when at least one printing in the pinned `default_cards` feed has `games.includes('paper')` and its pinned `oracle_cards` row has `legalities.commander === 'legal'`. Printing-level games on the representative Oracle row do not determine paper availability. Reversible printings without a top-level Oracle ID contribute their face Oracle IDs. The universe is deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, identities without paper printings, tokens, and other source objects that fail the explicit filter. The Oracle feed has 38,708 source rows and 37,854 rows with paper availability. The CSV `source_games` column records the representative Oracle printing; `source_has_paper_printing` records the availability used for this comparison.
 
-Recorded Oracle IDs take precedence. An Oracle batch identity missing from its pinned source is an error; native precon cards released after the snapshot retain their recorded IDs and are explicitly marked as unmatched. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 26 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Recorded Oracle IDs take precedence when present. An Oracle batch identity missing from its pinned source is an error. Native definitions absent from the snapshot are explicitly marked as unmatched; their CSV Oracle ID contains any recorded runtime ID and otherwise remains empty. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 2 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
 Current parser-eligible, unimported names: none. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
@@ -51,21 +51,32 @@ These are compiler queue reasons, not a claim that each card is impossible to im
 
 - Provider: Scryfall `oracle_cards` bulk feed.
 - Bulk ID: `27bf3214-1271-490b-bdfe-c0be6c23d02e`.
-- Pinned update: **2026-10-07T09:01:59.955+00:00**.
-- Compressed source SHA-256: `53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b`.
-- Current semantic compiler: **v92**.
+- Pinned update: **2026-10-09T09:01:54.966+00:00**.
+- Compressed source SHA-256: `0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be`.
 
-The original compressed snapshot is intentionally not committed. Use the same archived `.jsonl.gz` file and hash. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests.
+- Paper availability: Scryfall `default_cards` bulk feed, Oracle IDs aggregated from all paper printings.
+- Paper bulk ID: `e2ef41e3-5778-4bc2-af3f-78eca4dd9c23`.
+- Paper update: **2026-10-09T09:05:44.334+00:00**.
+- Compressed paper source SHA-256: `d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227`.
+- Paper printing rows: **109,466**; distinct paper Oracle IDs: **37,854**.
+
+- Current semantic compiler: **v97**.
+
+The original compressed snapshots are intentionally not committed. Use the same archived `.jsonl.gz` files and hashes. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing required source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests. Paper bulk ID, timestamp, and SHA-256 default to `state.source.paperAvailability`; a state recording that companion source cannot fall back to the representative printing's games field.
 
 ```sh
 node scripts/export-card-catalog.mjs \
   --source-file=/absolute/path/to/oracle-pinned.jsonl.gz \
-  --source-sha256=53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b
+  --source-sha256=0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be \
+  --paper-source-file=/absolute/path/to/default-cards-pinned.jsonl.gz \
+  --paper-source-sha256=d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227
 
 # Recompute and fail if any committed catalog artifact is stale:
 node scripts/export-card-catalog.mjs \
   --source-file=/absolute/path/to/oracle-pinned.jsonl.gz \
-  --source-sha256=53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b \
+  --source-sha256=0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be \
+  --paper-source-file=/absolute/path/to/default-cards-pinned.jsonl.gz \
+  --paper-source-sha256=d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227 \
   --check
 ```
 

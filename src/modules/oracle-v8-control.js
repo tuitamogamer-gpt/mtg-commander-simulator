@@ -3,6 +3,8 @@
 ((M) => {
   const stamp = game => game.oracleControlClock = (game.oracleControlClock || 0) + 1;
   const live = (card, version) => card?.zone === 'battlefield' && card.zoneVersion === version;
+  const canGain = (game, card, player) => card.ctrl === player ||
+    !(M.OracleV20?.handlers || []).some(handler => handler.canGainControl?.(game, card, player) === false);
 
   function attached(game, source, host) {
     const previous = source.meta.oracleAuraControlAttachment;
@@ -14,6 +16,7 @@
 
   function record(game, card, player, {temporary = false, legacy = false, duration = null} = {}) {
     if (!player || player.lost) return null; // CR 800.4b
+    if (!canGain(game, card, player)) return null;
     const fromEpoch = card.meta.oracleControlEpoch || 0;
     const effect = {kind: temporary ? 'temporaryControl' : 'oracleControl', layeredControl: true,
       iid: card.iid, zoneVersion: card.zoneVersion, from: card.ctrl, to: player,
@@ -36,7 +39,10 @@
         // Existing scripts can still make explicit persistent assignments.
         // Observe those as a new effect, not as a change to the entry baseline.
         if (card.ctrl?.lost) {card.ctrl = state.computed; continue;}
-        record(game, card, card.ctrl, {legacy: true});
+        const nextController = card.ctrl;
+        card.ctrl = state.computed;
+        if (!record(game, card, nextController, {legacy: true})) continue;
+        card.ctrl = nextController;
         card.sick = true; card.attacking = null; card.blocking = null;
         delete card.meta.ringBearer;
         state.computed = card.ctrl;
@@ -53,6 +59,20 @@
     if (!card || card.zone !== 'battlefield' || card.phasedOut || !player || player.lost) return null;
     observe(game, game.bf());
     return record(game, card, player, options);
+  }
+
+  function exchange(game, first, second) {
+    if (!first || !second || first === second || first.zone !== 'battlefield' || second.zone !== 'battlefield' ||
+        first.phasedOut || second.phasedOut) return false;
+    observe(game, game.bf());
+    const left = first.ctrl, right = second.ctrl;
+    if (!left || !right || left.lost || right.lost || left === right ||
+        !canGain(game, first, right) || !canGain(game, second, left)) return false;
+    // No controller changes occur between these synchronous records. Both
+    // acquisitions are allowed before either half of an exchange is created.
+    record(game, first, right);
+    record(game, second, left);
+    return true;
   }
 
   function recalculatePass(game, battlefield) {
@@ -82,7 +102,7 @@
         !pending.some(other => other !== effect && other.target === effect.source));
       const effect = pending.splice(independent < 0 ? 0 : independent, 1)[0];
       const controller = effect.source ? (effect.source.def.lcFealty ? game.monarch : controllers.get(effect.source)) : effect.to;
-      if (controller && !controller.lost) controllers.set(effect.target, controller);
+      if (controller && !controller.lost && canGain(game, effect.target, controller)) controllers.set(effect.target, controller);
     }
     for (const card of battlefield) {
       const state = card.meta.oracleControlState, controller = controllers.get(card);
@@ -90,6 +110,12 @@
       // default controller. Preserve its previous controller for departure LKI.
       if (controller?.lost) {card.meta.oracleExileForDepartedControl = true; continue;}
       delete card.meta.oracleExileForDepartedControl;
+      // A restriction also applies when an older layer expires and would
+      // return control. Existing control itself is not a new acquisition.
+      if (controller !== card.ctrl && !canGain(game, card, controller)) {
+        state.computed = card.ctrl;
+        continue;
+      }
       if (state.computed !== controller) {
         card.sick = true; card.attacking = null; card.blocking = null;
         // The designation ends as soon as another player gains control.
@@ -118,5 +144,5 @@
     recalculate(game, physical);
   }
 
-  M.OracleV8Control = {attached, gain, gainWhile, recalculate, playerLeft};
+  M.OracleV8Control = {attached, gain, canGain, exchange, gainWhile, recalculate, playerLeft};
 })(globalThis.MTG ||= {});

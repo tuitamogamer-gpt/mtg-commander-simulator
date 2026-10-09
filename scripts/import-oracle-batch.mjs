@@ -7,6 +7,7 @@ import { createGunzip } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { extractRawData } from './source-audit.mjs';
 import { createOracleCompilerCache } from './oracle-compiler-cache.mjs';
+import {hasPaperPrinting, loadPaperAvailabilityFromGzip, validatePaperAvailability} from './oracle-paper-universe.mjs';
 import { parseOracleSpellV4 } from './oracle-spell-v4.mjs';
 import { extensionEffect as v5Effect, extensionLine as v5Line, characteristicOperation as v5Characteristic } from './oracle-extensions-v5.mjs';
 import { extensionEffect as v6Effect, extensionLine as v6Line, characteristicOperation as v6Characteristic, extensionCost as v6Cost, modifierOperation as v6Modifier, modalOperation as v6Modal } from './oracle-extensions-v6.mjs';
@@ -2585,6 +2586,8 @@ export function createImportPlan({
   compilerVersion = SEMANTIC_COMPILER_VERSION,
   classificationCacheDirectory,
   selectedNames,
+  paperOracleIds,
+  paperSource,
 }) {
   const classificationCaches=classificationCacheDirectory?new Map(Array.from({length:Math.max(0,compilerVersion-9)},(_,i)=>compilerVersion-i).map(version=>[version,createOracleCompilerCache({directory:classificationCacheDirectory,compilerVersion:version})])):null;
   const selectedLimit = validateLimit(limit);
@@ -2601,6 +2604,11 @@ export function createImportPlan({
     importedOracleIds: [],
     importedNames: [],
   };
+  validatePaperAvailability(paperOracleIds, paperSource, currentState.source?.paperAvailability);
+  const previousPaperSource = currentState.source?.paperAvailability;
+  if (previousPaperSource && paperSource && previousPaperSource.bulkSha256 !== paperSource.bulkSha256 && !acceptNewSnapshot) {
+    throw new Error('Scryfall paper-availability snapshot changed. Review the new queue and rerun with --accept-new-snapshot.');
+  }
   const selectedSequence = Number(sequence);
   if (!Number.isInteger(selectedSequence) || selectedSequence < 1) {
     throw new Error('Oracle batch sequence must be a positive integer.');
@@ -2638,7 +2646,7 @@ export function createImportPlan({
   let commanderLegalCards = 0;
 
   for (const card of cards || []) {
-    if (!card.games || !card.games.includes('paper')) {
+    if (!hasPaperPrinting(card, paperOracleIds)) {
       addReason(deferredByReason, deferredExamples, 'not-paper', card);
       continue;
     }
@@ -2699,9 +2707,11 @@ export function createImportPlan({
       bulkUpdatedAt: bulk.updated_at,
       bulkDescription: bulk.description,
       ...(bulk.sha256 ? { bulkSha256: bulk.sha256 } : {}),
+      ...(paperSource ? {paperAvailability: {...paperSource}} : {}),
     },
     selectionPolicy: {
       games: ['paper'],
+      ...(paperSource ? {paperAvailability: 'Oracle ID has at least one paper printing in the pinned default_cards source'} : {}),
       commanderLegality: 'legal',
       sort: 'English card name, then Oracle ID',
       semanticClasses: [
@@ -2838,6 +2848,19 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
 
   const baseData = extractRawData(io.readFileSync(path.join(workspaceRoot, 'src', 'data.js'), 'utf8'));
   const reservations = reservedOracleCards(outputReportDir, io);
+  const paperSourceFile = argValue(args, 'paper-source-file', '');
+  const previousPaperSource = state.source?.paperAvailability;
+  let paperAvailability = {};
+  if (paperSourceFile) {
+    paperAvailability = await loadPaperAvailabilityFromGzip(
+      path.isAbsolute(paperSourceFile) ? paperSourceFile : path.join(workspaceRoot, paperSourceFile),
+      {type: 'default_cards', id: argValue(args, 'paper-source-bulk-id', previousPaperSource?.bulkId || ''),
+        updated_at: argValue(args, 'paper-source-updated-at', previousPaperSource?.bulkUpdatedAt || '')},
+      argValue(args, 'paper-source-sha256', previousPaperSource?.bulkSha256 || ''),
+    );
+  } else if (previousPaperSource || args.some(arg => /^--paper-source-(?:sha256|bulk-id|updated-at)=/.test(arg))) {
+    throw new Error('Pinned paper-availability source requires --paper-source-file.');
+  }
   const sourceFile = argValue(args, 'source-file', '');
   let loader = dependencies.fetchOracleCards;
   if (!loader && sourceFile) {
@@ -2880,6 +2903,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
     compilerVersion,
     classificationCacheDirectory: argValue(args, 'classification-cache', '') || undefined,
     selectedNames,
+    ...paperAvailability,
   });
   const logger = dependencies.console || console;
   logger.log(`Source: ${bulk.name} updated ${bulk.updated_at}`);

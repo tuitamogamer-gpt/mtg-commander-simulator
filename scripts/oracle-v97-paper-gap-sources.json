@@ -1,0 +1,498 @@
+{
+  "Blaze of Glory": {
+    "name": "Blaze of Glory",
+    "oracle_id": "b330ac89-790e-4cc9-96a5-532c48252088",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during combat before blockers are declared.\nTarget creature defending player controls can block any number of creatures this turn. It blocks each attacking creature this turn if able.",
+    "mana_cost": "{W}",
+    "type_line": "Instant"
+  },
+  "Blood Lust": {
+    "name": "Blood Lust",
+    "oracle_id": "55a253f9-f44d-4898-af83-fea68b7b279d",
+    "layout": "normal",
+    "oracle_text": "If target creature has toughness 5 or greater, it gets +4/-4 until end of turn. Otherwise, it gets +4/-X until end of turn, where X is its toughness minus 1.",
+    "mana_cost": "{1}{R}",
+    "type_line": "Instant"
+  },
+  "Bounty of the Hunt": {
+    "name": "Bounty of the Hunt",
+    "oracle_id": "77a43c24-398f-42c6-a0d3-b28b33a0ce12",
+    "layout": "normal",
+    "oracle_text": "You may exile a green card from your hand rather than pay this spell's mana cost.\nDistribute three +1/+1 counters among one, two, or three target creatures. For each +1/+1 counter you put on a creature this way, remove a +1/+1 counter from that creature at the beginning of the next cleanup step.",
+    "mana_cost": "{3}{G}{G}",
+    "type_line": "Instant"
+  },
+  "Broken Visage": {
+    "name": "Broken Visage",
+    "oracle_id": "8e1d750e-44a7-47b1-8e0a-5f8b15d48b41",
+    "layout": "normal",
+    "oracle_text": "Destroy target nonartifact attacking creature. It can't be regenerated. Create a black Spirit creature token. Its power is equal to that creature's power and its toughness is equal to that creature's toughness. Sacrifice the token at the beginning of the next end step.",
+    "mana_cost": "{4}{B}",
+    "type_line": "Instant"
+  },
+  "Burning of Xinye": {
+    "name": "Burning of Xinye",
+    "oracle_id": "3a3cec13-4766-40d2-88e0-41bcdd5249e9",
+    "layout": "normal",
+    "oracle_text": "You destroy four lands you control, then target opponent destroys four lands they control. Then Burning of Xinye deals 4 damage to each creature.",
+    "mana_cost": "{4}{R}{R}",
+    "type_line": "Sorcery"
+  },
+  "Cannibalize": {
+    "name": "Cannibalize",
+    "oracle_id": "bf044267-92b9-4983-964f-2bc4ecf76bce",
+    "layout": "normal",
+    "oracle_text": "Choose two target creatures controlled by the same player. Exile one of those creatures and put two +1/+1 counters on the other.",
+    "mana_cost": "{1}{B}",
+    "type_line": "Sorcery"
+  },
+  "Cataclysm": {
+    "name": "Cataclysm",
+    "oracle_id": "b0479ca4-e925-4aa7-a4fa-f7e01f899ac5",
+    "layout": "normal",
+    "oracle_text": "Each player chooses from among the permanents they control an artifact, a creature, an enchantment, and a land, then sacrifices the rest.",
+    "mana_cost": "{2}{W}{W}",
+    "type_line": "Sorcery"
+  },
+  "Contagion": {
+    "name": "Contagion",
+    "oracle_id": "433e86ce-df04-4182-bb63-ad2607d67dbd",
+    "layout": "normal",
+    "oracle_text": "You may pay 1 life and exile a black card from your hand rather than pay this spell's mana cost.\nDistribute two -2/-1 counters among one or two target creatures.",
+    "mana_cost": "{3}{B}{B}",
+    "type_line": "Instant"
+  },
+  "Corpse Dance": {
+    "name": "Corpse Dance",
+    "oracle_id": "59b02ca7-e7bd-4820-ac32-87ea1a8c64c0",
+    "layout": "normal",
+    "oracle_text": "Buyback {2} (You may pay an additional {2} as you cast this spell. If you do, put this card into your hand as it resolves.)\nReturn the top creature card of your graveyard to the battlefield. That creature gains haste until end of turn. Exile it at the beginning of the next end step.",
+    "mana_cost": "{2}{B}",
+    "type_line": "Instant"
+  },
+  "Crumble": {
+    "name": "Crumble",
+    "oracle_id": "8d6e39b0-a190-40a0-a8e1-ee82f477376f",
+    "layout": "normal",
+    "oracle_text": "Destroy target artifact. It can't be regenerated. That artifact's controller gains life equal to its mana value.",
+    "mana_cost": "{G}",
+    "type_line": "Instant"
+  },
+  "Death Spark": {
+    "name": "Death Spark",
+    "oracle_id": "4b23a89c-89ba-41ad-b894-ec02221689eb",
+    "layout": "normal",
+    "oracle_text": "Death Spark deals 1 damage to any target.\nAt the beginning of your upkeep, if this card is in your graveyard with a creature card directly above it, you may pay {1}. If you do, return this card to your hand.",
+    "mana_cost": "{R}",
+    "type_line": "Instant"
+  },
+  "Detonate": {
+    "name": "Detonate",
+    "oracle_id": "daa90a75-c600-41bd-9311-ec21cf51480b",
+    "layout": "normal",
+    "oracle_text": "Destroy target artifact with mana value X. It can't be regenerated. Detonate deals X damage to that artifact's controller.",
+    "mana_cost": "{X}{R}",
+    "type_line": "Sorcery"
+  },
+  "Disharmony": {
+    "name": "Disharmony",
+    "oracle_id": "fc4f1aa1-e252-4454-9ad9-d41682dff13b",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during combat before blockers are declared.\nUntap target attacking creature and remove it from combat. Gain control of that creature until end of turn.",
+    "mana_cost": "{2}{R}",
+    "type_line": "Instant"
+  },
+  "Drain Power": {
+    "name": "Drain Power",
+    "oracle_id": "0669172d-396b-4f5a-9703-129c5c849b55",
+    "layout": "normal",
+    "oracle_text": "Target player activates a mana ability of each land they control. Then that player loses all unspent mana and you add the mana lost this way.",
+    "mana_cost": "{U}{U}",
+    "type_line": "Sorcery"
+  },
+  "Dwarven Catapult": {
+    "name": "Dwarven Catapult",
+    "oracle_id": "2aae77ed-1a91-41f5-8dc2-e353d63a7586",
+    "layout": "normal",
+    "oracle_text": "Dwarven Catapult deals X damage divided evenly, rounded down, among all creatures target opponent controls.",
+    "mana_cost": "{X}{R}",
+    "type_line": "Instant"
+  },
+  "Energy Arc": {
+    "name": "Energy Arc",
+    "oracle_id": "959bcf99-3c9a-4f99-98b2-13514d3dac16",
+    "layout": "normal",
+    "oracle_text": "Untap any number of target creatures. Prevent all combat damage that would be dealt to and dealt by those creatures this turn.",
+    "mana_cost": "{W}{U}",
+    "type_line": "Instant"
+  },
+  "Errand of Duty": {
+    "name": "Errand of Duty",
+    "oracle_id": "977f0d8d-4359-44ae-8f22-2103ea909c40",
+    "layout": "normal",
+    "oracle_text": "Create a 1/1 white Knight creature token with banding. (Any creatures with banding, and up to one without, can attack in a band. Bands are blocked as a group. If any creatures with banding you control are blocking or being blocked by a creature, you divide that creature's combat damage, not its controller, among any of the creatures it's being blocked by or is blocking.)",
+    "mana_cost": "{1}{W}",
+    "type_line": "Instant"
+  },
+  "Essence Filter": {
+    "name": "Essence Filter",
+    "oracle_id": "b9f63388-d1ac-4895-84c5-e5b1db187463",
+    "layout": "normal",
+    "oracle_text": "Destroy all enchantments or all nonwhite enchantments.",
+    "mana_cost": "{1}{G}{G}",
+    "type_line": "Sorcery"
+  },
+  "Eureka": {
+    "name": "Eureka",
+    "oracle_id": "917f2b4b-79ec-4ded-b4c8-cbcf363cb23b",
+    "layout": "normal",
+    "oracle_text": "Starting with you, each player may put a permanent card from their hand onto the battlefield. Repeat this process until no one puts a card onto the battlefield.",
+    "mana_cost": "{2}{G}{G}",
+    "type_line": "Sorcery"
+  },
+  "Eye for an Eye": {
+    "name": "Eye for an Eye",
+    "oracle_id": "22647b1a-5a7c-41b5-b820-b2e9f49c7aad",
+    "layout": "normal",
+    "oracle_text": "The next time a source of your choice would deal damage to you this turn, instead that source deals that much damage to you and Eye for an Eye deals that much damage to that source's controller.",
+    "mana_cost": "{W}{W}",
+    "type_line": "Instant"
+  },
+  "Flame Wave": {
+    "name": "Flame Wave",
+    "oracle_id": "cee8ec5f-e36d-4bca-9b19-cb33113835b1",
+    "layout": "normal",
+    "oracle_text": "Flame Wave deals 4 damage to target player or planeswalker and each creature that player or that planeswalker's controller controls.",
+    "mana_cost": "{3}{R}{R}{R}{R}",
+    "type_line": "Sorcery"
+  },
+  "Forgotten Lore": {
+    "name": "Forgotten Lore",
+    "oracle_id": "ca9f538d-4191-448a-870d-f645b7c37c1b",
+    "layout": "normal",
+    "oracle_text": "Target opponent chooses a card in your graveyard. You may pay {G}. If you do, repeat this process except that opponent can't choose a card already chosen for Forgotten Lore. Then put the last chosen card into your hand.",
+    "mana_cost": "{G}",
+    "type_line": "Sorcery"
+  },
+  "Fork": {
+    "name": "Fork",
+    "oracle_id": "50c53ae0-51ba-4046-ac74-87c65e688032",
+    "layout": "normal",
+    "oracle_text": "Copy target instant or sorcery spell, except that the copy is red. You may choose new targets for the copy.",
+    "mana_cost": "{R}{R}",
+    "type_line": "Instant"
+  },
+  "Gorilla War Cry": {
+    "name": "Gorilla War Cry",
+    "oracle_id": "60a7f61c-41ad-4dce-b556-a99bf38c3d73",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during combat before blockers are declared.\nAll creatures gain menace until end of turn. (They can't be blocked except by two or more creatures.)\nDraw a card at the beginning of the next turn's upkeep.",
+    "mana_cost": "{1}{R}",
+    "type_line": "Instant"
+  },
+  "Harsh Justice": {
+    "name": "Harsh Justice",
+    "oracle_id": "fe4bee2c-f03f-44a4-94a4-55a06bcd0ad8",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during the declare attackers step and only if you've been attacked this step.\nThis turn, whenever an attacking creature deals combat damage to you, it deals that much damage to its controller.",
+    "mana_cost": "{2}{W}",
+    "type_line": "Instant"
+  },
+  "Hellfire": {
+    "name": "Hellfire",
+    "oracle_id": "e7b1975d-9574-4333-8530-33167948078a",
+    "layout": "normal",
+    "oracle_text": "Destroy all nonblack creatures. Hellfire deals X plus 3 damage to you, where X is the number of creatures that died this way.",
+    "mana_cost": "{2}{B}{B}{B}",
+    "type_line": "Sorcery"
+  },
+  "Intuition": {
+    "name": "Intuition",
+    "oracle_id": "3c9faba7-f2d3-4978-be94-020dc8003dc0",
+    "layout": "normal",
+    "oracle_text": "Search your library for three cards and reveal them. Target opponent chooses one. Put that card into your hand and the rest into your graveyard. Then shuffle.",
+    "mana_cost": "{2}{U}",
+    "type_line": "Instant"
+  },
+  "Juxtapose": {
+    "name": "Juxtapose",
+    "oracle_id": "a52ccb40-e950-4cd0-93ab-50daa52b03f3",
+    "layout": "normal",
+    "oracle_text": "You and target player exchange control of the creature you each control with the greatest mana value. Then exchange control of artifacts the same way. If two or more permanents a player controls are tied for greatest, their controller chooses one of them.",
+    "mana_cost": "{3}{U}",
+    "type_line": "Sorcery"
+  },
+  "Kaervek's Torch": {
+    "name": "Kaervek's Torch",
+    "oracle_id": "c629feae-084c-452f-9c09-4b9716331498",
+    "layout": "normal",
+    "oracle_text": "As long as Kaervek's Torch is on the stack, spells that target it cost {2} more to cast.\nKaervek's Torch deals X damage to any target.",
+    "mana_cost": "{X}{R}",
+    "type_line": "Sorcery"
+  },
+  "Kor Chant": {
+    "name": "Kor Chant",
+    "oracle_id": "5b3f6817-5d7a-4d83-ad1d-df75b4e1970b",
+    "layout": "normal",
+    "oracle_text": "All damage that would be dealt this turn to target creature you control by a source of your choice is dealt to another target creature instead.",
+    "mana_cost": "{2}{W}",
+    "type_line": "Instant"
+  },
+  "Lat-Nam's Legacy": {
+    "name": "Lat-Nam's Legacy",
+    "oracle_id": "f885ee54-3b26-4d61-9783-3930b0e625aa",
+    "layout": "normal",
+    "oracle_text": "Shuffle a card from your hand into your library. If you do, draw two cards at the beginning of the next turn's upkeep.",
+    "mana_cost": "{1}{U}",
+    "type_line": "Instant"
+  },
+  "Lava Burst": {
+    "name": "Lava Burst",
+    "oracle_id": "f7be3da5-55b2-46f2-a5aa-277dee242b94",
+    "layout": "normal",
+    "oracle_text": "Lava Burst deals X damage to any target. If Lava Burst would deal damage to a creature, that damage can't be prevented or dealt instead to another permanent or player.",
+    "mana_cost": "{X}{R}",
+    "type_line": "Sorcery"
+  },
+  "Leeches": {
+    "name": "Leeches",
+    "oracle_id": "0a265cb5-47c7-4e06-9030-602e17bedae5",
+    "layout": "normal",
+    "oracle_text": "Target player loses all poison counters. Leeches deals that much damage to that player.",
+    "mana_cost": "{1}{W}{W}",
+    "type_line": "Sorcery"
+  },
+  "Legerdemain": {
+    "name": "Legerdemain",
+    "oracle_id": "107d5f67-1395-444f-b612-c5cc770df956",
+    "layout": "normal",
+    "oracle_text": "Exchange control of target artifact or creature and another target permanent that shares one of those types with it. (This effect lasts indefinitely.)",
+    "mana_cost": "{2}{U}{U}",
+    "type_line": "Sorcery"
+  },
+  "Martyr's Cry": {
+    "name": "Martyr's Cry",
+    "oracle_id": "b636f17d-b54a-4a72-9a5e-ce13e7b4f00a",
+    "layout": "normal",
+    "oracle_text": "Exile all white creatures. For each creature exiled this way, its controller draws a card.",
+    "mana_cost": "{W}{W}",
+    "type_line": "Sorcery"
+  },
+  "Meteor Shower": {
+    "name": "Meteor Shower",
+    "oracle_id": "d2110083-b30f-43f1-9352-7536f5e19d3c",
+    "layout": "normal",
+    "oracle_text": "Meteor Shower deals X plus 1 damage divided as you choose among any number of targets.",
+    "mana_cost": "{X}{X}{R}",
+    "type_line": "Sorcery"
+  },
+  "Misinformation": {
+    "name": "Misinformation",
+    "oracle_id": "03dc8820-ec10-42c1-8200-d323cfcbf2b0",
+    "layout": "normal",
+    "oracle_text": "Put up to three target cards from an opponent's graveyard on top of their library in any order.",
+    "mana_cost": "{B}",
+    "type_line": "Instant"
+  },
+  "Mogg Infestation": {
+    "name": "Mogg Infestation",
+    "oracle_id": "cfd61b53-83c6-4886-8503-ddcb92dc7f85",
+    "layout": "normal",
+    "oracle_text": "Destroy all creatures target player controls. For each creature that died this way, that player creates two 1/1 red Goblin creature tokens.",
+    "mana_cost": "{3}{R}{R}",
+    "type_line": "Sorcery"
+  },
+  "Necrologia": {
+    "name": "Necrologia",
+    "oracle_id": "925f11c3-fd32-4aa7-a130-6554b81ad3eb",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during your end step.\nAs an additional cost to cast this spell, pay X life.\nDraw X cards.",
+    "mana_cost": "{3}{B}{B}",
+    "type_line": "Instant"
+  },
+  "Panic": {
+    "name": "Panic",
+    "oracle_id": "e98429a7-a83f-4b69-afad-9eb68b09e38e",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during combat before blockers are declared.\nTarget creature can't block this turn.\nDraw a card at the beginning of the next turn's upkeep.",
+    "mana_cost": "{R}",
+    "type_line": "Instant"
+  },
+  "Power Sink": {
+    "name": "Power Sink",
+    "oracle_id": "39412e6d-2837-4729-abf9-e64a5ba87e40",
+    "layout": "normal",
+    "oracle_text": "Counter target spell unless its controller pays {X}. If that player doesn't, they tap all lands with mana abilities they control and lose all unspent mana.",
+    "mana_cost": "{X}{U}",
+    "type_line": "Instant"
+  },
+  "Pox": {
+    "name": "Pox",
+    "oracle_id": "539d7c1a-b5e9-4204-9109-ddb2e8dec168",
+    "layout": "normal",
+    "oracle_text": "Each player loses a third of their life, then discards a third of the cards in their hand, then sacrifices a third of the creatures they control of their choice, then sacrifices a third of the lands they control of their choice. Round up each time.",
+    "mana_cost": "{B}{B}{B}",
+    "type_line": "Sorcery"
+  },
+  "Primitive Justice": {
+    "name": "Primitive Justice",
+    "oracle_id": "cf38ac6e-e370-4ca5-90cd-26a1b812c63a",
+    "layout": "normal",
+    "oracle_text": "As an additional cost to cast this spell, you may pay {1}{R} and/or {1}{G} any number of times.\nDestroy target artifact. For each additional {1}{R} you paid, destroy another target artifact. For each additional {1}{G} you paid, destroy another target artifact, and you gain 1 life.",
+    "mana_cost": "{1}{R}",
+    "type_line": "Sorcery"
+  },
+  "Psychic Purge": {
+    "name": "Psychic Purge",
+    "oracle_id": "6af596d2-f075-4f55-b088-a5237fcdaa51",
+    "layout": "normal",
+    "oracle_text": "Psychic Purge deals 1 damage to any target.\nWhen a spell or ability an opponent controls causes you to discard this card, that player loses 5 life.",
+    "mana_cost": "{U}",
+    "type_line": "Sorcery"
+  },
+  "Recall": {
+    "name": "Recall",
+    "oracle_id": "4158f397-4ee4-4f53-90f2-3b64bfe4f9b8",
+    "layout": "normal",
+    "oracle_text": "Discard X cards, then return a card from your graveyard to your hand for each card discarded this way. Exile Recall.",
+    "mana_cost": "{X}{X}{U}",
+    "type_line": "Sorcery"
+  },
+  "Reset": {
+    "name": "Reset",
+    "oracle_id": "4faa5a70-ac0c-4a29-8bec-218a35a29fdf",
+    "layout": "normal",
+    "oracle_text": "Cast this spell only during an opponent's turn after their upkeep step.\nUntap all lands you control.",
+    "mana_cost": "{U}{U}",
+    "type_line": "Instant"
+  },
+  "Retribution": {
+    "name": "Retribution",
+    "oracle_id": "2c7b0034-7eb5-4950-b6dc-8e1d07d26899",
+    "layout": "normal",
+    "oracle_text": "Choose two target creatures controlled by the same opponent. That player chooses and sacrifices one of those creatures. Put a -1/-1 counter on the other.",
+    "mana_cost": "{2}{R}{R}",
+    "type_line": "Sorcery"
+  },
+  "Riding the Dilu Horse": {
+    "name": "Riding the Dilu Horse",
+    "oracle_id": "b7162f90-8430-4c1d-9f9a-a912bf1e9f50",
+    "layout": "normal",
+    "oracle_text": "Target creature gets +2/+2 and gains horsemanship. (It can't be blocked except by creatures with horsemanship. This effect lasts indefinitely.)",
+    "mana_cost": "{2}{G}",
+    "type_line": "Sorcery"
+  },
+  "Rites of Initiation": {
+    "name": "Rites of Initiation",
+    "oracle_id": "77aa591d-efb5-48b5-98aa-5c8912ede11b",
+    "layout": "normal",
+    "oracle_text": "Discard any number of cards at random. Creatures you control get +1/+0 until end of turn for each card discarded this way.",
+    "mana_cost": "{R}",
+    "type_line": "Instant"
+  },
+  "Sacred Boon": {
+    "name": "Sacred Boon",
+    "oracle_id": "32a8d49b-cdfb-4944-bfb5-afd704cc3658",
+    "layout": "normal",
+    "oracle_text": "Prevent the next 3 damage that would be dealt to target creature this turn. At the beginning of the next end step, put a +0/+1 counter on that creature for each 1 damage prevented this way.",
+    "mana_cost": "{1}{W}",
+    "type_line": "Instant"
+  },
+  "Scars of the Veteran": {
+    "name": "Scars of the Veteran",
+    "oracle_id": "5f0ad09f-a9ee-42df-b32d-9d842ce5dd00",
+    "layout": "normal",
+    "oracle_text": "You may exile a white card from your hand rather than pay this spell's mana cost.\nPrevent the next 7 damage that would be dealt to any target this turn. If it's a creature, put a +0/+1 counter on it for each 1 damage prevented this way at the beginning of the next end step.",
+    "mana_cost": "{4}{W}",
+    "type_line": "Instant"
+  },
+  "Soul Exchange": {
+    "name": "Soul Exchange",
+    "oracle_id": "366ea3b4-5e7e-4693-9f4b-1e549972609e",
+    "layout": "normal",
+    "oracle_text": "As an additional cost to cast this spell, exile a creature you control.\nReturn target creature card from your graveyard to the battlefield. Put a +2/+2 counter on that creature if the exiled creature was a Thrull.",
+    "mana_cost": "{B}{B}",
+    "type_line": "Sorcery"
+  },
+  "Spore Cloud": {
+    "name": "Spore Cloud",
+    "oracle_id": "36d55084-4696-4d16-ab3a-b00f1456603f",
+    "layout": "normal",
+    "oracle_text": "Tap all blocking creatures. Prevent all combat damage that would be dealt this turn. Each attacking creature and each blocking creature doesn't untap during its controller's next untap step.",
+    "mana_cost": "{1}{G}{G}",
+    "type_line": "Instant"
+  },
+  "Stunted Growth": {
+    "name": "Stunted Growth",
+    "oracle_id": "e3480c8f-15ad-451b-bb34-b129805569e1",
+    "layout": "normal",
+    "oracle_text": "Target player chooses three cards from their hand and puts them on top of their library in any order.",
+    "mana_cost": "{3}{G}{G}",
+    "type_line": "Sorcery"
+  },
+  "Tangle": {
+    "name": "Tangle",
+    "oracle_id": "f627e125-15af-4e53-b34e-82b60e4ec87b",
+    "layout": "normal",
+    "oracle_text": "Prevent all combat damage that would be dealt this turn.\nEach attacking creature doesn't untap during its controller's next untap step.",
+    "mana_cost": "{1}{G}",
+    "type_line": "Instant"
+  },
+  "Telekinesis": {
+    "name": "Telekinesis",
+    "oracle_id": "1b9dd2b6-d14d-4c1e-9885-00ab2c0bf8da",
+    "layout": "normal",
+    "oracle_text": "Tap target creature. Prevent all combat damage that would be dealt by that creature this turn. It doesn't untap during its controller's next two untap steps.",
+    "mana_cost": "{U}{U}",
+    "type_line": "Instant"
+  },
+  "Transmute Artifact": {
+    "name": "Transmute Artifact",
+    "oracle_id": "dbe792f9-22be-4972-b418-99a6190c4421",
+    "layout": "normal",
+    "oracle_text": "Sacrifice an artifact. If you do, search your library for an artifact card. If that card's mana value is less than or equal to the sacrificed artifact's mana value, put it onto the battlefield. If it's greater, you may pay {X}, where X is the difference. If you do, put it onto the battlefield. If you don't, put it into its owner's graveyard. Then shuffle.",
+    "mana_cost": "{U}{U}",
+    "type_line": "Sorcery"
+  },
+  "Tyrant's Choice": {
+    "name": "Tyrant's Choice",
+    "oracle_id": "ee7d2c2f-e32f-4be6-82ac-ff1e32055376",
+    "layout": "normal",
+    "oracle_text": "Will of the council — Starting with you, each player votes for death or torture. If death gets more votes, each opponent sacrifices a creature of their choice. If torture gets more votes or the vote is tied, each opponent loses 4 life.",
+    "mana_cost": "{1}{B}",
+    "type_line": "Sorcery"
+  },
+  "Winter Blast": {
+    "name": "Winter Blast",
+    "oracle_id": "594827de-e85f-4aac-b0e6-d92878f0f26c",
+    "layout": "normal",
+    "oracle_text": "Tap X target creatures. Winter Blast deals 2 damage to each of those creatures with flying.",
+    "mana_cost": "{X}{G}",
+    "type_line": "Sorcery"
+  },
+  "Word of Command": {
+    "name": "Word of Command",
+    "oracle_id": "e8ad3a77-b293-4d69-b080-27ca9f95d443",
+    "layout": "normal",
+    "oracle_text": "Look at target opponent's hand and choose a card from it. You control that player until Word of Command finishes resolving. The player plays that card if able. While doing so, the player can activate mana abilities only if they're from lands that player controls and only if mana they produce is spent to activate other mana abilities of lands the player controls and/or to play that card. If the chosen card is cast as a spell, you control the player while that spell is resolving.",
+    "mana_cost": "{B}{B}",
+    "type_line": "Instant"
+  },
+  "Word of Undoing": {
+    "name": "Word of Undoing",
+    "oracle_id": "2597a1ee-fe9e-44b5-a5e3-d34332c6c123",
+    "layout": "normal",
+    "oracle_text": "Return target creature and all white Auras you own attached to it to their owners' hands.",
+    "mana_cost": "{U}",
+    "type_line": "Instant"
+  },
+  "Yawgmoth's Will": {
+    "name": "Yawgmoth's Will",
+    "oracle_id": "322f0459-f394-44f0-977b-55fd0cbe0712",
+    "layout": "normal",
+    "oracle_text": "Until end of turn, you may play lands and cast spells from your graveyard.\nIf a card would be put into your graveyard from anywhere this turn, exile that card instead.",
+    "mana_cost": "{2}{B}",
+    "type_line": "Sorcery"
+  }
+}

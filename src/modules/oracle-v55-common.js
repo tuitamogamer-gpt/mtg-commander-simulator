@@ -74,7 +74,7 @@
     case 'mill-pay-hand':{const cards=await milled(ctx,p,3),versions=new Map(cards.map(c=>[c,c.zoneVersion])),cost=M.parseCost('{1}');if(g.canPayLife(p,3)&&g.canPayMana(p,cost,null,{reservedLife:3})&&await option(ctx,p,'Pay {1} and 3 life?')==='yes'&&await g.payMana(p,cost,null,{reservedLife:3})){await g.loseLife(p,3,s.name);const [card]=await choose(ctx,p,cards.filter(c=>['graveyard','exile'].includes(c.zone)&&c.zoneVersion===versions.get(c)&&!c.faceDown),1,1);if(card)await g.move(card,'hand');}break;}
     case 'player-damage-or-pump':{let accepted=false;for(const q of apnap())if(await option(ctx,q,'Have this creature deal 4 damage to you?')==='yes'){await g.damageBatch([{src,target:q,n:4}],{deferSBA:true});accepted=true;break;}if(!accepted&&same())M.E.pumpUntilEOT(g,s,2,2,[]);break;}
     case 'grave-life-delay':{const turn=g.turnNo;g.delayed.push({on:'graveCardV55',once:false,expires:'eot',src:s,ctrl:p,name:s.name+' — graveyard life loss',filter:(g,d)=>g.turnNo===turn&&d.player!==p,run:next=>g.loseLife(next.data.player,1,s.name)});break;}
-    case 'exchange-self':if(c&&same()&&c.ctrl!==p&&c.owner!==p){const q=c.ctrl;M.OracleV8Control.gain(g,c,p);M.OracleV8Control.gain(g,s,q);g.recalc();}break;
+    case 'exchange-self':if(c&&same()&&c.ctrl!==p&&c.owner!==p){M.OracleV8Control.exchange(g,c,s);g.recalc();}break;
     case 'search-curse':if(c)await search(ctx,{what:'card',zone:'graveyard',subtype:'Curse'},'battlefield',card=>g.move(card,'battlefield',{ctrl:p,cursedPlayer:c}));break;
     case 'blocker-toughness':if(c&&same())g.addOracleBasePT(s,{toughness:c.power+1,temporary:false});break;
     case 'choose-opponent':{const q=await opponent(ctx);if(q&&same()){s.meta.chosenOpponentV55={version:s.zoneVersion,player:q};g.recalc();}break;}

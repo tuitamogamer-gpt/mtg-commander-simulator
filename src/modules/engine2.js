@@ -2717,6 +2717,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return null;
   }
 
+  // Generate the same native cost choices for normal casts and granted-zone
+  // permission validation, without recursing through timing or mana checks.
+  G.oracleDerivedCastOptionsV97 = function (p, card, from, alt) {
+    const out = [];
+    if(card.def.oracleOptionalCostV14&&!alt?.oracleOptionalCostV14&&!alt?.faceDownCast&&!alt?.adventure)out.push({...alt,oracleOptionalCostV14:true,label:card.def.oracleOptionalCostV14.kind==='mana'?'Pay additional '+card.def.oracleOptionalCostV14.mana:({teamwork:'Teamwork',blight:'Blight',behold:'Behold',evidence:'Collect evidence'})[card.def.oracleOptionalCostV14.kind]+(card.def.oracleOptionalCostV14.n?' '+card.def.oracleOptionalCostV14.n:'')});
+    if(card.def.oracleBargainV10&&!alt?.oracleBargainV10&&!alt?.faceDownCast&&MTG.oracleBargainPaymentV10.castCond(this,p,card))out.push({...alt,oracleBargainV10:true,label:'Bargain'});
+    if(card.def.oraclePrototypeV10&&!alt?.oraclePrototypeV10&&!alt?.faceDownCast)out.push({...alt,oraclePrototypeV10:true,label:'Prototype '+card.def.oraclePrototypeV10.cost});
+    if(from==='exile'&&!alt?.free&&!alt?.cdkTlincalli&&this.castHasType(card,alt||{},'Creature'))for(const source of MTG.CDK?.hunters?.(this,p)||[])out.push({...alt,free:true,cdkTlincalli:source.iid,cdkTlincalliVersion:source.zoneVersion});
+    if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.VN?.henzie(this,p,card,alt||{}))out.push({...alt,blitz:true,vnBlitz:true,altCostStr:this.castDefinition(card,alt||{}).cost,label:'Henzie: blitz'});
+    if(!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.AFC?.rooftopLive(this,p,card,alt||{}))out.push({...alt,afcRooftop:true,altCostStr:'{0}'});
+    if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.C1719?.fistLive(this,p))out.push({...alt,c1719Fist:true,altCostStr:'{W}{U}{B}{R}{G}'});
+    if(!alt?.oracleAlternativeCost&&!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined) {
+      for(const option of card.def.altCosts||[])if((option.oracleAlternativeCost||option.oracleCleaveV10)&&(!option.cond||option.cond(this,p,card)))out.push({...alt,...option});
+    }
+    return out;
+  };
+
   G.castableList = function (p) {
     // returns [{card, from, alt}] of spells p could cast now (mana-feasible)
     // Prepared kopiju može castati trenutni kontrolor prepared permanenta,
@@ -2732,17 +2749,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Bestow ' + card.def.bestowCost,
     } : null;
     const consider = (card, from, alt) => {
-      if(card.def.oracleOptionalCostV14&&!alt?.oracleOptionalCostV14&&!alt?.faceDownCast&&!alt?.adventure)consider(card,from,{...alt,oracleOptionalCostV14:true,label:card.def.oracleOptionalCostV14.kind==='mana'?'Pay additional '+card.def.oracleOptionalCostV14.mana:({teamwork:'Teamwork',blight:'Blight',behold:'Behold',evidence:'Collect evidence'})[card.def.oracleOptionalCostV14.kind]+(card.def.oracleOptionalCostV14.n?' '+card.def.oracleOptionalCostV14.n:'')});
-      if(card.def.oracleBargainV10&&!alt?.oracleBargainV10&&!alt?.faceDownCast&&MTG.oracleBargainPaymentV10.castCond(this,p,card))consider(card,from,{...alt,oracleBargainV10:true,label:'Bargain'});
-      if(card.def.oraclePrototypeV10&&!alt?.oraclePrototypeV10&&!alt?.faceDownCast)consider(card,from,{...alt,oraclePrototypeV10:true,label:'Prototype '+card.def.oraclePrototypeV10.cost});
-      if(from==='exile'&&!alt?.free&&!alt?.cdkTlincalli&&this.castHasType(card,alt||{},'Creature'))for(const source of MTG.CDK?.hunters?.(this,p)||[])consider(card,from,{...alt,free:true,cdkTlincalli:source.iid,cdkTlincalliVersion:source.zoneVersion});
-      if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.VN?.henzie(this,p,card,alt||{}))consider(card,from,{...alt,blitz:true,vnBlitz:true,altCostStr:this.castDefinition(card,alt||{}).cost,label:'Henzie: blitz'});
-      if(!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.AFC?.rooftopLive(this,p,card,alt||{}))consider(card,from,{...alt,afcRooftop:true,altCostStr:'{0}'});
-      if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.C1719?.fistLive(this,p))consider(card,from,{...alt,c1719Fist:true,altCostStr:'{W}{U}{B}{R}{G}'});
-      if(!alt?.oracleAlternativeCost&&!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined) {
-        for(const option of card.def.altCosts||[])if((option.oracleAlternativeCost||option.oracleCleaveV10)&&(!option.cond||option.cond(this,p,card)))
-          consider(card,from,{...alt,...option});
-      }
+      for(const option of this.oracleDerivedCastOptionsV97(p,card,from,alt))consider(card,from,option);
       if(alt?.oracleAlternativeCost&&!oracleAlternativeZonePermission(this,p,card,{...alt,from}))return;
       if(alt?.oracleKeywordPayment&&alt.cond&&!alt.cond(this,p,card))return;
       if (card.def.oracleSplit && !alt?.splitHalf && !alt?.splitFuse) {
@@ -3360,7 +3367,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const from = castOpts.from || card.zone;
       if (!castOpts.splitHalf && !castOpts.splitFuse) {
         const choices = this.oracleSplitCastingOptions(card, from, castOpts).filter(option => {
-          if (from === 'graveyard' && !option.isAftermath && !option.flashback && !option.free && !option.retrace && !option.jumpstart && option.oracleImmediateCast === undefined) return false;
+          if (from === 'graveyard' && !option.isAftermath && !option.flashback && !option.free && !option.retrace && !option.jumpstart && option.oracleImmediateCast === undefined &&
+              !(option.starterPermission && MTG.StarterCasting?.allowed(this,p,card,option))) return false;
           const specs = this.spellTargetSpecs(card, option, p) || [];
           return specs.every(spec => spec.upTo || this.legalTargets(spec, card, p).length >= (spec.min ?? spec.count ?? 1)) &&
             this.canPayMana(p, this.spellCost(p, card, option), {card, castOpts: option, xVal: 0});
@@ -3377,7 +3385,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const face = d.oracleSplit.faces.find(entry => entry.key === castOpts.splitHalf);
       if (castOpts.splitHalf && (!face || castOpts.splitFuse || face.aftermath && from !== 'graveyard')) return false;
       if (castOpts.splitFuse && (!d.oracleSplit.fuse || castOpts.splitFuse !== 'right' || from !== 'hand')) return false;
-      if (from === 'graveyard' && !face?.aftermath && !castOpts.flashback && !castOpts.free && !castOpts.retrace && !castOpts.jumpstart && !castOpts.escape && castOpts.oracleImmediateCast === undefined) return false;
+      if (from === 'graveyard' && !face?.aftermath && !castOpts.flashback && !castOpts.free && !castOpts.retrace && !castOpts.jumpstart && !castOpts.escape && castOpts.oracleImmediateCast === undefined &&
+          !(castOpts.starterPermission && MTG.StarterCasting?.allowed(this,p,card,castOpts))) return false;
       if (face?.aftermath) {castOpts.flashback = true; castOpts.isAftermath = true;}
       if (castOpts.altCostStr === undefined) castOpts.altCostStr = this.oracleSplitPrintedCost(card, castOpts);
     }
@@ -6949,6 +6958,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const candidates=(playerAura?this.alivePlayers():(this._battlefieldEntryReplacementSnapshot||this.bf())).filter(candidate=>
         candidate!==card&&(playerAura||candidate.zone==='battlefield')&&(!playerAura||spec.what!=='opponent'||candidate!==ctrl)&&
         (!spec.filter||spec.filter(this,candidate,ctrl,card))&&
+        this.canAttachOracle(card,candidate,ctrl)&&
         (playerAura||!this.isProtectedFrom(candidate,card)));
       if(!candidates.length)return false;
       const explicit=Object.hasOwn(opts,'attachTo');
@@ -6966,6 +6976,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.attach = async function (att, host) {
     if (!att || !host || att.zone !== 'battlefield' || host.zone !== 'battlefield' || att.phasedOut || host.phasedOut) return false;
+    if (!this.canAttachOracle(att, host, att.ctrl)) return false;
     if(att.hasSub('Equipment')&&att.def.oracleAttachmentLegendaryOnlyV60&&!att.cur?.abilitiesDisabled&&(!host.is('Creature')||!host.cur.super.includes('Legendary')))return false;
     if(att.attachedTo!==host.iid&&att.def.asAttach&&!att.cur?.abilitiesDisabled)await att.def.asAttach(this,att,host);
     if(att.attachedTo!==host.iid)this.refreshOracleTimestamp(att);

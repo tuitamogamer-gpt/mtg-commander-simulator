@@ -1,0 +1,70 @@
+{
+  "scope": "Read-only source/data inventory; no tests or gameplay execution",
+  "cohortOracleIds": 1021,
+  "importedOracleIds": 1021,
+  "identitySetMatch": true,
+  "missing": [],
+  "unexpected": [],
+  "duplicates": {
+    "oracleIds": 0,
+    "names": 0
+  },
+  "ineligible": [],
+  "sourceMismatches": [],
+  "runtimeCounts": [
+    {
+      "sequence": 264,
+      "count": 500,
+      "compilerVersion": 92
+    },
+    {
+      "sequence": 265,
+      "count": 500,
+      "compilerVersion": 97
+    },
+    {
+      "sequence": 266,
+      "count": 21,
+      "compilerVersion": 97
+    }
+  ],
+  "priorBatchFilesChanged": [],
+  "paperSource": {
+    "provider": "Scryfall",
+    "endpoint": "https://api.scryfall.com/bulk-data",
+    "bulkType": "default_cards",
+    "bulkId": "e2ef41e3-5778-4bc2-af3f-78eca4dd9c23",
+    "bulkUpdatedAt": "2026-10-09T09:05:44.334+00:00",
+    "bulkSha256": "d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227",
+    "oracleIdCount": 37854,
+    "sourceRows": 118602,
+    "paperRows": 109466,
+    "filter": "any default_cards printing.games includes 'paper'; use oracle_id or card_faces[].oracle_id"
+  },
+  "commanderPaperOracleIds": 32115,
+  "stateImportedOracleIds": 28137,
+  "stateImportedNames": 28137,
+  "summaryRegenerated": true,
+  "summary": {
+    "runtimeDefinitions": 32136,
+    "genericOracleCards": 28137,
+    "genericBatches": 266,
+    "manualOracleCards": 65,
+    "legacyDefinitions": 3934,
+    "individuallyReviewedLegacyDefinitions": 18,
+    "deckImportEligibleDefinitions": 32135,
+    "deckImportRestrictedDefinitions": 1,
+    "representedUniverseOracleIds": 32115,
+    "remainingUniverseOracleIds": 0,
+    "parserEligibleUnimported": 0,
+    "deferred": 0,
+    "runtimeEntriesWithoutSnapshotMatch": 17,
+    "runtimeEntriesOutsideComparisonUniverse": 2
+  },
+  "failures": [],
+  "baselineCommit": "31c4f796bb95746f4faebaf03f5500e8a5227059",
+  "rawDataMismatches": [],
+  "catalogDataMismatches": [],
+  "exactPriorPlusNewState": true,
+  "catalogUniverseOracleIds": 32115
+}

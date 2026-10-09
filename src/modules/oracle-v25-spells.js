@@ -71,7 +71,7 @@
   }
   if(effect.action==='exchange-control-v25'){
    const cards=h.genericEffectSubjects(ctx,effect.target),neither=cards.length===2&&cards.every(c=>c.ctrl!==ctx.you);
-   if(cards.length===2&&cards.every(c=>c.zone==='battlefield'&&!c.phasedOut&&!c.ctrl.lost)&&cards[0].ctrl!==cards[1].ctrl){const [a,b]=cards,ac=a.ctrl,bc=b.ctrl;M.OracleV8Control.gain(ctx.g,a,bc);M.OracleV8Control.gain(ctx.g,b,ac);ctx.g.recalc();}
+   if(cards.length===2&&cards.every(c=>c.zone==='battlefield'&&!c.phasedOut&&!c.ctrl.lost)&&cards[0].ctrl!==cards[1].ctrl){M.OracleV8Control.exchange(ctx.g,cards[0],cards[1]);ctx.g.recalc();}
    if(effect.drawIfNeither&&neither)await ctx.g.draw(ctx.you,effect.drawIfNeither,ctx.src);return true;
   }
   if(effect.action==='bounce-with-auras-v25'){

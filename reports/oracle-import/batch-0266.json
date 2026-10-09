@@ -1,0 +1,1555 @@
+{
+  "schemaVersion": 1,
+  "id": "oracle-0266",
+  "sequence": 266,
+  "generatedAt": "2026-10-09T17:26:14.708Z",
+  "source": {
+    "provider": "Scryfall",
+    "endpoint": "https://api.scryfall.com/bulk-data",
+    "bulkType": "oracle_cards",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "bulkUpdatedAt": "2026-10-09T09:01:54.966+00:00",
+    "bulkDescription": "One Oracle card per name; Scryfall Oracle Cards bulk data",
+    "bulkSha256": "0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be",
+    "paperAvailability": {
+      "provider": "Scryfall",
+      "endpoint": "https://api.scryfall.com/bulk-data",
+      "bulkType": "default_cards",
+      "bulkId": "e2ef41e3-5778-4bc2-af3f-78eca4dd9c23",
+      "bulkUpdatedAt": "2026-10-09T09:05:44.334+00:00",
+      "bulkSha256": "d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227",
+      "oracleIdCount": 37854,
+      "sourceRows": 118602,
+      "paperRows": 109466,
+      "filter": "any default_cards printing.games includes 'paper'; use oracle_id or card_faces[].oracle_id"
+    }
+  },
+  "selectionPolicy": {
+    "games": [
+      "paper"
+    ],
+    "paperAvailability": "Oracle ID has at least one paper printing in the pinned default_cards source",
+    "commanderLegality": "legal",
+    "sort": "English card name, then Oracle ID",
+    "semanticClasses": [
+      "vanilla",
+      "keyword-only",
+      "creature-template",
+      "land-mana-template",
+      "spell-template",
+      "spell-v4-template",
+      "permanent-template",
+      "artifact-template",
+      "enchantment-template",
+      "equipment-template",
+      "aura-template",
+      "vehicle-template"
+    ],
+    "note": "Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.",
+    "compilerVersion": 97,
+    "requestedNames": [
+      "Woolly Mammoths",
+      "Woolly Spider",
+      "Word of Command",
+      "Word of Undoing",
+      "Wormwood Treefolk",
+      "Wu Elite Cavalry",
+      "Wu Longbowman",
+      "Wu Warship",
+      "Wyluli Wolf",
+      "Xenic Poltergeist",
+      "Xiahou Dun, the One-Eyed",
+      "Yavimaya Ancients",
+      "Yavimaya Ants",
+      "Yavimaya Hollow",
+      "Yawgmoth's Will",
+      "Ydwen Efreet",
+      "Young Wei Recruits",
+      "Zhalfirin Crusader",
+      "Zhang Fei, Fierce Warrior",
+      "Zodiac Dragon",
+      "Zuran Spellcaster"
+    ]
+  },
+  "catalogSummary": {
+    "oracleRows": 38708,
+    "paperCards": 37854,
+    "commanderLegalCards": 32115,
+    "legacyEngineCards": 3934,
+    "readyForThisCompiler": 21,
+    "selected": 21,
+    "selectedBySemanticClass": {
+      "creature-template": 15,
+      "keyword-only": 2,
+      "land-mana-template": 1,
+      "spell-template": 3
+    },
+    "deferredByReason": {
+      "already-imported-batch": 28181,
+      "already-in-legacy-engine": 3913,
+      "not-commander-legal": 5739,
+      "not-paper": 854
+    },
+    "deferredExamples": {
+      "already-imported-batch": [
+        "Static Orb",
+        "Sensory Deprivation",
+        "Storm Crow",
+        "Walking Sponge",
+        "Ravnica at War",
+        "Greta, Sweettooth Scourge",
+        "Torrent of Fire",
+        "Nantuko Elder"
+      ],
+      "already-in-legacy-engine": [
+        "Nissa, Worldsoul Speaker",
+        "Road of Return",
+        "Pteramander",
+        "Marang River Prowler",
+        "Lattice Library",
+        "Escape Tunnel",
+        "Behemoth Sledge",
+        "Kindred Discovery"
+      ],
+      "not-commander-legal": [
+        "Munitions Enthusiast",
+        "Brightglass Gearhulk // Brightglass Gearhulk",
+        "Phyrexian Broodstar",
+        "Wall of Fortune",
+        "Gigantosaurus // Gigantosaurus",
+        "Tyranid",
+        "Gleeful Demolition // Gleeful Demolition",
+        "Demon"
+      ],
+      "not-paper": [
+        "Mine Security",
+        "Kavaron Consumed",
+        "Snarlfang Vermin",
+        "Providence of Night",
+        "Blighted Nightmare",
+        "Ethereal Grasp",
+        "Relics of the Rubblebelt",
+        "Gale, Primeval Conduit"
+      ]
+    },
+    "nextReadyNames": [],
+    "classificationScope": "reviewed-source-cohort",
+    "consideredOracleRows": 21,
+    "readyCountScope": "reviewed-source-cohort-only"
+  },
+  "cards": [
+    {
+      "position": 1,
+      "oracleId": "6e5f1088-a5ab-48ec-be27-c88eb164cf63",
+      "scryfallId": "69ec2c31-f8f1-4bfc-998c-f4e41c366ec0",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "self",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "trample"
+          ],
+          "condition": {
+            "kind": "count-comparison",
+            "count": {
+              "kind": "count",
+              "zone": "battlefield",
+              "what": "permanent",
+              "filters": [
+                {
+                  "what": "land",
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "min": 1,
+                  "snow": true
+                }
+              ],
+              "other": false
+            },
+            "min": 1
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ],
+      "rulesCore": "This creature has trample as long as you control a snow land.",
+      "raw": {
+        "name": "Woolly Mammoths",
+        "cost": "{1}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elephant"
+        ],
+        "oracle": "This creature has trample as long as you control a snow land.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "6e5f1088-a5ab-48ec-be27-c88eb164cf63",
+        "_scryfallId": "69ec2c31-f8f1-4bfc-998c-f4e41c366ec0",
+        "_layout": "normal",
+        "_set": "me2",
+        "_collectorNumber": "188",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elephant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me2",
+        "setName": "Masters Edition II",
+        "collectorNumber": "188",
+        "rarity": "common",
+        "releasedAt": "2008-09-22",
+        "scryfallUri": "https://scryfall.com/card/me2/188/woolly-mammoths?utm_source=api"
+      }
+    },
+    {
+      "position": 2,
+      "oracleId": "811c6f52-03cb-49a9-a3c7-7f4ae40e7155",
+      "scryfallId": "2496a40a-1d67-44ea-900d-9c5fbd5034a7",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "blocks",
+          "eventFilter": {
+            "kind": "self-creature-combat",
+            "otherFilter": {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "withKeyword": "flying"
+            }
+          },
+          "effects": [
+            {
+              "action": "pump",
+              "target": "self",
+              "power": 0,
+              "toughness": 2,
+              "keywords": []
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ],
+      "rulesCore": "Reach\nWhenever this creature blocks a creature with flying, this creature gets +0/+2 until end of turn.",
+      "raw": {
+        "name": "Woolly Spider",
+        "cost": "{1}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spider"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)\nWhenever this creature blocks a creature with flying, this creature gets +0/+2 until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "811c6f52-03cb-49a9-a3c7-7f4ae40e7155",
+        "_scryfallId": "2496a40a-1d67-44ea-900d-9c5fbd5034a7",
+        "_layout": "normal",
+        "_set": "me2",
+        "_collectorNumber": "189",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spider",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "me2",
+        "setName": "Masters Edition II",
+        "collectorNumber": "189",
+        "rarity": "uncommon",
+        "releasedAt": "2008-09-22",
+        "scryfallUri": "https://scryfall.com/card/me2/189/woolly-spider?utm_source=api"
+      }
+    },
+    {
+      "position": 3,
+      "oracleId": "e8ad3a77-b293-4d69-b080-27ca9f95d443",
+      "scryfallId": "8b1be5ba-6e5e-4801-815b-5e82b9e72b3d",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-spell-v97",
+          "name": "Word of Command",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect",
+        "generic-activated-effect",
+        "generic-continuous-effect"
+      ],
+      "rulesCore": "Look at target opponent's hand and choose a card from it. You control that player until Word of Command finishes resolving. The player plays that card if able. While doing so, the player can activate mana abilities only if they're from lands that player controls and only if mana they produce is spent to activate other mana abilities of lands the player controls and/or to play that card. If the chosen card is cast as a spell, you control the player while that spell is resolving.",
+      "raw": {
+        "name": "Word of Command",
+        "cost": "{B}{B}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Look at target opponent's hand and choose a card from it. You control that player until Word of Command finishes resolving. The player plays that card if able. While doing so, the player can activate mana abilities only if they're from lands that player controls and only if mana they produce is spent to activate other mana abilities of lands the player controls and/or to play that card. If the chosen card is cast as a spell, you control the player while that spell is resolving.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "e8ad3a77-b293-4d69-b080-27ca9f95d443",
+        "_scryfallId": "8b1be5ba-6e5e-4801-815b-5e82b9e72b3d",
+        "_layout": "normal",
+        "_set": "me4",
+        "_collectorNumber": "103",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me4",
+        "setName": "Masters Edition IV",
+        "collectorNumber": "103",
+        "rarity": "rare",
+        "releasedAt": "2011-01-10",
+        "scryfallUri": "https://scryfall.com/card/me4/103/word-of-command?utm_source=api"
+      }
+    },
+    {
+      "position": 4,
+      "oracleId": "2597a1ee-fe9e-44b5-a5e3-d34332c6c123",
+      "scryfallId": "c1b5d79e-7b96-445f-a36d-264082a4c6af",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-spell-v97",
+          "name": "Word of Undoing",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect",
+        "generic-activated-effect",
+        "generic-continuous-effect"
+      ],
+      "rulesCore": "Return target creature and all white Auras you own attached to it to their owners' hands.",
+      "raw": {
+        "name": "Word of Undoing",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Return target creature and all white Auras you own attached to it to their owners' hands.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "2597a1ee-fe9e-44b5-a5e3-d34332c6c123",
+        "_scryfallId": "c1b5d79e-7b96-445f-a36d-264082a4c6af",
+        "_layout": "normal",
+        "_set": "me1",
+        "_collectorNumber": "56",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me1",
+        "setName": "Masters Edition",
+        "collectorNumber": "56",
+        "rarity": "common",
+        "releasedAt": "2007-09-10",
+        "scryfallUri": "https://scryfall.com/card/me1/56/word-of-undoing?utm_source=api"
+      }
+    },
+    {
+      "position": 5,
+      "oracleId": "2a014ef1-0450-4485-8a8c-8210a985be4c",
+      "scryfallId": "3d4468de-2452-47b6-9417-b92055e496eb",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-creature-v94",
+          "mode": "Wormwood Treefolk",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ],
+      "rulesCore": "{G}{G}: This creature gains forestwalk until end of turn and deals 2 damage to you.\n{B}{B}: This creature gains swampwalk until end of turn and deals 2 damage to you.",
+      "raw": {
+        "name": "Wormwood Treefolk",
+        "cost": "{3}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Treefolk"
+        ],
+        "oracle": "{G}{G}: This creature gains forestwalk until end of turn and deals 2 damage to you. (It can't be blocked as long as defending player controls a Forest.)\n{B}{B}: This creature gains swampwalk until end of turn and deals 2 damage to you. (It can't be blocked as long as defending player controls a Swamp.)",
+        "_ci": [
+          "B",
+          "G"
+        ],
+        "_oracleId": "2a014ef1-0450-4485-8a8c-8210a985be4c",
+        "_scryfallId": "3d4468de-2452-47b6-9417-b92055e496eb",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "140",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Treefolk",
+        "colorIdentity": [
+          "B",
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "140",
+        "rarity": "uncommon",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/140/wormwood-treefolk?utm_source=api"
+      }
+    },
+    {
+      "position": 6,
+      "oracleId": "7dc5d729-0553-46fb-aff7-2f0d9573837b",
+      "scryfallId": "d034a3a0-714b-4b36-b1b8-eb723de7e51e",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "horsemanship"
+      ],
+      "implementation": [],
+      "oracleContracts": [],
+      "rulesCore": "Horsemanship",
+      "raw": {
+        "name": "Wu Elite Cavalry",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Horsemanship (This creature can't be blocked except by creatures with horsemanship.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "7dc5d729-0553-46fb-aff7-2f0d9573837b",
+        "_scryfallId": "d034a3a0-714b-4b36-b1b8-eb723de7e51e",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "54",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Horsemanship"
+        ],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "54",
+        "rarity": "common",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/54/wu-elite-cavalry?utm_source=api"
+      }
+    },
+    {
+      "position": 7,
+      "oracleId": "68fc55b9-55cc-4caf-a052-b44ddc0b346f",
+      "scryfallId": "87134379-273b-48dd-9f05-3d35f5659fb7",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "tap": true
+          },
+          "effects": [
+            {
+              "action": "damage",
+              "target": 0,
+              "n": 1
+            }
+          ],
+          "targets": [
+            {
+              "what": "any",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "max": 1,
+              "attackingOrBlocking": false
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false,
+          "beforeAttackersOnly": true
+        }
+      ],
+      "oracleContracts": [
+        "generic-activated-effect"
+      ],
+      "rulesCore": "{T}: This creature deals 1 damage to any target. Activate only during your turn, before attackers are declared.",
+      "raw": {
+        "name": "Wu Longbowman",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier",
+          "Archer"
+        ],
+        "oracle": "{T}: This creature deals 1 damage to any target. Activate only during your turn, before attackers are declared.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "68fc55b9-55cc-4caf-a052-b44ddc0b346f",
+        "_scryfallId": "87134379-273b-48dd-9f05-3d35f5659fb7",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "55",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier Archer",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "55",
+        "rarity": "common",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/55/wu-longbowman?utm_source=api"
+      }
+    },
+    {
+      "position": 8,
+      "oracleId": "f184e860-05c3-43cf-a625-ab53427406c5",
+      "scryfallId": "935fc8cf-c2c5-4bfc-9dd8-0a0d52058312",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "self",
+          "defenderRule": {
+            "filters": [
+              {
+                "what": "land",
+                "zone": "battlefield",
+                "controller": "you",
+                "min": 1,
+                "subtype": "Island"
+              }
+            ],
+            "require": true
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ],
+      "rulesCore": "This creature can't attack unless defending player controls an Island.",
+      "raw": {
+        "name": "Wu Warship",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "This creature can't attack unless defending player controls an Island.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "f184e860-05c3-43cf-a625-ab53427406c5",
+        "_scryfallId": "935fc8cf-c2c5-4bfc-9dd8-0a0d52058312",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "56",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "56",
+        "rarity": "common",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/56/wu-warship?utm_source=api"
+      }
+    },
+    {
+      "position": 9,
+      "oracleId": "00185f3b-2777-4417-a8e0-4691f41c0ec1",
+      "scryfallId": "3c97d419-6fee-4a32-9e64-8a827da59934",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "tap": true
+          },
+          "effects": [
+            {
+              "action": "pump",
+              "target": 0,
+              "power": 1,
+              "toughness": 1,
+              "keywords": []
+            }
+          ],
+          "targets": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "max": 1
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "generic-activated-effect"
+      ],
+      "rulesCore": "{T}: Target creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Wyluli Wolf",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wolf"
+        ],
+        "oracle": "{T}: Target creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "00185f3b-2777-4417-a8e0-4691f41c0ec1",
+        "_scryfallId": "3c97d419-6fee-4a32-9e64-8a827da59934",
+        "_layout": "normal",
+        "_set": "me1",
+        "_collectorNumber": "139",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wolf",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me1",
+        "setName": "Masters Edition",
+        "collectorNumber": "139",
+        "rarity": "common",
+        "releasedAt": "2007-09-10",
+        "scryfallUri": "https://scryfall.com/card/me1/139/wyluli-wolf?utm_source=api"
+      }
+    },
+    {
+      "position": 10,
+      "oracleId": "fb8f80cc-6214-4ab9-a9a9-1873ab9feb0c",
+      "scryfallId": "37055986-85e0-4568-a301-b8726da23b75",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-creature-v94",
+          "mode": "Xenic Poltergeist",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ],
+      "rulesCore": "{T}: Until your next upkeep, target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value.",
+      "raw": {
+        "name": "Xenic Poltergeist",
+        "cost": "{1}{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "oracle": "{T}: Until your next upkeep, target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "fb8f80cc-6214-4ab9-a9a9-1873ab9feb0c",
+        "_scryfallId": "37055986-85e0-4568-a301-b8726da23b75",
+        "_layout": "normal",
+        "_set": "me4",
+        "_collectorNumber": "104",
+        "_rarity": "uncommon",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spirit",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me4",
+        "setName": "Masters Edition IV",
+        "collectorNumber": "104",
+        "rarity": "uncommon",
+        "releasedAt": "2011-01-10",
+        "scryfallUri": "https://scryfall.com/card/me4/104/xenic-poltergeist?utm_source=api"
+      }
+    },
+    {
+      "position": 11,
+      "oracleId": "9602f262-62cb-4c1e-91b6-d94780e571cf",
+      "scryfallId": "4aeaaeff-fb23-4f63-8d5f-8ccea6e58d3a",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "horsemanship"
+      ],
+      "implementation": [
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "sacSelf": true
+          },
+          "effects": [
+            {
+              "action": "move-to-hand",
+              "target": 0
+            }
+          ],
+          "targets": [
+            {
+              "what": "card",
+              "zone": "graveyard",
+              "controller": "you",
+              "min": 1,
+              "color": "black"
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false,
+          "beforeAttackersOnly": true
+        }
+      ],
+      "oracleContracts": [
+        "generic-activated-effect"
+      ],
+      "rulesCore": "Horsemanship\nSacrifice Xiahou Dun: Return target black card from your graveyard to your hand. Activate only during your turn, before attackers are declared.",
+      "raw": {
+        "name": "Xiahou Dun, the One-Eyed",
+        "cost": "{2}{B}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Horsemanship (This creature can't be blocked except by creatures with horsemanship.)\nSacrifice Xiahou Dun: Return target black card from your graveyard to your hand. Activate only during your turn, before attackers are declared.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "9602f262-62cb-4c1e-91b6-d94780e571cf",
+        "_scryfallId": "4aeaaeff-fb23-4f63-8d5f-8ccea6e58d3a",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "83",
+        "_rarity": "uncommon",
+        "power": "3",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Legendary Creature — Human Soldier",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Horsemanship"
+        ],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "83",
+        "rarity": "uncommon",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/83/xiahou-dun-the-one-eyed?utm_source=api"
+      }
+    },
+    {
+      "position": 12,
+      "oracleId": "0e91a873-a680-4ca2-b073-26aa39376d77",
+      "scryfallId": "4f6ea327-524b-4790-abec-05c67d7f3bbc",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{G}",
+          "power": 1,
+          "toughness": -2,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{G}: This creature gets +1/-2 until end of turn.",
+      "raw": {
+        "name": "Yavimaya Ancients",
+        "cost": "{3}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Treefolk"
+        ],
+        "oracle": "{G}: This creature gets +1/-2 until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "0e91a873-a680-4ca2-b073-26aa39376d77",
+        "_scryfallId": "4f6ea327-524b-4790-abec-05c67d7f3bbc",
+        "_layout": "normal",
+        "_set": "me2",
+        "_collectorNumber": "190",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "7"
+      },
+      "catalog": {
+        "typeLine": "Creature — Treefolk",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me2",
+        "setName": "Masters Edition II",
+        "collectorNumber": "190",
+        "rarity": "uncommon",
+        "releasedAt": "2008-09-22",
+        "scryfallUri": "https://scryfall.com/card/me2/190/yavimaya-ancients?utm_source=api"
+      }
+    },
+    {
+      "position": 13,
+      "oracleId": "3f5bbfaa-cbd7-47af-9aa2-abb49d672734",
+      "scryfallId": "41fba6db-fc52-43f2-a5d6-72001be126af",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "trample",
+        "haste"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-cumulative-upkeep",
+          "cost": "{G}{G}",
+          "contract": "mechanic-cumulative-upkeep"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-cumulative-upkeep"
+      ],
+      "rulesCore": "Trample, haste\nCumulative upkeep {G}{G}",
+      "raw": {
+        "name": "Yavimaya Ants",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "Trample, haste\nCumulative upkeep {G}{G} (At the beginning of your upkeep, put an age counter on this permanent, then sacrifice it unless you pay its upkeep cost for each age counter on it.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "3f5bbfaa-cbd7-47af-9aa2-abb49d672734",
+        "_scryfallId": "41fba6db-fc52-43f2-a5d6-72001be126af",
+        "_layout": "normal",
+        "_set": "me1",
+        "_collectorNumber": "140",
+        "_rarity": "uncommon",
+        "power": "5",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Haste",
+          "Trample",
+          "Cumulative upkeep"
+        ],
+        "commanderLegality": "legal",
+        "set": "me1",
+        "setName": "Masters Edition",
+        "collectorNumber": "140",
+        "rarity": "uncommon",
+        "releasedAt": "2007-09-10",
+        "scryfallUri": "https://scryfall.com/card/me1/140/yavimaya-ants?utm_source=api"
+      }
+    },
+    {
+      "position": 14,
+      "oracleId": "53d6113d-acdb-4754-9641-f7991a96c7b9",
+      "scryfallId": "d9fdbc02-7ab7-4f77-8a89-5a9e01eb32f5",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "C": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "mana": "{G}",
+            "tap": true
+          },
+          "effects": [
+            {
+              "action": "regenerate",
+              "target": 0
+            }
+          ],
+          "targets": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "mana-source",
+        "generic-activated-effect"
+      ],
+      "rulesCore": "{T}: Add {C}.\n{G}, {T}: Regenerate target creature.",
+      "raw": {
+        "name": "Yavimaya Hollow",
+        "cost": null,
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{G}, {T}: Regenerate target creature.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "53d6113d-acdb-4754-9641-f7991a96c7b9",
+        "_scryfallId": "d9fdbc02-7ab7-4f77-8a89-5a9e01eb32f5",
+        "_layout": "normal",
+        "_set": "vma",
+        "_collectorNumber": "325",
+        "_rarity": "rare",
+        "_produced": [
+          "C"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Legendary Land",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [],
+        "keywords": [
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "vma",
+        "setName": "Vintage Masters",
+        "collectorNumber": "325",
+        "rarity": "rare",
+        "releasedAt": "2014-06-16",
+        "scryfallUri": "https://scryfall.com/card/vma/325/yavimaya-hollow?utm_source=api"
+      }
+    },
+    {
+      "position": 15,
+      "oracleId": "322f0459-f394-44f0-977b-55fd0cbe0712",
+      "scryfallId": "337239c7-73c4-4e2d-9160-ed26927dea1d",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-spell-v97",
+          "name": "Yawgmoth's Will",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect",
+        "generic-activated-effect",
+        "generic-continuous-effect"
+      ],
+      "rulesCore": "Until end of turn, you may play lands and cast spells from your graveyard.\nIf a card would be put into your graveyard from anywhere this turn, exile that card instead.",
+      "raw": {
+        "name": "Yawgmoth's Will",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Until end of turn, you may play lands and cast spells from your graveyard.\nIf a card would be put into your graveyard from anywhere this turn, exile that card instead.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "322f0459-f394-44f0-977b-55fd0cbe0712",
+        "_scryfallId": "337239c7-73c4-4e2d-9160-ed26927dea1d",
+        "_layout": "normal",
+        "_set": "vma",
+        "_collectorNumber": "148",
+        "_rarity": "mythic"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "vma",
+        "setName": "Vintage Masters",
+        "collectorNumber": "148",
+        "rarity": "mythic",
+        "releasedAt": "2014-06-16",
+        "scryfallUri": "https://scryfall.com/card/vma/148/yawgmoths-will?utm_source=api"
+      }
+    },
+    {
+      "position": 16,
+      "oracleId": "15b9b0cc-47ef-4147-aba7-a7adae41921b",
+      "scryfallId": "79a0dd6d-8904-467f-b63b-13dfc45232fb",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-creature-v94",
+          "mode": "Ydwen Efreet",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ],
+      "rulesCore": "Whenever this creature blocks, flip a coin. If you lose the flip, remove this creature from combat and it can't block this turn. Creatures it was blocking that had become blocked by only this creature this combat become unblocked.",
+      "raw": {
+        "name": "Ydwen Efreet",
+        "cost": "{R}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Efreet"
+        ],
+        "oracle": "Whenever this creature blocks, flip a coin. If you lose the flip, remove this creature from combat and it can't block this turn. Creatures it was blocking that had become blocked by only this creature this combat become unblocked.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "15b9b0cc-47ef-4147-aba7-a7adae41921b",
+        "_scryfallId": "79a0dd6d-8904-467f-b63b-13dfc45232fb",
+        "_layout": "normal",
+        "_set": "me1",
+        "_collectorNumber": "112",
+        "_rarity": "rare",
+        "power": "3",
+        "toughness": "6"
+      },
+      "catalog": {
+        "typeLine": "Creature — Efreet",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me1",
+        "setName": "Masters Edition",
+        "collectorNumber": "112",
+        "rarity": "rare",
+        "releasedAt": "2007-09-10",
+        "scryfallUri": "https://scryfall.com/card/me1/112/ydwen-efreet?utm_source=api"
+      }
+    },
+    {
+      "position": 17,
+      "oracleId": "cdada8f0-d001-485c-a245-5e1c1ab748ab",
+      "scryfallId": "9cae2231-183a-4627-be49-f59fb1d951cf",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "cant-block",
+          "contract": "cant-block-static"
+        }
+      ],
+      "oracleContracts": [
+        "cant-block-static"
+      ],
+      "rulesCore": "This creature can't block.",
+      "raw": {
+        "name": "Young Wei Recruits",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "This creature can't block.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "cdada8f0-d001-485c-a245-5e1c1ab748ab",
+        "_scryfallId": "9cae2231-183a-4627-be49-f59fb1d951cf",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "84",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "84",
+        "rarity": "common",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/84/young-wei-recruits?utm_source=api"
+      }
+    },
+    {
+      "position": 18,
+      "oracleId": "9e60c102-412e-4956-a7bb-a2cd737d6692",
+      "scryfallId": "f566f52d-0eba-4b36-936f-002dab3354b3",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-creature-v94",
+          "mode": "Zhalfirin Crusader",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ],
+      "rulesCore": "Flanking\n{1}{W}: The next 1 damage that would be dealt to this creature this turn is dealt to any target instead.",
+      "raw": {
+        "name": "Zhalfirin Crusader",
+        "cost": "{1}{W}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Knight"
+        ],
+        "oracle": "Flanking (Whenever a creature without flanking blocks this creature, the blocking creature gets -1/-1 until end of turn.)\n{1}{W}: The next 1 damage that would be dealt to this creature this turn is dealt to any target instead.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "9e60c102-412e-4956-a7bb-a2cd737d6692",
+        "_scryfallId": "f566f52d-0eba-4b36-936f-002dab3354b3",
+        "_layout": "normal",
+        "_set": "vma",
+        "_collectorNumber": "54",
+        "_rarity": "rare",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Knight",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flanking"
+        ],
+        "commanderLegality": "legal",
+        "set": "vma",
+        "setName": "Vintage Masters",
+        "collectorNumber": "54",
+        "rarity": "rare",
+        "releasedAt": "2014-06-16",
+        "scryfallUri": "https://scryfall.com/card/vma/54/zhalfirin-crusader?utm_source=api"
+      }
+    },
+    {
+      "position": 19,
+      "oracleId": "f3f815b8-75c6-40e0-9716-872f0f5c9d46",
+      "scryfallId": "6364eba6-6aba-4c18-b9f0-aead17064b48",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "vigilance",
+        "horsemanship"
+      ],
+      "implementation": [],
+      "oracleContracts": [],
+      "rulesCore": "Vigilance; horsemanship",
+      "raw": {
+        "name": "Zhang Fei, Fierce Warrior",
+        "cost": "{4}{W}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier",
+          "Warrior"
+        ],
+        "oracle": "Vigilance; horsemanship (This creature can't be blocked except by creatures with horsemanship.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "f3f815b8-75c6-40e0-9716-872f0f5c9d46",
+        "_scryfallId": "6364eba6-6aba-4c18-b9f0-aead17064b48",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "28",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Legendary Creature — Human Soldier Warrior",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Vigilance",
+          "Horsemanship"
+        ],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "28",
+        "rarity": "uncommon",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/28/zhang-fei-fierce-warrior?utm_source=api"
+      }
+    },
+    {
+      "position": 20,
+      "oracleId": "e5c2cf0f-c1c0-4fd6-9b5f-7d4aa25246a7",
+      "scryfallId": "1dfb3f91-5ecd-405d-9d67-655f2734a147",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "paper-creature-v94",
+          "mode": "Zodiac Dragon",
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ],
+      "rulesCore": "When this creature is put into your graveyard from the battlefield, you may return it to your hand.",
+      "raw": {
+        "name": "Zodiac Dragon",
+        "cost": "{7}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "oracle": "When this creature is put into your graveyard from the battlefield, you may return it to your hand.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "e5c2cf0f-c1c0-4fd6-9b5f-7d4aa25246a7",
+        "_scryfallId": "1dfb3f91-5ecd-405d-9d67-655f2734a147",
+        "_layout": "normal",
+        "_set": "me3",
+        "_collectorNumber": "112",
+        "_rarity": "rare",
+        "power": "8",
+        "toughness": "8"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dragon",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me3",
+        "setName": "Masters Edition III",
+        "collectorNumber": "112",
+        "rarity": "rare",
+        "releasedAt": "2009-09-07",
+        "scryfallUri": "https://scryfall.com/card/me3/112/zodiac-dragon?utm_source=api"
+      }
+    },
+    {
+      "position": 21,
+      "oracleId": "bc7b90b1-3517-4e5d-9bd8-68b4d8a259fd",
+      "scryfallId": "29d414a2-9afd-4bf1-908a-d9b5bea06222",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "tap": true
+          },
+          "effects": [
+            {
+              "action": "damage",
+              "target": 0,
+              "n": 1
+            }
+          ],
+          "targets": [
+            {
+              "what": "any",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "max": 1,
+              "attackingOrBlocking": false
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "generic-activated-effect"
+      ],
+      "rulesCore": "{T}: This creature deals 1 damage to any target.",
+      "raw": {
+        "name": "Zuran Spellcaster",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "oracle": "{T}: This creature deals 1 damage to any target.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "bc7b90b1-3517-4e5d-9bd8-68b4d8a259fd",
+        "_scryfallId": "29d414a2-9afd-4bf1-908a-d9b5bea06222",
+        "_layout": "normal",
+        "_set": "me2",
+        "_collectorNumber": "76",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Wizard",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "me2",
+        "setName": "Masters Edition II",
+        "collectorNumber": "76",
+        "rarity": "common",
+        "releasedAt": "2008-09-22",
+        "scryfallUri": "https://scryfall.com/card/me2/76/zuran-spellcaster?utm_source=api"
+      }
+    }
+  ]
+}

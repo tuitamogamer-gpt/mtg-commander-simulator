@@ -7,6 +7,7 @@ import { fetchOracleCardsFromGzip, semanticClass } from './import-oracle-batch.m
 import { loadEngine } from '../tests/helpers/load-engine.mjs';
 import { matchCatalogSource } from './catalog-source-match.mjs';
 import { createOracleCompilerCache } from './oracle-compiler-cache.mjs';
+import {hasPaperPrinting, inPaperCommanderUniverse, loadPaperAvailabilityFromGzip, validatePaperAvailability} from './oracle-paper-universe.mjs';
 
 // A read-only runtime inventory and a reproducible comparison with the pinned
 // Oracle feed. This script never imports cards or grants support certification.
@@ -21,21 +22,37 @@ let fresh = false;
 for (const argument of process.argv.slice(2)) {
   if (argument === '--check') { assert.equal(check, false, 'duplicate --check'); check = true; continue; }
   if (argument === '--fresh') { assert.equal(fresh, false, 'duplicate --fresh'); fresh = true; continue; }
-  const match = /^--(source-file|source-sha256)=(.+)$/.exec(argument);
+  const match = /^--(source-file|source-sha256|paper-source-file|paper-source-sha256|paper-source-bulk-id|paper-source-updated-at)=(.+)$/.exec(argument);
   assert.ok(match, `Unknown argument: ${argument}`);
   assert.equal(options.has(match[1]), false, `Duplicate --${match[1]}`);
   options.set(match[1], match[2]);
 }
-assert.ok(options.get('source-file'), 'Usage: node scripts/export-card-catalog.mjs --source-file=/path/oracle.jsonl.gz --source-sha256=<sha256> [--check] [--fresh]');
+assert.ok(options.get('source-file'), 'Usage: node scripts/export-card-catalog.mjs --source-file=/path/oracle.jsonl.gz --source-sha256=<sha256> [--paper-source-file=/path/default-cards.jsonl.gz --paper-source-sha256=<sha256> --paper-source-bulk-id=<id> --paper-source-updated-at=<timestamp>] [--check] [--fresh]');
 
 const state = JSON.parse(read('reports/oracle-import/state.json'));
 const source = state.source;
+const recordedPaperSource = source.paperAvailability;
+let paperAvailability = {};
+if (options.get('paper-source-file')) {
+  for (const [option, field] of [['paper-source-sha256', 'bulkSha256'], ['paper-source-bulk-id', 'bulkId'], ['paper-source-updated-at', 'bulkUpdatedAt']]) {
+    if (recordedPaperSource && options.has(option)) assert.equal(options.get(option), recordedPaperSource[field], `--${option} must match the current import state`);
+  }
+  paperAvailability = await loadPaperAvailabilityFromGzip(options.get('paper-source-file'), {
+    type: 'default_cards', id: options.get('paper-source-bulk-id') || recordedPaperSource?.bulkId,
+    updated_at: options.get('paper-source-updated-at') || recordedPaperSource?.bulkUpdatedAt,
+  }, options.get('paper-source-sha256') || recordedPaperSource?.bulkSha256);
+} else if ([...options.keys()].some(option => option.startsWith('paper-source-'))) {
+  throw new Error('Pinned paper-availability source requires --paper-source-file.');
+}
+const {paperOracleIds, paperSource} = paperAvailability;
+validatePaperAvailability(paperOracleIds, paperSource, recordedPaperSource);
 const expectedHash = options.get('source-sha256');
 assert.equal(expectedHash, source.bulkSha256, 'Source SHA-256 must match the current import state');
 const { cards } = await fetchOracleCardsFromGzip(options.get('source-file'), {
   type: source.bulkType, id: source.bulkId, updated_at: source.bulkUpdatedAt,
 }, expectedHash);
-const inUniverse = card => card.games?.includes('paper') && card.legalities?.commander === 'legal';
+const inUniverse = card => inPaperCommanderUniverse(card, paperOracleIds);
+const universeFilter = paperSource ? "Oracle ID has a paper printing in pinned default_cards AND oracle_cards legalities.commander equals 'legal'" : "games includes 'paper' AND legalities.commander equals 'legal'";
 const universe = cards.filter(inUniverse);
 const byId = new Map(cards.map(card => [card.oracle_id, card]));
 assert.equal(byId.size, cards.length, 'Pinned source must have unique Oracle IDs');
@@ -87,6 +104,7 @@ const imported = names.map(name => {
     in_comparison_universe: !!card && !!inUniverse(card),
     source_commander_legality: card?.legalities?.commander || '',
     source_games: (card?.games || []).join(','),
+    source_has_paper_printing: !!card && hasPaperPrinting(card, paperOracleIds),
   };
 });
 
@@ -96,7 +114,7 @@ const imported = names.map(name => {
 // covered; exclude this presentation/export script from classifier identity.
 const classifierFiles = sorted(sourceFiles('scripts').filter(file => file !== 'scripts/export-card-catalog.mjs'));
 const classifierFilesSha256 = hash(classifierFiles.map(file => `${file}\t${hash(read(file))}`).join('\n'));
-const cacheIdentity = { schemaVersion: 1, sourceSha256: expectedHash, classifierVersion: state.compilerVersion, classifierFilesSha256 };
+const cacheIdentity = { schemaVersion: 1, sourceSha256: expectedHash, ...(paperSource ? {paperSourceSha256: paperSource.bulkSha256} : {}), classifierVersion: state.compilerVersion, classifierFilesSha256 };
 const cachePath = path.join(root, 'output/card-catalog', `classifications-${hash(JSON.stringify(cacheIdentity))}.json`);
 const classifications = new Map();
 const rowCache = createOracleCompilerCache({directory: path.join(root, 'output/oracle-classifier'), compilerVersion: state.compilerVersion});
@@ -179,8 +197,9 @@ assert.equal(representedEligible + remaining.length, universe.length, 'Every sou
 const summary = {
   schemaVersion: 1,
   inventoryAsOfImportState: state.updatedAt,
-  source: { ...source, compressedBytes: fs.statSync(options.get('source-file')).size },
-  comparisonUniverse: { filter: "games includes 'paper' AND legalities.commander equals 'legal'", unit: 'distinct Oracle ID', sourceRows: cards.length, paperRows: cards.filter(card => card.games?.includes('paper')).length, oracleIds: universe.length },
+  source: { ...source, compressedBytes: fs.statSync(options.get('source-file')).size,
+    ...(paperSource ? {paperAvailability: {...paperSource, compressedBytes: fs.statSync(options.get('paper-source-file')).size}} : {}) },
+  comparisonUniverse: { filter: universeFilter, unit: 'distinct Oracle ID', sourceRows: cards.length, paperRows: cards.filter(card => hasPaperPrinting(card, paperOracleIds)).length, oracleIds: universe.length },
   counts: {
     runtimeDefinitions: imported.length,
     genericOracleCards: state.importedNames.length,
@@ -214,14 +233,18 @@ const summary = {
     'engine_status values are project catalog markers, not a promise of exhaustive Magic rules or multiplayer correctness.',
     'A parser-eligible unimported card still requires a recorded import, executable human/local-AI proof and release checks.',
     'The comparison does not cover later cards, later legality changes, or source objects excluded by the explicit paper/Commander filter.',
+    ...(paperSource ? ['Paper availability aggregates every paper default_cards printing by Oracle ID, including reversible-card face IDs when the printing has no top-level Oracle ID. source_games retains the representative Oracle printing games field.'] : []),
   ],
 };
 artifacts.set('docs/catalog/summary.json', JSON.stringify(summary, null, 2) + '\n');
 const number = value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const reasonTable = reasons.size ? [...reasons].sort((left, right) => right[1] - left[1] || compare(left[0], right[0])).map(([reason, count]) => `| \`${reason}\` | ${number(count)} |`).join('\n') : '| None — pinned import queue completed | 0 |';
+const paperSourceDoc = paperSource ? `\n- Paper availability: Scryfall \`default_cards\` bulk feed, Oracle IDs aggregated from all paper printings.\n- Paper bulk ID: \`${paperSource.bulkId}\`.\n- Paper update: **${paperSource.bulkUpdatedAt}**.\n- Compressed paper source SHA-256: \`${paperSource.bulkSha256}\`.\n- Paper printing rows: **${number(paperSource.paperRows)}**; distinct paper Oracle IDs: **${number(paperSource.oracleIdCount)}**.\n` : '';
+const paperSourceCli = paperSource ? ` \\\n  --paper-source-file=/absolute/path/to/default-cards-pinned.jsonl.gz \\\n  --paper-source-sha256=${paperSource.bulkSha256}` : '';
+const universeDescription = paperSource ? `An Oracle ID qualifies when at least one printing in the pinned \`default_cards\` feed has \`games.includes('paper')\` and its pinned \`oracle_cards\` row has \`legalities.commander === 'legal'\`. Printing-level games on the representative Oracle row do not determine paper availability. Reversible printings without a top-level Oracle ID contribute their face Oracle IDs.` : `The historical comparison universe is exactly \`games.includes('paper') && legalities.commander === 'legal'\` on the representative Oracle row in the pinned feed. This printing-level filter can omit paper identities whose representative printing is digital; current inventories use a companion \`default_cards\` source.`;
 const doc = `# Card catalog and remaining imports
 
-This inventory is generated from the application runtime and the pinned Scryfall Oracle feed. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
+This inventory is generated from the application runtime and the pinned Scryfall Oracle feed${paperSource ? ' with its pinned paper-printing availability source' : ''}. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
 
 ## Download the complete lists
 
@@ -256,9 +279,9 @@ Generic Oracle import state: **${state.updatedAt}**. The counts below include al
 
 ## What “remaining” means
 
-The comparison universe is exactly \`games.includes('paper') && legalities.commander === 'legal'\` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has ${number(cards.length)} source rows and ${number(summary.comparisonUniverse.paperRows)} rows marked for paper.
+${universeDescription} The universe is deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, identities without paper printings, tokens, and other source objects that fail the explicit filter. The Oracle feed has ${number(cards.length)} source rows and ${number(summary.comparisonUniverse.paperRows)} rows with paper availability. The CSV \`source_games\` column records the representative Oracle printing; \`source_has_paper_printing\` records the availability used for this comparison.
 
-Recorded Oracle IDs take precedence. An Oracle batch identity missing from its pinned source is an error; native precon cards released after the snapshot retain their recorded IDs and are explicitly marked as unmatched. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists ${aliases.length} such groups, ${unmatched.length} runtime names without a pinned-source match, and ${outside.length} matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Recorded Oracle IDs take precedence when present. An Oracle batch identity missing from its pinned source is an error. Native definitions absent from the snapshot are explicitly marked as unmatched; their CSV Oracle ID contains any recorded runtime ID and otherwise remains empty. Legacy definitions without IDs match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists ${aliases.length} such groups, ${unmatched.length} runtime names without a pinned-source match, and ${outside.length} matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
 Current parser-eligible, unimported names: ${ready.length ? ready.map(entry => '\`' + entry.name + '\`').join(', ') : 'none'}. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
@@ -274,19 +297,20 @@ These are compiler queue reasons, not a claim that each card is impossible to im
 - Bulk ID: \`${source.bulkId}\`.
 - Pinned update: **${source.bulkUpdatedAt}**.
 - Compressed source SHA-256: \`${source.bulkSha256}\`.
+${paperSourceDoc}
 - Current semantic compiler: **v${state.compilerVersion}**.
 
-The original compressed snapshot is intentionally not committed. Use the same archived \`.jsonl.gz\` file and hash. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests.
+The original compressed snapshots are intentionally not committed. Use the same archived \`.jsonl.gz\` files and hashes. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing required source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests. Paper bulk ID, timestamp, and SHA-256 default to \`state.source.paperAvailability\`; a state recording that companion source cannot fall back to the representative printing's games field.
 
 \`\`\`sh
 node scripts/export-card-catalog.mjs \\
   --source-file=/absolute/path/to/oracle-pinned.jsonl.gz \\
-  --source-sha256=${source.bulkSha256}
+  --source-sha256=${source.bulkSha256}${paperSourceCli}
 
 # Recompute and fail if any committed catalog artifact is stale:
 node scripts/export-card-catalog.mjs \\
   --source-file=/absolute/path/to/oracle-pinned.jsonl.gz \\
-  --source-sha256=${source.bulkSha256} \\
+  --source-sha256=${source.bulkSha256}${paperSourceCli} \\
   --check
 \`\`\`
 

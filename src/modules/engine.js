@@ -838,6 +838,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Player departure removes owned objects separately (CR 800.4).
       if (card.zone === 'battlefield' && card.phasedOut) return card;
       const fromZone = card.zone;
+      if (toZone === 'battlefield' && fromZone !== 'battlefield' && opts.attachTo &&
+          !this.canAttachOracle(card, opts.attachTo, opts.ctrl || card.ctrl)) {
+        // A resolving Aura cannot enter enchanting a prohibited object.
+        // A non-cast attempted entry leaves the Aura in its original zone.
+        return fromZone === 'stack' ? this.move(card, 'graveyard', {...opts, attachTo:null}) : card;
+      }
       if(toZone==='battlefield'&&fromZone!=='battlefield'&&MTG.C14){const entry=await MTG.C14.entry(this,card,opts);opts=entry.opts;toZone=entry.toZone||toZone;}
       if(toZone==='battlefield'&&!card.isToken&&this.bf().some(source=>!source.cur?.abilitiesDisabled&&source.def.oracleEntryProhibitionsV19?.some(rule=>rule.zones.includes(fromZone)&&(rule.quality==='creature'?card.is('Creature'):['Artifact','Battle','Creature','Enchantment','Land','Planeswalker'].some(type=>card.is(type))&&(rule.quality!=='nonland permanent'||!card.is('Land'))))))return card;
       const oracleFace = MTG.OracleV8Faces?.moveFace(card, toZone, opts);
@@ -1594,8 +1600,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return this._battlefieldEntryEvents ? this._makeTokenBatch(spec,ctrl,opts) : this.withBattlefieldEntryBatch(()=>this._makeTokenBatch(spec,ctrl,opts));
     }
 
+    canAttachOracle(card, host, controller = card.ctrl) {
+      if (card.zone === 'battlefield' && card.attachedTo === host?.iid) return true;
+      return !(MTG.OracleV20?.handlers || []).some(handler => handler.canAttach?.(this, card, host, controller) === false);
+    }
+
     legalEntryAttachment(card, host, controller) {
       if (!(host instanceof CardInst) || (host.zone !== 'battlefield' && !(card.def.wlmAnimate && host.zone === 'graveyard')) || host.phasedOut || card === host || card.is('Creature')) return false;
+      if (!this.canAttachOracle(card, host, controller)) return false;
       if (this.isProtectedFrom(host, card,{auraAttachment:card.hasSub('Aura'),attachmentCheckV66:true})) return false;
       if (card.hasSub('Aura')) {
         const spec = card.def.auraTarget?.[0] || (card.def.bestowCost ? card.def.bestowTarget?.[0] : null);
