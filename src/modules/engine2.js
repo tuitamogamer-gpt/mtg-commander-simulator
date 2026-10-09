@@ -6,6 +6,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const G = MTG.Game.prototype;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
+  G.payLifeV92=async function(player,n,scope={}){if(n<0||!Number.isSafeInteger(n)||this.canPayLife&&!this.canPayLife(player,n))return null;return{paid:n,lifePaid:await this.loseLife(player,n,{...scope,paying:true}),exiled:0};};
+  G.maxLifePaymentV92=function(player){return this.canPayLife&&!this.canPayLife(player,1)?0:Math.max(0,player.life);};
+  function manaLifePaymentAllowedV92(game,player,steps,options={},resources){
+    if(steps.some(step=>!step.phyrexianLife&&(step.src?.extraCost?.life||step.src?.virtual==='channel'&&step.chosen?.C)&&MTG.oracleLifeCostAllowedV67?.(game,player,{isMana:true,isAbility:true,isSpell:false})===false))return false;
+    if(MTG.oracleManaLifePaymentAllowedV92)return MTG.oracleManaLifePaymentAllowedV92(game,player,steps,options,resources);
+    const n=steps.reduce((total,step)=>total+(step.phyrexianLife||step.src?.virtual==='channel'&&Math.max(0,Number(step.chosen?.C)||0)||step.src?.extraCost?.life||0),0)+(options.reservedLife||0);
+    return game.canPayLife?game.canPayLife(player,n):n===0||player.life>=n;
+  }
+  G.canSacrificeCost=function(card,player=card?.ctrl,scope={isAbility:true}){return this.canSacrifice(card)&&MTG.oracleSacrificeCostAllowedV91?.(this,player,card,scope)!==false;};
   const mainPhaseEnteredV65=new WeakSet();
   async function enteredMainPhaseV65(game,player){mainPhaseEnteredV65.add(game);try{await game.mainPhase(player);}finally{mainPhaseEnteredV65.delete(game);}}
   MTG.oracleManaActivationControllerV66=(game,player,source)=>{
@@ -150,7 +159,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function canMatchPermanentCostGroups(game, player, source, groups, used = new Set(), index = 0) {
     if (index >= groups.length) return true;
     const group = groups[index];
-    return game.bf().some(card => card.ctrl === player && !used.has(card) && game.canSacrifice(card) &&
+    return game.bf().some(card => card.ctrl === player && !used.has(card) && game.canSacrificeCost(card) &&
       (!group.filter || group.filter(game, card, source, player)) &&
       canMatchPermanentCostGroups(game, player, source, groups, new Set([...used, card]), index + 1));
   }
@@ -310,7 +319,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return ordered.length === steps.length ? ordered : null;
   }
 
-  function manaActivationResourcePlan(game, player, steps, fixedAssignments, protectedSacrifices = [], excludedTaps = [], reservedCounters = [], reservedMill = 0) {
+  function manaActivationResourcePlan(game, player, steps, fixedAssignments, protectedSacrifices = [], excludedTaps = [], reservedCounters = [], reservedMill = 0, lifeOptions = {}) {
     const reserved = new Set(protectedSacrifices);
     const tapped = new Set();
     const tapGroups = [];
@@ -335,7 +344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         tapped.add(card);
       }
       if (cost.sacSelf || cost.exileSelf) {
-        if (reserved.has(card) || cost.sacSelf && !game.canSacrifice(card) ||
+        if (reserved.has(card) || cost.sacSelf && !game.canSacrificeCost(card) ||
             cost.exileSelf && (card.zone !== 'battlefield' || card.ctrl !== player)) return null;
         reserved.add(card);
       }
@@ -416,7 +425,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const groups = sacrificeGroups.map(group => ({
       ...group,
       candidates: game.bf().filter(candidate => candidate.ctrl === player && !reserved.has(candidate) &&
-        game.canSacrifice(candidate) && group.filter(candidate) &&
+        game.canSacrificeCost(candidate) && group.filter(candidate) &&
         (!fixedAssignments || (fixedAssignments.get(group.step) || []).includes(candidate))),
     })).concat(tapGroups.map(group => ({
       ...group,
@@ -434,7 +443,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const match = index => {
       if (index >= groups.length) {
         orderedSteps = orderManaActivationSteps(game, player, steps, assignments);
-        return !!orderedSteps;
+        return !!orderedSteps&&manaLifePaymentAllowedV92(game,player,orderedSteps,{...lifeOptions,reservedMill},{assignments});
       }
       const group = groups[index];
       const target = group.tap ? tapAssignments : assignments;
@@ -457,7 +466,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { assignments, tapAssignments, orderedSteps, v20ManaAssignments };
   }
 
-  async function chooseManaActivationResources(game, player, steps, suggestedPlan, protectedSacrifices = [], excludedTaps = [], reservedCounters = [], reservedMill = 0) {
+  async function chooseManaActivationResources(game, player, steps, suggestedPlan, protectedSacrifices = [], excludedTaps = [], reservedCounters = [], reservedMill = 0, lifeOptions = {}) {
     const assignments = new Map(),pomExileAssignments=new Map();
     const reserved = new Set(steps.filter(step => step.src && step.src.extraCost &&
       (step.src.extraCost.sacSelf || step.src.extraCost.exileSelf))
@@ -466,7 +475,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!amount) return true;
       const source = step.src.card;
       const pool = game.bf().filter(candidate => candidate.ctrl === player &&
-        !reserved.has(candidate) && game.canSacrifice(candidate) && filter(candidate));
+        !reserved.has(candidate) && game.canSacrificeCost(candidate) && filter(candidate));
       if (pool.length < amount) return false;
       const suggested = (suggestedPlan.assignments.get(step) || []).filter(card => pool.includes(card)).slice(0, amount);
       let selected = suggested.length === amount ? suggested : pool.slice(0, amount);
@@ -497,7 +506,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (cost.sacType && !await choose(step, 1,
         candidate => candidate !== step.src.card && candidate.hasSub(cost.sacType), cost.sacType)) return null;
     }
-    const result=manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices, excludedTaps, reservedCounters, reservedMill);
+    const result=manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices, excludedTaps, reservedCounters, reservedMill, lifeOptions);
     if(result){
       result.pomExileAssignments=pomExileAssignments;
       if(MTG.OracleV20Costs){result.v20ManaAssignments=await MTG.OracleV20Costs.choose(game,player,steps,[...reserved]);if(!result.v20ManaAssignments)return null;}
@@ -528,6 +537,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function manaRestrictionAllows(game, entry, forSpell) {
+    if(MTG.oracleManaOriginAllowedV88?.(game,entry,forSpell)===false)return false;
     if (!entry.restrict) return true;
     // A restriction such as Somberwald Sage's applies to casting spells only:
     // its mana cannot pay an activated ability merely because that ability's
@@ -558,6 +568,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function recordManaSpent(game, player, payment, unit) {
+    MTG.oracleRecordManaSpentV86?.(game, payment, unit);
     if (unit.caveManaV83 && payment?.card && !payment.isAbility) payment.caveManaV83 = (payment.caveManaV83 || 0) + 1;
     MTG.C21Rules?.spent(game, player, payment, unit);
     MTG.CDK?.spent(game, player, payment, unit);
@@ -654,18 +665,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const list = mm;
       for (const m of list) {
         if(m.activationControllerV66?m.activationControllerV66(this,c,p)!==true:c.ctrl!==p)continue;
-        if (m.cond && !m.cond(this, c, p)) continue;
+        if(m.cond&&!m.cond(this,c,p))continue;
+        if(!lifeCostAllowed(this,p,m.cost?.life||0,{isMana:true,isAbility:true,isSpell:false}))continue;
         if(m.cost?.energy&&(p.counters?.energy||0)<m.cost.energy)continue;
         if (m.needsUntap !== false && c.tapped && m.cost && m.cost.tap) continue;
         if (m.cost && m.cost.tap && c.tapped) continue;
         if (m.cost && m.cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c) && !m.creatureOK) continue;
         if (m.oncePerTurn && c.meta['_mana_' + (m.key || 0)] === this.turnNo) continue;
-        if (m.cost && m.cost.sacSelf && !this.canSacrifice(c)) continue;
+        if (m.cost && m.cost.sacSelf && !this.canSacrificeCost(c)) continue;
         if (m.cost && m.cost.sacType && !this.bf().some(x => x.ctrl === p && x !== c &&
-          x.hasSub(m.cost.sacType) && this.canSacrifice(x))) continue;
+          x.hasSub(m.cost.sacType) && this.canSacrificeCost(x))) continue;
         if (m.cost && m.cost.sac) {
           const need = m.cost.sacN || 1;
-          const available = this.bf().filter(x => x.ctrl === p && m.cost.sac(this, x, c, p) && this.canSacrifice(x));
+          const available = this.bf().filter(x => x.ctrl === p && m.cost.sac(this, x, c, p) && this.canSacrificeCost(x));
           if (available.length < need) continue;
         }
         if (m.cost && m.cost.mill && p.library.length < m.cost.mill) continue;
@@ -683,7 +695,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // izričito prijave (restrictAbilities), da postojeće spell-only
         // restrikcije ostanu netaknute.
         if (!opts.includeRestricted && forSpell && !manaRestrictionAllows(this, {
-          restrict: m.restrict,
+          restrict: m.restrict, viaConvoke:!!m.viaConvoke,
           restrictAbilities: !!m.restrictAbilities,
           source: c,
         }, forSpell)) continue;
@@ -753,7 +765,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const grantedConvoke = !fd.convoke && forSpell.card.def.types.includes('Creature') &&
         (forSpell.card.def.super || []).includes('Legendary') &&
         this.bf().some(cc => cc.ctrl === p && cc.def.grantsConvokeLegendary);
-      if (fd.convoke || grantedConvoke || MTG.CDK?.convoke?.(this,p,forSpell.card,forSpell.castOpts||{})) {
+      if (fd.convoke || grantedConvoke || MTG.CDK?.convoke?.(this,p,forSpell.card,forSpell.castOpts||{}) || MTG.oracleConvokeV92?.(this,p,forSpell)) {
         for (const x of this.bf()) {
           if (x.ctrl !== p || x.tapped || !x.is('Creature')) continue;
           // Convoke nije aktivirana {T} sposobnost stvorenja; summoning
@@ -773,11 +785,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // while paying a spell just like mana abilities. A single virtual source
     // offers every legal life amount; activation pays exactly the chosen
     // amount instead of forcing the player to pre-convert life on resolution.
-    if (p.channelUntilTurn === this.turnNo && p.life > 0) {
+    if(p.channelUntilTurn===this.turnNo&&this.maxLifePaymentV92(p)>0&&lifeCostAllowed(this,p,1,{isMana:true,isAbility:true,isSpell:false})){
       out.push({
         card: null, virtual: 'channel',
         m: { channel: true },
-        produce: Array.from({ length: p.life }, (_, index) => ({ C: index + 1 })),
+        produce: Array.from({ length: this.maxLifePaymentV92(p) }, (_, index) => ({ C: index + 1 })),
         extraCost: {},
       });
     }
@@ -933,7 +945,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ['W', 'U', 'B', 'R', 'G', 'C'].map(color => state.pool[color] || 0).join(','),
       ['W', 'U', 'B', 'R', 'G', 'C'].map(color => state.coloredOnly[color] || 0).join(','),
       ['W', 'U', 'B', 'R', 'G', 'C'].map(color => state.used[color] || 0).join(','),
-      metaKey(state.meta)].join('|');
+      metaKey(state.meta),(state.distinctColorsV89||[]).slice().sort().join(',')].join('|');
     const clonePoolState = (state, overrides = {}) => Object.assign({
       pool: Object.assign({}, state.pool),
       coloredOnly: Object.assign({}, state.coloredOnly),
@@ -941,6 +953,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       remaining: (state.remaining || []).map(pip => pip.slice()),
       meta: cloneMeta(state.meta),
       spendTrace: state.spendTrace ? state.spendTrace.slice() : undefined,
+      distinctColorsV89: (state.distinctColorsV89||[]).slice(),
     }, overrides);
     const spendStateUnitBranches = (state, color, context, generic, snow = false) => {
       const entries = (state.meta || []).filter(entry =>
@@ -948,17 +961,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const branches = [];
       for (let index = 0; index < (state.meta || []).length; index++) {
         const entry = state.meta[index];
-        if (entry.color !== color || (Number(entry.n) || 0) <= 0 ||
+        const flexibleSnowV89 = !generic && !snow && COLORS.includes(color) && entry.c13Snow && MTG.OracleV89?.snowFlexibleCast(this,p,context);
+        if (entry.color !== color && !flexibleSnowV89 || (Number(entry.n) || 0) <= 0 ||
           !manaRestrictionAllows(this, entry, context) || generic && entry.coloredOnly || snow && !entry.c13Snow) continue;
         const branch = clonePoolState(state);
         const tracked = branch.meta[index];
         tracked.n--;
-        branch.pool[color]--;
-        branch.used[color]++;
-        if (tracked.coloredOnly) branch.coloredOnly[color]--;
+        branch.pool[tracked.color]--;
+        branch.used[tracked.color]++;
+        if (tracked.coloredOnly) branch.coloredOnly[tracked.color]--;
         branch.meta = branch.meta.filter(candidate => (Number(candidate.n) || 0) > 0);
         if (branch.spendTrace) branch.spendTrace.push({
-          color, generic: !!generic, tracked: true,
+          color: tracked.color, generic: !!generic, tracked: true,
           source: tracked.source || null, restrict: tracked.restrict || null,
           restrictAbilities: !!tracked.restrictAbilities,
           coloredOnly: !!tracked.coloredOnly,
@@ -998,11 +1012,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const state of states) {
           const matching = pip.includes('S') ? COLORS.concat('C') : [...new Set(pip.filter(color => COLORS.includes(color) || color === 'C'))];
           for (const color of matching) {
+            if(pip.includes('DISTINCT_COLOR_V89')&&(state.distinctColorsV89||[]).includes(color))continue;
             for (const branch of spendStateUnitBranches(state, color, context, pip.includes('GENERIC_V20'), pip.includes('S'))) {
+              if(pip.includes('DISTINCT_COLOR_V89')){
+                branch.distinctColorsV89.push(color);
+                branch.remaining=branch.remaining.map(other=>other.includes('DISTINCT_COLOR_V89')?other.filter(value=>value!==color):other);
+              }
               next.set(stateKey(branch), branch);
             }
           }
-          const skipped = clonePoolState(state, { remaining: state.remaining.concat([pip]) });
+          const skipped = clonePoolState(state, { remaining: state.remaining.concat([pip.includes('DISTINCT_COLOR_V89')?pip.filter(color=>!(state.distinctColorsV89||[]).includes(color)):pip]) });
           next.set(stateKey(skipped), skipped);
         }
         states = [...next.values()];
@@ -1374,7 +1393,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if(coloredOnly&&state.pips[index].includes('GENERIC_V20'))continue;
             const colors = state.pips[index].includes('S') ? snow ? flexibleColor ? COLORS : [fixedColor] : [] : flexibleColor
               ? state.pips[index].filter(color => COLORS.includes(color))
-              : state.pips[index].includes(fixedColor) ? [fixedColor] : [];
+              : state.pips[index].includes(fixedColor) || snow && MTG.OracleV89?.snowFlexibleCast(this,p,forSpell) && state.pips[index].some(color=>COLORS.includes(color)) ? [fixedColor] : [];
             for (const color of [...new Set(colors)]) candidates.push({ index, color });
           }
           // Preserve scarce sources for fixed pips before spending them on a
@@ -1383,7 +1402,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           candidates.sort((a, b) => state.pips[a.index].length - state.pips[b.index].length || a.index - b.index);
           for (const candidate of candidates) {
             const pips = state.pips.map(pip => pip.slice());
+            const distinctColorV89=state.pips[candidate.index].includes('DISTINCT_COLOR_V89');
             pips.splice(candidate.index, 1);
+            if(distinctColorV89)for(const pip of pips)if(pip.includes('DISTINCT_COLOR_V89')){const index=pip.indexOf(candidate.color);if(index>=0)pip.splice(index,1);}
             const branch = {
               pips,
               generic: state.generic,
@@ -1473,7 +1494,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       step.src && sourcePriority(step.src) >= priority).map(step => step.src.card || step.src)).size;
     const hasResourceSensitiveSources = sources.some(source => {
       const extra = source.extraCost || {};
-      return extra.discard || extra.exileFromGY || extra.exileHandV20 || extra.exileHandSelfV20 || extra.untapSelf || extra.pomExileGY || extra.energy || extra.mill || extra.sacType || extra.sac || extra.sacSelf || extra.exileSelf || extra.rmCounter || extra.removeManaCounters ||
+      return extra.life || source.virtual==='channel' || extra.discard || extra.exileFromGY || extra.exileHandV20 || extra.exileHandSelfV20 || extra.untapSelf || extra.pomExileGY || extra.energy || extra.mill || extra.sacType || extra.sac || extra.sacSelf || extra.exileSelf || extra.rmCounter || extra.removeManaCounters ||
         extra.tapPermanents || source.m && source.m.oncePerTurn;
     });
     const useMemo = !hasResourceSensitiveSources && (pips.some(pip => pip.length > 1) || sources.some(source =>
@@ -1503,7 +1524,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (++nodes > 6000 || ++totalNodes > Math.max(totalNodeBudget, branchNodeFloor)) return null;
       if (!needPips.length && needGen <= 0) {
-        return (!(lifeCost+(opts.reservedLife||0)>0)||lifeCost <= p.life - (opts.reservedLife || 0)) && (!this.canPayLife||this.canPayLife(p,lifeCost+(opts.reservedLife||0))) && phyrexianLifeAllowed(this,p,planAcc,forSpell) ? { plan: planAcc, pool: availablePool } : null;
+        return manaActivationResourcePlan(this,p,planAcc,undefined,opts.protectedSacrifices,opts.excludeCards,opts.reservedCounters,opts.reservedMill,opts)&&phyrexianLifeAllowed(this,p,planAcc,forSpell)?{plan:planAcc,pool:availablePool}:null;
       }
       const attemptSource = (s, nextOrdinaryIdx, nextConverterMask, reusableBit = 0n) => {
         if(s.m.viaWaterbendV10&&planAcc.filter(step=>step.src?.m.viaWaterbendV10).length>=forSpell.waterbendV10)return null;
@@ -1536,7 +1557,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const hasLaterConverter = (nextConverterMask & ~reusableBit) !== 0n;
           const directAllowed = manaRestrictionAllows(this,
             {
-              restrict: s.m.restrict,
+              restrict: s.m.restrict, viaConvoke:!!s.m.viaConvoke,
               restrictAbilities: !!s.m.restrictAbilities,
               source: s.card,
             }, forSpell);
@@ -1553,7 +1574,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               if (payment.remaining.length || payment.generic > 0) continue;
               const step = Object.assign({}, baseStep, { consumePayment: payment.spendTrace || [] });
               const nextPlan = planAcc.concat([step]);
-              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill)) continue;
+              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill, opts)) continue;
               const nextPool = clonePoolState(payment);
               nextPool.meta.push(...(allocation.c1719BonusMeta || []));
               for (const color of COLORS.concat('C')) {
@@ -1564,7 +1585,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 }
                 if ((s.m.restrict || !s.m.viaConvoke&&s.card?.cur?.super?.includes('Snow')) && excess) {
                   nextPool.meta.push({
-                    color, n: excess, restrict: s.m.restrict, source: s.card,
+                    color, n: excess, restrict: s.m.restrict, viaConvoke:!!s.m.viaConvoke, source: s.card,
                     restrictAbilities: !!s.m.restrictAbilities,
                     coloredOnly: !!s.m.coloredOnly,
                     c13Snow: !s.m.viaConvoke&&!!s.card?.cur?.super?.includes('Snow'),
@@ -1596,7 +1617,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (ordinaryIdx >= ordinarySources.length) {
         const allPhy = needPips.every(pip => pip.includes('PHY'));
         const phyrexianSteps = needPips.map(pip => ({ phyrexianLife: 2, phyrexianPip: pip.slice() }));
-        if (allPhy && needGen <= 0 && planLifeCost(planAcc.concat(phyrexianSteps)) <= p.life - (opts.reservedLife || 0) && (!this.canPayLife||this.canPayLife(p,planLifeCost(planAcc.concat(phyrexianSteps))+(opts.reservedLife||0))) && phyrexianLifeAllowed(this,p,planAcc.concat(phyrexianSteps),forSpell)) {
+        if (allPhy && needGen <= 0 && manaActivationResourcePlan(this,p,planAcc.concat(phyrexianSteps),undefined,opts.protectedSacrifices,opts.excludeCards,opts.reservedCounters,opts.reservedMill,opts) && phyrexianLifeAllowed(this,p,planAcc.concat(phyrexianSteps),forSpell)) {
           return { plan: planAcc.concat(phyrexianSteps), pool: availablePool };
         }
         return null;
@@ -1820,9 +1841,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Validate all shared activation resources before tapping, milling,
     // sacrificing, spending life, or changing the pool. This keeps a failed
     // payment observationally atomic and gives each source a distinct sacrifice.
-    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill);
+    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps, undefined, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill, opts);
     if (!suggestedResources) return false;
-    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill);
+    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources, opts.protectedSacrifices, opts.excludeCards, opts.reservedCounters, opts.reservedMill, opts);
     if (!activationResources) return false;
     if(activationResources.changedManaProductionV66){
       if((opts.manaReplacementRetriesV66||0)>=(sol.manaSourcesV66?.length||0)+1)return false;
@@ -1842,12 +1863,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return this.payMana(p,cost,forSpell,{...opts,manaSourcesV66:manaSources,manaReplacementRetriesV66:(opts.manaReplacementRetriesV66||0)+1});
     }
     const steps = activationResources.orderedSteps;
-    const requiredLife = steps.reduce((total, step) => {
-      if (step.phyrexianLife) return total + step.phyrexianLife;
-      if (step.src && step.src.virtual === 'channel') return total + Math.max(0, Number(step.chosen && step.chosen.C) || 0);
-      return total + Math.max(0, Number(step.src && step.src.extraCost && step.src.extraCost.life) || 0);
-    }, 0);
-    if ((requiredLife+(opts.reservedLife||0)>0&&requiredLife > p.life - (opts.reservedLife || 0)) || this.canPayLife&&!this.canPayLife(p,requiredLife+(opts.reservedLife||0))) return false;
+    if(!manaLifePaymentAllowedV92(this,p,steps,opts,activationResources))return false;
     if(!phyrexianLifeAllowed(this,p,steps,forSpell))return false;
     if(steps.reduce((sum,step)=>sum+(step.src?.extraCost?.energy||0),0)>(p.counters?.energy||0)-(opts.reservedEnergy||0))return false;
     const genTotal0 = Math.max(0, paidCost.generic + (opts.xVal || 0) * (paidCost.x || 0) - (paidCost.xReduction || 0));
@@ -1866,9 +1882,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(opts.validateExtraV20&&!opts.validateExtraV20())return false;
       if(steps.some(step=>step.src&&!MTG.oracleManaAbilityAllowedV66(this,p,step.src)))return false;
       if([...activationResources.manaReplacementPlansV66.values()].some(plan=>plan?.valid&&!plan.valid()))return false;
-    let phyPaidWithLife = 0;
+    let phyPaidWithLife = 0,phyLifePaymentChoicesV92=0;
     for (const step of steps) {
-      if (step.phyrexianLife) { await this.loseLife(p, step.phyrexianLife, 'phyrexian'); phyPaidWithLife++; continue; }
+      if(step.phyrexianLife){const receipt=await this.payLifeV92(p,step.phyrexianLife,{source:forSpell?.card,isMana:!!forSpell?.isMana,isAbility:!!forSpell?.isAbility,isSpell:!!forSpell?.card&&!forSpell?.isAbility,reason:'phyrexian'});if(!receipt)return false;phyLifePaymentChoicesV92++;if(receipt.lifePaid>0)phyPaidWithLife++;continue;}
       if (step.consume) {
         const consumeContext = { card: step.src.card, isAbility: true, isMana:true, ability:step.src.m };
         const exact = step.consumePayment || [];
@@ -1896,7 +1912,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // spending mana.  Effects such as Kurbis and expend care about the mana
     // actually spent, not the spell's final total cost.
     const convoked = forSpell && forSpell.convokedCards ? forSpell.convokedCards.length : 0;
-    const total = Math.max(0, genTotal + paidCost.pips.length - phyPaidWithLife - convoked);
+    const total = Math.max(0, genTotal + paidCost.pips.length - phyLifePaymentChoicesV92 - convoked);
     if (forSpell) forSpell.manaSpent = total;
     if (opts.isSpell) await this.trackSpentOnSpell(p, total);
     this.note('mana', { p });
@@ -1904,8 +1920,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     if(opts.prepareOnlyV20){
       const cards=[...new Set(steps.flatMap(step=>[step.src?.card,...(activationResources.assignments.get(step)||[]),...(activationResources.tapAssignments?.get(step)||[]),...(activationResources.v20ManaAssignments?.get(step)||[]).map(row=>row.card)]).filter(Boolean))];
-      const snapshot=cards.map(card=>({card,version:card.zoneVersion,zone:card.zone,tapped:card.tapped,ctrl:card.ctrl,counters:JSON.stringify(card.counters)})),pool=JSON.stringify(p.pool),life=p.life;
-      const valid=()=>pool===JSON.stringify(p.pool)&&life===p.life&&snapshot.every(r=>r.card.zoneVersion===r.version&&r.card.zone===r.zone&&r.card.tapped===r.tapped&&r.card.ctrl===r.ctrl&&JSON.stringify(r.card.counters)===r.counters);
+      const snapshot=cards.map(card=>({card,version:card.zoneVersion,zone:card.zone,tapped:card.tapped,ctrl:card.ctrl,counters:JSON.stringify(card.counters)})),pool=JSON.stringify(p.pool),life=p.life,libraryV92=p.library.map(c=>c.iid+':'+c.zoneVersion).join('|');
+      const valid=()=>pool===JSON.stringify(p.pool)&&life===p.life&&libraryV92===p.library.map(c=>c.iid+':'+c.zoneVersion).join('|')&&manaLifePaymentAllowedV92(this,p,steps,opts,activationResources)&&snapshot.every(r=>r.card.zoneVersion===r.version&&r.card.zone===r.zone&&r.card.tapped===r.tapped&&r.card.ctrl===r.ctrl&&JSON.stringify(r.card.counters)===r.counters);
       return {valid,hasManaActivationsV67:steps.some(step=>step.src&&!step.src.virtual),commit:()=>valid()?commitPaymentV20():Promise.resolve(false)};
     }
     return commitPaymentV20();
@@ -1918,8 +1934,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !Number.isSafeInteger(chosen.n) || chosen.n < 0 || chosen.n % plannedAnyGroup)) return false;
     if (s.virtual === 'channel') {
       const amount = Math.max(0, Number(chosen && chosen.C) || 0);
-      if (!amount || p.channelUntilTurn !== this.turnNo || p.life < amount) return false;
-      await this.loseLife(p, amount, 'Channel');
+      if(!amount||p.channelUntilTurn!==this.turnNo||!this.canPayLife(p,amount))return false;
+      if(!await this.payLifeV92(p,amount,{source:p.channelSource,isMana:true,isAbility:true,reason:'Channel'}))return false;
       p.pool.C = (p.pool.C || 0) + amount;
       this.note('mana', { p });
       return true;
@@ -1960,7 +1976,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const sacrificeVersions=preparedSacrificeVersions;
     if ((!preparedCost || preparedCost.v20Only) && cost.sac) {
       const need = cost.sacN || 1;
-      const pool = this.bf().filter(x => x.ctrl === p && cost.sac(this, x, c, p) && this.canSacrifice(x));
+      const pool = this.bf().filter(x => x.ctrl === p && cost.sac(this, x, c, p) && this.canSacrificeCost(x));
       if (pool.length < need) return false;
       for(const card of pool)if(!sacrificeVersions.has(card))sacrificeVersions.set(card,card.zoneVersion);
       sacrificeTargets = await p.controller.decide(this, {
@@ -1972,7 +1988,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         sacrificeTargets.some(card => !pool.includes(card))) return false;
     }
     if ((!preparedCost || preparedCost.v20Only) && cost.sacType) {
-      const pool = this.bf().filter(x => x.ctrl === p && x !== c && x.hasSub(cost.sacType) && this.canSacrifice(x));
+      const pool = this.bf().filter(x => x.ctrl === p && x !== c && x.hasSub(cost.sacType) && this.canSacrificeCost(x));
       if (!pool.length) return false;
       for(const card of pool)if(!sacrificeVersions.has(card))sacrificeVersions.set(card,card.zoneVersion);
       let selected = [pool[0]];
@@ -1990,7 +2006,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const expectedSacrifices = (cost.sac ? Math.max(1, Number(cost.sacN) || 1) : 0) + (cost.sacType ? 1 : 0);
     if (preparedCost && !preparedCost.v20Only && (sacrificeTargets.length !== expectedSacrifices ||
       new Set(sacrificeTargets).size !== sacrificeTargets.length ||
-      sacrificeTargets.some(card => card.zone !== 'battlefield' || card.ctrl !== p || !this.canSacrifice(card)))) return false;
+      sacrificeTargets.some(card => card.zone !== 'battlefield' || card.ctrl !== p || !this.canSacrificeCost(card)))) return false;
     // A source that is already tapped can no longer pay its own tap cost: the
     // payment fails instead of producing mana for free.
     if (cost.tap && c.tapped) return false;
@@ -2057,14 +2073,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(s.m.handRevealV20&&!MTG.OracleV20Costs.validateHandMana(this,p,s,preparedCost.handPlanV20))return false;
       if(s.m.activationPaymentV20&&!MTG.OracleV20Costs.validateActivation(preparedCost.activationCtxV20,cost))return false;
       if(pomManaRows.some(row=>!MTG.POM.current(row)||row.card.owner!==p||row.card.zone!=='graveyard'))return false;
-      if(cost.tap&&c.tapped||cost.sacSelf&&!this.canSacrifice(c)||cost.rmCounter&&
+      if(cost.tap&&c.tapped||cost.sacSelf&&!this.canSacrificeCost(c)||cost.rmCounter&&
         (c.counters[cost.rmCounter.kind||cost.rmCounter]||0)<(cost.rmCounter.n||1))return false;
-      if(cost.life&&p.life<cost.life||cost.mill&&p.library.length<cost.mill||cost.topHandV56&&p.hand.length<cost.topHandV56||
+      if(!manaLifePaymentAllowedV92(this,p,[{src:s,chosen}])||cost.mill&&p.library.length<cost.mill||cost.topHandV56&&p.hand.length<cost.topHandV56||
         cost.energy&&(p.counters?.energy||0)<cost.energy||cost.counter&&!this.canPutCountersV18(c,cost.counter)||
         cost.removeManaCounters&&(c.counters[cost.removeManaCounters.kind]||0)<removeManaCount)return false;
       if(sacrificeTargets.length!==expectedSacrifices||new Set(sacrificeTargets).size!==sacrificeTargets.length||
         sacrificeTargets.some((card,index)=>card.zone!=='battlefield'||card.phasedOut||card.ctrl!==p||
-          card.zoneVersion!==sacrificeVersions.get(card)||!this.canSacrifice(card)||
+          card.zoneVersion!==sacrificeVersions.get(card)||!this.canSacrificeCost(card)||
           (index<(cost.sac?Math.max(1,Number(cost.sacN)||1):0)?!cost.sac(this,card,c,p):card===c||!card.hasSub(cost.sacType))))return false;
       if(tapCostTargets.some(card=>card.zone!=='battlefield'||card.phasedOut||card.ctrl!==p||card.tapped||
         card.zoneVersion!==tapVersions.get(card)||cost.tap&&card===c||!cost.tapPermanents.filter(this,card,c,p)))return false;
@@ -2088,7 +2104,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!cost.tap || c.zone !== 'battlefield') return false;
       if(!await MTG.OracleV8Exert.exert(this,p,c))return false;
     }
-    if (cost.life) await this.loseLife(p, cost.life, 'mana');
+    if(cost.life&&!await this.payLifeV92(p,cost.life,{source:c,isMana:true,isAbility:true,reason:'mana'}))return false;
     if (cost.mill) await this.mill(p, cost.mill);
     if (cost.sacSelf) await this.sacrifice(p, c);
     if (cost.exileSelf) await this.move(c,'exile',{noCmdReplace:true});
@@ -2103,8 +2119,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       forSpell.convokedCards = forSpell.convokedCards || [];
       if (!forSpell.convokedCards.includes(c)) forSpell.convokedCards.push(c);
     }
-    if (cost.counter === '-1/-1') await this.addM1(c, 1, p);
-    else if (cost.counter) this.addCounters(c, cost.counter, 1, true, p);
+    if (cost.counter === '-1/-1') await this.addM1(c, 1, p, true, {effect:false});
+    else if (cost.counter) {if(this.putCountersV91)await this.putCountersV91(c,cost.counter,1,{by:p,effect:false,silent:true});else this.addCounters(c,cost.counter,1,true,p);}
     if (cost.rmCounter) this.removeCounters(c, cost.rmCounter.kind || cost.rmCounter, cost.rmCounter.n || 1);
     if (cost.removeManaCounters && removeManaCount) this.removeCounters(c, cost.removeManaCounters.kind, removeManaCount);
     if (s.m.oncePerTurn) c.meta['_mana_' + (s.m.key || 0)] = this.turnNo;
@@ -2136,14 +2152,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         actualProduced[col] = (actualProduced[col] || 0) + chosen[col];
       }
     }
-    if (s.m.restrict||s.m.retainManaV11||s.m.pomCopyMana||s.m.cslHasteMana||s.m.spentRiderV20||sourceCreatureV20||snowSource||c.hasSub('Desert')||c.hasSub('Treasure')||!s.m.viaConvoke&&c.hasSub('Cave')||s.m.viaConvoke&&forSpell?.card?.def.oracleManaXColorsV20) {
+    if (s.m.restrict||s.m.retainManaV11||s.m.pomCopyMana||s.m.cslHasteMana||s.m.spentRiderV20||sourceCreatureV20||snowSource||c.hasSub('Desert')||c.hasSub('Treasure')||!s.m.viaConvoke&&c.hasSub('Cave')||s.m.viaConvoke&&forSpell?.card?.def.oracleManaXColorsV20||!s.m.viaConvoke&&MTG.oracleRecordManaSpentV86) {
       p.poolMeta = p.poolMeta || [];
       for (const [color, n] of Object.entries(actualProduced)) {
         if (!(Number(n) > 0)) continue;
         p.poolMeta.push({
-          color, n, restrict: producedRestrictionV20, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:s.m.cslHasteMana||false,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
+          color, n, restrict: producedRestrictionV20, source: c, viaConvoke:!!s.m.viaConvoke, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:s.m.cslHasteMana||false,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
           c13Snow: snowSource,oracleManaRiderV20:s.m.spentRiderV20,oracleManaRiderVersionV20:sourceZoneVersion,oracleManaCreatureV20:sourceCreatureV20,
           caveManaV83: !s.m.viaConvoke && !!activationSourceSnapshotV44?.subtypes?.includes('Cave'),
+          ...(!s.m.viaConvoke ? {oracleManaOriginV86:{iid:c.iid,version:sourceZoneVersion,name:activationSourceSnapshotV44?.name||c.name,controller:p.idx,snapshot:activationSourceSnapshotV44}} : {}),
           ...(s.m.viaConvoke&&forSpell?.card?.def.oracleManaXColorsV20?{oracleConvokeV80:true}:{}),
           opalPalace: !!s.m.opalPalace,
           restrictAbilities: !!s.m.restrictAbilities,
@@ -2151,6 +2168,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
     }
+    if(!s.m?.viaConvoke)await this.emit('manaProducedV91',{card:c,player:p,produced:actualProduced,sourceZoneVersion,isMana:true,viaConvoke:false});
     if(pomManaRows.length)await this.moveGraveyardBatch(pomManaRows.map(r=>r.card),'exile');
     if(s.m.afterProduce)await s.m.afterProduce(this,c,p,sourceZoneVersion);
     if(c1719ManaHooks.length)await MTG.C1719Mana.add(this,c,p,actualProduced,s,c1719ManaHooks.filter(provider=>provider.kind==='oracleTemporaryManaBonusV36'?this.untilEffects.includes(provider):provider.zone==='battlefield'&&!provider.phasedOut&&!provider.cur?.abilitiesDisabled));
@@ -2174,7 +2192,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Snow depends on the source. A color-restricted generic cost remains
     // generic for colored-only mana. Both need a provenance-aware complete
     // payment before any unit is spent, including mixed-cost backtracking.
-    if (cost.pips.some(pip => pip.includes('S')||pip.includes('GENERIC_V20'))) {
+    const flexibleSnowV89 = MTG.OracleV89?.snowFlexibleCast(this,p,forSpell);
+    if (flexibleSnowV89 || cost.pips.some(pip => pip.includes('S')||pip.includes('GENERIC_V20'))) {
       const groups = [], remaining = {...p.pool};
       for (const entry of p.poolMeta || []) {
         const n = Math.min(Math.max(0, Number(entry.n) || 0), remaining[entry.color] || 0);
@@ -2188,7 +2207,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (coloredOnly) groups.push({color, n: coloredOnly, coloredOnly: true, tracked: false, c13Snow: false});
         if ((remaining[color] || 0) > coloredOnly) groups.push({color, n: remaining[color] - coloredOnly, coloredOnly: false, tracked: false, c13Snow: false});
       }
-      const allowed = (group, pip) => pip === null ? !group.coloredOnly : (!pip.includes('GENERIC_V20')||!group.coloredOnly)&&(pip.includes('S') ? group.c13Snow : pip.includes(group.color));
+      const allowed = (group, pip) => pip === null ? !group.coloredOnly : (!pip.includes('GENERIC_V20')||!group.coloredOnly)&&(pip.includes('S') ? group.c13Snow : pip.includes(group.color)||flexibleSnowV89&&group.c13Snow&&pip.some(color=>COLORS.includes(color)));
       const requirements = cost.pips.slice().sort((a, b) =>
         groups.filter(row => allowed(row, a)).reduce((n, row) => n + row.n, 0) -
         groups.filter(row => allowed(row, b)).reduce((n, row) => n + row.n, 0));
@@ -2196,13 +2215,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (groups.reduce((n, row) => n + row.n, 0) < total) return false;
       requirements.push(...Array(Math.max(0, Number(cost.generic) || 0)).fill(null));
       const failed = new Set();
-      const allocate = index => {
+      const allocate = (index,distinctColorsV89=[]) => {
         if (index === requirements.length) return [];
-        const key = index + '|' + groups.map(row => row.n).join(',');
+        const key = index + '|' + groups.map(row => row.n).join(',')+'|'+distinctColorsV89.slice().sort().join(',');
         if (failed.has(key)) return null;
         for (const group of groups) {
-          if (group.n <= 0 || !allowed(group, requirements[index])) continue;
-          group.n--; const rest = allocate(index + 1); group.n++;
+          const distinctV89=requirements[index]?.includes('DISTINCT_COLOR_V89');
+          if (group.n <= 0 || !allowed(group, requirements[index]) || distinctV89&&distinctColorsV89.includes(group.color)) continue;
+          group.n--; const rest = allocate(index + 1,distinctV89?distinctColorsV89.concat([group.color]):distinctColorsV89); group.n++;
           if (rest) return [{...group, generic: requirements[index] === null||requirements[index].includes('GENERIC_V20'), restrictedXV80:!!requirements[index]?.includes('GENERIC_V20')}, ...rest];
         }
         failed.add(key); return null;
@@ -2671,6 +2691,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function oracleAlternativeZonePermission(game,player,card,options={}) {
     const from=options.from||card.zone;
     if(from!==card.zone)return null;
+    for (const handler of MTG.OracleV20?.handlers || []) {
+      const permission = handler.alternativeZonePermission?.(game,player,card,options);
+      if (permission !== undefined) return permission;
+    }
     if(card.meta?.playableCondition&&!card.meta.playableCondition(game,player,card))return null;
     if(from==='hand')return player.hand.includes(card)?{from}:null;
     if(from==='command')return player.command.includes(card)?{from}:null;
@@ -2732,8 +2756,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.castHasType(card, alt || {}, 'Land')) return;
       if (card.meta && card.meta.playableCondition && !card.meta.playableCondition(this, p, faceView)) return;
       if (!this.canCastTiming(p, card, alt)) return;
-      if (definition.castCond && !definition.castCond(this, p, faceView)) return;
-      if(alt?.adventure&&definition.adventure?.castCond&&!definition.adventure.castCond(this,p,card))return;
+      if (definition.castCond && !definition.castCond(this, p, faceView, alt || {})) return;
+      if(alt?.adventure&&definition.adventure?.castCond&&!definition.adventure.castCond(this,p,card,alt))return;
       const castOpts = alt ? Object.assign({}, alt) : {};
       castOpts.from = from;
       if(!castOpts.oracleAdditionalCastChoiceV65)for(const handler of MTG.OracleV20?.handlers||[])for(const choice of handler.additionalCastOptions?.(this,p,card,from,castOpts)||[])
@@ -2767,7 +2791,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         targetPreviewX = Math.min(targetPreviewX, Math.max(0, Number(definition.xMax(this, card, p, castOpts)) || 0));
       }
       if (alt?.oracleEmergeCost) {
-        const available=this.creatures(p).filter(creature=>creature!==card&&this.canSacrifice(creature));
+        const available=this.creatures(p).filter(creature=>creature!==card&&this.canSacrificeCost(creature));
         if(!available.some(creature=>this.canPayMana(p,{...cost,xReduction:(cost.xReduction||0)+Math.max(0,Number(creature.mv)||0)},spellContext,
           {xVal,protectedSacrifices:[creature]})))return;
       } else if (canUseDelve(this, card, castOpts,p)) {
@@ -2786,11 +2810,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ac = definition.addlCost;
       if (ac && !(alt && (alt.adventure || alt.faceDownCast))) {
         if (ac.sacCreature && !this.creatures(p).some(c =>
-          (!ac.sacCreatureFilter || ac.sacCreatureFilter(this, c, p, card)) && this.canSacrifice(c))) return;
+          (!ac.sacCreatureFilter || ac.sacCreatureFilter(this, c, p, card)) && this.canSacrificeCost(c))) return;
         if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p &&
-          (c.is('Artifact') || c.is('Creature')) && this.canSacrifice(c))) return;
+          (c.is('Artifact') || c.is('Creature')) && this.canSacrificeCost(c))) return;
         if (ac.discard && p.hand.filter(c => c !== card).length < ac.discard) return;
-        if (ac.discardOrLife && !p.hand.some(c => c !== card) && p.life < ac.discardOrLife) return;
+        if(ac.discardOrLife&&!p.hand.some(c=>c!==card)&&!this.canPayLife(p,ac.discardOrLife))return;
       }
       if(definition.oracleTapCostV20&&!MTG.OracleV20Costs.tapCostFeasible(this,p,card,cost,{...castOpts,xVal}))return;
       // An offer needs one affordable, legal X, not necessarily the largest
@@ -2854,7 +2878,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.def.zkTimely) consider(card, 'hand', {zkCommanderWard: true, label: 'Timely Ward: flash targeting a commander'});
       // Marshland Bloodcaster daje OPCIONI alternativni trošak. Normalna
       // ponuda ostaje dostupna, a druga eksplicitno kaže da se plaća životom.
-      if (p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
+      if (p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && this.canPayLife(p,card.mv)) {
         consider(card, 'hand', {
           free: true, bloodcaster: true, lifeCost: card.mv,
           label: `Plati ${card.mv} života umjesto mana cijene`,
@@ -2884,7 +2908,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const alternative of card.def.altCosts || []) {
         if (!alternative.cond || alternative.cond(this, p, card)) consider(card, 'command', alternative);
       }
-      if (p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
+      if (p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && this.canPayLife(p,card.mv)) {
         consider(card, 'command', {
           free: true, bloodcaster: true, lifeCost: card.mv,
           label: `Plati ${card.mv} života umjesto mana cijene`,
@@ -2965,7 +2989,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           { consumeExilePermission: true });
         consider(card, 'exile', permission);
         if(!card.meta.freePlay&&card.def.bestowCost)consider(card,'exile',bestowAlternative(card,permission));
-        if (!card.meta.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
+        if (!card.meta.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && this.canPayLife(p,card.mv)) {
           consider(card, 'exile', {
             free: true, bloodcaster: true, lifeCost: card.mv,
             consumeExilePermission: true,
@@ -2990,7 +3014,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           { consumeExilePermission: true });
         consider(card, 'exile', permission);
         if(!m.freePlay&&card.def.bestowCost)consider(card,'exile',bestowAlternative(card,permission));
-        if (!m.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
+        if (!m.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && this.canPayLife(p,card.mv)) {
           consider(card, 'exile', {
             free: true, bloodcaster: true, lifeCost: card.mv,
             asThoughAnyColor: !!m.anyColor,
@@ -3121,7 +3145,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'striveTargets', 'counterDistribution', 'damageDivision',
     'pomSquad','pomKickerGreen','pomKickerBlue','pomHellkiteCounters','squadN', 'sacdN', 'sacdSnaps', 'additionalTapped', 'harmonizeCreature', 'discardedCards',
     'additionalLifePaid', 'additionalBlightPaid', 'additionalCostChoice',
-    'oracleV4AdditionalCost', 'oracleSpliceV11',
+    'oracleV4AdditionalCost', 'oracleSpliceV11', 'oracleV89DiscardMV',
   ];
 
   function cloneCopiableSpellChoice(value, seen = new Map()) {
@@ -3211,7 +3235,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if((alt||opts).oracleCleaveV10&&(!alt||!card.def.oracleCleaveCostV10||alt.altCostStr!==card.def.oracleCleaveCostV10||['free','bestow','faceDownCast','overloaded','flashback','jumpstart','retrace','escape','mayhem','foretell','plotPlay','harmonize','warp','evoke','blitz','dash','bloodcaster','oracleAlternativeCost'].some(key=>alt[key])))return false;
     if(alt?.oracleAirbendV10&&(!this.oracleAirbendAvailable(p,card)||(opts.from||card.zone)!=='exile'||alt.altCostStr!=='{2}'||['free','bestow','faceDownCast','overloaded','flashback','jumpstart','retrace','escape','mayhem','foretell','plotPlay','harmonize','warp','evoke','blitz','dash','bloodcaster','oracleAlternativeCost'].some(key=>alt[key])))return false;
     if(alt?.oracleAirbendV10&&!this.canCastTiming(p,card,{oracleFace:alt.oracleFace,adventure:alt.adventure,splitHalf:alt.splitHalf}))return false;
-    if(alt?.warp&&card.zone!=='hand')return false;
+    if(alt?.warp&&card.zone!=='hand'&&!(card.zone==='graveyard'&&card.owner===p&&card.def.oracleGraveWarpV88))return false;
     if(alt?.madness){
       const permission=this._madnessCasting;
       if(!permission||permission.card!==card||permission.player!==p||permission.version!==card.zoneVersion||
@@ -3241,7 +3265,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (castOpts.oracleFace === undefined) {
         const choices = MTG.OracleV8Faces.castCandidates(this, p, card, from).map(option => ({...option, ...castOpts, oracleFace: option.oracleFace, name: option.name})).filter(option => {
           const definition = this.castDefinition(card, option);
-          if (!this.canCastTiming(p, card, option) || definition.castCond && !definition.castCond(this, p, MTG.OracleV8Faces.view(card, option.oracleFace))) return false;
+          if (!this.canCastTiming(p, card, option) || definition.castCond && !definition.castCond(this, p, MTG.OracleV8Faces.view(card, option.oracleFace), option)) return false;
           const specs = this.spellTargetSpecs(card, option, p) || [];
           return specs.every(spec => spec.upTo || this.legalTargets(spec, card, p).length >= (spec.min ?? spec.count ?? 1)) && this.canPayMana(p, this.spellCost(p, card, option), {card, castOpts: option, xVal: 0});
         });
@@ -3257,7 +3281,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (!MTG.OracleV8Faces.castChoiceAllowed(this, p, card, castOpts) || !this.canCastTiming(p, card, castOpts)) return false;
       const selected = this.castDefinition(card, castOpts);
-      if (selected.castCond && !selected.castCond(this, p, MTG.OracleV8Faces.view(card, castOpts.oracleFace))) return false;
+      if (selected.castCond && !selected.castCond(this, p, MTG.OracleV8Faces.view(card, castOpts.oracleFace), castOpts)) return false;
       castOpts.name = selected.name;
     }
     const d = this.castDefinition(card, castOpts);
@@ -3289,8 +3313,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Later announcements can add intrinsic Delve, kicker and buyback flags.
     // Revalidate the selected zone permission, rather than those cost choices.
     const paidGravePermissionOptions={...castOpts};
-    if (d.castCond && !d.castCond(this, p, castView)) return false;
-    if(castOpts.adventure&&d.adventure?.castCond&&!d.adventure.castCond(this,p,card))return false;
+    if (d.castCond && !d.castCond(this, p, castView, castOpts)) return false;
+    if(castOpts.adventure&&d.adventure?.castCond&&!d.adventure.castCond(this,p,card,castOpts))return false;
     let oracleAlternative=null,oracleAlternativeSourceVersion;
     const oracleCastingChoiceSourceVersion=d.oracleCastingChoice?card.zoneVersion:null;
     if(castOpts.foretell&&!foretellCastAllowed(this,p,card,castOpts))return false;
@@ -3558,6 +3582,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
     }
+    const ordinaryKickerPaidV89=kicked;
+    const stickerKickerV89=MTG.OracleV89?.chooseStickerKicker
+      ?await MTG.OracleV89.chooseStickerKicker(this,p,card,castOpts,cost,xVal,kickedManaPreview):null;
+    if(stickerKickerV89?.count){kicked=true;castOpts._kicked=true;}
     const pomCastPlan=MTG.POM?await MTG.POM.prepareCast(this,p,card,castOpts,cost,xVal):{};
     if(!pomCastPlan)return false;
     const c1920ReplicatePlans=await MTG.C1920.replicatePayments(this,p,card,castOpts,cost,xVal);
@@ -3623,7 +3651,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(d.spreeCost)combined.generic+=d.spreeCost*d.modes.list.length;
         for(const printedMode of d.modes.list)if(printedMode.tierCost){const tier=U.parseCost(printedMode.tierCost);combined.generic+=tier.generic;combined.pips=combined.pips.concat(tier.pips);}
         canEntwine=this.canPayMana(p,oracleAdditionalManaPreview(combined,cost),{card,castOpts},{xVal});
-        if(canEntwine&&entwine.cost.kind==='sacrifice')canEntwine=this.bf().filter(permanent=>permanent.ctrl===p&&permanent.is('Land')&&this.canSacrifice(permanent)).length>=entwine.cost.n;
+        if(canEntwine&&entwine.cost.kind==='sacrifice')canEntwine=this.bf().filter(permanent=>permanent.ctrl===p&&permanent.is('Land')&&this.canSacrificeCost(permanent)).length>=entwine.cost.n;
       }
       let modeKeys;
       if(canEntwine){
@@ -3687,7 +3715,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? 'Face-down creature spell'
         : (castOpts.adventure || castOpts.splitHalf || castOpts.splitFuse || castOpts.oracleFace) && castOpts.name ? castOpts.name : card.name,
       targets: [], x: xVal, mode,
-      castOpts, kicked, offspring, from: opts.from || card.zone, copyOf: null,
+      castOpts, kicked, offspring, stickerKickerV89, from: opts.from || card.zone, copyOf: null,
       oracleFlashCleanupV10:!!d.oracleFlashCleanupV10&&!faceDownCast&&(this.turnPlayer!==p||!['main1','main2'].includes(this.phase)||this.stack.length>0||this.oracleResolutionDepthV10>0),
     };
 
@@ -3785,7 +3813,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (prepared === false) return false;
       for (const key of Object.keys(so)) if (!keysBeforePrepare.has(key)) preparedChoiceKeys.push(key);
     }
-    for(const keyword of ['kicker','buyback'])if(d.oracleKeywordPayments?.[keyword]&&(keyword==='kicker'?kicked:castOpts.buybackPaid)){
+    for(const keyword of ['kicker','buyback'])if(d.oracleKeywordPayments?.[keyword]&&(keyword==='kicker'?ordinaryKickerPaidV89:castOpts.buybackPaid)){
       const keysBeforePrepare=new Set(Object.keys(so));
       if(!await MTG.OracleV8KeywordPayments.prepare({g:this,src:card,you:p,so,targets:so.targets,castOpts},keyword))return false;
       for(const key of Object.keys(so))if(!keysBeforePrepare.has(key))preparedChoiceKeys.push(key);
@@ -3850,7 +3878,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const pool = this.bf().filter(c => c.ctrl === p &&
           (ac.sacLand ? c.is('Land') : ac.sacCreature ? c.is('Creature') : ac.sacArtifactOrCreature ? (c.is('Artifact') || c.is('Creature')) : c.is('Creature')) &&
           (!ac.sacCreatureFilter || ac.sacCreatureFilter(this, c, p, card)) &&
-          this.canSacrifice(c));
+          this.canSacrificeCost(c));
         const targetCount = ac.sacCreaturesEqualTargets
           ? (so.targets || []).flat().filter(Boolean).length
           : null;
@@ -3896,7 +3924,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const discardPool = p.hand.filter(c => c !== card);
         const options = [];
         if (discardPool.length) options.push({ key: 'discard', label: 'Odbaci kartu' });
-        if (p.life >= ac.discardOrLife&&(!this.canPayLife||this.canPayLife(p,ac.discardOrLife))) options.push({ key: 'life', label: `Plati ${ac.discardOrLife} života` });
+        if (this.canPayLife(p,ac.discardOrLife)) options.push({ key: 'life', label: `Plati ${ac.discardOrLife} života` });
         if (!options.length) return false;
         const choice = options.length === 1 ? options[0].key : await p.controller.decide(this, {
           type: 'chooseOption', prompt: `${card.name}: dodatna cijena`, options,
@@ -3915,15 +3943,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (ac.lifeX) {
         const targeted = (so.targets || []).flat().filter(Boolean).length;
         const minLife = ac.divideAmongTargets ? targeted : 0;
-        const maxLife = ac.divideAmongTargets && targeted === 0 ? 0 : p.life;
+        const maxLife=ac.divideAmongTargets&&targeted===0?0:this.maxLifePaymentV92(p);
         const thresholds = [...new Set(this.bf().filter(c => c.is('Creature'))
-          .map(c => Math.max(0, c.toughness)).filter(n => n <= p.life))].sort((a, b) => a - b);
+          .map(c => Math.max(0, c.toughness)).filter(n=>n<=maxLife))].sort((a, b) => a - b);
         const chosen = await p.controller.decide(this, {
           type: 'chooseX', min: minLife, max: maxLife, thresholds, src: card,
           prompt: `${card.name}: plati X života`,
           aiHint: { kind: ac.aiKind || 'lifeX', card, targets: (so.targets || []).flat().filter(Boolean) },
         });
-        paidAddl.life = Math.max(minLife, Math.min(Number(chosen) || 0, p.life));
+        if(!Number.isSafeInteger(chosen)||chosen<minLife||chosen>maxLife)return false;paidAddl.life=chosen;
       }
       if (ac.optionalBlight) {
         const pool = this.creatures(p);
@@ -3949,10 +3977,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Casualty and conspire are optional additional costs paid as the spell is
     // cast. Paying one queues a reflexive trigger that copies that same spell.
     let casualtyPaid = [], conspirePaid = [];
-    const casualtyInstances=[...(!faceDownCast&&!castOpts.adventure&&Number.isInteger(d.casualty)?[{n:d.casualty}]:[]),...(!faceDownCast?this.vnCasualties?.(p,card,castOpts)||[]:[])];
+    const casualtyInstances=[...(!faceDownCast&&!castOpts.adventure&&(Number.isInteger(d.casualty)||d.v92ObCasualty)?[{n:d.v92ObCasualty?'X':d.casualty,variableV92:!!d.v92ObCasualty}]:[]),...(!faceDownCast?this.vnCasualties?.(p,card,castOpts)||[]:[])];
     for (const casualty of casualtyInstances) {
-      const pool = this.creatures(p).filter(c => c !== card && c.power >= casualty.n &&
-        !paidAddl.sacd.includes(c) && this.canSacrifice(c));
+      const pool = this.creatures(p).filter(c => c !== card && c.power >= (casualty.variableV92?0:casualty.n) &&
+        !paidAddl.sacd.includes(c) && this.canSacrificeCost(c));
       if (pool.length) {
         const answer = await p.controller.decide(this, { type: 'chooseOption',
           prompt: `Casualty ${casualty.n} for ${card.name} — sacrifice a creature to copy it?`,
@@ -3963,7 +3991,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             prompt: `Casualty ${casualty.n}: sacrifice which creature?`,
             aiHint: { kind: 'addlSac', card, required: 1 } });
           const victim = Array.isArray(picked) ? picked[0] : picked;
-          if (victim && pool.includes(victim)) { paidAddl.sacd = paidAddl.sacd.concat([victim]); casualtyPaid.push(casualty); }
+          if (victim && pool.includes(victim)) { paidAddl.sacd = paidAddl.sacd.concat([victim]); casualtyPaid.push({...casualty,...(casualty.variableV92?{powerV92:Math.max(0,victim.power)}:{})}); }
         }
       }
     }
@@ -4032,15 +4060,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       reservedEnergy:(castOpts.pomEnergyCost||0)+(castOpts.oracleReplicateEnergyV23||0),
       validateExtraV20:()=> plotCastAllowed(this,p,card,castOpts)&&paidExileConditionAllowed(this,p,card,castOpts)&&selfGravePermissionAllowed(this,p,card,paidGravePermissionOptions)&&
         (!castOpts.starterPermission||MTG.StarterCasting.validate({g:this,src:card,you:p,so}))&&
+        (!MTG.OracleV89||MTG.OracleV89.validateCast(this,p,card,so))&&
         (castOpts.oracleImmediateCast===undefined||MTG.OracleV8PlayPermissions?.allowed(this,p,card,castOpts)&&this.canCastTiming(p,card,castOpts))&&
         (!delveExiled.length||canUseDelve(this,card,castOpts,p))&&
         !(MTG.OracleV20?.handlers||[]).some(handler=>handler.validateCastChoices?.(this,p,card,castOpts)===false)&&(!MTG.OracleV23Spells||MTG.OracleV23Spells.validateSplice({g:this,you:p,src:card,so,castOpts}))&&(!d.oracleTapCostV20||MTG.OracleV20Costs.validateTapCost(this,p,card,so))&&(!d.oracleRevealCostV20||MTG.C1516.current(so.c1516Reveal)&&p.hand.includes(so.c1516Reveal.card)),
       xVal, isSpell: true,
       manualMana: !!d.manualManaPayment,
       excludeCards: paidAddl.tapped.concat(harmonizeCreature ? [harmonizeCreature] : [], so.oracleCastingChoicePlan?.kind === 'tapPermanent' ? [so.oracleCastingChoicePlan.card] : [], d.oracleOptionalCostV14?.kind==='teamwork'?(so.oracleOptionalPlanV14?.cards||[]).map(row=>row.card):[]),
-      protectedSacrifices: paidAddl.sacd.concat(d.c1516RevealCreature?[so.c1516Reveal.card]:[],(so.pomExile||[]).map(r=>r.card),kotisExiled, broodshipLand ? [broodshipLand] : [], (so.oracleCostPlans || []).flatMap(plan => [...plan.sacrifices, ...(plan.returns || []), ...(plan.handExiles || [])]), so.oracleCastingChoicePlan?.card ? [so.oracleCastingChoicePlan.card] : [], (so.oracleOptionalPlanV14?.cards||[]).map(row=>row.card), MTG.OracleV23Spells?.protectedChoices?.({g:this,you:p,src:card,so,castOpts})||[]),
-      reservedCounters:so.cdkPlan?.counters||[],
+      protectedSacrifices: paidAddl.sacd.concat(d.c1516RevealCreature?[so.c1516Reveal.card]:[],(so.pomExile||[]).map(r=>r.card),kotisExiled, broodshipLand ? [broodshipLand] : [], (so.oracleCostPlans || []).flatMap(plan => [...plan.sacrifices, ...(plan.returns || []), ...(plan.handExiles || [])]), so.oracleCastingChoicePlan?.card ? [so.oracleCastingChoicePlan.card] : [], (so.oracleOptionalPlanV14?.cards||[]).map(row=>row.card), MTG.OracleV23Spells?.protectedChoices?.({g:this,you:p,src:card,so,castOpts})||[],MTG.OracleV89?.reservedCards(so)||[],(so.counterCostV90?.rows||[]).map(row=>row.card)),
+      reservedCounters:[...(so.cdkPlan?.counters||[]),...(MTG.OracleV89?.reservedCounters(so)||[]),...(so.counterCostV90?MTG.OracleV8CounterCosts.reservations(so.counterCostV90.rows):[])],
       reservedLife: (cost.lifeCost||0)+paidAddl.life + (so.oracleCostPlans || []).reduce((sum, plan) => sum + plan.life, 0),
+      reservedLifePlansV92:[{life:cost.lifeCost||0},...(so.oracleCostPlans||[]).map(plan=>({life:plan.life||0,remove:[...(plan.sacrifices||[]),...(plan.returns||[])]})),{life:paidAddl.life,remove:paidAddl.sacd}],
     };
     // Lock the selected graveyard objects before paying any resources.
     const graveyardVersions = new Map(p.graveyard.map(candidate => [candidate, candidate.zoneVersion]));
@@ -4135,7 +4165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...kotisExiled,...delveExiled,...escapeExiled,...additionalExiled,...(broodshipLand?[broodshipLand]:[])]})) return false;
     if(d.c1516RevealCreature&&(!MTG.C1516.current(so.c1516Reveal)||!p.hand.includes(so.c1516Reveal.card)||paidAddl.discarded.includes(so.c1516Reveal.card)))return false;
     if(castOpts.madness&&d.vnMadnessLife)paidAddl.life+=d.vnMadnessLife;
-    if(this.canPayLife&&!this.canPayLife(p,paidAddl.life+(cost.lifeCost||0)))return false;
+    if(!manaLifePaymentAllowedV92(this,p,[],manaPaymentOptions))return false;
     if(!lifeCostAllowed(this,p,paidAddl.life+(cost.lifeCost||0)+(so.oracleCostPlans||[]).reduce((n,plan)=>n+plan.life,0),{isMana:false,isAbility:false,isSpell:true}))return false;
     if(splicePlans.some(plan=>plan.card.zone!=='hand'||plan.card.zoneVersion!==plan.version||!p.hand.includes(plan.card)))return false;
     if(MTG.OracleV23Spells&&!MTG.OracleV23Spells.validateSplice({g:this,you:p,src:card,so,castOpts}))return false;
@@ -4151,7 +4181,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     await MTG.OracleV23Spells?.commitSplice({g:this,you:p,src:card,so,castOpts});
     if(castOpts.pomEnergyCost&&!MTG.OracleV8Energy.spend(this,p,castOpts.pomEnergyCost,card))return false;
-    if(cost.lifeCost&&!castOpts.bloodcaster)await this.loseLife(p,cost.lifeCost,'altcost');
+    if(cost.lifeCost&&!castOpts.bloodcaster&&!await this.payLifeV92(p,cost.lifeCost,{source:card,isSpell:true,reason:'altcost'}))return false;
     // A "next spell costs less" permission is consumed by that cast even if
     // a free base plus no generic additions leaves zero mana to physically
     // pay. Keep this after successful payment so failed casts consume nothing.
@@ -4161,8 +4191,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (castOpts.bloodcaster) {
       const grant = p.bloodcasterAlternative;
       const manaValue = MTG.mv(d.cost || '', xVal);
-      if (!grant || grant.turn !== this.turnNo || p.life <= manaValue) return false;
-      await this.loseLife(p, manaValue, 'Marshland Bloodcaster');
+      if(!grant||grant.turn!==this.turnNo||!this.canPayLife(p,manaValue))return false;
+      if(!await this.payLifeV92(p,manaValue,{source:card,isSpell:true,reason:'Marshland Bloodcaster'}))return false;
       p.bloodcasterAlternative = null;
     }
     so.treasureUsed = !!paySpell.treasureUsed;
@@ -4177,6 +4207,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.manaSpent = paySpell.manaSpent || 0;
     so.oracleManaRidersV20=paySpell.oracleManaRidersV20||[];so.oracleCreatureManaV20=paySpell.oracleCreatureManaV20||0;
     so.paymentColorCounts={...(paySpell.paymentColorCounts||{})};
+    so.oracleManaSourcesV86=(paySpell.oracleManaSourcesV86||[]).map(row=>({...row}));
     so.oracleRestrictedXColorsV80={...(paySpell.oracleRestrictedXColorsV80||{})};
     so.snowSpent = paySpell.c13SnowSpent || 0;
     so.snowColorsV65={...(paySpell.c13SnowColors||{})};
@@ -4187,6 +4218,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // Revealing is paid only after every choice and mana payment succeeds.
+    if(MTG.OracleV89&&!await MTG.OracleV89.commitCast(this,p,card,so))return false;
     if(splicePlans.length)await this.revealToHuman({cards:splicePlans.map(plan=>plan.card),ctrl:p,source:card,kind:'splice'});
     if(d.c1516RevealCreature)await this.revealToHuman({cards:[so.c1516Reveal.card],ctrl:p,source:card,kind:'additionalCost'});
     // pay additional
@@ -4205,9 +4237,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.tap(harmonizeCreature);
     }
     for (const c of paidAddl.discarded) await this.discard(p, [c], { noReplacement: true });
-    if (paidAddl.life) await this.loseLife(p, paidAddl.life, {paying:true,source:card});
-    if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p);
-    so.additionalLifePaid = paidAddl.life;
+    let additionalLifeReceiptV92;if(paidAddl.life){additionalLifeReceiptV92=await this.payLifeV92(p,paidAddl.life,{source:card,isSpell:true});if(!additionalLifeReceiptV92)return false;}
+    if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p, true, {effect:false});
+    so.additionalLifePaid=additionalLifeReceiptV92?.lifePaid||0;so.additionalLifePaymentV92=additionalLifeReceiptV92||null;
     so.additionalBlightPaid = paidAddl.blightN;
     so.additionalCostChoice = paidAddl.choice;
     if (castOpts.kotis) {
@@ -4222,7 +4254,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       delete castOpts.flashback;
     }
     if (castOpts.gravecrawler) delete castOpts.flashback;
-    if(castOpts.starterPermission)MTG.StarterCasting.commit({g:this,src:card,you:p,so});
+    if(castOpts.starterPermission)await MTG.StarterCasting.commit({g:this,src:card,you:p,so});
     await this.moveGraveyardBatch((so.afcGorexRows||[]).map(r=>r.card),'exile');
     so.afcGorexExiled=(so.afcGorexRows||[]).filter(r=>r.card.zone==='exile'&&r.card.zoneVersion===r.version+1).map(r=>({iid:r.card.iid,version:r.card.zoneVersion}));
     await this.moveGraveyardBatch(additionalExiled, 'exile');
@@ -4299,6 +4331,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       alternativeManaChoices: so.alternativeManaChoices || { hybrid: [], phyrexian: [], twoBridge: [] },
       paymentColors: [...(card.meta._payColors || [])],
       paymentColorCounts:{...so.paymentColorCounts},
+      oracleManaSourcesV86:(so.oracleManaSourcesV86||[]).map(row=>({...row})),
       snowColorsV65:{...so.snowColorsV65},
     };
     if (paidTimes) { card.meta.paidTimes = paidTimes; so.squadN = paidTimes; }
@@ -4380,9 +4413,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     MTG.C21Rules?.copyTriggers(this,p,so,paySpell);
     // storm
-    for (const [paid, label] of [...casualtyPaid.map(()=>[true,'Casualty']), ...conspirePaid.filter(r=>MTG.C1920.copyGrantActive(this,r)).map(()=>[true,'Conspire'])]) if (paid) this.queueTrigger({
+    for (const [paid, label] of [...casualtyPaid.map(row=>[row,'Casualty']), ...conspirePaid.filter(r=>MTG.C1920.copyGrantActive(this,r)).map(()=>[true,'Conspire'])]) if (paid) this.queueTrigger({
       src: card, ctrl: p, name: label, data: { so },
-      run: async ctx => { await ctx.g.copySpell(ctx.data.so, ctx.you, { mayNewTargets: true }); },
+      run: async ctx => { const original=ctx.data.so,definition=original.oracleDefinition||ctx.g.castDefinition(original.card,original.castOpts);await ctx.g.copySpell(original,ctx.you,{mayNewTargets:true,...(paid.variableV92?{oracleDefinition:{...definition,super:(definition.super||[]).filter(t=>t!=='Legendary'),loyalty:String(paid.powerV92)}}:{})}); },
     });
     if(!faceDownCast&&d.replicate&&paidTimes>0)this.queueTrigger({
       src:card,ctrl:p,name:'Replicate',data:{so,count:paidTimes},run:async ctx=>{
@@ -4878,7 +4911,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         so.targetIdentities || so.ctx.targetIdentities);
       so.ctx.targets = checked.targets;
       so.targets = checked.targets;
-      if (checked.anyChosen && !checked.anyLegal) {
+      if (checked.anyChosen && !checked.anyLegal && !so.ctx.resolveIllegalV89) {
         this.lg(`${so.name}: all targets are illegal — trigger fizzles.`);
         return;
       }
@@ -4956,6 +4989,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!so.isCopy) await this.move(card, destination);
       return;
     }
+    so.oracleInstructionResolvedV89=true;
     this.lg(`Resolving: ${so.name}.`, 'resolve');
     await this.pace(p.isAI ? 750 : 200);
     const ctx = {
@@ -5148,7 +5182,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const recorded=so.oracleSneakPayment?.defender;
       const target=recorded?.kind==='player'?this.players.find(player=>player.idx===recorded.idx):recorded?.kind==='permanent'?this.byIid(recorded.iid):null;
       const valid=target instanceof MTG.Player?!target.lost&&target!==p:
-        target?.zone==='battlefield'&&target.zoneVersion===recorded.zoneVersion&&target.is('Planeswalker')&&target.ctrl!==p;
+        target?.zone==='battlefield'&&target.zoneVersion===recorded.zoneVersion&&
+        (target.is('Planeswalker')||target.is('Battle'))&&MTG.defendingPlayerV92(target)!==p;
       return {tapped:true,...(valid&&this.combat&&this.turnPlayer===p?{attacking:target}:{})};
     };
     if (so.isCopy) {
@@ -5172,6 +5207,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           alt: Object.assign({}, so.castOpts || {}),
           from: so.from,
           kicked: !!so.kicked,
+          dralnuDiscardMV89: so.oracleV89DiscardMV,
           ...(Array.isArray(so.castOpts?.oracleDualKickerV24)?{paidTimes:so.castOpts.oracleDualKickerV24.length}:{}),
           offspring: !!so.offspring,
           pomSquad: so.pomSquad || 0,
@@ -5375,7 +5411,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         {...options, protectedSacrifices: fixed.concat(picks)});
       if (!cost.sacCreature && !cost.sac) return payable([]);
       const pool = this.bf().filter(card => card.ctrl === p &&
-        (!(cost.sacOther || cost.sacSelf) || card !== source) && this.canSacrifice(card) &&
+        (!(cost.sacOther || cost.sacSelf) || card !== source) && this.canSacrificeCost(card) &&
         (cost.sacCreature ? card.is('Creature') : cost.sac(this, card, source)));
       const need = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? (cost.afcZeroX?0:1) : cost.sacN || 1;
       const visit = (start, picks) => {
@@ -5414,7 +5450,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cost.mill && p.library.length < cost.mill) return;
         if(cost.topHandV56&&p.hand.length<cost.topHandV56)return;
         if (cost.tap && (c.tapped)) return;
-        if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return;
+        if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')&&!MTG.C21Rules?.abilityHaste(this,c)))return;
         if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c)) return;
         if (cost.tapHost) {
           const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
@@ -5446,15 +5482,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }), a));
           if (!possible) return;
         }
-        if (cost.sacSelf && !this.canSacrifice(c)) return;
+        if (cost.sacSelf && !this.canSacrificeCost(c)) return;
         if (cost.exileSelf && c.zone !== 'battlefield') return;
         // sacN: cijena može tražiti VIŠE žrtava (Olivia: "Sacrifice two
         // Treasures"). Sa jednim dostupnim permanentom ability ne smije ni
         // biti ponuđen — inače igrač upadne u chooseCards prozor bez izlaza.
         const sacNeed = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? (cost.afcZeroX?0:1) : (cost.sacN || 1);
-        if (cost.sacCreature && this.creatures(p).filter(x => (!(cost.sacOther||cost.sacSelf) || x !== c) && this.canSacrifice(x)).length < sacNeed) return;
-        if (cost.sac && this.bf().filter(x => x.ctrl === p && (!(cost.sacOther||cost.sacSelf) || x !== c) && cost.sac(this, x, c) && this.canSacrifice(x)).length < sacNeed) return;
-        if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
+        if (cost.sacCreature && this.creatures(p).filter(x => (!(cost.sacOther||cost.sacSelf) || x !== c) && this.canSacrificeCost(x)).length < sacNeed) return;
+        if (cost.sac && this.bf().filter(x => x.ctrl === p && (!(cost.sacOther||cost.sacSelf) || x !== c) && cost.sac(this, x, c) && this.canSacrificeCost(x)).length < sacNeed) return;
+        if (cost.life && (!this.canPayLife(p,cost.life))) return;
         if (cost.discard) {
           const discardN = cost.discard === 'all' ? p.hand.length : typeof cost.discard === 'object' ? (cost.discard.n || 1) : cost.discard;
           const discardFilter = typeof cost.discard === 'object' ? cost.discard.filter : null;
@@ -5577,7 +5613,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const utility = (c.def.abilities || []).concat(c.cur && c.cur.extraAbilities || [])
         .some(ability => !ability.manaAbilityOnly) || source.m.manual || c.is('Creature') || restrictedCards.has(c) || hasManaFee;
       if (!utility) continue;
-      if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) continue;
+      if (cost.life && (!this.canPayLife(p,cost.life))) continue;
       if (cost.mana) {
         const manaCost = this.abilityManaCost(p, c, rawManaCost, {isMana:true});
         if (!this.canPayMana(p, manaCost, { card: c, isAbility: true, ability:source.m }, {
@@ -5602,7 +5638,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cost = a.cost || {};
         if (cost.mana && !this.canPayMana(p, this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, { ability: a }),
           { card: c, isAbility: true, ability: a })) return;
-        if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
+        if (cost.life && (!this.canPayLife(p,cost.life))) return;
         if (a.targets && a.targets.some(spec => !spec.upTo && this.legalTargets(spec, c, p).length < (spec.min ?? spec.count ?? 1))) return;
         out.push({ card: c, ability: a, idx: `opp_${ai}`, opponentAbility: true });
       });
@@ -5694,7 +5730,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(gyExtra.energy&&(p.counters.energy||0)<gyExtra.energy)continue;
       if (gyExtra.sac) {
         const need = gyExtra.sacN || 1;
-        if (this.bf().filter(card => card.ctrl === p && gyExtra.sac(this, card, c, p) && this.canSacrifice(card)).length < need) continue;
+        if (this.bf().filter(card => card.ctrl === p && gyExtra.sac(this, card, c, p) && this.canSacrificeCost(card)).length < need) continue;
       }
       if (gyExtra.return) {
         const need = gyExtra.returnN || 1;
@@ -5705,7 +5741,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!this.canPayMana(p, mc, { card: c, isAbility: true, ability: a }, { artifactAbilityAlreadyUsed: c.is('Artifact'),reservedMill:gyExtra.mill||0 })) continue;
       out.push({ card: c, gyAbility: true, gyAbilityOverride: a, grantSource });
     }
-    if (p.channelUntilTurn === this.turnNo && p.life > 0 && p.channelSource) {
+    if (p.channelUntilTurn===this.turnNo&&this.canPayLife(p,1)&&lifeCostAllowed(this,p,1,{isMana:true,isAbility:true,isSpell:false})&&p.channelSource) {
       out.push({
         card: p.channelSource, channelMana: true, manaAbility: true,
         label: 'Channel: plati 1 život → dodaj {C}',
@@ -5721,8 +5757,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (this.hasSplitSecond() && !(entry.manaAbility || entry.turnFaceUp || entry.oracleLicidEndV24 || entry.foretell)) return false;
     const c = entry.card;
     if (entry.channelMana) {
-      if (p.channelUntilTurn !== this.turnNo || p.life < 1) return false;
-      await this.loseLife(p, 1, 'Channel');
+      if(p.channelUntilTurn!==this.turnNo||!this.canPayLife(p,1))return false;
+      if(!await this.payLifeV92(p,1,{source:c,isMana:true,isAbility:true,reason:'Channel'}))return false;
       p.pool.C = (p.pool.C || 0) + 1;
       this.lg(`${p.name}: Channel — plati 1 život, dodaj {C}.`, 'mana');
       this.note('mana', { p });
@@ -5749,7 +5785,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (cost.tap && c.tapped) return false;
       if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c) &&
         !source.m.creatureOK && !source.m.ignoreSickness) return false;
-      if (cost.life && (p.life < cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return false;
+      if (cost.life && (!this.canPayLife(p,cost.life))) return false;
       const handPlanV20=source.m.handRevealV20?await MTG.OracleV20Costs.prepareHandMana(this,p,source):null;
       if(source.m.handRevealV20&&!handPlanV20)return false;
       const activationCtxV20=source.m.activationPaymentV20?{g:this,src:c,you:p,sourceZoneVersion:c.zoneVersion}:null;
@@ -5883,7 +5919,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ...(returnInfo?{excludeCards:forecastTaps.concat(handReturns.map(row=>row.card)),protectedSacrifices:handReturns.map(row=>row.card),prepareOnlyV20:true,validateExtraV20:validHandReturns}:{}),
       });
       if (!ok || !sameHandSource()) return false;
-      if(returnInfo){if(!ok.valid()||!validHandReturns()||!await ok.commit())return false;for(const row of handReturns)await this.move(row.card,'hand');ctx.returnedCost=handReturns.map(row=>({card:row.card,zone:row.card.zone,version:row.card.zoneVersion}));}
+      if(returnInfo){if(!ok.valid()||!validHandReturns()||!await ok.commit())return false;for(const row of handReturns){ctx.returnedPermanentAttacking||=row.card.attacking;await this.move(row.card,'hand');}ctx.returnedCost=handReturns.map(row=>({card:row.card,zone:row.card.zone,version:row.card.zoneVersion}));}
       ctx.pomCopyMana = handPayment.pomCopyMana || 0;
       this.markAbilityActivated(p, c, false, { targets: ctx.targets });
       if(a.oracleForecast){
@@ -6183,7 +6219,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (extra.sac) {
         const need = extra.sacN || 1;
-        const pool = this.bf().filter(card => card.ctrl === p && extra.sac(this, card, c, p) && this.canSacrifice(card));
+        const pool = this.bf().filter(card => card.ctrl === p && extra.sac(this, card, c, p) && this.canSacrificeCost(card));
         pickedSacrifices = await p.controller.decide(this, {
           type: 'chooseCards', from: pool, min: need, max: need,
           prompt: `${c.name}: žrtvuj ${need}`, aiHint: { kind: 'sacCost', src: c },
@@ -6205,7 +6241,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!canMatchPermanentCostGroups(this, p, c, extra.sacGroups)) return false;
         for (const group of extra.sacGroups) {
           const pool = this.bf().filter(card => card.ctrl === p && !pickedSacrifices.includes(card) &&
-            this.canSacrifice(card) && (!group.filter || group.filter(this, card, c, p)));
+            this.canSacrificeCost(card) && (!group.filter || group.filter(this, card, c, p)));
           const picked = await p.controller.decide(this, {
             type: 'chooseCards', from: pool, min: 1, max: 1,
             prompt: `${c.name}: žrtvuj ${group.label || 'odgovarajući permanent'}`,
@@ -6237,7 +6273,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for(const handCard of selections.exileHandV20||[])await this.move(handCard,'exile');
       for (const artifact of pickedArtifacts) await this.sacrifice(p, artifact);
       if (pickedSacrifices.length) {
-        if (pickedSacrifices.some(card => !this.canSacrifice(card))) return false;
+        if (pickedSacrifices.some(card => !this.canSacrificeCost(card))) return false;
         await this.sacrificeMany(p, pickedSacrifices);
       }
       for (const permanent of pickedReturns) {
@@ -6337,13 +6373,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(cost.lifePerHandV67)cost.life=p.hand.length;
     if(!lifeCostAllowed(this,p,cost.life,{isMana:false,isAbility:true,isSpell:false}))return false;
     if(!cost.mana&&!cost.manaFromTarget&&(MTG.CWW?.abilityTax(this,p)||this.abilityManaCost(p,c,'{0}',{ability:a}).generic>0))cost.mana='{0}';
-    if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return false;
+    if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')&&!MTG.C21Rules?.abilityHaste(this,c)))return false;
     if(cost.counter&&!this.canPutCountersV18(c,cost.counter))return false;
     if (cost.mill && p.library.length < cost.mill) return false;
     if(cost.topHandV56&&p.hand.length<cost.topHandV56)return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
     if (cost.discardRandom && p.hand.length < cost.discardRandom) return false;
-    if (cost.sacSelf && !this.canSacrifice(c)) return false;
+    if (cost.sacSelf && !this.canSacrificeCost(c)) return false;
     if (cost.rmCounter && (c.counters[cost.rmCounter.kind || cost.rmCounter] || 0) < (cost.rmCounter.n || 1)) return false;
     const ctx = {
       g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a, sourceZone:c.zone,
@@ -6548,7 +6584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!picked.length) return false;
       this.tap(picked[0]);
       ctx.tappedCre = picked[0];
-      ctx.stationPower = Math.max(0, picked[0].power);
+      ctx.stationPower = Math.max(0, picked[0].cur.stationByToughnessV89?picked[0].toughness:picked[0].power);
       ctx.stationZoneVersion = picked[0].zoneVersion;
     }
     if (cost.rmCounter) {
@@ -6637,7 +6673,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.sacCreature || cost.sac) {
       const pool = this.bf().filter(x => x.ctrl === p &&
         (cost.sacCreature ? x.is('Creature') : cost.sac(this, x, c)) &&
-        (!(cost.sacOther||cost.sacSelf) || x !== c) && !returnPermanents.includes(x) && this.canSacrifice(x));
+        (!(cost.sacOther||cost.sacSelf) || x !== c) && !returnPermanents.includes(x) && this.canSacrificeCost(x));
       rememberCostPool(pool);
       const nsac = cost.c1516TargetSacrifice ? cost.sacN : cost.sacN === 'X' ? null : (cost.sacN || 1);
       const canPayRemaining = picks => !resolvedManaCost || this.canPayMana(p, resolvedManaCost,
@@ -6668,15 +6704,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(publicActivation&&(!this.bf().includes(c)||c.cur?.activationDisabled||!(c.cur?.abilitiesDisabled?[]:c.def.abilities||[]).concat(c.cur?.extraAbilities||[]).includes(a)))return false;
     if(cost.tap&&(c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')&&!MTG.C21Rules?.abilityHaste(this,c)))return false;
     if(cost.c1516Unattach&&!c.attachedTo)return false;
-    if(cost.sacSelf&&!this.canSacrifice(c))return false;
+    if(cost.sacSelf&&!this.canSacrificeCost(c))return false;
     if(MTG.POM&&!MTG.POM.validateAbility(ctx))return false;
-    const destructive=[...(ctx.pomCostRows||[]).map(r=>r.card),...(cost.sacSelf?[c]:[]),...(sacPicked||[]),...returnPermanents,...(plannedDiscard||[]),...(plannedExile||[]),...(plannedHandExile||[]),...(plannedHandTop||[])];
+    const activationDestructive=ctx.oracleActivationPlanV20?.destructiveRowsV87??(ctx.oracleActivationPlanV20?.kind==='blight'||String(ctx.oracleActivationPlanV20?.kind).startsWith('counter-')?[]:ctx.oracleActivationPlanV20?.rows||[]);
+    const destructive=[...(ctx.pomCostRows||[]).map(r=>r.card),...activationDestructive.map(r=>r.card),...(cost.sacSelf?[c]:[]),...(sacPicked||[]),...returnPermanents,...(plannedDiscard||[]),...(plannedExile||[]),...(plannedHandExile||[]),...(plannedHandTop||[])];
     if(new Set(destructive).size!==destructive.length)return false;
     if(returnPermanents.some(card=>!currentCostObject(card)||card.ctrl!==p||!this.bf().includes(card)||cost.returnPermanents.filter&&!cost.returnPermanents.filter(this,card,c,p)))return false;
     if(tapPermanents.some(card=>!currentCostObject(card)||card.ctrl!==p||card.tapped||!this.bf().includes(card)||!cost.tapPermanents.filter(this,card,c,p)))return false;
     if(cost.tapPermanents?.saddleV10&&tapPermanents.reduce((sum,card)=>sum+MTG.oracleSaddlePowerV10(card),0)<cost.tapPermanents.totalPower)return false;
     if(cost.tapPermanents?.printedPowerV82&&tapPermanents.reduce((sum,card)=>sum+(Number(card.power)||0),0)<cost.tapPermanents.totalPower)return false;
-    if((sacPicked||[]).some(card=>!currentCostObject(card)||card.ctrl!==p||!this.canSacrifice(card)||(cost.sacCreature?!card.is('Creature'):!cost.sac(this,card,c))))return false;
+    if((sacPicked||[]).some(card=>!currentCostObject(card)||card.ctrl!==p||!this.canSacrificeCost(card)||(cost.sacCreature?!card.is('Creature'):!cost.sac(this,card,c))))return false;
     for(const [key,zone,picked]of [['discard','hand',plannedDiscard],['exileFromGY','graveyard',plannedExile],['exileHandV20','hand',plannedHandExile],['topHandV56','hand',plannedHandTop]])if(picked){
       const filter=typeof cost[key]==='object'?cost[key].filter:null;
       if(picked.some(card=>!currentCostObject(card)||!p[zone].includes(card)||filter&&!filter(this,card,c,p)))return false;
@@ -6755,7 +6792,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.pomReturnedNonbasic=returnPermanents.some(c=>(MTG.POM?.nonbasicLandTypes||[]).some(t=>c.hasSub(t)));
       await this.bounceMany(returnPermanents);
     }
-    if (cost.life) await this.loseLife(p, cost.life, 'cost');
+    if(cost.life){const receipt=await this.payLifeV92(p,cost.life,{source:c,isAbility:true,reason:'cost'});if(!receipt)return false;ctx.actualLifePaidV92=receipt.lifePaid;}
     if (cost.mill) {
       ctx.milledCostSnapshots = p.library.slice(-cost.mill).reverse().map(card => this.snapshot(card));
       await this.mill(p, cost.mill);
@@ -6772,13 +6809,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.move(c, 'exile', { noCmdReplace: true });
     }
     if (cost.sacSelf) {
-      if (!this.canSacrifice(c)) return false;
+      if (!this.canSacrificeCost(c)) return false;
       ctx.sacdSelf = this.snapshot(c);
       await this.sacrifice(p, c);
     }
     if (sacPicked) {
       ctx.sacd = sacPicked.map(x => this.snapshot(x));
-      for (const x of sacPicked) if (this.canSacrifice(x)) await this.sacrifice(p, x);
+      for (const x of sacPicked) if (this.canSacrificeCost(x)) await this.sacrifice(p, x);
     }
     if(plannedHandTop)for(const card of plannedHandTop)await this.move(card,'library');
     if (plannedDiscard) {
@@ -6835,8 +6872,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.moveGraveyardBatch(picked, 'exile');
       ctx.exiledCost=picked.filter(c=>c.zone==='exile').map(c=>({card:c,zone:c.zone,version:c.zoneVersion}));
     }
-    if (cost.counter === '-1/-1') await this.addM1(c, 1, p);
-    else if (cost.counter) this.addCounters(c, cost.counter, 1, true, p);
+    if (cost.counter === '-1/-1') await this.addM1(c, 1, p, true, {effect:false});
+    else if (cost.counter) {if(this.putCountersV91)await this.putCountersV91(c,cost.counter,1,{by:p,effect:false,silent:true});else this.addCounters(c,cost.counter,1,true,p);}
     if(a.boast){const use=boastUse(this,p,c,a,entry.idx);c.meta[use.key]={turn:this.turnNo,version:ctx.sourceZoneVersion,n:use.count+1};}
     else if (a.oncePerTurn) c.meta['_ab_' + (a.c1719UseKey||entry.idx)] = this.turnNo;
     if(a.maxEachTurnV10){const key='_oracleAbLimitV10_'+(a.oracleUseKeyV20||entry.idx),use=c.meta[key];c.meta[key]={turn:this.turnNo,version:c.zoneVersion,n:(use?.turn===this.turnNo&&use.version===c.zoneVersion?use.n:0)+1};}
@@ -6846,11 +6883,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (a.loyalty !== undefined) {
       if (!this.canActivateLoyalty(c)) return false;
       const loyaltyPaymentV74=typeof a.loyalty==='number'?a.loyalty+ctx.oracleLoyaltyAdjustmentV74:a.loyalty;
-      if (loyaltyPaymentV74 > 0) {if(!this.canPutCountersV18(c,'loyalty'))return false;this.addCounters(c, 'loyalty', loyaltyPaymentV74, true);}
+      if (loyaltyPaymentV74 > 0) {if(!this.canPutCountersV18(c,'loyalty'))return false;if(this.putCountersV91)await this.putCountersV91(c,'loyalty',loyaltyPaymentV74,{by:p,effect:false,silent:true});else this.addCounters(c, 'loyalty', loyaltyPaymentV74, true);}
       else if (a.loyalty === '-X') {
         const delta=ctx.oracleLoyaltyAdjustmentV74-ctx.x;
         if(!Number.isInteger(ctx.x)||ctx.x<0||(c.counters.loyalty||0)<-delta||delta>0&&!this.canPutCountersV18(c,'loyalty'))return false;
-        if(delta>0)this.addCounters(c,'loyalty',delta,true);else if(delta<0)this.removeCounters(c,'loyalty',-delta);
+        if(delta>0){if(this.putCountersV91)await this.putCountersV91(c,'loyalty',delta,{by:p,effect:false,silent:true});else this.addCounters(c,'loyalty',delta,true);}else if(delta<0)this.removeCounters(c,'loyalty',-delta);
       }
       else if (loyaltyPaymentV74 < 0) {
         if ((c.counters['loyalty'] || 0) < -loyaltyPaymentV74) return false;
@@ -6871,7 +6908,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
     await this.pace(p.isAI ? 800 : 0);
     await this.emit('abilityActivated', {
-      player: p, card: c, isMana: false, ability: a, targets: ctx.targets, stackObject: so, cdkLifePaid:(cost.life||0)+(ctx.cdkPhyLife||0),
+      player: p, card: c, isMana: false, ability: a, targets: ctx.targets, stackObject: so, cdkLifePaid:(ctx.actualLifePaidV92||0)+(ctx.cdkPhyLife||0),
     });
     // crime: ciljanje protivnika/njihovih stvari kroz ability
     {
@@ -7161,7 +7198,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function sacrificeHasPriorityPayoff(g, entry, me) {
     const cost = entry.ability?.cost || {};
     if (!(cost.sacSelf || cost.sacCreature || cost.sac)) return false;
-    const sacrifices = g.bf().filter(card => card.ctrl === me && g.canSacrifice(card) &&
+    const sacrifices = g.bf().filter(card => card.ctrl === me && g.canSacrificeCost(card) &&
       (cost.sacSelf && card === entry.card || (!(cost.sacOther || cost.sacSelf) || card !== entry.card) &&
         (cost.sacCreature && card.is('Creature') || cost.sac && cost.sac(g, card, entry.card))));
     return sacrifices.some(card => {
@@ -7421,7 +7458,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (typeof this.onTurnCheckpoint === 'function') {
         try { this.onTurnCheckpoint(this); } catch (error) { console.error(error); }
       }
-      await this.runTurn();
+      try{await this.runTurn();}catch(error){if(error!==this.v92RestartSignal||!this.v92RestartPending)throw error;await this.performRestartV92();}
     }
     if (!this.gameOver) {
       this.lg('Turn limit reached — the game ends.');
@@ -7458,6 +7495,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               if (!cast) castCtx.g.lg(`${p.name} cannot cast ${c.name}; it remains in exile with no time counters.`);
             },
           });
+  };
+
+  G.runUpkeepStepV90 = async function(p) {
+    if(this.oracleShouldSkipV10?.(p,'upkeep'))return;
+    this.phase='upkeep';this.step='';this.note('phase',{});
+    await this.pace(p.isAI?330:0);
+    await this.emit('upkeep', { player: p });
+    // Each suspended card creates a normal beginning-of-upkeep trigger. The
+    // counter is removed only when that trigger resolves. Removing the last
+    // counter then creates a second trigger, so players receive priority both
+    // before the counter removal and before the mandatory free-cast attempt.
+    for (const c of p.exile.slice()) {
+      if (!c.meta || !(Number(c.meta.suspended) > 0)) continue;
+      const suspendedZoneVersion = c.zoneVersion;
+      this.queueTrigger({
+        src: c,
+        ctrl: p,
+        name: `${c.name} — Suspend: remove a time counter`,
+        onlyIf: () => c.zone === 'exile' && c.zoneVersion === suspendedZoneVersion &&
+          c.meta && c.meta.suspended > 0,
+        run: async removeCtx => {
+          if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion ||
+              !c.meta || c.meta.suspended <= 0) return;
+          MTG.CWW?.syncTime(c);
+          removeCtx.g.removeCounters(c,'time',1);
+        },
+      });
+    }
+    await this.flushTriggers();
+    await this.priorityRound(p);
+    this.emptyPool();          // CR 500.4
+    if (this.gameOver) return;
   };
 
   G.runBeginningPhase = async function(p,{additional=false}={}) {
@@ -7500,40 +7569,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await MTG.oracleUntapBatchV67?.(this,p,untapped);
 
     // UPKEEP
-    this.phase = 'upkeep';
-    this.note('phase', {});
-    await this.pace(p.isAI ? 330 : 0);
     let queuedUpkeeps=1+(p.turnState.cwwExtraUpkeeps||0);p.turnState.cwwExtraUpkeeps=0;
     for(let upkeep=0;upkeep<queuedUpkeeps;upkeep++){
-    if(this.oracleShouldSkipV10?.(p,'upkeep'))continue;
-    await this.emit('upkeep', { player: p });
-    // Each suspended card creates a normal beginning-of-upkeep trigger. The
-    // counter is removed only when that trigger resolves. Removing the last
-    // counter then creates a second trigger, so players receive priority both
-    // before the counter removal and before the mandatory free-cast attempt.
-    for (const c of p.exile.slice()) {
-      if (!c.meta || !(Number(c.meta.suspended) > 0)) continue;
-      const suspendedZoneVersion = c.zoneVersion;
-      this.queueTrigger({
-        src: c,
-        ctrl: p,
-        name: `${c.name} — Suspend: remove a time counter`,
-        onlyIf: () => c.zone === 'exile' && c.zoneVersion === suspendedZoneVersion &&
-          c.meta && c.meta.suspended > 0,
-        run: async removeCtx => {
-          if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion ||
-              !c.meta || c.meta.suspended <= 0) return;
-          MTG.CWW?.syncTime(c);
-          removeCtx.g.removeCounters(c,'time',1);
-        },
-      });
-    }
-    await this.flushTriggers();
-    await this.priorityRound(p);
-    this.emptyPool();          // CR 500.4
-    if (this.gameOver) return;
-    queuedUpkeeps+=p.turnState.cwwExtraUpkeeps||0;p.turnState.cwwExtraUpkeeps=0;
-
+      await this.runUpkeepStepV90(p);
+      if(this.gameOver)return;
+      queuedUpkeeps+=p.turnState.cwwExtraUpkeeps||0;p.turnState.cwwExtraUpkeeps=0;
     }
     // DRAW
     const skipsFirstDraw = !additional && this.players.length === 2 && this.turnNo === 1 && this.players.indexOf(p) === 0;
@@ -7558,6 +7598,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.priorityRound(p);
     this.emptyPool();
     }          // CR 500.4
+    if (this.gameOver) return;
+
+  };
+
+  G.runEndStepV90 = async function(p) {
+    this.phase = 'end';
+    this.note('phase', {});
+    await this.pace(p.isAI ? 330 : 0);
+    if (this.monarch === p && !p.lost) {
+      this.lg(`👑 Monarch benefit — ${U.playerVerb(p, 'draw', 'draws')} a card at the end step.`, 'monarch');
+      await this.draw(p, 1);
+    }
+    await this.emit('endStep', { player: p });
+    await this.flushTriggers();
+    await this.priorityRound(p);
+    this.emptyPool();          // CR 500.4
     if (this.gameOver) return;
 
   };
@@ -7644,18 +7700,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (this.gameOver) return;
 
     // END STEP
-    this.phase = 'end';
-    this.note('phase', {});
-    await this.pace(p.isAI ? 330 : 0);
-    if (this.monarch === p && !p.lost) {
-      this.lg(`👑 Monarch benefit — ${U.playerVerb(p, 'draw', 'draws')} a card at the end step.`, 'monarch');
-      await this.draw(p, 1);
-    }
-    await this.emit('endStep', { player: p });
-    await this.flushTriggers();
-    await this.priorityRound(p);
-    this.emptyPool();          // CR 500.4
-    if (this.gameOver) return;
+    await this.runEndStepV90(p);
+    if(this.gameOver)return;
 
     } catch (error) {
       // Ending a turn unwinds the current priority/phase only. Keep the
@@ -7711,7 +7757,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // CR 514.2 explicitly removes marked damage from phased-out permanents
       // too. Cleanup also expires regeneration shields without phasing them in.
       for (const c of this.battlefield.filter(card => card.zone === 'battlefield')) {
-        c.damage = 0; c.deathtouched = false; c.regenShield = 0;
+        if(!c.def.keepDamageDuringCleanupV88||c.cur?.abilitiesDisabled||c.faceDown){c.damage=0;c.deathtouched=false;}
+        c.regenShield=0;
         // CR 702.26f: previously granted this-turn permissions expire while
         // phased, just like the untilEffects records removed below.
         c.meta.tempHaste = false;
@@ -7825,7 +7872,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const defender of defenders) {
       if (!defender || defender.lost || defender === ctrl) continue;
       candidates.push(defender);
-      candidates.push(...this.bf().filter(card => card.ctrl === defender && card.is('Planeswalker')));
+      candidates.push(...this.bf().filter(card => card.is('Planeswalker')&&card.ctrl===defender||card.is('Battle')&&card.protector===defender));
     }
     // Ovi tokeni nisu proglašeni kao napadači (CR 508.4), pa declaration-only
     // zabrane i porezi ne ograničavaju odredište koje njihov efekat dopušta.
@@ -7876,7 +7923,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // eligible attackers
     this.recalc();
     const elig = this.creatures(p).filter(c =>
-      !c.tapped && (!c.sick || c.kw('haste')) && !c.cur.cantAttack && this.canAttackAtAll(c));
+      !c.tapped && (!c.sick || c.kw('haste') || MTG.OracleV89?.saddleEligible(this,c)) && !c.cur.cantAttack && this.canAttackAtAll(c));
     const oppList = p.opponents(this);
     // CR 506.7: this deadline applies even with no eligible attackers and
     // remains passed during any extra combat phases later in this turn.
@@ -7886,7 +7933,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.pace(p.isAI ? 330 : 0);
     // forced attackers
     const forced = elig.filter(c => this.isForcedToAttack(c));
-    const attackTargets = oppList.concat(this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== p && !card.cur.oracleCannotBeAttackedV67));
+    const attackTargets = oppList.concat(this.bf().filter(card => (card.is('Planeswalker')&&card.ctrl!==p||card.is('Battle')&&card.protector!==p)&&!card.cur.oracleCannotBeAttackedV67));
     const declared = elig.length && oppList.length ? await p.controller.decide(this, {
       type: 'attackers', eligible: elig, opponents: oppList, attackTargets, forced,
     }) : [];
@@ -7925,7 +7972,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (this.diplomacyRequiredAttackTarget) {
       const pressureTarget = this.diplomacyRequiredAttackTarget(p);
       const alreadyPressuring = pressureTarget && attackers.some(card =>
-        (card.attacking instanceof MTG.Player ? card.attacking : card.attacking && card.attacking.ctrl) === pressureTarget);
+        (MTG.defendingPlayerV92(card.attacking)) === pressureTarget);
       if (pressureTarget && !alreadyPressuring) {
         const safe = this.diplomacyPressureAttackOpportunity
           ? this.diplomacyPressureAttackOpportunity(p, pressureTarget).attackers
@@ -7959,6 +8006,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     if(MTG.CDK?.requireSeekerAttack)await MTG.CDK.requireSeekerAttack(this,p,attackers,elig,forced);
+    for(let roundV88=0;roundV88<elig.length;roundV88++){
+      const requiredV88=MTG.oracleAttackGroupRequirementsV88?.(this,p,attackers,elig)||[];
+      let addedV88=false;
+      for(const card of requiredV88)if(elig.includes(card)&&!attackers.includes(card)){
+        const legal=declarationTargets(card).filter(target=>this.attackTargetIsFree(card,target));
+        if(!legal.length)continue;
+        card.attacking=legal.find(target=>!this.diplomacyAttackBlocked?.(p,target))||legal[0];
+        attackers.push(card);if(!forced.includes(card))forced.push(card);addedV88=true;
+      }
+      if(!addedV88)break;
+    }
     // Companion restrictions concern the complete declaration (CR 508.1c).
     // Forced attackers may need another otherwise optional creature; adding
     // companions fulfils the attack requirement without forcing an attack tax.
@@ -8002,7 +8060,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (tax > 0 || annexTax(c)>0) {
         const cost = { generic: tax, x: 0, pips: Array.from({length:annexTax(c)},()=>['W','PHY']) };
         const sources = this.bf().filter(source => !source.cur?.abilitiesDisabled &&
-          source.ctrl === (c.attacking instanceof MTG.Player ? c.attacking : c.attacking.ctrl) &&
+          source.ctrl === (MTG.defendingPlayerV92(c.attacking)) &&
           (c.attacking instanceof MTG.Player && source.def.attackTax > 0 || source.def.bomAnnex)).map(source => source.name);
         const paid = this.canPayMana(p, cost, null, {excludeCards: reserved()}) && await this.payMana(p, cost, null, {excludeCards: reserved()});
         if (!paid) {
@@ -8017,6 +8075,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     await MTG.OracleV8Exert.payAttackCosts(this,p,attackers,exertCosts);
     delete this.v83PaidAttackers;
+    await MTG.OracleBandingV89?.declare(this,p,attackers);
     // Remember the actual declaration before attack triggers can remove or
     // redirect a creature. Entering already attacking does not attack a player.
     this.combat.declaredAttackTargets = [...new Set(attackers.map(card=>card.attacking))];
@@ -8029,7 +8088,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of attackers) {
       const tname = c.attacking instanceof MTG.Player ? c.attacking.name : (c.attacking && c.attacking.name);
       this.lg(`⚔️ ${c.name} attacks → ${tname}.`, 'attack');
-      const dp = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
+      const dp = MTG.defendingPlayerV92(c.attacking);
       if (dp) { dp.lastAttackers = dp.lastAttackers || new Set(); dp.lastAttackers.add(p); }
     }
     this.note('combat', { kind: 'attackersDeclared', count: attackers.length });
@@ -8040,7 +8099,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     {
       const hu = this.human();
       if (p.isAI && hu) {
-        const mine = attackers.filter(c => c.attacking === hu || (c.attacking && c.attacking.ctrl === hu));
+        const mine = attackers.filter(c => MTG.defendingPlayerV92(c.attacking) === hu);
         if (mine.length) {
           const pw = mine.reduce((s, c) => s + (c.cur ? c.cur.power : 0), 0);
           await this.spotlight(
@@ -8081,7 +8140,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // makeTokens gura kopije u isti `attackers` niz.
     for (const c of attackers.slice()) {
       if (!c.kw('myriad')) continue;
-      const tgt = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
+      const tgt = MTG.defendingPlayerV92(c.attacking);
       const others = this.players.filter(o => o !== p && !o.lost && o !== tgt);
       if (!others.length) continue;
       const hit = [];
@@ -8118,7 +8177,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of this.combat.attackers) {
       if (!(c.attacking instanceof MTG.Player)) {
         const pw = c.attacking;
-        const dp = pw && pw.ctrl;
+        const dp = MTG.defendingPlayerV92(pw);
         if (dp) { if (!byDefender.has(dp)) byDefender.set(dp, []); byDefender.get(dp).push(c); }
         continue;
       }
@@ -8135,7 +8194,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const chooser = this.untilEffects.find(e => e.kind === 'chooseBlocksFor' && e.who !== dp) ||
         (replacementChooserV73 ? {who: replacementChooserV73} : null);
       let blocks;
-      if (chooser) {
+      const specialBlocksV88 = await MTG.oracleChooseBlocksV88?.(this,dp,atks,potential,chooser?.who);
+      if (Array.isArray(specialBlocksV88)) {
+        blocks = specialBlocksV88;
+      } else if (chooser) {
         this.lg(`${chooser.who.name} chooses blockers for ${dp.name} (Odric).`);
         blocks = chooser.who.isAI ? [] : await chooser.who.controller.decide(this, {
           type: 'blockers', attackers: atks, potential, player: dp, chosenByAttacker: true,
@@ -8184,6 +8246,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (MTG.OracleV20Permanents?.payBlockTaxes) await MTG.OracleV20Permanents.payBlockTaxes(this, atks, dp);
       else if (this.c13PayBlockTaxes) await this.c13PayBlockTaxes(atks, dp);
       this.pruneBlockDeclaration(atks);
+      MTG.OracleBandingV89?.expandBlocks(this,atks);
       // CR 509.1h: jednom blokiran — uvijek blokiran. Ostaje blokiran i ako mu
       // svi blokeri kasnije nestanu (ubijeni first strikeom, bounceovani…),
       // pa u tom slučaju ne nanosi štetu igraču (osim ako ima trample).
@@ -8278,9 +8341,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.canAttackTarget = function (c, target) {
     const legalWithoutSpecificAttack = candidate => {
       if (!c || !candidate || c.ctrl === candidate || candidate.lost) return false;
-      const defender = candidate instanceof MTG.Player ? candidate : candidate.ctrl;
+      const defender = MTG.defendingPlayerV92(candidate);
       if (!defender || defender === c.ctrl || defender.lost) return false;
-      if (!(candidate instanceof MTG.Player) && !(candidate instanceof MTG.CardInst && candidate.is('Planeswalker') && candidate.zone === 'battlefield')) return false;
+      if (!(candidate instanceof MTG.Player) && !(candidate instanceof MTG.CardInst && (candidate.is('Planeswalker')||candidate.is('Battle')) && candidate.zone === 'battlefield' && !candidate.phasedOut)) return false;
       if(candidate instanceof MTG.CardInst&&candidate.cur.oracleCannotBeAttackedV67)return false;
       if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, candidate)) return false;
       if(c.cur.attackRestrictions?.some(rule=>!rule(this,candidate)))return false;
@@ -8312,7 +8375,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.legalAttackTargets = function (c) {
     const players = c.ctrl.opponents(this);
-    const planeswalkers = this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== c.ctrl);
+    const planeswalkers = this.bf().filter(card => card.is('Planeswalker')&&card.ctrl!==c.ctrl||card.is('Battle')&&card.protector!==c.ctrl);
     return players.concat(planeswalkers).filter(target => this.canAttackTarget(c, target));
   };
 
@@ -8598,14 +8661,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A printed optional assignment changes only the attacker's damage:
       // blockers still assign their own simultaneous combat damage normally.
       const asUnblocked = await MTG.OracleV8CombatRestrictions?.assignUnblocked(this, a, blockers, amt);
+      const specialAssignmentV89 = await MTG.OracleBandingV89?.specialAttackAssignment(this,a,blockers,amt);
+      if (specialAssignmentV89) { plan.push(...specialAssignmentV89); continue; }
       // nikad blokiran → udara branioca/planeswalkera
       if (asUnblocked || !blockers.length && !a.wasBlocked) {
         if (amt > 0) {
-          if (a.attacking instanceof MTG.Player) plan.push({ src: a, target: a.attacking, n: amt, toPlayer: true });
+          if(MTG.OracleBandingV89)plan.push(...MTG.OracleBandingV89.destinationAssignment(this,a,amt));
+          else if (a.attacking instanceof MTG.Player) plan.push({ src: a, target: a.attacking, n: amt, toPlayer: true });
           else if (a.attacking && a.attacking.zone === 'battlefield') plan.push({ src: a, target: a.attacking, n: amt });
         }
         continue;
       }
+      const bandAssignmentV89 = await MTG.OracleBandingV89?.damageAssignment(this,a,blockers,amt,{attacker:true});
+      if (bandAssignmentV89) { plan.push(...bandAssignmentV89); continue; }
       const defensiveAssignment = await MTG.OracleV83?.defensiveAssignment?.(this,a,blockers,amt);
       if (defensiveAssignment) { plan.push(...defensiveAssignment); continue; }
       // CR 509.1h + 702.19c: blokiran je, ali su blokeri nestali. Bez tramplea
@@ -8627,7 +8695,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       if (rem > 0 && a.kw('trample')) {
-        if (a.attacking instanceof MTG.Player) plan.push({ src: a, target: a.attacking, n: rem, toPlayer: true });
+        if(MTG.OracleBandingV89)plan.push(...MTG.OracleBandingV89.destinationAssignment(this,a,rem));
+        else if (a.attacking instanceof MTG.Player) plan.push({ src: a, target: a.attacking, n: rem, toPlayer: true });
         else if (a.attacking && a.attacking.zone === 'battlefield') plan.push({ src: a, target: a.attacking, n: rem });
       }
     }
@@ -8637,6 +8706,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const amount = this.dmgAmount(blocker, stepKind);
       if (amount <= 0) continue;
       dealt.push(blocker);
+      const bandAssignmentV89 = await MTG.OracleBandingV89?.damageAssignment(this,blocker,attacking,amount);
+      if (bandAssignmentV89) { plan.push(...bandAssignmentV89); continue; }
       for (const {attacker, n} of this.assignBlockerDamage(blocker, attacking, amount)) plan.push({src: blocker, target: attacker, n});
     }
     const striking = [...new Set(dealt)];

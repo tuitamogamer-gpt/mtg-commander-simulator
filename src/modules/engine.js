@@ -1435,8 +1435,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           n = Math.max(0, n) + additionalEntryCounters['+1/+1'];
           delete additionalEntryCounters['+1/+1'];
         }
-        if(n>0)n=MTG.POM?.counterBonus(this,card,n)||n;
-        if (n > 0 && d.etbCounters.kind === '+1/+1') n = this.adjustPlusCounters(card, n);
+        if(n>0){if(MTG.OracleV91Counters)n=await MTG.OracleV91Counters.amount(this,card,d.etbCounters.kind,n,card.ctrl,{entry:true,effect:true});else{n=MTG.POM?.counterBonus(this,card,n)||n;if(d.etbCounters.kind==='+1/+1')n=this.adjustPlusCounters(card,n);}}
         if (n > 0) {
           card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
           this.notifyEffect(`◆ ${card.name} enters with ${n} ${d.etbCounters.kind} ${U.plural(n, 'counter', 'counters')}.`, {
@@ -1451,8 +1450,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (Object.keys(additionalEntryCounters).length) {
         for (const [kind, rawN] of Object.entries(additionalEntryCounters)) {
           let n = Math.max(0, Number(rawN) || 0);
-          if(n>0)n=MTG.POM?.counterBonus(this,card,n)||n;
-          if (kind === '+1/+1') n = this.adjustPlusCounters(card, n);
+          if(n>0){if(MTG.OracleV91Counters)n=await MTG.OracleV91Counters.amount(this,card,kind,n,opts.additionalCounterBy||card.ctrl,{entry:true,effect:true});else{n=MTG.POM?.counterBonus(this,card,n)||n;if(kind==='+1/+1')n=this.adjustPlusCounters(card,n);}}
           if (!n||!this.canPutCountersV18(card,kind)) continue;
           card.counters[kind] = (card.counters[kind] || 0) + n;
           this.notifyEffect(`◆ ${card.name} enters with ${n} additional ${kind} ${U.plural(n, 'counter', 'counters')}.`, {
@@ -1473,12 +1471,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.castMeta && card.castMeta.grantedSunburstColors > 0&&this.canPutCountersV18(card,card.is('Creature')?'+1/+1':'charge')) {
         const kind = card.is('Creature') ? '+1/+1' : 'charge';
         const before = card.counters[kind] || 0;
-        card.counters[kind] = before + card.castMeta.grantedSunburstColors;
-        this.notifyEffect(`◆ ${card.name}: sunburst adds ${card.castMeta.grantedSunburstColors} ${kind} counters.`, {
-          kind: 'counter', card, counterKind: kind, n: card.castMeta.grantedSunburstColors,
+        const sunburstCountersV91=MTG.OracleV91Counters?await MTG.OracleV91Counters.amount(this,card,kind,card.castMeta.grantedSunburstColors,card.ctrl,{entry:true,effect:true}):card.castMeta.grantedSunburstColors;
+        card.counters[kind] = before + sunburstCountersV91;
+        this.notifyEffect(`◆ ${card.name}: sunburst adds ${sunburstCountersV91} ${kind} counters.`, {
+          kind: 'counter', card, counterKind: kind, n: sunburstCountersV91,
         });
         entryCounterEvents.push({
-          kind, n: card.castMeta.grantedSunburstColors,
+          kind, n: sunburstCountersV91,
           before, after: card.counters[kind], by: card.ctrl,
         });
       }
@@ -1487,12 +1486,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (d.compleated && card.castMeta && card.castMeta.phyrexianLifePaid > 0) {
           card.counters['loyalty'] = Math.max(0, card.counters['loyalty'] - 2);
         }
+        if(MTG.OracleV91Counters)card.counters.loyalty=await MTG.OracleV91Counters.amount(this,card,'loyalty',card.counters.loyalty,card.ctrl,{entry:true,effect:true});
         this.notifyEffect(`◆ ${card.name} enters with ${card.counters['loyalty']} loyalty counters.`, {
           kind: 'counter', card, counterKind: 'loyalty', n: card.counters['loyalty'],
         });
       }
       if (d.defense && card.is('Battle')) {
-        card.counters.defense = parseInt(d.defense, 10);
+        card.counters.defense = MTG.OracleV91Counters?await MTG.OracleV91Counters.amount(this,card,'defense',parseInt(d.defense,10),card.ctrl,{entry:true,effect:true}):parseInt(d.defense, 10);
         this.notifyEffect(`◆ ${card.name} enters with ${card.counters.defense} defense counters.`, {
           kind: 'counter', card, counterKind: 'defense', n: card.counters.defense,
         });
@@ -2073,6 +2073,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async loseLife(p, n, why) {
       if (n <= 0 || p.lost) return 0;
+      const replaced=await MTG.oracleLifeLossV86?.(this,p,n,why);
+      if(replaced!==undefined)return replaced;
       p.life -= n;
       p.turnState.lifeLost += n;
       p.turnState.lifeLossEvents++;
@@ -2234,14 +2236,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const infect = this.damageSourceTrait(src,'infect',opts)||(MTG.OracleV20?.handlers||[]).some(handler=>handler.damageAsInfect?.(this,p,src,opts)===true);
       const toxic = opts.combat && src ? (opts._damageBatch?.traits.get(src)?.toxic ?? MTG.oracleToxicValueV10?.(src) ?? (!(src.cur&&src.cur.abilitiesDisabled)?Math.max(0,Number(src.def?.toxic)||0):0)) : 0;
       if (infect&&this.canPutPlayerCountersV66(p,'poison')) {
-        const actual = MTG.POM?.playerCounterBonus(this,p,n)||n;
+        const actual = MTG.OracleV91Counters?await MTG.OracleV91Counters.amount(this,p,'poison',n,opts._damageBatch?.traits.get(src)?.controller||src?.ctrl,{effect:true}):MTG.POM?.playerCounterBonus(this,p,n)||n;
         const before = p.poison || 0;
         p.poison = (p.poison || 0) + actual;
         this.lg(`${p.name} gets ${actual} poison counter${actual === 1 ? '' : 's'} (infect).`, 'dmg');
         await this.emit('playerCountersPlaced', {player:p,kind:'poison',n:actual,before,after:p.poison,by:opts._damageBatch?.traits.get(src)?.controller||src?.ctrl,source:src});
       }
       if (toxic&&this.canPutPlayerCountersV66(p,'poison')) {
-        const actual = MTG.POM?.playerCounterBonus(this,p,toxic)||toxic;
+        const actual = MTG.OracleV91Counters?await MTG.OracleV91Counters.amount(this,p,'poison',toxic,opts._damageBatch?.traits.get(src)?.controller||src?.ctrl,{effect:true}):MTG.POM?.playerCounterBonus(this,p,toxic)||toxic;
         const before = p.poison || 0;
         p.poison = (p.poison || 0) + actual;
         this.lg(`${p.name} gets ${actual} poison counter${actual === 1 ? '' : 's'} (toxic).`, 'dmg');
@@ -2357,10 +2359,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // -1/-1 counteri sa centralnim eventom ('m1Added') za Auntie Ool/Hapatra/Blowfly...
-    async addM1(card, n, by, deferSBA) {
+    async addM1(card, n, by, deferSBA, opts = {}) {
       if (n <= 0 || card.zone !== 'battlefield'||!this.canPutCountersV18(card,'-1/-1')) return;
-      this.addCounters(card, '-1/-1', n, false, by);
-      await this.emit('m1Added', { card, n, by, ctrl: card.ctrl });
+      const placedV91=this.putCountersV91?await this.putCountersV91(card,'-1/-1',n,{by,effect:opts.effect!==false&&!this.v91CounterCost}):(this.addCounters(card,'-1/-1',n,false,by),n);
+      await this.emit('m1Added', { card, n:placedV91, by, ctrl: card.ctrl });
       if (!deferSBA) await this.checkSBA();
     }
 
@@ -2399,7 +2401,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for(const permanent of this.bf())if(!permanent.cur?.abilitiesDisabled)for(const [index,rule]of(permanent.def.oracleDamageRedirectionsV19||[]).entries()){
           const host=this.byIid(permanent.attachedTo),from=rule.from==='controller'?permanent.ctrl:host;
           const recipient=rule.to==='self'?permanent:rule.to==='host'?host:host?.ctrl;
-          if(data.target===from&&recipient&&recipient!==data.target&&(recipient instanceof Player?!recipient.lost:recipient.zone==='battlefield'&&!recipient.phasedOut))add({key:'redirect-v19:'+permanent.iid+':'+index,src:permanent,label:permanent.name+' — redirect damage',apply:async()=>{data.target=recipient;}});
+          if(MTG.oracleDamageMayRedirectV88?.(this,data)!==false&&data.target===from&&recipient&&recipient!==data.target&&(recipient instanceof Player?!recipient.lost:recipient.zone==='battlefield'&&!recipient.phasedOut))add({key:'redirect-v19:'+permanent.iid+':'+index,src:permanent,label:permanent.name+' — redirect damage',apply:async()=>{data.target=recipient;}});
         }
         for (const r of this.replacers('damage')) {
           if (r.prevent && !preventionAllowed || r.applies && !r.applies(this, data, r.src)) continue;
@@ -2414,7 +2416,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const effect of this.untilEffects.slice()) {
           const playerTarget = data.target instanceof Player;
           const toAffectedPlayer = effect.who === affectedPlayer;
-          if ((effect.kind === 'redirectToCreature' && playerTarget || effect.kind === 'redirectAllDamage') && toAffectedPlayer && effect.iid !== data.target.iid) {
+          if (MTG.oracleDamageMayRedirectV88?.(this,data)!==false && (effect.kind === 'redirectToCreature' && playerTarget || effect.kind === 'redirectAllDamage') && toAffectedPlayer && effect.iid !== data.target.iid) {
             const recipient = this.byIid(effect.iid);
             if (recipient?.zone === 'battlefield' && (effect.zoneVersion === undefined || recipient.zoneVersion === effect.zoneVersion)) {
               add({key: effect, src: effect.sourceCard, label: 'Redirect damage to ' + recipient.name,
@@ -3190,6 +3192,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if ((!s.phase || s.phase === 2) && s.apply) inAbilityLayer(c.timestamp,()=>s.apply(this, c, bf));
         }
       }
+      MTG.OracleV87?.applyStickerLayers(this,bf,inAbilityLayer,'stats');
       // emblems
       for (const p of this.players) for (const e of p.emblems) if (e.apply) inAbilityLayer(e.timestamp,()=>e.apply(this, p, bf));
       // Continuous abilities that function specifically from the graveyard
@@ -3277,6 +3280,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       // Obavijesti samo kad se NOVA dodijeljena sposobnost/keyword pojavi.
+      MTG.OracleV87?.applyStickerLayers(this,bf,inAbilityLayer);
       abilityLayers?.finish();
       for(const c of bf)for(const keyword of c.cur.keywordBansV18||[]){c.cur.kw.delete(keyword);if(keyword==='hexproof')c.cur.hexproof=false;}
       // Recalc se poziva cesto, pa se potpisi pamte na objektu karte da isti
@@ -3673,6 +3677,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ctrl, ctx, run: tr.run || selectedMode?.run, targets: ctx.targets, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
         targetIdentities: ctx.targetIdentities,
         ...(tr.sagaChapter?{sagaChapter:tr.sagaChapter}:{}),
+        ...(tr.siegeDefeatV92?{siegeDefeatV92:tr.siegeDefeatV92}:{}),
         ...(tr.oracleStateTrigger?{oracleStateTrigger:tr.oracleStateTrigger}:{}),
         ...(tr.oracleReflexive?{oracleReflexive:tr.oracleReflexive}:{}),
         damageDivision: ctx.damageDivision
@@ -3845,7 +3850,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.wardTargets = [];
       const targetedNow = [];
       const casting=ctx.so?.kind==='spell',castOptions=ctx.so?.castOpts||{},castDefinition=casting?this.castDefinition(src,castOptions):null;
-      const castColors=casting?(castOptions.faceDownCast?[]:castOptions.adventure&&castDefinition.adventure?U.colorsOfCost(castDefinition.adventure.cost||castDefinition.adventure.altCostStr||''):castDefinition.devoid?[]:MTG.C1920?.castColors(this,src,castOptions)||src.colors):null;
+      const castColors=casting?(castOptions.faceDownCast?[]:MTG.C1920?.castColors(this,src,castOptions)||(castDefinition.devoid?[]:src.colors)):null;
       ctx.boundTargetSpecs=specs.map(spec=>({...(typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec),oracleTargetActionV20:casting?'spell':'ability',...(casting?{oracleTargetColorsV20:castColors}: {})}));
       for (const [specIndex, spec] of ctx.boundTargetSpecs.entries()) {
         // A copied ability may choose a different opponent when it chooses
@@ -4035,17 +4040,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${w.blight}: choose your creature`, aiHint: { kind: 'blight', n: w.blight, source: target },
         });
         if (!picked.length) return false;
-        await this.addM1(picked[0], w.blight, ctrl);
+        await this.addM1(picked[0],w.blight,ctrl,false,{effect:false});
         return true;
       }
       if (w.life) {
-        if(ctrl.life<w.life){this.lg(`${ctrl.name} cannot pay Ward—pay ${w.life} life.`);return false;}
+        if(this.canPayLife?!this.canPayLife(ctrl,w.life):ctrl.life<w.life){this.lg(`${ctrl.name} cannot pay Ward—pay ${w.life} life.`);return false;}
         const yes = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Ward — pay ${w.life} life to target ${target.name}?`,
           options: [{ key: 'yes', label: `Pay ${w.life} life` }, { key: 'no', label: 'Cancel' }],
           aiHint: { kind: 'ward', target },
         });
-        if (yes === 'yes') { await this.loseLife(ctrl, w.life, 'ward'); return true; }
+        if(yes==='yes')return !!await this.payLifeV92(ctrl,w.life,{source:target,reason:'ward'});
         return false;
       }
       if(w.discard){
@@ -4155,7 +4160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (pairs) counterPairs.push({card, pairs});
         if (card.is('Creature')) {
           if (card.toughness <= 0) moves.set(card, 'graveyard');
-          else if (card.damage > 0 && card.damage >= this.lethalDamageThreshold(card) || card.deathtouched) {
+          else if (card.damage > 0 && card.damage >= this.lethalDamageThreshold(card) && MTG.oracleDamageLethalAllowedV88?.(this,card)!==false || card.deathtouched) {
             deathtouchChecks.push(card);
             if (card.kw('indestructible')) {
               // Marked damage remains until cleanup. Deathtouch only checks
@@ -4165,6 +4170,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             else moves.set(card, 'destroy');
           }
         }
+        if(card.is('Battle')&&(card.counters.defense||0)<=0&&!MTG.OracleV92Battles?.pending(this,card))moves.set(card,'graveyard');
         if (card.is('Planeswalker') && (card.counters.loyalty || 0) <= 0 && !card.cur.zeroLoyaltySurvivesV45) moves.set(card, 'graveyard');
         const subs = card.cur.subtypes || card.def.subtypes || [];
         if (subs.includes('Aura')) {

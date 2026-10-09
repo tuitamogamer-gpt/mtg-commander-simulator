@@ -764,6 +764,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const colorName = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', C: 'Colorless' };
       const words = value => String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
+      if(p.counters?.ticket)add({key:'tickets-v87',kind:'counter',icon:'🎟',label:'Ticket counters',detail:`${p.counters.ticket} tickets available for ability and power/toughness stickers.`,duration:'Tickets remain until spent.'});
+      if((p.availableStickerSheetsV87||[]).length)add({key:'stickers-v87',kind:'choice',icon:'★',label:'Available sticker sheets',detail:p.availableStickerSheetsV87.join(' · '),duration:'Three sheets selected at random before the game.'});
+      if(p.companionV87)add({key:'companion-v87',kind:'choice',icon:'✦',label:'Companion: '+p.companionV87.name,detail:'Pay {3} as a sorcery to put your companion into your hand.',duration:'One special action per game.'});
       if(p.counters?.energy)add({key:'energy',kind:'counter',icon:'ϟ',label:'Energy counters',detail:`${p.counters.energy} energy available to spend.`,duration:'Counters remain until an effect removes them.'});
       if(p.counters?.experience)add({key:'experience',kind:'counter',icon:'✦',label:'Experience counters',detail:`${p.counters.experience} experience counters.`,duration:'Remain when your commander leaves the battlefield.'});
       if(p.counters?.rad > 0)add({key:'rad',kind:'counter',icon:'☢',label:'Rad counters',detail:`${p.counters.rad} rad counters. At the beginning of your precombat main phase, mill that many cards. For each nonland milled, lose 1 life and remove 1 rad counter.`,duration:'Counters remain until radiation or another effect removes them.'});
@@ -2668,11 +2671,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     zoneCounter(player, zone, options = {}) {
-      const labels = { hand: 'Hand', library: 'Library', 'library-top': 'Library', graveyard: 'Graveyard', exile: 'Exile', command: 'Command' };
+      const labels = { hand: 'Hand', library: 'Library', 'library-top': 'Library', graveyard: 'Graveyard', exile: 'Exile', command: 'Command', junkyardV87:'Attraction junkyard', outsideGameV87:'Outside game' };
       const key = zone === 'library-top' ? 'library' : zone;
       const count = player[key]?.length || 0;
       const label = labels[zone] || zone;
-      const publicZone = ['graveyard', 'exile', 'command'].includes(zone);
+      const publicZone = ['graveyard', 'exile', 'command', 'junkyardV87'].includes(zone)||zone==='outsideGameV87'&&player===this.me;
       const interactive = publicZone || !!options.onClick;
       const control = el(interactive ? 'button' : 'span', 'zonecounter zone-' + key + (interactive ? ' zbtn' : ''),
         `${U.icon(key === 'hand' ? 'cards' : key === 'command' ? 'crown' : key)}<span class="zonecounterlabel">${label}</span><b>${count}</b>`);
@@ -2917,7 +2920,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           lanes.get(target).push(attacker);
         }
         for (const [target, attackers] of lanes) {
-          const targetOwner = target instanceof MTG.Player ? target : target.ctrl;
+          const targetOwner = MTG.defendingPlayerV92(target);
           const lane = el('div', 'combatlane' + (target === this.me || targetOwner === this.me ? ' tome' : ''));
           const cards = el('div', 'combatattackers');
           let rawDamage = 0;
@@ -2935,7 +2938,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           lane.appendChild(el('div', 'combatarrow', '<span></span>'));
           const targetDetail = target instanceof MTG.Player
             ? `${target.life} life`
-            : `Planeswalker · ${target.counters.loyalty || 0} loyalty · ${targetOwner.name}`;
+            : target.is('Battle')?`Battle · ${target.counters.defense||0} defense · protected by ${target.protector?.name||'unassigned'}`:`Planeswalker · ${target.counters.loyalty || 0} loyalty · ${targetOwner.name}`;
           lane.appendChild(el('div', 'combatdefender', `<b>${esc(target.name)}</b><span>${esc(targetDetail)} · ${attackers.length} attacker${attackers.length === 1 ? '' : 's'} · up to ${rawDamage} damage</span>`));
           map.appendChild(lane);
         }
@@ -3380,7 +3383,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (c.blocking) badges.push(U.icon('shield'));
       if (this.actable && this.actable.has(c.iid)) { badges.push(U.icon('effects')); d.classList.add('actable'); }
       if (c.commander) d.classList.add('cmdr');
-      const pt = c.is('Creature') ? `<div class="pt">${c.power}/${c.toughness}</div>` : (c.is('Planeswalker') ? `<div class="pt">◆${c.counters['loyalty'] || 0}</div>` : '');
+      const pt = c.is('Creature') ? `<div class="pt">${c.power}/${c.toughness}</div>` : (c.is('Planeswalker') ? `<div class="pt">◆${c.counters['loyalty'] || 0}</div>` : c.is('Battle')?`<div class="pt">◆${c.counters.defense||0}</div>`:'');
       const markedDamage = this.markedDamageState(c);
       const combatStats = markedDamage
         ? `<div class="markeddamagestats"><span class="markeddamage" data-damage="${markedDamage.amount}" title="${escAttr(markedDamage.detail)}" aria-label="${escAttr(markedDamage.detail)}">${markedDamage.amount} DMG</span>${pt}</div>`
@@ -3862,7 +3865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (pd.boardPeek) {
             bar.classList.add('combatboardpeek');
             bar.appendChild(el('div', 'ptext', this.arenaDragEnabled
-              ? `🗺 Battlefield view · drag a glowing creature onto a player or planeswalker. ${n} attacker${n === 1 ? '' : 's'} assigned.`
+              ? `🗺 Battlefield view · drag a glowing creature onto a player, planeswalker, or battle. ${n} attacker${n === 1 ? '' : 's'} assigned.`
               : `🗺 Battlefield view · ${n} attacker${n === 1 ? '' : 's'} still assigned.`));
             if (pd.attackPending?.length) bar.appendChild(el('div', 'ptext',
               `${pd.attackPending.length} selected creature${pd.attackPending.length === 1 ? '' : 's'} need a defender. Return to Attack Overview to choose.`));
@@ -4300,7 +4303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const attackers = (q.attackers || []).filter(c => c && c.zone === 'battlefield');
         const attacker = q.attackingPlayer || (attackers[0] && attackers[0].ctrl);
         const attackingMe = attacker === this.me;
-        const atMe = attackers.filter(c => c.attacking === this.me || (c.attacking && c.attacking.ctrl === this.me));
+        const atMe = attackers.filter(c => MTG.defendingPlayerV92(c.attacking) === this.me);
         const lanes = new Map();
         for (const card of attackers) {
           const target = card.attacking;
@@ -4316,7 +4319,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const body = el('div', 'combatreviewlanes');
         for (const [target, cards] of lanes) {
           const rawDamage = cards.reduce((sum, card) => sum + g.dmgAmount(card, 'normal'), 0);
-          const targetOwner = target instanceof MTG.Player ? target : target.ctrl;
+          const targetOwner = MTG.defendingPlayerV92(target);
           const lane = el('div', 'combatreviewlane' + (target === this.me || targetOwner === this.me ? ' tome' : ''));
           const laneHead = el('div', 'combatreviewtarget');
           const targetMeta = target instanceof MTG.Player
@@ -5136,11 +5139,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       const playerOrder = q.opponents || [];
       const offered = q.attackTargets || playerOrder.concat(g.bf().filter(card =>
-        card.is('Planeswalker') && card.ctrl !== this.me));
+        card.is('Planeswalker')&&card.ctrl!==this.me||card.is('Battle')&&card.protector!==this.me));
       const targets = [];
       for (const player of playerOrder) {
         if (offered.includes(player) && eligible.some(card => legalTargets(card).includes(player))) targets.push(player);
-        for (const walker of offered.filter(target => !(target instanceof MTG.Player) && target.ctrl === player)) {
+        for (const walker of offered.filter(target => !(target instanceof MTG.Player) && MTG.defendingPlayerV92(target) === player)) {
           if (eligible.some(card => legalTargets(card).includes(walker))) targets.push(walker);
         }
       }
@@ -5186,17 +5189,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       const lanes = el('div', 'attackalloclanes');
       for (const target of targets) {
-        const owner = target instanceof MTG.Player ? target : target.ctrl;
+        const owner = MTG.defendingPlayerV92(target);
         const isWalker = !(target instanceof MTG.Player);
+        const isBattle = isWalker && target.is('Battle');
         const legalCards = eligible.filter(card => legalTargets(card).includes(target));
         const assigned = pd.sel.filter(entry => entry.target === target).map(entry => entry.card);
         const lane = el('button', 'attackalloclane' + (pd.attackTarget === target ? ' focused' : '') + (isWalker ? ' walker' : ' player'));
         lane.type = 'button';
-        lane.dataset.target = isWalker ? `planeswalker-${target.iid}` : `player-${target.idx}`;
+        lane.dataset.target = isWalker ? `${isBattle ? 'battle' : 'planeswalker'}-${target.iid}` : `player-${target.idx}`;
         const possibleBlockers = g.creatures(owner).filter(card => !card.tapped && !card.cur.cantBlock);
-        const stat = isWalker ? `${target.counters.loyalty || 0} loyalty` : `${target.life} life`;
+        const stat = isWalker ? isBattle ? `${target.counters.defense || 0} defense` : `${target.counters.loyalty || 0} loyalty` : `${target.life} life`;
         lane.innerHTML = `<div class="attacklanehead"><span class="attacklaneicon">${isWalker ? '◆' : ((MTG.DECK_META[owner.deckName] || {}).icon || '🛡')}</span>` +
-          `<span><small>${isWalker ? `PLANESWALKER · ${esc(owner.name)}` : 'PLAYER'}</small><b>${esc(target.name)}</b><i>${esc(stat)} · ${possibleBlockers.length} possible blocker${possibleBlockers.length === 1 ? '' : 's'}</i></span>` +
+          `<span><small>${isWalker ? `${isBattle ? 'BATTLE' : 'PLANESWALKER'} · ${esc(owner.name)}` : 'PLAYER'}</small><b>${esc(target.name)}</b><i>${esc(stat)} · ${possibleBlockers.length} possible blocker${possibleBlockers.length === 1 ? '' : 's'}</i></span>` +
           `<em>${assigned.length}</em></div>`;
         const stack = el('div', 'attacklaneassigned');
         for (const card of assigned) {
@@ -5423,6 +5427,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${this.deathReturnState(card) ? `<div class="animatedpermanentstate">${esc(this.deathReturnState(card))}</div>` : ''}
         <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
+      if((card.meta.stickersV87||[]).length)info.appendChild(el('div','soracle sticker-list-v87','<b>Stickers</b><br>'+card.meta.stickersV87.map(r=>esc(r.kind+': '+r.text)).join('<br>')));if(card.def.attractionLightsV87)info.appendChild(el('div','soracle attraction-lights-v87','Visit on: '+card.def.attractionLightsV87.join(', ')));
       m.appendChild(info);
       // actions
       const acts = el('div', 'sheetacts');
@@ -5600,6 +5605,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(navigation);
       const zones = el('div', 'playeroverviewzones');
       for (const zone of ['hand', 'library', 'graveyard', 'exile', 'command']) zones.appendChild(this.zoneCounter(p, zone, { returnPlayer: p }));
+      if((p.junkyardV87||[]).length)zones.appendChild(this.zoneCounter(p,'junkyardV87',{returnPlayer:p}));if(p===this.me&&(p.outsideGameV87||[]).length)zones.appendChild(this.zoneCounter(p,'outsideGameV87',{returnPlayer:p}));const attractionCount=p.attractionDeckV87?.length??p.attractionDeckCountV87??0;if(attractionCount)zones.appendChild(el('span','zonecounter',`Attraction deck <b>${attractionCount}</b> face-down`));
       m.appendChild(zones);
       const counters = el('div', 'playeroverviewcounters', `${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}`);
       if (counters.children.length) m.appendChild(counters);
@@ -5670,7 +5676,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ov.onclick = (e) => { if (e.target === ov) { this.zoneBrowse = null; this.render(); } };
       const m = el('div', 'sheet tall');
       ov.appendChild(m);
-      const names = { graveyard: 'Graveyard', exile: 'Exile', command: 'Command zone' };
+      const names = { graveyard: 'Graveyard', exile: 'Exile', command: 'Command zone', junkyardV87:'Attraction junkyard',outsideGameV87:'Outside game' };
       m.appendChild(el('div', 'mtitle', `${esc(player.name)}: ${names[zone] || zone} (${player[zone].length})`));
       const grid = el('div', 'cardgrid');
       const judgeReturn = this.zoneBrowse.judgeReturn;
@@ -6058,7 +6064,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 <b>🎴 Playing cards:</b> click a card in your hand to open its available actions, such as Cast, Play land, or Cycling. Cards with a <span style="color:#5aa860">green frame</span> can be played now. The <b>✨/🖐 MANA</b> button switches between automatic payment and choosing exact mana sources.<br><br>
 <b>👑 Commander:</b> your commander stays in the COMMAND ZONE above your hand until cast. Click it, then choose Cast. When it dies, you may return it to the command zone; each recast adds {2} commander tax.<br><br>
 <b>⚙️ Abilities and tokens:</b> a permanent with a ⚙️ badge has an available activated ability. Click it, then choose an action such as creating Food, equipping, or crewing.<br><br>
-<b>⚔️ Attacking:</b> during combat, click one of your creatures, then choose the player or planeswalker it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
+<b>⚔️ Attacking:</b> during combat, click one of your creatures, then choose the player, planeswalker or Battle it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
 <b>🎯 Targets:</b> legal targets <span style="color:#e8c05a">glow gold</span>. Click a card or an opponent panel to select it.<br><br>
 <b>Opponents:</b> click a name or the info button for a public overview. Use the expand button to focus a battlefield. Hand and library counts stay visible; graveyard, exile and command zones open for inspection.<br><br>
 <b>⚡ Instants and priority:</b> each opposing nonland card appears on the central action stage and waits for your <b>Proceed</b>. Legal combat responses open a reaction window automatically. The <b>STOP</b> button controls additional priority windows.<br>

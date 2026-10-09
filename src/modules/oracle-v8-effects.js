@@ -122,14 +122,14 @@
       }
       const options = await manaOptions(ctx, cost, xVal);
       const paid = options !== null && await ctx.g.payMana(ctx.you, MTG.parseCost(cost.mana), null, {...options,reservedLife:cost.lifeV14||0});
-      if(paid&&cost.lifeV14)await ctx.g.loseLife(ctx.you,cost.lifeV14,'Oracle resolution payment');
+      if(paid&&cost.lifeV14&&!await ctx.g.payLifeV92(ctx.you,cost.lifeV14,{source:ctx.src,reason:'Oracle resolution payment'}))return false;
       if (paid) ctx.oraclePaymentCapture = { kind: cost.kind, count: 0, cards: [] };
       if (paid && /\{X\}/.test(cost.mana)) ctx.x = xVal;
       return paid;
     }
     if (cost.kind === 'life') {
       ctx.oraclePaymentCapture = { kind: cost.kind, count: current.n, cards: [] };
-      await ctx.g.loseLife(ctx.you, current.n, 'Oracle resolution payment'); return true;
+      return !!await ctx.g.payLifeV92(ctx.you,current.n,{source:ctx.src,reason:'Oracle resolution payment'});
     }
     if(cost.kind==='damage-v14'){
       ctx.oraclePaymentCapture={kind:cost.kind,count:current.n,cards:[]};await helpers.damage(ctx,current.n);return true;

@@ -60,7 +60,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function defenderOf(target) {
-    return target instanceof U.Player ? target : target && target.ctrl;
+    return MTG.defendingPlayerV92(target);
   }
 
   function activePlayers(game) {

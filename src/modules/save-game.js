@@ -142,7 +142,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   function ownedCards(game, owner) {
-    const zones = ['library', 'hand', 'graveyard', 'exile', 'command'];
+    const zones = ['library', 'hand', 'graveyard', 'exile', 'command', 'junkyardV87', 'outsideGameV87'];
     return zones.flatMap(zone => owner[zone] || []).concat((game.battlefield || []).filter(card => card.owner === owner))
       .filter((card, index, all) => card && all.indexOf(card) === index)
       .sort((a, b) => a.iid - b.iid);

@@ -663,7 +663,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (cost.kind === 'payLife') {
       const life = amountValue(cost.amount, ctx);
-      if (player.life < plan.life + life || game.canPayLife&&!game.canPayLife(player,plan.life+life)) return false;
+      if(game.canPayLife?!game.canPayLife(player,plan.life+life):player.life<plan.life+life)return false;
       plan.life += life;
       return true;
     }
@@ -739,7 +739,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (cost.kind === 'payLife') {
       const life = amountValue(cost.amount, ctx);
-      if (player.life < plan.life + life || game.canPayLife&&!game.canPayLife(player,plan.life+life)) return false;
+      if(game.canPayLife?!game.canPayLife(player,plan.life+life):player.life<plan.life+life)return false;
       plan.life += life;
       return true;
     }
@@ -805,7 +805,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (plan.exiles.length) await ctx.g.moveGraveyardBatch(plan.exiles, 'exile');
     for(const card of plan.handExiles||[])await ctx.g.move(card,'exile');
     if (plan.returns?.length) await ctx.g.bounceMany(plan.returns);
-    if (plan.life) await ctx.g.loseLife(ctx.you, plan.life, `${ctx.src.name} additional cost`);
+    if(plan.life){const receipt=await ctx.g.payLifeV92(ctx.you,plan.life,{source:ctx.src,isSpell:ctx.so.kind==='spell',isAbility:ctx.so.kind==='ability'||!!ctx.isActivatedAbility,reason:'additional cost'});invariant(!!receipt,'additional life payment changed');record.life=receipt.lifePaid;record.lifePaymentV92=receipt;}
     const previous=ctx.so.oracleV4AdditionalCost;
     ctx.so.oracleV4AdditionalCost = previous?{
       sacrifices:previous.sacrifices.concat(record.sacrifices),discards:previous.discards.concat(record.discards),
@@ -838,7 +838,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       }
     }
-    return ctx.you.life>=life;
+    return MTG.oracleAdditionalLifePaymentAllowedV92?MTG.oracleAdditionalLifePaymentAllowedV92(ctx.g,ctx.you,plans):ctx.g.canPayLife?ctx.g.canPayLife(ctx.you,life):ctx.you.life>=life;
   };
 
   function modeLabel(option, effectMap, index) {

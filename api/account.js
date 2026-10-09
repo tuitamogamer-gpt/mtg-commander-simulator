@@ -450,6 +450,19 @@ function assertImportedDeckLibraryInvariants(savedDecks, deck, existing = null) 
     throw importedDeckError('An imported deck with that name is already in your library.', 409);
 }
 
+function copyAuxiliaryDeckV87(value) {
+  if (value === undefined) return undefined;
+  const plain = x => x && typeof x === 'object' && !Array.isArray(x);
+  const text = x => typeof x === 'string' && x.length > 0 && x.length <= 160 && !/[\u0000-\u001f\u007f]/.test(x);
+  const json = (x, depth = 0) => depth <= 5 && (x === null || typeof x === 'boolean' || Number.isSafeInteger(x) || text(x) || Array.isArray(x) && x.length <= 500 && x.every(v => json(v, depth + 1)) || plain(x) && Object.keys(x).length <= 150 && Object.entries(x).every(([k, v]) => text(k) && !['__proto__', 'constructor', 'prototype'].includes(k) && json(v, depth + 1)));
+  if (!plain(value) || !json(value) || byteSize(value) > 60000) throw importedDeckError('Invalid auxiliary deck configuration.');
+  for (const key of ['attractions', 'stickers', 'outsideGame']) if (value[key] !== undefined && (!Array.isArray(value[key]) || !value[key].every(text))) throw importedDeckError('Invalid auxiliary card list.');
+  if (value.companion !== undefined && value.companion !== null && !text(value.companion)) throw importedDeckError('Invalid companion name.');
+  if (value.colors !== undefined && (!plain(value.colors) || Object.values(value.colors).some(colors => !Array.isArray(colors) || colors.length > 5 || colors.some(c => !['W', 'U', 'B', 'R', 'G'].includes(c))))) throw importedDeckError('Invalid chosen colors.');
+  if (value.draft !== undefined && !plain(value.draft)) throw importedDeckError('Invalid draft notes.');
+  return JSON.parse(JSON.stringify(value));
+}
+
 function cleanImportedDeck(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value) || value.schema !== 'commander-deck/v1')
     throw importedDeckError('Unsupported imported-deck format.');
@@ -497,6 +510,7 @@ function cleanImportedDeck(value) {
     name,
     commanders,
     cards,
+    ...(value.auxiliaryV87 !== undefined ? { auxiliaryV87: copyAuxiliaryDeckV87(value.auxiliaryV87) } : {}),
   };
 }
 

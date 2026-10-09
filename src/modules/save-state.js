@@ -30,8 +30,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (type === 'number' || type === 'string' || type === 'boolean') { out[key] = value; continue; }
       if (type === 'object') {
         try {
-          const encoded = JSON.stringify(value);
-          if (encoded !== undefined && encoded.length <= 4000) out[key] = JSON.parse(encoded);
+          const encoded = JSON.stringify(key==='draftV87' ? MTG.OracleV87?.captureDraft?.(value) ?? value : value);
+          if (encoded !== undefined && encoded.length <= (key==='stickersV87'?16000:4000)) out[key] = JSON.parse(encoded);
         } catch (error) { /* circular or card-bearing scratch: not portable */ }
       }
     }
@@ -100,7 +100,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Every card is written as "what it is" plus "how it sits on the table".
   function captureCard(card) {
     const face=card.faceDown&&!card.isToken?card.meta.faceDownDef||card.def:card.def;
-    const printed = face?.c1719Unflipped || face;
+    let printed = face?.c1719Unflipped || face;while(printed?.stickerBaseV87||printed?.exchangeBaseV87||printed?.c1719TextBase||printed?.lastVoyageBaseV87)printed=printed.stickerBaseV87||printed.exchangeBaseV87||printed.c1719TextBase||printed.lastVoyageBaseV87;
     // Double-faced cards are catalogued under their "Front // Back" name; the
     // current face is saved separately as oracleFace. Saving the face name
     // made every checkpoint with such a card fail ("not in this build").
@@ -108,15 +108,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? printed.oracleCanonicalName : printed?.name;
     const identity = { name: catalogName };
     if (card.isToken) {
-      identity.token = tokenKeyOf(card.def);
+      identity.token = tokenKeyOf(printed);
       // A token copy of a real card keeps that card's name; anything else that
       // is not a catalog token is not portable.
-      identity.copyOf = !card.def.rulesNoName && card.isCopyOf && card.isCopyOf.name || null;
+      identity.copyOf = !printed.rulesNoName && card.isCopyOf && card.isCopyOf.name || null;
       if (identity.copyOf && MTG.DEFS[identity.copyOf]) {
-        const overrides = copyOverrides(card.def, MTG.DEFS[identity.copyOf]);
+        const overrides = copyOverrides(printed, MTG.DEFS[identity.copyOf]);
         if (Object.keys(overrides).length) identity.copyOverrides = overrides;
       }
-      if (!identity.token && !identity.copyOf && !MTG.DEFS[identity.name]) identity.face = tokenFace(card.def);
+      if (!identity.token && !identity.copyOf && !MTG.DEFS[identity.name]) identity.face = tokenFace(printed);
     } else if (card.isCopySpell && card.meta?.preparedBy && MTG.E.preparedSpellDefinitions?.[card.meta.oraclePreparedDefinitionV10||identity.name]) {
       identity.preparedSpell = true;
     } else {
@@ -148,6 +148,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (card.timestamp) entry.timestamp = Number(card.timestamp) || 0;
     if (card.zoneVersion) entry.zoneVersion = Number(card.zoneVersion) || 0;
     if (card.phasedOut) entry.phasedOut = true;
+    if (card.attractionBackV87) entry.attractionBackV87 = true;
+    if (card.zone === 'battlefield' && card.is('Battle') && card.protector) entry.protectorV92 = card.protector.idx;
     if (card.phasedOut && card.cur) entry.phasedCharacteristics = {
       types: card.cur.types.slice(), subtypes: card.cur.subtypes.slice(), super: card.cur.super.slice(),
       colors: card.cur.colors.slice(), keywords: [...card.cur.kw],
@@ -178,11 +180,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       life: player.life,
       startingLife: player.startingLife,
       poison: Number(player.poison) || 0,
-      counters: {energy: Number(player.counters?.energy) || 0, ...(player.counters?.experience ? {experience: player.counters.experience} : {}), ...(player.counters?.rad ? {rad: player.counters.rad} : {})},
+      counters: {energy: Number(player.counters?.energy) || 0, ...(player.counters?.experience ? {experience: player.counters.experience} : {}), ...(player.counters?.rad ? {rad: player.counters.rad} : {}), ...(player.counters?.ticket ? {ticket: player.counters.ticket} : {})},
       lost: !!player.lost,
       landsPlayed: Number(player.landsPlayed) || 0,
       maxLands: Number(player.maxLands) || 1,
       commanderDamage: Object.assign({}, player.commanderDamage || {}),
+      auxiliaryV87: player.auxiliaryV87 ? JSON.parse(JSON.stringify(player.auxiliaryV87)) : null,
+      oracleDraftV87: MTG.OracleV87?.captureDraft?.(player.oracleDraftV87 || {}) || null,
+      availableStickerSheetsV87: (player.availableStickerSheetsV87||[]).slice(),
+      companionIidV87: player.companionV87?.iid ?? null,
+      v90CompanionTaken: !!player.v90CompanionTaken, v91CompanionTaken: !!player.v91CompanionTaken,
+      v91CounterOrder: (player.v91CounterOrder || []).slice(),
+      v91CounterOrderKey: player.v91CounterOrderKey || '',
       commanders: (player.commanders || []).map(card => card.iid),
       chosenCommanders: player.chosenCommanders ? player.chosenCommanders.slice() : null,
       colorIdentity: (player.colorIdentity || []).slice(),
@@ -329,11 +338,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return game.untilEffects.filter(effect=>isPlainObjectZoneReplacement(effect)&&versions.get(effect.iid)===effect.zoneVersion);
   }
 
-  const BASE_PT_FIELDS = new Set(['kind', 'iid', 'zoneVersion', 'timestamp', 'expires', 'power', 'toughness', 'keywords', 'temporary']);
+  const BASE_PT_FIELDS = new Set(['kind', 'iid', 'zoneVersion', 'timestamp', 'expires', 'power', 'toughness', 'keywords', 'temporary', 'stickerPTV87']);
   const MAX_BASE_PT_EFFECTS = 4096;
   function isPlainBasePT(effect) {
     return effect && effect.kind === 'oracleBasePT' &&
       Object.keys(effect).every(key => BASE_PT_FIELDS.has(key)) &&
+      (effect.stickerPTV87===undefined||typeof effect.stickerPTV87==='string'&&effect.stickerPTV87.length<180) &&
       Number.isSafeInteger(effect.iid) && effect.iid > 0 &&
       Number.isSafeInteger(effect.zoneVersion) && effect.zoneVersion >= 0 &&
       Number.isSafeInteger(effect.timestamp) && effect.timestamp > 0 && effect.timestamp <= MTG.MAX_RESTORED_TIMESTAMP &&
@@ -350,7 +360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kind: 'oracleBasePT', iid: effect.iid, zoneVersion: effect.zoneVersion,
       timestamp: effect.timestamp, expires: effect.expires,
     };
-    for (const field of ['power', 'toughness', 'temporary']) if (effect[field] !== undefined) out[field] = effect[field];
+    for (const field of ['power', 'toughness', 'temporary', 'stickerPTV87']) if (effect[field] !== undefined) out[field] = effect[field];
     if (effect.keywords !== undefined) out.keywords = effect.keywords.slice();
     return out;
   }
@@ -401,6 +411,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(MTG.AFC?.snapshotBlockers)blockers.push(...MTG.AFC.snapshotBlockers(game));
     if(MTG.ZK?.snapshotBlockers)blockers.push(...MTG.ZK.snapshotBlockers(game));
     if(MTG.C1920?.snapshotBlockers)blockers.push(...MTG.C1920.snapshotBlockers(game));
+    if((game.exchangesV87||[]).some(r=>r.source.zone==='battlefield'&&r.source.zoneVersion===r.sourceVersion))blockers.push('an active text-box exchange');
     if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
     if (MTG.POM?.snapshotBlockers) blockers.push(...MTG.POM.snapshotBlockers(game));
     if (MTG.WLM?.snapshotBlockers) blockers.push(...MTG.WLM.snapshotBlockers(game));
@@ -442,8 +453,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const cards = [];
     for (const card of game.battlefield) cards.push(captureCard(card));
     for (const player of game.players) {
-      for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command']) {
-        for (const card of player[zone]) cards.push(captureCard(card));
+      for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command', 'attractionDeckV87', 'junkyardV87', 'outsideGameV87']) {
+        for (const card of player[zone]||[]) cards.push({...captureCard(card),...(['attractionDeckV87','junkyardV87','outsideGameV87'].includes(zone)?{auxiliaryZoneV87:zone}:{})});
       }
     }
     return {
@@ -513,6 +524,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         d.path.at(-1) === d.room && d.path.every((key, i) => !!rooms[key] && (!i || rooms[d.path[i - 1]].next.includes(key)));
     }), 'invalid dungeon path.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.experience??0)&&(player.counters?.experience??0)>=0), 'invalid player experience counters.');
+    assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.ticket??0)&&(player.counters?.ticket??0)>=0), 'invalid ticket counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.rad??0)&&(player.counters?.rad??0)>=0), 'invalid player rad counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
@@ -550,7 +562,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     game.c1719Permissions=[];game.c1719GraveGrants=[];
     game.battlefield.length = 0;
     for (const player of game.players) {
-      for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command']) player[zone].length = 0;
+      for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command', 'attractionDeckV87', 'junkyardV87', 'outsideGameV87']) player[zone] = [];
+      player['outside-game']=player.outsideGameV87;
       player.commanders = [];
       player.emblems = [];
     }
@@ -589,6 +602,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.attachedTo = entry.attachedTo ?? null;
       card.attachments = (entry.attachments || []).slice();
       card.isToken = !!entry.isToken;
+      card.attractionBackV87 = !!entry.attractionBackV87;
       card.isCopySpell = !!entry.preparedSpell;
       card.faceDown = !!entry.faceDown;
       card.commander = !!entry.commander;
@@ -622,8 +636,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         MTG.OracleV26Common.restoreForm(game,card,entry.oracleEntryFormV26);
         if(card.isToken&&card.isCopyOf)card.isCopyOf=card.def;
       }
+      if(entry.protectorV92!==undefined){assert(card.zone==='battlefield'&&card.def.types.includes('Battle')&&Number.isSafeInteger(entry.protectorV92)&&!!game.players[entry.protectorV92]&&!snapshot.players[entry.protectorV92].lost&&game.players[entry.protectorV92]!==card.ctrl,'invalid Battle protector');card.protector=game.players[entry.protectorV92];}else if(card.zone==='battlefield'&&card.def.types.includes('Battle'))assert(false,'a saved Battle is missing its protector');
       byIid.set(card.iid, card);
       if (entry.zone === 'battlefield') game.battlefield.push(card);
+      else if(entry.auxiliaryZoneV87){assert(['attractionDeckV87','junkyardV87','outsideGameV87'].includes(entry.auxiliaryZoneV87)&&entry.zone===(entry.auxiliaryZoneV87==='outsideGameV87'?'outside-game':'command'),'invalid supplementary deck zone');owner[entry.auxiliaryZoneV87].push(card);}
       else {
         assert(Array.isArray(owner[entry.zone]), `unknown zone ${entry.zone}.`);
         owner[entry.zone].push(card);
@@ -662,11 +678,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.life = saved.life;
       player.startingLife = saved.startingLife;
       player.poison = saved.poison;
-      player.counters = {energy: saved.counters?.energy || 0, ...(saved.counters?.experience ? {experience: saved.counters.experience} : {}), ...(saved.counters?.rad ? {rad: saved.counters.rad} : {})};
+      player.counters = {energy: saved.counters?.energy || 0, ...(saved.counters?.experience ? {experience: saved.counters.experience} : {}), ...(saved.counters?.rad ? {rad: saved.counters.rad} : {}), ...(saved.counters?.ticket ? {ticket:saved.counters.ticket} : {})};
       player.lost = saved.lost;
       player.landsPlayed = saved.landsPlayed;
       player.maxLands = saved.maxLands;
       player.commanderDamage = Object.assign({}, saved.commanderDamage);
+      assert(!saved.v91CounterOrder || Array.isArray(saved.v91CounterOrder) && saved.v91CounterOrder.length <= 500 && saved.v91CounterOrder.every(iid => Number.isSafeInteger(iid)), 'invalid counter replacement order');
+      assert(saved.v91CounterOrderKey === undefined || typeof saved.v91CounterOrderKey === 'string' && saved.v91CounterOrderKey.length <= 10000, 'invalid counter replacement cohort');
+      player.v91CounterOrder = (saved.v91CounterOrder || []).slice();
+      player.v91CounterOrderKey = saved.v91CounterOrderKey || '';
+      player.auxiliaryV87=saved.auxiliaryV87||{};player.oracleDraftV87=structuredClone(saved.oracleDraftV87||saved.auxiliaryV87?.draft||{});player.stickerSheetsV87=(saved.auxiliaryV87?.stickers||[]).slice();player.availableStickerSheetsV87=(saved.availableStickerSheetsV87||[]).slice();player.companionV87=byIid.get(saved.companionIidV87)||null;player.v90CompanionTaken=!!saved.v90CompanionTaken;player.v91CompanionTaken=!!saved.v91CompanionTaken;
+      MTG.OracleV87?.restoreDraftReferences?.(game,player);
       player.commanders = (saved.commanders || []).map(iid => byIid.get(iid)).filter(Boolean);
       player.chosenCommanders = saved.chosenCommanders ? saved.chosenCommanders.slice() : null;
       player.colorIdentity = (saved.colorIdentity || []).slice();
@@ -743,6 +765,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, rad: player.counters?.rad || 0, lost: !!player.lost, enduringStory: !!player.enduringStory, maximumHandSizeReductionV64: player.maximumHandSizeReductionV64||0, spellsCastThisGameV64: player.spellsCastThisGameV64??null,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
         yidaroCyclesV79: player.yidaroCyclesV79||0, completedTombV79: !!player.completedTombV79,
+        ticketsV87: player.counters?.ticket || 0, stickerSheetsV87: player.availableStickerSheetsV87 || [], companionV87: player.companionV87?.iid ?? null,
+        auxiliaryZonesV87: ['attractionDeckV87','junkyardV87','outsideGameV87'].map(zone=>(player[zone]||[]).map(card=>`${card.name}#${card.iid}`).join(',')),
+        counterOrderV91: player.v91CounterOrder || [], counterOrderKeyV91: player.v91CounterOrderKey || '',
         zones: ['library', 'hand', 'graveyard', 'exile', 'command'].map(zone =>
           player[zone].map(card => `${card.name}#${card.iid}`).sort().join(',')),
       })),
@@ -751,7 +776,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // A counter kind sitting at zero is not a counter (CR 122.1c), so it is
         // not part of the state a save has to reproduce.
         Object.entries(card.counters || {}).filter(([, value]) => value).sort(),
-        card.attachedTo ?? null].join('|')).sort(),
+        card.attachedTo ?? null,card.is('Battle')?card.protector?.idx??null:null].join('|')).sort(),
       goads: game.untilEffects.filter(isPlainGoad).map(effect =>
         [effect.iid, effect.expires, effect.notPlayer ? effect.notPlayer.idx : '', effect.whoTurn ? effect.whoTurn.idx : ''].join('|')).sort(),
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),

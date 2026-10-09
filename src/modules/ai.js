@@ -26,7 +26,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return 3 + Math.min(6, power) * 0.5 - (card.kw('lifelink') ? 3 : 0);
     }
     const trample = card.kw('trample') ? 0 : Math.max(0, ...destinations.map(target => {
-      const defender = target instanceof U.Player ? target : target.ctrl;
+      const defender = MTG.defendingPlayerV92(target);
       const blockers = game.creatures(defender).filter(blocker => game.canBlock(blocker, card));
       return blockers.length ? Math.min(4, Math.max(0, power + 2 - Math.min(...blockers.map(c => c.toughness)))) : 0;
     }));

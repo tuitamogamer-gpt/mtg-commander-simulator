@@ -85,6 +85,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       !cards.some(row => row.name === name && row.n === 1 && row.section === 'Commander')) ||
       cards.some(row => row.section === 'Commander' && !value.commanders.includes(row.name))) return null;
     const record = { schema: value.schema, id: value.id, name: value.name, commanders: value.commanders.slice(), cards };
+    if (value.auxiliaryV87 !== undefined) {
+      const aux = value.auxiliaryV87;
+      const json = (x, depth = 0) => depth <= 5 && (x === null || typeof x === 'boolean' || Number.isSafeInteger(x) || validText(x, 160) || Array.isArray(x) && x.length <= 500 && x.every(v => json(v, depth + 1)) || isObject(x) && Object.keys(x).length <= 150 && Object.entries(x).every(([k, v]) => validText(k, 160) && !['__proto__', 'constructor', 'prototype'].includes(k) && json(v, depth + 1)));
+      if (!isObject(aux) || !json(aux)) return null;
+      for (const key of ['attractions', 'stickers', 'outsideGame']) if (aux[key] !== undefined && (!Array.isArray(aux[key]) || !aux[key].every(x => validText(x, 160)))) return null;
+      if (aux.companion !== undefined && aux.companion !== null && !validText(aux.companion, 160)) return null;
+      if (aux.colors !== undefined && (!isObject(aux.colors) || Object.values(aux.colors).some(colors => !Array.isArray(colors) || colors.length > 5 || colors.some(c => !['W', 'U', 'B', 'R', 'G'].includes(c))))) return null;
+      if (aux.draft !== undefined && !isObject(aux.draft)) return null;
+      record.auxiliaryV87 = JSON.parse(JSON.stringify(aux));
+    }
     try {
       const bytes = encodeURIComponent(JSON.stringify(record)).replace(/%[A-F\d]{2}|./g, 'x').length;
       return bytes <= MAX_DECK_RECORD_BYTES ? record : null;

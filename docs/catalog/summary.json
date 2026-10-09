@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryAsOfImportState": "2026-10-09T09:33:39.214Z",
+  "inventoryAsOfImportState": "2026-10-09T14:47:29.508Z",
   "source": {
     "provider": "Scryfall",
     "endpoint": "https://api.scryfall.com/bulk-data",
@@ -19,40 +19,22 @@
     "oracleIds": 31070
   },
   "counts": {
-    "runtimeDefinitions": 30415,
-    "genericOracleCards": 26416,
-    "genericBatches": 261,
+    "runtimeDefinitions": 31115,
+    "genericOracleCards": 27116,
+    "genericBatches": 263,
     "manualOracleCards": 65,
     "legacyDefinitions": 3934,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 30414,
+    "deckImportEligibleDefinitions": 31114,
     "deckImportRestrictedDefinitions": 1,
-    "representedUniverseOracleIds": 30370,
-    "remainingUniverseOracleIds": 700,
+    "representedUniverseOracleIds": 31070,
+    "remainingUniverseOracleIds": 0,
     "parserEligibleUnimported": 0,
-    "deferred": 700,
+    "deferred": 0,
     "runtimeEntriesWithoutSnapshotMatch": 17,
     "runtimeEntriesOutsideComparisonUniverse": 26
   },
-  "remainingByReason": {
-    "adventure-needs-complete-face-semantics": 1,
-    "class-level-needs-complete-semantics-v21": 1,
-    "complex-layout": 18,
-    "double-faced-card-needs-complete-back-semantics": 17,
-    "double-faced-card-needs-complete-front-semantics": 80,
-    "double-faced-card-needs-face-transition-semantics": 2,
-    "dynamic-power-toughness": 2,
-    "flip-needs-complete-front-semantics": 1,
-    "land-needs-explicit-semantics": 7,
-    "noncreature-needs-explicit-semantics": 108,
-    "oracle-needs-explicit-semantics": 403,
-    "room-door-needs-complete-semantics": 1,
-    "saga-chapter-needs-complete-semantics-v21": 2,
-    "spell-needs-explicit-semantics": 51,
-    "split-needs-complete-face-semantics": 2,
-    "unbound-event-reference": 1,
-    "unbound-target-damage-source": 3
-  },
+  "remainingByReason": {},
   "parserEligibleUnimportedNames": [],
   "runtimeNamesWithoutSnapshotMatch": [
     "Aggro Amalgam",
@@ -326,12 +308,12 @@
     "Trouble in Pairs",
     "Vow of Lightning"
   ],
-  "classifierVersion": 85,
-  "classifierFilesSha256": "faf75acaae58815f4e936b28f7cd6d2058018efcf38717d662aff4bb4a23f295",
-  "inputFilesSha256": "7ab5ab3f2e70564ee1fb0ebf64f1c9e9716677dc3f66e273e458567023ce530b",
+  "classifierVersion": 92,
+  "classifierFilesSha256": "1f43993ceed6a2bff559812e502043b8d017e48d8b5b06cb722be9029296cdb9",
+  "inputFilesSha256": "658d4092d94e67b39633e0de63520b0e9aa38a930ed0deb4d26ec4d7fc900f72",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "cb24b72cc6be7b668c886df3e40811186a4308e98aa9f53475f28ac5b5157583",
-    "docs/catalog/remaining-cards.csv": "d81449f870e81dc85a2f7ca5b4e848e95b3a202db813dafdff4601ae0d342a19"
+    "docs/catalog/imported-cards.csv": "0f192f78bb87bef6b9ace0b2c6142688d30300c6186b9f7fb692275f613bed49",
+    "docs/catalog/remaining-cards.csv": "f0f380b669bc726e2d421068ede82094fb29b07d1f8560c7393da72253896fec"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

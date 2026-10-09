@@ -6,7 +6,7 @@
   if(card.def.bdfRoom)return M.BDF.castVariants(game,card,base);
   if(card.def.bdfGift)return [base,{...base,bdfGift:true}];
   const faces=M.OracleV8Faces?.physical(card);
-  if(faces)return faces.faces.filter(face=>faces.layout!=='transform'||face.key==='front').map(face=>({...base,oracleFace:face.key,name:face.def.name,label:face.def.name}));
+  if(faces)return faces.faces.filter(face=>base.oracleFace?face.key===base.oracleFace:faces.layout!=='transform'||face.key==='front').map(face=>({...base,oracleFace:face.key,name:face.def.name,label:face.def.name}));
   if(card.def.oracleSplit)return game.oracleSplitCastingOptions(card,card.zone,base);
   return [base,...(card.def.adventure?[{...base,adventure:true,name:card.def.adventure.name,label:card.def.adventure.name,types:card.def.adventure.types,cost:card.def.adventure.cost}]:[])];
  }
@@ -30,7 +30,7 @@
    ['oraclePrototypeV10','bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','oracleBottomOnGraveyardV67','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
  }
  function openFrame(ctx,cards,effect,helpers){
-  const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(typeof effect.altCostStr==='string'?{altCostStr:effect.altCostStr}:{}),...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{}),...(effect.bottomAfter===true?{oracleBottomOnGraveyardV67:true}:{})};
+  const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.oracleFace?{oracleFace:effect.oracleFace}:{}),...(typeof effect.altCostStr==='string'?{altCostStr:effect.altCostStr}:{}),...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{}),...(effect.bottomAfter===true?{oracleBottomOnGraveyardV67:true}:{})};
   const filter=effect.filter?helpers.target(effect.filter,[],0,{...ctx.data,oracleX:ctx.so?.x??ctx.x??0,oracleSourceCapture:ctx.oracleSourceCapture||{zoneVersion:ctx.sourceZoneVersion??ctx.src.zoneVersion}}).filter:null;
   const frame={id,player:ctx.you,source:ctx.src,free:effect.free,anyColor:base.asThoughAnyColor,filter,entries:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion,alternatives:alternatives(ctx.g,card,base).map(alt=>effect.exileAfter&&effect.exileTypes?.some(type=>ctx.g.castHasType(card,alt,type))?{...alt,oracleExileOnGraveyard:true}:alt)}))};
   // A paid immediate cast still allows printed alternatives such as Snuff

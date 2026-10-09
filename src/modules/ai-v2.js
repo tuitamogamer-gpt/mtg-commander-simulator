@@ -1512,7 +1512,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // creatures) so that planning a wide board does not rebuild the full bot
   // view for every attacker × target pair.
   function attackAssignmentAssessment(game, player, card, target, priorAttackers = 0, ctx = null, committedDamage = 0) {
-    const defender = target instanceof U.Player ? target : target.ctrl;
+    const defender = MTG.defendingPlayerV92(target);
     const baseHit = Math.max(0, game.dmgAmount ? game.dmgAmount(card, 'normal') : card.power || 0);
     const hit = baseHit * (card.kw('double strike') ? 2 : 1);
     const defenderCreatures = ctx && ctx.creaturesOf ? ctx.creaturesOf(defender) : game.creatures(defender);
@@ -2118,7 +2118,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // visible, so a 1/1 deathtouch blocker cannot be "absorbed" by fodder.
     let lostValue = 0, killedValue = 0;
     for (const target of new Set(assignments.map(item => item.target))) {
-      const defender = target instanceof U.Player ? target : target.ctrl;
+      const defender = MTG.defendingPlayerV92(target);
       const attackers = assignments.filter(item => item.target === target).map(item => item.card);
       const potential = game.creatures(defender).filter(card => !card.tapped && !dead.has(card));
       const defense = survivalBlocks(game, defender, attackers, potential);
@@ -2233,9 +2233,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // da cijeli combat generator ostane bez akcije.
         if (!forced.has(attacker) || !targets.length) next.push({ assignments: node.assignments.slice(), score: node.score, committed: node.committed });
         for (const target of targets) {
-          const defender = target instanceof U.Player ? target : target.ctrl;
+          const defender = MTG.defendingPlayerV92(target);
           const prior = node.assignments.filter(item =>
-            (item.target instanceof U.Player ? item.target : item.target.ctrl) === defender).length;
+            (MTG.defendingPlayerV92(item.target)) === defender).length;
           // Koliko štete je plan već uperio u ovog branioca — višak preko
           // njegovog života više ne donosi bodove.
           const already = node.committed.get(defender) || 0;
@@ -2317,7 +2317,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, promisedTarget)));
       if (canFulfill) {
         const fulfilling = plans.filter(plan => plan.assignments.some(item =>
-          (item.target instanceof U.Player ? item.target : item.target && item.target.ctrl) === promisedTarget));
+          (MTG.defendingPlayerV92(item.target)) === promisedTarget));
         if (fulfilling.length) plans = fulfilling;
       }
     }
@@ -3975,7 +3975,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const priorByDefender = new Map();
       let damaging = 0;
       for (const item of assignments) {
-        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        const defender = MTG.defendingPlayerV92(item.target);
         if (!defender) continue;
         const prior = priorByDefender.get(defender.idx) || 0;
         priorByDefender.set(defender.idx, prior + 1);
@@ -4074,7 +4074,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const assignments = action.assignments || [];
       const priorByDefender = new Map();
       for (const item of assignments) {
-        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        const defender = MTG.defendingPlayerV92(item.target);
         if (!defender) continue;
         const prior = priorByDefender.get(defender.idx) || 0;
         priorByDefender.set(defender.idx, prior + 1);
@@ -4183,7 +4183,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const assignments = action.assignments || [];
       const priorByDefender = new Map();
       for (const item of assignments) {
-        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        const defender = MTG.defendingPlayerV92(item.target);
         if (!defender) continue;
         const prior = priorByDefender.get(defender.idx) || 0;
         priorByDefender.set(defender.idx, prior + 1);
@@ -4285,7 +4285,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const priorByDefender = new Map();
       const distinctDefenders = new Set();
       for (const item of assignments) {
-        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        const defender = MTG.defendingPlayerV92(item.target);
         if (!defender) continue;
         distinctDefenders.add(defender.idx);
         const prior = priorByDefender.get(defender.idx) || 0;
@@ -4359,7 +4359,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const traits = coreArchetypeTraits(player);
     if (!traits) return;
     breakdown.archetype = 0;
-    const defenderOf = target => target instanceof U.Player ? target : target && target.ctrl || null;
+    const defenderOf = target => MTG.defendingPlayerV92(target);
     const threatOf = defender => defender ? MTG.assessPlayerThreat(view, player.idx, defender.idx).totalScore : 0;
     const opponents = player.opponents(game).filter(o => !o.lost);
     const leader = opponents.length > 1
@@ -4495,7 +4495,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'declareAttackers') {
       const assignments = action.assignments || [];
       const hitsMonarch = assignments.some(item => {
-        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        const defender = MTG.defendingPlayerV92(item.target);
         return defender && game.monarch === defender;
       });
       if (mode === 'SETUP') breakdown.valueEngine -= assignments.length * 9;
@@ -5521,6 +5521,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const defendingPlayer=defender instanceof MTG.Player;
         const lethal=defendingPlayer ? card?.kw('infect') ? (defender.poison||0)+amount>=10
           : defender.life<=amount || card?.commander&&(defender.commanderDamage?.[card.iid]||0)+amount>=21
+          : defender?.is?.('Battle') ? (defender.counters.defense||0)<=amount
           : defender?.is?.('Planeswalker')&&(defender.counters.loyalty||0)<=amount;
         let remaining=amount,removal=0;
         for(const blocker of blockers.slice().sort((a,b)=>(a.toughness-a.damage)-(b.toughness-b.damage))){
@@ -5714,7 +5715,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice = (40 - target.life) * 0.35 + playerThreatForGame(game, player, target) * 0.16 +
             (target.life <= tokenPower ? 40 : 0);
         } else if (target instanceof U.CardInst) {
-          breakdown.choice = permanentGameValue(game, target, player) + Math.max(0, 6 - (target.counters.loyalty || 0));
+          breakdown.choice = permanentGameValue(game, target, player) + Math.max(0, 6 - (target.counters[target.is('Battle') ? 'defense' : 'loyalty'] || 0));
         }
       } else if (hintKind === 'myriadCopy') {
         const source = q.aiHint && q.aiHint.src;

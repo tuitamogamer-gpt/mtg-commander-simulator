@@ -30,7 +30,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     seen.delete(value);
     return result;
   }
-  const metaKeys = ['chosenType', 'chosenColor', 'oracleChosenColor', 'oracleChosenSubtypeV16', 'oracleChosenSubtypeBindingV16', 'thrivingColor', 'siegeMode', 'level', 'unlocked',
+  const metaKeys = ['stickersV87', 'colorsV87', 'visitedV87', 'chosenType', 'chosenColor', 'oracleChosenColor', 'oracleChosenSubtypeV16', 'oracleChosenSubtypeBindingV16', 'thrivingColor', 'siegeMode', 'level', 'unlocked',
     'suspended', 'foretold', 'plotted', 'freePlay', 'playableBy', 'playableUntil', 'playableUntilOwnTurn', 'ringBearer', 'crewedTurn',
     'prepared', 'preparedCopy', 'preparedBy'];
   U.onlineCardPresentation = function (card, viewer, mayInspect = false) {
@@ -46,7 +46,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } : data(card.def);
     if (!hidden && card.def.mana) def.mana = data(card.def.mana) || true;
     const current = publicBody ? data(card.cur) : null;
-    const publicMeta = hidden ? {} : Object.fromEntries(metaKeys.filter(k => meta[k] !== undefined).map(k => [k, data(meta[k])]));
+    const publicMeta = hidden ? (publicBody?{stickersV87:data(meta.stickersV87||[])}:{}) : Object.fromEntries(metaKeys.filter(k => meta[k] !== undefined).map(k => [k, data(meta[k])]));
     if (publicBody && meta.togetherForeverTurn !== undefined) publicMeta.togetherForeverTurn = meta.togetherForeverTurn;
     if(card.mutateState){publicMeta.c1920Mutations=meta.c1920Mutations||0;publicMeta.mutateComponents=U.Mutate.present(card,viewer);}
     if (card.faceDown && mayLook) {
@@ -58,6 +58,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       token: token(card), iid: card.iid, zoneVersion: card.zoneVersion || 0,
       name: hidden ? 'Hidden card' : (card.faceDown && meta.faceDownDef ? meta.faceDownDef.name : card.name),
       zone: card.zone, ownerSeat: seat(card.owner || card.ctrl), controllerSeat: seat(card.ctrl),
+      protectorSeat: publicBody && card.is('Battle') ? seat(card.protector) : null,
       hidden, faceDown: !!card.faceDown, def, cur: current,
       types: publicBody ? [...(card.cur?.types || def.types)] : [...def.types],
       cost: !hidden || publicBody ? def.cost || '' : undefined,
@@ -131,6 +132,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         handCount: player.hand.length, libraryCount: player.library.length,
         manaPool: data(player.pool || {}), hand: player === viewer ? player.hand.map(card) : undefined,
         graveyard: player.graveyard.map(card), exile: player.exile.map(card), command: player.command.map(card),
+        junkyardV87: (player.junkyardV87||[]).map(card), outsideGameV87: player===viewer?(player.outsideGameV87||[]).map(card):[],
+        attractionDeckCountV87: (player.attractionDeckV87||[]).length, availableStickerSheetsV87:(player.availableStickerSheetsV87||[]).slice(), companionV87: player.companionV87?card(player.companionV87):null,
         commanders: (player.commanders || []).map(card), commanderDamage: data(player.commanderDamage || {}),
         landsPlayed: player.landsPlayed || 0, landPlayLimit: game.landPlayLimit(player),
         afcDungeon: data(player.afcDungeon || null), afcCompletedDungeons: player.afcCompletedDungeons || 0,
@@ -161,7 +164,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     const combat = enc.encode({ attackers: game.combat?.attackers || [] });
     const events = (game._onlinePublicEvents || []).map(event => ({ id: event.id, event: enc.encode(event.event) }));
-    const zoneObjects = battlefield.concat(players.flatMap(p => [p.hand || [], p.graveyard, p.exile, p.command, p.commanders, p.libraryTop ? [p.libraryTop] : []].flat()));
+    const zoneObjects = battlefield.concat(players.flatMap(p => [p.hand || [], p.graveyard, p.exile, p.command, p.commanders, p.junkyardV87||[], p.outsideGameV87||[], p.companionV87?[p.companionV87]:[], p.libraryTop ? [p.libraryTop] : []].flat()));
     const zoneTokens = new Set(zoneObjects.map(object => object.token));
     return {
       schema: 'commander-arena/v1', turn: game.turnNo, phase: game.phase, step: game.step,
@@ -341,6 +344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.cur = object.cur ? { ...data(object.cur), kw: new Set(object.cur.kw || []), blockGroupRestrictions: [] } : null;
         card.owner = this.players.find(p => p.onlineSeat === object.ownerSeat);
         card.ctrl = this.players.find(p => p.onlineSeat === object.controllerSeat);
+        card.protector = object.protectorSeat === null || object.protectorSeat === undefined ? null : this.players.find(p => p.onlineSeat === object.protectorSeat) || null;
         card.meta = this.decode(card.meta || {}); card.counters ||= {}; card.attachments ||= [];
       }
       for (const object of objects) {
@@ -374,7 +378,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Public zones already contain their full records. The auxiliary list
       // contains only additional Stack/event references, avoiding a second
       // copy of every permanent in every human's network snapshot.
-      const zoneObjects = snapshot.battlefield.concat(snapshot.players.flatMap(p => [p.hand || [], p.graveyard || [], p.exile || [], p.command || [], p.commanders || [], p.libraryTop ? [p.libraryTop] : []].flat()));
+      const zoneObjects = snapshot.battlefield.concat(snapshot.players.flatMap(p => [p.hand || [], p.graveyard || [], p.exile || [], p.command || [], p.commanders || [], p.junkyardV87||[], p.outsideGameV87||[], p.companionV87?[p.companionV87]:[], p.libraryTop ? [p.libraryTop] : []].flat()));
       const objects = [...new Map(zoneObjects.concat(snapshot.objects || []).map(object => [object.token, object])).values()];
       const visible = new Set(objects.map(object => object.token));
       for (const object of this.currentQuestion?.onlineDecision.objects || []) visible.add(object.token);
@@ -389,7 +393,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.putDecisionCards(this.currentQuestion?.onlineDecision.objects || []);
       for (const row of snapshot.players) {
         const p = this.players.find(p => p.onlineSeat === row.seat);
-        for (const zone of ['hand', 'graveyard', 'exile', 'command', 'commanders']) p[zone] = (row[zone] || []).map(c => this.ref(c.token)).filter(Boolean);
+        for (const zone of ['hand', 'graveyard', 'exile', 'command', 'commanders', 'junkyardV87', 'outsideGameV87']) p[zone] = (row[zone] || []).map(c => this.ref(c.token)).filter(Boolean);
+        p.companionV87=row.companionV87?this.ref(row.companionV87.token):null;p.attractionDeckCountV87=row.attractionDeckCountV87||0;p.availableStickerSheetsV87=row.availableStickerSheetsV87||[];
         if (!row.hand) p.hand = Array.from({ length: row.handCount }, () => this.hiddenCard(p, 'hand'));
         p.library = Array.from({ length: row.libraryCount }, () => this.hiddenCard(p, 'library'));
         if (row.libraryTop && p.library.length) p.library[p.library.length - 1] = this.ref(row.libraryTop.token);

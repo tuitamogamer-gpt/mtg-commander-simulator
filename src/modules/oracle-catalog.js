@@ -76,7 +76,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function genericAmount(value, ctx, preserveNegative = false) {
-    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85)/.test(value?.kind||''))for(const handler of v20.handlers){const result=handler.amount?.(value,ctx,v20.helpers);if(result!==undefined)return result;}
+    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92)/.test(value?.kind||''))for(const handler of v20.handlers){const result=handler.amount?.(value,ctx,v20.helpers);if(result!==undefined)return result;}
     if(value?.kind==='product-v16')return genericAmount(value.left,ctx,preserveNegative)*genericAmount(value.right,ctx,preserveNegative);
     if(JSON.stringify(value)?.includes('"kind":"chosen-subtype-v16"'))return genericAmount(bindChosenSubtypeV16(value,subtypeChoiceV16(ctx.oracleSourceCapture,ctx.src)),ctx,preserveNegative);
     if(value?.kind==='result-count-v16')return Math.max(0,Number(ctx.oracleResultCountV16)||0);
@@ -468,6 +468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const permanentUnion = anyTarget && target.alternatives?.length && target.alternatives.every(branch =>
       branch.zone === 'battlefield' && !['any','any target','player','opponent','player or planeswalker','target player or planeswalker'].includes(String(branch.what).toLowerCase()));
     const spec = {
+      oracleTargetDescriptorV89:target,
       what: playerTarget ? rawWhat : (permanentUnion ? 'permanent' : anyTarget || playerOrPlaneswalker ? 'any' : 'permanent'),
       zone,
       prompt: target.prompt || 'Choose target',
@@ -954,6 +955,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const snap=current()?ctx.g.snapshot(subject):subject.battlefieldLKI?.get(version);
     const explorer=snap?.ctrl;
     if(!explorer||explorer.lost)return;
+    await MTG.oracleBeforeExploreV86?.(ctx,subject,version);
     const top=explorer.library.at(-1),topVersion=top?.zoneVersion;
     if(top){
       ctx.g.lg(`Explore: revealed ${top.name}.`);
@@ -984,7 +986,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function genericCount(game,source,player,node,preserveNegative=false) {
-    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85)/.test(node?.kind||''))for(const handler of v20.handlers){const result=handler.count?.(game,source,player,node,v20.helpers);if(result!==undefined)return result;}
+    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92)/.test(node?.kind||''))for(const handler of v20.handlers){const result=handler.count?.(game,source,player,node,v20.helpers);if(result!==undefined)return result;}
     if(node?.kind==='sacrificed-count-v19')return game.players.reduce((n,p)=>n+(p.turnState.oracleSacrificedV19||0),0);
     if(node?.kind==='transformed-permanents-v19')return game.bf().filter(card=>card.ctrl===player&&card.oracleFaces?.layout==='transform'&&card.oracleFace==='back').length;
     if(node.kind==='attacked-creature-count-v10'){const history=(node.youV18?player:game.turnPlayer)?.turnState?.oracleAttackersV10;return history?.turn===game.turnNo?history.count:0;}
@@ -1086,7 +1088,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.Game.prototype.oracleDiscoverV9=async function(ctx,n){return MTG.WLM.discover(ctx,n);};
 
   async function runGenericEffect(ctx, effect) {
-    if(effect.huatliNoBlockV62||/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85)/.test(effect.action||''))for(const handler of v20.handlers)if(await handler.effect?.(ctx,effect,v20.helpers))return;
+    if(effect.huatliNoBlockV62||/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92)/.test(effect.action||''))for(const handler of v20.handlers)if(await handler.effect?.(ctx,effect,v20.helpers))return;
     if(effect.action==='zone-exchange-v19'){
       const [first,second]=effect.zones;
       if(!['hand','graveyard','library'].includes(first)||!['hand','graveyard','library'].includes(second)||first===second)throw Error('Invalid zone exchange');
@@ -1476,7 +1478,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(effect.drawCounteredV18)await ctx.g.draw(ctx.you,n,ctx.src);return;
     }
     if(effect.action==='combat-mana'){
-      const n=genericAmount(effect.n,ctx);if(n>0){ctx.you.pool.R=(ctx.you.pool.R||0)+n;(ctx.you.poolMeta||=[]).push({color:'R',n,persist:'combat'});}return;
+      const n=genericAmount(effect.n,ctx);if(n>0){ctx.you.pool.R=(ctx.you.pool.R||0)+n;(ctx.you.poolMeta||=[]).push({color:'R',n,persist:'combat',source:ctx.src,oracleManaOriginV86:{iid:ctx.src.iid,version:ctx.sourceZoneVersion??ctx.src.zoneVersion,name:ctx.src.name,controller:ctx.you.idx,snapshot:ctx.src.battlefieldLKI?.get(ctx.sourceZoneVersion)||ctx.g.snapshot(ctx.src,false)}});}await ctx.g.emit('firebend',{player:ctx.you,card:ctx.src,n});return;
     }
     if(effect.action==='look-face-v17'){
       for(const card of genericEffectSubjects(ctx,effect.target))if(card.zone==='battlefield'&&card.faceDown&&card.meta.faceDownDef){
@@ -1553,7 +1555,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const choices=effect.payment.kind==='alternatives'?effect.payment.choices:[effect.payment];
         const plans=choices.map((cost,index)=>{
           const candidates=cost.zone?(cost.zone==='battlefield'?ctx.g.bf():player[cost.zone]).filter(card=>(cost.zone!=='battlefield'||card.ctrl===player)&&genericResolutionTargetSpec(ctx,cost.filter,[],0).filter(ctx.g,card,player,ctx.src)&&(cost.kind!=='sacrifice'||ctx.g.canSacrifice(card))):[];
-          const payable=cost.kind==='mana'?ctx.g.canPayMana(player,MTG.parseCost(cost.mana)):cost.kind==='life'?player.life>=cost.n:candidates.length>=cost.n;
+          const payable=cost.kind==='mana'?ctx.g.canPayMana(player,MTG.parseCost(cost.mana)):cost.kind==='life'?ctx.g.canPayLife(player,cost.n):candidates.length>=cost.n;
           return {cost,candidates,payable,index};
         }).filter(plan=>plan.payable);
         let paid=false;
@@ -1564,7 +1566,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const plan=plans.find(plan=>choice===(multiple?'pay-'+plan.index:'yes'));
           if(plan){const {cost,candidates}=plan;
             if(cost.kind==='mana')paid=await ctx.g.payMana(player,MTG.parseCost(cost.mana));
-            else if(cost.kind==='life'){await ctx.g.loseLife(player,cost.n,'Oracle payment');paid=true;}
+            else if(cost.kind==='life')paid=!!await ctx.g.payLifeV92(player,cost.n,{source:ctx.src,reason:'Oracle payment'});
             else {
               let chosen;
               if(cost.random){chosen=candidates.slice();MTG.shuffle(chosen,ctx.g.rnd);chosen=chosen.slice(0,cost.n);}
@@ -1618,12 +1620,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         candidates=(cost.zone==='battlefield'?ctx.g.bf().filter(card=>card.ctrl===player):player[cost.zone]).filter(card=>filter(ctx.g,card,player,ctx.src)&&(cost.action!=='sacrifice'||ctx.g.canSacrifice(card)));
         if(candidates.length<cost.n)return;
       }
-      if(cost.life&&player.life<cost.life||cost.mana&&!ctx.g.canPayMana(player,MTG.parseCost(cost.mana))||cost.energy&&MTG.OracleV8Energy.count(player)<cost.energy)return;
+      if(cost.life&&!ctx.g.canPayLife(player,cost.life)||cost.mana&&!ctx.g.canPayMana(player,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0})||cost.energy&&MTG.OracleV8Energy.count(player)<cost.energy)return;
       const answer=await player.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay the reflexive ability cost?',options:[{key:'yes',label:'Pay'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src}});
       if(answer!=='yes')return;
       if(cost.energy&&!MTG.OracleV8Energy.spend(ctx.g,player,cost.energy,ctx.src))return;
-      if(cost.mana&&!await ctx.g.payMana(player,MTG.parseCost(cost.mana)))return;
-      if(cost.life)await ctx.g.loseLife(player,cost.life,'Reflexive ability cost');
+      if(cost.mana&&!await ctx.g.payMana(player,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0}))return;
+      if(cost.life&&!await ctx.g.payLifeV92(player,cost.life,{source:ctx.src,reason:'Reflexive ability cost'}))return;
       if(cost.zone){
         const keepTargets=candidates.filter(card=>effect.reflexiveBody.targets.some(target=>target.zone===cost.zone&&genericResolutionTargetSpec(ctx,target,[],0).filter(ctx.g,card,player,ctx.src)));
         const locks=new Map(candidates.map(card=>[card,card.zoneVersion]));
@@ -1694,10 +1696,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(effect.action==='airbend-v10'){
       const cards=subjects.filter(card=>card.zone==='battlefield').map(card=>({card,version:card.zoneVersion}));
       await ctx.g.exileMany(cards.map(row=>row.card));
+      if(cards.length)await ctx.g.emit('airbend',{player:ctx.you,card:ctx.src,cards:cards.map(r=>r.card)});
       for(const {card,version}of cards)if(!card.isToken&&card.zone==='exile'&&card.zoneVersion===version+1)card.meta.oracleAirbendV10=card.zoneVersion;
       return;
     }
     if(effect.action==='earthbend-v10'){
+      if(subjects.some(c=>c.zone==='battlefield'))await ctx.g.emit('earthbend',{player:ctx.you,card:ctx.src,cards:subjects});
       // Fix X before animation can change the characteristics being counted.
       for(const card of subjects)if(card.zone==='battlefield'){
         ctx.g.addOracleAnimation(card,{types:['Creature'],subtypes:[],retainTypes:true,retainAllSubtypes:true,keywords:['haste'],power:0,toughness:0,temporary:false});
@@ -1759,6 +1763,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const faces=MTG.OracleV8Faces?.physical(ctx.src);
       if(!faces||faces.faces.length!==2)return;
       const next=ctx.src.oracleFace==='back'?'front':'back';
+      if(await MTG.oracleBeforeTransformV86?.(ctx.g,ctx.src,next)===false)return;
       if(MTG.OracleV8Faces.setFace(ctx.src,next)){
         ctx.src.oracleTransformCount=(ctx.src.oracleTransformCount||0)+1;
         ctx.g.recalc();
@@ -1901,13 +1906,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(effect.choices){const answer=await manaPlayer.controller.decide(ctx.g,{type:'chooseOption',prompt:'Choose mana',options:effect.choices.map((option,index)=>({key:String(index),label:Object.entries(option).map(([color,n])=>'{'+color+'}'.repeat(n)).join('')})),aiHint:{kind:'manaColor'}});produce=effect.choices[Number(answer)]||effect.choices[0];}
       if(produce.ANY){for(let i=0;i<(produce.n||1)*multiplier;i++){const answer=await manaPlayer.controller.decide(ctx.g,{type:'chooseOption',prompt:'Choose a mana color',options:COLORS.map(color=>({key:color,label:'{'+color+'}'})),aiHint:{kind:'manaColor'}});manaPlayer.pool[COLORS.includes(answer)?answer:COLORS[0]]++;}}
       else for (const [color, amount] of Object.entries(produce)) if([...COLORS,'C'].includes(color))manaPlayer.pool[color] += amount*multiplier;
-      if (effect.restriction || effect.retainManaV11) {
+      if (effect.restriction || effect.retainManaV11 || MTG.oracleRecordManaSpentV86) {
         const descriptor = compileGenericMana({produce: [{}], restriction: effect.restriction});
         const source = Object.assign(Object.create(ctx.src || null), {ctrl: manaPlayer});
         manaPlayer.poolMeta ||= [];
         for (const color of [...COLORS, 'C']) {
           const n = (manaPlayer.pool[color] || 0) - (beforePool[color] || 0);
-          if (n > 0) manaPlayer.poolMeta.push({color, n, source, restrict: descriptor.restrict, restrictAbilities: descriptor.restrictAbilities, ...(effect.retainManaV11?{persist:effect.retainManaV11}:{})});
+          if (n > 0) manaPlayer.poolMeta.push({color,n,source,oracleManaOriginV86:{iid:ctx.src?.iid,version:ctx.sourceZoneVersion??ctx.src?.zoneVersion,name:ctx.src?.name,controller:manaPlayer.idx,snapshot:ctx.src?.battlefieldLKI?.get(ctx.sourceZoneVersion)||ctx.g.snapshot(ctx.src,false)},restrict: descriptor.restrict, restrictAbilities: descriptor.restrictAbilities, ...(effect.retainManaV11?{persist:effect.retainManaV11}:{})});
         }
       }
       ctx.g.note('mana', {p: manaPlayer});
@@ -2020,13 +2025,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(effect.action==='optional-payment') {
       const cost=effect.payment;
       if(cost.sacSelf && (!sameBattlefieldSource(ctx)||ctx.src.ctrl!==ctx.you)) return;
-      if(cost.life && ctx.you.life<cost.life || cost.discard && !ctx.you.hand.length) return;
-      if(cost.mana && !ctx.g.canPayMana(ctx.you,MTG.parseCost(cost.mana))) return;
+      if(cost.life&&!ctx.g.canPayLife(ctx.you,cost.life)|| cost.discard && !ctx.you.hand.length) return;
+      if(cost.mana&&!ctx.g.canPayMana(ctx.you,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0}))return;
       const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay the optional cost?',
         options:[{key:'yes',label:'Pay'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src}});
       if(answer!=='yes') return;
-      if(cost.mana && !await ctx.g.payMana(ctx.you,MTG.parseCost(cost.mana))) return;
-      if(cost.life) await ctx.g.loseLife(ctx.you,cost.life,'Optional cost');
+      if(cost.mana&&!await ctx.g.payMana(ctx.you,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0}))return;
+      if(cost.life&&!await ctx.g.payLifeV92(ctx.you,cost.life,{source:ctx.src,reason:'Optional cost'}))return;
       if(cost.sacSelf) await ctx.g.sacrifice(ctx.you,ctx.src);
       if(cost.discard) {
         const cards=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',from:ctx.you.hand,min:1,max:1,prompt:'Discard a card',aiHint:{kind:'addlDiscard'}});
@@ -2131,6 +2136,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(effect.action==='amass') {await MTG.E.amass(ctx.g,ctx.you,n,effect.subtype);return;}
     if(effect.action==='ring-tempts') {await MTG.E7.ringTempts(ctx.g,ctx.you);return;}
     if(effect.action==='learn') {
+      if(MTG.OracleV89?.learn)return MTG.OracleV89.learn(ctx);
       if(!ctx.you.hand.length) return;
       const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Learn: discard a card to draw a card?',options:[{key:'yes',label:'Discard and draw'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src}});
       if(answer!=='yes') return;
@@ -2997,7 +3003,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function genericCondition(game,self,condition,p=self.ctrl,evidence) {
-    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85)/.test(condition?.kind||''))for(const handler of v20.handlers){const result=handler.condition?.(game,self,condition,p,evidence,v20.helpers);if(result!==undefined)return result;}
+    if(/-v(?:20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92)/.test(condition?.kind||''))for(const handler of v20.handlers){const result=handler.condition?.(game,self,condition,p,evidence,v20.helpers);if(result!==undefined)return result;}
     if(condition?.kind==='source-blocked-history-v19'){const history=evidence?evidence.blockHistoryV19:self.meta.oracleBlockHistoryV19;return history?.turn===game.turnNo&&history.blockedBy.length>0;}
     if(condition?.kind==='opponent-cast-v19')return game.players.some(player=>player!==p&&(player.turnState.spellsCastList||[]).some(row=>(!condition.color||row.colors?.includes(condition.color))&&(!condition.type||row.types?.includes(condition.type))));
     if(condition?.kind==='extra-turn-v19')return (game.extraTurnDepth||0)>0;
@@ -4252,7 +4258,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             return player.opponents(game).length < operation.threshold;
           }
           if (operation.condition === 'pay-life') {
-            if (player.life < operation.life) return true;
+            if(!game.canPayLife(player,operation.life))return true;
             const choice = await player.controller.decide(game, {
               type: 'chooseOption',
               prompt: 'Pay ' + operation.life + ' life so ' + card.name + ' enters untapped?',
@@ -4260,8 +4266,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               aiHint: { kind: 'payLifeForUntappedLand', card, life: operation.life },
             });
             if (choice !== 'pay') return true;
-            await game.loseLife(player, operation.life, card.name + ' entry cost');
-            return false;
+            return !await game.payLifeV92(player,operation.life,{source:card,reason:'entry cost'});
           }
           throw new Error('Unknown conditional Oracle land entry: ' + operation.condition);
         };
@@ -4793,7 +4798,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
 
       registeredNames.set(name, batch.id);
-      MTG.SCRIPTS[name] = compileOracleScript(batch, entry);
+      try{MTG.SCRIPTS[name]=compileOracleScript(batch,entry);}catch(error){throw new Error(batch.id+'/'+name+': '+error.message,{cause:error});}
     }
 
     batches.push(batch);

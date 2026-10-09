@@ -869,6 +869,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cards: Array.isArray(record.cards)
         ? record.cards.map(entry => ({ name: entry && entry.name, n: entry && entry.n, section: entry && entry.section }))
         : [],
+      ...(record.auxiliaryV87 ? { auxiliaryV87: JSON.parse(JSON.stringify(record.auxiliaryV87)) } : {}),
       ...(Number.isSafeInteger(record.revision) ? { revision: record.revision } : {}),
       ...(record.createdAt ? { createdAt: record.createdAt } : {}),
       ...(record.updatedAt ? { updatedAt: record.updatedAt } : {}),
@@ -963,6 +964,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         n: entry.n,
         section: validation.commanders.includes(entry.name) ? 'Commander' : 'Main',
       })),
+      ...(validation.deck.auxiliaryV87 ? { auxiliaryV87: JSON.parse(JSON.stringify(validation.deck.auxiliaryV87)) } : {}),
       ...(Number.isSafeInteger(options.revision) ? { revision: options.revision } : {}),
       createdAt: options.createdAt || now,
       updatedAt: now,
@@ -980,6 +982,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })) : [],
       commanders: Array.isArray(safeRecord.commanders) ? safeRecord.commanders.slice() : [],
       ignored: [],
+      ...(safeRecord.auxiliaryV87 ? { auxiliaryV87: safeRecord.auxiliaryV87 } : {}),
     };
     const validation = MTG.validateImportedDeck(parsed, {
       name: typeof safeRecord.name === 'string' ? safeRecord.name.trim() : '',

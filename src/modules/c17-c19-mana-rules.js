@@ -2,8 +2,8 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.C1719,G=M.Game.prototype,colors=['W','U','B','R','G'];
- const hooks=(g,land,p)=>g.bf().filter(c=>C.live(c)&&(c.def.bomKinnan&&!land.is('Land')&&c.ctrl===p||land.is('Land')&&c.ctrl===p&&(c.def.c14Sun||c.def.c14Ghast&&land.hasSub('Swamp'))||c.def.c1719LandMana&&(c.def.c1719LandMana.filterV10?c.def.c1719LandMana.filterV10(g,land,c,p):land.is('Land'))&&(c.def.c1719LandMana.attached?c.attachedTo===land.iid:c.def.c1719LandMana.allV10||c.ctrl===p))).concat(g.untilEffects.filter(row=>row.kind==='oracleTemporaryManaBonusV36'&&(!row.playerV69||row.playerV69===p)&&land.is('Land')&&land.hasSub(row.subtype)));
- const options=(source,produced)=>{if(source.def.c14Ghast)return [{B:1}];if(source.def.c14Sun){const color=source.meta.c14Color;return [colors.includes(color)&&produced[color]>0?{[color]:1}:{}];}const rule=source.def.c1719LandMana||{};if(rule.afcChosen)return source.meta.afcColor?[{[source.meta.afcColor]:1}]:[];if(rule.fixed)return [rule.fixed];if(rule.any)return [{ANY:true,n:rule.any}];return Object.keys(produced).filter(k=>[...colors,'C'].includes(k)&&produced[k]>0).map(k=>({[k]:1}));};
+ const hooks=(g,land,p)=>g.bf().filter(c=>C.live(c)&&(c.def.bomKinnan&&!land.is('Land')&&c.ctrl===p||land.is('Land')&&c.ctrl===p&&(c.def.c14Sun||c.def.c14Ghast&&land.hasSub('Swamp'))||c.def.v86Sasaya&&land.is('Land')&&c.ctrl===p||c.def.c1719LandMana&&(c.def.c1719LandMana.filterV10?c.def.c1719LandMana.filterV10(g,land,c,p):land.is('Land'))&&(c.def.c1719LandMana.attached?c.attachedTo===land.iid:c.def.c1719LandMana.allV10||c.ctrl===p))).concat(g.untilEffects.filter(row=>row.kind==='oracleTemporaryManaBonusV36'&&(!row.playerV69||row.playerV69===p)&&land.is('Land')&&land.hasSub(row.subtype)));
+ const options=(source,produced,game,land,player)=>{if(source.def.v86Sasaya){const n=game.lands(player).filter(c=>c!==land&&c.name===land.name).length;return Object.keys(produced).filter(k=>[...colors,'C'].includes(k)&&produced[k]>0).map(k=>({[k]:n}));}if(source.def.c14Ghast)return [{B:1}];if(source.def.c14Sun){const color=source.meta.c14Color;return [colors.includes(color)&&produced[color]>0?{[color]:1}:{}];}const rule=source.def.c1719LandMana||{};if(rule.afcChosen)return source.meta.afcColor?[{[source.meta.afcColor]:1}]:[];if(rule.fixed)return [rule.fixed];if(rule.any)return [{ANY:true,n:rule.any}];return Object.keys(produced).filter(k=>[...colors,'C'].includes(k)&&produced[k]>0).map(k=>({[k]:1}));};
  const countColors=xs=>xs.reduce((out,k)=>(out[k]=(out[k]||0)+1,out),{});
  const sources=G.manaSources;
  G.manaSources=function(p,spell,opts={}){return sources.call(this,p,spell,opts).map(s=>s.card&&s.extraCost?.tap&&!s.m.viaConvoke?{...s,c1719ManaBonuses:hooks(this,s.card,p)}:s);};
@@ -12,7 +12,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   let result=rows.map(r=>({...r,c1719BonusExcess:{},c1719BonusMeta:[],c1719BonusChoices:[]}));
   for(const source of s.c1719ManaBonuses){const next=[];
    for(const old of result){const underlying=s.c14BaseMana?.[s.produce.indexOf(base)]||base,produced=underlying.ANY?countColors(old.anyColors):underlying;
-    for(const choice of options(source,produced)){
+    for(const choice of options(source,produced,g,s.card,s.card.ctrl)){
      const zeroBonus=!choice.ANY&&Object.entries(choice).every(([color,n])=>[...colors,'C'].includes(color)&&Number.isFinite(n)&&n===0);
      const branches=zeroBonus?[{pips:old.pips,generic:old.generic,excess:{},anyColors:[]}]:branch(old.pips,old.generic,choice,false,true,true,!!source.cur?.super?.includes('Snow'));
      for(const b of branches){
@@ -27,13 +27,13 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   return result;
  }
  async function add(g,land,p,produced,source,captured){
-  for(const h of captured){const legal=options(h,produced);if(!legal.length)continue;const planned=source.c1719BonusPlan?.find(r=>r.source===h.iid&&r.version===h.zoneVersion);
+  for(const h of captured){const legal=options(h,produced,g,land,p);if(!legal.length)continue;const planned=source.c1719BonusPlan?.find(r=>r.source===h.iid&&r.version===h.zoneVersion);
    let choice=planned?.choice;
    if(!choice||!legal.some(o=>JSON.stringify(o)===JSON.stringify(choice))){const key=legal.length===1?'0':await p.controller.decide(g,{type:'chooseOption',player:p,prompt:h.name+': choose additional mana',options:legal.map((o,i)=>({key:String(i),label:Object.entries(o).map(([k,n])=>n+' '+k).join(', ')})),aiHint:{kind:'manaColor'}});choice=legal[Number(key)];if(!choice)throw Error('Invalid additional mana choice');}
    const producedBonus={},snow=!!h.cur?.super?.includes('Snow');
    if(choice.ANY){for(let i=0;i<choice.n;i++){const col=planned?.colors?.[i]||await p.controller.decide(g,{type:'chooseOption',player:p,prompt:h.name+': choose mana color',options:colors.map(key=>({key,label:key})),aiHint:{kind:'manaColor'}});if(!colors.includes(col))throw Error('Invalid additional mana color');p.pool[col]=(p.pool[col]||0)+1;producedBonus[col]=(producedBonus[col]||0)+1;}}
    else for(const [col,n]of Object.entries(choice)){p.pool[col]=(p.pool[col]||0)+n;producedBonus[col]=n;}
-   if(snow){p.poolMeta=p.poolMeta||[];for(const [color,n]of Object.entries(producedBonus))p.poolMeta.push({color,n,source:h,c13Snow:true});}
+   if(snow||M.oracleRecordManaSpentV86){p.poolMeta=p.poolMeta||[];for(const [color,n]of Object.entries(producedBonus))if(n>0)p.poolMeta.push({color,n,source:h,c13Snow:snow,oracleManaOriginV86:{iid:h.iid,version:h.zoneVersion,name:h.name,controller:p.idx,snapshot:g.snapshot(h,false)}});}
   }
  }
  M.C1719Mana={hooks,allocations,add};

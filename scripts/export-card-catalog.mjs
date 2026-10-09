@@ -147,9 +147,8 @@ if (!check) {
   fs.writeFileSync(cachePath, JSON.stringify({ identity: cacheIdentity, rowsSha256: hash(JSON.stringify(rows)), rows }) + '\n');
 }
 
-function csv(rows) {
-  assert.ok(rows.length, 'CSV inventory must not be empty');
-  const keys = Object.keys(rows[0]);
+function csv(rows, keys = Object.keys(rows[0] || {})) {
+  assert.ok(keys.length, 'CSV inventory needs column names');
   const quote = value => `"${String(value ?? '').replaceAll('"', '""')}"`;
   return [keys.map(quote).join(','), ...rows.map(row => keys.map(key => quote(row[key])).join(','))].join('\n') + '\n';
 }
@@ -166,7 +165,7 @@ const inputFiles = sorted([
 const inputHashes = Object.fromEntries(inputFiles.map(file => [file, hash(read(file))]));
 const artifacts = new Map([
   ['docs/catalog/imported-cards.csv', csv(imported)],
-  ['docs/catalog/remaining-cards.csv', csv(remaining)],
+  ['docs/catalog/remaining-cards.csv', csv(remaining, ['name', 'oracle_id', 'mana_cost', 'type_line', 'color_identity', 'layout', 'status', 'reason', 'semantic_class'])],
 ]);
 const representedEligible = universe.filter(card => represented.has(card.oracle_id)).length;
 const eligibleEntries = imported.filter(entry => entry.deck_import_eligible).length;
@@ -219,7 +218,7 @@ const summary = {
 };
 artifacts.set('docs/catalog/summary.json', JSON.stringify(summary, null, 2) + '\n');
 const number = value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-const reasonTable = [...reasons].sort((left, right) => right[1] - left[1] || compare(left[0], right[0])).map(([reason, count]) => `| \`${reason}\` | ${number(count)} |`).join('\n');
+const reasonTable = reasons.size ? [...reasons].sort((left, right) => right[1] - left[1] || compare(left[0], right[0])).map(([reason, count]) => `| \`${reason}\` | ${number(count)} |`).join('\n') : '| None — pinned import queue completed | 0 |';
 const doc = `# Card catalog and remaining imports
 
 This inventory is generated from the application runtime and the pinned Scryfall Oracle feed. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.

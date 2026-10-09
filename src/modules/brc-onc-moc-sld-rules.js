@@ -17,6 +17,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   if(!c.oracleFaces||!['transform','modal_dfc'].includes(c.oracleFaces.layout))return false;
   const face=c.oracleFace==='back'?'front':'back';
   if(c.oracleFaces.faces.find(row=>row.key===face)?.def.types.some(type=>['Instant','Sorcery'].includes(type)))return false;
+  if(await M.oracleBeforeTransformV86?.(ctx.g,c,face)===false)return false;
   if(!M.OracleV8Faces.setFace(c,face))return false;
   c.oracleTransformCount=(c.oracleTransformCount||0)+1;ctx.g.recalc();
   await ctx.g.emit('transformed',{card:c,face});return true;

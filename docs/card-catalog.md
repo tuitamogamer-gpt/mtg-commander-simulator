@@ -12,22 +12,22 @@ CSV files are UTF-8, sorted by card name without locale-specific collation, and 
 
 ## Current inventory
 
-Generic Oracle import state: **2026-10-09T09:33:39.214Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
+Generic Oracle import state: **2026-10-09T14:47:29.508Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 30,415 |
-| Generic Oracle imports (261 batches; 259 × 100, 1 × 200, 1 × 316 cards) | 26,416 |
+| Runtime card definitions | 31,115 |
+| Generic Oracle imports (263 batches; 259 × 100, 2 × 200, 1 × 316, 1 × 500 cards) | 27,116 |
 | Dedicated/manual Oracle imports | 65 |
 | Legacy definitions | 3,934 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 30,414 |
+| Definitions allowed in arbitrary deck imports | 31,114 |
 | Legacy definitions restricted from arbitrary deck imports | 1 |
 | Paper, Commander-legal source Oracle IDs | 31,070 |
-| Source Oracle IDs represented by a runtime name or face alias | 30,370 |
-| Source Oracle IDs still absent from the runtime | 700 |
+| Source Oracle IDs represented by a runtime name or face alias | 31,070 |
+| Source Oracle IDs still absent from the runtime | 0 |
 | Of those: parser-eligible but not imported | 0 |
-| Of those: deferred by the current semantic compiler | 700 |
+| Of those: deferred by the current semantic compiler | 0 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -43,23 +43,7 @@ Current parser-eligible, unimported names: none. These still need an import reco
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 403 |
-| `noncreature-needs-explicit-semantics` | 108 |
-| `double-faced-card-needs-complete-front-semantics` | 80 |
-| `spell-needs-explicit-semantics` | 51 |
-| `complex-layout` | 18 |
-| `double-faced-card-needs-complete-back-semantics` | 17 |
-| `land-needs-explicit-semantics` | 7 |
-| `unbound-target-damage-source` | 3 |
-| `double-faced-card-needs-face-transition-semantics` | 2 |
-| `dynamic-power-toughness` | 2 |
-| `saga-chapter-needs-complete-semantics-v21` | 2 |
-| `split-needs-complete-face-semantics` | 2 |
-| `adventure-needs-complete-face-semantics` | 1 |
-| `class-level-needs-complete-semantics-v21` | 1 |
-| `flip-needs-complete-front-semantics` | 1 |
-| `room-door-needs-complete-semantics` | 1 |
-| `unbound-event-reference` | 1 |
+| None — pinned import queue completed | 0 |
 
 These are compiler queue reasons, not a claim that each card is impossible to implement. The complete per-card list is in [remaining-cards.csv](catalog/remaining-cards.csv).
 
@@ -69,7 +53,7 @@ These are compiler queue reasons, not a claim that each card is impossible to im
 - Bulk ID: `27bf3214-1271-490b-bdfe-c0be6c23d02e`.
 - Pinned update: **2026-10-07T09:01:59.955+00:00**.
 - Compressed source SHA-256: `53c35f3df74a48df1a15859c29f2559fb3761f6680f0954b0a19fad9342f489b`.
-- Current semantic compiler: **v85**.
+- Current semantic compiler: **v92**.
 
 The original compressed snapshot is intentionally not committed. Use the same archived `.jsonl.gz` file and hash. A current download from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data) may have different contents; it cannot reproduce this historical inventory. The exporter fails on a missing source, mismatched SHA-256, duplicate/ambiguous identity, or catalog/state mismatch, and makes no network requests.
 

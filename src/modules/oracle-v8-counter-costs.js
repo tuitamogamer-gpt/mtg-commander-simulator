@@ -15,7 +15,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const used=(plan,row)=>plan.filter(item=>item.card===row.card&&item.kind===row.kind).length;
  function choices(ctx,info,plan){return entries(ctx,info).filter(row=>used(plan,row)<row.n&&(info.among||!plan.length||plan[0].card===row.card));}
  function reservations(plan){const result=[];for(const row of plan){let same=result.find(item=>item.card===row.card&&item.kind===row.kind);if(!same){same={card:row.card,zoneVersion:row.zoneVersion,kind:row.kind,n:0};result.push(same);}same.n+=row.amount??1;}return result.filter(row=>row.n>0);}
- function funded(ctx,plan){return !ctx.manaCost||ctx.g.canPayMana(ctx.you,ctx.manaCost,{card:ctx.src,isAbility:true},{excludeCards:ctx.tap?[ctx.src]:[],artifactAbilityAlreadyUsed:ctx.src.is('Artifact'),reservedCounters:reservations(plan),protectedSacrifices:[...new Set(plan.map(row=>row.card))]});}
+ function funded(ctx,plan){const action=ctx.so?.kind==='spell'?{card:ctx.src,castOpts:ctx.so.castOpts,xVal:ctx.so.x}:{card:ctx.src,isAbility:true};return !ctx.manaCost||ctx.g.canPayMana(ctx.you,ctx.manaCost,action,{...(ctx.so?.kind==='spell'?{xVal:ctx.so.x}:{}),excludeCards:ctx.tap?[ctx.src]:[],artifactAbilityAlreadyUsed:ctx.so?.kind!=='spell'&&ctx.src.is('Artifact'),reservedCounters:reservations(plan),protectedSacrifices:[...new Set(plan.map(row=>row.card))]});}
  function completion(ctx,info,plan=[],failed=new Set()){
   const key=JSON.stringify(reservations(plan).map(row=>[row.card.iid,row.zoneVersion,row.kind,row.n]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]||a[2].localeCompare(b[2])));
   if(failed.has(key))return null;
