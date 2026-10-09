@@ -193,6 +193,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       spellsCastThisGameV64: player.spellsCastThisGameV64??null,
       lcGollumDamaged: !!player.lcGollumDamaged,
       afcDungeon: player.afcDungeon?plainMeta(player.afcDungeon):null, afcDungeonSerial: player.afcDungeonSerial||0, afcCompletedDungeons: player.afcCompletedDungeons||0,
+      yidaroCyclesV79: player.yidaroCyclesV79||0,
+      completedTombV79: !!player.completedTombV79,
       skipUntapOnce: !!player.skipUntapOnce,
       turnsStarted: Number(player.turnsStarted) || 0,
       lastTurnSpellsCast: Number(player.lastTurnSpellsCast) || 0,
@@ -501,6 +503,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'the saved table has a different number of seats.');
     assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
     assert(snapshot.players.every(p=>p.afcDungeon==null||Number.isSafeInteger(p.afcDungeon.id)&&p.afcDungeon.id>0&&!!MTG.AFC?.dungeons[p.afcDungeon.key]?.rooms[p.afcDungeon.room]), 'invalid dungeon progress.');
+    assert(snapshot.players.every(p=>Number.isSafeInteger(p.yidaroCyclesV79??0)&&(p.yidaroCyclesV79??0)>=0), 'invalid Yidaro cycling history.');
+    assert(snapshot.players.every(p=>p.completedTombV79===undefined||typeof p.completedTombV79==='boolean'), 'invalid Tomb of Annihilation completion history.');
     assert(snapshot.players.every(p => {
       const d = p.afcDungeon;
       if (!d || d.path === undefined) return true; // Older saves only recorded the current room.
@@ -675,6 +679,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.spellsCastThisGameV64 = Number.isSafeInteger(saved.spellsCastThisGameV64)&&saved.spellsCastThisGameV64>=0?saved.spellsCastThisGameV64:null;
       player.lcGollumDamaged=!!saved.lcGollumDamaged;
       player.afcDungeon=saved.afcDungeon||null; player.afcDungeonSerial=saved.afcDungeonSerial||0; player.afcCompletedDungeons=saved.afcCompletedDungeons||0;
+      player.yidaroCyclesV79=saved.yidaroCyclesV79??0;
+      player.completedTombV79=saved.completedTombV79??false;
       player.skipUntapOnce = saved.skipUntapOnce;
       player.turnsStarted = saved.turnsStarted;
       player.lastTurnSpellsCast = saved.lastTurnSpellsCast;
@@ -736,6 +742,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       players: game.players.map(player => ({
         idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, rad: player.counters?.rad || 0, lost: !!player.lost, enduringStory: !!player.enduringStory, maximumHandSizeReductionV64: player.maximumHandSizeReductionV64||0, spellsCastThisGameV64: player.spellsCastThisGameV64??null,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
+        yidaroCyclesV79: player.yidaroCyclesV79||0, completedTombV79: !!player.completedTombV79,
         zones: ['library', 'hand', 'graveyard', 'exile', 'command'].map(zone =>
           player[zone].map(card => `${card.name}#${card.iid}`).sort().join(',')),
       })),

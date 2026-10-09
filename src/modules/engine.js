@@ -1844,7 +1844,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // object is not turned face up and creates no turned-face-up event.
         if(card.zone!=='battlefield'||card.zoneVersion!==record.sourceZoneVersion)return true;
         card.meta.oracleFaceUpPayment=record;
-      }else if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true, turnFaceUp: true },{validateExtraV20:validFaceUp})) return false;
+      }else if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true, turnFaceUp: true, faceUpKind: selected.kind },{validateExtraV20:validFaceUp})) return false;
       return this._finishFaceUpV65(player, card, original, x, selected.kind === 'megamorph');
     }
 
