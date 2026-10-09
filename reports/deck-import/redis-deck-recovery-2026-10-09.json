@@ -1,0 +1,30 @@
+{
+  "store": "upstash-redis",
+  "realRedisLua": true,
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "inputCards": 100,
+  "commander": "Yuriko, the Tiger's Shadow",
+  "legacy": {
+    "id": "deck-yuriko-redis-recovery-legacy",
+    "name": "Yuriko",
+    "readyAfterGetAndReload": true,
+    "metadataUnchanged": true,
+    "cardsUnchanged": true,
+    "rawStorageUnchanged": true,
+    "spotlightSelectable": true
+  },
+  "fresh": {
+    "name": "Yuriko (2)",
+    "freshId": true,
+    "persistedAfterReload": true,
+    "objectMapsPreserved": true,
+    "trueArraysPreserved": true,
+    "originalUnchanged": true,
+    "removedThroughRealRedisLua": true
+  },
+  "browserErrors": [],
+  "gameStarted": false
+}

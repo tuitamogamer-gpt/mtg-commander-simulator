@@ -183,12 +183,17 @@ export class UpstashAccountStore {
   async upsertDeck(id, deck) {
     const nameKey = importedDeckNameKey(deck.name);
     const storageDeck = { ...deck, _libraryNameKey: nameKey };
+    // Metadata belongs to the atomic write; keep the remaining JSON intact so
+    // Lua's cjson does not collapse empty maps and lists into the same shape.
+    delete storageDeck.revision;
+    delete storageDeck.createdAt;
+    delete storageDeck.updatedAt;
     const script = `
       local libraryKey = KEYS[1]
       local namesKey = KEYS[2]
       local deckId = ARGV[1]
       local nameKey = ARGV[2]
-      local candidate = cjson.decode(ARGV[3])
+      local candidateRaw = ARGV[3]
       local now = ARGV[4]
       local maxDecks = tonumber(ARGV[5])
       local existingRaw = redis.call('HGET', libraryKey, deckId)
@@ -229,10 +234,12 @@ export class UpstashAccountStore {
         end
       end
 
-      candidate.revision = existing and math.max(0, tonumber(existing.revision) or 0) + 1 or 1
-      candidate.createdAt = existing and existing.createdAt or now
-      candidate.updatedAt = now
-      local encoded = cjson.encode(candidate)
+      local revision = existing and math.max(0, tonumber(existing.revision) or 0) + 1 or 1
+      local createdAt = existing and existing.createdAt or now
+      local encoded = string.sub(candidateRaw, 1, -2)
+        .. ',"revision":' .. cjson.encode(revision)
+        .. ',"createdAt":' .. cjson.encode(createdAt)
+        .. ',"updatedAt":' .. cjson.encode(now) .. '}'
       redis.call('HSET', libraryKey, deckId, encoded)
       redis.call('HSET', namesKey, nameKey, deckId)
       return {created, encoded}`;
@@ -427,7 +434,39 @@ function importedDeckNameKey(value) {
 
 function publicStoredDeck(value) {
   const deck = clone(value);
-  if (deck && typeof deck === 'object') delete deck._libraryNameKey;
+  if (deck && typeof deck === 'object') {
+    delete deck._libraryNameKey;
+    // Older Redis writes re-encoded the whole record with cjson. Recover only
+    // empty containers at schema-defined map/list positions; leave nonempty
+    // invalid values for the ordinary validators to inspect.
+    const auxiliary = deck.auxiliaryV87;
+    if (auxiliary && typeof auxiliary === 'object' && !Array.isArray(auxiliary)) {
+      const repairEmptyList = (record, key) => {
+        const value = record[key];
+        if (value && typeof value === 'object' && !Array.isArray(value)
+          && Object.keys(value).length === 0) record[key] = [];
+      };
+      for (const key of ['attractions', 'stickers', 'outsideGame']) repairEmptyList(auxiliary, key);
+      for (const key of ['colors', 'draft']) {
+        if (Array.isArray(auxiliary[key]) && auxiliary[key].length === 0) auxiliary[key] = {};
+      }
+      if (auxiliary.colors && typeof auxiliary.colors === 'object' && !Array.isArray(auxiliary.colors)) {
+        for (const name of Object.keys(auxiliary.colors)) repairEmptyList(auxiliary.colors, name);
+      }
+      if (auxiliary.draft && typeof auxiliary.draft === 'object' && !Array.isArray(auxiliary.draft)) {
+        for (const [name, note] of Object.entries(auxiliary.draft)) {
+          if (['palianoColors', 'automatonCounts', 'trackerPlayers'].includes(name)) {
+            repairEmptyList(auxiliary.draft, name);
+          } else if (Array.isArray(note) && note.length === 0) {
+            auxiliary.draft[name] = {};
+          } else if (note && typeof note === 'object' && !Array.isArray(note)) {
+            for (const key of ['names', 'types', 'keywords', 'removed', 'exiled', 'exiledCards', 'colors', 'numbers'])
+              repairEmptyList(note, key);
+          }
+        }
+      }
+    }
+  }
   return deck;
 }
 

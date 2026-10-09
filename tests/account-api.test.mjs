@@ -457,7 +457,7 @@ test('Upstash imported deck writes and deletes each use one atomic Lua operation
   const redis = {
     async eval(script, keys, args) {
       calls.push({ script, keys, args });
-      if (script.includes("local candidate = cjson.decode(ARGV[3])")) {
+      if (script.includes("local candidateRaw = ARGV[3]")) {
         const candidate = JSON.parse(args[2]);
         return [1, JSON.stringify({ ...candidate, revision: 1, createdAt: args[3], updatedAt: args[3] })];
       }
