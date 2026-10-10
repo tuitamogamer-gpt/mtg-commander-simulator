@@ -70,6 +70,8 @@ Card availability and format legality are separate checks. A real card can be le
 
 The UI displays the first eight import errors and reports whether more remain. Rechecking after corrections exposes the remaining issues. Unsupported lists are not partially saved or silently filled with substitute cards.
 
+Card artwork that is not bundled with the game loads online. Split cards and Adventures share a printed image; double-faced cards show their active side. Artwork fixes also apply to decks already in My Library, so you do not need to reimport them.
+
 ## Storage and changing a list
 
 My Library holds up to **40 imported decks**. Guest lists stay in that browser's site data; account lists are stored with the signed-in account and can be loaded on another device. Signing in switches to the account library: it does not automatically migrate guest lists. Keep your source decklist and sign in before importing when you want account storage.

@@ -164,19 +164,45 @@ function manifestSource(cardPaths, artPaths, missing) {
     `MTG.CARD_ART_PATHS = Object.freeze(${art});\n` +
     `MTG.CARD_IMAGE_MISSING = Object.freeze(${unavailable});\n` +
     `MTG.CARD_IMAGE_PLACEHOLDER = './assets/cards/card-back.webp';\n\n` +
-    `MTG.CARD_IMAGE_API_BASE = 'https://api.scryfall.com/cards/named';\n` +
-    `MTG.CARD_IMAGE_ID_API_BASE = 'https://api.scryfall.com/cards/';\n` +
-    `MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_IMAGE_ID_API_BASE]);\n` +
-    `MTG.cardImageAPIURL = function (name, variant) {\n` +
-    `  const version = variant === 'art' ? 'art_crop' : 'normal';\n` +
-    `  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=' + version + '&fuzzy=' + encodeURIComponent(String(name || ''));\n` +
-    `};\n\n` +
-    `MTG.cardImageAPIURLById = function (id, variant) {\n` +
-    `  const version = variant === 'art' ? 'art_crop' : 'normal';\n` +
-    `  return MTG.CARD_IMAGE_ID_API_BASE + encodeURIComponent(String(id || '')) + '?format=image&version=' + version;\n` +
-    `};\n\n` +
+    "MTG.CARD_IMAGE_API_BASE = 'https://api.scryfall.com/cards/named';\n" +
+    "MTG.CARD_IMAGE_ID_API_BASE = 'https://api.scryfall.com/cards/';\n" +
+    "MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_IMAGE_ID_API_BASE]);\n" +
+    "MTG.cardImageAPIURL = function (name, variant, face) {\n" +
+    "  const version = variant === 'art' ? 'art_crop' : 'normal';\n" +
+    "  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=' + version + '&fuzzy=' + encodeURIComponent(String(name || '')) + (face === 'back' ? '&face=back' : '');\n" +
+    "};\n" +
+    "\n" +
+    "MTG.cardImageAPIURLById = function (id, variant, face) {\n" +
+    "  const version = variant === 'art' ? 'art_crop' : 'normal';\n" +
+    "  return MTG.CARD_IMAGE_ID_API_BASE + encodeURIComponent(String(id || '')) + '?format=image&version=' + version + (face === 'back' ? '&face=back' : '');\n" +
+    "};\n" +
+    "\n" +
+    "// Reuse the importer's identity-aware aliases without rebuilding its name list\n" +
+    "// whenever a visible card face is rendered again.\n" +
+    "MTG.cardImageCatalogName = (function () {\n" +
+    "  let catalog, definitions, printingAliases;\n" +
+    "  const resolvedNames = new Map();\n" +
+    "  return function (name) {\n" +
+    "    if (MTG.CARD_CATALOG?.[name]) return name;\n" +
+    "    if (catalog !== MTG.CARD_CATALOG || definitions !== MTG.DEFS || printingAliases !== MTG.DECK_CARD_ALIASES) {\n" +
+    "      catalog = MTG.CARD_CATALOG;\n" +
+    "      definitions = MTG.DEFS;\n" +
+    "      printingAliases = MTG.DECK_CARD_ALIASES;\n" +
+    "      resolvedNames.clear();\n" +
+    "    }\n" +
+    "    if (resolvedNames.has(name)) return resolvedNames.get(name);\n" +
+    "    const resolved = MTG.resolveDeckCardName?.(name);\n" +
+    "    if (resolved && catalog?.[resolved]) {\n" +
+    "      resolvedNames.set(name, resolved);\n" +
+    "      return resolved;\n" +
+    "    }\n" +
+    "    return null;\n" +
+    "  };\n" +
+    "})();\n" +
+    "\n" +
     "MTG.cardImageURL = function (name, variant) {\n" +
-    "  const face = String(name || '').split(' // ')[0];\n" +
+    "  const requested = String(name || '');\n" +
+    "  const face = requested.split(' // ')[0];\n" +
     "  const defaultToken = face.endsWith(' Token') && !MTG.CARD_CATALOG?.[face] && !MTG.DEFS?.[face];\n" +
     "  const tokenType = defaultToken ? face.slice(0, -6) : face;\n" +
     "  const imageFace = MTG.CARD_IMAGE_PATHS[face] ? face : tokenType === 'Phyrexian Germ' && !MTG.CARD_IMAGE_PATHS[tokenType] ? 'Germ' : tokenType;\n" +
@@ -187,12 +213,17 @@ function manifestSource(cardPaths, artPaths, missing) {
     "    return MTG.cardImageAPIURL(face);\n" +
     "  }\n" +
     "  if (local) return local;\n" +
-    "  const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[face];\n" +
+    "  const canonical = MTG.cardImageCatalogName(requested);\n" +
+    "  const catalog = MTG.CARD_CATALOG?.[canonical];\n" +
+    "  // Split cards and Adventures share one printed front. Only a physical\n" +
+    "  // double-faced definition can request the reverse of the recorded print.\n" +
+    "  const back = MTG.DEFS?.[canonical]?.oracleFaces?.faces.find(entry => entry.key === 'back');\n" +
+    "  const imageSide = back?.def.name === requested ? 'back' : 'front';\n" +
     "  if (catalog && catalog.engineBatch && catalog.scryfallId) {\n" +
-    "    return MTG.cardImageAPIURLById(catalog.scryfallId, variant);\n" +
+    "    return MTG.cardImageAPIURLById(catalog.scryfallId, variant, imageSide);\n" +
     "  }\n" +
     "  // A hand-entered Oracle card without a recorded print is found by name.\n" +
-    "  if (catalog && catalog.engineBatch) return MTG.cardImageAPIURL(face, variant);\n" +
+    "  if (catalog && catalog.engineBatch) return MTG.cardImageAPIURL(canonical, variant, imageSide);\n" +
     "  return MTG.CARD_IMAGE_PLACEHOLDER;\n" +
     "};\n";
 }
