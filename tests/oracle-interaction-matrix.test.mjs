@@ -36,6 +36,19 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
     assert.equal(JSON.stringify(restored), JSON.stringify(operation), 'only the reviewed discard reference changes');
     operation = repaired;
   }
+  // Iron Man's frozen descriptor omits the printed action-limit group.
+  // The runtime recovers that one line so declining does not consume a use.
+  // Native paid human/AI proofs cover decline, acceptance and turn reset.
+  if (entry.oracleId === 'fc6e170c-820c-48bb-95c7-ee79fba634de' &&
+      operation.kind === 'generic-trigger' && operation.optional && operation.onceEachTurn && !operation.onceGroup) {
+    const repaired = implementation.find(candidate => candidate.kind === operation.kind && candidate.event === operation.event);
+    const lines = entry.raw.oracle.split('\n').filter(line => line.includes('Do this only once each turn.'));
+    assert.equal(lines.length, 1);
+    assert.equal(repaired?.onceGroup, lines[0], 'recover exactly the printed action-limit line');
+    const restored = {...repaired}; delete restored.onceGroup;
+    assert.equal(JSON.stringify(restored), JSON.stringify(operation), 'all other frozen Iron Man fields remain exact');
+    operation = repaired;
+  }
   assert.ok(implementation.some(candidate => JSON.stringify(candidate) === JSON.stringify(operation)),
     `${entry.raw.name}: catalog keeps the exact compiled operation`);
   assert.ok(definition.oracleContracts.includes(operation.contract),
@@ -132,10 +145,11 @@ function namedFor(MTG, keyword) {
 }
 
 function castingContract(entry) {
+  if (entry.catalog.typeLine === 'Stickers') return 'generic-trigger-effect';
   if (entry.raw.types.includes('Land')) return 'land-play';
   if (entry.raw.types.some(type => type === 'Instant' || type === 'Sorcery')) return 'spell-casting';
   if (entry.raw.types.includes('Creature')) return 'creature-casting';
-  if (entry.raw.types.includes('Planeswalker')) return 'permanent-casting';
+  if (entry.raw.types.some(type => type === 'Planeswalker' || type === 'Battle')) return 'permanent-casting';
   if (entry.raw.types.some(type => type === 'Artifact' || type === 'Enchantment')) return 'permanent-casting';
   return null;
 }
@@ -180,6 +194,11 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
     assert.equal(audit.ready, true, `${entry.raw.name}: ${JSON.stringify(audit.unsupported)}`);
     const base = castingContract(entry);
     assert.ok(base, `${entry.raw.name}: supported runtime type`);
+    if (entry.catalog.typeLine === 'Stickers') {
+      assert.equal(MTG.DEFS[entry.raw.name].stickerSheetV87,true,`${entry.raw.name}: native supplementary sheet definition`);
+      assert.ok(MTG.OracleV87.sheets.has(entry.raw.name),`${entry.raw.name}: actual sheet registry`);
+      assert.equal(typeof MTG.Game.prototype.placeStickerV87,'function','native ticket payment and sticker placement path');
+    }
     assert.ok(audit.contracts.some(contract => contract.id === base), `${entry.raw.name}: ${base}`);
     for (const operation of entry.implementation || []) {
       assert.ok(MTG.ORACLE_INTERACTION_CONTRACTS[operation.contract], `${entry.raw.name}: known ${operation.contract}`);

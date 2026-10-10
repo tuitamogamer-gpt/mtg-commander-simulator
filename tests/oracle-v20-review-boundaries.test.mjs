@@ -33,12 +33,14 @@ for(const role of ['human','ai']){
   for(const first of ['Worship','Bloodletter of Aclazotz']){const {game,a,b}=context(M,role);put(M,game,a,'Worship');put(M,game,a,'Grizzly Bears');const enemy=put(M,game,b,'Bloodletter of Aclazotz');game.turnPlayer=b;a.life=5;let choices=0;choose(a,(g,q)=>{if(q.type==='chooseOption'&&q.aiHint?.kind==='replacementOrder'){choices++;return q.options.find(option=>option.label.startsWith(first))?.key;}return undefined;});assert.equal(await game.damageAny(enemy,a,5,{deferSBA:true}),5);assert.equal(choices,1);assert.equal(a.life,first==='Worship'?-3:1,'each replacement applies at most once, in the chosen order');assert.equal(a.turnState.lifeLost,first==='Worship'?8:4);assertGameStateInvariants(game);}
  });
  test(role+': colored spell restrictions use the announced Adventure face and current colors on resolution',async()=>{
-  const {game,a,b}=context(M,role);fund(a);const paladin=put(M,game,b,'Fiendslayer Paladin'),spell=put(M,game,a,'Brazen Borrower','hand');
-  // Keep the real Petty Theft implementation and exercise a differently
-  // colored permanent face, as on native multicolor Adventure cards.
-  spell.def={...spell.def,cost:'{1}{R}{R}',colorsOverride:['R']};choose(a,(g,q)=>q.type==='chooseTargets'?(q.candidates.includes(paladin)?[paladin]:[]):undefined);
-  assert.equal(await game.castSpell(a,spell,{from:'hand',alt:{adventure:true}}),true);assert.deepEqual(Array.from(spell.colors),['U']);await settle(game);assert.equal(paladin.zone,'hand');assert.equal(spell.zone,'exile');
-  await game.move(paladin,'battlefield',{ctrl:b});const red=put(M,game,a,'Bonecrusher Giant','hand');red.def={...red.def,cost:'{1}{U}{U}',colorsOverride:['U']};assert.equal(await game.castSpell(a,red,{from:'hand',alt:{adventure:true}}),false);assert.equal(red.zone,'hand','a blue permanent face cannot bypass the restriction for its red Adventure');
-  const second=put(M,game,a,'Brazen Borrower','hand');second.def={...second.def,cost:'{1}{R}{R}',colorsOverride:['R']};assert.equal(await game.castSpell(a,second,{from:'hand',alt:{adventure:true}}),true);game.untilEffects.push({kind:'oracleAnimation',stackColorV18:true,iid:second.iid,zoneVersion:second.zoneVersion,colors:['R'],expires:'eot'});assert.deepEqual(Array.from(second.colors),['R']);await settle(game);assert.equal(paladin.zone,'battlefield','current spell color is checked again at resolution');assert.equal(second.zone,'graveyard');assertGameStateInvariants(game);
+  const {game,a,b}=context(M,role);fund(a);const paladin=put(M,game,b,'Fiendslayer Paladin'),spell=put(M,game,a,'Scalding Viper // Steam Clean','hand');
+  const adventure=card=>{const entry=game.castableList(a).find(entry=>entry.card===card&&entry.alt?.adventure);assert.ok(entry,'the printed Adventure has a native offer');return {from:entry.from,alt:entry.alt};};
+  choose(a,(g,q)=>q.type==='chooseTargets'?(q.candidates.includes(paladin)?[paladin]:[]):q.type==='chooseOption'&&q.options.some(option=>option.key==='R')?'R':undefined);
+  assert.deepEqual(Array.from(spell.colors),['R'],'the physical printed Viper is red');
+  assert.equal(await game.castSpell(a,spell,adventure(spell)),true);assert.deepEqual(Array.from(spell.colors),['U']);await settle(game);assert.equal(paladin.zone,'hand');assert.equal(spell.zone,'exile');assert.deepEqual(Array.from(spell.colors),['R']);
+  await game.move(paladin,'battlefield',{ctrl:b});const red=put(M,game,a,'Bonecrusher Giant','hand');assert.equal(await game.castSpell(a,red,adventure(red)),false);assert.equal(red.zone,'hand','the actual red Stomp cannot target the protected Paladin');
+  put(M,game,a,'Vedalken Orrery');const second=put(M,game,a,'Brazen Borrower','hand');assert.equal(await game.castSpell(a,second,adventure(second)),true);
+  const painter=put(M,game,a,"Painter's Servant",'hand'),entry=game.castableList(a).find(entry=>entry.card===painter);assert.ok(entry,'the printed Orrery permits this response');
+  assert.equal(await game.castSpell(a,painter,{from:entry.from,alt:entry.alt}),true);await settle(game);assert.equal(painter.meta.painterV88,'R');assert.equal(paladin.zone,'battlefield','current spell color is checked again at resolution');assert.equal(second.zone,'graveyard');assertGameStateInvariants(game);
  });
 }

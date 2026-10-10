@@ -13,7 +13,7 @@
  const handler={layoutsV22:true,compile(op,script){
   if(op.kind==='converted-casting-v22'){script.oracleConvertedCastingV22=op.cost;return true;}
   if(op.kind==='converted-physical-v22'){script.oracleConvertedFrontCostV22=op.frontCost;return true;}
-  if(op.kind==='living-metal-v22'){(script.statics||=[]).push({apply:(g,c)=>{if(g.turnPlayer===c.ctrl&&!c.cur.abilitiesDisabled&&!c.cur.types.includes('Creature'))c.cur.types.push('Creature');}});return true;}
+  if(op.kind==='living-metal-v22'){const prior=script.dynTypes;script.dynTypes=function(g,c){return [...(prior?.call(this,g,c)||[]),...(g.turnPlayer===c.ctrl?['Artifact','Creature']:[])];};return true;}
   return false;
  },async effect(ctx,e){
   if(e.action==='reveal-until-v22'){

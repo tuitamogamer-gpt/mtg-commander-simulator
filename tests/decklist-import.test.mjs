@@ -70,20 +70,58 @@ test('pasted Commander deck prolazi tek nakon size, singleton, commander, color 
   for (const name of extras) assert.ok(player.library.some(card => card.name === name), `${name}: built into library`);
 });
 
-test('svaka generička Oracle batch karta može ući u legalan 100-card custom deck i CardInst', () => {
+test('svaka generička Oracle batch karta ulazi u svoj glavni ili supplementary dio legalnog custom decka', t => {
   const MTG = loadEngine();
+  const auxiliaryNames = {
+    attractions: Object.keys(MTG.DEFS).filter(name => MTG.DEFS[name].attractionLightsV87),
+    stickers: Object.keys(MTG.DEFS).filter(name => MTG.DEFS[name].stickerSheetV87),
+  };
+  const counts = {main: 0, attractions: 0, stickers: 0};
   for (const name of batchNames(MTG)) {
-    const imported = MTG.importCommanderDeck(deckText('Ashling, the Limitless', [name]), { name: `Probe — ${name}` });
+    const def = MTG.DEFS[name];
+    const field = def?.stickerSheetV87 ? 'stickers' : def?.attractionLightsV87 ? 'attractions' : null;
+    let text = deckText('Ashling, the Limitless', [name]);
+    if (name === 'Cryptic Spires') text = text.replace(/^(1 Cryptic Spires[^\n]*)$/m, '$1 [colors=W,U]');
+    if (field) {
+      const wrongSection = MTG.importCommanderDeck(text);
+      assert.equal(wrongSection.ok, false, `${name}: supplementary cards cannot occupy a main-deck slot`);
+      assert.ok(wrongSection.errors.some(error => error.code === 'auxiliary-main' && error.card === name),
+        `${name}: explicit supplementary-section error`);
+      const rows = [name, ...auxiliaryNames[field].filter(other => other !== name).slice(0, 9)];
+      assert.equal(rows.length, 10, `${name}: ten distinct supplementary names`);
+      text = deckText('Ashling, the Limitless', []) + '\n\n' +
+        (field === 'stickers' ? 'Sticker sheets' : 'Attractions') + '\n' + rows.map(row => '1 ' + row).join('\n');
+    }
+    const imported = MTG.importCommanderDeck(text, { name: `Probe — ${name}` });
     assert.equal(imported.ok, true, `${name}: ${imported.errors.map(error => error.message).join('; ')}`);
     assert.equal(imported.interactions.ready, true, `${name}: interactions`);
+    assert.equal(imported.summary.inputCards, 100, `${name}: main deck remains exactly 100 cards`);
     const game = new MTG.Game({ seed: 3, paced: false, maxTurns: 2 });
     const player = game.addPlayer('Probe', imported.deck, null, true);
     game.buildDeck(player, imported.deck, MTG.DEFS, imported.commanders);
+    assert.equal(player.library.length, 99, `${name}: main library size`);
+    counts[field || 'main']++;
+    if (field === 'stickers') {
+      assert.ok(player.stickerSheetsV87.includes(name), `${name}: native brought-sheet list`);
+      assert.equal(player.availableStickerSheetsV87.length, 3, `${name}: native random three-sheet selection`);
+      assert.equal(new Set(player.availableStickerSheetsV87).size, 3);
+      assert.ok(player.availableStickerSheetsV87.every(sheet => player.stickerSheetsV87.includes(sheet)));
+      assert.ok(MTG.OracleV87.sheets.has(name), `${name}: executable native sheet registry`);
+      assert.equal(player.library.some(card => card.def.name === name), false);
+      continue;
+    }
     const printed = MTG.DEFS[name] && MTG.DEFS[name].name;
-    const instance = player.library.find(card => card.name === name || card.name === printed);
-    assert.ok(instance, `${name}: CardInst in imported deck`);
+    const zone = field === 'attractions' ? player.attractionDeckV87 : player.library;
+    const instance = zone.find(card => card.name === name || card.name === printed);
+    assert.ok(instance, `${name}: CardInst in correct imported deck zone`);
+    if (field === 'attractions') {
+      assert.equal(instance.zone, 'command');assert.equal(instance.attractionBackV87, true);
+      assert.equal(player.attractionDeckV87.length, 10);
+      assert.equal(player.library.includes(instance), false);
+    }
     assert.equal(instance.def.oracle, MTG.CARD_CATALOG[name].oracleText, `${name}: exact Oracle survives deck import`);
   }
+  t.diagnostic(JSON.stringify({genericNames: Object.values(counts).reduce((a, b) => a + b, 0), ...counts}));
 });
 
 test('import odbija pogrešnu veličinu, duplikat, off-color, lažnog commandera i nepoznatu kartu', () => {

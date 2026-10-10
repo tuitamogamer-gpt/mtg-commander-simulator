@@ -221,10 +221,18 @@ test('a creature battle applies marked creature damage and defense removal toget
   const battle = f.add('Invasion of Dominaria // Serra Faithkeeper'); battle.counters.defense = 4;
   f.add('Enchanted Evening'); f.add('Opalescence'); f.game.recalc();
   assert.ok(battle.is('Creature') && battle.is('Battle')); assert.equal(battle.toughness, 3);
-  f.opposingAttackers = () => [{ card: attacker, target: f.a }]; f.blockers = () => [{ blocker: battle, attacker }];
+  // CR509.1a forbids a Battle creature from blocking. Printed fight damage
+  // legally exercises both damage results on the same animated permanent.
+  // Mana creatures survive Enchanted Evening/Opalescence; ordinary lands
+  // would become zero-toughness creatures before they could pay the spell.
+  const fight = f.add('Pit Fight', f.a, 'hand'), manaSources = [f.add('Llanowar Elves'), f.add('Elvish Mystic')];
+  f.opposingAttackers = () => [{ card: attacker, target: f.a }];
+  const remaining = castAt(f, [{ card: fight, step: 'blockers', targets: [battle, attacker] }]);
   await play(f, t.name);
+  assert.equal(remaining.length, 0); assert.equal(fight.zone, 'graveyard'); assert.ok(manaSources.every(card => card.tapped));
   assert.equal(battle.zone, 'battlefield'); assert.equal(attacker.zone, 'graveyard');
   assert.equal(battle.counters.defense, 2); assert.equal(battle.damage, 2);
+  assert.equal(f.a.life, 40, 'the printed fight resolves before the attacker can deal combat damage');
 });
 
 

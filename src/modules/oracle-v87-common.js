@@ -68,15 +68,17 @@
  // Every ignored die is excluded from roll-trigger events; replacement
  // controllers choose their ignored die before result-modifying effects.
  G.rollDice=async function(p,faces,count=1,{source=null,ignore=0}={}){
-  if(!Number.isInteger(faces)||faces<2||!Number.isInteger(count)||count<1)throw Error('Invalid dice roll');
+  if(!Number.isInteger(faces)||faces<2||!Number.isInteger(count)||count<0)throw Error('Invalid dice roll');
+  if(!count)return [];
   const nativeExtra=this.bf().filter(c=>active(c)&&c.ctrl===p&&c.def.afcExtraDie).length;
   const rows=(this.dieReplacementsV87||[]).filter(r=>r.player===p.idx&&r.turn===this.turnNo),bamboo=this.untilEffects.filter(r=>r.kind==='extraIgnoredDieV88'&&r.player===p);
   this.dieReplacementsV87=(this.dieReplacementsV87||[]).filter(r=>!rows.includes(r)&&r.turn===this.turnNo);this.untilEffects=this.untilEffects.filter(r=>!bamboo.includes(r));
   const raw=Array.from({length:count+nativeExtra+rows.length+bamboo.length},()=>1+Math.floor(this.rnd()*faces)),kept=raw.map((value,index)=>({value,index})),ignored=[];
   for(const row of rows.concat(bamboo)){const chooser=row.chooser||this.players[row.controller]||p,options=kept.map(d=>({key:String(d.index),label:'Ignore die '+(d.index+1)+' ('+d.value+')'})),key=await option({g:this,you:chooser,src:source},'Choose a die to ignore',options,chooser),i=kept.findIndex(d=>String(d.index)===key);ignored.push(kept.splice(i,1)[0].value);}
   kept.sort((a,b)=>a.value-b.value);ignored.push(...kept.splice(0,Math.min(ignore+nativeExtra,kept.length-1)).map(d=>d.value));const results=kept.sort((a,b)=>a.index-b.index).map(d=>d.value);
-  if(M.OracleV88?.diceAdjust)await M.OracleV88.diceAdjust(this,p,faces,results,source);
-  const data={player:p,source,sides:faces,results,raw,ignored};this.note('diceRolled',data);await this.emit('diceRolled',data);return results;
+  const naturalResults=results.slice();
+  if(M.OracleV88?.diceAdjust)await M.OracleV88.diceAdjust(this,p,faces,results,source,naturalResults);
+  const data={player:p,source,sides:faces,results,naturalResults,raw,ignored};this.note('diceRolled',data);await this.emit('diceRolled',data);return results;
  };
  G.controlNextTurnV87=function(controller,player){(this.c1516TurnControls||=[]).push({subject:player.idx,controller:controller.idx});};
  const copyDefinition=M.OracleV8Faces.copyTokenDefinition;M.OracleV8Faces.copyTokenDefinition=function(c,...args){if(c?.def?.stickerBaseV87||c?.def?.exchangeBaseV87||c?.def?.lastVoyageBaseV87){let d=c.def;while(d.stickerBaseV87||d.exchangeBaseV87||d.lastVoyageBaseV87)d=d.stickerBaseV87||d.exchangeBaseV87||d.lastVoyageBaseV87;c=Object.assign(Object.create(c),{def:d});}return copyDefinition.call(this,c,...args);};
@@ -180,7 +182,7 @@
     case 'Equinox':st((g,s)=>{const host=g.byIid(s.attachedTo);if(live(host))host.cur.extraAbilities.push(ability({tap:true},'equinox',[{zone:'stack',what:'spell',min:1,max:1,filter:(game,so)=>so.kind==='spell'}]));});break;
     case 'Spellweaver Volute':script.oracleSpellweaverV87=true;script.auraTarget=[spec('instant','graveyard')];script.wlmAnimate=true;{const tr=t('cast',(g,s,d)=>d.player===s.ctrl&&g.castHasType(d.card,d.so?.castOpts||{},'Sorcery'),'spellweaver'),prior=tr.filter;tr.filter=(g,s,d)=>{if(!prior(g,s,d))return false;const c=g.byIid(s.attachedTo);(d.spellweaverLinksV87||={})[s.iid]=c?lock(c):null;return true;};}break;
     case 'Construct a Cosmic Cube':t('draw',(g,s,d)=>d.player===s.ctrl&&d.nth===2,'cosmic-draw');{const tr=t('countersPlaced',(g,s,d)=>d.card===s&&d.kind==='plan'&&d.before<7&&d.after>=7,'cosmic-seventh');}break;
-    case 'The Dominion Bracelet':h.statics.push({phase:2,apply:(g,s)=>{const c=g.byIid(s.attachedTo);if(live(c)){c.cur.power++;c.cur.toughness++;}}});st((g,s)=>{const c=g.byIid(s.attachedTo);if(!live(c))return;const ab=ability({mana:'{15}'},'dominion-control',[spec('opponent','player')],{sorceryOnly:true});ab.cost.additionalCostV20={kind:'v87-bracelet',source:s,version:s.zoneVersion};ab.oracleBraceletV87={source:s,version:s.zoneVersion};c.cur.extraAbilities.push(ab);});break;
+    case 'The Dominion Bracelet':h.statics.push({phase:2,apply:(g,s)=>{const c=g.byIid(s.attachedTo);if(live(c)){c.cur.power++;c.cur.toughness++;}}});st((g,s)=>{const c=g.byIid(s.attachedTo);if(!live(c))return;const ab=ability({mana:'{15}'},'dominion-control',[spec('opponent','player')],{sorceryOnly:true});ab.cost.additionalCostV20={kind:'v87-bracelet',source:s,version:s.zoneVersion,host:c,hostVersion:c.zoneVersion};ab.oracleBraceletV87={source:s,version:s.zoneVersion};c.cur.extraAbilities.push(ab);});break;
     default:throw Error('Unknown v87 permanent '+op.mode);
    }return true;
   },
@@ -331,7 +333,7 @@
  const globalCost=c=>c.additionalCostV20?.kind==='v87-global';
  const braceletCost=c=>c.additionalCostV20?.kind==='v87-bracelet';
  const destructiveRows=plan=>!plan||plan.kind==='blight'||String(plan.kind).startsWith('counter-')?[]:plan.destructiveRowsV87||plan.rows||[];
- const braceletLive=(ctx,cost)=>{const r=cost.additionalCostV20;return live(ctx.src)&&ctx.src.ctrl===ctx.you&&live(r.source)&&r.source.zoneVersion===r.version&&r.source.attachedTo===ctx.src.iid&&r.source.attachedHostVersion===ctx.src.zoneVersion;};
+ const braceletLive=(ctx,cost)=>{const r=cost.additionalCostV20;return live(ctx.src)&&ctx.src.ctrl===ctx.you&&r.host===ctx.src&&r.hostVersion===ctx.src.zoneVersion&&live(r.source)&&r.source.zoneVersion===r.version&&r.source.attachedTo===ctx.src.iid;};
  function auxiliaryCtx(ctx){return {...ctx,so:ctx.v87CostSo,allowSourceSacrifice:!ctx.v87CostMain.sacSelf,reservedCards:ctx.v87CostReservations||[]};}
  function descriptors(ctx,cost){return M.OracleV87.additionalCosts(ctx.g,ctx.you,ctx.src,{}, {isAbility:true,ability:ctx.ability,cost});}
  costs.activationFeasible=function(g,p,src,cost,mana,a){

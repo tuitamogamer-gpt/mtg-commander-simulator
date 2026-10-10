@@ -81,7 +81,15 @@
     for (const card of permanents) {
       const state = card.meta.oracleCopyState;
       if (!state || state.zoneVersion !== card.zoneVersion) continue;
-      const layer = latest.get(card.iid), def = layer?.definition || state.base, copy = layer ? def : state.baseCopy;
+      const layer = latest.get(card.iid);
+      // A temporary copy does not turn the physical card back when it ends.
+      // Only an unchanged printed face can use its current physical other face;
+      // an independent underlying copy retains its own characteristics.
+      const physicalBase = card.oracleFaces && state.base.oracleFaces === card.oracleFaces &&
+        ['front', 'back'].includes(state.base.oracleFace);
+      const base = !layer && !state.baseCopy && physicalBase && card.oracleFace !== state.base.oracleFace
+        ? M.OracleV8Faces.faceDefinition(card.oracleFaces, card.oracleFace) || state.base : state.base;
+      const def = layer?.definition || base, copy = layer ? def : state.baseCopy;
       const key = layer?.timestamp || 0;
       // Face-down status is layer 1b, after copy effects (layer 1a). Keep the
       // underlying copied definition available for a legal turn-face-up action.

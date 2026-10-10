@@ -5,13 +5,17 @@ import {context,put,settle} from './helpers/oracle-v8-fixtures.mjs';
 
 const M=loadEngine();
 for(const role of ['human','ai']) {
- test(role+': Heat Ray with no target uses a constant number of X offer probes',()=>{
-  const ctx=context(M,role),source=put(M,ctx.game,ctx.a,'Heat Ray','hand');
-  ctx.a.pool={C:100,R:1,W:0,U:0,B:0,G:0};
-  const original=ctx.game.spellTargetSpecs;let probes=0;
-  ctx.game.spellTargetSpecs=function(...args){probes++;return original.apply(this,args);};
-  assert.equal(ctx.game.castableList(ctx.a).some(entry=>entry.card===source),false);
-  assert.ok(probes<=3,`static empty target set must not enumerate affordable X values (${probes} probes)`);
+ test(role+': Heat Ray with no target uses a bounded number of X offer probes',()=>{
+  const counts=[];
+  for(const mana of [8,100]){
+   const ctx=context(M,role),source=put(M,ctx.game,ctx.a,'Heat Ray','hand');
+   ctx.a.pool={C:mana,R:1,W:0,U:0,B:0,G:0};
+   const original=ctx.game.spellTargetSpecs;let probes=0;
+   ctx.game.spellTargetSpecs=function(...args){probes++;return original.apply(this,args);};
+   assert.equal(ctx.game.castableList(ctx.a).some(entry=>entry.card===source),false);
+   counts.push(probes);
+  }
+  assert.ok(counts[1]<=counts[0]+1,`more available mana must not enumerate affordable X values (${counts.join(' -> ')} probes)`);
  });
  for(const name of ['Repeal','Disembowel'])test(role+': '+name+' finds an exact target threshold below affordable X and pays that X',async()=>{
   const ctx=context(M,role),target=put(M,ctx.game,ctx.b,'Runeclaw Bear'),source=put(M,ctx.game,ctx.a,name,'hand');

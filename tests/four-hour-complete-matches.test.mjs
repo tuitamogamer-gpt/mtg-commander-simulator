@@ -43,6 +43,10 @@ for (let seat = 0; seat < 4; seat++) test(`Four seeded random native decks finis
   assert.ok(game.winner, 'the match has a winner');
   assert.ok(game.turnNo < game.maxTurns, 'the match ends naturally before the artificial turn limit');
   assert.equal(game.pendingTriggers.length, 0);
+  assert.equal((game.aiDecisionLog || []).some(row => row.fallback), false,
+    'all decisions use the native AI policy');
+  assert.equal(game.log.some(row => /AI V2 fallback/i.test(row.msg)), false,
+    'the completed match has no AI fallback warnings');
   assert.deepEqual(boundaries, [], 'all completed-turn boundaries preserve card, zone, controller, counter and mana invariants');
   assertGameStateInvariants(game, `completed seed ${seed}`);
   assert.ok(checkpoints > 1);

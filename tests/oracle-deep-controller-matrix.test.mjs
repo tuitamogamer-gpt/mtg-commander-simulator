@@ -6,6 +6,13 @@ import { castThroughSuspend } from './helpers/oracle-suspend-cast-proof.mjs';
 
 const MTG = loadEngine();
 const COLORS = ['W', 'U', 'B', 'R', 'G', 'C'];
+// Native mana replacement receipts make the implicit one-color ANY group
+// explicit. Preserve every production field and amount while comparing it.
+const manaShape = options => JSON.stringify(options.map(option => {
+  const row = { ...option };
+  if (row.ANY) { row.n ??= 1; row.anyColorGroupV59 ??= 1; }
+  return Object.fromEntries(Object.entries(row).sort(([left], [right]) => left.localeCompare(right)));
+}));
 
 function oracleRows() {
   // Frozen v4 regression cohort; v5 has its own complete operation drivers.
@@ -822,8 +829,8 @@ async function verifyPermanentOperations(context, entry, before) {
     card.tapped = false;
     card.sick = false;
     game.recalc();
-    const wanted = JSON.stringify(operation.produce);
-    const source = game.manaSources(player).find(candidate => candidate.card === card && JSON.stringify(candidate.produce) === wanted);
+    const wanted = manaShape(operation.produce);
+    const source = game.manaSources(player).find(candidate => candidate.card === card && manaShape(candidate.produce) === wanted);
     assert.ok(source, `${entry.raw.name}: controller-path mana source is discoverable`);
     for (const option of source.produce) {
       card.tapped = false;
@@ -2397,6 +2404,7 @@ test('zajednički troškovi mana izvora se rezervišu jednom i ne mijenjaju stan
     assert.equal(player.pool.C, 0);
 
     const secondFood = permanent(game, player, MTG.TOKENS.food);
+    game.recalc();
     assert.ok(game.manaSolve(player, cost), 'two Foods produce a distinct reservation for each Goose');
     assert.equal(await game.payMana(player, cost), true);
     assert.equal(geese.every(card => card.tapped), true);

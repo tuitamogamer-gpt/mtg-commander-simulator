@@ -49,7 +49,8 @@ for(const role of ['human','ai']){
  test(role+': graveyard departure observes a creature spell before its stack face changes',async()=>{
   const f=context(M,role),{game,a}=f;await cast(f,'Along the Crooked Way');
   const creature=put(M,game,a,'Grizzly Bears','graveyard');creature.meta.emryCastTurn=game.turnNo;fund(a);
-  assert.equal(await game.castSpell(a,creature,{from:'graveyard'}),true);await settle(game);
+  const offered=game.castableList(a).find(row=>row.card===creature&&row.from==='graveyard');assert.ok(offered);
+  assert.equal(await game.castSpell(a,creature,{from:offered.from,alt:offered.alt}),true);await settle(game);
   const army=game.bf().find(card=>card.ctrl===a&&card.hasSub('Army'));assert.ok(army);assert.equal(army.counters['+1/+1'],1);assertGameStateInvariants(game);
  });
  test(role+': cast prohibitions check the affected player, card quality and actual origin',async()=>{

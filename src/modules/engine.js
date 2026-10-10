@@ -5,6 +5,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // CR 603.2h tracks the source controller who performed the optional action.
+  // Older saves lack that controller, so retain their used-turn restriction.
+  MTG.triggerActionUsed = (record, turn, player, version) => {
+    if (typeof record === 'number') return record === turn;
+    if (typeof record === 'string') return record === version + ':' + turn;
+    if (!record || record.turn !== turn || version !== undefined && record.version !== version) return false;
+    return !Array.isArray(record.players) || record.players.includes(player.idx);
+  };
+  MTG.recordTriggerAction = (record, turn, player, version) => {
+    const same = record && typeof record === 'object' && record.turn === turn &&
+      (version === undefined || record.version === version);
+    return {turn, ...(version === undefined ? {} : {version}),
+      players: [...new Set([...(same && Array.isArray(record.players) ? record.players : []), player.idx])]};
+  };
+
   // Native graveyard permissions can overlap. Follow the wrappers actually
   // installed on the definition, not the order of independent scratch fields.
   MTG.nativeGraveyardBaseDefinition = definition => {
@@ -1040,10 +1055,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // nakon ETB događaja. ETB filteri zato odmah moraju vidjeti napadača.
         // Initial counters can make the entrant a creature (Kaito). Validate
         // its final entry types after counters and continuous effects below.
-        if (opts.attacking && this.combat && card.ctrl===this.turnPlayer) {
-          card.attacking = opts.attacking;
+        const attackTarget = opts.attacking;
+        const attackDefender = MTG.defendingPlayerV92(attackTarget);
+        const validAttackTarget = attackTarget instanceof Player
+          ? this.players.includes(attackTarget) && !attackTarget.lost
+          : attackTarget instanceof CardInst && attackTarget.zone === 'battlefield' && !attackTarget.phasedOut &&
+            (attackTarget.is('Planeswalker') || attackTarget.is('Battle')) &&
+            (opts.attackingZoneVersion === undefined || attackTarget.zoneVersion === opts.attackingZoneVersion);
+        // CR 508.4a: an entrant with an invalid specified destination is
+        // never attacking. Existing destinationless attackers remain separate.
+        if (validAttackTarget && attackDefender && !attackDefender.lost && attackDefender !== card.ctrl &&
+            this.combat && card.ctrl===this.turnPlayer) {
+          card.attacking = attackTarget;
           this.combat.hadAttackers = true;
           if (!this.combat.attackers.includes(card)) this.combat.attackers.push(card);
+          this.recordCombatDestination(card);
         }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
         if (fromZone !== 'battlefield') card.meta = {};
@@ -1540,9 +1566,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       MTG.oracleV8RecordConditionEntry?.(this,card);
       // CR 506.3: continuous entry effects can make the would-be attacker
       // a noncreature. Entry triggers must already observe that outcome.
-      if(card.attacking&&(!card.is('Creature')||card.ctrl!==this.turnPlayer)){
+      if(card.attacking&&(!card.is('Creature')||card.is('Battle')||card.ctrl!==this.turnPlayer)){
         card.attacking=null;
-        if(this.combat)this.combat.attackers=this.combat.attackers.filter(attacker=>attacker!==card);
+        if(this.combat){
+          this.combat.attackers=this.combat.attackers.filter(attacker=>attacker!==card);
+          this.combat.defenders?.delete(card);
+        }
       }
       // Generic counter event preserves the actual kind. Cards such as
       // Captain Marvel must copy shield/charge/etc. counters, not only +1/+1.
@@ -2839,11 +2868,61 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return unique.length;
     }
 
-    removeFromCombat(card) {
+    recordCombatDestination(attacker) {
+      const target = attacker.attacking;
+      if (!this.combat || !target) return;
+      (this.combat.defenders ||= new Map()).set(attacker, {
+        target, zoneVersion: target.zoneVersion, controller: target.ctrl, protector: target.protector,
+        wasPlaneswalker: !!target.is?.('Planeswalker'), wasBattle: !!target.is?.('Battle'),
+        defendingPlayer: MTG.defendingPlayerV92(target),
+      });
+    }
+
+    removeCombatDestination(attacker) {
+      const target = attacker.attacking;
+      if (!target || target.combatDestinationRemoved) return;
+      const captured = this.combat?.defenders?.get(attacker);
+      // CR 506.4c: retain attacking status and the original blocking seat,
+      // while ceasing to attack any player, planeswalker, or battle.
+      attacker.attacking = Object.freeze({
+        combatDestinationRemoved: true, name: 'No attack destination',
+        defendingPlayer: captured?.defendingPlayer || MTG.defendingPlayerV92(target),
+        formerPlaneswalker: captured?.wasPlaneswalker ?? !!target.is?.('Planeswalker'),
+        is: () => false,
+      });
+    }
+
+    refreshCombatDestinations() {
+      if (!this.combat) return;
+      for (const attacker of this.combat.attackers) {
+        const target = attacker.attacking;
+        if (!(target instanceof CardInst || target instanceof Player)) continue;
+        let captured = this.combat.defenders?.get(attacker);
+        if (!captured || captured.target !== target) {
+          this.recordCombatDestination(attacker); captured = this.combat.defenders.get(attacker);
+        }
+        if (target instanceof Player) continue;
+        // CR 506.4e also covers the two possible surviving roles of a
+        // permanent that was both a battle and a planeswalker.
+        const retainsAttackedType = captured.wasBattle
+          ? target.is('Battle') || captured.wasPlaneswalker && target.is('Planeswalker') && target.ctrl === captured.protector
+          : captured.wasPlaneswalker && target.is('Planeswalker');
+        if (target.zone !== 'battlefield' || target.phasedOut || target.zoneVersion !== captured.zoneVersion ||
+            target.ctrl !== captured.controller || captured.wasBattle && target.protector !== captured.protector || !retainsAttackedType) {
+          this.removeCombatDestination(attacker);
+        }
+      }
+    }
+
+    removeFromCombat(card, { creatureOnly = false } = {}) {
       const blockers = card.blockedBy.slice();
       if (this.combat) {
+        if (!creatureOnly) for (const attacker of this.combat.attackers) {
+          if (attacker.attacking === card) this.removeCombatDestination(attacker);
+        }
         const ci = this.combat.attackers.indexOf(card);
         if (ci >= 0) this.combat.attackers.splice(ci, 1);
+        this.combat.defenders?.delete(card);
         for (const a of this.combat.attackers) a.blockedBy = a.blockedBy.filter(b => b !== card);
       }
       card.attacking = null;
@@ -3347,10 +3426,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       let newlyBlessed=false;
       for(const player of this.alivePlayers())if(!player.cityBlessing&&bf.some(card=>card.ctrl===player&&card.def.oracleAscend&&!card.cur.abilitiesDisabled))newlyBlessed=this.grantCityBlessing(player)||newlyBlessed;
-      // CR 506.4: a permanent that stops being a creature leaves combat.
+      // CR 506.4: a creature that loses its type or becomes a battle leaves combat.
       // Check the completed type layers, including devotion and animation,
       // and remove the reciprocal links without unblocking its former foe.
-      for (const card of bf) if (!card.is('Creature') && (card.attacking || card.blocking !== null)) this.removeFromCombat(card);
+      for (const card of bf) if ((!card.is('Creature') || card.is('Battle')) && (card.attacking || card.blocking !== null)) this.removeFromCombat(card, {creatureOnly: true});
+      this.refreshCombatDestinations();
       // dmgAmount se u borbi i u AI prognozama poziva desetine hiljada puta;
       // bez ovog spiska je svaki poziv skenirao cijelu tablu. Pamti se samo
       // članstvo (mijenja ga zone promjena, koja uvijek pokreće recalc), dok
@@ -3383,8 +3463,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const onceStamp=t.oncePerTurn?this.turnNo+':'+(history?.zoneVersion??card.zoneVersion):null;
           if (t.oncePerTurn && card.meta['_once_' + (t.onceKey||t.on)] === onceStamp) continue;
           if(t.oncePerObjectTriggerV53&&card.meta['_onceObjectV53_'+(t.onceKey||t.on)]===(history?.zoneVersion??card.zoneVersion))continue;
-          if (t.oncePerTurnOnUse && (history?.sourceMeta || card.meta)[t.oncePerTurnOnUse] === this.turnNo) continue;
-          try { if (t.filter && !t.filter(this, card, data)) continue; } catch (e) { continue; }
+          try {
+            if (t.filter && !t.filter(this, card, data)) continue;
+            if (t.oncePerTurnOnUse && MTG.triggerActionUsed((history?.sourceMeta || card.meta)[t.oncePerTurnOnUse],
+              this.turnNo, (typeof t.controller === 'function' ? t.controller(this, card, data) : t.controller) ||
+                ctrlOverride || history?.ctrl || card.ctrl, history?.zoneVersion ?? card.zoneVersion)) continue;
+          } catch (e) { continue; }
           cardSeen.add(t);
           found.push({ card, t, ctrlOverride, onceStamp, history });
         }
@@ -3471,8 +3555,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           let sources=batches.get(oracleBatch);if(!sources){sources=new Map();batches.set(oracleBatch,sources);}
           let triggers=sources.get(card);if(!triggers){triggers=new Map();sources.set(card,triggers);}
           const version=(this._simultaneousLeaveSources||[]).find(row=>row.card===card)?.snap.zoneVersion??card.zoneVersion;
-          if(triggers.get(t)===version)continue;
-          triggers.set(t,version);
+          if(t.batchPerPlayer){
+            // CR 603.2c: a singular player is a separate occurrence within
+            // one event (for example, Gnome lands for different opponents).
+            const stamp=version+':'+(data.ctrl||data.player||data.card?.ctrl).idx;
+            let stamps=triggers.get(t);if(!stamps){stamps=new Set();triggers.set(t,stamps);}
+            if(stamps.has(stamp))continue;
+            stamps.add(stamp);
+          }else{
+            if(triggers.get(t)===version)continue;
+            triggers.set(t,version);
+          }
         }
         if (t.oncePerTurn) card.meta['_once_' + (t.onceKey||t.on)] = onceStamp;
         if(t.oncePerObjectTriggerV53)card.meta['_onceObjectV53_'+(t.onceKey||t.on)]=history?.zoneVersion??card.zoneVersion;
@@ -3557,6 +3650,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (d.once !== false) this.delayed.splice(this.delayed.indexOf(d), 1);
         this.queueTrigger({ src: d.src, name: d.name || name, run: d.run, ctrl: d.ctrl, data, targets: d.targets, prepareTargets:d.prepareTargets, opt:d.opt,
           sourceZoneVersion:d.sourceZoneVersion,sourceMeta:d.sourceMeta,sourceUntapEpoch:d.sourceUntapEpoch,
+          sourceTransformIid:d.sourceTransformIid,sourceTransformCount:d.sourceTransformCount,sourceTransformDelayed:d.sourceTransformDelayed,
           sourceDurationControlEpoch:d.sourceDurationControlEpoch,sourcePhaseEpoch:d.sourcePhaseEpoch,
           sourceCopying:d.sourceCopying,sourceCopyEpoch:d.sourceCopyEpoch });
       }
@@ -3759,6 +3853,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? ctx.damageDivision.map(entry => Object.assign({}, entry)) : null,
       };
       MTG.C14?.targetStackObjects.set(ctx,so);
+      if(tr.src instanceof CardInst){ctx.sourceTransformIid=tr.sourceTransformIid??tr.src.iid;ctx.sourceTransformCount=tr.sourceTransformCount??(tr.src.oracleTransformCount||0);ctx.sourceTransformDelayed=!!tr.sourceTransformDelayed;}
       this.stack.push(so);
       this.queueWardTriggers(so, ctx);
       this.note('stack', {});

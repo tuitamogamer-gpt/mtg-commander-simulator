@@ -162,6 +162,7 @@ test('Elrond obrađuje svaki Fellowship glas i ukradeno stvorenje ne može napas
   await elrond.def.triggers[0].run({ g: game, src: elrond, you: elven });
   assert.equal(ownerAsked, true, 'Elrondov kontrolor takođe bira za vlastiti Fellowship glas');
   assert.equal(donated.ctrl, elven);
+  donated.sick = false; // Test destination restrictions on an otherwise ready creature.
   assert.equal(game.canAttackTarget(donated, owner), false);
   assert.equal(game.canAttackTarget(donated, other), true);
 });

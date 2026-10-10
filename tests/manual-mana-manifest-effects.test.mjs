@@ -236,13 +236,34 @@ test('copy, svaki counter i nova dodijeljena sposobnost salju effectNotice', asy
   assert.equal(notices.filter(event => event.kind === 'spellCopy').length, 1);
 });
 
-test('default stop profil otvara combat reakciju samo kad postoji legalna akcija', () => {
+test('default stop profil otvara combat reakciju samo kad postoji legalna akcija', async () => {
   const MTG = loadEngine();
-  const { game, player } = makeGame(MTG);
+  let question;
+  const { game, player } = makeGame(MTG, (g, q) => {
+    if (q.type === 'priority') question = q;
+    return defaultDecision(g, q);
+  });
+  const forest = permanent(MTG, game, player, 'Forest');
+  const bear = permanent(MTG, game, player, 'Grizzly Bears');
+  const growth = new MTG.CardInst(MTG.DEFS['Giant Growth'], player);
+  growth.zone = 'hand';
+  player.hand.push(growth);
   game.phase = 'combat';
   game.step = 'blockers';
+  game.recalc();
 
-  assert.equal(MTG.autoPassPolicy('end', game, { type: 'priority', casts: [{}], acts: [] }, player), false);
-  assert.equal(MTG.autoPassPolicy('end', game, { type: 'priority', casts: [], acts: [] }, player), true);
-  assert.equal(MTG.autoPassPolicy('off', game, { type: 'priority', casts: [{}], acts: [] }, player), true);
+  await game.askPriorityAction(player);
+  assert.ok(question.casts.some(entry => entry.card === growth), 'native priority offers the payable printed instant');
+  assert.equal(MTG.autoPassPolicy('end', game, question, player), false);
+  assert.equal(MTG.autoPassPolicy('off', game, question, player), true);
+
+  assert.equal(await game.castSpell(player, growth, { from: 'hand' }), true);
+  assert.equal(forest.tapped, true);
+  assert.equal(growth.zone, 'graveyard');
+  assert.equal(bear.power, 5);
+  assert.equal(game.stack.length, 0);
+  await game.askPriorityAction(player);
+  assert.equal(question.casts.length, 0);
+  assert.equal(question.acts.length, 0);
+  assert.equal(MTG.autoPassPolicy('end', game, question, player), true);
 });

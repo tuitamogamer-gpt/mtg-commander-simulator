@@ -15,7 +15,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  G.copySpells=function(so,p,n,options={}){if(!Number.isSafeInteger(n)||n<0)throw Error('Invalid spell-copy count');return this.copySpellBatch(so,p,Array.from({length:n},()=>options));};
  G.copySpell=async function(so,p,options={}){return (await this.copySpellBatch(so,p,[options]))[0];};
  M.SCRIPTS['Twinning Staff']={c1920Twinning:true,abilities:[{label:'Copy your instant or sorcery spell',cost:{mana:'{7}',tap:true},targets:[M.T.spell((g,s,p)=>s.ctrl===p&&g.isInstantSorcerySpell(s))],run:ctx=>ctx.targets[0]&&ctx.g.copySpell(ctx.targets[0],ctx.you,{mayNewTargets:true}),aiScore:()=>6}]};
- const spellColors=(g,c,a)=>{const d=g.castDefinition(c,a);return d.devoid?[]:d.colorsOverride||M.colorsOfCost(a.adventure?d.adventure.cost:d.oracleSplit?g.oracleSplitPrintedCost(c,a):d.cost);};
+ const spellColors=(g,c,a)=>{const d=g.castDefinition(c,a),printed=M.OracleV88?.unpaintCastDefinition(d)||d;if(a.adventure&&printed===d){const face=d.adventure;return face.devoid?[]:face.colorsOverride||M.colorsOfCost(face.cost||face.altCostStr||'');}return d.devoid?[]:d.colorsOverride||M.colorsOfCost(a.adventure?d.adventure.cost:d.oracleSplit?g.oracleSplitPrintedCost(c,a):d.cost);};
  const sources=(g,p,c,a,key)=>g.isInstantSorceryCast(c,a)?g.bf().filter(s=>s.ctrl===p&&C.live(s)&&s.def[key]).map(s=>({iid:s.iid,version:s.zoneVersion,controller:p.idx})):[];
  C.copyGrantActive=(g,r)=>!r||g.bf().some(s=>s.iid===r.iid&&s.zoneVersion===r.version&&s.ctrl.idx===r.controller&&C.live(s));
  C.conspireSources=(g,p,c,a)=>spellColors(g,c,a).some(k=>k==='R'||k==='G')?sources(g,p,c,a,'c1920Wort'):[];

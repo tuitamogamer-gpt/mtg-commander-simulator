@@ -634,7 +634,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (rule.another && sameObject(card, source)) return false;
       if (rule.anotherThanAttached && sameObject(card, game.byIid(source.attachedTo))) return false;
       if (rule.permanentOnly && card.zone !== 'battlefield' && !card._oracleLKI) return false;
-      const candidate = snapshotObject(card, snapshot);
+      let candidate = snapshotObject(card, snapshot);
+      if (rule.filter?.blockedBySourceV19) {
+        // This relation is current combat state, not a characteristic in LKI.
+        const physical = game.byIid(card.iid);
+        const blockedBy = physical?.zone === 'battlefield' && !physical.phasedOut &&
+          physical.zoneVersion === candidate.zoneVersion ? physical.blockedBy : [];
+        candidate = Object.assign(Object.create(candidate), {blockedBy});
+      }
       if (rule.controller === 'you' && candidate.ctrl !== source.ctrl || rule.controller === 'opponent' && candidate.ctrl === source.ctrl) return false;
       if (rule.spellOnly && card.zone !== 'stack') return false;
       return !!target.filter(game, candidate, source.ctrl, source);

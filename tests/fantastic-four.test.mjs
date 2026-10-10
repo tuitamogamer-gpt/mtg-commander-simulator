@@ -489,11 +489,17 @@ test('Fantasticar sacrifice is optional and creates four flying hasty Constructs
     (g, q) => q.aiHint?.kind === 'fantasticarSacrifice' ? 'yes' : q.type === 'chooseOption' ? 'no' : defaultDecision(g, q),
   ], 2);
   const car = permanent(game, fantastic, 'The Fantasticar');
-  const spells = ['Sol Ring', 'Arcane Signet', 'Monologue Tax', 'Whirlwind of Thought']
-    .map(name => new MTG.CardInst(MTG.DEFS[name], fantastic));
-  fantastic.turnState.spellsCastList = spells.map(card => ({ card }));
-  await game.emit('cast', { player: fantastic, card: spells[3], nthNonCreature: 4 });
-  await resolveAll(game);
+  for (const [name, pool, spent] of [
+    ['Sol Ring', { C: 1 }, 1], ['Arcane Signet', { C: 2 }, 2],
+    ['Monologue Tax', { C: 2, W: 1 }, 3], ['Whirlwind of Thought', { C: 1, U: 1, R: 1, W: 1 }, 4],
+  ]) {
+    const spell = inZone(fantastic, name, 'hand');
+    Object.assign(fantastic.pool, pool);
+    assert.equal(await game.castSpell(fantastic, spell, { from: 'hand' }), true);
+    assert.equal(spell.castMeta.manaSpent, spent);
+    await resolveAll(game);
+  }
+  assert.equal(fantastic.turnState.spellsCastList.length, 4);
   assert.equal(car.zone, 'graveyard');
   const constructs = game.creatures(fantastic).filter(card => card.isToken && card.name === 'Construct Token');
   assert.equal(constructs.length, 4);
@@ -543,13 +549,17 @@ test("The Watcher's Warning triggers for each opponent's first spell, not only t
     (g, q) => q.aiHint?.kind === 'freeCast' ? 'no' : defaultDecision(g, q),
   ], 3);
   permanent(game, fantastic, "The Watcher's Warning");
+  inZone(one, 'Island', 'library');
+  inZone(two, 'Island', 'library');
   const topOne = inZone(one, 'Sol Ring', 'library');
   const topTwo = inZone(two, 'Arcane Signet', 'library');
-  const spellOne = new MTG.CardInst(MTG.DEFS['Forest'], one);
-  const spellTwo = new MTG.CardInst(MTG.DEFS['Island'], two);
-  await game.emit('cast', { player: one, card: spellOne, nthThisTurn: 1 });
+  const spellOne = inZone(one, 'Opt', 'hand');
+  const spellTwo = inZone(two, 'Opt', 'hand');
+  one.pool.U = 1;
+  assert.equal(await game.castSpell(one, spellOne, { from: 'hand' }), true);
   await resolveAll(game);
-  await game.emit('cast', { player: two, card: spellTwo, nthThisTurn: 1 });
+  two.pool.U = 1;
+  assert.equal(await game.castSpell(two, spellTwo, { from: 'hand' }), true);
   await resolveAll(game);
   assert.equal(topOne.zone, 'exile');
   assert.equal(topTwo.zone, 'exile');

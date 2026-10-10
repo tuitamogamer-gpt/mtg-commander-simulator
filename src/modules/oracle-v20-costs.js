@@ -188,10 +188,10 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
    if(e.action==='grant-flashback-v20'){for(const c of [ctx.targets[e.target]].flat(Infinity))if(c instanceof M.CardInst&&c.zone==='graveyard'){c.meta.flashbackUntil=ctx.g.turnNo;c.meta.oracleFlashbackV20={version:c.zoneVersion,turn:ctx.g.turnNo};}return true;}
    if(e.action==='add-mana-v20'){
     const player=e.who?h.genericEffectSubjects(ctx,e.who)[0]:ctx.you;if(!(player instanceof M.Player))return true;
-    const before={...player.pool},effect={...e,action:'add-mana'};delete effect.restrictionV20;delete effect.splitManaV20;
+    const priorMeta=new Set(player.poolMeta||[]),effect={...e,action:'add-mana'};delete effect.restrictionV20;delete effect.splitManaV20;
     if(e.splitManaV20){const n=Math.max(0,Math.floor(h.genericAmount(e.splitManaV20.n,ctx))),[a,b]=e.splitManaV20.colors;effect.choices=Array.from({length:n+1},(_,i)=>({[a]:i,[b]:n-i}));delete effect.multiplier;}
     await h.runGenericEffect(ctx,effect);
-    if(e.restrictionV20){const source=Object.assign(Object.create(ctx.src||null),{ctrl:player}),restrict=manaRestriction(e.restrictionV20,h);player.poolMeta||=[];for(const color of [...colors,'C']){const n=(player.pool[color]||0)-(before[color]||0);if(n>0)player.poolMeta.push({color,n,source,restrict,restrictAbilities:true});}}
+    if(e.restrictionV20){const restrict=manaRestriction(e.restrictionV20,h);for(const row of player.poolMeta||[])if(!priorMeta.has(row)){const previous=row.restrict;row.restrict=previous?(g,a,s)=>previous(g,a,s)&&restrict(g,a,s):restrict;row.restrictAbilities=previous?!!row.restrictAbilities:true;}}
     return true;
    }
    if(e.action!=='return-grave-source-v20')return false;if(ctx.src.zone==='graveyard'&&ctx.src.zoneVersion===ctx.sourceZoneVersion)await ctx.g.move(ctx.src,e.destination,{ctrl:ctx.you,tapped:e.tapped,...(e.counter?{additionalCounters:{[e.counter]:1}}:{})});return true;

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-10",
+  "source": "Pinned Scryfall Murders at Karlov Manor Judith Imp token",
+  "added": [
+    {
+      "key": "CARD_IMAGE_PATHS",
+      "variant": "normal",
+      "relative": "./assets/cards/imp-token-50dd24ae71.webp",
+      "source": "https://cards.scryfall.io/normal/front/4/7/47a1385b-2be2-49a8-8400-186cd5525dad.jpg?1783912609",
+      "scryfallId": "47a1385b-2be2-49a8-8400-186cd5525dad",
+      "set": "tmkm",
+      "collectorNumber": "7",
+      "sha256": "aa8fcabecb833b1a629dc4b44f8924aff7733716d0361e762b4588c39f916afc"
+    }
+  ],
+  "existingImagesUnchanged": true
+}

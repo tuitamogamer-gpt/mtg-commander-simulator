@@ -125,9 +125,9 @@ test('Puresteel equip zero overrides Wrecking Ball Arm alternate cost and Conque
   const reduced = game.abilityManaCost(limit, arm, arm.cur.equipCost, { kind: 'equip', targets: [cloud], ability: { equip: true } });
   assert.equal(reduced.generic, 0);
   const instant = inZone(opponent, 'Chaos Warp', 'hand'); game.turnPlayer = limit; game.phase = 'main1';
-  assert.equal(game.canCastTiming(opponent, instant, null), true);
+  assert.equal(game.canCastTiming(opponent, instant, {}), true);
   flail.attachedTo = cloud.iid; cloud.attachments.push(flail.iid); game.recalc();
-  assert.equal(game.canCastTiming(opponent, instant, null), false);
+  assert.equal(game.canCastTiming(opponent, instant, {}), false);
 });
 
 test('Yuffie uses shared ninjutsu, steals a noncreature artifact, equips, and restores control when she leaves', async () => {

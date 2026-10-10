@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
 import { context, put, settle } from './helpers/oracle-v8-fixtures.mjs';
+import { secondNativeOnceCoverage } from './helpers/second-trigger-once-coverage.mjs';
 
 const M = loadEngine();
 const names = [
@@ -146,7 +147,7 @@ for (const role of ['human', 'ai']) for (const name of names) {
 
 test('the once-on-use regression cases cover every such Oracle card in the catalog', () => {
   const actual = Object.values(M.DEFS).filter(d => /Do this only once each turn\./.test(d.oracle || '')).map(d => d.name).sort();
-  assert.deepEqual(actual, [...names, 'Leonardo, the Balance'].sort());
+  assert.deepEqual(actual, [...names, 'Leonardo, the Balance', ...Object.keys(secondNativeOnceCoverage)].sort());
 });
 
 for (const name of ['Welcoming Vampire', 'Tocasia\'s Welcome', 'Elvish Warmaster']) {

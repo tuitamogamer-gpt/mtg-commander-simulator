@@ -373,7 +373,12 @@ for(const role of ['human','ai']){
   assert.equal(land.tapped,true);assert.equal(game.canPayMana(a,MTG.parseCost('{U}')),false);
   land.tapped=false;assert.equal(await game.payMana(a,MTG.parseCost('{U}')),true);
   assert.equal(land.tapped,true);assert.equal(a.pool.U,0);assert.equal(game.stack.length,0);
-  land.tapped=false;land.cur.abilitiesDisabled=true;
+  const animation=put(game,a,'Animate Land','hand');a.pool.G=1;
+  assert.equal(await game.castSpell(a,animation,{from:'hand'}),true);await settle(game);
+  assert.equal(land.is('Creature'),true);land.tapped=false;
+  const dress=put(game,a,'Dress Down','hand');a.pool.C=1;a.pool.U=1;
+  assert.equal(await game.castSpell(a,dress,{from:'hand'}),true);await settle(game);
+  assert.equal(land.cur.abilitiesDisabled,true);
   assert.equal(game.canPayMana(a,MTG.parseCost('{U}')),false);
  });
  test(`v7 ${role}: Masterwork inherits and uses the copied Equipment's equip ability`,async()=>{

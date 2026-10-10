@@ -95,7 +95,7 @@ for(const role of ['human','ai']) {
   });
   test(`${role}: Marvo keeps the original defending player when the attacked planeswalker changes control`,async()=>{
     const ctx=context(M,role,2),marvo=put(M,ctx.game,ctx.a,'Marvo, Deep Operative'),walker=put(M,ctx.game,ctx.b,'Garruk, Primal Hunter');top(ctx);marvo.attacking=walker;
-    await ctx.game.emit('attacks',{card:marvo,attacker:marvo,defender:walker});walker.ctrl=ctx.others[1];
+    await ctx.game.emit('attacks',{card:marvo,attacker:marvo,player:ctx.a,defender:walker});walker.ctrl=ctx.others[1];
     const clash=ctx.game.clash;let opponent;ctx.game.clash=async function(p,opts){opponent=opts.opponent;return clash.call(this,p,opts);};
     await settle(ctx.game);assert.equal(opponent,ctx.b);
   });
@@ -105,7 +105,7 @@ for(const role of ['human','ai']) {
     const spell=put(M,ctx.game,ctx.a,'Grizzly Bears','hand');const decide=ctx.a.controller.decide.bind(ctx.a.controller);
     ctx.a.controller.decide=async(g,q)=>q.type==='chooseCards'&&q.from.includes(spell)?[spell]:decide(g,q);
     let asked=false;const original=M.E.chooseOpponent;M.E.chooseOpponent=async(...args)=>{asked=true;return original(...args);};
-    try{await ctx.game.emit('attacks',{card:marvo,attacker:marvo,defender});await ctx.game.move(marvo,'exile');await settle(ctx.game);}finally{M.E.chooseOpponent=original;}
+    try{await ctx.game.emit('attacks',{card:marvo,attacker:marvo,player:ctx.a,defender});await ctx.game.move(marvo,'exile');await settle(ctx.game);}finally{M.E.chooseOpponent=original;}
     assert.equal(asked,false); // The attack trigger retains its defending player after Marvo leaves.
     assert.equal(spell.zone,'hand'); // The separate winning ability is absent when the clash occurs.
   });

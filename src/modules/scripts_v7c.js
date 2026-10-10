@@ -1028,7 +1028,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 chosen.ctrl = ctx.you;
                 g.untilEffects.push({
                   kind: 'cantAttackPlayerCard', iid: chosen.iid, timestamp: chosen.timestamp,
-                  notPlayer: chosen.owner, expires: 'never',
+                  notPlayer: chosen.owner, expires: 'never', grantedAbility: true,
                 });
                 g.recalc();
                 g.lg(`${chosen.name} goes to ${ctx.you.name} and can't attack its owner ${chosen.owner.name}.`);

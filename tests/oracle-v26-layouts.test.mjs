@@ -4,7 +4,13 @@ const report=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v26-layouts-r
 const fund=p=>{for(const c of ['W','U','B','R','G','C'])p.pool[c]=40;},total=p=>Object.values(p.pool).reduce((s,n)=>s+n,0),ids=cards=>Array.from(cards,c=>c.iid);
 const choose=(p,predicate,value)=>{const old=p.controller.decide.bind(p.controller);p.controller.decide=async(g,q)=>predicate(q)?value(q,g):old(g,q);};
 const card=(f,name,types=['Creature'],cost='{2}',subtypes=[],owner=f.a)=>{const c=put(M,f.game,owner,'Grizzly Bears','library');c.def={...c.def,name,types,cost,subtypes,super:[],kws:[],power:'3',toughness:'7',colorsOverride:[]};f.game.recalc();return c;};
-const cast=async(f,name,opts={})=>{fund(f.a);const source=put(M,f.game,f.a,name,opts.from||'hand'),mana=total(f.a);assert.equal(await f.game.castSpell(f.a,source,{from:opts.from||'hand',...opts}),true,name);await settle(f.game);assert.ok(total(f.a)<mana,name+': printed cost paid');return source;};
+const cast=async(f,name,opts={})=>{
+ fund(f.a);const from=opts.from||'hand',source=put(M,f.game,f.a,name,from),mana=total(f.a);
+ const offered=opts.alt&&f.game.castableList(f.a).find(row=>row.card===source&&row.from===from&&Object.entries(opts.alt).every(([key,value])=>row.alt?.[key]===value));
+ if(opts.alt)assert.ok(offered,name+': requested printed alternative is actually offered');
+ assert.equal(await f.game.castSpell(f.a,source,{from,...opts,...(offered?{alt:offered.alt}:{})}),true,name);
+ await settle(f.game);assert.ok(total(f.a)<mana,name+': printed cost paid');return source;
+};
 const activate=async(f,source)=>{const row=f.game.activatableList(f.a).find(r=>r.card===source&&r.ability?.oracleOperation?.effects?.some(e=>JSON.stringify(e).includes('-v26')));assert.ok(row,source.name+': printed activation offered');const mana=total(f.a);assert.equal(await f.game.activateAbility(f.a,row),true);await settle(f.game);assert.ok(total(f.a)<mana);return row;};
 for(const role of ['human','ai']){
  test(role+': Bison Whistle retains one inspected object through independent Bison and creature conditions',async()=>{for(const [types,subs,entry,hand,destination]of [[['Creature'],['Bison'],true,true,'battlefield'],[['Creature'],['Bison'],false,true,'hand'],[['Creature'],[],false,true,'hand'],[['Land'],[],false,false,'graveyard']]){const f=context(M,role),top=card(f,'Actual inspected',types,'{3}',subs);choose(f.a,q=>q.type==='chooseOption'&&/^Move the inspected card/.test(q.prompt||''),q=>q.prompt.includes('battlefield')?(entry?'yes':'no'):'yes');choose(f.a,q=>q.type==='chooseOption'&&q.prompt==='Reveal the inspected card?',()=>hand?'yes':'no');const source=await cast(f,'Bison Whistle'),version=top.zoneVersion;await activate(f,source);assert.equal(top.zone,destination);assert.equal(top.zoneVersion,version+1);assert.ok(top.owner===f.a);assertGameStateInvariants(f.game);}});

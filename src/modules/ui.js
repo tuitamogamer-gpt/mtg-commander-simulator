@@ -2950,10 +2950,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           lane.appendChild(cards);
           lane.appendChild(el('div', 'combatarrow', '<span></span>'));
-          const targetDetail = target instanceof MTG.Player
+          const destinationRemoved = target.combatDestinationRemoved === true;
+          const targetDetail = destinationRemoved
+            ? `No attack destination · original defender ${targetOwner.name}`
+            : target instanceof MTG.Player
             ? `${target.life} life`
             : target.is('Battle')?`Battle · ${target.counters.defense||0} defense · protected by ${target.protector?.name||'unassigned'}`:`Planeswalker · ${target.counters.loyalty || 0} loyalty · ${targetOwner.name}`;
-          lane.appendChild(el('div', 'combatdefender', `<b>${esc(target.name)}</b><span>${esc(targetDetail)} · ${attackers.length} attacker${attackers.length === 1 ? '' : 's'} · up to ${rawDamage} damage</span>`));
+          lane.appendChild(el('div', 'combatdefender', `<b>${esc(target.name)}</b><span>${esc(targetDetail)} · ${attackers.length} attacker${attackers.length === 1 ? '' : 's'}${destinationRemoved ? '' : ` · up to ${rawDamage} damage`}</span>`));
           map.appendChild(lane);
         }
         wrap.appendChild(map);
@@ -4355,8 +4358,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const targetOwner = MTG.defendingPlayerV92(target);
           const lane = el('div', 'combatreviewlane' + (target === this.me || targetOwner === this.me ? ' tome' : ''));
           const laneHead = el('div', 'combatreviewtarget');
-          const targetMeta = target instanceof MTG.Player
+          const targetMeta = target.combatDestinationRemoved === true
+            ? `NO ATTACK DESTINATION · ORIGINAL DEFENDER ${targetOwner.name}`
+            : target instanceof MTG.Player
             ? `${target.life} life`
+            : target.is('Battle')
+            ? `BATTLE · ${target.counters.defense || 0} DEFENSE · PROTECTED BY ${target.protector?.name || 'unassigned'}`
             : `PLANESWALKER · ${target.counters.loyalty || 0} LOYALTY · ${targetOwner.name}`;
           laneHead.innerHTML = `<div><small>${esc(targetMeta)}</small><b>${esc(target.name)}</b></div>` +
             `<div class="combatestimate"><strong>${rawDamage}</strong><span>possible damage</span></div>`;

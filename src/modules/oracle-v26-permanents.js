@@ -15,7 +15,14 @@
   if(op.kind==='generic-trigger'&&op.permanentLinkedLandNameV26){const trigger=h.compileGenericTrigger(op),prior=trigger.filter;trigger.filter=(g,s,d)=>sameName(g,s,op.permanentLinkedLandNameV26.link,d.card)&&(!prior||prior(g,s,d));h.triggers.push(trigger);return true;}
   return false;
  }});
- const costs=M.OracleV20Costs,prepare=costs.prepareActivation,validate=costs.validateActivation,commit=costs.commitActivation;
+ const costs=M.OracleV20Costs,feasible=costs.activationFeasible,prepare=costs.prepareActivation,validate=costs.validateActivation,commit=costs.commitActivation;
+ costs.activationFeasible=function(g,p,s,cost,mana,a){
+  const d=cost.additionalCostV20;if(d?.kind!=='paid-exile-v26')return feasible.call(this,g,p,s,cost,mana,a);
+  const pool=p.graveyard.filter(c=>d.filter(g,c,s,p));if(pool.length<d.min)return false;
+  const payable=cards=>!mana||g.canPayMana(p,mana,{card:s,isAbility:true,ability:a},{excludeCards:cost.tap?[s]:[],protectedSacrifices:cards.concat(cost.sacSelf?[s]:[]),reservedLife:cost.life||0});
+  const visit=(start,cards)=>{if(cards.length===d.min)return payable(cards);for(let i=start;i<=pool.length-(d.min-cards.length);i++)if(visit(i+1,cards.concat(pool[i])))return true;return false;};
+  return visit(0,[]);
+ };
  costs.prepareActivation=async function(ctx,cost){const d=cost.additionalCostV20;if(d?.kind!=='paid-exile-v26')return prepare.call(this,ctx,cost);const {g,src,you}=ctx,pool=you.graveyard.filter(c=>d.filter(g,c,src,you)),versions=new Map(pool.map(c=>[c,c.zoneVersion])),sourceVersion=src.zoneVersion;if(pool.length<d.min)return false;const chosen=await you.controller.decide(g,{type:'chooseCards',from:pool,min:d.min,max:pool.length,prompt:src.name+': exile cards as a cost',aiHint:{kind:'delve',card:src,activationPaymentV20:true}});if(!Array.isArray(chosen)||new Set(chosen).size!==chosen.length||chosen.length<d.min||chosen.some(c=>!versions.has(c)))return false;ctx.oracleActivationPlanV20={sourceVersion,sourceZone:src.zone,kind:d.kind,rows:chosen.map(card=>({card,zone:'graveyard',version:versions.get(card)}))};return this.validateActivation(ctx,cost);};
  costs.validateActivation=function(ctx,cost){const d=cost.additionalCostV20;if(d?.kind!=='paid-exile-v26')return validate.call(this,ctx,cost);const plan=ctx.oracleActivationPlanV20,{g,src,you}=ctx;return !!plan&&L.live(src)&&src.ctrl===you&&src.zoneVersion===plan.sourceVersion&&plan.rows.length>=d.min&&new Set(plan.rows.map(r=>r.card)).size===plan.rows.length&&plan.rows.every(r=>r.card.zone==='graveyard'&&r.card.zoneVersion===r.version&&you.graveyard.includes(r.card)&&d.filter(g,r.card,src,you));};
  costs.commitActivation=async function(ctx,cost){if(cost.additionalCostV20?.kind!=='paid-exile-v26')return commit.call(this,ctx,cost);if(!this.validateActivation(ctx,cost))return false;await ctx.g.moveGraveyardBatch(ctx.oracleActivationPlanV20.rows.map(r=>r.card),'exile');ctx.exiledCost=ctx.oracleActivationPlanV20.rows.filter(r=>r.card.zone==='exile'&&r.card.zoneVersion===r.version+1).map(r=>({card:r.card,zone:'exile',version:r.card.zoneVersion}));return true;};

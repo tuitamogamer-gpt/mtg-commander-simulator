@@ -87,7 +87,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  });
  async function transform(g,c){
   const state=c.mutateState;if(!state||c.faceDown||c.cur?.cantTransformV66)return false;let changed=false;
-  for(const r of state.components)if(['transform','modal_dfc'].includes(r.oracleFaces?.layout)&&!r.faceDown){const face=r.oracleFace==='back'?'front':'back',definition=M.OracleV8Faces.faceDefinition(r.oracleFaces,face);if(!definition||definition.types.some(type=>['Instant','Sorcery'].includes(type)))continue;if(await M.oracleBeforeTransformV86?.(g,c,face)===false)continue;r.oracleFace=face;r.copiableDef=definition;changed=true;}
+  for(const r of state.components)if(['transform','modal_dfc'].includes(r.oracleFaces?.layout)&&!r.faceDown){const face=r.oracleFace==='back'?'front':'back',definition=M.OracleV8Faces.faceDefinition(r.oracleFaces,face);if(!definition||definition.types.some(type=>['Instant','Sorcery'].includes(type)))continue;if(await M.oracleBeforeTransformV86?.(g,c,face,definition)===false)continue;const copiedDefinition=M.OracleV8Faces.faceDefinition(r.copiableDef.oracleFaces,face);r.oracleFace=face;r.copiableDef=copiedDefinition||definition;changed=true;}
   if(!changed)return false;
   const defs=state.components.map(r=>r.faceDown?g.faceDownCreatureDef('morph'):r.copiableDef),definition=defs.slice(1).reduce(aggregate,defs[0]);state.faceUpDefinition=definition;
   const layer=g.untilEffects.filter(e=>e.c1920Merge&&e.iid===c.iid&&e.zoneVersion===c.zoneVersion).at(-1);if(layer)layer.definition=definition;

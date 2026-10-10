@@ -1768,11 +1768,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A transforming permanent keeps its physical identity and swaps to its
       // other printed face. Leaving the battlefield resets it to the front.
       if(!sameBattlefieldSource(ctx))return;
+      if(ctx.sourceTransformIid===ctx.src.iid&&ctx.sourceTransformCount!==undefined&&ctx.sourceTransformCount!==(ctx.src.oracleTransformCount||0))return;
       if(ctx.src.def.bomDaybound||ctx.src.def.bomNightbound)return;
       if(ctx.src.mutateState){await MTG.Mutate.transform(ctx.g,ctx.src);return;}
       const faces=MTG.OracleV8Faces?.physical(ctx.src);
       if(!faces||faces.faces.length!==2)return;
       const next=ctx.src.oracleFace==='back'?'front':'back';
+      if(MTG.OracleV8Faces.faceDefinition(faces,next)?.types.some(type=>['Instant','Sorcery'].includes(type)))return;
       if(await MTG.oracleBeforeTransformV86?.(ctx.g,ctx.src,next)===false)return;
       if(MTG.OracleV8Faces.setFace(ctx.src,next)){
         ctx.src.oracleTransformCount=(ctx.src.oracleTransformCount||0)+1;
@@ -2333,7 +2335,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         search:true,prompt:'Search your library',aiHint:{kind:type.includes('land')?'searchBasic':'recur'}});
       const selected=Array.isArray(picked) ? [...new Set(picked)].filter(card=>candidates.includes(card)).slice(0,n):[];
       if(effect.reveal && selected.length) await ctx.g.revealToHuman({cards:selected,ctrl:ctx.you,kind:'reveal'});
-      for(const card of selected) if(effect.destination==='battlefield')await ctx.g.putPermanentOntoBattlefield(card,ctx.you,{tapped:!!effect.tapped});else if(effect.destination==='library-top')ctx.you.library.splice(ctx.you.library.indexOf(card),1);else await ctx.g.move(card,effect.destination);
+      if(effect.destination==='battlefield')await ctx.g.withBattlefieldEntryBatch(async()=>{
+        for(const card of selected)await ctx.g.putPermanentOntoBattlefield(card,ctx.you,{tapped:!!effect.tapped});
+      });else for(const card of selected)if(effect.destination==='library-top')ctx.you.library.splice(ctx.you.library.indexOf(card),1);else await ctx.g.move(card,effect.destination);
       MTG.shuffle(ctx.you.library,ctx.g.rnd);
       if(effect.destination==='library-top')ctx.you.library.push(...selected);
       return;
@@ -2649,9 +2653,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const baseFilter = genericTriggerFilter(operation.event, operation.eventFilter);
     const triggerTimes = operation.eventFilter?.kickedV17?(game,source,data)=>MTG.oracleKicksV17(game,data.so):MTG.oracleV8TriggerTimes?.(operation.event, operation.eventFilter, genericTargetSpec);
-    // CR 603.2h: "Do this only once each turn" limits the optional action,
-    // not the trigger. Declining leaves the next trigger this turn available;
-    // accepting stops later triggers, as the hand-written scripts already do.
+    // CR 603.2h: later triggers stop once the source's controller performs the
+    // optional action. Declining leaves later triggers this turn available.
     const onceOnUse = !!operation.onceEachTurn && !!operation.optional && !targetedOptional &&
       /Do this only once each turn\./.test(operation.onceGroup || '');
     const trigger = {
@@ -2680,6 +2683,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (capturedSource(source, data) || rememberSource(game, source, data)).controller,
       prepareTargets: async ctx => {
         applyCapturedSource(ctx);
+        if (operation.condition) ctx.oracleTriggerCondition = context =>
+          genericCondition(context.g,context.src,operation.condition,context.you,capturedSource(context.src,context.data));
         return prepareGenericDivisions(ctx, modalBody ? modalBody.modes[ctx.mode]?.body.effects : operation.effects);
       },
       run: async ctx => {
@@ -3099,7 +3104,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(condition.kind==='not')return !genericCondition(game,self,condition.condition,p,evidence);
     if(condition.kind==='all')return condition.conditions.every(item=>genericCondition(game,self,item,p,evidence));
     if(condition.kind==='any')return condition.conditions.some(item=>genericCondition(game,self,item,p,evidence));
-    if(condition.kind==='count-comparison'){const n=condition.count.kind==='target-count'?genericAmount(condition.count,{g:game,src:self,you:p,oracleSourceCapture:evidence}):genericCount(game,self,p,condition.count);return (condition.min===undefined||n>=condition.min)&&(condition.max===undefined||n<=condition.max);}
+    if(condition.kind==='count-comparison'){const n=condition.count.kind==='target-count'?genericAmount(condition.count,{g:game,src:self,you:p,oracleSourceCapture:evidence}):genericCount(game,self,p,!sameSource&&condition.count.other?{...condition.count,other:false}:condition.count);return (condition.min===undefined||n>=condition.min)&&(condition.max===undefined||n<=condition.max);}
     if(condition.kind==='turn-stat')return p.turnState[condition.field]>=condition.min;
     if(condition.kind==='opponent-life')return game.alivePlayers().some(player=>player!==p&&player.life<=condition.max);
     if(condition.kind==='opponent-poison')return game.alivePlayers().some(player=>player!==p&&player.poison>=condition.min);
@@ -3645,6 +3650,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function compileOracleScript(batch, entry) {
     entry = MTG.normalizeOracleTimeLordEntry(entry);
+    // A frozen trigger can omit its group while retaining the printed
+    // action limit. Recover it only when both associations are unambiguous.
+    const optionalTurnLimits = (entry.implementation || []).filter(operation =>
+      operation.kind === 'generic-trigger' && operation.optional && operation.onceEachTurn);
+    const printedActionLimits = (entry.raw?.oracle || '').split('\n').filter(line => /Do this only once each turn\./.test(line));
+    if (optionalTurnLimits.length === 1 && !optionalTurnLimits[0].onceGroup && printedActionLimits.length === 1) entry = {
+      ...entry, implementation: entry.implementation.map(operation => operation === optionalTurnLimits[0]
+        ? {...operation, onceGroup: printedActionLimits[0]} : operation),
+    };
     // The frozen Hellhole Rats manifest encoded "that card's mana value" as
     // the ETB event card's stat. Bind the discarded card explicitly without
     // changing the original event capture or the pinned manifest bytes.
@@ -4006,6 +4020,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const selected=await card.ctrl.controller.decide(game,{type:'chooseCards',from,min:0,max:1,source:card,player:card.ctrl,aiHint:{kind:'bestCard'},prompt:'Choose a permanent or card to copy as this enters.'});
           const chosen=selected?.[0];if(!from.includes(chosen))return;
           const def={...(chosen.isCopyOf||chosen.def)},mod=operation.modifications;
+          delete def.oracleFaces;delete def.oracleFace;delete def.oracleCanonicalName;
           if(mod.power!==undefined){def.power=String(mod.power);delete def.cdaPower;}
           if(mod.toughness!==undefined){def.toughness=String(mod.toughness);delete def.cdaToughness;}
           def.types=[...new Set([...(def.types||[]),...(mod.types||[])])];
@@ -4014,7 +4029,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for(const field of ['abilities','triggers'])if(extra[field]?.length)def[field]=[...(def[field]||[]),...extra[field]];
           if(extra.mana)def.mana=[...[].concat(def.mana||[]),...[].concat(extra.mana)];
           card.meta.characteristicOriginalDef ||= card.def;
-          card.def=def;card.isCopyOf=def;game.recalc();
+          MTG.OracleV8Copies.applyCopy(game,card,def);game.recalc();
         };
         continue;
       }

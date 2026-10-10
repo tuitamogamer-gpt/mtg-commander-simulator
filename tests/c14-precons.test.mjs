@@ -165,7 +165,7 @@ test('Pontiff of Blight grants a distinct extort instance to every other creatur
  const f=setup(),b=body(f);await play(f,'Pontiff of Blight');await play(f,'Opt');assert.equal(f.b.life,38);assert.equal(f.a.life,44);assert.equal(b.cur.extraTriggers.filter(t=>t.desc==='Extort').length,1);
 });
 test('Raving Dead selects a deterministic random opponent and halves life after combat damage',async()=>{
- const f=setup(),d=await play(f,'Raving Dead');await event(f,'beginCombat',{player:f.a});const target=f.game.untilEffects.find(e=>e.kind==='mustAttackPlayerCard').targetPlayer;assert.ok(Counterpart(f).includes(target));assert.equal(f.game.canAttackTarget(d,target),true);await f.game.damagePlayer(d,f.b,2,{combat:true});await event(f,'combatDamageToPlayer',{card:d,player:f.b,n:2});assert.equal(f.b.life,19);
+ const f=setup(),d=await play(f,'Raving Dead');d.sick=false;await event(f,'beginCombat',{player:f.a});const target=f.game.untilEffects.find(e=>e.kind==='mustAttackPlayerCard').targetPlayer;assert.ok(Counterpart(f).includes(target));assert.equal(f.game.canAttackTarget(d,target),true);await f.game.damagePlayer(d,f.b,2,{combat:true});await event(f,'combatDamageToPlayer',{card:d,player:f.b,n:2});assert.equal(f.b.life,19);
  function Counterpart(f){return f.a.opponents(f.game);}
 });
 test('Skeletal Scrying exiles exactly X cards as an additional cost before resolution and then draws/loses X',async()=>{

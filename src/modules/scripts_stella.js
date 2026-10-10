@@ -290,7 +290,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.g.lg('Your next instant or sorcery this turn is copied.');
     },
   };
-  SC['Opt'] = { resolve: async ctx => { await E.scry(ctx.g, ctx.you, 1); await ctx.g.draw(ctx.you, 1); } };
+  SC['Opt'] = { immediateOwnDraw: 1, resolve: async ctx => { await E.scry(ctx.g, ctx.you, 1); await ctx.g.draw(ctx.you, 1); } };
   SC['Pongify'] = {
     targets: [T.creature({ prompt: 'Destroy (3/3 Ape)', aiHint: { goal: 'removal', removalKind: 'destroy' } })],
     resolve: async ctx => {
@@ -300,10 +300,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Radical Idea'] = {
+    immediateOwnDraw: 1,
     jumpstart: { altCostStr: '{1}{U}', speed: 'instant' },
     resolve: async ctx => { await ctx.g.draw(ctx.you, 1); },
   };
   SC['Think Twice'] = {
+    immediateOwnDraw: 1,
     flashback: { cost: '{2}{U}', altCostStr: '{2}{U}', speed: 'instant' },
     resolve: async ctx => { await ctx.g.draw(ctx.you, 1); },
   };
@@ -480,6 +482,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Ponder'] = {
+    immediateOwnDraw: 1,
     resolve: async ctx => {
       const g = ctx.g, p = ctx.you;
       const top = p.library.slice(-3).reverse();
@@ -501,7 +504,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await g.draw(p, 1);
     },
   };
-  SC['Preordain'] = { resolve: async ctx => { await E.scry(ctx.g, ctx.you, 2); await ctx.g.draw(ctx.you, 1); } };
+  SC['Preordain'] = { immediateOwnDraw: 1, resolve: async ctx => { await E.scry(ctx.g, ctx.you, 2); await ctx.g.draw(ctx.you, 1); } };
   SC['Pyretic Charge'] = {
     plot: '{3}{R}',
     resolve: async ctx => {

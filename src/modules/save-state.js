@@ -273,7 +273,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Attack restrictions only name seats and card identities.
   const PLAYER_ATTACK_FIELDS = new Set(['kind', 'who', 'notPlayer', 'expires', 'whoTurn', 'afterTurnsStarted', 'oracleLayerTimestamp']);
-  const CARD_ATTACK_FIELDS = new Set(['kind', 'iid', 'timestamp', 'notPlayer', 'expires', 'whileCounter', 'oracleLayerTimestamp']);
+  const CARD_ATTACK_FIELDS = new Set(['kind', 'iid', 'timestamp', 'notPlayer', 'expires', 'whileCounter', 'oracleLayerTimestamp', 'grantedAbility']);
   function validAttackRestriction(effect, seat) {
     if (!effect || typeof effect !== 'object' || !validLayerTimestamp(effect)) return false;
     if (effect.kind === 'cantAttackPlayer') {
@@ -286,14 +286,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       Number.isSafeInteger(effect.iid) && effect.iid > 0 && seat(effect.notPlayer) && effect.expires === 'never' &&
       (effect.timestamp === undefined || Number.isSafeInteger(effect.timestamp) && effect.timestamp >= 0 &&
         effect.timestamp <= MTG.MAX_RESTORED_TIMESTAMP) &&
+      (effect.grantedAbility === undefined || typeof effect.grantedAbility === 'boolean') &&
+      (effect.grantedAbility !== true || effect.oracleLayerTimestamp !== undefined) &&
       (effect.whileCounter === undefined || typeof effect.whileCounter === 'string' && effect.whileCounter.length <= 64);
   }
   const isPlainAttackRestriction = effect => validAttackRestriction(effect, player => player instanceof MTG.Player);
-  // Restrictions are checks, not layered changes, so a restore may stamp them anew.
+  // Granted restrictions retain their order relative to ability-removal effects.
+  // Ordinary attack checks can receive a fresh timestamp when restored.
   function captureAttackRestriction(effect) {
     const out = {};
     for (const [key, value] of Object.entries(effect)) {
-      if (key !== 'oracleLayerTimestamp') out[key] = value instanceof MTG.Player ? value.idx : value;
+      if (key !== 'oracleLayerTimestamp' || effect.grantedAbility === true) out[key] = value instanceof MTG.Player ? value.idx : value;
     }
     return out;
   }

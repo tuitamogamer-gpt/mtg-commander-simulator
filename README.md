@@ -727,6 +727,7 @@ These reports describe their dated imports and checks. Use the [generated catalo
 | [Oracle 0228](reports/oracle-import/validation-0228.md) | Oracle batch 0228; the previous requested 1,000 cards imported and verified. |
 | [Oracle 0264–0266](reports/oracle-import/validation-0264-0266.md) | Latest 1,021 definitions; completion of the pinned 9 October paper/Commander comparison. |
 | [10 October engine audit](reports/releases/2026-10-10-extended-engine-audit.md) | Native rules, payment, stack, combat and save/continue behavior, with paired previous-version evidence. |
+| [10 October follow-up engine audit](reports/releases/2026-10-10-second-engine-audit.md) | Further native combat, transform, trigger, mana and bot scenarios, with exact starting-version comparisons and mobile checks. Includes separately verified [Yuriko/exile highlights](reports/releases/2026-10-10-yuriko-exile-highlights.md). |
 | [Oracle 0249–0258](reports/oracle-import/validation-0258.md) | 1,000 additional cards with exact source, human/local hard-AI execution, and browser evidence. |
 | [Oracle 0239–0248](reports/oracle-import/validation-0248.md) | Previous complete 1,000-card expansion with source, execution, and browser evidence. |
 | [Oracle 0229–0238](reports/oracle-import/validation-0238.md) | Completed expansion: all 1,000 additional cards imported with source, execution and browser evidence. |

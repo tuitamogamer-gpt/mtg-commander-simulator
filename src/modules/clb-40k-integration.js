@@ -32,7 +32,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  };
  const oldLegal=G.legalTargets;G.legalTargets=function(s,c,p,o){if(s.cdkSpellOrPermanent)return [...oldLegal.call(this,{...s,cdkSpellOrPermanent:false,zone:'battlefield',what:'permanent'},c,p,o),...oldLegal.call(this,{...s,cdkSpellOrPermanent:false,zone:'stack',what:'spell'},c,p,o)];return oldLegal.call(this,s,c,p,o);};
  const revoker=(g,c)=>sources(g,'cdkRevoker').some(s=>M.OracleV8NameGroups.names(c).includes(s.meta.cdkRevoker));
- const manaSources=G.manaSources;G.manaSources=function(p,...args){return manaSources.call(this,p,...args).filter(s=>!s.card||!revoker(this,s.card)).flatMap(s=>s.m?.cdkIlluminor?this.creatures(p).filter(c=>c!==s.card&&this.canSacrifice(c)).map(c=>{const v=c.zoneVersion,extraCost={...s.extraCost,sac:(g,x)=>x===c&&x.zoneVersion===v};return {...s,extraCost,produce:[{B:c.mv}],m:{...s.m,cost:extraCost,produce:[{B:c.mv}]}};}):[s]);};
+ const manaSources=G.manaSources;G.manaSources=function(p,...args){return manaSources.call(this,p,...args).filter(s=>!s.card||!revoker(this,s.card)).flatMap(s=>s.m?.cdkIlluminor?this.creatures(p).filter(c=>c!==s.card&&this.canSacrifice(c)).map(c=>{const v=c.zoneVersion,mv=c.mv,extraCost={...s.extraCost,sac:(g,x)=>x===c&&x.zoneVersion===v&&x.mv===mv};return {...s,extraCost,produce:[{B:mv}]};}):[s]);};
  const activateMana=G.activateManaSource;G.activateManaSource=function(p,s,...args){return s.card&&revoker(this,s.card)?Promise.resolve(false):activateMana.call(this,p,s,...args);};
  const list=G.activatableList,activate=G.activateAbility,unearth=C.unearth('{3}').gyAbility;
  G.activatableList=function(p,...args){const out=list.call(this,p,...args).filter(e=>!revoker(this,e.card));

@@ -1135,7 +1135,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         commandZone: other.command.map(card => publicCard(card, player, true)),
         commanderDamage: Object.freeze(Object.assign({}, other.commanderDamage || {})),
         manaPool: mine ? Object.freeze(Object.assign({}, other.pool || {})) : undefined,
-        openMana: gameState.manaSources ? gameState.manaSources(other, null).length : gameState.lands(other).filter(card => !card.tapped).length,
+        openMana: availableManaEstimate(gameState, other),
         deckId: other.deckName || other.deck && other.deck.name || null,
         colors: Object.freeze((other.colorIdentity || []).slice()),
       };
@@ -1858,6 +1858,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const result = { life: initial.life ?? defender.life, poison: initial.poison ?? (defender.poison || 0),
       commanderDamage: Object.assign({}, initial.commanderDamage || defender.commanderDamage),
       dead: new Set(), removed: new Set(), lifeGain: new Map(), damage: 0, lethal: false };
+    const destinationAllowsPlayerDamage = attacker => {
+      const target = attacker.attacking;
+      return !target?.combatDestinationRemoved || target.formerPlaneswalker &&
+        attacker.cur.trampleOverWalkersV90 && attacker.kw('trample') &&
+        target.defendingPlayer === defender && !defender.lost;
+    };
     const active = card => !state.get(card).dead && !state.get(card).removed;
     // dmgAmount je najskuplji poziv u prognozi, a unutar jedne prognoze je
     // konstanta po karti — mijenja se samo lokalni counterReduction.
@@ -1881,7 +1887,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       for (const card of swarm) {
         const dealt = amount(card);
-        if (dealt > 0) hits.push({ source: card, target: defender, n: dealt });
+        if (dealt > 0 && destinationAllowsPlayerDamage(card)) hits.push({ source: card, target: defender, n: dealt });
       }
       for (const attacker of modeled.filter(active)) {
         const assigned = blockersByAttacker.get(attacker) || [];
@@ -1899,7 +1905,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (dealt > 0) hits.push({ source: attacker, target: blocker, n: dealt });
           remaining -= dealt;
         }
-        if (remaining > 0 && ((!legalBlock && !(initial.declared && attacker.wasBlocked)) || attacker.kw('trample'))) hits.push({ source: attacker, target: defender, n: remaining });
+        if (remaining > 0 && destinationAllowsPlayerDamage(attacker) &&
+          ((!legalBlock && !(initial.declared && attacker.wasBlocked)) || attacker.kw('trample'))) hits.push({ source: attacker, target: defender, n: remaining });
       }
       for (const [blocker, attacking] of blockedAttackers) for (const {attacker, n} of game.assignBlockerDamage(blocker, attacking, amount(blocker), card => state.get(card))) hits.push({source: blocker, target: attacker, n});
       for (const { source, target, n } of hits) {
@@ -1999,6 +2006,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return !!(entry.card.def.stationCreatureAt && entry.ability?.cost?.tapCreature);
   }
 
+  function canAttackNextTurn(game, card, target) {
+    if (card.cur.cantAttack || card.tapped &&
+      (Number(card.counters.stun || 0) > 0 || card.def.doesntUntap || card.cur.cantUntap)) return false;
+    // Current-turn legality includes summoning sickness. Forecast the next
+    // ordinary untap without changing the live object or its printed rules.
+    const ready = Object.create(card);
+    ready.sick = false; ready.tapped = false;
+    return game.canAttackAtAll(ready) && game.canAttackTarget(ready, target);
+  }
+
   // Evaluate Station as a plan to unlock a printed tier, including all of its
   // tap payments. Extra charge alone is not a payoff. Only public battlefield
   // information enters this forecast; opponents untap before our next turn.
@@ -2009,9 +2026,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seat = game.players.indexOf(player);
     const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
     for (const opponent of ordered.filter(p => !p.lost && p !== player)) {
-      const attackers = game.creatures(opponent).filter(card => !card.cur.cantAttack &&
-        game.canAttackAtAll(card) && game.canAttackTarget(card, player) &&
-        !(card.tapped && (card.counters.stun > 0 || card.def.doesntUntap || card.cur.cantUntap)));
+      const attackers = game.creatures(opponent).filter(card => canAttackNextTurn(game, card, player));
       if (!attackers.length) continue;
       const { outcome } = survivalBlocks(game, player, attackers, blockers, position);
       position = { life: outcome.life, poison: outcome.poison,
@@ -2022,6 +2037,64 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     return danger + Math.max(0, player.life - position.life) * (player.life <= 12 ? 3 : 1.2);
   }
+
+  function routineTapExposure(game, player, source) {
+    if (!source.is('Creature') || source.tapped || source.blocking) return 0;
+    const blockers = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock);
+    const remaining = blockers.filter(card => card !== source);
+    if (game.turnPlayer === player) return Math.max(0,
+      stationDefense(game, player, remaining) - stationDefense(game, player, blockers));
+    // Before an opponent's combat, predict only this actual attack window.
+    // A sick creature does not attack now, and a completed block declaration
+    // cannot be changed by keeping an unused creature untapped.
+    const inCombat = game.phase === 'combat';
+    if (inCombat ? !game.combat || game.combat.blockersDeclared
+      : !['upkeep', 'draw', 'main1'].includes(game.phase) || game.turnPlayer.turnState.reachedDeclareAttackers) return 0;
+    const attackers = inCombat && game.combat.attackers.length ? game.combat.attackers
+      .filter(card => card.zone === 'battlefield' && card.attacking === player)
+      : game.creatures(game.turnPlayer).filter(card => !card.tapped &&
+        (!card.sick || card.kw('haste') || MTG.OracleV89?.saddleEligible(game, card)) &&
+        game.canAttackAtAll(card) && game.canAttackTarget(card, player));
+    const before = survivalBlocks(game, player, attackers, blockers).outcome;
+    const after = survivalBlocks(game, player, attackers, remaining).outcome;
+    return Math.max(0, combatDanger(after) - combatDanger(before) +
+      Math.max(0, before.life - after.life) * (player.life <= 12 ? 3 : 1.2));
+  }
+
+  function sourceDiesInDeclaredCombat(game, source) {
+    if (!game.combat?.blockersDeclared || game.step !== 'blockers') return false;
+    const attackers = game.combat.attackers.filter(card => card.zone === 'battlefield');
+    for (const target of new Set(attackers.map(card => card.attacking))) {
+      const defender = MTG.defendingPlayerV92(target);
+      if (!defender) continue;
+      const group = attackers.filter(card => card.attacking === target);
+      const assignments = group.flatMap(attacker => (attacker.blockedBy || [])
+        .filter(blocker => blocker.zone === 'battlefield').map(blocker => ({attacker, blocker})));
+      if (forecastCombat(game, defender, group, assignments, {declared: true}).dead.has(source)) return true;
+    }
+    return false;
+  }
+
+  MTG.botPureRampSacrificeScore = function (game, source, player) {
+    if (pendingCreatureRemoval(game, source)) return 12;
+    if (game.combat?.blockersDeclared && game.step === 'blockers' && source.blocking) {
+      let exposure = 0;
+      const attackers = game.combat.attackers.filter(card => card.zone === 'battlefield');
+      for (const target of new Set(attackers.map(card => card.attacking))) {
+        if (MTG.defendingPlayerV92(target) !== player) continue;
+        const group = attackers.filter(card => card.attacking === target);
+        const assignments = group.flatMap(attacker => (attacker.blockedBy || [])
+          .filter(blocker => blocker.zone === 'battlefield').map(blocker => ({attacker, blocker})));
+        const before = forecastCombat(game, player, group, assignments, {declared: true});
+        const after = forecastCombat(game, player, group,
+          assignments.filter(row => row.blocker !== source), {declared: true});
+        exposure = Math.max(exposure, combatDanger(after) - combatDanger(before) +
+          Math.max(0, before.life - after.life) * (player.life <= 12 ? 3 : 1.2));
+      }
+      return 2.4 - Math.max(0, exposure);
+    }
+    return 2.4 - routineTapExposure(game, player, source);
+  };
 
   MTG.stationPlan = function (game, source, player, pool = null) {
     const charge = Number(source.counters.charge || 0);
@@ -2143,9 +2216,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seat = game.players.indexOf(player);
     const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
     for (const opponent of ordered.filter(row => opponents.includes(row) && !eliminated.has(row))) {
-      const attackers = game.creatures(opponent).filter(card => !dead.has(card) && !card.cur.cantAttack &&
-        game.canAttackAtAll(card) && game.canAttackTarget(card, player) &&
-        !(card.tapped && (Number(card.counters.stun || 0) > 0 || card.def.doesntUntap || card.cur.cantUntap)));
+      const attackers = game.creatures(opponent).filter(card => !dead.has(card) && canAttackNextTurn(game, card, player));
       const defense = survivalBlocks(game, player, attackers, blockers, position);
       position = { life: defense.outcome.life, poison: defense.outcome.poison,
         commanderDamage: defense.outcome.commanderDamage, freshTurn: true };
@@ -2876,7 +2947,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const battlefield = game.bf();
     let draws = 0;
-    for (const source of battlefield.filter(permanent => permanent.ctrl === player)) {
+    for (const source of battlefield.filter(permanent => permanent.ctrl === player &&
+      !permanent.cur?.abilitiesDisabled)) {
       const rules = source.def.mandatoryCastDraw
         ? (Array.isArray(source.def.mandatoryCastDraw)
           ? source.def.mandatoryCastDraw : [source.def.mandatoryCastDraw])
@@ -2892,16 +2964,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           (event === 'cast' || event === 'castIS' || event.startsWith('cast'));
         if (castOrCopyIS) {
           times += battlefield.filter(doubler =>
-            doubler.ctrl === source.ctrl && doubler.def.doublesMagecraft).length;
+            doubler.ctrl === source.ctrl && !doubler.cur?.abilitiesDisabled &&
+            doubler.def.doublesMagecraft).length;
         }
         for (const doubler of battlefield) {
-          if (doubler.ctrl === source.ctrl && doubler.def.doubleTriggerFilter &&
+          if (doubler.ctrl === source.ctrl && !doubler.cur?.abilitiesDisabled && doubler.def.doubleTriggerFilter &&
             doubler.def.doubleTriggerFilter(game, doubler, source, event, data)) times++;
         }
         draws += nativeDraws * times;
       }
     }
     return draws;
+  }
+
+  function immediateDrawWouldLose(game, player, draws) {
+    if (draws <= 0 || game.canLoseGame && !game.canLoseGame(player)) return false;
+    let ordinaryFactor = 1, exceptFirstFactor = 1;
+    for (const source of game.bf().filter(card => card.ctrl === player && !card.cur?.abilitiesDisabled)) {
+      if (source.def.drawDouble) exceptFirstFactor *= 2;
+      for (const operation of source.def.oracleDrawReplacements || []) {
+        if (operation.mode !== 'multiply' || operation.n !== 2) continue;
+        if (operation.exceptFirst === true) exceptFirstFactor *= 2;
+        else ordinaryFactor *= 2;
+      }
+    }
+    const firstDraw = game.phase === 'draw' && game.turnPlayer === player && !player.turnState._firstDrawDone;
+    // Only the first physical card bypasses the first-draw doublers; later
+    // cards in the same instruction still receive their replacement effects.
+    const required = draws * ordinaryFactor * exceptFirstFactor - (firstDraw ? exceptFirstFactor - 1 : 0);
+    if (required <= player.library.length) return false;
+    return !game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled &&
+      (source.def.oracleDrawReplacements || []).some(operation => operation.mode === 'win-empty'));
   }
 
   // ---- Spell-heavy playbook ------------------------------------------------
@@ -3009,9 +3102,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seat = game.players.indexOf(player);
     const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
     for (const opponent of ordered.filter(row => !row.lost && row !== player)) {
-      const attackers = game.creatures(opponent).filter(card => !removes(card) && !card.cur.cantAttack &&
-        game.canAttackAtAll(card) && game.canAttackTarget(card, player) &&
-        !(card.tapped && (Number(card.counters.stun || 0) > 0 || card.def.doesntUntap || card.cur.cantUntap)));
+      const attackers = game.creatures(opponent).filter(card => !removes(card) && canAttackNextTurn(game, card, player));
       const { outcome } = survivalBlocks(game, player, attackers, blockers, position);
       if (outcome.lethal) return true;
       blockers = blockers.filter(card => !outcome.dead.has(card) && !outcome.removed.has(card));
@@ -3397,6 +3488,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (hint === 'oracleBasePT') return oracleBasePTTargetValue(game, player, target, q);
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
+      if (hint === 'buff' && target.is('Land')) {
+        const landTypes = (q.src?.def.oracleImplementation || [])
+          .filter(operation => operation.kind === 'v8-land-types' && operation.attached === true);
+        if (landTypes.length && landTypes.every(operation => operation.retain === true)) {
+          const gained = new Set(landTypes.flatMap(operation => operation.types)
+            .filter(type => !target.hasSub(type))).size;
+          return (hostile ? -1 : 1) * (1 + gained);
+        }
+      }
       if (q.aiHint && q.aiHint.temporaryCopy) return temporaryCopyValue(game, player, target, q.aiHint);
       if (q.aiHint && q.aiHint.kind === 'equipTarget') {
         if (hostile) return -1000;
@@ -3748,10 +3848,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return (/win|damage|draw|token|counter/.test(name) ? 3 : 0) + (/sacrifice|discard|lose/.test(name) ? -1 : 0);
   }
 
-  function availableManaEstimate(game, player) {
-    try { return game.manaSources(player, null).length + Object.values(player.pool || {}).reduce((sum, n) => sum + n, 0); }
-    catch (error) { return game.lands(player).filter(card => !card.tapped).length; }
+  function availableManaEstimate(game, player, forSpell = null) {
+    try {
+      const producers = new Map();
+      let available = Object.values(player.pool || {}).reduce((sum, n) => sum + Math.max(0, Number(n) || 0), 0);
+      for (const source of game.manaSources(player, forSpell)) {
+        const produced = Math.max(0, ...source.produce.map(option =>
+          ['W', 'U', 'B', 'R', 'G', 'C'].reduce((sum, color) => sum + Math.max(0, Number(option[color]) || 0), 0) +
+          (option.ANY ? Math.max(0, Number(option.n) || 1) : 0)));
+        const cost = source.extraCost || {};
+        const activation = cost.mana ? U.parseCost(typeof cost.mana === 'function'
+          ? cost.mana(game, source.card, player) : cost.mana) : null;
+        const net = Math.max(0, produced - (activation ? activation.generic + activation.pips.length : 0));
+        if (!source.card) { available += net; continue; }
+        let row = producers.get(source.card);
+        if (!row) { row = {tap: 0, leaveTapped: 0, leaveUntapped: 0, other: 0}; producers.set(source.card, row); }
+        const leaves = cost.sacSelf || cost.exileSelf;
+        // Printed, intrinsic and granted tap abilities are choices that spend
+        // the same permanent. A non-tap sacrifice can follow an ordinary tap;
+        // a tap-and-sacrifice ability consumes both resources together.
+        if (leaves) {
+          const key = cost.tap ? 'leaveTapped' : 'leaveUntapped';
+          row[key] = Math.max(row[key], net);
+        } else if (cost.tap) row.tap = Math.max(row.tap, net);
+        // Keep independent non-tap activations independent. This is a bounded
+        // resource estimate; the mana solver still validates actual payments.
+        else row.other += net;
+      }
+      for (const row of producers.values()) available += row.other + Math.max(row.leaveTapped, row.tap + row.leaveUntapped);
+      return available;
+    } catch (error) { return game.lands(player).filter(card => !card.tapped).length; }
   }
+  MTG.botAvailableManaEstimate = availableManaEstimate;
 
   function jimmyAggroMode(game, player, view, profile) {
     if (!player || MTG.getAIBaseStyle(player.aiStyle) !== 'jimmy') return null;
@@ -4997,13 +5125,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (operation.kind === 'etb-draw') return sum + Math.max(0, Number(operation.n) || 0);
         if (operation.kind === 'etb-loot' && operation.order === 'draw-discard') return sum + 1;
         return sum;
-      }, mandatoryCastTriggerDraws(game, player, card));
-      if (immediateDraws > player.library.length) {
-        const emptyLibraryWin = game.bf().some(source => source.ctrl === player &&
-          /(?:draw a card while your library has no cards|draw from an empty library).*(?:win|instead)/i.test(
-            String(source.def && source.def.oracle || '')));
-        if (!emptyLibraryWin) breakdown.safety -= 1000000;
-      }
+      }, mandatoryCastTriggerDraws(game, player, card) +
+        (Number.isSafeInteger(card.def.immediateOwnDraw) && card.def.immediateOwnDraw > 0
+          ? card.def.immediateOwnDraw : 0));
+      if (immediateDrawWouldLose(game, player, immediateDraws)) breakdown.safety -= 1000000;
       // Tempiranje instanata: reaktivne karte (trick/protection/counter) se
       // drže za tuđe akcije, a value instanti se radije bacaju na kraju tuđeg
       // poteza nego u vlastitoj main fazi sa praznim stackom.
@@ -5332,6 +5457,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = entry.card;
       const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
+      const effects = ability?.oracleOperation?.effects || [];
+      const routineDraw = effects.some(effect => effect.action === 'draw' && effect.who === 'you') &&
+        effects.every(effect => ['draw', 'discard', 'scry', 'surveil'].includes(effect.action) &&
+          effect.who === 'you');
+      if (ability?.cost?.tap && routineDraw) breakdown.safety -= routineTapExposure(game, player, card);
+      const ownDraws = effects.reduce((sum, effect) => effect.action === 'draw' && effect.who === 'you' &&
+        Number.isSafeInteger(effect.n) && effect.n > 0 ? sum + effect.n : sum, 0);
+      if (routineDraw && immediateDrawWouldLose(game, player, ownDraws)) breakdown.safety -= 1000000;
+      const pureSelfReturn = card.zone === 'battlefield' && card.ctrl === player && effects.length &&
+        effects.every(effect => ['bounce', 'move-to-hand'].includes(effect.action) && effect.target === 'self');
+      if (pureSelfReturn) {
+        const removal = pendingCreatureRemoval(game, card);
+        const combatDeath = sourceDiesInDeclaredCombat(game, card);
+        // A declared blocker can draw before saving itself. Tapping it does
+        // not undo its block, and damage still waits for another priority pass.
+        const drawFirst = !removal && combatDeath && (q?.acts || []).some(row =>
+          row.card === card && row.ability?.cost?.tap && row.ability.oracleOperation?.effects?.length &&
+          row.ability.oracleOperation.effects.every(effect => effect.action === 'draw' && effect.who === 'you'));
+        breakdown.base = removal || combatDeath ? drawFirst ? 2.4 : Math.max(breakdown.base, 12) : -100;
+      }
       const pumpPlan = MTG.sacrificePumpPlan(game, player, entry);
       if (pumpPlan) breakdown.base = pumpPlan.score > 0 ? pumpPlan.score : -100;
       const copyValues = MTG.valkiCopyXValues(game, player, card, ability);
@@ -6287,6 +6432,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(value._oracleTriggerBatches)out._oracleTriggerBatches=new WeakMap();
       if(value._oracleV9BatchEvents)out._oracleV9BatchEvents=new WeakMap();
       if(value.v83TargetGroups)out.v83TargetGroups=new WeakSet();
+      if(value.v92ExileBatches)out.v92ExileBatches=new WeakMap();
     }
     return out;
   }

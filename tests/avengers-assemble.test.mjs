@@ -176,9 +176,10 @@ test('Speed pays the real cost, locks a chosen haste target, and only haste crea
   permanent(game, avengers, 'Captain America, Team Leader');
   const slowBlocker = permanent(game, opponent, 'Bastion Protector');
   const hasteBlocker = permanent(game, opponent, 'Quicksilver, Speedster');
-  avengers.pool.C = 1;
+  avengers.pool.C = 3;
   const spell = inZone(avengers, 'Arcane Signet', 'hand');
-  await game.emit('cast', { player: avengers, card: spell, isInstantSorcery: false });
+  assert.equal(await game.castSpell(avengers, spell, { from: 'hand' }), true);
+  assert.equal(spell.castMeta.manaSpent, 2);
   await resolveAll(game);
   assert.equal(avengers.pool.C, 0);
   assert.equal(wanted.cur.cantBeBlockedBy(game, slowBlocker), true);

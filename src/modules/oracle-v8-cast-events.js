@@ -2,7 +2,8 @@
  function kicksV17(game,so){
   if(!so||so.isCopy)return 0;
   const def=game.castDefinition(so.card,so.castOpts||{});
-  return Number(!!so.kicked)+(def.multikicker?Math.max(0,Number(so.squadN)||0):0)+Number(!!so.pomKickerGreen)+Number(!!so.pomKickerBlue);
+  const paid=Number.isSafeInteger(so.kickerPaymentsV17)?Math.max(0,so.kickerPaymentsV17):Number(!!so.kicked)+(def.multikicker?Math.max(0,Number(so.squadN)||0):0);
+  return paid+Number(!!so.pomKickerGreen)+Number(!!so.pomKickerBlue);
  }
  M.oracleKicksV17=kicksV17;
  function triggerFilter(rule,h){

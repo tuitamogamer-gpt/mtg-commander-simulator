@@ -1,0 +1,15 @@
+export const secondNativeOnceCoverage = Object.freeze({
+ "Amzu, Swarm's Hunger": 'second-audit-trigger-once-extended.test.mjs',
+ 'Corruption of Towashi': 'second-audit-trigger-once-extended.test.mjs',
+ 'Iron Man, Bleeding Edge': 'second-audit-trigger-once-extended.test.mjs',
+ 'Irreverent Gremlin': 'second-audit-trigger-once-extended.test.mjs',
+ 'Legolas, Counter of Kills': 'second-audit-trigger-once-extended.test.mjs',
+ 'Spider-Verse': 'second-audit-trigger-once-extended.test.mjs',
+ 'Lucy MacLean, Positively Armed': 'second-audit-trigger-once-next.test.mjs',
+ 'Night Shift of the Living Dead': 'second-audit-trigger-once-next.test.mjs',
+ 'Planetarium of Wan Shi Tong': 'second-audit-trigger-once-next.test.mjs',
+ 'Priority Boarding': 'second-audit-trigger-once-next.test.mjs',
+ 'Riveteers Ascendancy': 'second-audit-trigger-once-next.test.mjs',
+ 'Calix, Guided by Fate': 'second-audit-trigger-once-combat.test.mjs',
+ 'Rinoa, Angel Wing': 'second-audit-trigger-once-combat.test.mjs',
+});

@@ -54,6 +54,17 @@ function allTargetSpecs(script) {
   ];
 }
 
+function includesPlayerTarget(spec) {
+  return typeof spec?.what === 'string' && (spec.what === 'any' || /\b(?:opponent|player)\b/.test(spec.what))
+    || (spec?.alternatives || []).some(includesPlayerTarget);
+}
+
+test('target-opponent checker recognizes mixed player alternatives without mistaking a card controller for a player target', () => {
+  assert.equal(includesPlayerTarget({what: 'mixed-v18', alternatives: [{what: 'opponent'}, {what: 'planeswalker'}]}), true);
+  assert.equal(includesPlayerTarget({what: 'mixed-v18', alternatives: [{what: 'creature'}, {what: 'planeswalker'}]}), false);
+  assert.equal(includesPlayerTarget({what: 'creature', controller: 'opponent'}), false);
+});
+
 test('centralni netargetirani izbor prikazuje svakog živog protivnika i poštuje ljudski izbor', async () => {
   const { game, players: [human, botA, botB, botC] } = choiceFixture();
   let seen = null;
@@ -81,7 +92,7 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
 
   for (const [canonicalName, def] of targetOpponentCards) {
     if (intentionalRandom.has(def.name)) continue;
-    const script = MTG.SCRIPTS[canonicalName] || {};
+    const script = def;
     // Vindictive Lich chooses a legal subset of modes before creating its
     // distinct opponent specs. Paid entry/death and both controller paths
     // are exercised in c17-c19-entry.test.mjs.
@@ -90,7 +101,20 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     // target on a reflexive trigger. pip-otc-m3c-advanced.test.mjs executes it
     // for both controllers and checks the opponent while it is on the Stack.
     if(canonicalName==="Caesar, Legion's Emperor"){assert.equal(typeof script.triggers[0].run,'function');continue;}
+    // The seventh plan counter sacrifices the Cube before its targeted
+    // reflexive trigger exists. The paid seven-counter route and all three
+    // actual opponent offers are covered in second-audit-target-opponent-native.
+    if(canonicalName==='Construct a Cosmic Cube'){assert.equal(typeof script.triggers.at(-1).run,'function');continue;}
     const specs = allTargetSpecs(script);
+    // Compiled modal abilities and triggers construct their target specs from
+    // the actual source and event; the mode list retains executable factories.
+    for (const node of [script, ...(script.abilities || []), ...(script.triggers || [])]) {
+      for (const mode of node.modes?.list || []) if (typeof mode.targets === 'function') {
+        const targets = mode.targets(game, card(controller, canonicalName), {}, controller);
+        assert.ok(targets == null || Array.isArray(targets), canonicalName + ': mode target factory returns actual specs');
+        specs.push(...(targets || []));
+      }
+    }
     // Brewing sizes its up-to target set from the actual number of opponents.
     if(canonicalName==='Communal Brewing')specs.push(...script.triggers[0].targets(game,card(controller,canonicalName)));
     // Witch Hunt binds a random legal opponent when its end-step trigger is
@@ -107,14 +131,24 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
       for(const c of [background,commander]){c.zone='battlefield';game.battlefield.push(c);}game.recalc();
       specs.push(...commander.cur.extraTriggers.flatMap(trigger=>trigger.targets||[]));game.battlefield=[];game.recalc();
     }
+    if(canonicalName==='Endless Whispers'){
+      const enchantment=card(controller,canonicalName),creature=card(controller,'Grizzly Bears');
+      for(const c of [enchantment,creature]){c.zone='battlefield';game.battlefield.push(c);}game.recalc();
+      specs.push(...creature.cur.extraTriggers.flatMap(trigger=>trigger.targets||[]));game.battlefield=[];game.recalc();
+    }
+    if(canonicalName==='The Dominion Bracelet'){
+      const equipment=card(controller,canonicalName),creature=card(controller,'Grizzly Bears');
+      for(const c of [equipment,creature]){c.zone='battlefield';game.battlefield.push(c);}
+      equipment.attachedTo=creature.iid;game.recalc();
+      specs.push(...creature.cur.extraAbilities.flatMap(ability=>ability.targets||[]));game.battlefield=[];game.recalc();
+    }
     if (typeof script.targets === 'function') {
       const targets = script.targets(game, card(controller, canonicalName), {}, controller);
       assert.ok(targets == null || Array.isArray(targets), canonicalName + ': target factory returns actual specs');
       specs.push(...(targets || []));
     }
     assert.ok(
-      specs.some(spec => typeof spec.what === 'string' &&
-        (spec.what === 'any' || /\b(?:opponent|player)\b/.test(spec.what))),
+      specs.some(includesPlayerTarget),
       `${def.name}: tekst traži target opponent, ali skripta nema player/opponent target`,
     );
   }

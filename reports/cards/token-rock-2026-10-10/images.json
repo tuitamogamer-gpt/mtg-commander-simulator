@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-10",
+  "source": "Pinned Scryfall Commander Legends Rock Equipment token",
+  "added": [
+    {
+      "key": "CARD_IMAGE_PATHS",
+      "variant": "normal",
+      "relative": "./assets/cards/rock-f302f0ea1d.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+      "scryfallId": "661cbde4-9444-4259-b2cf-7c8f9814a071",
+      "set": "tcmr",
+      "collectorNumber": "11",
+      "sha256": "08aee88445fc4309b0dee6d9072b593012e325d00ad7aabd89304508abf32695"
+    },
+    {
+      "key": "CARD_ART_PATHS",
+      "variant": "art_crop",
+      "relative": "./assets/cards/art/rock-f302f0ea1d.webp",
+      "source": "https://cards.scryfall.io/art_crop/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+      "scryfallId": "661cbde4-9444-4259-b2cf-7c8f9814a071",
+      "set": "tcmr",
+      "collectorNumber": "11",
+      "sha256": "e6c8548659d96c7b4f18fda0425e323019c936a91315de4abff2468dc2c28a3a"
+    }
+  ],
+  "existingImagesUnchanged": true
+}

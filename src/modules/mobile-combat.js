@@ -14,9 +14,13 @@ const button = (label, action, cls = '') => {
 const inspect = (ui, card) => { ui.sheet = { card }; ui.render(); };
 const keywords = card => ['flying', 'reach', 'menace', 'trample', 'deathtouch', 'first strike', 'double strike', 'lifelink', 'vigilance', 'indestructible', 'infect', 'wither']
   .filter(key => card.kw(key)).join(' · ');
-const defenderText = (ui, target) => target?.iid != null
-  ? `${target.name} · ${target.counters.loyalty || 0} loyalty · ${target.ctrl.name}, ${target.ctrl.life} life`
-  : `${target === ui.me ? 'You' : target?.name || 'Defender'} · ${target?.life ?? '—'} life`;
+const defenderText = (ui, target) => target?.combatDestinationRemoved === true
+  ? `${target.name} · original defender ${target.defendingPlayer.name}`
+  : target?.iid != null
+    ? target.is('Battle')
+      ? `${target.name} · ${target.counters.defense || 0} defense · protected by ${target.protector?.name || 'unassigned'}`
+      : `${target.name} · ${target.counters.loyalty || 0} loyalty · ${target.ctrl.name}, ${target.ctrl.life} life`
+    : `${target === ui.me ? 'You' : target?.name || 'Defender'} · ${target?.life ?? '—'} life`;
 function cardDetails(ui, card, copy, showTapped = false) {
   const abilities = keywords(card);
   if (abilities) copy.append(node('small', 'ct-mobile-combat-keywords', abilities));
@@ -70,9 +74,9 @@ function defendingCreatures(ui, game, pd) {
   section.setAttribute('aria-label', 'Defending creatures');
   section.append(node('h3', '', 'Defending creatures'));
   const offered = pd.q.attackTargets || pd.q.opponents || [];
-  const players = [...new Set(offered.map(target => target.iid != null ? target.ctrl : target))];
+  const players = [...new Set(offered.map(target => globalThis.MTG.defendingPlayerV92(target)))];
   const focused = pd.attackTarget || pd.sel.at(-1)?.target;
-  const focusedPlayer = focused?.iid != null ? focused.ctrl : focused;
+  const focusedPlayer = globalThis.MTG.defendingPlayerV92(focused);
   pd.mobileDefenseOpen ||= {};
   for (const player of players) {
     const creatures = game.creatures(player);

@@ -50,8 +50,12 @@ for(const role of ['human','ai']){
  });
 }
 test('Eminence stops when its source changes zones, even if it reaches another permitted zone',async()=>{
- const f=setup(),e=card(f,'Edgar Markov'),v=card(f,'Vampire Nighthawk','hand');await f.game.emit('cast',{player:f.a,card:v});assert.equal(f.game.pendingTriggers.length,1);await f.game.move(e,'command');await settle(f.game);assert.equal(tokens(f).length,0);
- await f.game.emit('cast',{player:f.a,card:v});await settle(f.game);assert.equal(tokens(f).length,1);
+ const f=setup(),e=card(f,'Edgar Markov'),v=card(f,'Vampire Nighthawk','hand');fuel(f.a);
+ assert.equal(await f.game.castSpell(f.a,v,{from:'hand'}),true);assert.equal(v.castMeta.manaSpent,3);
+ await f.game.flushTriggers();assert.equal(f.game.stack.filter(so=>so.kind==='trigger'&&so.srcCard===e).length,1);
+ await f.game.move(e,'command');await settle(f.game);assert.equal(tokens(f).length,0);
+ const later=card(f,'Blood Artist','hand');fuel(f.a);
+ assert.equal(await f.game.castSpell(f.a,later,{from:'hand'}),true);await settle(f.game);assert.equal(tokens(f).length,1);
 });
 test('Arahbo has no eminence from the graveyard and never targets itself',async()=>{
  const f=setup(),a=card(f,'Arahbo, Roar of the World','graveyard'),c=card(f,'Leonin Relic-Warder');await event(f,'beginCombat',{player:f.a});assert.equal(c.power,2);await f.game.move(a,'battlefield');await f.game.move(c,'graveyard');await event(f,'beginCombat',{player:f.a});assert.equal(a.power,5);

@@ -273,6 +273,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Sakura-Tribe Elder'] = {
     abilities: [{
       label: 'Sacrifice: basic (tapped)', cost: { sacSelf: true },
+      aiScore: (g, self, you) => MTG.botPureRampSacrificeScore?.(g, self, you) ?? 2.4,
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { tapped: true }); },
     }],
   };

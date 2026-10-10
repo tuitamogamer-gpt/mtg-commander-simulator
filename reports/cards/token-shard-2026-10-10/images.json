@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-10",
+  "source": "Pinned Scryfall Duskmourn Niko Shard token",
+  "added": [
+    {
+      "key": "CARD_IMAGE_PATHS",
+      "variant": "normal",
+      "relative": "./assets/cards/shard-token-2aa08d716f.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/a/6a198942-049c-4537-b5b1-d35df32d45d5.jpg?1783909270",
+      "scryfallId": "6a198942-049c-4537-b5b1-d35df32d45d5",
+      "set": "tdsk",
+      "collectorNumber": "2",
+      "sha256": "e6d5bfe420709cb214971a0dce8d2606f0a0a36919174b1070e1b5b575abe27f"
+    }
+  ],
+  "existingImagesUnchanged": true
+}

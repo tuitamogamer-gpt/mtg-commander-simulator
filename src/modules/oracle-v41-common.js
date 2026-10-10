@@ -34,7 +34,7 @@
       if(e.action!=='spell-effects-v41')return false;
       const g=ctx.g,subjects=i=>H.genericEffectSubjects(ctx,i),cards=subjects(e.target),c=cards[0],run=(effects,targets=ctx.targets)=>H.runGenericEffects({...ctx,targets},effects,true),damage=H.oracleDamageSource(ctx);
       const fog=(mode,extra={})=>g.untilEffects.push({kind:'oracleCombatFogV41',expires:'eot',source:ctx.src,mode,...extra});
-      const transform=async card=>{if(card.zone==='battlefield'&&M.OracleV8Faces.physical(card)?.layout==='transform')await H.runGenericEffects({...ctx,src:card,sourceZoneVersion:card.zoneVersion},[{action:'transform-self'}],true);};
+      const transform=async card=>{const components=card.mutateState?.components||[{oracleFaces:M.OracleV8Faces.physical(card),oracleFace:card.oracleFace}],canTransform=components.some(row=>{const faces=row.oracleFaces,def=M.OracleV8Faces.faceDefinition(faces,row.oracleFace==='back'?'front':'back');return !row.faceDown&&['transform','modal_dfc'].includes(faces?.layout)&&def&&!def.types.some(type=>['Instant','Sorcery'].includes(type));});if(card.zone==='battlefield'&&canTransform)await H.runGenericEffects({...ctx,src:card,sourceZoneVersion:card.zoneVersion},[{action:'transform-self'}],true);};
       switch(e.mode){
         case 'self-grave-shuffle':await run([{action:'move-to-library',target:0,shuffleAfter:true}],[[...cards,...(ctx.src.zone==='stack'&&(ctx.sourceZoneVersion===undefined||ctx.src.zoneVersion===ctx.sourceZoneVersion)?[ctx.src]:[])]]);break;
         case 'calm-opponents':{const affected=g.bf().filter(x=>x.is('Creature')&&x.ctrl!==ctx.you);for(const card of affected)card.meta.suspected=false;await run([{action:'pump',target:0,power:-2,toughness:0,keywords:[]}],[affected]);g.recalc();break;}

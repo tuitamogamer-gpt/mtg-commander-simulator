@@ -84,7 +84,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
       for(const c of bottom?ordered:ordered.slice().reverse())await ctx.g.move(c,'library',{toBottom:bottom});
     }
   }};
-  SC['Brainstorm']={resolve:async ctx=>{
+  SC['Brainstorm']={immediateOwnDraw:3,resolve:async ctx=>{
     await ctx.g.draw(ctx.you,3);const picked=await choose(ctx.g,ctx.you,ctx.you.hand,Math.min(2,ctx.you.hand.length),2,'Brainstorm: choose cards in top-to-bottom order','putBack');
     for(const c of picked.slice().reverse())await ctx.g.move(c,'library');
   }};

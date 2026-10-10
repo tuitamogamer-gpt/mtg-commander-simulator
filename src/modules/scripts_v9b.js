@@ -1814,17 +1814,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const caster = ctx.data.player;
         if (!caster.library.length) return;
-        const c = caster.library.pop();
-        c.zone = 'exile'; caster.exile.push(c);
+        const c = caster.library.at(-1), version = c.zoneVersion;
+        await ctx.g.move(c, 'exile');
+        if (c.zone !== 'exile' || c.zoneVersion !== version + 1) return;
+        const exileVersion = c.zoneVersion;
         if (!c.is('Land')) {
           const yes = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseOption', prompt: `Watcher: cast ${c.name} for free?`,
             options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }], aiHint: { kind: 'freeCast', card: c },
           });
-          if (yes === 'yes') {
-            caster.exile.splice(caster.exile.indexOf(c), 1); c.zone = 'nowhere';
-            const ok = await ctx.g.castSpell(ctx.you, c, { free: true, from: 'exile', asThoughAnyColor: true });
-            if (!ok) { c.zone = 'exile'; caster.exile.push(c); }
+          if (yes === 'yes' && c.zone === 'exile' && c.zoneVersion === exileVersion) {
+            await MTG.OracleV8PlayPermissions.castOne(ctx, [c], { free: true, selected: true }, { target: MTG.OracleV20.helpers.genericTargetSpec });
           }
         }
       },

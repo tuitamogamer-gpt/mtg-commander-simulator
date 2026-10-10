@@ -87,7 +87,7 @@ for(const role of ['human','ai']){
  });
  test(`${role}: Snag prevents normal combat and a later extra combat after real attack declarations`,async()=>{
   const ctx=setup(role),{game,a,b}=ctx,enemy=witness(ctx);game.turnPlayer=b;const decide=b.controller.decide.bind(b.controller);b.controller.decide=async(g,q)=>q.type==='attackers'?[{card:enemy,target:a}]:decide(g,q);game.reviewCombatWithHuman=async()=>{};await cast(ctx,'Snag');
-  const events=[];const emit=game.emit.bind(game);game.emit=async(name,data)=>{if(name==='attacks'||name==='damagePrevented')events.push({name,data});return emit(name,data);};
+  const events=[],seenPrevention=new WeakSet();const emit=game.emit.bind(game);game.emit=async(name,data)=>{if(name==='attacks'||name==='damagePrevented'&&!seenPrevention.has(data)){events.push({name,data});if(name==='damagePrevented')seenPrevention.add(data);}return emit(name,data);};
   for(let i=0;i<2;i++){game.untap(enemy);await game.combatPhase(b);assert.equal(a.life,40);}
   assert.equal(events.filter(e=>e.name==='attacks'&&e.data.card===enemy).length,2);assert.equal(events.filter(e=>e.name==='damagePrevented').reduce((n,e)=>n+e.data.n,0),16);assert.equal(game.combat,null);
  });

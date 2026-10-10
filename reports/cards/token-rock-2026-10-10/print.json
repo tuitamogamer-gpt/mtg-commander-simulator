@@ -1,0 +1,138 @@
+{
+  "object": "card",
+  "id": "661cbde4-9444-4259-b2cf-7c8f9814a071",
+  "oracle_id": "300757bc-5dbf-4d1e-a225-fe3b6e0c9ef4",
+  "multiverse_ids": [],
+  "tcgplayer_id": 228148,
+  "name": "Rock",
+  "lang": "en",
+  "released_at": "2020-11-20",
+  "uri": "https://api.scryfall.com/cards/661cbde4-9444-4259-b2cf-7c8f9814a071",
+  "scryfall_uri": "https://scryfall.com/card/tcmr/11/rock?utm_source=api",
+  "layout": "token",
+  "highres_image": true,
+  "image_status": "highres_scan",
+  "image_updated_at": "2026-07-13T07:43:05Z",
+  "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+    "normal": "https://cards.scryfall.io/normal/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+    "large": "https://cards.scryfall.io/large/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+    "png": "https://cards.scryfall.io/png/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.png?1783928585",
+    "art_crop": "https://cards.scryfall.io/art_crop/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+    "border_crop": "https://cards.scryfall.io/border_crop/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.jpg?1783928585",
+    "thumb": "https://cards.scryfall.io/thumb/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.webp?1783928585",
+    "grid": "https://cards.scryfall.io/grid/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.webp?1783928585",
+    "display": "https://cards.scryfall.io/display/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.webp?1783928585",
+    "art": "https://cards.scryfall.io/art/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.webp?1783928585",
+    "crop": "https://cards.scryfall.io/crop/front/6/6/661cbde4-9444-4259-b2cf-7c8f9814a071.webp?1783928585"
+  },
+  "mana_cost": "",
+  "cmc": 0,
+  "type_line": "Token Artifact — Equipment",
+  "oracle_text": "Equipped creature has \"{1}, {T}, Sacrifice Rock: This creature deals 2 damage to any target.\"\nEquip {1}",
+  "colors": [],
+  "color_identity": [],
+  "keywords": [
+    "Equip"
+  ],
+  "all_parts": [
+    {
+      "object": "related_card",
+      "id": "661cbde4-9444-4259-b2cf-7c8f9814a071",
+      "component": "token",
+      "name": "Rock",
+      "type_line": "Token Artifact — Equipment",
+      "uri": "https://api.scryfall.com/cards/661cbde4-9444-4259-b2cf-7c8f9814a071"
+    },
+    {
+      "object": "related_card",
+      "id": "16a097ba-6242-4a28-a6f1-72a5b3ec3a8f",
+      "component": "combo_piece",
+      "name": "Toggo, Goblin Weaponsmith",
+      "type_line": "Legendary Creature — Goblin Artificer",
+      "uri": "https://api.scryfall.com/cards/16a097ba-6242-4a28-a6f1-72a5b3ec3a8f"
+    }
+  ],
+  "legalities": {
+    "standard": "not_legal",
+    "future": "not_legal",
+    "historic": "not_legal",
+    "timeless": "not_legal",
+    "gladiator": "not_legal",
+    "pioneer": "not_legal",
+    "modern": "not_legal",
+    "legacy": "not_legal",
+    "pauper": "not_legal",
+    "vintage": "not_legal",
+    "penny": "not_legal",
+    "commander": "not_legal",
+    "oathbreaker": "not_legal",
+    "standardbrawl": "not_legal",
+    "brawl": "not_legal",
+    "competitivebrawl": "not_legal",
+    "alchemy": "not_legal",
+    "paupercommander": "not_legal",
+    "duel": "not_legal",
+    "oldschool": "not_legal",
+    "premodern": "not_legal",
+    "predh": "not_legal",
+    "tlr": "not_legal"
+  },
+  "games": [
+    "paper"
+  ],
+  "reserved": false,
+  "game_changer": false,
+  "foil": true,
+  "nonfoil": true,
+  "finishes": [
+    "nonfoil",
+    "foil"
+  ],
+  "oversized": false,
+  "promo": false,
+  "reprint": false,
+  "variation": false,
+  "set_id": "6bcdcd3c-15a1-49b2-bbe7-639d18395a5d",
+  "set": "tcmr",
+  "set_name": "Commander Legends Tokens",
+  "set_type": "token",
+  "set_uri": "https://api.scryfall.com/sets/6bcdcd3c-15a1-49b2-bbe7-639d18395a5d",
+  "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Atcmr&unique=prints",
+  "scryfall_set_uri": "https://scryfall.com/sets/tcmr?utm_source=api",
+  "rulings_uri": "https://api.scryfall.com/cards/661cbde4-9444-4259-b2cf-7c8f9814a071/rulings",
+  "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A300757bc-5dbf-4d1e-a225-fe3b6e0c9ef4&unique=prints",
+  "collector_number": "11",
+  "digital": false,
+  "rarity": "common",
+  "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+  "artist": "Tomasz Jedruszek",
+  "artist_ids": [
+    "bba69285-2445-4a4b-a847-59397be972ea"
+  ],
+  "illustration_id": "fcce935a-4a9d-4c97-ac08-7ff9d1dfb30f",
+  "border_color": "black",
+  "frame": "2015",
+  "full_art": false,
+  "textless": false,
+  "booster": false,
+  "story_spotlight": false,
+  "prices": {
+    "usd": "1.18",
+    "usd_foil": null,
+    "usd_etched": null,
+    "eur": null,
+    "eur_foil": null,
+    "tix": null
+  },
+  "related_uris": {
+    "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DRock",
+    "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DRock",
+    "edhrec": "https://edhrec.com/route/?cc=Rock"
+  },
+  "purchase_uris": {
+    "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F228148%3Fpage%3D1",
+    "cardmarket": "https://www.cardmarket.com/en/Magic/Products/Search?referrer=scryfall&searchString=Rock&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+    "cardhoarder": "https://www.cardhoarder.com/cards?affiliate_id=scryfall&data%5Bsearch%5D=Rock&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+  }
+}

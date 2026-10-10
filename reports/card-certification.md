@@ -1,6 +1,6 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-10-10T10:34:59.153Z
+Generisano: 2026-10-10T14:08:23.899Z
 
 Aktivni deckovi: **175** · stvarno jedinstvenih karata: **6474** · card/deck provjere: **14566**
 

@@ -707,7 +707,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (isBatch) {
         batchCards += entry.n;
         if ((def.types || []).includes('Creature')) addContract('creature-casting', entry.name);
-        if ((def.types || []).some(type => type === 'Artifact' || type === 'Enchantment' || type === 'Planeswalker') &&
+        if ((def.types || []).some(type => type === 'Artifact' || type === 'Enchantment' || type === 'Planeswalker' || type === 'Battle') &&
             !(def.types || []).includes('Creature')) addContract('permanent-casting', entry.name);
         if ((def.types || []).includes('Land')) addContract('land-play', entry.name);
         if ((def.types || []).some(type => type === 'Instant' || type === 'Sorcery')) addContract('spell-casting', entry.name);

@@ -21,7 +21,7 @@ test('whole pinned delayed-object sources compile; unsupported antecedents and f
   assert.equal(semanticClass({name:'Boundary',oracle_text:oracle,mana_cost:'{B}',type_line:'Instant',layout:'normal'}).semanticClass,undefined);
 });
 test('delayed extension preserves every previously imported delayed-object descriptor',()=>{
- const faceSources=new Map(JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-v20-disturb.json',import.meta.url))).map(card=>[card.name,card]));
+ const faceSources=new Map(['oracle-v69-common.json','oracle-v20-disturb.json'].flatMap(file=>JSON.parse(fs.readFileSync(new URL('./fixtures/'+file,import.meta.url)))).map(card=>[card.name,card]));
  for(const file of fs.readdirSync(new URL('../reports/oracle-import/',import.meta.url)).filter(name=>/^batch-\d+\.json$/.test(name))){
   const report=JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/'+file,import.meta.url)));
   for(const entry of report.cards||[]){

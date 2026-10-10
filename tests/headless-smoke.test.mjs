@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
+import { assertGameStateInvariants } from './helpers/game-state-invariants.mjs';
 
 test('seeded games allocate card identities locally instead of inheriting process history', () => {
   const MTG = loadEngine();
@@ -38,11 +39,26 @@ test('svaki deck može završiti jednu determinističku četveroigračku smoke p
       maxTurns: 200,
       paced: false,
     });
+    const positions = game.players.map(player => ({seat: player.idx + 1, deck: player.deckName, isAI: player.isAI}));
+    let checkpoints = 0;
+    const boundaryFailures = [];
+    game.onTurnCheckpoint = () => {
+      checkpoints++;
+      try { assertGameStateInvariants(game, `${decks[index]}: completed turn ${game.turnNo}`); }
+      catch (error) { boundaryFailures.push(error.message); }
+    };
     await game.start();
     assert.ok(game.gameOver, `${decks[index]}: partija nije završila`);
     assert.ok(game.winner, `${decks[index]}: nema pobjednika u smoke partiji`);
     assert.ok(game.turnNo < game.maxTurns, `${decks[index]}: dostignut je vještački turn limit`);
     assert.equal(game.pendingTriggers.length, 0, `${decks[index]}: ostali pending triggeri`);
+    assert.deepEqual(boundaryFailures, [], `${decks[index]}: turn boundaries preserve native game-state invariants`);
+    assertGameStateInvariants(game, `${decks[index]}: completed match`);
+    assert.equal((game.aiDecisionLog || []).some(row => row.fallback), false, `${decks[index]}: no native AI fallback decisions`);
+    assert.equal(game.log.some(row => /AI V2 fallback/i.test(row.msg)), false, `${decks[index]}: no native AI fallback warnings`);
     if(process.env.HEADLESS_PROGRESS)console.log(`Finished ${decks[index]}: turn ${game.turnNo}, winner ${game.winner.name}`);
+    if(process.env.HEADLESS_PROGRESS)console.log(JSON.stringify({deckIndex:index,seed:11_081+index,positions,
+      turns:game.turnNo,checkpoints,winnerSeat:game.winner.idx+1,winnerDeck:game.winner.deckName,
+      survivingSeats:game.alivePlayers().map(player=>player.idx+1)}));
   }
 });

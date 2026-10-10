@@ -57,7 +57,7 @@
  }
  M.OracleV87.validateAuxiliary=validateConfig;
  const validate=M.validateImportedDeck;M.validateImportedDeck=function(parsed,options){
-  const raw=parsed?.auxiliaryV87||{},chosen=plain(raw.colors)?raw.colors:{},original=M.DEFS,defs={...original};for(const [name,colors]of Object.entries(chosen))if(defs[name]&&Array.isArray(colors)&&['Cryptic Spires','The Prismatic Piper','Faceless One'].includes(name))defs[name]={...defs[name],colorIdentityExtra:colors};
+  const raw=parsed?.auxiliaryV87||{},chosen=plain(raw.colors)?raw.colors:{},original=M.DEFS;let defs=original;for(const [name,colors]of Object.entries(chosen))if(defs[name]&&Array.isArray(colors)&&['Cryptic Spires','The Prismatic Piper','Faceless One'].includes(name)){if(defs===original)defs={...original};defs[name]={...defs[name],colorIdentityExtra:colors};}
   M.DEFS=defs;let result;try{result=validate.call(this,parsed,options);}finally{M.DEFS=original;}
   const aux=validateConfig(raw,result.draftDeck,defs),identity=result.summary.colorIdentity;
   if(aux.config.companion&&M.cardColorIdentity(defs[aux.config.companion]).some(c=>!identity.includes(c)))aux.errors.push(problem('companion-color','The companion is outside the commanders’ color identity.',aux.config.companion));

@@ -3,7 +3,7 @@
  'use strict';
  const G=M.Game.prototype;
  const battle=c=>c instanceof M.CardInst&&c.is('Battle');
- M.defendingPlayerV92=t=>t instanceof M.Player?t:battle(t)?t.protector:t?.ctrl;
+ M.defendingPlayerV92=t=>t?.combatDestinationRemoved?t.defendingPlayer:t instanceof M.Player?t:battle(t)?t.protector:t?.ctrl;
  const live=c=>c?.zone==='battlefield'&&!c.phasedOut;
  async function protector(g,c){
   const choices=g.alivePlayers().filter(p=>p!==c.ctrl);

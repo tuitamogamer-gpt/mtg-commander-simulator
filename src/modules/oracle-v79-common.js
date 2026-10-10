@@ -19,6 +19,7 @@
   host.cur.extraAbilities.push(rockAbilities.get(source).ability);
  }};
  M.TOKENS.rockV79=M.tokenDefinitionForCreation({...rock,bomTokenKey:'rockV79'});
+ M.TOKEN_IMG.Rock='661cbde4-9444-4259-b2cf-7c8f9814a071';
  const emit=G.emit;
  G.emit=async function(event,d,...rest){
   if(event==='cycled'&&M.OracleV8NameGroups.names(d.card).includes('Yidaro, Wandering Monster'))d.player.yidaroCyclesV79=(d.player.yidaroCyclesV79||0)+1;

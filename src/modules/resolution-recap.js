@@ -17,6 +17,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const frame = {
       source: cardView(source), sourceCard: source, name, controller: controller?.name || '', actor: controller, combat,
       humans: game.reviewHumans(), details: [], searches: new Map(), revealed: new Set(),
+      publicReveals: new Map(), exileMoves: [],
       damage: [], prevented: [], damagedPermanents: new Set(), damageTargets: new Set(), draws: new Map(),
       battlefield: new Map(game.bf().map(card => [card, {
         card: cardView(card), version: card.zoneVersion, controller: card.ctrl,
@@ -99,7 +100,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.revealToHuman = function (payload) {
     const frame = this._resolutionRecap;
     if (frame && payload.kind !== 'look') {
-      for (const card of payload.cards || []) if (!card.faceDown) frame.revealed.add(card);
+      for (const card of payload.cards || []) if (!card.faceDown) {
+        frame.revealed.add(card);
+        // Preserve the public face at the actual reveal, before later moves or
+        // face changes. Lands are meaningful reveals too (mana value zero).
+        frame.publicReveals.set(card, {card: cardView(card), manaValue: Number(card.mv) || 0,
+          zone: card.zone, owner: card.owner?.name || payload.ctrl?.name || ''});
+      }
       // Aggregate entries/search reveals after all instructions and state-based
       // actions. Looks and other mid-effect choices retain their own decisions.
       if (['enters', 'tokens'].includes(payload.kind)) {
@@ -108,6 +115,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (payload.kind === 'reveal' && frame.searches.size) return Promise.resolve(null);
     }
     return reveal.call(this, payload);
+  };
+
+  const publicZones = new Set(['battlefield', 'graveyard', 'exile', 'command', 'stack']);
+  const move = G.move;
+  G.move = async function (card, destination, opts) {
+    const frame = this._resolutionRecap;
+    if (!frame) return move.call(this, card, destination, opts);
+    const from = card.zone, version = card.zoneVersion;
+    const previousHiddenExile = frame?.exileMoves.some(row => row.object === card && !row.publicBefore);
+    const publicBefore = !card.faceDown && publicZones.has(from) &&
+      !(from === 'exile' && previousHiddenExile && !frame.revealed.has(card));
+    const before = cardView(card);
+    const result = await move.call(this, card, destination, opts);
+    if (frame && this._resolutionRecap === frame && (from !== card.zone || version !== card.zoneVersion) &&
+        (card.zone === 'exile' || from === 'exile')) {
+      frame.exileMoves.push({object: card, from, to: card.zone, publicBefore,
+        card: publicBefore ? before : cardView(card), owner: card.owner?.name || ''});
+    }
+    return result;
   };
 
   async function finish(game, frame) {
@@ -152,12 +178,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const drawn = Math.max(0, ...frame.draws.values());
     const poisonGain = Math.max(0, ...players.map(row => row.poisonAfter - row.poisonBefore));
     const totalLifeLost = players.reduce((n, row) => n + Math.max(0, row.before - row.after), 0);
-    const major = !!game.gameOver || eliminated > 0 || removed >= 3 || prevented >= 10 ||
+    const revealedToHand = [...frame.publicReveals].filter(([card, snapshot]) => snapshot.zone === 'library' && card.zone === 'hand' &&
+      ![...frame.searches.values()].some(found => found.has(card))).map(([, snapshot]) => ({card: snapshot.card,
+        text: `${snapshot.owner}: revealed ${snapshot.card.name} · mana value ${snapshot.manaValue} · library → hand.`}));
+    const exileRows = frame.exileMoves.map(row => {
+      // Some scripts mark an exiled card face down only after move returns.
+      // A transient face-up state must never publish a private identity.
+      const visible = !row.object.faceDown && (row.publicBefore || frame.revealed.has(row.object) || publicZones.has(row.object.zone));
+      const view = !visible ? {name: 'Face-down card', faceDown: true, types: []} : row.publicBefore ? row.card :
+        frame.publicReveals.get(row.object)?.card || cardView(row.object);
+      return {card: view, text: `${row.owner}: ${view.name} · ${zoneName(row.from)} → ${zoneName(row.to)}.`};
+    });
+    const publicOutcome = revealedToHand.length || exileRows.length;
+    const opponentLifeLost = frame.players.filter(row => row.player !== frame.actor)
+      .reduce((n, row) => n + Math.max(0, row.life - row.player.life), 0);
+    const major = !!publicOutcome || !!game.gameOver || eliminated > 0 || removed >= 3 || prevented >= 10 ||
       lifeSwing >= 10 || totalLifeLost >= 12 || (damage >= 12 && frame.damageTargets.size >= 3) ||
       entered.length >= 5 || handSwing >= 5 || drawn >= 5 || poisonGain >= 3 || controlChanges.length >= 3 || boosted.length >= 3;
     const explain = frame.searches.size || frame.explain || unexpectedEntries.length || controlChanges.length || prevented >= 3;
     if (!major && !explain) return;
     const headline = game.gameOver ? 'Final blow' : eliminated ? 'Player eliminated' :
+      revealedToHand.length ? opponentLifeLost ? 'Revealed card · life loss' : 'Revealed card' : exileRows.length ?
+        frame.exileMoves.some(row => row.from === 'exile' && row.to === 'battlefield') ? 'Gone and back' :
+        frame.exileMoves.some(row => row.to === 'exile') ? 'Into exile' : 'From exile' :
       frame.boardWipe && removed >= 3 ? 'Board wipe' : removed >= 3 ? 'Battlefield upheaval' :
       prevented >= 10 ? 'Damage stopped' : controlChanges.length >= 3 ? 'Changing sides' :
       entered.length >= 5 ? entered.filter(card => card.is('Creature')).length >= 5 ? 'Army assembled' :
@@ -166,6 +209,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       drawn >= 5 || handSwing >= 5 ? 'A fresh hand' : poisonGain >= 3 ? 'Poison rising' :
       damage >= 10 ? 'Massive damage' : 'Life swing';
     const stats = [];
+    if (revealedToHand.length) {
+      stats.push({value: [...frame.publicReveals].find(([card, snapshot]) => snapshot.zone === 'library' && card.zone === 'hand' &&
+        ![...frame.searches.values()].some(found => found.has(card)))[1].manaValue, label: 'revealed mana value'});
+      stats.push({value: opponentLifeLost, label: 'life lost across opponents'});
+    } else if (exileRows.length) {
+      const intoExile = frame.exileMoves.filter(row => row.to === 'exile').length;
+      stats.push({value: intoExile || frame.exileMoves.filter(row => row.from === 'exile').length,
+        label: intoExile ? 'cards moved to exile' : 'cards left exile'});
+    }
     if (eliminated) stats.push({value: eliminated, label: 'players eliminated'});
     if (removed) stats.push({value: removed, label: 'permanents removed'});
     if (damage) stats.push({value: damage, label: 'damage dealt'});
@@ -218,8 +270,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cards = entered.filter(card => card.ctrl === p);
         return {text: `${p.name}: ${cards.length} permanent${cards.length === 1 ? '' : 's'} entered the battlefield.`};
       });
+      const revealLife = revealedToHand.length ? [{text: 'Life totals · ' + frame.players.filter(row => !row.lost &&
+          (row.player !== frame.actor || row.life !== row.player.life))
+        .map(row => `${row.player.name}: ${row.life} → ${row.player.life} life (${Math.max(0, row.life - row.player.life)} lost)`)
+        .join('; ') + '.'}] : [];
       const highlights = major
-        ? [...(eliminated ? lifeRows : []), ...survivors.slice(0, 1), ...aftermath, ...(!eliminated ? lifeRows : []),
+        ? [...revealedToHand, ...revealLife, ...exileRows, ...(eliminated ? lifeRows : []), ...survivors.slice(0, 1), ...aftermath, ...(!eliminated ? lifeRows : []),
           ...drawRows, ...handRows, ...(entered.length >= 5 ? entryRows : []), ...controlChanges, ...boosted, ...frame.prevented].slice(0, 3)
         : searches.length ? searches : frame.explain ? frame.details.slice(-2) : controlChanges.length ? controlChanges : unexpectedEntries.length ?
           entries.filter((row, index) => unexpectedEntries.includes(entered[index])) : frame.prevented;
@@ -228,6 +284,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const summary = major
         ? game.gameOver ? 'The last exchange decided the match.' :
           eliminated ? `${eliminated} player${eliminated === 1 ? ' was' : 's were'} eliminated.` :
+          revealedToHand.length ? 'The revealed card is now in hand. Actual life totals are shown below.' :
+          exileRows.length ? 'Cards moved through exile. Their actual source and destination zones are shown below.' :
           removed >= 3 ? `${removed} permanents left the battlefield${survivors.length ? `; ${survivors.length} survived the effect` : ''}.` :
           entered.length >= 5 ? `${entered.length} new permanents changed the board.` :
           boosted.length >= 3 ? `${boosted.length} creatures grew stronger at once.` :
@@ -243,7 +301,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           controlChanges.length ? 'The permanent now answers to a different player.' :
           unexpectedEntries.length ? 'A card entered without being cast.' : 'Here is how the effect played out.';
       const recap = {name: frame.name, source: frame.source, controllerName: frame.controller,
-        combat: frame.combat, details: frame.details, searches, changes, players,
+        combat: frame.combat, details: [...revealedToHand, ...exileRows, ...frame.details], searches, changes, players,
         damage: frame.damage, prevented: frame.prevented, totalDamage: damage, stack, queued,
         gameOver: !!game.gameOver, impact, summary, highlights};
       await player.controller.decide(game, {type: 'effectReview', effectKind: 'resolutionRecap',

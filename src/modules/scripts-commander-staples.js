@@ -32,8 +32,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function availableMana(game, player) {
     try {
-      return game.manaSources(player, null).length +
-        Object.values(player.pool || {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
+      return M.botAvailableManaEstimate(game, player);
     } catch (error) {
       return game.lands(player).filter(card => !card.tapped).length;
     }

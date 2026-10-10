@@ -13,6 +13,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const seat = player => player ? player.onlineSeat ?? player.idx : null;
   const token = object => !object ? null : typeof object === 'number' ? `c:${object}` : object instanceof U.Player ? `p:${object.idx}`
     : Number.isInteger(object.iid) ? `c:${object.iid}` : U.onlineStackToken(object);
+  const attackDestination = target => target?.combatDestinationRemoved === true ? {
+    combatDestinationRemoved: true, name: 'No attack destination',
+    defendingPlayer: { $ref: token(target.defendingPlayer) }, formerPlaneswalker: !!target.formerPlaneswalker,
+  } : token(target);
   const finite = value => value === Infinity ? 1000000 : value === -Infinity ? -1000000 : value;
   // Static presentation metadata only. Card scripts, context closures, private
   // engine references and prototype keys cannot cross this boundary.
@@ -73,7 +77,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       mv: publicBody || !hidden ? card.mv || 0 : 0,
       damageAmount: creature && publicBody && card.owner?.game?.dmgAmount ? card.owner.game.dmgAmount(card, 'normal') : 0,
       attachedTo: publicBody ? card.attachedTo : null, attachments: publicBody ? [...(card.attachments || [])] : [],
-      attacking: publicBody ? token(card.attacking) : null,
+      attacking: publicBody ? attackDestination(card.attacking) : null,
       blocking: publicBody ? card.blocking : null,
       blockedBy: publicBody ? (card.blockedBy || []).map(token) : [],
     };
@@ -325,6 +329,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     decode(value) {
       if (!value || typeof value !== 'object') return value;
+      if (value.combatDestinationRemoved === true) return Object.freeze({
+        combatDestinationRemoved: true, name: 'No attack destination',
+        defendingPlayer: this.decode(value.defendingPlayer), formerPlaneswalker: !!value.formerPlaneswalker, is: () => false,
+      });
       if (value.$ref) return this.ref(value.$ref);
       return Array.isArray(value) ? value.map(item => this.decode(item)) :
         Object.fromEntries(Object.entries(value).filter(([key]) => !['__proto__', 'constructor', 'prototype'].includes(key)).map(([key, item]) => [key, this.decode(item)]));
@@ -349,7 +357,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       for (const object of objects) {
         const card = this.cards.get(object.token);
-        card.attacking = this.ref(object.attacking);
+        card.attacking = object.attacking?.combatDestinationRemoved === true ? this.decode(object.attacking) : this.ref(object.attacking);
         card.blockedBy = (object.blockedBy || []).map(id => this.ref(id)).filter(Boolean);
       }
     }

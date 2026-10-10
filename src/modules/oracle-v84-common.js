@@ -24,7 +24,9 @@
  const used=(ctx,key)=>(ctx.sourceMeta||ctx.src.meta)[key]===ctx.g.turnNo;
  const imp=token('Imp',2,2,['Imp'],['R']);imp.triggers=[H.compileGenericTrigger({kind:'generic-trigger',event:'dies',eventFilter:'self',effects:[{action:'damage',target:'each-opponent',n:2}],targets:[],optional:false})];
  M.TOKENS.impV84=M.tokenDefinitionForCreation({...imp,bomTokenKey:'impV84'});
+ M.TOKEN_IMG['Imp Token']='47a1385b-2be2-49a8-8400-186cd5525dad';
  M.TOKENS.shardV84=M.tokenDefinitionForCreation({name:'Shard',cost:'',types:['Enchantment'],subtypes:['Shard'],super:[],colorsOverride:[],bomTokenKey:'shardV84',abilities:[H.compileGenericAbility({kind:'generic-ability',cost:{mana:'{2}',sacSelf:true},effects:[{action:'scry',who:'you',n:1},{action:'draw',who:'you',n:1}],targets:[],optional:false})]});
+ M.TOKEN_IMG['Shard Token']='6a198942-049c-4537-b5b1-d35df32d45d5';
  const anyColor=cost=>({...cost,pips:cost.pips.map(pip=>pip.some(k=>'WUBRG'.includes(k))?['W','U','B','R','G','C',...pip.filter(k=>k==='PHY'||k==='TWO')]:pip)});
  const nathan=(g,p)=>g.bf().some(c=>enabled(c)&&c.ctrl===p&&c.def.v84Nathan);
  const spellCost=G.spellCost;G.spellCost=function(p,c,a={}){let out=spellCost.call(this,p,c,a);if(c.owner!==p&&nathan(this,p))out=anyColor(out);const n=(a.from||c.zone)==='exile'?(p.turnState.v84Liara||0):0;if(n){const net=out.generic-(out.xReduction||0)-n;out={...out,generic:Math.max(0,net),xReduction:Math.max(0,-net)};}return out;};
