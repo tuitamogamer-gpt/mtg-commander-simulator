@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
+import { activatedOracleLines, activatedPaths } from '../scripts/card-certification-rules.mjs';
 
 function controller(overrides = {}) {
   return {
@@ -67,19 +68,8 @@ test('svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putan
     assert.equal(!!def.simplified, false, `${name}: simplified`);
     assert.equal((script.statics || []).some(entry => entry.apply && /=>\s*\{\s*\}/.test(String(entry.apply))), false, `${name}: no-op static`);
 
-    // Quoted text belongs to a created token, not to this card's own paths.
-    const oracle = String(def.oracle || '').replace(/\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ')
-      .replace(/"[^"]*"/g, ' ');
-    const activated = oracle.split('\n').filter(line => {
-      const value = line.trim();
-      return /^(?:\{[^}]+\}(?:,\s*)?)+[^:]*:/.test(value) || /^(?:Sacrifice|Discard|Tap)\b[^:]*:/.test(value);
-    }).length;
-    const mana = Array.isArray(def.mana) ? def.mana.length : def.mana ? 1 : 0;
-    const paths = mana + (def.abilities || []).length + (def.opponentAbilities || []).length +
-      (def.handAbility ? 1 : 0) + (def.gyAbility ? 1 : 0) + (def.oracleExileAbilityV20 ? 1 : 0) + (def.cycling ? 1 : 0) +
-      (def.cdkSuspendedSacrifice ? 1 : 0) + (typeof def.c13CommandAbility?.run === 'function' ? 1 : 0) +
-      (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0) +
-      (def.statics || []).filter(rule => rule.grantsSelfActivatedAbility && typeof rule.apply === 'function').length;
+    const activated = activatedOracleLines(def.oracle).length;
+    const paths = activatedPaths(def, MTG);
     assert.ok(paths >= activated, `${name}: Oracle aktivacije ${activated}, putanje ${paths}`);
   }
 });

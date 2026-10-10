@@ -685,7 +685,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return targets.map(target => {
         if (target instanceof MTG.Player) return target === this.me ? 'You' : target.name;
         if (target && target.kind && target.card) return `${target.card.name} on stack`;
-        if (target instanceof MTG.CardInst && target.faceDown && !this.maySeeFaceDown(target)) return 'Face-down permanent';
+        if (target instanceof MTG.CardInst && target.faceDown && !this.canLookFaceDown(target)) return 'Face-down permanent';
         return target.name || target.card && target.card.name || 'Stack object';
       }).join(' · ');
     }
@@ -917,7 +917,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       shown.forEach((target, index) => {
         const stackTarget = target && target.kind && target.card ? target.card : null;
         const targetCard = stackTarget || (target instanceof MTG.CardInst ? target : null);
-        const hidden = targetCard && targetCard.faceDown && !this.maySeeFaceDown(targetCard);
+        const hidden = targetCard && targetCard.faceDown && !this.canLookFaceDown(targetCard);
         const name = target instanceof MTG.Player
           ? (target === this.me ? 'YOU' : target.name)
           : hidden ? 'Face-down permanent' : targetCard && targetCard.name || target.name || 'Stack object';
@@ -6196,7 +6196,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const standings = el('div', 'recapstandings');
       [...g.players].sort((a, b) => Number(a.lost) - Number(b.lost) || b.life - a.life).forEach((player, index) => {
         standings.appendChild(el('div', player === g.winner ? 'winner' : player.lost ? 'eliminated' : '',
-          `<i>${String(index + 1).padStart(2, '0')}</i><span><b>${esc(player.name)}</b><small>${esc(player.deckName || '')}</small></span><strong>${player.life}<small>LIFE</small></strong>`));
+          `<i>P${player.idx + 1}</i><span><b>${esc(player.name)}</b><small>${esc(player.deckName || '')}</small></span><strong>${player.life}<small>LIFE</small></strong>`));
       });
       m.appendChild(standings);
       const highlights = el('section', 'recaphighlights');

@@ -229,11 +229,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Champion of Lambholt'] = {
-    blockRestriction: (g, blocker, attacker) => {
-      // blokeri slabiji od Championa ne mogu blokirati stvorenja njegovog kontrolora
-      const champs = g.bf().filter(c => c.def.name === 'Champion of Lambholt' && c.ctrl === attacker.ctrl);
-      return !champs.some(ch => blocker.power < ch.power);
-    },
+    blockRestriction: (g, blocker, attacker, source) => source.ctrl !== attacker.ctrl || blocker.power >= source.power,
     triggers: [{
       on: 'etb', desc: '+1/+1 counter',
       filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.is('Creature'),

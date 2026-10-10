@@ -157,6 +157,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Changeling Outcast'] = {
+    changeling: true,
     statics: [{
       apply: (g, self, bf) => { self.cur.allCreatureTypes = true; self.cur.cantBlock = true; self.cur.unblockable = true; },
     }],
@@ -357,6 +358,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Mirror Entity'] = {
+    changeling: true,
     statics: [{ apply: (g, self) => { self.cur.allCreatureTypes = true; } }],
     abilities: [{
       label: 'X: all become X/X', xCost: true, cost: { mana: '{X}' },
@@ -1344,10 +1346,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     targets: [T.player({ prompt: 'Who shuffles their graveyard?', aiHint: { goal: 'self' } })],
     resolve: async ctx => {
       const q = ctx.targets[0] || ctx.you;
-      while (q.graveyard.length) {
-        const c = q.graveyard.pop();
-        c.zone = 'library'; q.library.push(c);
-      }
+      await ctx.g.moveGraveyardBatch(q.graveyard.slice(), 'library');
       U.shuffle(q.library, ctx.g.rnd);
       ctx.g.lg(`${q.name} shuffles their graveyard into their library.`);
       await ctx.g.draw(ctx.you, 1);

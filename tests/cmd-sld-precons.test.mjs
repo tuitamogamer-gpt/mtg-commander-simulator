@@ -37,7 +37,7 @@ for(const role of ['human','ai']){
  });
  test(role+': Kaalia puts a chosen creature into combat against the attacked opponent',async()=>{
   const f=setup(role),s=card(f,'Kaalia of the Vast'),dragon=card(f,'Dragon Whelp','hand');f.decide=(p,q)=>q.type==='chooseCards'&&q.from.includes(dragon)?[dragon]:undefined;
-  f.game.combat={attackers:[s]};await event(f,'attacks',{card:s,player:f.a,target:f.b});assert.equal(dragon.zone,'battlefield');assert.equal(dragon.attacking,f.b);assert.ok(dragon.tapped);
+  f.game.combat={attackers:[s]};await event(f,'attacks',{card:s,player:f.a,defender:f.b});assert.equal(dragon.zone,'battlefield');assert.equal(dragon.attacking,f.b);assert.ok(dragon.tapped);
  });
  test(role+': Karador permits exactly one graveyard creature cast during each own turn',async()=>{
   const f=setup(role),s=card(f,'Karador, Ghost Chieftain'),a=card(f,'Grizzly Bears','graveyard'),b=card(f,'Wind Drake','graveyard');fuel(f.a);

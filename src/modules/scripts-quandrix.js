@@ -107,7 +107,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       targets: (g, card, castOpts) => [T.yourCreature({ count: castOpts.xVal || 0, min: 0, upTo: true, prompt: "Grove's Bounty: choose up to X of your creatures", aiHint: { goal: 'buff' } })],
       prepareTargets: async ctx => { const d = await distribution(ctx, ctx.so.x || 0, flat(ctx.targets[0]), "Grove's Bounty"); if (d === false) return false; ctx.so.counterDistribution = d; },
       resolve: async ctx => { for (const e of ctx.so.counterDistribution || []) { const c = ctx.g.byIid(e.iid); if (c?.zone === 'battlefield') ctx.g.addCounters(c, '+1/+1', e.n, false, ctx.you); } } },
-    blockRestriction: (g, blocker, attacker) => attacker.name !== 'Elusive Otter' || blocker.power >= attacker.power,
+    blockRestriction: (g, blocker, attacker, source) => attacker !== source || blocker.power >= attacker.power,
   };
   SC['Goldvein Hydra'] = { xCost: true, etbCounters: xEtb(1), triggers: [{ on: 'dies', desc: 'Tapped Treasurei', filter: (g, self, d) => d.card === self,
     run: async ctx => { const n = Math.max(0, ctx.data.snap.power || 0); if (n) await ctx.g.makeTokens('treasure', ctx.you, { n, tapped: true }); } }] };

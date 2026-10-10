@@ -130,8 +130,8 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 97,
-  "classifierFilesSha256": "a2d67cdbf1f2810a97edbb1c7ebe0ab201f14374bc7778cfe90fb460575ec00d",
-  "inputFilesSha256": "14f5d911dbab92ab9767b531814aec010a010170a987bb48a602a50680573b33",
+  "classifierFilesSha256": "c7a0437aded1c67ed9e2926e7bfe91bbea41c2214df9924f1a2958017714d647",
+  "inputFilesSha256": "98316d67b1f36eb6edcfee2606fb3dc12296de5a2c5254117e30919b73e011e4",
   "artifactSha256": {
     "docs/catalog/imported-cards.csv": "a0f0de2f6f4c3690fe653f3d6a840cdd51452662796c17779937b99a407e7834",
     "docs/catalog/remaining-cards.csv": "f0f380b669bc726e2d421068ede82094fb29b07d1f8560c7393da72253896fec"

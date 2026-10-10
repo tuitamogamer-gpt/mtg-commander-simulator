@@ -60,7 +60,7 @@ function table({ defending = false, mode = 'end' } = {}) {
   a.controller = ui.controllerFor(a);
   const emit = game.emit.bind(game);
   game.emit = async (event, data, ...rest) => {
-    if (event === 'damageToPlayer') hits.push({ step: game.step, src: data.src, player: data.player, n: data.n });
+    if (event === 'damageToPlayer' && !game._damageEventQueue) hits.push({ step: game.step, src: data.src, player: data.player, n: data.n });
     return emit(event, data, ...rest);
   };
   Object.assign(f, { ui, windows, questions, activated, hits,

@@ -6282,10 +6282,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (value instanceof MTG.CardInst) MTG.cloneCardDefinitionForSimulation?.(value, out);
     if(value instanceof MTG.Game){
       MTG.initializeContinuousEffects(out,cloneGraph(value.untilEffects,seen,'untilEffects',value));
-      // Event-cohort deduplication is a transient identity cache. WeakMap's
-      // contents cannot be graph-cloned, and a prototype-only copy is invalid.
+      // Event-cohort deduplication uses transient weak identity caches whose
+      // contents cannot be graph-cloned; a prototype-only copy is invalid.
       if(value._oracleTriggerBatches)out._oracleTriggerBatches=new WeakMap();
       if(value._oracleV9BatchEvents)out._oracleV9BatchEvents=new WeakMap();
+      if(value.v83TargetGroups)out.v83TargetGroups=new WeakSet();
     }
     return out;
   }

@@ -220,7 +220,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Reassembling Skeleton'] = { gyAbility: {
     label: 'Return tapped', cost: '{1}{B}', exileSelf: false,
-    run: async ctx => { if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'battlefield', { ctrl: ctx.you, tapped: true }); },
+    run: async ctx => { if (ctx.src.zone === 'graveyard' && ctx.src.zoneVersion === ctx.sourceZoneVersion) await ctx.g.move(ctx.src, 'battlefield', { ctrl: ctx.you, tapped: true }); },
   } };
 
   SC['Shigeki, Jukai Visionary'] = {
@@ -688,7 +688,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Drownyard Temple'] = {
     producesColors: [], mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     gyAbility: { label: 'Return tapped', cost: '{3}', exileSelf: false,
-      run: async ctx => { if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'battlefield', { ctrl: ctx.you, tapped: true }); } },
+      run: async ctx => { if (ctx.src.zone === 'graveyard' && ctx.src.zoneVersion === ctx.sourceZoneVersion) await ctx.g.move(ctx.src, 'battlefield', { ctrl: ctx.you, tapped: true }); } },
   };
 
   SC['Foreboding Landscape'] = {

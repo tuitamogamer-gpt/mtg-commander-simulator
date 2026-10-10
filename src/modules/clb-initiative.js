@@ -16,7 +16,6 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  G.takeInitiative=async function(p,source=null){if(!p||p.lost)return;this.initiative=p;this.lg(p.name+' takes the initiative.','info');this.note('initiative',{player:p});this.queueTrigger({src:null,ctrl:p,name:'Initiative: venture into Undercity',run:ctx=>ctx.g.venture(ctx.you,source,true)});await this.emit('initiativeTaken',{player:p,source});};
  const emit=G.emit;G.emit=async function(name,data){
   if(name==='upkeep'&&data.player===this.initiative)this.queueTrigger({src:null,ctrl:data.player,name:'Initiative upkeep: venture into Undercity',run:ctx=>ctx.g.venture(ctx.you,null,true)});
-  if(name==='damageToPlayer'&&data.combat&&data.player===this.initiative&&data.src?.ctrl!==data.player){const p=data.src.ctrl;this.queueTrigger({src:null,ctrl:p,name:'Take the initiative after combat damage',run:ctx=>ctx.g.takeInitiative(ctx.you)});}
   return emit.call(this,name,data);
  };
  const SC=M.SCRIPTS;

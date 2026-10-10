@@ -682,6 +682,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return costs.every(cost => simulateCost(game, player, source, cost, ctx, plan));
   }
 
+  function additionalManaFeasible(ctx, costs, preparedPlan) {
+    const {g: game, you: player, src: source} = ctx;
+    const initial = preparedPlan ? clonedPlan(preparedPlan) : {sacrifices: [], discards: [], exiles: [], returns: [], handExiles: [],
+      life: 0, choices: [], selections: [], reservedCards: [],
+      allowSourceReturn: ctx.allowSourceReturn === true, allowSourceSacrifice: ctx.allowSourceSacrifice === true};
+    const search = (remaining, plan) => {
+      if (!remaining.length) return game.canPayMana(player, ctx.manaCost,
+        {card: source, castOpts: ctx.castOpts || {}, xVal: ctx.x || 0},
+        {xVal: ctx.x || 0, protectedSacrifices: [...plan.reservedCards, ...plan.sacrifices, ...plan.returns,
+          ...plan.discards, ...plan.exiles, ...plan.handExiles],
+          reservedLife: (ctx.manaCost.lifeCost || 0) + plan.life,
+          reservedLifePlansV92: [{life: ctx.manaCost.lifeCost || 0},
+            {life: plan.life, remove: [...plan.sacrifices, ...plan.returns]}]});
+      const [cost, ...tail] = remaining, key = allocationKey(cost.kind);
+      if (key) {
+        const pool = costPool(game, player, source, cost, plan), {min} = costQuantity(cost, ctx);
+        if (pool.length < min) return false;
+        const choose = (start, picked) => {
+          if (picked.length === min) {
+            const branch = clonedPlan(plan); branch[key].push(...picked);
+            return search(tail, branch);
+          }
+          for (let i = start; i <= pool.length - (min - picked.length); i++)
+            if (choose(i + 1, picked.concat(pool[i]))) return true;
+          return false;
+        };
+        return choose(0, []);
+      }
+      if (cost.kind === 'payLife') {
+        const branch = clonedPlan(plan); branch.life += amountValue(cost.amount, ctx);
+        return (game.canPayLife ? game.canPayLife(player, branch.life) : player.life >= branch.life) && search(tail, branch);
+      }
+      if (cost.kind === 'sequence') return search(cost.costs.concat(tail), plan);
+      return cost.options.some(option => search([option, ...tail], clonedPlan(plan)));
+    };
+    return search(costs, initial);
+  }
+
   function costLabel(cost, ctx) {
     if (cost.kind === 'exileGraveyard') return `Exile ${cost.quantity.min} ${(cost.object.types || ['card']).join(' or ')} from your graveyard`;
     if (cost.kind === 'exileHand') return `Exile ${cost.quantity.min} ${(cost.object.types || ['card']).join(' or ')} from your hand`;
@@ -720,13 +758,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (pool.length < min) return false;
       const versions=new Map(pool.map(card=>[card,card.zoneVersion]));
+      const canPayRemaining = cost.kind === 'sacrifice' && ctx.so?.kind === 'spell' && ctx.manaCost ? picks => {
+        if (!Array.isArray(picks) || new Set(picks).size !== picks.length || picks.some(card => !pool.includes(card))) return false;
+        const candidate = clonedPlan(plan); candidate.sacrifices.push(...picks);
+        return additionalManaFeasible({...ctx, castOpts: ctx.castOpts || ctx.so?.castOpts || {}, x: ctx.x ?? ctx.so?.x ?? 0}, [], candidate);
+      } : null;
       const randomCards=cost.randomV18?pool.slice():null;
       if(randomCards)for(let i=randomCards.length-1;i>0;i--){const j=Math.floor(game.rnd()*(i+1));[randomCards[i],randomCards[j]]=[randomCards[j],randomCards[i]];}
       const picked = cost.randomV18 ? randomCards.slice(0,min) : await player.controller.decide(game, {
         type: 'chooseCards', from: pool, min, max,
         prompt: `${source.name}: ${costLabel(cost, ctx)}`,
         aiHint: { kind: ({sacrifice:'addlSac',discard:'addlDiscard',exileGraveyard:'delve',returnPermanent:'bounceCost',exileHand:'delve'}[cost.kind]), card: source,
-          keepTargets:(ctx.targets||ctx.so.targets||[]).flat(Infinity),...(cost.kind==='sacrifice'?{required:min}:{}) },
+          keepTargets:(ctx.targets||ctx.so.targets||[]).flat(Infinity),...(cost.kind==='sacrifice'?{required:min}:{}),
+          ...(canPayRemaining ? {canPayRemaining} : {}) },
       });
       if(ctx.strictCostChoices&&(!Array.isArray(picked)||picked.length<min||picked.length>max||new Set(picked).size!==picked.length||picked.some(card=>!pool.includes(card))))return false;
       const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(card => pool.includes(card)) : [];
@@ -859,6 +903,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       maximumAdditionalXV19:(game,player,source)=>Math.min(...costs.filter(cost=>cost.quantity?.xV19).map(cost=>costPool(game,player,source,cost,{}).length)),
       canPayContext:ctx=>canPayCosts(ctx.g,ctx.you,ctx.src,costs,ctx),
+      canPayManaContext:(ctx,combinedCosts=costs)=>additionalManaFeasible(ctx,combinedCosts),
       castCond:(game,player,card)=>canPayCosts(game,player,card,costs,{g:game,you:player,src:card,x:0,so:{x:0}}),
       prepareTargets:async ctx=>planAndCommitCosts(ctx,costs),
     };
@@ -874,6 +919,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
 
     if (operation.additionalCosts.length) {
+      fragment.oracleAdditionalManaCostsV4 = operation.additionalCosts;
+      fragment.oracleAdditionalManaFeasibleV4 = ctx => additionalManaFeasible(ctx, operation.additionalCosts);
       fragment.castCond = (game, player, card) => canPayCosts(game, player, card,
         operation.additionalCosts, { g: game, you: player, src: card, x: 0, so: { x: 0 } });
       fragment.prepareTargets = async ctx => planAndCommitCosts(ctx, operation.additionalCosts);

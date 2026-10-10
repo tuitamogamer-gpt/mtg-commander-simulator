@@ -94,14 +94,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (pick.length) {
             const c = pick[0];
             pickedCreature = c;
-            p.library.splice(p.library.indexOf(c), 1);
-            c.zone = 'nowhere';
-            await g.move(c, 'battlefield', { ctrl: p, tapped: true, attacking: ctx.src.attacking });
-            c.meta._returnEOC = true;
-            g.delayed.push({
-              on: 'endCombat', once: true, name: 'Arthur return', ctrl: p,
-              run: async c2 => { if (c.zone === 'battlefield') { c2.g.remove(c); c.zone = 'hand'; p.hand.push(c); c2.g.lg(`${c.name} returns to hand.`); } },
-            });
+            await g.putPermanentOntoBattlefield(c,p,{tapped:true,
+              chooseAttacking: (game,entrant) => game.combat&&game.turnPlayer===p
+                ? game.chooseAttackingDestination(p,null,entrant,ctx.src.name) : null});
+            if(c.zone==='battlefield'){
+              const version=c.zoneVersion;
+              c.meta._returnEOC = true;
+              g.delayed.push({
+                on: 'endCombat', once: true, name: 'Arthur return', ctrl: p,
+                run: async c2 => { if (c.zone === 'battlefield'&&!c.phasedOut&&c.zoneVersion===version)await c2.g.move(c,'hand'); },
+              });
+            }
           }
         }
         const rest = top.filter(c => c !== pickedCreature);

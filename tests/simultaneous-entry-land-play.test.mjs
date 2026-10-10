@@ -224,8 +224,8 @@ test('Evercoat Ursine uses playLand for an open extra drop and rejects a land du
     permanent(game, player, definition('Additional Land Permission', {
       cost: '{1}{G}', types: ['Enchantment'], power: undefined, toughness: undefined, additionalLandPlays: 1,
     }));
-    const hidden = cardIn(player, 'Forest', 'exile');
-    bear.meta.hide = [hidden.iid];
+    const hidden = cardIn(player, 'Forest', 'library');
+    await bear.def.triggers.find(trigger => trigger.on === 'etb').run({ g: game, src: bear, you: player });
     player.landsPlayed = player.maxLands;
     let playLandCalls = 0;
     const originalPlayLand = game.playLand.bind(game);
@@ -245,8 +245,8 @@ test('Evercoat Ursine uses playLand for an open extra drop and rejects a land du
     const { game, players: [player] } = rulesGame();
     game.phase = 'combat';
     const bear = permanent(game, player, 'Evercoat Ursine');
-    const hidden = cardIn(player, 'Forest', 'exile');
-    bear.meta.hide = [hidden.iid];
+    const hidden = cardIn(player, 'Forest', 'library');
+    await bear.def.triggers.find(trigger => trigger.on === 'etb').run({ g: game, src: bear, you: player });
     let playLandCalls = 0;
     const originalPlayLand = game.playLand.bind(game);
     game.playLand = async (...args) => {

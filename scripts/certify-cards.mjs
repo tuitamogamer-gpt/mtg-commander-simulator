@@ -3,7 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEngine } from '../tests/helpers/load-engine.mjs';
 import { auditSource } from './source-audit.mjs';
-import { oracleEquipAbility } from './card-certification-rules.mjs';
+import { oracleEquipAbility, oracleWithoutReminder, activatedOracleLines, activatedPaths,
+  hasDirectOracleManaActivation } from './card-certification-rules.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reportDir = path.join(root, 'reports');
@@ -11,28 +12,6 @@ const strict = process.argv.includes('--strict');
 const MTG = loadEngine();
 const sourceAudit = auditSource();
 const duplicates = new Set(sourceAudit.duplicateScripts.map(row => row.name));
-
-function oracleWithoutReminder(text) {
-  return String(text || '').replace(/\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ');
-}
-
-function activatedOracleLines(oracle) {
-  // Quoted rules text belongs to a token this card creates, not to the card's
-  // own activation paths.
-  return oracleWithoutReminder(oracle).replace(/"[^"]*"/g, ' ').split('\n').filter(line => {
-    const value = line.trim();
-    return /^(?:\{[^}]+\}(?:,\s*)?)+[^:]*:/.test(value) ||
-      /^(?:Sacrifice|Discard|Tap)\b[^:]*:/.test(value);
-  });
-}
-
-function activatedPaths(def) {
-  const mana = Array.isArray(def.mana) ? def.mana.length : def.mana ? 1 : 0;
-  return mana + (def.abilities || []).length + (def.opponentAbilities || []).length +
-    (def.handAbility ? 1 : 0) + (def.gyAbility ? 1 : 0) + (typeof def.oracleExileAbilityV20?.run === 'function' ? 1 : 0) + (def.cycling ? 1 : 0) +
-    (def.cdkSuspendedSacrifice ? 1 : 0) + (typeof def.c13CommandAbility?.run === 'function' ? 1 : 0) + (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0) +
-    (def.statics || []).filter(rule => rule.grantsSelfActivatedAbility && typeof rule.apply === 'function').length;
-}
 
 function issuesFor(name) {
   const def = MTG.DEFS[name];
@@ -50,7 +29,7 @@ function issuesFor(name) {
   if (isSpell && !def.resolve && !def.modes && !def.roomHalves && !def.adventure && !def.rulesOnlySpell) {
     issues.push('Spell nema izvršivu resolve/modes putanju');
   }
-  if (types.includes('Land') && /\{T\}:\s*Add/i.test(oracle) && !def.mana) {
+  if (types.includes('Land') && hasDirectOracleManaActivation(oracle) && !def.mana) {
     issues.push('Land proizvodi manu u Oracle tekstu, ali nema mana putanju');
   }
   if ((def.subtypes || []).includes('Equipment') && /^\s*Equip\b/im.test(oracleWithoutReminder(oracle)) && def.equip === undefined && !def.attachGrant && !oracleEquipAbility(def)) {
@@ -60,7 +39,7 @@ function issuesFor(name) {
     issues.push('Aura nema legalnu attach metu');
   }
   const oracleActivated = activatedOracleLines(oracle).length;
-  const implementedActivated = activatedPaths(def);
+  const implementedActivated = activatedPaths(def, MTG);
   if (oracleActivated > implementedActivated) {
     issues.push(`Oracle ima ${oracleActivated} aktiviranih sposobnosti, izvršnih putanja je ${implementedActivated}`);
   }

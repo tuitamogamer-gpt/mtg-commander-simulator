@@ -120,8 +120,8 @@ test('account save schema keeps deterministic setup, private decisions, and prof
 
   assert.match(mainSource, /MTG\.restoreSaveDecision\(request, p, recorded\)/);
   assert.match(mainSource, /MTG\.replayAccountSideAction\(game, p, side\.action\)/);
-  // the checkpoint writer also carries the written-down board (5th argument)
-  assert.match(mainSource, /MTG\.buildAccountSave\(\s*g,\s*saveSetup,\s*recordedTimeline,\s*matchId,\s*latestBoardState\)/);
+  // The board and its absolute decision offset travel together.
+  assert.match(mainSource, /MTG\.buildAccountSave\(\s*g,\s*saveSetup,\s*recordedTimeline,\s*matchId,\s*latestBoardState,\s*latestBoardTimelineIndex\)/);
   assert.match(mainSource, /paced:\s*true/);
   assert.doesNotMatch(mainSource, /paced:\s*!resumeSave/);
   assert.match(mainSource, /if \(resumeSave\) g\.speedFactor = 0/);
@@ -138,4 +138,42 @@ test('account save schema keeps deterministic setup, private decisions, and prof
   assert.match(accountSource, /credentials: 'same-origin'/);
   assert.match(accountCss, /\.account-stats/);
   assert.match(accountCss, /@media \(max-width: 720px\)/);
+});
+
+test('account board checkpoint offsets reject skipped, repeated, or unanchored decision histories', () => {
+  const MTG = loadEngine(), game = new MTG.Game({seed: 31, paced: false});
+  const setup = {deck:'Quandrix Unlimited',commanders:['Zimone, Infinite Analyst'],ai:1,aiDecks:['Elven Council'],aiStyles:['balanced'],seed:'31'};
+  const decisions = Array.from({length:3},()=>({shape:{type:'mulligan'},response:{kind:'boolean',value:false}}));
+  const state = {format:2,cards:[],players:[],randomState:0};
+  const save = MTG.buildAccountSave(game,setup,decisions,'match-save-tail-offset-0001',state,1);
+  assert.equal(MTG.validateAccountSave(save).checkpointTimelineIndex,1);
+  for(const offset of [-1,0.5,4]) {
+    assert.throws(()=>MTG.buildAccountSave(game,setup,decisions,save.matchId,state,offset),/checkpoint decision offset/);
+    assert.throws(()=>MTG.validateAccountSave({...save,checkpointTimelineIndex:offset}),/checkpoint decision offset/);
+  }
+  assert.throws(()=>MTG.validateAccountSave({...save,state:null}),/checkpoint decision offset/);
+  const old = MTG.buildAccountSave(game,setup,decisions,save.matchId,state);
+  assert.equal('checkpointTimelineIndex' in old,false);
+  assert.equal(MTG.validateAccountSave(old),old,'older checkpoint-only saves keep their compatible path');
+  for(const offset of [0,decisions.length])assert.equal(MTG.validateAccountSave({...save,checkpointTimelineIndex:offset}).checkpointTimelineIndex,offset);
+});
+
+test('a resumed imported deck remains self-contained after saving again without a local library', () => {
+  const MTG = loadEngine();
+  const name = 'Saved Yuriko archive';
+  const imported = MTG.importCommanderDeck(readFileSync(new URL('./fixtures/yuriko-custom-deck.txt', import.meta.url),'utf8'),{name,commanders:["Yuriko, the Tiger's Shadow"]});
+  assert.equal(imported.ok,true,'the actual 100-card custom list passes native validation');
+  const record = MTG.createImportedDeckRecord(imported,{id:'deck-save-continue-yuriko'});
+  MTG.hydrateImportedDeckLibrary([record],{source:'guest'});
+  const setup = {deck:name,commanders:["Yuriko, the Tiger's Shadow"],ai:1,aiDecks:['Elven Council'],aiStyles:['balanced'],seed:'31'};
+  const first = MTG.buildAccountSave({turnNo:1},setup,[],'match-import-repeat-save-0001');
+  assert.equal(first.setup.importedDecks.length,1);
+  MTG.hydrateImportedDeckLibrary([],{source:'guest'});
+  const resumed = MTG.validateAccountSave(JSON.parse(JSON.stringify(first)));
+  assert.equal(MTG.importedDeckRecordFor(name),null,'the carried list is adopted for play while the local library remains empty');
+  const second = MTG.buildAccountSave({turnNo:1},resumed.setup,[],resumed.matchId);
+  assert.deepEqual(JSON.parse(JSON.stringify(second.setup.importedDecks)),JSON.parse(JSON.stringify(first.setup.importedDecks)),
+    'another save must retain the exact portable list that came with the match');
+  delete MTG.DECKS[name];delete MTG.DECK_META[name];
+  assert.equal(MTG.validateAccountSave(JSON.parse(JSON.stringify(second))).setup.deck,name);
 });

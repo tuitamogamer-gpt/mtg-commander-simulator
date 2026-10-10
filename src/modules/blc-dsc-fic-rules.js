@@ -5,7 +5,15 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  for(const s of Object.values(M.SCRIPTS))if(s.miracle)s.oracleMiracle=true;
  const types=cs=>[...new Set(cs.flatMap(c=>c.zone==='battlefield'&&c.cur?c.cur.types:c.def.types))];
  const ownPermanents=(g,p)=>g.bf().filter(c=>c.ctrl===p);
- const winAt=(on,desc,condition)=>C.trigger(on,desc,ctx=>condition(ctx.g,ctx.src,ctx.data)&&C.win(ctx),{filter:(g,c,d)=>d.player===c.ctrl&&condition(g,c,d)});
+ const winAt=(on,desc,condition)=>C.trigger(on,desc,ctx=>{
+  // "You" remains the ability's controller after the source changes control.
+  // Source counters use the original object's last known information if it
+  // left before the intervening-if condition is checked again.
+  const source=Object.create(ctx.src),history=ctx.src.battlefieldLKI?.get(ctx.sourceZoneVersion);
+  Object.defineProperty(source,'ctrl',{value:ctx.you});
+  if(history&&(ctx.src.zone!=='battlefield'||ctx.src.zoneVersion!==ctx.sourceZoneVersion))Object.defineProperty(source,'counters',{value:history.counters});
+  return condition(ctx.g,source,ctx.data)&&C.win(ctx);
+ },{filter:(g,c,d)=>d.player===c.ctrl&&condition(g,c,d)});
  const dread=ctx=>ctx.g.manifestDread(ctx.you);
  const counterKinds=c=>Object.keys(c.counters).filter(k=>c.counters[k]>0);
  const moveCounter=async(ctx,from,to)=>{if(!from||!to||from===to)return;const versions=[from.zoneVersion,to.zoneVersion],kinds=counterKinds(from);if(!kinds.length)return;const key=await C.option(ctx,kinds.map(key=>({key,label:key+' counter'})),'Choose a counter to move');if(!kinds.includes(key))throw Error('Invalid counter kind');if(from.zone!=='battlefield'||to.zone!=='battlefield'||from.phasedOut||to.phasedOut||from.zoneVersion!==versions[0]||to.zoneVersion!==versions[1]||!ctx.g.canPutCountersV18(to,key))return;const before=from.counters[key];ctx.g.removeCounters(from,key,1);const n=before-(from.counters[key]||0);if(n)C.add(ctx,to,key,n);};

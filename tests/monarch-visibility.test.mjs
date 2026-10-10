@@ -82,6 +82,14 @@ test('combat damage and elimination transfer the crown through the same visible 
   const attacker = permanent(game, opponent, 'Willie Lumpkin, Postman');
   await game.damagePlayer(attacker, you, 2, { combat: true, deferSBA: true });
 
+  assert.equal(game.monarch, you, 'combat damage queues the inherent crown ability before responses');
+  assert.equal(game.pendingTriggers.length, 1);
+  await game.flushTriggers();
+  assert.equal(game.stack[0].kind, 'trigger');
+  assert.equal(game.stack[0].ctrl, you);
+  assert.equal(game.stack[0].srcCard??null, null);
+  while(game.stack.length)await game.resolveTop();
+
   assert.equal(game.monarch, opponent);
   assert.equal(game.monarchSince.sourceName, 'Willie Lumpkin, Postman');
   assert.equal(game.monarchSince.reason, 'combat damage');

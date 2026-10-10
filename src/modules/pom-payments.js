@@ -43,6 +43,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  C.spent=(g,p,action,unit)=>{if(!action)return;for(const k of ['pomDesertMana','pomTreasureMana','pomCopyMana'])if(unit[k])action[k]=(action[k]||0)+1;};
  const pay=G.payMana;G.payMana=function(p,cost,action,...args){if(action)action.player=p;return pay.call(this,p,cost,action,...args);};
  S['Thieving Varmint'].mana.restrict=(g,s,source)=>!!s?.card&&!s.isAbility&&s.card.owner!==source.ctrl;
+ S['Thieving Varmint'].mana.freezeRestrictV20=(g,source)=>{const producer=source.ctrl;return(g,s)=>!!s?.card&&!s.isAbility&&s.card.owner!==producer;};
  const abilityCost=G.abilityManaCost;G.abilityManaCost=function(p,s,raw,ctx={}){
   const cost=abilityCost.call(this,p,s,raw,ctx);
   if(ctx.kind==='equip'||ctx.ability?.oracleEquip){const hosts=new Map();for(const aura of C.sources(this,p,'pomStrongBack'))if(!ctx.targets?.length||ctx.targets.flat(Infinity).some(c=>c.iid===aura.attachedTo))hosts.set(aura.attachedTo,(hosts.get(aura.attachedTo)||0)+3);cost.generic=Math.max(0,cost.generic-Math.max(0,...hosts.values()));}

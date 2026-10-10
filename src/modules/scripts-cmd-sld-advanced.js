@@ -41,7 +41,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   S['Szadek, Lord of Secrets'] = {kws: ['flying'], replace: [{event: 'damage', applies: (g, d, s) => d.src === s && d.combat && d.target instanceof M.Player, run: async (g, d, s) => {
     g.addCounters(s, '+1/+1', d.n, false, s.ctrl); await g.mill(d.target, d.n); return 0;
   }}]};
-  S['Throne of Eldraine'] = {cslThrone: true, asEnters: async (g, c) => {c.meta.cslColor = await C.color({g, src: c, you: c.ctrl});}, mana: {cost: {tap: true}, produce: (g, c) => c.meta.cslColor ? [{[c.meta.cslColor]: 4}] : [], restrict: (g, action, source) => {
-    if (!action?.card || action.isAbility) return false; const colors = M.CDK.castColors(g, action.card, action.castOpts || {}); return colors.length === 1 && colors[0] === source.meta.cslColor;
+  const throneManaAllows = (g, action, color) => {
+    if (!action?.card || action.isAbility) return false; const colors = M.CDK.castColors(g, action.card, action.castOpts || {}); return colors.length === 1 && colors[0] === color;
+  };
+  S['Throne of Eldraine'] = {cslThrone: true, asEnters: async (g, c) => {c.meta.cslColor = await C.color({g, src: c, you: c.ctrl});}, mana: {cost: {tap: true}, produce: (g, c) => c.meta.cslColor ? [{[c.meta.cslColor]: 4}] : [], restrict: (g, action, source) => throneManaAllows(g, action, source.meta.cslColor), freezeRestrictV20: (g, source) => {
+    const color = source.meta.cslColor; return (g, action) => throneManaAllows(g, action, color);
   }}, abilities: [{label: 'Spend three mana of the chosen color: draw two', cost: {mana: '{3}', tap: true}, cslColoredPayment: true, run: ctx => C.draw(ctx, 2)}]};
 })();

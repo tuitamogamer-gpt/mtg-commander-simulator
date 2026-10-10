@@ -124,7 +124,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Dragonmaster Outcast'] = { triggers: [{
     on: 'upkeep', desc: 'Create a 5/5 Dragon',
     filter: (g, self, data) => data.player === self.ctrl && g.lands(self.ctrl).length >= 6,
-    run: async ctx => { await ctx.g.makeTokens('temurDragon55', ctx.you); },
+    run: async ctx => { if(ctx.g.lands(ctx.you).length>=6)await ctx.g.makeTokens('temurDragon55', ctx.you); },
   }] };
   SC['Deceptive Frostkite'] = {
     asEnters: async (g, card) => {
@@ -765,7 +765,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: COLORS,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
       cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-      restrict: (g, action) => action && !action.isAbility && action.card && action.card.is('Creature') && isDragon(action.card),
+      restrict: (g, action) => action?.card && !action.isAbility && !action.isSpecialAction && !action.foretellAction && !action.turnFaceUp &&
+        g.castHasType(action.card, action.castOpts || {}, 'Creature') &&
+        (g.castChangelingV16(action.card, action.castOpts || {}) || g.castSubtypesV16(action.card, action.castOpts || {}).includes(MTG.c1719TextType(g, 'Dragon'))),
     }],
     abilities: [{
       label: 'Return a Dragon creature or Ugin planeswalker', cost: { mana: '{2}', tap: true, sacSelf: true },

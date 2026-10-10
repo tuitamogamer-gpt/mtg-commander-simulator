@@ -433,7 +433,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if(target.controller==='opponent'&&object.ctrl===controller||target.controller==='you'&&object.ctrl!==controller)return false;
         const card=object.card,castOpts=object.castOpts||{},adventure=castOpts.adventure&&card.def.adventure;
-        const copyDef=object.oracleDefinition,spellColors=copyDef?.colorsOverride||card.castMeta?.spellColors||card.colors;
+        const copyDef=object.oracleDefinition;
+        let colorSource=card;
+        if(object.isCopy){
+          const definition=copyDef||game.castDefinition(card,castOpts);
+          colorSource=Object.assign(MTG.OracleV8Faces.spellSource(card,MTG.OracleV88?.unpaintCastDefinition(definition)||definition,object.ctrl),{
+            oracleStackObject:object,owner:object.owner||object.ctrl,
+            castMeta:{...(card.castMeta||{}),alt:castOpts,x:object.x,
+              spellColors:copyDef?.colorsOverride||object.spellColors||MTG.OracleV88?.baseSpellColors(card.castMeta)||card.castMeta?.spellColors||MTG.C1920.castColors(game,card,castOpts)},
+          });
+        }
+        const spellColors=colorSource.colors;
         if(target.colorsAny&&!target.colorsAny.some(color=>spellColors.includes(color)))return false;
         const targetColors={white:'W',blue:'U',black:'B',red:'R',green:'G'};
         if(target.color&&(targetColors[target.color]&&!spellColors.includes(targetColors[target.color])||target.color==='colorless'&&spellColors.length!==0||target.color==='multicolored'&&spellColors.length<2||target.color==='monocolored'&&spellColors.length!==1))return false;

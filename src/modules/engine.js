@@ -442,7 +442,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.attacking = null; card.blocking = null; card.blockedBy = [];
       card.damage = 0; card.deathtouched = false; card.regenShield = 0;
       if (card.isToken && toZone !== 'battlefield') {
-        for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
         card.zone = 'ceased';
         return 'ceases to exist';
       }
@@ -1188,7 +1187,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // CR 610.3: expiration creates an immediate one-shot effect, not a
       // delayed triggered ability. Remove records before nested moves.
       if(this._simultaneousLeaveSources?.length)return;
-      const expired=(this.oracleExileDurations||[]).filter(row=>row.source.zone!=='battlefield'||row.source.zoneVersion!==row.sourceZoneVersion);
+      const expired=(this.oracleExileDurations||[]).filter(row=>row.monarchPlayer!==undefined?row.monarchExpired:row.source.zone!=='battlefield'||row.source.zoneVersion!==row.sourceZoneVersion);
       this.oracleExileDurations=(this.oracleExileDurations||[]).filter(row=>!expired.includes(row));
       const returning=expired.flatMap(row=>row.cards.map(entry=>({...entry,to:row.returnZone||'battlefield'}))).filter(({card,zoneVersion})=>card.zone==='exile'&&card.zoneVersion===zoneVersion);
       if(returning.length)await this.withBattlefieldEntryBatch(async()=>{for(const {card,to} of returning)if(to==='battlefield')await this.putPermanentOntoBattlefield(card,card.owner);else await this.move(card,to);});
@@ -1692,7 +1691,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const def = typeof sp === 'string' ? MTG.TOKENS[sp] : sp;
         if (!def) { continue; }
         const isCopy = opts.copyOf && (Array.isArray(spec) ? spec.includes(sp) : sp === spec)||creationProposalV66?.copyDefinitionsV66?.has(def);
-        const c = new CardInst(isCopy ? def : MTG.tokenDefinitionForCreation(def), ctrl);
+        // A permanent spell copy becomes a token without being created again
+        // (CR 608.3f), so its stack owner survives a controller change.
+        const c = new CardInst(isCopy ? def : MTG.tokenDefinitionForCreation(def), opts.fromSpellCopy && opts.owner ? opts.owner : ctrl);
         c.isToken = true;
         if (isCopy) c.isCopyOf = def;
         c.zone = 'nowhere';
@@ -1926,6 +1927,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const made = await this.makeTokens(def, ctrl, {
         n: opts.n === undefined ? 1 : opts.n, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
         chooseAttacking: opts.chooseAttacking, noReplace: opts.noReplace, fromSpellCopy: opts.fromSpellCopy, haste: opts.haste,
+        ...(opts.fromSpellCopy ? {owner: opts.owner} : {}),
         castMeta: opts.castMeta, entryMeta: opts.entryMeta,
         ...(Object.hasOwn(opts, 'attachTo') ? {attachTo: opts.attachTo} : {}),
       });
@@ -2079,6 +2081,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // impossible to miss even when no card triggers from it.
       this.note('monarchChanged', payload);
       await this.emit('monarchChanged', payload);
+      // A Palace Jailer duration ends on an actual opponent taking the crown,
+      // independently of the Jailer or its later battlefield incarnations.
+      for (const row of this.oracleExileDurations || []) {
+        if (row.monarchPlayer !== undefined && this.players[row.monarchPlayer]?.opponents(this).includes(player)) row.monarchExpired = true;
+      }
+      await this.returnOracleExiles();
       return true;
     }
 
@@ -2173,7 +2181,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async _dealDamageBatch(hits,opts={}){
       // A single instruction damages each recipient once per source. Snapshot
       // amounts and source keywords before wither/counters change the board.
-      const grouped=[],batch={traits:new Map(),lifelink:new Map(),lifeLoss:new Map(),snapshots:new Map(),monarch:this.monarch,lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
+      const grouped=[],batch={traits:new Map(),lifelink:new Map(),lifeLoss:new Map(),snapshots:new Map(),lifeAtStart:new Map(this.alivePlayers().map(player=>[player,player.life])),monarch:this.monarch,initiative:this.initiative,initiativeControllers:new Set(),lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
       for(const hit of hits){
         if(!hit.target||!(hit.n>0))continue;
         const existing=grouped.find(row=>row.src===hit.src&&row.target===hit.target);
@@ -2245,8 +2253,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           sourceVersion: snap.zoneVersion, subtypes: snap.subtypes.slice(), changeling: snap.changeling,
         });
       }
-      if (opts.combat && this.monarch === p && src && src.ctrl && src.ctrl !== p) {
-        await this.becomeMonarch(src.ctrl, { reason: 'combat damage', source: src });
+      const damagedMonarch = opts._damageBatch ? opts._damageBatch.monarch : this.monarch;
+      const combatSource = opts.combat && src ? oracleHit?.sourceSnap || src._oracleDamageSnapshot ||
+        opts._damageBatch?.snapshots?.get(src) || this.snapshot(src,false) : null;
+      if (opts.combat && damagedMonarch === p && combatSource?.types.includes('Creature')) {
+        // CR 725.2: each creature's damage creates a source-less ability
+        // controlled by the monarch. Simultaneous hits all observe the crown
+        // at damage time, and each damaging controller is fixed then.
+        const controller = combatSource.ctrl;
+        this.queueTrigger({ctrl:p,name:'Monarch — combat damage changes the crown',run:async ctx=>{
+          await ctx.g.becomeMonarch(controller,{reason:'combat damage',source:src});
+        }});
+      }
+      const damagedInitiative=opts._damageBatch?opts._damageBatch.initiative:this.initiative;
+      if(opts.combat&&damagedInitiative===p&&combatSource?.types.includes('Creature')){
+        // CR 726.2 groups simultaneous creatures by their controller. The
+        // source-less ability belongs to the holder at damage time.
+        const controller=combatSource.ctrl,controllers=opts._damageBatch?.initiativeControllers;
+        if(!controllers?.has(controller)){
+          controllers?.add(controller);
+          this.queueTrigger({ctrl:p,name:'Take the initiative after combat damage',run:ctx=>ctx.g.takeInitiative(controller)});
+        }
       }
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;
       const infect = this.damageSourceTrait(src,'infect',opts)||(MTG.OracleV20?.handlers||[]).some(handler=>handler.damageAsInfect?.(this,p,src,opts)===true);
@@ -2291,24 +2318,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!(n > 0)) { if (!opts.deferSBA) await this.checkSBA(); return 0; }
       const oracleHit=MTG.OracleV8DamageEvents?.capture(this,src,target,n,opts);
       this.recordDamageResult(src, target, n, opts);
-      if (target.is('Battle')) {
-        this.removeCounters(target, 'defense', Math.min(n, target.counters.defense || 0));
-        await this.applyDamageLifelink(src,n,opts);
-        this.lg(`${src ? src.name : 'Source'} deals ${n} damage to battle ${target.name}.`, 'dmg');
-        target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
-        this.note('gameEffect', {
-          kind: 'damage', targetKind: 'permanent', target, targetCard: target,
-          source: src || null, amount: n, combat: !!opts.combat,
-          combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
-        });
-        await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
-      await this.emitOracleDamage(oracleHit);
-        if (!opts.deferSBA) await this.checkSBA();
-        return n;
-      }
-      if (target.is('Planeswalker')) {
-        this.removeCounters(target, 'loyalty', n);
-        this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete planeswalkeru ${target.name}.`, 'dmg');
+      // CR 120.3: an animated battle or planeswalker is also a creature.
+      // Its one damage event produces every applicable card-type result.
+      const creature = target.is('Creature'), battle = target.is('Battle'), walker = target.is('Planeswalker');
+      if (battle) this.removeCounters(target, 'defense', Math.min(n, target.counters.defense || 0));
+      if (walker) this.removeCounters(target, 'loyalty', n);
+      if (!creature && (battle || walker)) {
+        this.lg(`${src ? src.name : 'Source'} deals ${n} damage to ${target.name}.`, 'dmg');
         await this.applyDamageLifelink(src,n,opts);
         target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
         this.note('gameEffect', {
@@ -3296,9 +3312,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // Weathered Sentinels: "can attack players who attacked you last turn
           // as though it didn't have defender" — bez ovoga je recalc svejedno
           // postavljao cantAttack, pa karta nikad nije mogla napasti.
-          const revenge = c.def.canAttackRevenge &&
-            (((c.ctrl.prevAttackers && c.ctrl.prevAttackers.size) || 0) +
-             ((c.ctrl.lastAttackers && c.ctrl.lastAttackers.size) || 0)) > 0;
+          const revenge = c.def.canAttackRevenge && !c.cur.abilitiesDisabled &&
+            c.ctrl.opponents(this).some(player => (player.c1719PreviousTurnAttacks || []).includes(c.ctrl.idx));
           c.cur.cantAttack = c.cur.cantAttack ||
             (!c.meta.canAttackDefender && !c.cur.defenderCanAttack && !revenge);
         }
@@ -3468,19 +3483,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // instant or sorcery. Prowess lives on `castNonCreature`, Manaform on
         // `cast`, and other engines use castFirst/castSecond.
         let times = nativeTimes;
+        // Leave triggers look back at the battlefield immediately before
+        // departure, including doublers that leave in the same instruction.
+        // Reuse each view so filters can still distinguish "another" source.
+        const triggerViews = new Map();
+        const triggerView = (source, snap) => {
+          if (!snap) return source;
+          if (!triggerViews.has(source)) triggerViews.set(source, {
+            ...snap, zone: 'battlefield', phasedOut: false, meta: snap.sourceMeta,
+            cur: { abilitiesDisabled: snap.abilitiesDisabled },
+            is: type => snap.types.includes(type),
+            hasSub: type => snap.subtypes.includes(type) || snap.changeling && MTG.CREATURE_SUBTYPES.has(type),
+            kw: keyword => snap.kw.includes(keyword),
+          });
+          return triggerViews.get(source);
+        };
+        const observedSource = triggerView(card, history);
+        const doublingSources = new Map(this.bf().map(source => [source, {card: source}]));
+        if (['dies','lto','sacrificed','destroyedV74','exploited','zkExiled','permanentUnattachedV20'].includes(name)) {
+          for (const row of this._simultaneousLeaveSources || []) doublingSources.set(row.card, row);
+          if (name === 'zkExiled') for (const row of data.oracleBatch || []) doublingSources.set(row.card, row);
+          if (data.card && data.snap) doublingSources.set(data.card, {card: data.card, snap: data.snap});
+        }
+        const activeDoublers = [...doublingSources.values()].map(row => triggerView(row.card, row.snap))
+          .filter(source => !source.cur?.abilitiesDisabled);
         const castOrCopyIS = data && data.isInstantSorcery &&
           (name === 'spellCopied' || name === 'targeted' || name === 'cast' || name.startsWith('cast'));
         const castOrCopyController = data && (data.player || data.ctrl || data.byPlayer);
-        if (castOrCopyIS && castOrCopyController === card.ctrl) {
-          times += nativeTimes * this.bf().filter(v => v.def.doublesMagecraft && v.ctrl === card.ctrl).length;
+        if (observedSource.zone==='battlefield' && castOrCopyIS && castOrCopyController === observedSource.ctrl) {
+          times += nativeTimes * activeDoublers.filter(v => v.def.doublesMagecraft && v.ctrl === observedSource.ctrl).length;
         }
-        for (const doubler of this.bf()) {
-          if (doubler.ctrl === card.ctrl && doubler.def.doubleTriggerFilter &&
-            doubler.def.doubleTriggerFilter(this, doubler, card, name, data)) times += nativeTimes;
+        for (const doubler of activeDoublers) {
+          if (observedSource.zone==='battlefield' && doubler.ctrl === observedSource.ctrl && doubler.def.doubleTriggerFilter &&
+            doubler.def.doubleTriggerFilter(this, doubler, observedSource, name, data)) times += nativeTimes;
         }
         times += nativeTimes * (MTG.OracleV20Permanents?.additionalTriggers(this,card,name,data,history,t) || 0);
         // Krang: draw-uzrokovani trigeri tvojih permanenata okidaju dodatni put
-        if (name === 'draw' && this.bf().some(v => v.def.doubleDrawTriggers && v.ctrl === card.ctrl)) times *= 2;
+        if (observedSource.zone==='battlefield' && name === 'draw') times += nativeTimes * activeDoublers.filter(v => v.def.doubleDrawTriggers && v.ctrl === observedSource.ctrl).length;
         // An explicit trigger limit also constrains additional-trigger effects.
         // A trigger for the first occurrence of an event can still be doubled.
         if (t.oncePerTurn && !t.firstTimeEachTurn || t.oncePerObjectTriggerV53) times = Math.min(1, times);
@@ -3488,6 +3527,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           this.queueTrigger({
             src: card,
             ...(history ? {sourceZoneVersion: history.zoneVersion, sourceMeta: history.sourceMeta,
+              sourceCopying: history.copying, sourceCopyEpoch: history.copyEpoch,
               sourceAttachedTo: history.attachedTo, sourceAttachedToZoneVersion: history.attachedHostVersion} : {}),
             ctrl: typeof t.controller === 'function'
               ? t.controller(this, card, data || {})
@@ -3515,7 +3555,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const dl = this.delayed.filter(d => d.on === name && (!d.filter || d.filter(this, data, d)));
       for (const d of dl) {
         if (d.once !== false) this.delayed.splice(this.delayed.indexOf(d), 1);
-        this.queueTrigger({ src: d.src, name: d.name || name, run: d.run, ctrl: d.ctrl, data, targets: d.targets, prepareTargets:d.prepareTargets, opt:d.opt });
+        this.queueTrigger({ src: d.src, name: d.name || name, run: d.run, ctrl: d.ctrl, data, targets: d.targets, prepareTargets:d.prepareTargets, opt:d.opt,
+          sourceZoneVersion:d.sourceZoneVersion,sourceMeta:d.sourceMeta,sourceUntapEpoch:d.sourceUntapEpoch,
+          sourceDurationControlEpoch:d.sourceDurationControlEpoch,sourcePhaseEpoch:d.sourcePhaseEpoch,
+          sourceCopying:d.sourceCopying,sourceCopyEpoch:d.sourceCopyEpoch });
       }
     }
     emitSync(name, data) { /* fire-and-forget for non-trigger notifications */ this.note(name, data || {}); }
@@ -3527,6 +3570,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (tr.src instanceof CardInst) {
         if (tr.sourceZoneVersion === undefined) tr.sourceZoneVersion = tr.src.zoneVersion;
         if (tr.sourceMeta === undefined) tr.sourceMeta = tr.src.meta;
+        if (tr.sourceCopying === undefined) tr.sourceCopying = !!tr.src.isCopyOf;
+        if (tr.sourceCopyEpoch === undefined) tr.sourceCopyEpoch = tr.src.copyEpoch || 0;
         if(tr.sourceUntapEpoch===undefined)tr.sourceUntapEpoch=tr.src.meta.oracleUntapEpoch||0;
         if(tr.sourceDurationControlEpoch===undefined)tr.sourceDurationControlEpoch=tr.src.meta.oracleDurationControl?.epoch||0;
         if(tr.sourcePhaseEpoch===undefined)tr.sourcePhaseEpoch=tr.src.meta.oraclePhaseEpoch||0;
@@ -3608,6 +3653,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // able to distinguish a permanent that left and later returned.
         sourceZoneVersion: tr.sourceZoneVersion ?? (tr.src instanceof CardInst ? tr.src.zoneVersion : null),
         sourceMeta: tr.sourceMeta ?? tr.src?.meta,
+        sourceCopying: tr.sourceCopying,
+        sourceCopyEpoch: tr.sourceCopyEpoch,
         oncePerTurnOnUse: tr.oncePerTurnOnUse,
         sourceUntapEpoch:tr.sourceUntapEpoch,sourceDurationControlEpoch:tr.sourceDurationControlEpoch,sourcePhaseEpoch:tr.sourcePhaseEpoch,
         // Attachment-triggered abilities may need last known information if

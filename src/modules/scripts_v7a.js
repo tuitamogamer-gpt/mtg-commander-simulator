@@ -407,7 +407,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         on: 'draw', desc: '+1/+1 counter on Baxter', filter: (g, self, d) => d.player === self.ctrl,
-        run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
+        run: async ctx => { if(ctx.src.zone==='battlefield'&&!ctx.src.phasedOut&&ctx.src.zoneVersion===ctx.sourceZoneVersion)ctx.g.addCounters(ctx.src, '+1/+1', 1); },
       },
     ],
   };
@@ -555,7 +555,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     doubleDrawTriggers: true,
     triggers: [{
       on: 'draw', desc: '+1/+1 (second card)', filter: (g, self, d) => d.nth === 2,
-      run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
+      run: async ctx => { if(ctx.src.zone==='battlefield'&&!ctx.src.phasedOut&&ctx.src.zoneVersion===ctx.sourceZoneVersion)ctx.g.addCounters(ctx.src, '+1/+1', 1); },
     }],
   };
   SC['Leatherhead, Iron Gator'] = {

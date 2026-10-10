@@ -237,7 +237,7 @@ test("Hazel's Brewmaster pamti ciljanu egziliranu creature kartu i kopira njene 
   game.recalc();
 
   assert.equal(creature.zone, 'exile');
-  assert.deepEqual(Array.from(brewmaster.meta.brewedCards), [creature.iid]);
+  assert.deepEqual(Array.from(MTG.OracleV24Permanents.linked(game, brewmaster, 'hazel-brewmaster'), card => card.iid), [creature.iid]);
   const food = game.bf().find(c => c.ctrl === caster && c.hasSub('Food'));
   assert.ok(food);
   assert.ok(food.cur.extraAbilities.some(a => /Draw 2/.test(a.label)));

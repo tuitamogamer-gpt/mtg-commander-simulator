@@ -706,29 +706,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         label: 'Convert an exiled card', cost: { tap: true },
-        cond: (g, self) => (self.meta.converted || []).some(iid => {
-          const card = g.byIid(iid); return card && card.zone === 'exile';
-        }),
+        cond: (g, self) => U.OracleV24Permanents.linked(g, self, 'currency-converter').length > 0,
         run: async ctx => {
-          const pool = (ctx.src.meta.converted || []).map(iid => ctx.g.byIid(iid)).filter(card => card && card.zone === 'exile');
+          const pool = U.OracleV24Permanents.linked(ctx.g, ctx.src, 'currency-converter', ctx);
+          if (!pool.length) return;
           const picked = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Return an exiled card to the graveyard', aiHint: { kind: 'bestCard' },
           });
           const card = picked[0];
-          if (!card) return;
+          if (!card || !pool.includes(card) || !U.OracleV24Permanents.linked(ctx.g, ctx.src, 'currency-converter', ctx).includes(card)) return;
           await ctx.g.move(card, 'graveyard');
-          ctx.src.meta.converted = (ctx.src.meta.converted || []).filter(iid => iid !== card.iid);
           if (card.is('Land')) await ctx.g.makeTokens('treasure', ctx.you);
           else await ctx.g.makeTokens('rogue22', ctx.you);
         },
       },
     ],
     triggers: [{
-      on: 'discarded', desc: 'Exile the discarded card', filter: (g, self, d) => d.player === self.ctrl && d.card.zone === 'graveyard', opt: true,
+      on: 'discarded', desc: 'Exile the discarded card', filter: (g, self, d) => {
+        if (d.player !== self.ctrl || d.card.zone !== 'graveyard') return false;
+        d.currencyConverterDiscardVersion ??= d.card.zoneVersion;
+        return true;
+      }, opt: true,
       run: async ctx => {
         const card = ctx.data.card;
-        await ctx.g.move(card, 'exile');
-        ctx.src.meta.converted = (ctx.src.meta.converted || []).concat(card.iid);
+        if (card.zone !== 'graveyard' || card.zoneVersion !== ctx.data.currencyConverterDiscardVersion) return;
+        await U.OracleV24Permanents.acquire(ctx, { from: 'graveyard', link: 'currency-converter' }, [card]);
       },
     }],
   };
@@ -1669,8 +1671,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) await ctx.g.exileCard(c);
       await ctx.g.moveGraveyardBatch(ctx.g.players.flatMap(q => q.graveyard), 'exile');
       const card = ctx.src;
-      if (card.zone === 'stack' || card.zone === 'graveyard') {
-        ctx.g.remove(card); card.zone = 'library'; ctx.you.library.unshift(card);
+      if (!ctx.so?.isCopy && (card.zone === 'stack' || card.zone === 'graveyard')) {
+        await ctx.g.move(card, 'library', { toBottom: true });
       }
       ctx.g.lg('Ultimate Nullification: all creatures and graveyards exiled!');
     },
@@ -2069,20 +2071,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           const t = ctx.targets[0];
           if (t) {
+            const version = t.zoneVersion;
             await ctx.g.exileCard(t);
-            ctx.src.meta.prisoner = t.iid;
-            ctx.src.meta.jailerMonarch = ctx.you;
+            if (t.zone !== 'exile' || t.zoneVersion !== version + 1 || t.isToken) return;
+            (ctx.g.oracleExileDurations ||= []).push({
+              source: ctx.src, sourceZoneVersion: ctx.sourceZoneVersion,
+              cards: [{card: t, zoneVersion: t.zoneVersion}],
+              monarchPlayer: ctx.you.idx, monarchExpired: false,
+            });
             ctx.g.lg(`${t.name} is imprisoned until an opponent becomes the monarch.`);
           }
-        },
-      },
-      {
-        on: 'monarchChanged', desc: 'Open the prison',
-        filter: (g, self, d) => !!self.meta.prisoner && d.player !== self.meta.jailerMonarch,
-        run: async ctx => {
-          const prisoner = ctx.g.byIid(ctx.src.meta.prisoner);
-          delete ctx.src.meta.prisoner;
-          if (prisoner && prisoner.zone === 'exile') await ctx.g.move(prisoner, 'battlefield', { ctrl: prisoner.owner });
         },
       },
     ],

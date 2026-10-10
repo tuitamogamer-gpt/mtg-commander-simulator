@@ -65,8 +65,9 @@
  }});
  M.OracleV20Damage={sourceThreat(g,p,c){return !c?-10000:c.ctrl===p?-1000:10+Math.max(0,Number(c.power)||0)+(c.zone==='stack'?20:0);},spellKeyword(g,source,keyword){
   if(source?.oracleFrozenSpellTraitsV64===true)return (source._oracleDamageSnapshot?.kw||[]).includes(keyword);
-  const snapshot=source?._oracleDamageSnapshot,types=snapshot?.types||source?.cur?.types||source?.def?.types||[],colors=snapshot?.colors||source?.colors||[],controller=snapshot?.ctrl||source?.ctrl;
-  if(!source||source.zone!=='stack'&&snapshot?.zone!=='stack'||!types.some(type=>['Instant','Sorcery'].includes(type)))return false;
+  const snapshot=source?._oracleDamageSnapshot,spell=snapshot?snapshot.types?.some(type=>['Instant','Sorcery'].includes(type)):source?.is?.('Instant')||source?.is?.('Sorcery');
+  if(!source||source.zone!=='stack'&&snapshot?.zone!=='stack'||!spell)return false;
+  const colors=snapshot?.colors||source?.colors||[],controller=snapshot?.ctrl||source?.ctrl;
   return g.bf().some(permanent=>permanent.ctrl===controller&&!permanent.cur?.abilitiesDisabled&&permanent.def.oracleSpellKeywordsV20?.some(rule=>rule.keywords.includes(keyword)&&(!rule.colors||rule.colors.some(color=>colors.includes(color)))));
  },temporaryCandidates(g,data){
   return g.untilEffects.filter(s=>s.kind==='oracleDamageRuleV20'&&(!s.used||data.batch&&s.batch===data.batch)&&(s.remaining>0||s.op.mode==='modify')&&matches(g,s.source,g.players[s.seat],s.op,data,s.records)).map(state=>({key:state,src:state.source,label:state.source.name+' — damage effect',apply:async()=>{const old=data.n;data.n=await replace(g,state.source,g.players[state.seat],state.op,data,state);if(state.op.mode==='prevent'&&old>data.n){g.note('gameEffect',{kind:'damagePrevented',target:data.target,amount:old-data.n,source:data.src});await g.emit('damagePrevented',{src:data.src,target:data.target,...(data.target instanceof M.Player?{player:data.target}:{}),n:old-data.n,combat:data.combat});}}}));

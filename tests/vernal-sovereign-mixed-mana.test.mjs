@@ -8,14 +8,14 @@ async function paidPermanent(f,name){for(const c of colors)f.a.pool[c]=10;const 
 async function setup(role){const f=context(M,role);f.jegantha=await paidPermanent(f,'Jegantha, the Wellspring');f.braider=await paidPermanent(f,'Flamebraider');f.ring=await paidPermanent(f,'Sol Ring');f.game.emptyPool();for(const card of [f.jegantha,f.braider,f.ring])card.sick=false;f.game.turnNo++;return f;}
 async function mana(f,card,colors){const source=f.game.manaSources(f.a,null).find(row=>row.card===card);assert.ok(source);assert.equal(await f.game.activateManaSource(f.a,source,source.produce[0],null,colors),true);assert.equal(card.tapped,true);}
 const sourceMana=(f,source)=>Array.from(f.a.poolMeta||[]).filter(row=>row.source===source);
-function jeganthaProvenance(f,remaining){
+function jeganthaProvenance(f,remaining,ringFloating=false){
  const rows=sourceMana(f,f.jegantha);assert.deepEqual(rows.map(row=>[row.color,row.n,row.coloredOnly,row.oracleManaCreatureV20]).sort(),remaining.map(color=>[color,1,true,true]).sort(),'unspent Jegantha mana keeps its colored-only and creature provenance');
- assert.ok((f.a.poolMeta||[]).every(row=>row.source===f.jegantha||row.source===f.braider),'pool contains only the actual producing creatures');
+ assert.ok((f.a.poolMeta||[]).every(row=>row.source===f.jegantha||row.source===f.braider||ringFloating&&row.source===f.ring),'pool receipts contain only the actual producing sources');
 }
 const snapshot=f=>JSON.stringify({pool:f.a.pool,colored:f.a.coloredOnlyPool,meta:(f.a.poolMeta||[]).map(row=>({source:row.source.iid,n:row.n,color:row.color,coloredOnly:row.coloredOnly,restrictAbilities:row.restrictAbilities})),tapped:[f.jegantha,f.braider,f.ring].map(card=>card.tapped)});
 for(const role of ['human','ai'])for(const floating of [false,true])test(role+': Jegantha and Flamebraider '+(floating?'floating':'automatic')+' mana pay Vernal Sovereign once',async()=>{
  const f=await setup(role),{game,a}=f;await mana(f,f.jegantha,[]);
- if(floating){await mana(f,f.ring,[]);await mana(f,f.braider,['W','W']);const restricted=sourceMana(f,f.braider);assert.equal(restricted.length,1);assert.equal(restricted[0].n,2);assert.equal(restricted[0].coloredOnly,false);assert.equal(restricted[0].oracleManaCreatureV20,true);assert.equal(typeof restricted[0].restrict,'function');jeganthaProvenance(f,['W','U','B','R','G']);assert.equal(a.poolMeta.length,6);}
+ if(floating){await mana(f,f.ring,[]);await mana(f,f.braider,['W','W']);const restricted=sourceMana(f,f.braider);assert.equal(restricted.length,1);assert.equal(restricted[0].n,2);assert.equal(restricted[0].coloredOnly,false);assert.equal(restricted[0].oracleManaCreatureV20,true);assert.equal(typeof restricted[0].restrict,'function');const ring=sourceMana(f,f.ring);assert.deepEqual(ring.map(row=>[row.color,row.n,!!row.coloredOnly,!!row.oracleManaCreatureV20]),[['C',2,false,false]],'the native Sol Ring C2 receipt retains its ordinary artifact-source provenance');jeganthaProvenance(f,['W','U','B','R','G'],true);assert.equal(a.poolMeta.length,7);}
  const card=put(M,game,a,'Vernal Sovereign','hand'),cost=game.spellCost(a,card),before=snapshot(f),manaBefore=a.turnState.manaSpentOnSpells;
  assert.equal(game.canPayMana(a,cost,{card}),true);assert.equal(snapshot(f),before,'affordability is read only');
  assert.ok(game.castableList(a).some(entry=>entry.card===card&&!entry.alt),'printed normal cast is offered');

@@ -12,8 +12,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 // general way to serialize a function. So a snapshot is only taken at a moment
 // when none of those unsupported effects exist — in practice the start of a turn, which is a
 // natural resume point anyway and covers the large majority of turns. When a
-// turn begins with a lingering effect the previous snapshot is kept, so the
-// worst case is resuming one turn earlier rather than losing the game.
+// turn begins with a lingering effect the previous snapshot is kept together
+// with the recorded decisions needed to resume from that safe boundary.
 (function () {
   const U = MTG;
   const FORMAT = 2;
@@ -214,6 +214,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A snapshot is taken between turns, so the pool is empty and the turn
       // state is about to be replaced; both are restored for exactness anyway.
       pool: Object.assign({}, player.pool || {}),
+      coloredOnlyPool: Object.assign({}, player.coloredOnlyPool || {}),
+      persistMana: Object.assign({}, player.persistMana || {}),
       // Turn state is script-visible scratch too: it can hold card and player
       // references. Only the portable part is kept.
       turnState: plainMeta(player.turnState),
@@ -385,11 +387,74 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const captureEnchantmentReturn=effect=>({...effect,types:['Enchantment'],subtypes:[],keywords:[]});
   function currentEnchantmentReturns(game){const versions=new Map(game.battlefield.map(card=>[card.iid,card.zoneVersion]));return game.untilEffects.filter(effect=>isPlainEnchantmentReturn(effect)&&versions.get(effect.iid)===effect.zoneVersion);}
 
+  const EXILE_DURATION_FIELDS = new Set(['source','sourceIid','sourceZoneVersion','cards','returnZone','monarchPlayer','monarchExpired']);
+  const exileIdentity = value => Number.isSafeInteger(value) && value >= 0;
+  function portableExileDuration(row) {
+    return row && Object.keys(row).every(key => EXILE_DURATION_FIELDS.has(key)) &&
+      Number.isSafeInteger(row.source?.iid ?? row.sourceIid) && (row.source?.iid ?? row.sourceIid) > 0 &&
+      exileIdentity(row.sourceZoneVersion) && Array.isArray(row.cards) &&
+      row.cards.every(entry => entry && Object.keys(entry).every(key => ['card','zoneVersion'].includes(key)) &&
+        Number.isSafeInteger(entry.card?.iid) && entry.card.iid > 0 && exileIdentity(entry.zoneVersion)) &&
+      (row.returnZone === undefined || ['battlefield','hand','graveyard','exile','library'].includes(row.returnZone)) &&
+      (row.monarchPlayer === undefined || exileIdentity(row.monarchPlayer) && typeof row.monarchExpired === 'boolean');
+  }
+  function captureExileDuration(row) {
+    return {sourceIid: row.source?.iid ?? row.sourceIid, sourceZoneVersion: row.sourceZoneVersion,
+      cards: row.cards.map(entry => ({iid: entry.card.iid, zoneVersion: entry.zoneVersion})),
+      ...(row.returnZone === undefined ? {} : {returnZone: row.returnZone}),
+      ...(row.monarchPlayer === undefined ? {} : {monarchPlayer: row.monarchPlayer, monarchExpired: row.monarchExpired})};
+  }
+  function currentExileDurations(game) {
+    return (game.oracleExileDurations || []).flatMap(row => {
+      if (!row || !Array.isArray(row.cards)) return [row];
+      const cards = row.cards.filter(entry => entry.card?.zone === 'exile' && entry.card.zoneVersion === entry.zoneVersion);
+      return cards.length ? [{...row, cards}] : [];
+    });
+  }
+  const LINKED_EXILE_FIELDS = new Set(['source','sourceIid','sourceZoneVersion','link','lifetime','cards','hideaway']);
+  const validLinkLifetime = value => value === 'native' || typeof value === 'string' &&
+    /^copy:(0|[1-9]\d*)$/.test(value) && Number.isSafeInteger(Number(value.slice(5)));
+  function portableLinkedExile(row) {
+    return row && Object.keys(row).every(key => LINKED_EXILE_FIELDS.has(key)) &&
+      Number.isSafeInteger(row.sourceIid) && row.sourceIid > 0 && row.source?.iid === row.sourceIid &&
+      exileIdentity(row.sourceZoneVersion) && typeof row.link === 'string' && row.link.length > 0 && row.link.length <= 256 &&
+      validLinkLifetime(row.lifetime) && (row.hideaway === undefined || typeof row.hideaway === 'boolean') &&
+      Array.isArray(row.cards) && row.cards.length <= MAX_BASE_PT_EFFECTS && row.cards.every(entry =>
+        entry && Object.keys(entry).every(key => ['card','zoneVersion'].includes(key)) &&
+        Number.isSafeInteger(entry.card?.iid) && entry.card.iid > 0 && exileIdentity(entry.zoneVersion));
+  }
+  function currentLinkedExiles(game) {
+    return (game.oracleLinkedExiles || []).flatMap(row => {
+      if (!row || !Array.isArray(row.cards)) return [row];
+      const cards = row.cards.filter(entry => entry.card?.zone === 'exile' && entry.card.zoneVersion === entry.zoneVersion);
+      return cards.length ? [{...row, cards}] : [];
+    });
+  }
+  function captureLinkedExile(row) {
+    return {sourceIid: row.sourceIid, sourceZoneVersion: row.sourceZoneVersion, link: row.link, lifetime: row.lifetime,
+      cards: row.cards.map(entry => ({iid: entry.card.iid, zoneVersion: entry.zoneVersion})),
+      ...(row.hideaway === undefined ? {} : {hideaway: row.hideaway})};
+  }
+  const validRandomState = value => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff;
+  const validManaAmounts = amounts => amounts && typeof amounts === 'object' && !Array.isArray(amounts) &&
+    Object.entries(amounts).every(([color,n]) => ['W','U','B','R','G','C'].includes(color) && Number.isSafeInteger(n) && n >= 0);
+
   MTG.gameStateSnapshotBlockers = function (game) {
     const blockers = [];
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
+    // A physical entry copy needs both its original card definition and its
+    // active copy lifetime. Saving just the current catalog name loses both.
+    if (game.battlefield.some(card => card.isCopyOf && !card.isToken)) blockers.push('an unsupported non-token copy');
+    if (game.battlefield.some(card => card.meta?.oracleCopyState)) blockers.push('an unsupported temporary-copy history');
+    // A mana receipt may contain a frozen executable spending restriction and
+    // source-dependent riders. Keeping only its amount would change the game.
+    if (game.players.some(player => (player.poolMeta || []).some(row => Number(row.n) > 0))) blockers.push('floating mana with source-dependent rules');
+    if (currentExileDurations(game).some(row => !portableExileDuration(row)) ||
+      currentExileDurations(game).length > MAX_BASE_PT_EFFECTS) blockers.push('an unsupported exile duration');
+    if (currentLinkedExiles(game).some(row => !portableLinkedExile(row) || !game.byIid(row.sourceIid)) ||
+      currentLinkedExiles(game).length > MAX_BASE_PT_EFFECTS) blockers.push('an unsupported linked exile');
     const versions = cardVersions(game);
     const grantedKeywords = new Set(currentGrantedKeywords(game));
     const objectZoneReplacements=new Set(currentObjectZoneReplacements(game));
@@ -460,6 +525,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       format: FORMAT,
       turnNo: game.turnNo,
+      ...(validRandomState(game.rnd?.state) ? {randomState: game.rnd.state} : {}),
       bomDayNight:game.bomDayNight||null,bomPreviousActive:game.bomPreviousActive??null,bomMonarchAtTurnStart:game.bomMonarchAtTurnStart??null,
       c1719TurnDirection:game.c1719TurnDirection||1,
       damageHistory: captureDamageHistory(game),
@@ -484,6 +550,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       attackRestrictions: currentAttackRestrictions(game).map(captureAttackRestriction),
       grantedKeywords: currentGrantedKeywords(game).map(captureGrantedKeywords),
       objectZoneReplacements: currentObjectZoneReplacements(game).map(effect=>({...effect})),
+      exileDurations: currentExileDurations(game).map(captureExileDuration),
+      linkedExiles: currentLinkedExiles(game).map(captureLinkedExile),
       cards,
     };
   }
@@ -528,6 +596,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.rad??0)&&(player.counters?.rad??0)>=0), 'invalid player rad counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
+    assert(snapshot.randomState === undefined || validRandomState(snapshot.randomState), 'invalid random state.');
     const landTypeEffects=snapshot.landTypeEffects??[];
     const enchantmentReturns=snapshot.enchantmentReturns??[];
     assert(Array.isArray(enchantmentReturns)&&enchantmentReturns.length<=MAX_BASE_PT_EFFECTS&&enchantmentReturns.every(isPlainEnchantmentReturn),'invalid enchantment return effects.');
@@ -537,6 +606,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'invalid base power/toughness effects.');
     const attackRestrictions = snapshot.attackRestrictions ?? [];
     const seat = index => Number.isSafeInteger(index) && index >= 0 && index < game.players.length;
+    const exileDurations = snapshot.exileDurations ?? [];
+    const savedCards = new Map((snapshot.cards || []).map(card => [card.iid, card]));
+    assert(Array.isArray(exileDurations) && exileDurations.length <= MAX_BASE_PT_EFFECTS && exileDurations.every(row =>
+      row && Object.keys(row).every(key => ['sourceIid','sourceZoneVersion','cards','returnZone','monarchPlayer','monarchExpired'].includes(key)) &&
+      Number.isSafeInteger(row.sourceIid) && row.sourceIid > 0 && exileIdentity(row.sourceZoneVersion) &&
+      (row.monarchPlayer === undefined ? savedCards.has(row.sourceIid) : seat(row.monarchPlayer) && typeof row.monarchExpired === 'boolean') &&
+      (row.returnZone === undefined || ['battlefield','hand','graveyard','exile','library'].includes(row.returnZone)) &&
+      Array.isArray(row.cards) && row.cards.length <= MAX_BASE_PT_EFFECTS && row.cards.every(entry =>
+        entry && Object.keys(entry).every(key => ['iid','zoneVersion'].includes(key)) && savedCards.has(entry.iid) && exileIdentity(entry.zoneVersion))), 'invalid exile durations.');
+    const linkedExiles = snapshot.linkedExiles ?? [];
+    assert(Array.isArray(linkedExiles) && linkedExiles.length <= MAX_BASE_PT_EFFECTS && linkedExiles.every(row =>
+      row && Object.keys(row).every(key => ['sourceIid','sourceZoneVersion','link','lifetime','cards','hideaway'].includes(key)) &&
+      savedCards.has(row.sourceIid) && exileIdentity(row.sourceZoneVersion) &&
+      typeof row.link === 'string' && row.link.length > 0 && row.link.length <= 256 && validLinkLifetime(row.lifetime) &&
+      (row.hideaway === undefined || typeof row.hideaway === 'boolean') && Array.isArray(row.cards) && row.cards.length <= MAX_BASE_PT_EFFECTS &&
+      row.cards.every(entry => entry && Object.keys(entry).every(key => ['iid','zoneVersion'].includes(key)) &&
+        savedCards.get(entry.iid)?.zone === 'exile' && (savedCards.get(entry.iid)?.zoneVersion ?? 0) === entry.zoneVersion && exileIdentity(entry.zoneVersion))),
+      'invalid linked exiles.');
+    assert(snapshot.players.every(player => [player.pool ?? {},player.coloredOnlyPool ?? {},player.persistMana ?? {}].every(validManaAmounts)), 'invalid saved mana.');
     assert(Array.isArray(attackRestrictions) && attackRestrictions.length <= MAX_BASE_PT_EFFECTS &&
       attackRestrictions.every(effect => validAttackRestriction(effect, seat)), 'invalid attack restrictions.');
     const grantedKeywords = snapshot.grantedKeywords ?? [];
@@ -576,6 +664,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       turn: snapshot.damageHistory.turn,
       bySource: new Map(snapshot.damageHistory.bySource.map(([source, targets]) => [source, new Set(targets)])),
     } : undefined;
+    game.oracleExileDurations = [];
+    game.oracleLinkedExiles = [];
     if (snapshot.diplomacy) game.diplomacy = JSON.parse(JSON.stringify(snapshot.diplomacy));
     for (const goad of snapshot.goads || []) {
       game.untilEffects.push({
@@ -655,6 +745,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.meta.playableCondition = (g,p) => source.zone === 'battlefield' && source.zoneVersion===version && !source.phasedOut && source.ctrl===p && source.meta.prepared && source.meta.preparedCopy === card.iid;
     }
 
+    game.oracleExileDurations = exileDurations.map(row => ({
+      source: byIid.get(row.sourceIid) || null, sourceIid: row.sourceIid, sourceZoneVersion: row.sourceZoneVersion,
+      cards: row.cards.map(entry => ({card: byIid.get(entry.iid), zoneVersion: entry.zoneVersion})),
+      ...(row.returnZone === undefined ? {} : {returnZone: row.returnZone}),
+      ...(row.monarchPlayer === undefined ? {} : {monarchPlayer: row.monarchPlayer, monarchExpired: row.monarchExpired}),
+    }));
+    game.oracleLinkedExiles = linkedExiles.map(row => ({
+      source: byIid.get(row.sourceIid), sourceIid: row.sourceIid, sourceZoneVersion: row.sourceZoneVersion,
+      link: row.link, lifetime: row.lifetime,
+      cards: row.cards.map(entry => ({card: byIid.get(entry.iid), zoneVersion: entry.zoneVersion})),
+      ...(row.hideaway === undefined ? {} : {hideaway: row.hideaway}),
+    }));
+
     for(const effect of landTypeEffects){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push(captureLandTypes(effect));}
     for(const effect of enchantmentReturns){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push(captureEnchantmentReturn(effect));}
 
@@ -711,7 +814,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.maximumHandSizeEffectsV74 = (saved.maximumHandSizeEffectsV74||[]).map(e=>({n:e.n,timestamp:e.timestamp}));
       player.bdfApproaches = Number(saved.bdfApproaches)||0;
       player.pool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, saved.pool);
-      player.coloredOnlyPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+      player.coloredOnlyPool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, saved.coloredOnlyPool);
+      player.persistMana = Object.assign({}, saved.persistMana);
       player.poolMeta = [];
       player.turnState = Object.assign(player.freshTurnState(), saved.turnState || {});
       player.c1719PreviousTurnAttacks=(saved.c1719PreviousTurnAttacks||[]).slice();
@@ -737,11 +841,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const highestTimestamp = game.battlefield.concat(game.untilEffects,game.players.flatMap(p=>[...p.emblems,{timestamp:p.noMaxHandTimestampV74},...(p.maximumHandSizeEffectsV74||[])])).reduce((max, entry) =>
       Math.max(max, ...[entry.timestamp, entry.oracleLayerTimestamp].filter(Number.isSafeInteger)), 0);
     MTG.reserveTimestamp(highestTimestamp);
-    // The random stream cannot be captured (it lives in a closure), so a
-    // resumed game gets a fresh but deterministic one: the same save always
-    // continues the same way.
+    // New checkpoints resume the exact stream. Older snapshots retain their
+    // established deterministic fallback because they have no stream state.
     const seed = Number(game.opts && game.opts.seed) || 1;
-    game.rnd = MTG.mulberry32((seed ^ (snapshot.turnNo + 1) * 2654435761) >>> 0);
+    game.rnd = MTG.mulberry32(snapshot.randomState ?? ((seed ^ (snapshot.turnNo + 1) * 2654435761) >>> 0));
     game.recalc();
     game.diplomacyRefresh?.();
     return game;

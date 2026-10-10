@@ -44,22 +44,25 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 
 ### Current catalog
 
-Repository inventory checked on **8 October 2026**:
+Current inventory, compared with the pinned **9 October 2026** Oracle and paper-printing snapshots:
 
 | Measure | Available |
 | --- | ---: |
 | Built-in precon decks | **175**, each with 100 cards |
-| Runtime card definitions | **29,799** |
-| Definitions eligible for deck import | **29,798** |
-| Generic Oracle batches | **258**, containing 25,800 definitions |
+| Runtime card definitions | **32,136** |
+| Definitions eligible for deck import | **32,135** |
+| Generic Oracle batches | **266**, containing 28,137 definitions |
+| Remaining paper/Commander Oracle IDs in the pinned comparison | **0** of 32,115 |
 | Dedicated commander videos | **28**, across the original 27 decks |
 
 These counts describe the implemented catalog, not every Magic card or every possible rules interaction. **Brisela, Voice of Nightmares** is a meld result and cannot be imported as a standalone card. Some original precon lists retain cards regardless of banlist status; acceptance by this simulator is not a current tournament-legality check.
 
-Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Its comparison feed is pinned to **7 October 2026**, with native additions and older import snapshots recorded separately. The seven manual Commander staples below are included in that export.
+Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Paper availability aggregates all paper printings by Oracle ID; names and face aliases are resolved by the deck importer. A complete pinned comparison does not establish correctness for every rules interaction or cover later cards and legality changes.
 
 ### Recent additions
 
+- **9 October catalog completion:** the latest 1,021 definitions in batches 0264–0266 complete the pinned paper/Commander comparison. [Validation report](reports/oracle-import/validation-0264-0266.md)
+- **Engine behavior audit:** actual payment, priority, copied spells, combat, triggers, zone identity and account save/continue are checked beyond catalog inventory. [10 October audit](reports/releases/2026-10-10-extended-engine-audit.md)
 - **1,000 additional Oracle cards:** batches 0249–0258, bringing the installed catalog to 29,799 definitions. Complete source records, native rules, and human/local hard-AI execution evidence are retained in the [validation report](reports/oracle-import/validation-0258.md).
 - **Previous 1,000-card expansion:** batches 0239–0248, verified against the October pinned source. [Validation report](reports/oracle-import/validation-0248.md)
 - **Another 1,000 Oracle cards added:** batches 0229–0238, including complete rules, pinned source records and human/local-AI execution checks. That expansion brought the catalog to 27,799 definitions. [Validation report](reports/oracle-import/validation-0238.md)
@@ -722,7 +725,9 @@ These reports describe their dated imports and checks. Use the [generated catalo
 | [Oracle 0226](reports/oracle-import/validation-0226.md) | Oracle batch 0226; 800 of the requested 1,000 cards imported so far. |
 | [Oracle 0227](reports/oracle-import/validation-0227.md) | Oracle batch 0227; 900 of the requested 1,000 cards imported so far. |
 | [Oracle 0228](reports/oracle-import/validation-0228.md) | Oracle batch 0228; the previous requested 1,000 cards imported and verified. |
-| [Oracle 0249–0258](reports/oracle-import/validation-0258.md) | 1,000 additional cards; current expansion with exact source, human/local hard-AI execution, and browser evidence. |
+| [Oracle 0264–0266](reports/oracle-import/validation-0264-0266.md) | Latest 1,021 definitions; completion of the pinned 9 October paper/Commander comparison. |
+| [10 October engine audit](reports/releases/2026-10-10-extended-engine-audit.md) | Native rules, payment, stack, combat and save/continue behavior, with paired previous-version evidence. |
+| [Oracle 0249–0258](reports/oracle-import/validation-0258.md) | 1,000 additional cards with exact source, human/local hard-AI execution, and browser evidence. |
 | [Oracle 0239–0248](reports/oracle-import/validation-0248.md) | Previous complete 1,000-card expansion with source, execution, and browser evidence. |
 | [Oracle 0229–0238](reports/oracle-import/validation-0238.md) | Completed expansion: all 1,000 additional cards imported with source, execution and browser evidence. |
 | [Oracle 0209–0218](reports/oracle-import/validation-0209-0218.md) | Oracle batches 0209–0218; 1,000 cards. |

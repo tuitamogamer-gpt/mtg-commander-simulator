@@ -207,11 +207,13 @@ test('Estinien remembers Dragon damage granted by Maskwood Nexus after the sourc
   const f = setup();
   permanent(f);
   const bear = permanent(f, 'Grizzly Bears');
-  permanent(f, 'Maskwood Nexus');
+  const nexus = permanent(f, 'Maskwood Nexus');
   await main(f, { precombat: true });
   assert.equal(bear.hasSub('Dragon'), true);
   await hit(f, bear, f.players[1]);
   await f.game.destroy(bear);
+  assert.equal(bear.hasSub('Dragon'), true, 'Nexus also grants every type to owned creature cards in the graveyard');
+  await f.game.destroy(nexus);
   assert.equal(bear.hasSub('Dragon'), false);
   await main(f);
   result(f, 1);

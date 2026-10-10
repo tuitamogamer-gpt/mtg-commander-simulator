@@ -67,7 +67,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     power: undefined, toughness: undefined,
     mana: {
       cost: { tap: true }, produce: [{ C: 1 }],
-      restrict: (g, forSpell) => forSpell && forSpell.card && forSpell.card.is('Artifact'),
+      restrict: (g, forSpell) => forSpell?.card && !forSpell.isAbility && !forSpell.isSpecialAction && !forSpell.foretellAction && !forSpell.turnFaceUp && g.castHasType(forSpell.card, forSpell.castOpts || {}, 'Artifact'),
     },
   });
 
@@ -133,7 +133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         self.cur.cantBeBlockedBy = null; // tačna restrikcija se primjenjuje kroz blockRestriction ispod
       },
     }],
-    blockRestriction: (g, blocker, attacker) => !(blocker.name === 'Brazen Borrower' && !attacker.kw('flying')),
+    blockRestriction: (g, blocker, attacker, source) => blocker !== source || attacker.kw('flying'),
   };
   SC['Brudiclad, Telchor Engineer'] = {
     statics: [{
@@ -214,8 +214,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Harmonic Prodigy'] = {
-    doubleTriggerFilter: (g, self, source) => source !== self && source.ctrl === self.ctrl &&
-      source.is('Creature') && (source.hasSub(MTG.c1719TextType(g,'Shaman')) || source.hasSub(MTG.c1719TextType(g,'Wizard'))),
+    doubleTriggerFilter: (g, self, source) => source.ctrl === self.ctrl &&
+      source.is('Creature') && (source.hasSub(MTG.c1719TextType(g,'Shaman')) || source !== self && source.hasSub(MTG.c1719TextType(g,'Wizard'))),
   };
   SC['Inspired Skypainter'] = {
     triggers: [
@@ -1425,7 +1425,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Avenge'] = {
-    selfCostAdjust: (g, card, p) => p.prevAttackers && p.prevAttackers.size ? -2 : 0,
+    selfCostAdjust: (g, card, p) => g.players.some(player => player !== p && (player.c1719PreviousTurnAttacks || []).includes(p.idx)) ? -2 : 0,
     resolve: async ctx => {
       let n = 0;
       for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) { if (await ctx.g.destroy(c)) n++; }
@@ -1734,7 +1734,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.super || []).includes('Legendary'),
+        restrict: (g, forSpell) => {
+          if (!forSpell?.card || forSpell.isAbility || forSpell.isSpecialAction || forSpell.foretellAction || forSpell.turnFaceUp) return false;
+          const options = forSpell.castOpts || {};
+          const supertypes = options.faceDownCast ? [] : options.adventure ? forSpell.card.def.adventure?.super || [] : g.castDefinition(forSpell.card, options).super || [];
+          return supertypes.includes('Legendary');
+        },
       },
       {
         cost: { tap: true },
@@ -1831,15 +1836,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     card.meta.chosenType = pick;
     g.lg(`${card.name}: chosen type — ${pick}.`);
   }
-  const typedRestrict = (g, forSpell, src) => {
+  const chosenTypeManaAllows = (g, forSpell, t) => {
     if (!forSpell || !forSpell.card) return false;
     if (forSpell.isSpecialAction || forSpell.foretellAction || forSpell.turnFaceUp) return false;
-    const t = src && src.meta && src.meta.chosenType;
     if (!t) return true;                    // tip još nije izabran — ne blokiraj
     // Secluded Courtyard vrijedi i za sposobnosti stvorenja tog tipa;
     // Unclaimed Territory samo za bacanje stvorenja.
     if (forSpell.isAbility) return forSpell.card.is('Creature') && forSpell.card.hasSub(t);
-    return forSpell.card.is('Creature') && forSpell.card.hasSub(t);
+    const options = forSpell.castOpts || {};
+    return g.castHasType(forSpell.card, options, 'Creature') &&
+      (g.castChangelingV16(forSpell.card, options) || g.castSubtypesV16(forSpell.card, options).includes(t));
+  };
+  const typedRestrict = (g, forSpell, src) => chosenTypeManaAllows(g, forSpell, src?.meta?.chosenType);
+  const freezeTypedRestrict = (_g, src) => {
+    const chosenType = src?.meta?.chosenType;
+    return (g, forSpell) => chosenTypeManaAllows(g, forSpell, chosenType);
   };
 
   SC['Secluded Courtyard'] = {
@@ -1848,7 +1859,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mana: [
       { cost: { tap: true }, produce: [{ C: 1 }] },
       // restrictAbilities: vrijedi i kad se plaća sposobnost, ne samo spell
-      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict, restrictAbilities: true },
+      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict, freezeRestrictV20: freezeTypedRestrict, restrictAbilities: true },
     ],
   };
   SC['Unclaimed Territory'] = {
@@ -1856,7 +1867,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     asEnters: chooseCreatureType,
     mana: [
       { cost: { tap: true }, produce: [{ C: 1 }] },
-      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict },
+      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict, freezeRestrictV20: freezeTypedRestrict },
     ],
   };
   SC['Scavenger Grounds'] = {

@@ -5,7 +5,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const nonblack = T.creature({filter: (g, c) => !c.colors.includes('B')});
   S['Oloro, Ageless Ascetic'] = {triggers: [
     C.upkeep('Gain two life', ctx => ctx.g.gainLife(ctx.you, 2, ctx.src)),
-    C.upkeep('Gain two life from the command zone', ctx => ctx.src.zone === 'command' && ctx.g.gainLife(ctx.you, 2, ctx.src), {zone: 'command'}),
+    C.upkeep('Gain two life from the command zone', ctx => ctx.src.zone === 'command' && ctx.src.zoneVersion===ctx.sourceZoneVersion && ctx.g.gainLife(ctx.you, 2, ctx.src), {zone: 'command'}),
     C.trigger('lifeGain', 'Pay one to draw and drain each opponent', async ctx => {if (await C.pay(ctx, '{1}')) {await C.draw(ctx); for (const p of ctx.you.opponents(ctx.g)) await ctx.g.loseLife(p, 1, ctx.src.name);}}),
   ]};
   S['Razor Hippogriff'] = {kws: ['flying'], triggers: [C.enterTrigger('Return an artifact and gain life for its mana value', async ctx => {
@@ -115,7 +115,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{apply: (g, c, bf) => {if (c.ctrl.life >= c.ctrl.startingLife + 7) for (const card of bf) if (card.ctrl === c.ctrl && card.is('Creature')) {card.cur.power += 2; card.cur.toughness += 2;}}}]};
   S['Anarchist'] = {triggers: [C.enterTrigger('Return a sorcery from your graveyard', ctx => ctx.g.move(ctx.targets[0], 'hand'), {opt: true, targets: [C.grave((g, c, p) => c.owner === p && c.is('Sorcery'))]})]};
   S['Genesis'] = {triggers: [C.upkeep('Pay 2G to return a creature from your graveyard', async ctx => {
-    if (ctx.src.zone === 'graveyard' && await C.pay(ctx, '{2}{G}')) await ctx.g.move(ctx.targets[0], 'hand');
+    if (ctx.src.zone === 'graveyard' && ctx.src.zoneVersion === ctx.sourceZoneVersion && await C.pay(ctx, '{2}{G}')) await ctx.g.move(ctx.targets[0], 'hand');
   }, {zone: 'graveyard', targets: [C.grave((g, c, p) => c.owner === p && c.is('Creature'))]})]};
   S['Rootbreaker Wurm'] = {kws: ['trample']};
   S['Jungle Lion'] = {statics: [{apply: (g, c) => {c.cur.cantBlock = true;}}]};

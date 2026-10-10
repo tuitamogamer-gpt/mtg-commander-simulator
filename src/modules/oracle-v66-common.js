@@ -80,7 +80,10 @@
   async replaceDrawStep(g,p){const sources=g.bf().filter(c=>active(c)&&c.ctrl===p&&c.def.v66Fasting),used=new Set();while(true){const candidates=sources.filter(c=>!used.has(c)&&active(c)&&c.ctrl===p).map(src=>({key:src,src,label:src.name}));if(!candidates.length)return false;const selected=await g.chooseReplacement(p,candidates,'drawStep',1),s=selected.src,version=s.zoneVersion;used.add(s);if(await option(g,p,s,'Skip your draw step and gain 2 life?')==='yes'&&active(s)&&s.zoneVersion===version&&s.ctrl===p){await g.gainLife(p,2,s);return true;}}},
   canSuspect(g,c){return !g.bf().some(s=>active(s)&&s.def.v66HostBan==='suspect'&&s.attachedTo===c.iid);},
   canTurnFaceUp(g,p,c){return !g.bf().some(s=>active(s)&&s.def.v66HostBan==='face-up'&&s.attachedTo===c.iid);},
-  damageAsInfect(g,p){return p.life<=0&&g.bf().some(c=>active(c)&&c.ctrl===p&&c.def.v66LowLifeInfect);},
+  // A prevention rider's life gain is another result of this same damage
+  // event (CR 120.4d), so it cannot change a later simultaneous hit to normal
+  // damage. A later event takes a new life snapshot.
+  damageAsInfect(g,p,_src,opts={}){return (opts._damageBatch?.lifeAtStart?.get(p)??p.life)<=0&&g.bf().some(c=>active(c)&&c.ctrl===p&&c.def.v66LowLifeInfect);},
   spellHasRebound(g,p,card,so){return g.isInstantSorcerySpell(so)&&g.bf().some(c=>active(c)&&c.ctrl===p&&c.def.v66SpellRebound);},
   canPutPlayerCounters(g){if(g.bf().some(c=>active(c)&&c.def.v66PlayerCounterBan))return false;},
   damageSourceColors(g,src,snap){if(!g.bf().some(c=>active(c)&&c.def.v66DamageColors))return;const spell=g.c1516Resolving?.kind==='spell'&&g.c1516Resolving.card?.iid===src?.iid?g.c1516Resolving:null,definition=spell?.oracleDefinition||src?.def,colors=spell?(spell.castOpts?.adventure?M.colorsOfCost(definition.adventure.cost):definition.colorsOverride||M.colorsOfCost(definition.cost)):snap.colors||src?.colors||[];if(colors.some(k=>k==='B'||k==='R')&&(spell||(snap.zone||src?.zone)==='stack'||(snap.types||src?.cur?.types||src?.def?.types||[]).some(t=>['Artifact','Battle','Creature','Enchantment','Land','Planeswalker'].includes(t))))return [];},

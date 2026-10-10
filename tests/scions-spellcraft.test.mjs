@@ -451,9 +451,8 @@ test('Urianger opcionalno skriva vrh, kasnije dozvoljava land/spell uz {2} popus
   await resolveAll(game);
   assert.equal(scions.life, life + 2);
 
-  const spell = inZone(scions, 'Vindicate', 'exile');
-  spell.faceDown = true; spell.meta.revealedTo = [scions.idx];
-  urianger.meta.arc.push(spell.iid);
+  const spell = inZone(scions, 'Vindicate', 'library');
+  await urianger.def.abilities[0].run({ g: game, src: urianger, you: scions });
   urianger.tapped = false;
   await urianger.def.abilities[1].run({ g: game, src: urianger, you: scions });
   assert.equal(game.spellCost(scions, spell, { from: 'exile' }).generic, 0);

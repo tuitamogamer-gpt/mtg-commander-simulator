@@ -457,7 +457,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes.includes('Ninja') || forSpell.card.def.subtypes.includes('Turtle')),
+        restrict: (g, forSpell) => {
+          if (!forSpell?.card || forSpell.isAbility || forSpell.isSpecialAction || forSpell.foretellAction || forSpell.turnFaceUp) return false;
+          const options = forSpell.castOpts || {}, subtypes = g.castSubtypesV16(forSpell.card, options);
+          return g.castChangelingV16(forSpell.card, options) || subtypes.includes('Ninja') || subtypes.includes('Turtle');
+        },
       },
     ],
     abilities: [{

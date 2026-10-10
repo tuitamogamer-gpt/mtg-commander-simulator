@@ -9,8 +9,9 @@
  // A retarget is one transaction. Retained targets keep their original object
  // identities, even if illegal; new targets use the ordinary legality filters.
  async function retarget(ctx,object){
-  const game=ctx.g,source=object.card||object.srcCard,rule=ctx.oracleRetargetV20;
-  if(!game.stack.includes(object)||!source)return false;
+  const game=ctx.g,card=object.card||object.srcCard,rule=ctx.oracleRetargetV20;
+  if(!game.stack.includes(object)||!card)return false;
+  const source=object.isCopy&&object.kind==='spell'?Object.assign(M.OracleV8Faces.spellSource(card,object.oracleDefinition||game.castDefinition(card,object.castOpts||{}),object.ctrl),{oracleStackObject:object,owner:object.owner||object.ctrl,castMeta:{...(card.castMeta||{}),alt:object.castOpts,x:object.x,spellColors:object.oracleDefinition?.colorsOverride||object.spellColors||card.castMeta?.spellColors||M.C1920.castColors(game,card,object.castOpts||{})}}):card;
   const previous=(object.targets||object.ctx?.targets||[]).map(row=>Array.isArray(row)?row.slice():row),identities=game.cloneTargetIdentities(object.targetIdentities||object.ctx?.targetIdentities||game.captureTargetIdentities(previous));
   const announced=previous.flat(Infinity).filter(Boolean);if(!announced.length)return false;
   const specs=object.targetSpecs||object.ctx?.boundTargetSpecs||(object.kind==='spell'?game.spellTargetSpecs(source,object.castOpts,object.ctrl):[]);
@@ -53,7 +54,7 @@
   if(object.ctx){object.ctx.targets=next;object.ctx.targetIdentities=nextIdentities;}
   const flattenIdentities=(targets,ids)=>targets.flatMap((row,i)=>[row].flat().flatMap((card,j)=>card?[Array.isArray(ids[i])?ids[i][j]:ids[i]]:[]));
   const flatNew=next.flat(Infinity).filter(Boolean),flatIds=flattenIdentities(next,nextIdentities),flatOldIds=flattenIdentities(previous,identities),fresh=flatNew.filter((card,i)=>!announced.some((old,j)=>equalIdentity(card,flatIds[i],old,flatOldIds[j])));
-  for(const holder of [object,object.ctx].filter(Boolean))for(const field of ['damageDivision','counterDistribution'])if(holder[field])holder[field]=holder[field].map((row,index)=>{const card=row.targetSlot!==undefined?[next[row.targetSlot]].flat().filter(Boolean)[row.targetOrdinal||0]:flatNew[index];return {...row,iid:card?.iid,playerIdx:card instanceof M.Player?card.idx:null,...('target' in row?{target:card}:{})};});
+  for(const holder of [object,object.ctx].filter(Boolean))for(const field of ['damageDivision','counterDistribution','v97Division'])if(holder[field])holder[field]=holder[field].map((row,index)=>{const card=row.targetSlot!==undefined?[next[row.targetSlot]].flat().filter(Boolean)[row.targetOrdinal||0]:flatNew[index];return {...row,iid:card?.iid,playerIdx:card instanceof M.Player?card.idx:null,...('target' in row?{target:card}:{})};});
   for(const card of [...new Set(fresh)])await game.emit('targeted',{card,byPlayer:object.ctrl,src:source,isSpell:object.kind==='spell',isInstantSorcery:object.kind==='spell'&&game.isInstantSorcerySpell(object),isActivatedAbility:object.kind==='ability',isTriggeredAbility:object.kind==='trigger',so:object});
   game.queueWardTriggers(object,{wardTargets:game.captureWardTargets([...new Set(fresh)],object.ctrl)});return true;
  }
@@ -179,7 +180,7 @@
    }
    if(effect.action==='retarget-stack-v20'||effect.action==='control-stack-v20'){
     for(const object of h.genericEffectSubjects(ctx,effect.target))if(ctx.g.stack.includes(object)){
-     if(effect.action==='control-stack-v20'){object.ctrl=ctx.you;if(object.card)object.card.ctrl=ctx.you;if(object.ctx)object.ctx.you=ctx.you;}
+     if(effect.action==='control-stack-v20'){object.ctrl=ctx.you;if(object.card&&!object.isCopy)object.card.ctrl=ctx.you;if(object.ctx)object.ctx.you=ctx.you;}
      if(effect.forceTarget==='self'&&!h.sameBattlefieldSource(ctx))continue;
      if(effect.action==='retarget-stack-v20'||effect.retarget)await M.C1719.retarget({...ctx,oracleRetargetV20:{optional:effect.optional!==false,mustChange:effect.optional===false,playerOnly:!!effect.playerOnly,force:effect.forceTarget?h.genericEffectSubjects(ctx,effect.forceTarget)[0]:null}},object);
     }return true;

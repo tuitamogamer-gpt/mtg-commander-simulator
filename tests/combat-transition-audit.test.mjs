@@ -70,7 +70,7 @@ function table({ defending = false } = {}) {
     : q.type === 'blockers' ? f.opposingBlockers?.(q) || [] : prior(g, q);
   const emit = game.emit.bind(game);
   game.emit = async (event, data, ...rest) => {
-    if (event === 'damageToPlayer') hits.push({ step: game.step, src: data.src.name, player: data.player.name, n: data.n });
+    if (event === 'damageToPlayer' && !game._damageEventQueue) hits.push({ step: game.step, src: data.src.name, player: data.player.name, n: data.n });
     if (event === 'combatDamageDone') snapshots.push({ step: game.step, cards: game.bf().map(c => ({
       iid: c.iid, name: c.name, ctrl: c.ctrl.name, attacking: c.attacking?.name || null,
       blocking: c.blocking, blockedBy: c.blockedBy.map(b => b.iid), damage: c.damage,

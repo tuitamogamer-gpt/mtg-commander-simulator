@@ -57,6 +57,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       try {return await previous.apply(this, args);} finally {this.zkAnnouncing--;}
     };
   }
+  // High-level announcements include their priority round. A spell or
+  // ability resolved there is an effect; only nested announcements made
+  // during that resolution should mark their own exile payments as costs.
+  const resolveTop = G.resolveTop;
+  G.resolveTop = async function (...args) {
+    const announcing = this.zkAnnouncing;
+    this.zkAnnouncing = 0;
+    try {return await resolveTop.apply(this, args);} finally {this.zkAnnouncing = announcing;}
+  };
   async function exiled(g, card, from, to, snapshot, opts) {
     if (to !== 'exile') return;
     if (opts.zkCosmic && !card.isToken) {

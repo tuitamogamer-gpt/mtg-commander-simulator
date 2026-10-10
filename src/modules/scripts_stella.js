@@ -224,8 +224,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     colorIdentityExtra: ['U', 'R'],
     doublesMagecraft: true,
     triggers: [
-      { on: 'castIS', desc: '+1/+1 EOT', filter: myCastIS, run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); } },
-      { on: 'spellCopied', desc: '+1/+1 EOT', filter: (g, self, d) => d.ctrl === self.ctrl && d.isInstantSorcery, run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); } },
+      { on: 'castIS', desc: '+1/+1 EOT', filter: myCastIS, run: async ctx => { if(ctx.src.zone==='battlefield'&&!ctx.src.phasedOut&&ctx.src.zoneVersion===ctx.sourceZoneVersion)E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); } },
+      { on: 'spellCopied', desc: '+1/+1 EOT', filter: (g, self, d) => d.ctrl === self.ctrl && d.isInstantSorcery, run: async ctx => { if(ctx.src.zone==='battlefield'&&!ctx.src.phasedOut&&ctx.src.zoneVersion===ctx.sourceZoneVersion)E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); } },
     ],
   };
   SC['Young Pyromancer'] = {
@@ -431,7 +431,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const g = ctx.g, p = ctx.you, x = ctx.x || 0;
       if (x >= 10) {
-        while (p.graveyard.length) { const c = p.graveyard.pop(); c.zone = 'library'; p.library.push(c); }
+        await g.moveGraveyardBatch(p.graveyard.slice(), 'library');
         U.shuffle(p.library, g.rnd);
         await g.draw(p, x);
         const lands = g.bf().filter(card => card.is('Land'));
@@ -654,23 +654,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mana: { cost: { tap: true }, produce: [{ U: 1 }] },
     abilities: [{
       label: 'Hour counter', cost: { mana: '{2}{U}' },
-      run: async ctx => { ctx.g.addCounters(ctx.src, 'hour', 1); await clockCheck(ctx); },
+      run: async ctx => {
+        if (ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion) ctx.g.addCounters(ctx.src, 'hour', 1, false, ctx.you);
+      },
     }],
     triggers: [{
       on: 'upkeep', desc: 'Hour counter', filter: () => true,
-      run: async ctx => { ctx.g.addCounters(ctx.src, 'hour', 1, true); await clockCheck(ctx); },
+      run: async ctx => {
+        if (ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion) ctx.g.addCounters(ctx.src, 'hour', 1, true, ctx.you);
+      },
+    }, {
+      on: 'countersPlaced', desc: 'Midnight',
+      filter: (g, card, data) => data.card === card && data.kind === 'hour' && data.before < 12 && data.after >= 12,
+      run: clockCheck,
     }],
   };
   async function clockCheck(ctx) {
-    if ((ctx.src.counters['hour'] || 0) >= 12 && ctx.src.zone === 'battlefield') {
-      const g = ctx.g, p = ctx.you;
-      while (p.hand.length) { const c = p.hand.pop(); c.zone = 'library'; p.library.push(c); }
-      while (p.graveyard.length) { const c = p.graveyard.pop(); c.zone = 'library'; p.library.push(c); }
-      U.shuffle(p.library, g.rnd);
-      await g.draw(p, 7);
-      await g.exileCard(ctx.src);
-      g.lg('Midnight Clock: midnight! New hand of 7.');
-    }
+    const g = ctx.g, p = ctx.you;
+    const hand = p.hand.map(card => ({ card, version: card.zoneVersion }));
+    for (const row of hand) if (row.card.zone === 'hand' && row.card.zoneVersion === row.version) await g.move(row.card, 'library');
+    await g.moveGraveyardBatch(p.graveyard.slice(), 'library');
+    U.shuffle(p.library, g.rnd);
+    await g.draw(p, 7);
+    if (ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion) await g.exileCard(ctx.src);
+    g.lg('Midnight Clock: midnight! New hand of 7.');
   }
   SC['Smoldering Stagecoach'] = {
     crew: 2,

@@ -121,9 +121,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
 
+  const elementalManaAllows = (g, action) => {
+    if (!action?.card || action.isSpecialAction || action.foretellAction || action.turnFaceUp) return false;
+    const type = MTG.c1719TextType(g, 'Elemental');
+    if (action.isAbility) return action.card.hasSub(type);
+    const options = action.castOpts || {};
+    return g.castChangelingV16(action.card, options) || g.castSubtypesV16(action.card, options).includes(type);
+  };
   const elementalMana = {
     cost: { tap: true }, produce: [{ ANY: true, n: 2 }], restrictAbilities: true,
-    restrict: (g, action) => action && action.card && action.card.hasSub && action.card.hasSub(MTG.c1719TextType(g,'Elemental')),
+    restrict: elementalManaAllows,
   };
   SC.Flamebraider = { mana: elementalMana };
   SC.Smokebraider = { mana: elementalMana };
@@ -367,7 +374,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Yarok, the Desecrated'] = {
     doubleTriggerFilter: (g, self, source, event, data) => source.ctrl === self.ctrl &&
-      source.zone === 'battlefield' && event === 'etb' && data.card && data.card.ctrl === self.ctrl,
+      source.zone === 'battlefield' && ['etb','landfall'].includes(event) && data.card && data.card.ctrl === self.ctrl,
   };
   SC['Bane of Progress'] = {
     triggers: [{ on: 'etb', desc: 'Destroy artifacts/enchantments', filter: etbSelf, run: async ctx => {
@@ -623,7 +630,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => !card.meta.revealedElemental,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
       cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
-      restrict: (g, action) => action && !action.isSpecialAction && !action.foretellAction && !action.turnFaceUp && action.card && action.card.hasSub && action.card.hasSub(MTG.c1719TextType(g,'Elemental')),
+      restrict: elementalManaAllows,
     }],
   };
 

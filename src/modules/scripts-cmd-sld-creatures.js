@@ -37,10 +37,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const n = Math.max(0, ctx.data.snap.power); for (const c of ctx.g.creatures(ctx.you)) if (c.name === 'Gruff Triplets') C.add(ctx, c, '+1/+1', n);
   })]};
   S['Kaalia of the Vast'] = {kws: ['flying'], triggers: [C.attack('Put an Angel, Demon or Dragon into combat', async ctx => {
-    const p = ctx.data.target;
+    const p = ctx.data.defender;
     const [c] = await C.choose(ctx.g, ctx.you, ctx.you.hand.filter(c => c.is('Creature') && ['Angel', 'Demon', 'Dragon'].some(t => c.hasSub(t))), 0, 1, 'Put a creature onto the battlefield attacking ' + p.name);
     if (c) await ctx.g.putPermanentOntoBattlefield(c, ctx.you, {tapped: true, attacking: p});
-  }, {filter: (g, c, d) => d.card === c && d.target instanceof M.Player && d.target !== c.ctrl})]};
+  }, {filter: (g, c, d) => d.card === c && d.defender instanceof M.Player && d.defender !== c.ctrl})]};
   S['Lightkeeper of Emeria'] = {kws: ['flying'], multikicker: '{W}', triggers: [C.enterTrigger('Gain two life for each kicker payment', ctx => ctx.g.gainLife(ctx.you, 2 * (ctx.src.castMeta?.paidTimes || 0), ctx.src))]};
   S['Magus of the Vineyard'] = {triggers: [C.trigger('precombatMain', 'Add two green mana', ctx => {ctx.data.player.pool.G += 2;}, {filter: (g, c, d) => (d.ordinal || 1) === 1})]};
   S['Malfegor'] = {kws: ['flying'], triggers: [C.enterTrigger('Discard your hand; opponents sacrifice that many creatures', async ctx => {

@@ -306,6 +306,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(operation.lifeX)script.additionalCostX=true;
       const previousCond=script.castCond,previousPrepare=script.prepareTargets;
       const fragment=MTG.compileOracleAdditionalCosts(operation.costs);
+      const manaCosts=(script.oracleAdditionalManaCostsV4||[]).concat(operation.costs);
+      script.oracleAdditionalManaCostsV4=manaCosts;
+      script.oracleAdditionalManaFeasibleV4=ctx=>fragment.canPayManaContext(ctx,manaCosts);
       if(operation.costs.some(cost=>cost.quantity?.xV19)){
         script.oracleVariableAdditionalXV19=true;
         const priorMax=script.xMax;

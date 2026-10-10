@@ -233,8 +233,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["White Sun's Zenith"] = {resolve: async ctx => {
     await ctx.g.makeTokens(cat, ctx.you, {n: ctx.x});
     if (!ctx.so.isCopy && ctx.src.zone === 'stack') {
-      await ctx.g.move(ctx.src, 'library'); M.shuffle(ctx.src.owner.library, ctx.g.rnd);
+      await ctx.g.move(ctx.src, 'library');
     }
+    M.shuffle(ctx.src.owner.library, ctx.g.rnd);
   }};
   SC['Archfiend of Depravity'] = {triggers: [{on: 'endStep', desc: 'Opponent keeps at most two creatures',
     filter: (g, self, d) => d.player !== self.ctrl,

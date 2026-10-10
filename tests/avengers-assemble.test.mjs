@@ -404,10 +404,14 @@ test('Avenge discount checks attacks during the relevant previous turn, not perm
   const { game, players: [avengers, opponent] } = rulesGame([], 2);
   const adjust = MTG.DEFS.Avenge.selfCostAdjust;
   avengers.grudges = { [opponent.idx]: 9 };
-  avengers.prevAttackers = new Set();
+  // Stage the persisted history acquired by actual turns in the native
+  // Avenge/Time Warp controls in four-hour-combat-damage.test.mjs.
+  opponent.c1719PreviousTurnAttacks = [];
   assert.equal(adjust(game, {}, avengers), 0);
-  avengers.prevAttackers.add(opponent);
+  opponent.c1719PreviousTurnAttacks = [avengers.idx];
   assert.equal(adjust(game, {}, avengers), -2);
+  opponent.c1719PreviousTurnAttacks = [];
+  assert.equal(adjust(game, {}, avengers), 0);
 });
 
 test('Thor increases only damage from another source currently controlled by Thor controller', async () => {

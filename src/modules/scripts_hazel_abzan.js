@@ -233,8 +233,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     kws: ['menace'],
     statics: [{
       apply: (g, source, bf) => {
-        const brewed = (source.meta.brewedCards || []).map(iid => g.byIid(iid)).filter(c =>
-          c && c.zone === 'exile' && c.is('Creature'));
+        const brewed = U.OracleV24Permanents.linked(g, source, 'hazel-brewmaster').filter(c => c.is('Creature'));
         if (!brewed.length) return;
         for (const food of bf) {
           if (food.ctrl !== source.ctrl || !food.hasSub('Food')) continue;
@@ -260,11 +259,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const g = ctx.g, p = ctx.you;
     const picked = ctx.targets[0];
     if (picked && picked.zone === 'graveyard') {
-      await g.move(picked, 'exile');
-      if (picked.zone === 'exile') {
-        ctx.src.meta.brewedCards = ctx.src.meta.brewedCards || [];
-        if (!ctx.src.meta.brewedCards.includes(picked.iid)) ctx.src.meta.brewedCards.push(picked.iid);
-      }
+      await U.OracleV24Permanents.acquire(ctx, { from: 'graveyard', link: 'hazel-brewmaster' }, [picked]);
     }
     await g.makeTokens('food', p);
   }
@@ -527,7 +522,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Zulaport Cutthroat'] = {
     triggers: [{
       on: 'dies', desc: 'Drain 1',
-      filter: (g, self, d) => d.snap.types.includes('Creature') && d.snap.ctrl === self.ctrl,
+      filter: (g, self, d) => d.snap.types.includes('Creature') && d.snap.ctrl ===
+        ((g._simultaneousLeaveSources||[]).find(row=>row.card===self)?.snap.ctrl||(d.card===self?d.snap.ctrl:self.ctrl)),
       run: async ctx => {
         await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1);
         await ctx.g.gainLife(ctx.you, 1);

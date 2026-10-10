@@ -16,7 +16,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   const counters=(ctx,c,n)=>{if(c&&n>0)ctx.g.addCounters(c,'+1/+1',n,false,ctx.you);};
   const life=async(g,p,n)=>{if(n>p.life)await g.gainLife(p,n-p.life);else if(n<p.life)await g.loseLife(p,p.life-n,'life total change');};
   async function enterMany(ctx,cards,ctrl=ctx.you,opts={}){await ctx.g.withBattlefieldEntryBatch(async()=>{for(const c of cards.filter(Boolean)){const p=ctrl||c.owner;await ctx.g.putPermanentOntoBattlefield(c,p,opts);}});}
-  async function shuffleSelf(ctx){if(ctx.src.zone==='stack'&&!ctx.src.isToken){await ctx.g.move(ctx.src,'library');M.shuffle(ctx.src.owner.library,ctx.g.rnd);}}
+  async function shuffleSelf(ctx){if(ctx.src.zone==='stack'&&!ctx.src.isToken){if(!ctx.so?.isCopy)await ctx.g.move(ctx.src,'library');M.shuffle(ctx.src.owner.library,ctx.g.rnd);}}
   async function basicCycle(ctx){return C.search(ctx,ctx.you,c=>c.is('Land')&&c.def.super.includes('Basic'),1);}
   const cycling={cost:'{2}',noDraw:true,effect:basicCycle};
   const undaunted=(g,c,p)=>-p.opponents(g).length;
@@ -116,7 +116,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     if(g.c1516ActiveControl||(g.c1516TurnControls||[]).length)blockers.push('a controlled player turn');
     if(g.players.some(p=>p.c1516MagusTurn===g.turnNo))blockers.push('Magus of the Will permission');
     if(g.bf().some(c=>c.meta.c1516Servant||(c.meta.c1516Dragons||[]).length||(c.meta.c1516Artisans||[]).length))blockers.push('linked C15/C16 objects');
-    if((g.oracleExileDurations||[]).some(r=>r.source.name==='Grasp of Fate'&&r.source.zone==='battlefield'&&r.source.zoneVersion===r.sourceZoneVersion))blockers.push('Grasp of Fate exile duration');
+    if((g.oracleExileDurations||[]).some(r=>r.source?.name==='Grasp of Fate'&&r.source.zone==='battlefield'&&r.source.zoneVersion===r.sourceZoneVersion))blockers.push('Grasp of Fate exile duration');
     if(g.bf().some(c=>c.isToken&&c.isCopyOf&&(c.def.types||[]).join(',')!==(M.DEFS[c.name]?.types||c.def.types||[]).join(',')))blockers.push('a token copy with added card types');
     return blockers;
   }

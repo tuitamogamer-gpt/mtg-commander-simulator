@@ -772,39 +772,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const card = ctx.you.library[ctx.you.library.length - 1];
         if (!card) return;
+        const version = card.zoneVersion;
+        if (!ctx.you.isAI) await ctx.you.controller.decide(ctx.g, {
+          type: 'cardReveal', player: ctx.you, cards: [card], kind: 'look', private: true,
+        });
         const use = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseOption', prompt: 'Urianger: exile the top card of the library face down?',
           options: [{ key: 'yes', label: 'Yes — exile' }, { key: 'no', label: 'No — leave it' }],
           aiHint: { kind: 'uriangerExileTop', card },
         });
-        if (use !== 'yes') return;
-        ctx.you.library.pop();
-        card.zone = 'exile'; card.faceDown = true;
-        card.meta = card.meta || {}; card.meta.revealedTo = [ctx.you.idx];
-        ctx.you.exile.push(card);
-        ctx.src.meta.arc = (ctx.src.meta.arc || []).concat([card.iid]);
+        if (use !== 'yes' || card.zone !== 'library' || card.zoneVersion !== version) return;
+        await U.OracleV24Permanents.acquire(ctx, {
+          from: 'library', link: 'urianger-arcanum', faceDown: true, lookAllowed: true,
+        }, [card]);
         ctx.g.lg('Urianger exiles the top card of the library.');
       },
     }, {
       label: 'Play Arcanum: play exiled cards until end of turn', cost: { tap: true },
-      cond: (g, c, p) => {
-        const ids = c.meta.arc || [];
-        return p.exile.some(card => ids.includes(card.iid));
-      },
-      aiScore: (g, c, p) => (c.meta.arc || []).filter(iid => p.exile.some(card => card.iid === iid)).length * 3,
+      cond: (g, c) => U.OracleV24Permanents.linked(g, c, 'urianger-arcanum').length > 0,
+      aiScore: (g, c) => U.OracleV24Permanents.linked(g, c, 'urianger-arcanum').length * 3,
       run: async ctx => {
-        const ids = ctx.src.meta.arc || [];
-        const cands = ctx.you.exile.filter(c => ids.includes(c.iid));
+        const cands = U.OracleV24Permanents.linked(ctx.g, ctx.src, 'urianger-arcanum', ctx);
         if (!cands.length) { ctx.g.lg('Urianger: no exiled cards.'); return; }
         for (const card of cands) {
-          card.meta = card.meta || {};
-          card.meta.playableBy = ctx.you;
-          card.meta.playableUntil = ctx.g.turnNo;
+          U.C1719.playGrant(ctx, card, { turn: ctx.g.turnNo });
         }
         // Jedna dozvola pokriva sve povezane karte i svaki spell castan na taj
         // način dobija zasebno {2} smanjenje do cleanup koraka.
+        const cards = cands.map(card => ({ iid: card.iid, version: card.zoneVersion }));
         ctx.you.tempReductions = ctx.you.tempReductions || [];
-        ctx.you.tempReductions.push({ filter: (g, card) => ids.includes(card.iid) && card.zone === 'exile', delta: -2 });
+        ctx.you.tempReductions.push({ filter: (g, card) => card.zone === 'exile' && cards.some(row => row.iid === card.iid && row.version === card.zoneVersion), delta: -2 });
         ctx.g.lg(`Urianger allows playing ${cands.length} Arcanum ${U.plural(cands.length, 'card', 'cards')} until end of turn.`);
       },
     }],

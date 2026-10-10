@@ -232,19 +232,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const name of names) {
       if (seen.has(name) || !MTG.DECKS?.[name]?.custom) continue;
       seen.add(name);
-      const record = MTG.importedDeckRecordFor?.(name);
+      let record = MTG.importedDeckRecordFor?.(name);
+      if (!record) {
+        const carried = (setup.importedDecks || []).find(candidate => candidate?.name === name);
+        if (carried) {
+          const validation = MTG.validateImportedDeckRecord(carried);
+          if (validation.ok) record = validation.record;
+        }
+      }
       if (record) records.push(record);
     }
     return records;
   }
 
-  MTG.buildAccountSave = function (game, setup, decisions, matchId, state) {
+  MTG.buildAccountSave = function (game, setup, decisions, matchId, state, checkpointTimelineIndex) {
     assert(game && setup && matchId, 'cannot build a checkpoint without a running match.');
+    if (checkpointTimelineIndex !== undefined && checkpointTimelineIndex !== null) {
+      assert(state && Number.isInteger(checkpointTimelineIndex) && checkpointTimelineIndex >= 0 && checkpointTimelineIndex <= decisions.length,
+        'the board checkpoint decision offset is invalid.');
+    }
     return {
-      // A written-down board. Restoring it needs no replay and does not care
-      // whether the rules engine or the AI changed since the save. The recorded
-      // timeline below stays as a fallback for saves made before this existed.
+      // A safe turn-boundary board plus the offset of its recorded decisions.
+      // Continue can replay only the actions completed after that checkpoint.
       state: state || null,
+      ...(state && checkpointTimelineIndex !== undefined && checkpointTimelineIndex !== null ? {checkpointTimelineIndex} : {}),
       schema: 'commander-save/v1',
       mode: 'solo',
       matchId,
@@ -303,6 +314,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(Array.isArray(save.decisions) && save.decisions.length <= 5000, 'decision history is invalid.');
     if (save.state) assert(save.state.format >= 2 && Array.isArray(save.state.cards) && Array.isArray(save.state.players),
       'the saved board is not readable by this build.');
+    if (save.checkpointTimelineIndex !== undefined) assert(save.state && Number.isInteger(save.checkpointTimelineIndex) &&
+      save.checkpointTimelineIndex >= 0 && save.checkpointTimelineIndex <= save.decisions.length,
+      'the board checkpoint decision offset is invalid.');
     MTG.validateAISkillSetup(save.setup.aiStyles || [], save.setup.aiCustomSkills || []);
     return save;
   };

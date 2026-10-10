@@ -66,8 +66,35 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  };
  C.requireSeekerAttack=async(g,p,attackers,eligible,forced)=>{if(attackers.length||!sources(g,'cdkSeeker').some(c=>c.ctrl!==p))return;const pool=eligible.filter(c=>g.legalDeclarationAttackTargets(c).some(t=>g.c21AttackTax(c,t)===0));if(!pool.length)return;const[c]=await C.choose(g,p,pool,1,1,'Seeker of Slaanesh: choose at least one attacker','attack');if(!c)return;const ts=g.legalDeclarationAttackTargets(c).filter(t=>g.c21AttackTax(c,t)===0),t=await C.choosePlayer({g,src:c,you:p},ts,'choose an attack destination');if(t){c.attacking=t;c.meta.cdkRequiredAttackTurn=g.turnNo;c.meta.cdkRequiredCombat=g.cdkCombatSerial||0;attackers.push(c);forced.push(c);}};
  C.redirectOne=async(ctx,so,target)=>{
-  if(!C.same(ctx)||!ctx.g.stack.includes(so))return;const src=so.card||so.srcCard,specs=so.targetSpecs||(so.kind==='spell'?ctx.g.spellTargetSpecs(so.card,so.castOpts,so.ctrl):so.ctx?.boundTargetSpecs)||[],old=so.targets||so.ctx?.targets||[],choices=[];
-  for(let i=0;i<old.length;i++)for(let j=0;j<(Array.isArray(old[i])?old[i].length:1);j++){const next=old.map(x=>Array.isArray(x)?x.slice():x);if(Array.isArray(next[i]))next[i][j]=target;else next[i]=target;if(ctx.g.targetsStillOk(next,specs,src,so.ctrl))choices.push({key:i+':'+j,label:'Replace target '+(i+1)+(Array.isArray(old[i])?'.'+(j+1):''),next});}
-  if(!choices.length)return;const key=choices.length===1?choices[0].key:await C.option(ctx,choices,'choose which target to change'),chosen=choices.find(c=>c.key===key);if(!chosen)return;so.targets=chosen.next;so.targetIdentities=ctx.g.captureTargetIdentities(chosen.next);if(so.ctx){so.ctx.targets=chosen.next;so.ctx.targetIdentities=so.targetIdentities;}for(const field of ['damageDivision','counterDistribution'])if(so[field])so[field]=so[field].map((r,i)=>({...r,iid:chosen.next.flat(Infinity)[i]?.iid,playerIdx:chosen.next.flat(Infinity)[i] instanceof M.Player?chosen.next.flat(Infinity)[i].idx:null}));await ctx.g.emit('targeted',{card:target,byPlayer:so.ctrl,src,isSpell:so.kind==='spell',isInstantSorcery:so.kind==='spell'&&ctx.g.isInstantSorcerySpell(so),so});ctx.g.queueWardTriggers(so,{wardTargets:ctx.g.captureWardTargets([target],so.ctrl)});
+  if(!C.same(ctx)||!ctx.g.stack.includes(so))return;
+  const g=ctx.g,src=so.card||so.srcCard,specs=so.targetSpecs||(so.kind==='spell'?g.spellTargetSpecs(so.card,so.castOpts,so.ctrl):so.ctx?.boundTargetSpecs)||[],old=so.targets||so.ctx?.targets||[],choices=[];
+  const identities=g.cloneTargetIdentities(so.targetIdentities||so.ctx?.targetIdentities||g.captureTargetIdentities(old));
+  const source=so.kind==='spell'&&so.isCopy
+    ?Object.assign(M.OracleV8Faces.spellSource(src,so.oracleDefinition||g.castDefinition(src,so.castOpts||{}),so.ctrl),{oracleStackObject:so,owner:so.owner||so.ctrl,castMeta:{...(src.castMeta||{}),alt:so.castOpts,x:so.x,spellColors:so.oracleDefinition?.colorsOverride||so.spellColors||src.castMeta?.spellColors||M.C1920.castColors(g,src,so.castOpts||{})}}):src;
+  const targetIdentity=g.captureTargetIdentity(target);
+  for(let i=0;i<old.length;i++)for(let j=0;j<(Array.isArray(old[i])?old[i].length:1);j++){
+   const previous=Array.isArray(old[i])?old[i][j]:old[i];
+   if(!previous)continue;
+   const previousIdentity=Array.isArray(identities[i])?identities[i][j]:identities[i];
+   if(previous===target&&previousIdentity?.zoneVersion===targetIdentity?.zoneVersion)continue;
+   const next=old.map(x=>Array.isArray(x)?x.slice():x),nextIdentities=g.cloneTargetIdentities(identities),spec=specs[i];
+   if(!spec)continue;
+   if(Array.isArray(next[i])){next[i][j]=target;nextIdentities[i][j]=targetIdentity;}else{next[i]=target;nextIdentities[i]=targetIdentity;}
+   // Only the changed slot must be legal now. Other slots may already have
+   // lost their targets, and retain the identities announced before a blink.
+   if(!g.targetStillOk(target,spec,source,so.ctrl,next.slice(0,i),targetIdentity,nextIdentities.slice(0,i)))continue;
+   const picks=[next[i]].flat().filter(Boolean);
+   if(picks.filter(card=>card===target).length>1||spec.distinctCtrl&&picks.some((card,k)=>k!==j&&card.ctrl===target.ctrl)||spec.sameGraveyard&&picks.some(card=>card.owner!==target.owner))continue;
+   if(spec.oracleGroupRetargetV22&&!spec.oracleGroupRetargetV22(g,picks,[nextIdentities[i]].flat(),picks.map((_,k)=>k===j),so.ctrl,source))continue;
+   if(next.some((row,k)=>specs[k]?.differentFromPrevious&&[row].flat().some(card=>[next[k-1]].flat().includes(card))||specs[k]?.differentFromAllPrevious&&[row].flat().some(card=>next.slice(0,k).flat().includes(card))))continue;
+   choices.push({key:i+':'+j,label:'Replace target '+(i+1)+(Array.isArray(old[i])?'.'+(j+1):''),next,nextIdentities});
+  }
+  if(!choices.length)return;
+  const key=choices.length===1?choices[0].key:await C.option(ctx,choices,'choose which target to change'),chosen=choices.find(c=>c.key===key);if(!chosen)return;
+  so.targets=chosen.next;so.targetIdentities=chosen.nextIdentities;
+  if(so.ctx){so.ctx.targets=chosen.next;so.ctx.targetIdentities=so.targetIdentities;}
+  for(const holder of [so,so.ctx].filter(Boolean))for(const field of ['damageDivision','counterDistribution','v97Division'])if(holder[field])holder[field]=holder[field].map((r,i)=>{const card=r.targetSlot!==undefined?[chosen.next[r.targetSlot]].flat()[r.targetOrdinal||0]:chosen.next.flat(Infinity)[i];return {...r,iid:card?.iid,playerIdx:card instanceof M.Player?card.idx:null};});
+  await g.emit('targeted',{card:target,byPlayer:so.ctrl,src:source,isSpell:so.kind==='spell',isInstantSorcery:so.kind==='spell'&&g.isInstantSorcerySpell(so),isActivatedAbility:so.kind==='ability',isTriggeredAbility:so.kind==='trigger',so});
+  g.queueWardTriggers(so,{wardTargets:g.captureWardTargets([target],so.ctrl)});
  };
 })();

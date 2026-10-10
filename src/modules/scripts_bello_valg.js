@@ -82,35 +82,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'etb', filter: etbSelf, desc: 'Hideaway 3 ×2',
         run: async ctx => {
           const g = ctx.g, p = ctx.you;
-          ctx.src.meta.hide = ctx.src.meta.hide || [];
           for (let round = 0; round < 2; round++) {
-            const top = p.library.slice(-3).reverse();
-            if (!top.length) break;
-            const pick = await p.controller.decide(g, {
-              type: 'chooseCards', from: top, min: 1, max: 1, prompt: 'Hideaway: hide one', aiHint: { kind: 'hideaway' },
+            if (!p.library.length) break;
+            await U.OracleV20.helpers.runGenericEffect(ctx, {
+              action: 'permanent-linked-acquire-v24', mode: 'hideaway', from: 'library',
+              n: 3, link: 'evercoat-hideaway', faceDown: true, hideaway: true,
             });
-            for (const c of top) p.library.splice(p.library.indexOf(c), 1);
-            const hid = pick[0] || top[0];
-            hid.zone = 'exile'; p.exile.push(hid);
-            ctx.src.meta.hide.push(hid.iid);
-            for (const c of top) if (c !== hid) { c.zone = 'library'; p.library.unshift(c); }
           }
           g.lg('Evercoat Ursine: 2 cards hidden away.');
         },
       },
       {
         on: 'combatDamageToPlayer', filter: (g, self, d) => d.card === self, desc: 'Play the hidden card', opt: true,
-        onlyIf: (g, self) => (self.meta.hide || []).some(iid => { const c = g.byIid(iid); return c && c.zone === 'exile'; }),
+        onlyIf: (g, self, data, ctx) => U.OracleV24Permanents.linked(g, self, 'evercoat-hideaway', ctx).length > 0,
         run: async ctx => {
           const g = ctx.g, p = ctx.you;
-          let cards = (ctx.src.meta.hide || []).map(iid => g.byIid(iid)).filter(c => c && c.zone === 'exile');
+          let cards = U.OracleV24Permanents.linked(g, ctx.src, 'evercoat-hideaway', ctx);
           // "play" land i dalje troši land drop — bez slobodnog dropa land nije igriv
           cards = cards.filter(c => !c.is('Land') || E.canPlayLandNow(g, p));
           if (!cards.length) return;
           const picked = await p.controller.decide(g, {
             type: 'chooseCards', from: cards, min: 0, max: 1, prompt: 'Play for free:', aiHint: { kind: 'bestCard' },
           });
-          if (!picked.length) return;
+          if (!picked.length || !cards.includes(picked[0]) || !U.OracleV24Permanents.linked(g, ctx.src, 'evercoat-hideaway', ctx).includes(picked[0])) return;
           const c = picked[0];
           if (c.is('Land')) {
             await E.playExiledLand(g, p, c);
@@ -166,7 +160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'lto', filter: (g, self, d) => d.card === self, desc: 'Everyone draws',
         run: async ctx => {
           // sva šteta Grothami OVAJ potez, po kontroloru izvora (engine bookkeeping)
-          const rec = ctx.src.meta._damageByCtrl;
+          const rec = (ctx.sourceMeta || ctx.src.meta)._damageByCtrl;
           const by = rec && rec.turn === ctx.g.turnNo ? rec.by : {};
           for (const q of ctx.g.players) {
             const n = by[q.idx] || 0;
@@ -927,19 +921,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'draw', opt: true, desc: '1 damage',
       filter: (g, self, d) => d.player !== self.ctrl && g.bf().some(c => c.ctrl === self.ctrl && c.colors.includes('R')),
-      run: async ctx => { await ctx.g.damagePlayer(ctx.src, ctx.data.player, 1); },
+      run: async ctx => { if(ctx.g.bf().some(c=>c.ctrl===ctx.you&&c.colors.includes('R')))await ctx.g.damagePlayer(ctx.src, ctx.data.player, 1); },
     }],
   };
   SC['Massacre Girl'] = {
     triggers: [{
       on: 'etb', filter: etbSelf, desc: '-1/-1 chain',
       run: async ctx => {
-        const g = ctx.g, self = ctx.src;
-        E.pumpAllUntilEOT(g, (g2, c) => c !== self, -1, -1);
+        const g = ctx.g, self = ctx.src,version=ctx.sourceZoneVersion;
+        const other=(_g,c)=>c!==self||c.zoneVersion!==version;
+        E.pumpAllUntilEOT(g, other, -1, -1);
         g.delayed.push({
-          on: 'dies', once: false, expires: 'eot', src: self, ctrl: ctx.you, name: 'Massacre Girl chain',
+          on: 'dies', once: false, expires: 'eot', src: self, sourceZoneVersion:version, ctrl: ctx.you, name: 'Massacre Girl chain',
           filter: (g2, d) => d.snap.types.includes('Creature'),
-          run: async c2 => { E.pumpAllUntilEOT(c2.g, (g3, c) => c !== self, -1, -1); await c2.g.checkSBA(); },
+          run: async c2 => { E.pumpAllUntilEOT(c2.g, other, -1, -1); await c2.g.checkSBA(); },
         });
         await g.checkSBA();
       },
@@ -1203,10 +1198,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if (mi === 1) {
         await g.destroy(ctx.targets[0]);
       } else {
-        for (const q of g.alivePlayers()) {
-          const n = g.creatures(q).length;
-          if (n) await g.damagePlayer(null, q, n);
-        }
+        await g.damageBatch(g.creatures().map(creature => ({ src: creature, target: creature.ctrl, n: 1 })));
       }
     },
   };
@@ -1281,7 +1273,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'endStep', desc: 'Soul counter', filter: () => true,
       onlyIf: (g, self) => g.diedThisTurn.some(s => s.types.includes('Creature')),
-      run: async ctx => { ctx.g.addCounters(ctx.src, 'soul', 1); },
+      run: async ctx => { if(ctx.src.zone==='battlefield'&&!ctx.src.phasedOut&&ctx.src.zoneVersion===ctx.sourceZoneVersion)ctx.g.addCounters(ctx.src, 'soul', 1); },
     }],
     mana: {
       cost: { tap: true },
@@ -1291,8 +1283,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       restrict: (g, forSpell) => {
         const card = forSpell && forSpell.card;
-        if (!card) return false;
-        return card.is('Instant') || card.is('Sorcery') || card.def.subtypes.includes(MTG.c1719TextType(g,'Demon')) || card.def.subtypes.includes(MTG.c1719TextType(g,'Spirit'));
+        if (!card || forSpell.isAbility || forSpell.isSpecialAction || forSpell.foretellAction || forSpell.turnFaceUp) return false;
+        const options = forSpell.castOpts || {}, subtypes = g.castSubtypesV16(card, options);
+        return g.castHasType(card, options, 'Instant') || g.castHasType(card, options, 'Sorcery') ||
+          g.castChangelingV16(card, options) || subtypes.includes(MTG.c1719TextType(g, 'Demon')) || subtypes.includes(MTG.c1719TextType(g, 'Spirit'));
       },
     },
   };

@@ -4,13 +4,24 @@
  const choice=source=>source.meta.oracleEntryLandTypeV28?.version===source.zoneVersion?source.meta.oracleEntryLandTypeV28.types:[];
  const creatureChoice=source=>source.meta.oracleEntryCreatureTypeV28?.version===source.zoneVersion?source.meta.oracleEntryCreatureTypeV28.type:null;
  const proposedCasters=new WeakMap();
- // Cost calculation knows the caster before a spell object exists. Keep that
- // context local to the native synchronous calculation, including nested calls.
+ // Native cost and mana calculations know the proposed caster before a spell
+ // object exists. Scope that view to each synchronous call, including nesting.
+ const withProposedCaster=(player,card,calculate)=>{
+  if(!card||!player)return calculate();
+  const previous=proposedCasters.get(card);proposedCasters.set(card,player);
+  try{return calculate();}
+  finally{if(previous)proposedCasters.set(card,previous);else proposedCasters.delete(card);}
+ };
  const spellCost=M.Game.prototype.spellCost;
  M.Game.prototype.spellCost=function(player,card,...args){
-  const previous=proposedCasters.get(card);proposedCasters.set(card,player);
-  try{return spellCost.call(this,player,card,...args);}
-  finally{if(previous)proposedCasters.set(card,previous);else proposedCasters.delete(card);}
+  return withProposedCaster(player,card,()=>spellCost.call(this,player,card,...args));
+ };
+ for(const method of ['manaSolve','deductPool']){
+  const native=M.Game.prototype[method];
+  M.Game.prototype[method]=function(player,cost,action,...args){
+   const spellCard=action&&!action.isAbility&&!action.isSpecialAction&&!action.foretellAction&&!action.turnFaceUp?action.card:null;
+   return withProposedCaster(player,spellCard,()=>native.call(this,player,cost,action,...args));
+  };
  };
  // Creature-card and creature-spell effects share a timestamp-ordered type
  // layer. Independent wrappers must not re-add an earlier type after Conspiracy.
@@ -48,6 +59,7 @@
   }
   return {subtypes:all?[...new Set(subs.concat(M.RULES_CREATURE_TYPES))]:subs,changeling};
  }
+ M.oracleFaceDownSpellSubtypesV28=card=>outsideCharacteristics(card,{subtypes:[],changeling:false},{asSpell:true}).subtypes;
  M.CardInst.prototype.hasSub=function(type){return this.is('Creature')&&outsideEffects(this).length?outsideCharacteristics(this).subtypes.includes(type):nativeHasSub.call(this,type);};
  const snapshot=M.Game.prototype.snapshot;M.Game.prototype.snapshot=function(card,...args){const row=snapshot.call(this,card,...args);if(card.is('Creature')&&outsideEffects(card).length)Object.assign(row,outsideCharacteristics(card));return row;};
  const castDefinition=M.Game.prototype.castDefinition;M.Game.prototype.castDefinition=function(card,...args){const def=castDefinition.call(this,card,...args);return def.types.includes('Creature')&&outsideEffects(card,{asSpell:true}).length?{...def,...outsideCharacteristics(card,def,{asSpell:true})}:def;};

@@ -531,12 +531,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         on: 'lto', zone: 'self', desc: 'Third from the top', opt: true,
-        filter: (game, card, data) => data.card === card && (card.zone === 'graveyard' || card.zone === 'exile'),
+        filter: (game, card, data) => {
+          if (data.card !== card || card.zone !== 'graveyard' && card.zone !== 'exile') return false;
+          data.bontuMovedZoneVersion ??= card.zoneVersion;
+          return true;
+        },
         run: async ctx => {
           const card = ctx.src;
-          if (card.zone !== 'graveyard' && card.zone !== 'exile') return;
+          if (card.zone !== 'graveyard' && card.zone !== 'exile' || card.zoneVersion !== ctx.data.bontuMovedZoneVersion) return;
+          const version = card.zoneVersion;
+          await ctx.g.move(card, 'library');
+          if (card.zone !== 'library' || card.zoneVersion !== version + 1) return;
           const library = card.owner.library;
-          ctx.g.remove(card); card.zone = 'library'; library.splice(Math.max(0, library.length - 2), 0, card);
+          library.splice(library.indexOf(card), 1);
+          library.splice(Math.max(0, library.length - 2), 0, card);
+          ctx.g.note('zone', {});
         },
       },
     ],
@@ -673,7 +682,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Return two lands: Multani to hand', cost: '{1}{G}', exileSelf: false,
       extraCost: { return: (game, permanent) => permanent.is('Land'), returnN: 2, allowMana: true },
       run: async ctx => {
-        if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'hand');
+        if (ctx.src.zone === 'graveyard' && ctx.src.zoneVersion === ctx.sourceZoneVersion) await ctx.g.move(ctx.src, 'hand');
       },
     },
   };
@@ -691,7 +700,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Sacrifice a land: return World Breaker', cost: '{2}{C}', exileSelf: false,
       extraCost: { sac: (game, permanent) => permanent.is('Land'), sacN: 1, allowMana: true },
       run: async ctx => {
-        if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'hand');
+        if (ctx.src.zone === 'graveyard' && ctx.src.zoneVersion === ctx.sourceZoneVersion) await ctx.g.move(ctx.src, 'hand');
       },
     },
   };

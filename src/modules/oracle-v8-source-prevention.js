@@ -3,18 +3,20 @@
  const qualifies=(card,quality)=>!!card&&(!quality.type||card.is?.(quality.type))&&(!quality.colors||quality.colors.some(color=>card.colors?.includes(color)))&&(!quality.keyword||(typeof card.kw==='function'?card.kw(quality.keyword):card.kw?.includes(quality.keyword)))&&(!quality.subtype||(typeof card.hasSub==='function'?card.hasSub(quality.subtype):card.subtypes?.includes(quality.subtype)||card.changeling&&M.CREATURE_SUBTYPES.has(quality.subtype)));
  function candidates(game,quality={},resolving){
   const rows=[];
-  const add=(card,version=card?.zoneVersion,snap)=>{
-   if(!(card instanceof M.CardInst)||rows.some(row=>row.card===card&&row.version===version))return;
-   snap||=card.battlefieldLKI?.get(version);
+  const add=(card,version=card?.zoneVersion,snap,stackObject=card?.oracleStackObject)=>{
+   if(!(card instanceof M.CardInst)||rows.some(row=>stackObject?row.stackObject===stackObject:row.card===card&&row.version===version))return;
+   if(!stackObject?.isCopy)snap||=card.battlefieldLKI?.get(version);
    if(!qualifies(sourceView(card,version,snap),quality))return;
-   rows.push({card,version,snapshot:snap,spell:card.zone==='stack'&&card.zoneVersion===version});
+   rows.push({card,version,snapshot:snap,stackObject,spell:stackObject?.kind==='spell'||card.zone==='stack'&&card.zoneVersion===version});
   };
   for(const card of game.bf())add(card);
   for(const p of game.players)for(const card of p.command||[])if(!card.faceDown)add(card);
   const references=object=>{
-   add(object.card);add(object.srcCard||object.src||object.sourceCard,object.ctx?.sourceZoneVersion??object.sourceZoneVersion);
+   if(object.kind==='spell'&&object.isCopy){const card=object.card,source=Object.assign(M.OracleV8Faces.spellSource(card,object.oracleDefinition||game.castDefinition(card,object.castOpts||{}),object.ctrl),{oracleStackObject:object,owner:object.owner||object.ctrl,castMeta:{...(card.castMeta||{}),alt:object.castOpts,x:object.x,spellColors:object.oracleDefinition?.colorsOverride||object.spellColors||card.castMeta?.spellColors||M.C1920.castColors(game,card,object.castOpts||{})}});add(source,source.zoneVersion,null,object);}
+   else add(object.card,object.card?.zoneVersion,null,object.kind==='spell'?object:undefined);
+   add(object.srcCard||object.src||object.sourceCard,object.ctx?.sourceZoneVersion??object.sourceZoneVersion);
    for(const card of [object.targets,object.target,object.source,object.ctx?.targets].flat(Infinity).filter(Boolean))add(card);
-   if(object.sourceRecord)add(object.sourceRecord.card,object.sourceRecord.version,object.sourceRecord.snapshot);
+   if(object.sourceRecord)add(object.sourceRecord.card,object.sourceRecord.version,object.sourceRecord.snapshot,object.sourceRecord.stackObject);
   };
   for(const object of [...game.stack,...game.delayed,...game.untilEffects])references(object);
   if(resolving)references({srcCard:resolving.src,ctx:resolving,targets:resolving.targets});
@@ -23,9 +25,9 @@
  async function run(ctx,effect,h){
   const game=ctx.g,choices=candidates(game,effect.quality,ctx).sort((a,b)=>Number(b.card.ctrl!==ctx.you)-Number(a.card.ctrl!==ctx.you)||Math.max(0,Number(b.card.power)||0)-Math.max(0,Number(a.card.power)||0));
   if(!choices.length)return;
-  const picked=await ctx.you.controller.decide(game,{type:'chooseOption',prompt:'Choose a source of damage',options:choices.map((row,i)=>({key:String(i),label:row.card.name,card:row.card})),aiHint:{kind:'damagePreventionSource',source:ctx.src}});
+  const picked=await ctx.you.controller.decide(game,{type:'chooseOption',prompt:'Choose a source of damage',options:choices.map((row,i)=>({key:String(i),label:row.stackObject?.isCopy?row.stackObject.name:row.card.name,card:row.card,stackObject:row.stackObject})),aiHint:{kind:'damagePreventionSource',source:ctx.src}});
   const selected=choices[Number(picked)];if(!selected||String(Number(picked))!==String(picked))return;
-  if(!candidates(game,effect.quality,ctx).some(row=>row.card===selected.card&&row.version===selected.version))return;
+  if(!candidates(game,effect.quality,ctx).some(row=>selected.stackObject?row.stackObject===selected.stackObject:row.card===selected.card&&row.version===selected.version))return;
   const targets=effect.target==='all'?[null]:h.subjects(ctx,effect.target);
   // A resolved shield is not an object controlled by its caster (CR 800.4a).
   // Retain the controller for riders without marking the effect for departure cleanup.
@@ -35,8 +37,11 @@
   if(shield.effect.combat&&!data.combat)return false;
   if(shield.consumed&&(!data.batch||shield.consumedBatch!==data.batch))return false;
   const selected=shield.sourceRecord,src=data.src,version=src?._oracleDamageSnapshot?.zoneVersion??data.sourceSnapshot?.zoneVersion??src?.zoneVersion;
-  const resolvedPermanent=selected.spell&&src?.zone==='battlefield'&&version===selected.version+1&&src.meta?._enteredFromZone==='stack';
-  if(src?.iid!==selected.card.iid||version!==selected.version&&!resolvedPermanent)return false;
+  const resolving=game.c1516Resolving,spell=src?.oracleStackObject||(resolving?.kind==='spell'&&resolving.card?.iid===src?.iid?resolving:null);
+  const resolvedPermanent=selected.spell&&!selected.stackObject?.isCopy&&src?.zone==='battlefield'&&version===selected.version+1&&src.meta?._enteredFromZone==='stack';
+  if(src?.iid!==selected.card.iid)return false;
+  if(selected.stackObject&&spell){if(spell!==selected.stackObject)return false;}
+  else if(selected.stackObject?.isCopy||version!==selected.version&&!resolvedPermanent)return false;
   if(shield.target&&(data.target!==shield.target||data.target.zoneVersion!==shield.targetVersion))return false;
   const snap=data.sourceSnapshot||src?._oracleDamageSnapshot||selected.card.battlefieldLKI?.get(version);
   return qualifies(sourceView(src,version,snap),shield.effect.quality)&&(!shield.effect.half||data.n>1);

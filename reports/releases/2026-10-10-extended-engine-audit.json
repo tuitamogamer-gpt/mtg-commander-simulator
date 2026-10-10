@@ -1,0 +1,4119 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-10T10:43:44.735418+00:00",
+  "auditWindow": {
+    "startUtc": "2026-10-10T06:45:52Z",
+    "endUtc": "2026-10-10T10:45:52Z",
+    "baselineCommit": "c05c5d737d8efa06ae0105a067e28daca9babed7"
+  },
+  "method": "Printed production definitions, native announcement/payment/priority/resolution, controlled reproducible initial positions; scenario counts are not distinct bug counts.",
+  "originalSourceIntegrity": {
+    "trackedSrcFilesCompared": 725,
+    "differences": 0,
+    "sortedPathContentSha256": "4a26a54a88b3477bac7fc50d58edacce0c014bc28dd686ee246bec3e4a2a9853",
+    "pairedTestFilesIdentical": 23
+  },
+  "pairedNativeCases": {
+    "tests": 357,
+    "currentPass": 357,
+    "currentFail": 0,
+    "originalPass": 130,
+    "originalFail": 227,
+    "cohorts": [
+      {
+        "cohort": "combat_and_permanent_owner",
+        "cases": 73,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-combat-damage.test.mjs",
+            "sha256": "5b516b5dab14436680464648bee123702f6ed58aa00277361ec09c89818733ec",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-permanent-copy-owner.test.mjs",
+            "sha256": "64304d2e117a43b54c79d53580ee309eaadfa0805ad1109d2d7bca9b9606a557",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 73,
+            "pass": 34,
+            "fail": 39,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "combat-damage/final-c05c5d7-native-baseline.tap",
+              "sha256": "50362804887510c121ff51d469536326096d49a46a343cc2f814d23a9f632500",
+              "summary": {
+                "tests": 70,
+                "pass": 33,
+                "fail": 37,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "combat-damage/permanent-copy-owner-three-original.tap",
+              "sha256": "0c390ba2e7a7a2a54fb4efc394dacf442d938e6cb7372e0ee11e315c94d1eca6",
+              "summary": {
+                "tests": 3,
+                "pass": 1,
+                "fail": 2,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 73,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "zones_and_linked_exiles",
+        "cases": 44,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-zone-audit.test.mjs",
+            "sha256": "fd57daf8b68b67bd01c9ff0dc53174d19816932c8a2242eb555caf28ae422278",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 44,
+            "pass": 10,
+            "fail": 34,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "zones/final-native-immutable-baseline.tap",
+              "sha256": "300d6b0dd3c2b7592c04d675839012b0dbc8e96e5db0037c8cb19eceeb9f0522",
+              "summary": {
+                "tests": 44,
+                "pass": 10,
+                "fail": 34,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 44,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "triggers_and_inherited_abilities",
+        "cases": 67,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-trigger-audit.test.mjs",
+            "sha256": "b89af050999a13dcbebea6317ff443540c8fcb6c4819cecc6eb2040f970d9181",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-trigger-peer.test.mjs",
+            "sha256": "6819c83eb19ca2fec3d871024451a569534380d3c3bbdf31237443b87fd5b16b",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-trigger-borrowed.test.mjs",
+            "sha256": "a620e7f6e245e46612292fa9e30f8ca4bcbc53a6a2be8c52bf69a4ffee638097",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 67,
+            "pass": 22,
+            "fail": 45,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "triggers/wave7-original-baseline.tap",
+              "sha256": "b88a4f419709b2fe89873a313364b2fe6dd4948639beedbe6ff74c21849ec489",
+              "summary": {
+                "tests": 58,
+                "pass": 18,
+                "fail": 40,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "triggers/final-native-peer6-borrowed3-original.tap",
+              "sha256": "56c092c6610aa99b6738ef13013aa5e02277fff5b583a8d10f1e6421588202a7",
+              "summary": {
+                "tests": 9,
+                "pass": 4,
+                "fail": 5,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 67,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "mana_costs_and_changeling",
+        "cases": 69,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-mana-costs.test.mjs",
+            "sha256": "142f996b66cb56f54c66e4fc7b43832afc192b2890605826f34bfb9838da9216",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-printed-changeling.test.mjs",
+            "sha256": "bd8b200ce8048b0b2465442fdc69dd5bfe4fcebeb677ab9a1300c3d9c667d27f",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-borrowed-mana-costs.test.mjs",
+            "sha256": "fae46b50d24eeeb4721c70dcdcf715a1f0fd1ee23010196654ad554730327725",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-borrowed-mana-row.test.mjs",
+            "sha256": "72d5e64eff8526ae479d1928d836ca350a6e7d56295ce12974905d2636c18eb9",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 69,
+            "pass": 29,
+            "fail": 40,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "mana-costs/final-native-baseline.tap",
+              "sha256": "e45a113a2a7e87f4a0877c2b5c9ccecdbf9575cb772459c85409ea66dab310fa",
+              "summary": {
+                "tests": 59,
+                "pass": 25,
+                "fail": 34,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "mana-costs/final-printed-changeling-baseline-v2.tap",
+              "sha256": "68c0c2108d6d21c76d0cbe6408bb3f47c1533466a70fc4ecab45c395fdc864eb",
+              "summary": {
+                "tests": 6,
+                "pass": 2,
+                "fail": 4,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "mana-costs/borrowed-costs-native-immutable-final.tap",
+              "sha256": "1b3569761fe78345af1d4ad178ba4de2adbbe14bdd619a178f3542ad7f189d5e",
+              "summary": {
+                "tests": 2,
+                "pass": 1,
+                "fail": 1,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "mana-costs/borrowed-mana-row-native-immutable.tap",
+              "sha256": "a9c521bd2de590ca3471032cfc27e9352e38592ca2856ba25e9d2cae9f10c117",
+              "summary": {
+                "tests": 2,
+                "pass": 1,
+                "fail": 1,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 69,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "targets_copy_colors_and_ai_colors",
+        "cases": 57,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-target-resolution.test.mjs",
+            "sha256": "b295de8d8e1cf507d12ff8c3106a8717edf4b0f09ee7852076edf24afb6305c5",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-target-color-controls.test.mjs",
+            "sha256": "680244cf94fcb8d038889d4f2695a6ea217b87a018ceceb0cbe29766f945b305",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-target-white-controls.test.mjs",
+            "sha256": "5181b7478538fd3404aa7f721d7db6f2060fd4bec16a8425b2c061506e36c041",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-target-ai-color.test.mjs",
+            "sha256": "d01f787f1032fc839549ef754950885fc74635498c08d22bfd2a4cd87538e3ce",
+            "archiveMatches": true
+          },
+          {
+            "path": "tests/four-hour-painter-copy-values.test.mjs",
+            "sha256": "87f1708207ba49aa8b1a0257c1e80b9c7bd5341b41934e392a36e4f8bcd77932",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 57,
+            "pass": 17,
+            "fail": 40,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "targets-resolution/final-native49-immutable-baseline.tap",
+              "sha256": "b72d64fc2ba3817d3c6cffb3e726f81c1013752cd31c3daa50b5ce7a179a1adf",
+              "summary": {
+                "tests": 49,
+                "pass": 11,
+                "fail": 38,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "targets-resolution/white-painter-native5-immutable-baseline.tap",
+              "sha256": "0068758a1e0ab8bafb880e9c7cb52dacf8794edd6482f90ca8be59c060c76a72",
+              "summary": {
+                "tests": 5,
+                "pass": 4,
+                "fail": 1,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            },
+            {
+              "localArtifact": "targets-resolution/ai-clone-native3-immutable-baseline.tap",
+              "sha256": "49ed714509b891338aa83cd5a8aeafd929df42b7db599071a8b601fcb8e2a3af",
+              "summary": {
+                "tests": 3,
+                "pass": 2,
+                "fail": 1,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 57,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "save_and_rng_restoration",
+        "cases": 15,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-save-resume.test.mjs",
+            "sha256": "0ae095abcf307722d5e3708e2d1a03b6d392c48b2a73203582707f2e44acbc6b",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 15,
+            "pass": 2,
+            "fail": 13,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "save-resume-final15-immutable-baseline.tap",
+              "sha256": "d1f05f2193303af70736f3733a46ab5a3ab2aa9e11e5bb004b2629216208dc91",
+              "summary": {
+                "tests": 15,
+                "pass": 2,
+                "fail": 13,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 15,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "player_recovery",
+        "cases": 5,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-player-recovery.test.mjs",
+            "sha256": "880549176601cf3b0e576486a47ae8769a0a56ceaebf974f86ce36547ef80b1c",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 5,
+            "pass": 1,
+            "fail": 4,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "player-recovery-immutable-baseline.tap",
+              "sha256": "aa04431e337e0f573d480c4029e88be43d3662856884b9d112e93a9cd6540a95",
+              "summary": {
+                "tests": 5,
+                "pass": 1,
+                "fail": 4,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 5,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "source_less_and_rakdos_damage",
+        "cases": 9,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-null-damage.test.mjs",
+            "sha256": "286026f97b319c5152d4e7b6cab20f132507ec5ec63aed116c8a90d3ac325856",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 9,
+            "pass": 4,
+            "fail": 5,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "zones/null-damage-final-nine-immutable-baseline.tap",
+              "sha256": "6e73fc0bcfeadb0d681bb1f645598385434d0d66a87d58f506ae8fa7b6ebd3b0",
+              "summary": {
+                "tests": 9,
+                "pass": 4,
+                "fail": 5,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 9,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "native_color_counterspells",
+        "cases": 3,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-color-counterspell.test.mjs",
+            "sha256": "bd0a4e9c2e69fbf5f45eaf683e266b88718879ff877350deb5b10b9e5b85cf8e",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 3,
+            "pass": 1,
+            "fail": 2,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "combat-damage/color-counterspell-three-original-final.tap",
+              "sha256": "49c091122813f9d5631f80b9649e49ed95b57cc58791e24866bf2430992b5e7c",
+              "summary": {
+                "tests": 3,
+                "pass": 1,
+                "fail": 2,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 3,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "ai_target_group_clone_cache",
+        "cases": 4,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-ai-target-clone.test.mjs",
+            "sha256": "63ec5c504c44bdaf6d7152e41302d7cd4e882df09088b36e161b6663b40d7499",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 4,
+            "pass": 2,
+            "fail": 2,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "zones/ai-target-clone-final-immutable-baseline.tap",
+              "sha256": "0b8c534824901046856b1200c61817db3f5fe499519fb7a3321441291fb4011b",
+              "summary": {
+                "tests": 4,
+                "pass": 2,
+                "fail": 2,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 4,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "native_emblem_cumulative_and_echo",
+        "cases": 3,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-native-emblem.test.mjs",
+            "sha256": "a4d6d2c1449134e6874be4ce6bd03895c1af64f1919dfa0374a127e08eff62ba",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 3,
+            "pass": 2,
+            "fail": 1,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "combat-damage/native-emblem-three-original.tap",
+              "sha256": "c2fd30f39f15195a9a02eac4d13563634caaa4461de7fcdbde3f186d92beba7a",
+              "summary": {
+                "tests": 3,
+                "pass": 2,
+                "fail": 1,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 3,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "native_loyalty_current_types",
+        "cases": 5,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-native-loyalty-types.test.mjs",
+            "sha256": "e81ac52038425d6d6f042251ea46b22dd185869c79f38f9b024dceefda375ff1",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 5,
+            "pass": 3,
+            "fail": 2,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "combat-damage/native-loyalty-types-original.tap",
+              "sha256": "94e7555be94c3c16930bcc00e7ca48ec6b367ab1c5daccc122c416b9828f8567",
+              "summary": {
+                "tests": 5,
+                "pass": 3,
+                "fail": 2,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 5,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      },
+      {
+        "cohort": "native_certification_interfaces",
+        "cases": 3,
+        "testFiles": [
+          {
+            "path": "tests/four-hour-certification-interfaces.test.mjs",
+            "sha256": "c0856aece81190213809901272807e12c8ebe65c631ec3603ebcf2cef20e4434",
+            "archiveMatches": true
+          }
+        ],
+        "original": {
+          "combinedSummary": {
+            "tests": 3,
+            "pass": 3,
+            "fail": 0,
+            "skipped": 0,
+            "cancelled": 0
+          },
+          "artifacts": [
+            {
+              "localArtifact": "certification-interfaces/native-original.tap",
+              "sha256": "5822bb03061cfe7bf302c4ba4d8373e88119b69f099a263312025a99a76d03d5",
+              "summary": {
+                "tests": 3,
+                "pass": 3,
+                "fail": 0,
+                "skipped": 0,
+                "cancelled": 0
+              }
+            }
+          ]
+        },
+        "current": {
+          "pass": 3,
+          "fail": 0,
+          "evidence": "final-frozen-native-release.tap"
+        }
+      }
+    ],
+    "note": "The final three certification-interface controls pass on both runtimes; the 24 repaired checker reports are not gameplay fixes."
+  },
+  "finalCurrentNativeRun": {
+    "localArtifact": "final-frozen-native-release.tap",
+    "sha256": "05de9f1348587871178362114104bab5ae380399067ee5311ae3312087720034",
+    "summary": {
+      "tests": 361,
+      "pass": 361,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    }
+  },
+  "headlessCompleteMatches": {
+    "cases": 4,
+    "partOfFinalCurrentNativeRun": true,
+    "testFile": {
+      "path": "tests/four-hour-complete-matches.test.mjs",
+      "sha256": "e20de71eb618489a681bcde0ac7c5791523a42bade5fe16a939bd1b5f4b9c4f7"
+    },
+    "seeds": [
+      101026712,
+      101026710,
+      101026713,
+      101026719
+    ],
+    "finishedTurns": [
+      40,
+      43,
+      37,
+      46
+    ],
+    "results": [
+      {
+        "seed": 101026712,
+        "positions": [
+          {
+            "seat": 1,
+            "name": "You",
+            "deck": "Legends' Legacy",
+            "isAI": true
+          },
+          {
+            "seat": 2,
+            "name": "AI Dragon",
+            "deck": "Swell the Host",
+            "isAI": true
+          },
+          {
+            "seat": 3,
+            "name": "AI Raven",
+            "deck": "Ahoy Mateys",
+            "isAI": true
+          },
+          {
+            "seat": 4,
+            "name": "AI Wolf",
+            "deck": "Eldrazi Incursion",
+            "isAI": true
+          }
+        ],
+        "turns": 40,
+        "checkpoints": 40,
+        "winner": "AI Wolf",
+        "winnerSeat": 4,
+        "winnerDeck": "Eldrazi Incursion",
+        "survivingSeats": [
+          4
+        ]
+      },
+      {
+        "seed": 101026710,
+        "positions": [
+          {
+            "seat": 1,
+            "name": "AI Raven",
+            "deck": "Ahoy Mateys",
+            "isAI": true
+          },
+          {
+            "seat": 2,
+            "name": "You",
+            "deck": "Legends' Legacy",
+            "isAI": true
+          },
+          {
+            "seat": 3,
+            "name": "AI Wolf",
+            "deck": "Eldrazi Incursion",
+            "isAI": true
+          },
+          {
+            "seat": 4,
+            "name": "AI Dragon",
+            "deck": "Swell the Host",
+            "isAI": true
+          }
+        ],
+        "turns": 43,
+        "checkpoints": 43,
+        "winner": "AI Wolf",
+        "winnerSeat": 3,
+        "winnerDeck": "Eldrazi Incursion",
+        "survivingSeats": [
+          3
+        ]
+      },
+      {
+        "seed": 101026713,
+        "positions": [
+          {
+            "seat": 1,
+            "name": "AI Dragon",
+            "deck": "Swell the Host",
+            "isAI": true
+          },
+          {
+            "seat": 2,
+            "name": "AI Wolf",
+            "deck": "Eldrazi Incursion",
+            "isAI": true
+          },
+          {
+            "seat": 3,
+            "name": "You",
+            "deck": "Legends' Legacy",
+            "isAI": true
+          },
+          {
+            "seat": 4,
+            "name": "AI Raven",
+            "deck": "Ahoy Mateys",
+            "isAI": true
+          }
+        ],
+        "turns": 37,
+        "checkpoints": 37,
+        "winner": "AI Dragon",
+        "winnerSeat": 1,
+        "winnerDeck": "Swell the Host",
+        "survivingSeats": [
+          1
+        ]
+      },
+      {
+        "seed": 101026719,
+        "positions": [
+          {
+            "seat": 1,
+            "name": "AI Dragon",
+            "deck": "Swell the Host",
+            "isAI": true
+          },
+          {
+            "seat": 2,
+            "name": "AI Raven",
+            "deck": "Ahoy Mateys",
+            "isAI": true
+          },
+          {
+            "seat": 3,
+            "name": "AI Wolf",
+            "deck": "Eldrazi Incursion",
+            "isAI": true
+          },
+          {
+            "seat": 4,
+            "name": "You",
+            "deck": "Legends' Legacy",
+            "isAI": true
+          }
+        ],
+        "turns": 46,
+        "checkpoints": 46,
+        "winner": "You",
+        "winnerSeat": 4,
+        "winnerDeck": "Legends' Legacy",
+        "survivingSeats": [
+          4
+        ]
+      }
+    ],
+    "decks": [
+      "Legends' Legacy",
+      "Swell the Host",
+      "Ahoy Mateys",
+      "Eldrazi Incursion"
+    ],
+    "control": "Normal native bots; designated player starts at each index0-3, no controller/seat/winner override."
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "controlledRoutes": {
+      "focused": 33,
+      "yuriko": 3,
+      "precedingAudit": 11,
+      "pass": 47,
+      "fail": 0,
+      "browserErrors": 0,
+      "completeMatches": 0
+    },
+    "accountSaveSchema": {
+      "pass": 7,
+      "fail": 0
+    },
+    "distinctCompleteMatchCases": 2,
+    "completeMatches": [
+      {
+        "seed": 330957,
+        "finishedTurn": 39,
+        "humanSeatIndex": 0,
+        "winner": {
+          "idx": 1,
+          "name": "AI Wolf",
+          "deck": "Multiverse Reforged",
+          "life": 22
+        },
+        "elapsedMs": 275326,
+        "uiActionGroups": 98,
+        "questionAssociatedActionGroups": 92,
+        "transitionActionGroups": 6,
+        "browserErrors": 0,
+        "decisionFallback": false,
+        "manualResolution": false,
+        "turnLimit": false,
+        "localArtifact": "browser/full-match-330957/result.json",
+        "sha256": "bd30fbe04900be1ca6ae8e8f8fdc506356063547b888701d5b7df88686e1a41a"
+      },
+      {
+        "seed": 330958,
+        "finishedTurn": 32,
+        "humanSeatIndex": 2,
+        "winner": {
+          "idx": 0,
+          "name": "AI Raven",
+          "deck": "Painbow",
+          "life": 65
+        },
+        "elapsedMs": 241489,
+        "uiActionGroups": 56,
+        "questionAssociatedActionGroups": 53,
+        "transitionActionGroups": 3,
+        "browserErrors": 0,
+        "decisionFallback": false,
+        "manualResolution": false,
+        "turnLimit": false,
+        "localArtifact": "browser/full-match-330958-pre-oath53/result.json",
+        "sha256": "245e6a2c75377392f86e41761002dac251f83ac4d2917ebd1d8b94d41f8b8e22"
+      }
+    ],
+    "repeatAfterFinalRepair": {
+      "seed": 330958,
+      "additionalDistinctCases": 0,
+      "previousRuntimeModules": 53,
+      "finalRuntimeModules": 54,
+      "completeMatches": 0,
+      "latestAttemptArtifact": "browser/full-match-330958-post-oath54-partial/result.json",
+      "latestAttemptArtifactSha256": "83575107cfe0364756d07e970c1803e9cd23f00775bfdb90b25b41c12e12a39c",
+      "latestAttemptStoppedReason": "15-minute bounded attempt",
+      "latestAttemptFinishedTurn": 17,
+      "partialAttemptObservations": {
+        "stage": "final post-Oath54 controlled routes and bounded partial normal match attempts",
+        "recordedUtc": "2026-10-10T10:43:19.016278+00:00",
+        "inventorySha256": "35823ccb1d2ea1fbf89aaf5807c4f99de1b8a81a6b0180e557ab7643e72aa181",
+        "runtimeChangedSinceFrozen": [],
+        "anchorChangedSinceFrozen": [],
+        "driverChangedSinceFrozen": [],
+        "servedChangedRuntimeCount": 54,
+        "controlledRoutesArtifact": "browser/run-1791628238876-complete.json",
+        "controlledRoutes": 33,
+        "controlledBrowserErrors": [],
+        "fullMatches": 0,
+        "latestAttemptArtifact": "browser/full-match-330958-post-oath54-partial/result.json",
+        "earlierAttemptObservation": "browser/post-oath54-first-partial-observed.json",
+        "latestAttemptElapsedMs": 70049,
+        "latestAttemptTurn": 17,
+        "totalGroups": 25,
+        "nativeQuestionGroups": 23,
+        "transitionGroups": 2,
+        "browserErrors": [],
+        "nativeFallback": false,
+        "stoppedReason": "bounded partial attempt; raw driver retains its generic 15-minute label",
+        "latestRawLabel": "15-minute bounded attempt",
+        "latestLoggedBudgetMinutes": 1.167,
+        "historicalDistinctCompletedUISeedCases": 2,
+        "historicalSecondCompleteMatchArtifact": "browser/full-match-330958-pre-oath53/result.json",
+        "historicalSecondCompleteSourceManifest": "browser/pre-oath53-runtime-sha256.json",
+        "canonicalHistoricalCompleteMatchArtifact": "browser/full-match-330958/result.json",
+        "historicalSecondRuntimeModuleCount": 53,
+        "historicalSecondInventorySha256": "8c95a7ef3efe2fbb10b0102aeef0240949e05986e56df9ce8a55dfc686ee2e03"
+      },
+      "previousArtifact": "browser/full-match-330958-pre-oath53/result.json",
+      "previousArtifactSha256": "245e6a2c75377392f86e41761002dac251f83ac4d2917ebd1d8b94d41f8b8e22"
+    },
+    "finalRuntimeVerification": {
+      "controlledRoutes": 33,
+      "additionalDistinctRoutes": 0,
+      "routeArtifact": "browser/run-1791628238876-complete.json",
+      "routeArtifactSha256": "c50c3321b5d940e61c2f426d65e44e5af26c321dd7f581eda3da4932a6a15d40",
+      "latestAttemptSeed": 330958,
+      "completeMatches": 0,
+      "servedSourceFilesUnchanged": true,
+      "sortedInventorySha256": "35823ccb1d2ea1fbf89aaf5807c4f99de1b8a81a6b0180e557ab7643e72aa181",
+      "manifestArtifactSha256": "ea138cdc064c0666b2aae83f9c71f1a6acb482e127301b977cf35ab5a14886fa"
+    },
+    "recapLabelPresentation": {
+      "firstLabels": [
+        "P2",
+        "P1",
+        "P3",
+        "P4"
+      ],
+      "secondLabels": [
+        "P1",
+        "P3",
+        "P2",
+        "P4"
+      ],
+      "labelsReferToActualSeats": true,
+      "additionalMatches": 0
+    }
+  },
+  "wideRegression": {
+    "plannedFiles": 655,
+    "fileAttemptsFinished": 252,
+    "filesWithCompletedTestSummary": 249,
+    "completedWholeRun": false,
+    "startedUtc": "2026-10-10T08:14:30.297859+00:00",
+    "stoppedSweep": {
+      "stoppedUtc": "2026-10-10T10:35:14.297278+00:00",
+      "parentPid": 31841,
+      "activeInterrupted": [],
+      "fileAttemptsFinished": 252,
+      "plannedFiles": 655,
+      "completedWholeRun": false,
+      "reason": "Stop wider file sweep to finish final checks, final-runtime mobile replay, evidence review and publication inside the four-hour audit."
+    },
+    "lastResultUtc": "2026-10-10T10:35:14.297278+00:00",
+    "rawReportedTotals": {
+      "tests": 5234,
+      "pass": 5184,
+      "fail": 48,
+      "skipped": 2,
+      "cancelled": 0
+    },
+    "perFileRuntimeBudgetSeconds": 900,
+    "runtimeBudgetExcludesLockWait": true,
+    "failedFileResults": [
+      {
+        "file": "tests/afc-dice.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 10.694,
+        "lock_wait_seconds": 0.0,
+        "runtime_seconds": 10.694,
+        "summary": {
+          "tests": 17,
+          "pass": 14,
+          "fail": 3,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: Barbarian Class ignores lowest dice and triggers once per group",
+          "ai: Barbarian Class ignores lowest dice and triggers once per group",
+          "zero dice produces no roll trigger"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/ai-custom-skills.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 334.903,
+        "lock_wait_seconds": 197.334,
+        "runtime_seconds": 137.568,
+        "summary": {
+          "tests": 20,
+          "pass": 19,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "reserve mana changes the cast score only while holding interaction"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/ai-station.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 127.3,
+        "lock_wait_seconds": 119.43,
+        "runtime_seconds": 7.869,
+        "summary": {
+          "tests": 36,
+          "pass": 33,
+          "fail": 3,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "easy: preserves the only flying blocker against a lethal next turn",
+          "normal: preserves the only flying blocker against a lethal next turn",
+          "hard: preserves the only flying blocker against a lethal next turn"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/avengers-assemble.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 116.907,
+        "lock_wait_seconds": 0.04,
+        "runtime_seconds": 116.867,
+        "summary": {
+          "tests": 27,
+          "pass": 25,
+          "fail": 2,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Speed pays the real cost, locks a chosen haste target, and only haste creatures can block it",
+          "Avenge discount checks attacks during the relevant previous turn, not permanent AI grudges"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c13-td0-sld-precons.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 15.456,
+        "lock_wait_seconds": 0.014,
+        "runtime_seconds": 15.441,
+        "summary": {
+          "tests": 107,
+          "pass": 103,
+          "fail": 4,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: Primal Vigor doubles tokens and counters for every player",
+          "human: a simultaneously entering Primal Vigor does not double its co-entrant\u2019s counters",
+          "ai: Primal Vigor doubles tokens and counters for every player",
+          "ai: a simultaneously entering Primal Vigor does not double its co-entrant\u2019s counters"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c14-precons.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 15.114,
+        "lock_wait_seconds": 0.017,
+        "runtime_seconds": 15.097,
+        "summary": {
+          "tests": 78,
+          "pass": 77,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Raving Dead selects a deterministic random opponent and halves life after combat damage"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c17-c19-aura-control.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 16.573,
+        "lock_wait_seconds": 0.029,
+        "runtime_seconds": 16.544,
+        "summary": {
+          "tests": 10,
+          "pass": 7,
+          "fail": 3,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: Xantcha enters under the chosen opponent before ETB triggers and cannot attack its owner or that owner planeswalker",
+          "ai: Xantcha enters under the chosen opponent before ETB triggers and cannot attack its owner or that owner planeswalker",
+          "Xantcha has no attack restriction or must-attack requirement after losing all abilities"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c17-c19-commanders.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 17.198,
+        "lock_wait_seconds": 0.015,
+        "runtime_seconds": 17.183,
+        "summary": {
+          "tests": 23,
+          "pass": 22,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Eminence stops when its source changes zones, even if it reaches another permitted zone"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c17-c19-text-search.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 14.353,
+        "lock_wait_seconds": 0.033,
+        "runtime_seconds": 14.32,
+        "summary": {
+          "tests": 13,
+          "pass": 11,
+          "fail": 2,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: New Blood modifies native tribal rules while leaving unrelated cards and later copies unchanged",
+          "ai: New Blood modifies native tribal rules while leaving unrelated cards and later copies unchanged"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c19-c20-mutate.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 14.64,
+        "lock_wait_seconds": 0.01,
+        "runtime_seconds": 14.63,
+        "summary": {
+          "tests": 57,
+          "pass": 55,
+          "fail": 2,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: a merged double-faced component can transform and prevents turning the merge face down",
+          "ai: a merged double-faced component can transform and prevents turning the merge face down"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/c21-precons.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 15.637,
+        "lock_wait_seconds": 0.019,
+        "runtime_seconds": 15.618,
+        "summary": {
+          "tests": 69,
+          "pass": 68,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Daretti rummages, exchanges an artifact and creates a delayed-return emblem"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/clb-dmc-40k-rules.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 14.615,
+        "lock_wait_seconds": 0.013,
+        "runtime_seconds": 14.603,
+        "summary": {
+          "tests": 69,
+          "pass": 68,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Illuminor sacrifices exactly the selected creature and produces its mana value"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/combat-action-audit.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 11.121,
+        "lock_wait_seconds": 0.012,
+        "runtime_seconds": 11.108,
+        "summary": {
+          "tests": 14,
+          "pass": 13,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "default profile: an instant can change normal damage after first-strike damage has resolved"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/commander-staples.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 13.159,
+        "lock_wait_seconds": 0.015,
+        "runtime_seconds": 13.143,
+        "summary": {
+          "tests": 30,
+          "pass": 29,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Smothering Tithe: an AI opponent pays with spare mana but keeps its mana while developing"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/decklist-import.test.mjs",
+        "exit_code": "timeout",
+        "elapsed_seconds": 1084.687,
+        "lock_wait_seconds": 184.679,
+        "runtime_seconds": 900.008,
+        "summary": {
+          "tests": null,
+          "pass": null,
+          "fail": null,
+          "skipped": null,
+          "cancelled": null
+        },
+        "failures": [],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/engine-x-offer-boundaries.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 10.677,
+        "lock_wait_seconds": 0.026,
+        "runtime_seconds": 10.652,
+        "summary": {
+          "tests": 8,
+          "pass": 6,
+          "fail": 2,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: Heat Ray with no target uses a constant number of X offer probes",
+          "ai: Heat Ray with no target uses a constant number of X offer probes"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/estinien-varlineau.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 13.879,
+        "lock_wait_seconds": 0.013,
+        "runtime_seconds": 13.866,
+        "summary": {
+          "tests": 18,
+          "pass": 17,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Estinien remembers Dragon damage granted by Maskwood Nexus after the source dies"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/fantastic-four.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 78.623,
+        "lock_wait_seconds": 0.017,
+        "runtime_seconds": 78.606,
+        "summary": {
+          "tests": 30,
+          "pass": 28,
+          "fail": 2,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Fantasticar sacrifice is optional and creates four flying hasty Constructs only after a successful sacrifice",
+          "The Watcher's Warning triggers for each opponent's first spell, not only the first opponent overall"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/elven-council.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 152.902,
+        "lock_wait_seconds": 45.967,
+        "runtime_seconds": 106.935,
+        "summary": {
+          "tests": 23,
+          "pass": 22,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Elrond obra\u0111uje svaki Fellowship glas i ukradeno stvorenje ne mo\u017ee napasti vlasnika"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/full-card-audit.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 9.602,
+        "lock_wait_seconds": 0.014,
+        "runtime_seconds": 9.588,
+        "summary": {
+          "tests": 13,
+          "pass": 12,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/local-card-images.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 8.733,
+        "lock_wait_seconds": 0.015,
+        "runtime_seconds": 8.718,
+        "summary": {
+          "tests": 3,
+          "pass": 2,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "runtime card art uses local WebP except the explicit API fallback list"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/ltc-cmm-deep.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 10.845,
+        "lock_wait_seconds": 0.014,
+        "runtime_seconds": 10.831,
+        "summary": {
+          "tests": 51,
+          "pass": 49,
+          "fail": 2,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: Oath of Teferi does not grant extra activations to Sparkshaper Bird creatures",
+          "ai: Oath of Teferi does not grant extra activations to Sparkshaper Bird creatures"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/limit-break.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 122.129,
+        "lock_wait_seconds": 0.013,
+        "runtime_seconds": 122.115,
+        "summary": {
+          "tests": 13,
+          "pass": 12,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "Puresteel equip zero overrides Wrecking Ball Arm alternate cost and Conqueror lock exists only while attached"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/headless-smoke.test.mjs",
+        "exit_code": "timeout",
+        "elapsed_seconds": 900.031,
+        "lock_wait_seconds": 0.023,
+        "runtime_seconds": 900.008,
+        "summary": {
+          "tests": null,
+          "pass": null,
+          "fail": null,
+          "skipped": null,
+          "cancelled": null
+        },
+        "failures": [],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/manual-mana-manifest-effects.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 9.325,
+        "lock_wait_seconds": 0.018,
+        "runtime_seconds": 9.308,
+        "summary": {
+          "tests": 9,
+          "pass": 8,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "default stop profil otvara combat reakciju samo kad postoji legalna akcija"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/multiplayer-parity.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 12.121,
+        "lock_wait_seconds": 0.015,
+        "runtime_seconds": 12.107,
+        "summary": {
+          "tests": 21,
+          "pass": 20,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "standalone server room contract is generated from the exact browser version"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/once-per-turn-effects.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 11.822,
+        "lock_wait_seconds": 0.013,
+        "runtime_seconds": 11.808,
+        "summary": {
+          "tests": 95,
+          "pass": 94,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "the once-on-use regression cases cover every such Oracle card in the catalog"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/opponent-choice.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 12.102,
+        "lock_wait_seconds": 0.011,
+        "runtime_seconds": 12.091,
+        "summary": {
+          "tests": 11,
+          "pass": 10,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "svaki aktivni oracle target-opponent put ima stvarni target spec"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/oracle-clash-source.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 13.944,
+        "lock_wait_seconds": 0.022,
+        "runtime_seconds": 13.921,
+        "summary": {
+          "tests": 29,
+          "pass": 25,
+          "fail": 4,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "human: Marvo keeps the original defending player when the attacked planeswalker changes control",
+          "human: Marvo retains the captured defender after its source leaves",
+          "ai: Marvo keeps the original defending player when the attacked planeswalker changes control",
+          "ai: Marvo retains the captured defender after its source leaves"
+        ],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/oracle-bulk-interactions.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 135.79,
+        "lock_wait_seconds": 0.029,
+        "runtime_seconds": 135.762,
+        "summary": {
+          "tests": null,
+          "pass": null,
+          "fail": null,
+          "skipped": null,
+          "cancelled": null
+        },
+        "failures": [],
+        "infrastructure_signal": []
+      },
+      {
+        "file": "tests/oracle-deep-controller-matrix.test.mjs",
+        "exit_code": 1,
+        "elapsed_seconds": 234.928,
+        "lock_wait_seconds": 102.65,
+        "runtime_seconds": 132.277,
+        "summary": {
+          "tests": 30,
+          "pass": 27,
+          "fail": 3,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "failures": [
+          "svih 4.600 Oracle karata prolazi stvarni human i lokal-AI controller tok",
+          "mana-source solver \u010duva basic za fiksni pip, a life payment ta\u010dno ozna\u010dava razli\u010diti Phyrexian pip",
+          "zajedni\u010dki tro\u0161kovi mana izvora se rezervi\u0161u jednom i ne mijenjaju stanje pri odbijenom pla\u0107anju"
+        ],
+        "infrastructure_signal": []
+      }
+    ],
+    "diagnosticReview": {
+      "schema_version": 1,
+      "snapshot_utc": "2026-10-10T10:40:11.811020+00:00",
+      "baseline_commit": "c05c5d737d8efa06ae0105a067e28daca9babed7",
+      "source_summaries": {
+        "current": {
+          "path": "current-broad-files/summary.json",
+          "sha256": "6bb43460a51cd030c1ab3841f078dcc7e68592651909cab18df646cafdc201e3",
+          "updated_utc": "2026-10-10T10:35:14.297278+00:00"
+        },
+        "original": {
+          "path": "broad-baseline-classifications/summary.json",
+          "sha256": "41f64a24574ab2da1530bc6254f67e6b34b62e9cc281be35a7160f42f291341a",
+          "updated_utc": "2026-10-10T10:39:27.437392+00:00"
+        }
+      },
+      "wide_suite_progress": {
+        "reported_file_results": 252,
+        "completed_files_with_named_results": 249,
+        "planned_files": 655,
+        "unexecuted_planned_files": 403,
+        "jobs": 4,
+        "reported_totals": {
+          "tests": 5234,
+          "pass": 5184,
+          "fail": 48,
+          "skipped": 2,
+          "cancelled": 0
+        },
+        "infrastructure_signal_files": []
+      },
+      "normalization": "Parsed TAP YAML fields location, failureType, error, code, name, expected, actual, operator. Recursively normalize current/immutable workspace prefixes in string values; retain full error wording and expected/actual values. Runtime-generated app.js line offsets, stack frames and timings excluded. Original passing cases have diagnostic_match=false and separate superseding evidence where available.",
+      "counts": {
+        "compared_current_failures": 48,
+        "diagnostic_matches": 46,
+        "confirmed_preexisting_test_failures": 40,
+        "superseded": 8,
+        "unresolved": 0,
+        "fixture_corrections_pending_final_check": 0,
+        "unresolved_execution_files": 3
+      },
+      "fixture_notes": [
+        {
+          "files": [
+            "tests/c17-c19-commanders.test.mjs",
+            "tests/avengers-assemble.test.mjs"
+          ],
+          "note": "Both Eminence and Speed fail in direct synthetic emit(cast) calls that omit data.so. The unchanged v91 wrapper dereferences castOpts; exact original diagnostic matches. These diagnostics do not demonstrate failed real paid casts."
+        },
+        {
+          "files": [
+            "tests/c21-precons.test.mjs"
+          ],
+          "note": "Daretti fails when a delayed-emblem trigger reaches the existing v89 resolveTriggerNow wrapper at oracleCumulativeV89; same exact original TypeError. No new native proof or repair performed in this read-only review."
+        },
+        {
+          "files": [
+            "tests/clb-dmc-40k-rules.test.mjs"
+          ],
+          "note": "Illuminor activation false!==true also reproduced in whole immutable original CLB69 file; latest current Trazyn borrowed activation passes after approved native repair."
+        }
+      ],
+      "comparisons": [
+        {
+          "file": "tests/afc-dice.test.mjs",
+          "name": "human: Barbarian Class ignores lowest dice and triggers once per group",
+          "current_artifact": "current-broad-files/afc-dice.test.tap",
+          "original_artifact": "broad-baseline-classifications/afc-dice.test.tap",
+          "current_diagnostic": {
+            "location": "tests/afc-dice.test.mjs:5:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   6,\n    3,\n-   6\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": 3,
+              "1": 6
+            },
+            "actual": {
+              "0": 6,
+              "1": 3
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/afc-dice.test.mjs:5:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   6,\n    3,\n-   6\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": 3,
+              "1": 6
+            },
+            "actual": {
+              "0": 6,
+              "1": 3
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/afc-dice.test.mjs",
+          "name": "ai: Barbarian Class ignores lowest dice and triggers once per group",
+          "current_artifact": "current-broad-files/afc-dice.test.tap",
+          "original_artifact": "broad-baseline-classifications/afc-dice.test.tap",
+          "current_diagnostic": {
+            "location": "tests/afc-dice.test.mjs:5:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   6,\n    3,\n-   6\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": 3,
+              "1": 6
+            },
+            "actual": {
+              "0": 6,
+              "1": 3
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/afc-dice.test.mjs:5:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   6,\n    3,\n-   6\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": 3,
+              "1": 6
+            },
+            "actual": {
+              "0": 6,
+              "1": 3
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/afc-dice.test.mjs",
+          "name": "zero dice produces no roll trigger",
+          "current_artifact": "current-broad-files/afc-dice.test.tap",
+          "original_artifact": "broad-baseline-classifications/afc-dice.test.tap",
+          "current_diagnostic": {
+            "location": "tests/afc-dice.test.mjs:14:1",
+            "failureType": "testCodeFailure",
+            "error": "Invalid dice roll",
+            "code": "ERR_TEST_FAILURE",
+            "name": null,
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/afc-dice.test.mjs:14:1",
+            "failureType": "testCodeFailure",
+            "error": "Invalid dice roll",
+            "code": "ERR_TEST_FAILURE",
+            "name": null,
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/ai-custom-skills.test.mjs",
+          "name": "reserve mana changes the cast score only while holding interaction",
+          "current_artifact": "current-broad-files/ai-custom-skills.test.tap",
+          "original_artifact": "broad-baseline-classifications/ai-custom-skills.test.tap",
+          "current_diagnostic": {
+            "location": "tests/ai-custom-skills.test.mjs:138:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n'cast' !== 'done'",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "done",
+            "actual": "cast",
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/ai-custom-skills.test.mjs:138:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n'cast' !== 'done'",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "done",
+            "actual": "cast",
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/ai-station.test.mjs",
+          "name": "easy: preserves the only flying blocker against a lethal next turn",
+          "current_artifact": "current-broad-files/ai-station.test.tap",
+          "original_artifact": "broad-baseline-classifications/ai-station.test.tap",
+          "current_diagnostic": {
+            "location": "tests/ai-station.test.mjs:57:3",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/ai-station.test.mjs:57:3",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/ai-station.test.mjs",
+          "name": "normal: preserves the only flying blocker against a lethal next turn",
+          "current_artifact": "current-broad-files/ai-station.test.tap",
+          "original_artifact": "broad-baseline-classifications/ai-station.test.tap",
+          "current_diagnostic": {
+            "location": "tests/ai-station.test.mjs:57:3",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/ai-station.test.mjs:57:3",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/ai-station.test.mjs",
+          "name": "hard: preserves the only flying blocker against a lethal next turn",
+          "current_artifact": "current-broad-files/ai-station.test.tap",
+          "original_artifact": "broad-baseline-classifications/ai-station.test.tap",
+          "current_diagnostic": {
+            "location": "tests/ai-station.test.mjs:57:3",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/ai-station.test.mjs:57:3",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/avengers-assemble.test.mjs",
+          "name": "Speed pays the real cost, locks a chosen haste target, and only haste creatures can block it",
+          "current_artifact": "current-broad-files/avengers-assemble.test.tap",
+          "original_artifact": "broad-baseline-classifications/avengers-assemble.test.tap",
+          "current_diagnostic": {
+            "location": "tests/avengers-assemble.test.mjs:166:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/avengers-assemble.test.mjs:166:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/avengers-assemble.test.mjs",
+          "name": "Avenge discount checks attacks during the relevant previous turn, not permanent AI grudges",
+          "current_artifact": "current-broad-files/avengers-assemble.test.tap",
+          "original_artifact": "broad-baseline-classifications/avengers-assemble.test.tap",
+          "current_diagnostic": {
+            "location": "tests/avengers-assemble.test.mjs:403:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n0 !== -2",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": -2,
+            "actual": 0,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": null,
+          "original_outcome": "passed",
+          "diagnostic_match": false,
+          "effective_status": "superseded_by_passing_final_observer_check",
+          "latest_evidence": {
+            "artifact": "combat-damage/avengers-assemble-updated-final.tap",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 27,
+              "pass": 26,
+              "fail": 1
+            },
+            "note": "Latest full-suite observer correction supersedes this earlier current failure; remaining Speed failure matches immutable original.",
+            "sha256": "4ad11109fc6a665c1ac12e6114890aff03e591985164018f65b839e79531384f",
+            "pass_verified": true
+          }
+        },
+        {
+          "file": "tests/c13-td0-sld-precons.test.mjs",
+          "name": "human: Primal Vigor doubles tokens and counters for every player",
+          "current_artifact": "current-broad-files/c13-td0-sld-precons.test.tap",
+          "original_artifact": "broad-baseline-classifications/c13-td0-sld-precons.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:74:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n2 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 2,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:74:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n2 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 2,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c13-td0-sld-precons.test.mjs",
+          "name": "human: a simultaneously entering Primal Vigor does not double its co-entrant\u2019s counters",
+          "current_artifact": "current-broad-files/c13-td0-sld-precons.test.tap",
+          "original_artifact": "broad-baseline-classifications/c13-td0-sld-precons.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:126:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n3 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 3,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:126:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n3 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 3,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c13-td0-sld-precons.test.mjs",
+          "name": "ai: Primal Vigor doubles tokens and counters for every player",
+          "current_artifact": "current-broad-files/c13-td0-sld-precons.test.tap",
+          "original_artifact": "broad-baseline-classifications/c13-td0-sld-precons.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:74:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n2 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 2,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:74:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n2 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 2,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c13-td0-sld-precons.test.mjs",
+          "name": "ai: a simultaneously entering Primal Vigor does not double its co-entrant\u2019s counters",
+          "current_artifact": "current-broad-files/c13-td0-sld-precons.test.tap",
+          "original_artifact": "broad-baseline-classifications/c13-td0-sld-precons.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:126:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n3 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 3,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c13-td0-sld-precons.test.mjs:126:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n3 !== 4",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 4,
+            "actual": 3,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c14-precons.test.mjs",
+          "name": "Raving Dead selects a deterministic random opponent and halves life after combat damage",
+          "current_artifact": "current-broad-files/c14-precons.test.tap",
+          "original_artifact": "broad-baseline-classifications/c14-precons.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c14-precons.test.mjs:167:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c14-precons.test.mjs:167:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c17-c19-aura-control.test.mjs",
+          "name": "human: Xantcha enters under the chosen opponent before ETB triggers and cannot attack its owner or that owner planeswalker",
+          "current_artifact": "current-broad-files/c17-c19-aura-control.test.tap",
+          "original_artifact": "broad-baseline-classifications/c17-c19-aura-control.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c17-c19-aura-control.test.mjs:11:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c17-c19-aura-control.test.mjs:11:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c17-c19-aura-control.test.mjs",
+          "name": "ai: Xantcha enters under the chosen opponent before ETB triggers and cannot attack its owner or that owner planeswalker",
+          "current_artifact": "current-broad-files/c17-c19-aura-control.test.tap",
+          "original_artifact": "broad-baseline-classifications/c17-c19-aura-control.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c17-c19-aura-control.test.mjs:11:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c17-c19-aura-control.test.mjs:11:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c17-c19-aura-control.test.mjs",
+          "name": "Xantcha has no attack restriction or must-attack requirement after losing all abilities",
+          "current_artifact": "current-broad-files/c17-c19-aura-control.test.tap",
+          "original_artifact": "broad-baseline-classifications/c17-c19-aura-control.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c17-c19-aura-control.test.mjs:21:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c17-c19-aura-control.test.mjs:21:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c17-c19-commanders.test.mjs",
+          "name": "Eminence stops when its source changes zones, even if it reaches another permitted zone",
+          "current_artifact": "current-broad-files/c17-c19-commanders.test.tap",
+          "original_artifact": "broad-baseline-classifications/c17-c19-commanders.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c17-c19-commanders.test.mjs:52:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/c17-c19-commanders.test.mjs:52:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c17-c19-text-search.test.mjs",
+          "name": "human: New Blood modifies native tribal rules while leaving unrelated cards and later copies unchanged",
+          "current_artifact": "current-broad-files/c17-c19-text-search.test.tap",
+          "original_artifact": "broad-baseline-classifications/c17-c19-text-search.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c17-c19-text-search.test.mjs:7:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n1 !== 2",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 2,
+            "actual": 1,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c17-c19-text-search.test.mjs:7:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n1 !== 2",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 2,
+            "actual": 1,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c17-c19-text-search.test.mjs",
+          "name": "ai: New Blood modifies native tribal rules while leaving unrelated cards and later copies unchanged",
+          "current_artifact": "current-broad-files/c17-c19-text-search.test.tap",
+          "original_artifact": "broad-baseline-classifications/c17-c19-text-search.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c17-c19-text-search.test.mjs:7:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n1 !== 2",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 2,
+            "actual": 1,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c17-c19-text-search.test.mjs:7:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\n1 !== 2",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 2,
+            "actual": 1,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c19-c20-mutate.test.mjs",
+          "name": "human: a merged double-faced component can transform and prevents turning the merge face down",
+          "current_artifact": "current-broad-files/c19-c20-mutate.test.tap",
+          "original_artifact": "broad-baseline-classifications/c19-c20-mutate.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c19-c20-mutate.test.mjs:26:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Bloodline Keeper'\n- 'Lord of Lineage'",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "Lord of Lineage",
+            "actual": "Bloodline Keeper",
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c19-c20-mutate.test.mjs:26:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Bloodline Keeper'\n- 'Lord of Lineage'",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "Lord of Lineage",
+            "actual": "Bloodline Keeper",
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c19-c20-mutate.test.mjs",
+          "name": "ai: a merged double-faced component can transform and prevents turning the merge face down",
+          "current_artifact": "current-broad-files/c19-c20-mutate.test.tap",
+          "original_artifact": "broad-baseline-classifications/c19-c20-mutate.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c19-c20-mutate.test.mjs:26:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Bloodline Keeper'\n- 'Lord of Lineage'",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "Lord of Lineage",
+            "actual": "Bloodline Keeper",
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/c19-c20-mutate.test.mjs:26:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Bloodline Keeper'\n- 'Lord of Lineage'",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "Lord of Lineage",
+            "actual": "Bloodline Keeper",
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/c21-precons.test.mjs",
+          "name": "Daretti rummages, exchanges an artifact and creates a delayed-return emblem",
+          "current_artifact": "current-broad-files/c21-precons.test.tap",
+          "original_artifact": "broad-baseline-classifications/c21-precons.test.tap",
+          "current_diagnostic": {
+            "location": "tests/c21-precons.test.mjs:23:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'oracleCumulativeV89')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/c21-precons.test.mjs:23:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'oracleCumulativeV89')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "superseded_by_passing_final_native_and_affected_check",
+          "latest_evidence": {
+            "artifact": "combat-damage/native-emblem-existing-daretti-after.tap",
+            "native_artifact": "combat-damage/native-emblem-three-current-after.tap",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 1,
+              "pass": 1,
+              "fail": 0
+            },
+            "native_suite_result": {
+              "tests": 3,
+              "pass": 3,
+              "fail": 0
+            },
+            "note": "Approved exact v89 optional-def guard repaired genuine native emblem failure. Real paid Daretti emblem/disenchant/end-step return plus unchanged cumulative upkeep and echo controls pass; previous wide-suite observation superseded.",
+            "sha256": "7b0b413bd1e199e13bdb8627ea66837731d6a983d9eeb1ec6960946db161ceb2",
+            "pass_verified": true,
+            "native_sha256": "070e1c56c85dcb2962fbdbeff7595882321184cebc7cfd2278e2d612aef68cdb"
+          }
+        },
+        {
+          "file": "tests/clb-dmc-40k-rules.test.mjs",
+          "name": "Illuminor sacrifices exactly the selected creature and produces its mana value",
+          "current_artifact": "current-broad-files/clb-dmc-40k-rules.test.tap",
+          "original_artifact": "broad-baseline-classifications/clb-dmc-40k-rules.test.tap",
+          "current_diagnostic": {
+            "location": "tests/clb-dmc-40k-rules.test.mjs:25:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/clb-dmc-40k-rules.test.mjs:25:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/combat-action-audit.test.mjs",
+          "name": "default profile: an instant can change normal damage after first-strike damage has resolved",
+          "current_artifact": "current-broad-files/combat-action-audit.test.tap",
+          "original_artifact": "broad-baseline-classifications/combat-action-audit.test.tap",
+          "current_diagnostic": {
+            "location": "tests/combat-action-audit.test.mjs:200:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    1,\n+   1,\n    4,\n+   4\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": 1,
+              "1": 4
+            },
+            "actual": {
+              "0": 1,
+              "1": 1,
+              "2": 4,
+              "3": 4
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_diagnostic": null,
+          "original_outcome": "passed",
+          "diagnostic_match": false,
+          "effective_status": "superseded_by_passing_final_observer_check",
+          "latest_evidence": {
+            "artifact": "combat-action-observer-final.tap",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 14,
+              "pass": 14,
+              "fail": 0
+            },
+            "note": "Latest full-suite observer correction supersedes this earlier current failure.",
+            "sha256": "66775591fe0bf3edb8529316bfb2f8efab3ca77bd9f2fd7d51857f614e8b66e3",
+            "pass_verified": true
+          }
+        },
+        {
+          "file": "tests/commander-staples.test.mjs",
+          "name": "Smothering Tithe: an AI opponent pays with spare mana but keeps its mana while developing",
+          "current_artifact": "current-broad-files/commander-staples.test.tap",
+          "original_artifact": "broad-baseline-classifications/commander-staples.test.tap",
+          "current_diagnostic": {
+            "location": "tests/commander-staples.test.mjs:216:1",
+            "failureType": "testCodeFailure",
+            "error": "with three lands and a spell to cast on its own turn the AI declines\n\n0 !== 1",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 1,
+            "actual": 0,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/commander-staples.test.mjs:216:1",
+            "failureType": "testCodeFailure",
+            "error": "with three lands and a spell to cast on its own turn the AI declines\n\n0 !== 1",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 1,
+            "actual": 0,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/engine-x-offer-boundaries.test.mjs",
+          "name": "human: Heat Ray with no target uses a constant number of X offer probes",
+          "current_artifact": "current-broad-files/engine-x-offer-boundaries.test.tap",
+          "original_artifact": "broad-baseline-classifications/engine-x-offer-boundaries.test.tap",
+          "current_diagnostic": {
+            "location": "tests/engine-x-offer-boundaries.test.mjs:8:2",
+            "failureType": "testCodeFailure",
+            "error": "static empty target set must not enumerate affordable X values (12 probes)",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_diagnostic": {
+            "location": "tests/engine-x-offer-boundaries.test.mjs:8:2",
+            "failureType": "testCodeFailure",
+            "error": "static empty target set must not enumerate affordable X values (12 probes)",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/engine-x-offer-boundaries.test.mjs",
+          "name": "ai: Heat Ray with no target uses a constant number of X offer probes",
+          "current_artifact": "current-broad-files/engine-x-offer-boundaries.test.tap",
+          "original_artifact": "broad-baseline-classifications/engine-x-offer-boundaries.test.tap",
+          "current_diagnostic": {
+            "location": "tests/engine-x-offer-boundaries.test.mjs:8:2",
+            "failureType": "testCodeFailure",
+            "error": "static empty target set must not enumerate affordable X values (4 probes)",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_diagnostic": {
+            "location": "tests/engine-x-offer-boundaries.test.mjs:8:2",
+            "failureType": "testCodeFailure",
+            "error": "static empty target set must not enumerate affordable X values (4 probes)",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/estinien-varlineau.test.mjs",
+          "name": "Estinien remembers Dragon damage granted by Maskwood Nexus after the source dies",
+          "current_artifact": "current-broad-files/estinien-varlineau.test.tap",
+          "original_artifact": "broad-baseline-classifications/estinien-varlineau.test.tap",
+          "current_diagnostic": {
+            "location": "tests/estinien-varlineau.test.mjs:206:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/estinien-varlineau.test.mjs:206:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "superseded_by_passing_final_observer_check",
+          "latest_evidence": {
+            "artifact": "estinien-native-fixture-final.tap",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 18,
+              "pass": 18,
+              "fail": 0
+            },
+            "note": "Printed Maskwood Nexus grants Dragon subtype to owned creature cards in graveyard while it remains on the battlefield in both original/current runtime. Corrected fixture verifies that grant, then removes Nexus and retains historic Dragon damage memory. No production source change.",
+            "sha256": "1c21a800cbf26802527bb46adfd4b6db74a3f502ed66d0f9f821993a18832c37",
+            "pass_verified": true
+          }
+        },
+        {
+          "file": "tests/fantastic-four.test.mjs",
+          "name": "Fantasticar sacrifice is optional and creates four flying hasty Constructs only after a successful sacrifice",
+          "current_artifact": "current-broad-files/fantastic-four.test.tap",
+          "original_artifact": "broad-baseline-classifications/fantastic-four.test.tap",
+          "current_diagnostic": {
+            "location": "tests/fantastic-four.test.mjs:487:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/fantastic-four.test.mjs:487:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/fantastic-four.test.mjs",
+          "name": "The Watcher's Warning triggers for each opponent's first spell, not only the first opponent overall",
+          "current_artifact": "current-broad-files/fantastic-four.test.tap",
+          "original_artifact": "broad-baseline-classifications/fantastic-four.test.tap",
+          "current_diagnostic": {
+            "location": "tests/fantastic-four.test.mjs:541:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/fantastic-four.test.mjs:541:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of undefined (reading 'castOpts')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/elven-council.test.mjs",
+          "name": "Elrond obra\u0111uje svaki Fellowship glas i ukradeno stvorenje ne mo\u017ee napasti vlasnika",
+          "current_artifact": "current-broad-files/elven-council.test.tap",
+          "original_artifact": "broad-baseline-classifications/elven-council.test.tap",
+          "current_diagnostic": {
+            "location": "tests/elven-council.test.mjs:147:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/elven-council.test.mjs:147:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/full-card-audit.test.mjs",
+          "name": "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+          "current_artifact": "current-broad-files/full-card-audit.test.tap",
+          "original_artifact": "broad-baseline-classifications/full-card-audit.test.tap",
+          "current_diagnostic": {
+            "location": "tests/full-card-audit.test.mjs:53:1",
+            "failureType": "testCodeFailure",
+            "error": "Carnival Elephant Meteor: Oracle aktivacije 1, putanje 0",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_diagnostic": {
+            "location": "tests/full-card-audit.test.mjs:53:1",
+            "failureType": "testCodeFailure",
+            "error": "Carnival Elephant Meteor: Oracle aktivacije 1, putanje 0",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "superseded_by_passing_final_checker_check",
+          "latest_evidence": {
+            "artifact": "certification-interfaces/checker-and-full-audit.tap",
+            "kind": "checker_correction",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 18,
+              "pass": 18,
+              "fail": 0
+            },
+            "control_artifacts": [
+              "certification-interfaces/native-before.tap",
+              "certification-interfaces/native-original.tap"
+            ],
+            "note": "Checker correction counts proven existing registered sticker and Lightning Storm stack interfaces, and distinguishes direct Land mana from quoted Saga grants. Existing runtime was unchanged; actual paid current/original interface controls3/3 and checker+whole-audit18/18 pass. Preserve earlier Carnival checker failure as a raw observation, not a production repair.",
+            "sha256": "7461589704beda88866dd5a2c7df440b1b1cb8b72e082231c4f8d9104a0fde7e",
+            "pass_verified": true
+          }
+        },
+        {
+          "file": "tests/local-card-images.test.mjs",
+          "name": "runtime card art uses local WebP except the explicit API fallback list",
+          "current_artifact": "current-broad-files/local-card-images.test.tap",
+          "original_artifact": "broad-baseline-classifications/local-card-images.test.tap",
+          "current_diagnostic": {
+            "location": "tests/local-card-images.test.mjs:12:1",
+            "failureType": "testCodeFailure",
+            "error": "Rock: canonical card or token name retains its local art",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "./assets/cards/card-back.webp",
+            "actual": "./assets/cards/card-back.webp",
+            "operator": "notStrictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/local-card-images.test.mjs:12:1",
+            "failureType": "testCodeFailure",
+            "error": "Rock: canonical card or token name retains its local art",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": "./assets/cards/card-back.webp",
+            "actual": "./assets/cards/card-back.webp",
+            "operator": "notStrictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/ltc-cmm-deep.test.mjs",
+          "name": "human: Oath of Teferi does not grant extra activations to Sparkshaper Bird creatures",
+          "current_artifact": "current-broad-files/ltc-cmm-deep.test.tap",
+          "original_artifact": "broad-baseline-classifications/ltc-cmm-deep.test.tap",
+          "current_diagnostic": {
+            "location": "tests/ltc-cmm-deep.test.mjs:38:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/ltc-cmm-deep.test.mjs:38:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "superseded_by_passing_final_native_and_affected_check",
+          "latest_evidence": {
+            "artifact": "combat-damage/native-loyalty-types-affected-oath-after.tap",
+            "native_artifact": "combat-damage/native-loyalty-types-current-after.tap",
+            "kind": "native_production_repair",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 2,
+              "pass": 2,
+              "fail": 0
+            },
+            "native_suite_result": {
+              "tests": 5,
+              "pass": 5,
+              "fail": 0
+            },
+            "note": "Proven native loyalty type repair: printed loyalty abilities remain usable on nonplaneswalker permanents, while Oath of Teferi grants its additional activation only to a current planeswalker. Paid native5/5 controls and both prior human/AI Oath observations2/2 pass; genuine production repair, not fixture relaxation.",
+            "sha256": "1933755d4e3d2a68ca3af0349f56d361a7f8c52437fb745ac6a1c65ecb3b47a2",
+            "pass_verified": true,
+            "native_sha256": "7360b4597cc50021df7fa7fc4f92b0de6c02f5c2db0f927abf3d6a032bbf44f2"
+          }
+        },
+        {
+          "file": "tests/ltc-cmm-deep.test.mjs",
+          "name": "ai: Oath of Teferi does not grant extra activations to Sparkshaper Bird creatures",
+          "current_artifact": "current-broad-files/ltc-cmm-deep.test.tap",
+          "original_artifact": "broad-baseline-classifications/ltc-cmm-deep.test.tap",
+          "current_diagnostic": {
+            "location": "tests/ltc-cmm-deep.test.mjs:38:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/ltc-cmm-deep.test.mjs:38:2",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\ntrue !== false",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": false,
+            "actual": true,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "superseded_by_passing_final_native_and_affected_check",
+          "latest_evidence": {
+            "artifact": "combat-damage/native-loyalty-types-affected-oath-after.tap",
+            "native_artifact": "combat-damage/native-loyalty-types-current-after.tap",
+            "kind": "native_production_repair",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 2,
+              "pass": 2,
+              "fail": 0
+            },
+            "native_suite_result": {
+              "tests": 5,
+              "pass": 5,
+              "fail": 0
+            },
+            "note": "Proven native loyalty type repair: printed loyalty abilities remain usable on nonplaneswalker permanents, while Oath of Teferi grants its additional activation only to a current planeswalker. Paid native5/5 controls and both prior human/AI Oath observations2/2 pass; genuine production repair, not fixture relaxation.",
+            "sha256": "1933755d4e3d2a68ca3af0349f56d361a7f8c52437fb745ac6a1c65ecb3b47a2",
+            "pass_verified": true,
+            "native_sha256": "7360b4597cc50021df7fa7fc4f92b0de6c02f5c2db0f927abf3d6a032bbf44f2"
+          }
+        },
+        {
+          "file": "tests/limit-break.test.mjs",
+          "name": "Puresteel equip zero overrides Wrecking Ball Arm alternate cost and Conqueror lock exists only while attached",
+          "current_artifact": "current-broad-files/limit-break.test.tap",
+          "original_artifact": "broad-baseline-classifications/limit-break.test.tap",
+          "current_diagnostic": {
+            "location": "tests/limit-break.test.mjs:117:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of null (reading 'faceDownCast')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/limit-break.test.mjs:117:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of null (reading 'faceDownCast')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/manual-mana-manifest-effects.test.mjs",
+          "name": "default stop profil otvara combat reakciju samo kad postoji legalna akcija",
+          "current_artifact": "current-broad-files/manual-mana-manifest-effects.test.tap",
+          "original_artifact": "broad-baseline-classifications/manual-mana-manifest-effects.test.tap",
+          "current_diagnostic": {
+            "location": "tests/manual-mana-manifest-effects.test.mjs:239:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/manual-mana-manifest-effects.test.mjs:239:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly equal:\n\nfalse !== true",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/multiplayer-parity.test.mjs",
+          "name": "standalone server room contract is generated from the exact browser version",
+          "current_artifact": "current-broad-files/multiplayer-parity.test.tap",
+          "original_artifact": "broad-baseline-classifications/multiplayer-parity.test.tap",
+          "current_diagnostic": {
+            "location": "tests/multiplayer-parity.test.mjs:83:1",
+            "failureType": "testCodeFailure",
+            "error": "Command failed: /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/sync-online-room.mjs --check\nfile://scripts/sync-online-room.mjs:24\n  if (fs.readFileSync(target, 'utf8') !== generated) throw new Error('Run node scripts/sync-online-room.mjs before shipping a room protocol change.');\n                                                           ^\n\nError: Run node scripts/sync-online-room.mjs before shipping a room protocol change.\n    at file://scripts/sync-online-room.mjs:24:60\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.19.0",
+            "code": "ERR_TEST_FAILURE",
+            "name": null,
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/multiplayer-parity.test.mjs:83:1",
+            "failureType": "testCodeFailure",
+            "error": "Command failed: /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/sync-online-room.mjs --check\nfile://scripts/sync-online-room.mjs:24\n  if (fs.readFileSync(target, 'utf8') !== generated) throw new Error('Run node scripts/sync-online-room.mjs before shipping a room protocol change.');\n                                                           ^\n\nError: Run node scripts/sync-online-room.mjs before shipping a room protocol change.\n    at file://scripts/sync-online-room.mjs:24:60\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.19.0",
+            "code": "ERR_TEST_FAILURE",
+            "name": null,
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "superseded_by_passing_final_generated_artifact_check",
+          "latest_evidence": {
+            "artifact": "final-multiplayer-parity.tap",
+            "kind": "generated_contract_sync",
+            "outcome": "passed",
+            "suite_result": {
+              "tests": 21,
+              "pass": 21,
+              "fail": 0
+            },
+            "note": "Root regenerated standalone logic.js through unchanged sync-online-room script, restoring the browser auxiliaryV87 contract and matching validation. Final whole multiplayer-parity21/21 passes; previous exact-original generated-contract drift is superseded by validated artifact synchronization.",
+            "sha256": "c20c9b96aa3d82a16b2e6f900205ec8ff8e957c528e00d7a4d1d310fdb931e1f",
+            "pass_verified": true
+          }
+        },
+        {
+          "file": "tests/once-per-turn-effects.test.mjs",
+          "name": "the once-on-use regression cases cover every such Oracle card in the catalog",
+          "current_artifact": "current-broad-files/once-per-turn-effects.test.tap",
+          "original_artifact": "broad-baseline-classifications/once-per-turn-effects.test.tap",
+          "current_diagnostic": {
+            "location": "tests/once-per-turn-effects.test.mjs:147:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   \"Amzu, Swarm's Hunger\",\n    'Ancient Cornucopia',\n    'Baron Strucker, HYDRA Overlord',\n+   'Calix, Guided by Fate',\n+   'Corruption of Towashi',\n    'Cosmic Crucible',\n    'Deep Gnome Terramancer',\n    'Donal, Herald of Wings',\n    'Earth Kingdom General',\n    'Emet-Selch of the Third Seat',\n    \"G'raha Tia, Scion Reborn\",\n+   'Iron Man, Bleeding Edge',\n+   'Irreverent Gremlin',\n    'Krile Baldesion',\n+   'Legolas, Counter of Kills',\n    'Leonardo, the Balance',\n+   'Lucy MacLean, Positively Armed',\n+   'Night Shift of the Living Dead',\n    'Nykthos Paragon',\n    'Ondu Spiritdancer',\n    'Pantlaza, Sun-Favored',\n+   'Planetarium of Wan Shi Tong',\n+   'Priority Boarding',\n    \"Puca's Covenant\",\n+   'Rinoa, Angel Wing',\n+   'Riveteers Ascendancy',\n    'Screeching Scorchbeast',\n+   'Spider-Verse',\n    'Terrasymbiosis',\n    'The Reaper, King No More',\n    \"Tidus, Yuna's Guardian\"\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": "Ancient Cornucopia",
+              "1": "Baron Strucker, HYDRA Overlord",
+              "2": "Cosmic Crucible",
+              "3": "Deep Gnome Terramancer",
+              "4": "Donal, Herald of Wings",
+              "5": "Earth Kingdom General",
+              "6": "Emet-Selch of the Third Seat",
+              "7": "G'raha Tia, Scion Reborn",
+              "8": "Krile Baldesion",
+              "9": "Leonardo, the Balance",
+              "10": "Nykthos Paragon",
+              "11": "Ondu Spiritdancer",
+              "12": "Pantlaza, Sun-Favored",
+              "13": "Puca's Covenant",
+              "14": "Screeching Scorchbeast",
+              "15": "Terrasymbiosis",
+              "16": "The Reaper, King No More",
+              "17": "Tidus, Yuna's Guardian"
+            },
+            "actual": {
+              "0": "Amzu, Swarm's Hunger",
+              "1": "Ancient Cornucopia",
+              "2": "Baron Strucker, HYDRA Overlord",
+              "3": "Calix, Guided by Fate",
+              "4": "Corruption of Towashi",
+              "5": "Cosmic Crucible",
+              "6": "Deep Gnome Terramancer",
+              "7": "Donal, Herald of Wings",
+              "8": "Earth Kingdom General",
+              "9": "Emet-Selch of the Third Seat",
+              "10": "G'raha Tia, Scion Reborn",
+              "11": "Iron Man, Bleeding Edge",
+              "12": "Irreverent Gremlin",
+              "13": "Krile Baldesion",
+              "14": "Legolas, Counter of Kills",
+              "15": "Leonardo, the Balance",
+              "16": "Lucy MacLean, Positively Armed",
+              "17": "Night Shift of the Living Dead",
+              "18": "Nykthos Paragon",
+              "19": "Ondu Spiritdancer",
+              "20": "Pantlaza, Sun-Favored",
+              "21": "Planetarium of Wan Shi Tong",
+              "22": "Priority Boarding",
+              "23": "Puca's Covenant",
+              "24": "Rinoa, Angel Wing",
+              "25": "Riveteers Ascendancy",
+              "26": "Screeching Scorchbeast",
+              "27": "Spider-Verse",
+              "28": "Terrasymbiosis",
+              "29": "The Reaper, King No More",
+              "30": "Tidus, Yuna's Guardian"
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/once-per-turn-effects.test.mjs:147:1",
+            "failureType": "testCodeFailure",
+            "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   \"Amzu, Swarm's Hunger\",\n    'Ancient Cornucopia',\n    'Baron Strucker, HYDRA Overlord',\n+   'Calix, Guided by Fate',\n+   'Corruption of Towashi',\n    'Cosmic Crucible',\n    'Deep Gnome Terramancer',\n    'Donal, Herald of Wings',\n    'Earth Kingdom General',\n    'Emet-Selch of the Third Seat',\n    \"G'raha Tia, Scion Reborn\",\n+   'Iron Man, Bleeding Edge',\n+   'Irreverent Gremlin',\n    'Krile Baldesion',\n+   'Legolas, Counter of Kills',\n    'Leonardo, the Balance',\n+   'Lucy MacLean, Positively Armed',\n+   'Night Shift of the Living Dead',\n    'Nykthos Paragon',\n    'Ondu Spiritdancer',\n    'Pantlaza, Sun-Favored',\n+   'Planetarium of Wan Shi Tong',\n+   'Priority Boarding',\n    \"Puca's Covenant\",\n+   'Rinoa, Angel Wing',\n+   'Riveteers Ascendancy',\n    'Screeching Scorchbeast',\n+   'Spider-Verse',\n    'Terrasymbiosis',\n    'The Reaper, King No More',\n    \"Tidus, Yuna's Guardian\"\n  ]",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": {
+              "0": "Ancient Cornucopia",
+              "1": "Baron Strucker, HYDRA Overlord",
+              "2": "Cosmic Crucible",
+              "3": "Deep Gnome Terramancer",
+              "4": "Donal, Herald of Wings",
+              "5": "Earth Kingdom General",
+              "6": "Emet-Selch of the Third Seat",
+              "7": "G'raha Tia, Scion Reborn",
+              "8": "Krile Baldesion",
+              "9": "Leonardo, the Balance",
+              "10": "Nykthos Paragon",
+              "11": "Ondu Spiritdancer",
+              "12": "Pantlaza, Sun-Favored",
+              "13": "Puca's Covenant",
+              "14": "Screeching Scorchbeast",
+              "15": "Terrasymbiosis",
+              "16": "The Reaper, King No More",
+              "17": "Tidus, Yuna's Guardian"
+            },
+            "actual": {
+              "0": "Amzu, Swarm's Hunger",
+              "1": "Ancient Cornucopia",
+              "2": "Baron Strucker, HYDRA Overlord",
+              "3": "Calix, Guided by Fate",
+              "4": "Corruption of Towashi",
+              "5": "Cosmic Crucible",
+              "6": "Deep Gnome Terramancer",
+              "7": "Donal, Herald of Wings",
+              "8": "Earth Kingdom General",
+              "9": "Emet-Selch of the Third Seat",
+              "10": "G'raha Tia, Scion Reborn",
+              "11": "Iron Man, Bleeding Edge",
+              "12": "Irreverent Gremlin",
+              "13": "Krile Baldesion",
+              "14": "Legolas, Counter of Kills",
+              "15": "Leonardo, the Balance",
+              "16": "Lucy MacLean, Positively Armed",
+              "17": "Night Shift of the Living Dead",
+              "18": "Nykthos Paragon",
+              "19": "Ondu Spiritdancer",
+              "20": "Pantlaza, Sun-Favored",
+              "21": "Planetarium of Wan Shi Tong",
+              "22": "Priority Boarding",
+              "23": "Puca's Covenant",
+              "24": "Rinoa, Angel Wing",
+              "25": "Riveteers Ascendancy",
+              "26": "Screeching Scorchbeast",
+              "27": "Spider-Verse",
+              "28": "Terrasymbiosis",
+              "29": "The Reaper, King No More",
+              "30": "Tidus, Yuna's Guardian"
+            },
+            "operator": "deepStrictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/opponent-choice.test.mjs",
+          "name": "svaki aktivni oracle target-opponent put ima stvarni target spec",
+          "current_artifact": "current-broad-files/opponent-choice.test.tap",
+          "original_artifact": "broad-baseline-classifications/opponent-choice.test.tap",
+          "current_diagnostic": {
+            "location": "tests/opponent-choice.test.mjs:74:1",
+            "failureType": "testCodeFailure",
+            "error": "Goblin Lyre: tekst tra\u017ei target opponent, ali skripta nema player/opponent target",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_diagnostic": {
+            "location": "tests/opponent-choice.test.mjs:74:1",
+            "failureType": "testCodeFailure",
+            "error": "Goblin Lyre: tekst tra\u017ei target opponent, ali skripta nema player/opponent target",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": false,
+            "operator": "=="
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-clash-source.test.mjs",
+          "name": "human: Marvo keeps the original defending player when the attacked planeswalker changes control",
+          "current_artifact": "current-broad-files/oracle-clash-source.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-clash-source.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:96:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:96:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-clash-source.test.mjs",
+          "name": "human: Marvo retains the captured defender after its source leaves",
+          "current_artifact": "current-broad-files/oracle-clash-source.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-clash-source.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:102:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:102:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-clash-source.test.mjs",
+          "name": "ai: Marvo keeps the original defending player when the attacked planeswalker changes control",
+          "current_artifact": "current-broad-files/oracle-clash-source.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-clash-source.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:96:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:96:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-clash-source.test.mjs",
+          "name": "ai: Marvo retains the captured defender after its source leaves",
+          "current_artifact": "current-broad-files/oracle-clash-source.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-clash-source.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:102:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-clash-source.test.mjs:102:3",
+            "failureType": "testCodeFailure",
+            "error": "Cannot set properties of undefined (setting 'rogueAttackTurnV82')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-deep-controller-matrix.test.mjs",
+          "name": "svih 4.600 Oracle karata prolazi stvarni human i lokal-AI controller tok",
+          "current_artifact": "current-broad-files/oracle-deep-controller-matrix.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-deep-controller-matrix.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-deep-controller-matrix.test.mjs:1032:1",
+            "failureType": "testCodeFailure",
+            "error": "oracle-0004/Alloy Myr/human: Alloy Myr: controller-path mana source is discoverable\noracle-0004/Alloy Myr/ai: Alloy Myr: controller-path mana source is discoverable\noracle-0004/Bronze Walrus/human: Bronze Walrus: controller-path mana source is discoverable\noracle-0004/Bronze Walrus/ai: Bronze Walrus: controller-path mana source is discoverable\noracle-0004/Centaur Nurturer/human: Centaur Nurturer: controller-path mana source is discoverable\noracle-0004/Centaur Nurturer/ai: Centaur Nurturer: controller-path mana source is discoverable\noracle-0005/Dawnhart Rejuvenator/human: Dawnhart Rejuvenator: controller-path mana source is discoverable\noracle-0005/Dawnhart Rejuvenator/ai: Dawnhart Rejuvenator: controller-path mana source is discoverable\noracle-0005/Deathbloom Gardener/human: Deathbloom Gardener: controller-path mana source is discoverable\noracle-0005/Deathbloom Gardener/ai: Deathbloom Gardener: controller-path mana source is discoverable\noracle-0006/Great Forest Druid/human: Great Forest Druid: controller-path mana source is discoverable\noracle-0006/Great Forest Druid/ai: Great Forest Druid: controller-path mana source is discoverable\noracle-0007/Leyline Prowler/human: Leyline Prowler: controller-path mana source is discoverable\noracle-0007/Leyline Prowler/ai: Leyline Prowler: controller-path mana source is discoverable\noracle-0007/Lifespring Druid/human: Lifespring Druid: controller-path mana source is discoverable\noracle-0007/Lifespring Druid/ai: Lifespring Druid: controller-path mana source is discoverable\noracle-0008/Lotus Guardian/human: Lotus Guardian: controller-path mana source is discoverable\noracle-0008/Lotus Guardian/ai: Lotus Guardian: controller-path mana source is discoverable\noracle-0009/Nightshade Dryad/human: Nightshade Dryad: controller-path mana source is discoverable\noracle-0009/Nightshade Dryad/ai: Nightshade Dryad: controller-path mana source is discoverable\noracle-0009/Oasis Gardener/human: Oasis Gardener: controller-path mana source is discoverable\noracle-0009/Oasis Gardener/ai: Oasis Gardener: controller-path mana source is discoverable\noracle-0009/Opaline Unicorn/human: Opaline Unicorn: controller-path mana source is discoverable\noracle-0009/Opaline Unicorn/ai: Opaline Unicorn: controller-path mana source is discoverable\noracle-0013/Three Tree Rootweaver/human: Three Tree Rootweaver: controller-path mana source is discoverable\noracle-0013/Three Tree Rootweaver/ai: Three Tree Rootweaver: controller-path mana source is discoverable\noracle-0013/Utopia Tree/human: Utopia Tree: controller-path mana source is discoverable\noracle-0013/Utopia Tree/ai: Utopia Tree: controller-path mana source is discoverable\noracle-0015/Celestial Prism/human: Celestial Prism: controller-path mana source is discoverable\noracle-0015/Celestial Prism/ai: Celestial Prism: controller-path mana source is discoverable\noracle-0016/Cultivator's Caravan/human: Cultivator's Caravan: controller-path mana source is discoverable\noracle-0016/Cultivator's Caravan/ai: Cultivator's Caravan: controller-path mana source is discoverable\noracle-0016/Darksteel Ingot/human: Darksteel Ingot: controller-path mana source is discoverable\noracle-0016/Darksteel Ingot/ai: Darksteel Ingot: controller-path mana source is discoverable\noracle-0016/Dependable Quinjet/human: Dependable Quinjet: controller-path mana source is discoverable\noracle-0016/Dependable Quinjet/ai: Dependable Quinjet: controller-path mana source is discoverable\noracle-0017/Frog Butler/human: Frog Butler: controller-path mana source is discoverable\noracle-0017/Frog Butler/ai: Frog Butler: controller-path mana source is discoverable\noracle-0018/Helionaut/human: Helionaut: controller-path mana source is discoverable\noracle-0018/Helionaut/ai: Helionaut: controller-path mana source is discoverable\noracle-0019/Mana Cylix/human: Mana Cylix: controller-path mana source is discoverable\noracle-0019/Mana Cylix/ai: Mana Cylix: controller-path mana source is discoverable\noracle-0020/Manalith/human: Manalith: controller-path mana source is discoverable\noracle-0020/Manalith/ai: Manalith: controller-path mana source is discoverable\noracle-0021/Poison Dart Frog/human: Poison Dart Frog: controller-path mana source is discoverable\noracle-0021/Poison Dart Frog/ai: Poison Dart Frog: controller-path mana source is discoverable\noracle-0021/Prismatic Lens/human: Prismatic Lens: controller-path mana source is discoverable\noracle-0021/Prismatic Lens/ai: Prismatic Lens: controller-path mana source is discoverable\noracle-0022/Rootrider Faun/human: Rootrider Faun: controller-path mana source is discoverable\noracle-0022/Rootrider Faun/ai: Rootrider Faun: controller-path mana source is discoverable\noracle-0024/Viridian Acolyte/human: Viridian Acolyte: controller-path mana source is discoverable\noracle-0024/Viridian Acolyte/ai: Viridian Acolyte: controller-path mana source is discoverable\noracle-0030/Ceta Disciple/human: Ceta Disciple: controller-path mana source is discoverable\noracle-0030/Ceta Disciple/ai: Ceta Disciple: controller-path mana source is discoverable\noracle-0031/Draconic Disciple/human: Draconic Disciple: controller-path mana source is discoverable\noracle-0031/Draconic Disciple/ai: Draconic Disciple: controller-path mana source is discoverable\noracle-0034/Giant's Boulder/human: Giant's Boulder: controller-path mana source is discoverable\noracle-0034/Giant's Boulder/ai: Giant's Boulder: controller-path mana source is discoverable\noracle-0035/Honored Heirloom/human: Honored Heirloom: controller-path mana source is discoverable\noracle-0035/Honored Heirloom/ai: Honored Heirloom: controller-path mana source is discoverable\noracle-0035/Hot Dog Cart/human: Hot Dog Cart: controller-path mana source is discoverable\noracle-0035/Hot Dog Cart/ai: Hot Dog Cart: controller-path mana source is discoverable\noracle-0037/Letter of Acceptance/human: Letter of Acceptance: controller-path mana source is discoverable\noracle-0037/Letter of Acceptance/ai: Letter of Acceptance: controller-path mana source is discoverable\noracle-0037/Mana Geode/human: Mana Geode: controller-path mana source is discoverable\noracle-0037/Mana Geode/ai: Mana Geode: controller-path mana source is discoverable\noracle-0038/Meteorite/human: Meteorite: controller-path mana source is discoverable\noracle-0038/Meteorite/ai: Meteorite: controller-path mana source is discoverable\noracle-0040/Prophetic Prism/human: Prophetic Prism: controller-path mana source is discoverable\noracle-0040/Prophetic Prism/ai: Prophetic Prism: controller-path mana source is discoverable\noracle-0046/Veloheart Bike/human: Veloheart Bike: controller-path mana source is discoverable\noracle-0046/Veloheart Bike/ai: Veloheart Bike: controller-path mana source is discoverable\n\n72 !== 0",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 0,
+            "actual": 72,
+            "operator": "strictEqual"
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-deep-controller-matrix.test.mjs:1032:1",
+            "failureType": "testCodeFailure",
+            "error": "oracle-0004/Alloy Myr/human: Alloy Myr: controller-path mana source is discoverable\noracle-0004/Alloy Myr/ai: Alloy Myr: controller-path mana source is discoverable\noracle-0004/Bronze Walrus/human: Bronze Walrus: controller-path mana source is discoverable\noracle-0004/Bronze Walrus/ai: Bronze Walrus: controller-path mana source is discoverable\noracle-0004/Centaur Nurturer/human: Centaur Nurturer: controller-path mana source is discoverable\noracle-0004/Centaur Nurturer/ai: Centaur Nurturer: controller-path mana source is discoverable\noracle-0005/Dawnhart Rejuvenator/human: Dawnhart Rejuvenator: controller-path mana source is discoverable\noracle-0005/Dawnhart Rejuvenator/ai: Dawnhart Rejuvenator: controller-path mana source is discoverable\noracle-0005/Deathbloom Gardener/human: Deathbloom Gardener: controller-path mana source is discoverable\noracle-0005/Deathbloom Gardener/ai: Deathbloom Gardener: controller-path mana source is discoverable\noracle-0006/Great Forest Druid/human: Great Forest Druid: controller-path mana source is discoverable\noracle-0006/Great Forest Druid/ai: Great Forest Druid: controller-path mana source is discoverable\noracle-0007/Leyline Prowler/human: Leyline Prowler: controller-path mana source is discoverable\noracle-0007/Leyline Prowler/ai: Leyline Prowler: controller-path mana source is discoverable\noracle-0007/Lifespring Druid/human: Lifespring Druid: controller-path mana source is discoverable\noracle-0007/Lifespring Druid/ai: Lifespring Druid: controller-path mana source is discoverable\noracle-0008/Lotus Guardian/human: Lotus Guardian: controller-path mana source is discoverable\noracle-0008/Lotus Guardian/ai: Lotus Guardian: controller-path mana source is discoverable\noracle-0009/Nightshade Dryad/human: Nightshade Dryad: controller-path mana source is discoverable\noracle-0009/Nightshade Dryad/ai: Nightshade Dryad: controller-path mana source is discoverable\noracle-0009/Oasis Gardener/human: Oasis Gardener: controller-path mana source is discoverable\noracle-0009/Oasis Gardener/ai: Oasis Gardener: controller-path mana source is discoverable\noracle-0009/Opaline Unicorn/human: Opaline Unicorn: controller-path mana source is discoverable\noracle-0009/Opaline Unicorn/ai: Opaline Unicorn: controller-path mana source is discoverable\noracle-0013/Three Tree Rootweaver/human: Three Tree Rootweaver: controller-path mana source is discoverable\noracle-0013/Three Tree Rootweaver/ai: Three Tree Rootweaver: controller-path mana source is discoverable\noracle-0013/Utopia Tree/human: Utopia Tree: controller-path mana source is discoverable\noracle-0013/Utopia Tree/ai: Utopia Tree: controller-path mana source is discoverable\noracle-0015/Celestial Prism/human: Celestial Prism: controller-path mana source is discoverable\noracle-0015/Celestial Prism/ai: Celestial Prism: controller-path mana source is discoverable\noracle-0016/Cultivator's Caravan/human: Cultivator's Caravan: controller-path mana source is discoverable\noracle-0016/Cultivator's Caravan/ai: Cultivator's Caravan: controller-path mana source is discoverable\noracle-0016/Darksteel Ingot/human: Darksteel Ingot: controller-path mana source is discoverable\noracle-0016/Darksteel Ingot/ai: Darksteel Ingot: controller-path mana source is discoverable\noracle-0016/Dependable Quinjet/human: Dependable Quinjet: controller-path mana source is discoverable\noracle-0016/Dependable Quinjet/ai: Dependable Quinjet: controller-path mana source is discoverable\noracle-0017/Frog Butler/human: Frog Butler: controller-path mana source is discoverable\noracle-0017/Frog Butler/ai: Frog Butler: controller-path mana source is discoverable\noracle-0018/Helionaut/human: Helionaut: controller-path mana source is discoverable\noracle-0018/Helionaut/ai: Helionaut: controller-path mana source is discoverable\noracle-0019/Mana Cylix/human: Mana Cylix: controller-path mana source is discoverable\noracle-0019/Mana Cylix/ai: Mana Cylix: controller-path mana source is discoverable\noracle-0020/Manalith/human: Manalith: controller-path mana source is discoverable\noracle-0020/Manalith/ai: Manalith: controller-path mana source is discoverable\noracle-0021/Poison Dart Frog/human: Poison Dart Frog: controller-path mana source is discoverable\noracle-0021/Poison Dart Frog/ai: Poison Dart Frog: controller-path mana source is discoverable\noracle-0021/Prismatic Lens/human: Prismatic Lens: controller-path mana source is discoverable\noracle-0021/Prismatic Lens/ai: Prismatic Lens: controller-path mana source is discoverable\noracle-0022/Rootrider Faun/human: Rootrider Faun: controller-path mana source is discoverable\noracle-0022/Rootrider Faun/ai: Rootrider Faun: controller-path mana source is discoverable\noracle-0024/Viridian Acolyte/human: Viridian Acolyte: controller-path mana source is discoverable\noracle-0024/Viridian Acolyte/ai: Viridian Acolyte: controller-path mana source is discoverable\noracle-0030/Ceta Disciple/human: Ceta Disciple: controller-path mana source is discoverable\noracle-0030/Ceta Disciple/ai: Ceta Disciple: controller-path mana source is discoverable\noracle-0031/Draconic Disciple/human: Draconic Disciple: controller-path mana source is discoverable\noracle-0031/Draconic Disciple/ai: Draconic Disciple: controller-path mana source is discoverable\noracle-0034/Giant's Boulder/human: Giant's Boulder: controller-path mana source is discoverable\noracle-0034/Giant's Boulder/ai: Giant's Boulder: controller-path mana source is discoverable\noracle-0035/Honored Heirloom/human: Honored Heirloom: controller-path mana source is discoverable\noracle-0035/Honored Heirloom/ai: Honored Heirloom: controller-path mana source is discoverable\noracle-0035/Hot Dog Cart/human: Hot Dog Cart: controller-path mana source is discoverable\noracle-0035/Hot Dog Cart/ai: Hot Dog Cart: controller-path mana source is discoverable\noracle-0037/Letter of Acceptance/human: Letter of Acceptance: controller-path mana source is discoverable\noracle-0037/Letter of Acceptance/ai: Letter of Acceptance: controller-path mana source is discoverable\noracle-0037/Mana Geode/human: Mana Geode: controller-path mana source is discoverable\noracle-0037/Mana Geode/ai: Mana Geode: controller-path mana source is discoverable\noracle-0038/Meteorite/human: Meteorite: controller-path mana source is discoverable\noracle-0038/Meteorite/ai: Meteorite: controller-path mana source is discoverable\noracle-0040/Prophetic Prism/human: Prophetic Prism: controller-path mana source is discoverable\noracle-0040/Prophetic Prism/ai: Prophetic Prism: controller-path mana source is discoverable\noracle-0046/Veloheart Bike/human: Veloheart Bike: controller-path mana source is discoverable\noracle-0046/Veloheart Bike/ai: Veloheart Bike: controller-path mana source is discoverable\n\n72 !== 0",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": 0,
+            "actual": 72,
+            "operator": "strictEqual"
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-deep-controller-matrix.test.mjs",
+          "name": "mana-source solver \u010duva basic za fiksni pip, a life payment ta\u010dno ozna\u010dava razli\u010diti Phyrexian pip",
+          "current_artifact": "current-broad-files/oracle-deep-controller-matrix.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-deep-controller-matrix.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-deep-controller-matrix.test.mjs:2278:1",
+            "failureType": "testCodeFailure",
+            "error": "memoized source solver finds the legal constrained-hybrid allocation below its node budget",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": null,
+            "operator": "=="
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-deep-controller-matrix.test.mjs:2278:1",
+            "failureType": "testCodeFailure",
+            "error": "memoized source solver finds the legal constrained-hybrid allocation below its node budget",
+            "code": "ERR_ASSERTION",
+            "name": "AssertionError",
+            "expected": true,
+            "actual": null,
+            "operator": "=="
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        },
+        {
+          "file": "tests/oracle-deep-controller-matrix.test.mjs",
+          "name": "zajedni\u010dki tro\u0161kovi mana izvora se rezervi\u0161u jednom i ne mijenjaju stanje pri odbijenom pla\u0107anju",
+          "current_artifact": "current-broad-files/oracle-deep-controller-matrix.test.tap",
+          "original_artifact": "broad-baseline-classifications/oracle-deep-controller-matrix.test.tap",
+          "current_diagnostic": {
+            "location": "tests/oracle-deep-controller-matrix.test.mjs:2346:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of null (reading 'abilitiesDisabled')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_diagnostic": {
+            "location": "tests/oracle-deep-controller-matrix.test.mjs:2346:1",
+            "failureType": "testCodeFailure",
+            "error": "Cannot read properties of null (reading 'abilitiesDisabled')",
+            "code": "ERR_TEST_FAILURE",
+            "name": "TypeError",
+            "expected": null,
+            "actual": null,
+            "operator": null
+          },
+          "original_outcome": "failed",
+          "diagnostic_match": true,
+          "effective_status": "confirmed_preexisting_test_failure",
+          "latest_evidence": null
+        }
+      ],
+      "unresolved_execution_files": [
+        {
+          "file": "tests/decklist-import.test.mjs",
+          "exit_code": "timeout",
+          "runtime_seconds": 900.008,
+          "elapsed_seconds": 1084.687,
+          "lock_wait_seconds": 184.679,
+          "named_failures": [],
+          "diagnostic_match": false,
+          "current_artifact": "current-broad-files/decklist-import.test.tap",
+          "classification": "unresolved_execution_without_original_diagnostic",
+          "execution_kind": "timeout",
+          "bounded_follow_up": {
+            "artifact": "decklist-import-bounded-subset.tap",
+            "sha256": "e21e38af8e940bd6eeaddc646e57fe819a8e1d8b3bc54b41f26e0b925c91e327",
+            "result": {
+              "tests": 4,
+              "pass": 4,
+              "fail": 0,
+              "skipped": 0
+            },
+            "excluded_test": "svaka generi\u010dka Oracle batch karta mo\u017ee u\u0107i u legalan 100-card custom deck i CardInst",
+            "coverage_limit": "Parser, Commander validation, rejection and imported-deck AI match subset passed; full catalog custom-deck enumeration remains uncompleted. Positive bounded subset does not classify the original whole-file timeout."
+          }
+        },
+        {
+          "file": "tests/headless-smoke.test.mjs",
+          "exit_code": "timeout",
+          "runtime_seconds": 900.008,
+          "elapsed_seconds": 900.031,
+          "lock_wait_seconds": 0.023,
+          "named_failures": [],
+          "diagnostic_match": false,
+          "current_artifact": "current-broad-files/headless-smoke.test.tap",
+          "classification": "unresolved_execution_without_original_diagnostic",
+          "execution_kind": "timeout"
+        },
+        {
+          "file": "tests/oracle-bulk-interactions.test.mjs",
+          "exit_code": 1,
+          "runtime_seconds": 135.762,
+          "elapsed_seconds": 135.79,
+          "lock_wait_seconds": 0.029,
+          "named_failures": [],
+          "diagnostic_match": false,
+          "current_artifact": "current-broad-files/oracle-bulk-interactions.test.tap",
+          "classification": "unresolved_execution_without_original_diagnostic",
+          "execution_kind": "deadline_priority_interruption",
+          "interruption_receipt": {
+            "artifact": "deadline-priority-interruptions.json",
+            "sha256": "3241292140617db6ae764510acf86254d90022dac9f34ce7c79e41bf86f5b1f0",
+            "entries": [
+              {
+                "utc": "2026-10-10T10:23:29.514682+00:00",
+                "pid": 42628,
+                "testFile": "tests/oracle-bulk-interactions.test.mjs",
+                "action": "SIGTERM process group",
+                "reason": "Prioritize final paid loyalty proof, complete native cohort and post-repair mobile replay inside the authorized four-hour audit. Whole-catalog exhaustive loop remains incomplete and is not passing coverage.",
+                "command": "node --max-old-space-size=3072 --test --test-concurrency=1 --test-reporter=tap tests/oracle-bulk-interactions.test.mjs "
+              }
+            ]
+          }
+        }
+      ],
+      "unreviewed_named_failures": []
+    },
+    "supersedingReruns": [
+      {
+        "localArtifact": "combat-action-observer-final.tap",
+        "sha256": "66775591fe0bf3edb8529316bfb2f8efab3ca77bd9f2fd7d51857f614e8b66e3",
+        "summary": {
+          "tests": 14,
+          "pass": 14,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      },
+      {
+        "localArtifact": "combat-damage/avengers-assemble-updated-final.tap",
+        "sha256": "4ad11109fc6a665c1ac12e6114890aff03e591985164018f65b839e79531384f",
+        "summary": {
+          "tests": 27,
+          "pass": 26,
+          "fail": 1,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      },
+      {
+        "localArtifact": "combat-damage/native-emblem-existing-daretti-after.tap",
+        "sha256": "7b0b413bd1e199e13bdb8627ea66837731d6a983d9eeb1ec6960946db161ceb2",
+        "summary": {
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      },
+      {
+        "localArtifact": "estinien-native-fixture-final.tap",
+        "sha256": "1c21a800cbf26802527bb46adfd4b6db74a3f502ed66d0f9f821993a18832c37",
+        "summary": {
+          "tests": 18,
+          "pass": 18,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      },
+      {
+        "localArtifact": "combat-damage/native-loyalty-types-affected-oath-after.tap",
+        "sha256": "1933755d4e3d2a68ca3af0349f56d361a7f8c52437fb745ac6a1c65ecb3b47a2",
+        "summary": {
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      },
+      {
+        "localArtifact": "certification-interfaces/checker-and-full-audit.tap",
+        "sha256": "7461589704beda88866dd5a2c7df440b1b1cb8b72e082231c4f8d9104a0fde7e",
+        "summary": {
+          "tests": 18,
+          "pass": 18,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      },
+      {
+        "localArtifact": "final-multiplayer-parity.tap",
+        "sha256": "c20c9b96aa3d82a16b2e6f900205ec8ff8e957c528e00d7a4d1d310fdb931e1f",
+        "summary": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        }
+      }
+    ],
+    "deadlinePriorityInterruptions": [
+      {
+        "utc": "2026-10-10T10:23:29.514682+00:00",
+        "pid": 42628,
+        "testFile": "tests/oracle-bulk-interactions.test.mjs",
+        "action": "SIGTERM process group",
+        "reason": "Prioritize final paid loyalty proof, complete native cohort and post-repair mobile replay inside the authorized four-hour audit. Whole-catalog exhaustive loop remains incomplete and is not passing coverage.",
+        "command": "node --max-old-space-size=3072 --test --test-concurrency=1 --test-reporter=tap tests/oracle-bulk-interactions.test.mjs "
+      }
+    ],
+    "note": "Initial broader observations remain in raw totals. Later complete/selected reruns are separately recorded, including actual loyalty repair, corrected checker and generated room-contract synchronization. Interrupted files are not passing coverage; the final native361 run is separate."
+  },
+  "catalog": {
+    "pinnedSourceDay": "2026-10-09",
+    "source": {
+      "provider": "Scryfall",
+      "endpoint": "https://api.scryfall.com/bulk-data",
+      "bulkType": "oracle_cards",
+      "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+      "bulkUpdatedAt": "2026-10-09T09:01:54.966+00:00",
+      "bulkDescription": "One Oracle card per name; Scryfall Oracle Cards bulk data",
+      "bulkSha256": "0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be",
+      "paperAvailability": {
+        "provider": "Scryfall",
+        "endpoint": "https://api.scryfall.com/bulk-data",
+        "bulkType": "default_cards",
+        "bulkId": "e2ef41e3-5778-4bc2-af3f-78eca4dd9c23",
+        "bulkUpdatedAt": "2026-10-09T09:05:44.334+00:00",
+        "bulkSha256": "d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227",
+        "oracleIdCount": 37854,
+        "sourceRows": 118602,
+        "paperRows": 109466,
+        "filter": "any default_cards printing.games includes 'paper'; use oracle_id or card_faces[].oracle_id",
+        "compressedBytes": 78779411
+      },
+      "compressedBytes": 24596743
+    },
+    "counts": {
+      "runtimeDefinitions": 32136,
+      "genericOracleCards": 28137,
+      "genericBatches": 266,
+      "manualOracleCards": 65,
+      "legacyDefinitions": 3934,
+      "individuallyReviewedLegacyDefinitions": 18,
+      "deckImportEligibleDefinitions": 32135,
+      "deckImportRestrictedDefinitions": 1,
+      "representedUniverseOracleIds": 32115,
+      "remainingUniverseOracleIds": 0,
+      "parserEligibleUnimported": 0,
+      "deferred": 0,
+      "runtimeEntriesWithoutSnapshotMatch": 17,
+      "runtimeEntriesOutsideComparisonUniverse": 2
+    },
+    "comparisonUniverse": {
+      "filter": "Oracle ID has a paper printing in pinned default_cards AND oracle_cards legalities.commander equals 'legal'",
+      "unit": "distinct Oracle ID",
+      "sourceRows": 38708,
+      "paperRows": 37854,
+      "oracleIds": 32115
+    },
+    "summarySha256": "88970467a681684e7dc920aa08808967898b72a4b50e3ed09c0c8051f575b69a",
+    "importedCsvSha256": "a0f0de2f6f4c3690fe653f3d6a840cdd51452662796c17779937b99a407e7834",
+    "remainingCsvSha256": "f0f380b669bc726e2d421068ede82094fb29b07d1f8560c7393da72253896fec",
+    "runtimeInputsSha256": "98316d67b1f36eb6edcfee2606fb3dc12296de5a2c5254117e30919b73e011e4"
+  },
+  "checks": {
+    "javascriptSyntax": {
+      "status": "PASS",
+      "localArtifact": "final-syntax-check.log",
+      "sha256": "a2395e640f2e23e1d8ed21916d799f0ab4e6d96bc6674abba74841ddc024b70c"
+    },
+    "sourceAudit": {
+      "status": "PASS",
+      "localArtifact": "final-source-audit.log",
+      "sha256": "5570d2ed72e62d908b006ca554894c2ec4235dce3dce31d2e62d725e67d33c6e"
+    },
+    "catalogExport": {
+      "status": "PASS",
+      "localArtifact": "final-catalog-export.log",
+      "sha256": "d8313cdbe0de343f21ba8e3e1edcccbc23d119e4c27ae037146eaff7ac731de0"
+    },
+    "multiplayerParity": {
+      "status": "PASS",
+      "localArtifact": "final-multiplayer-parity.tap",
+      "sha256": "c20c9b96aa3d82a16b2e6f900205ec8ff8e957c528e00d7a4d1d310fdb931e1f"
+    },
+    "serverRegression": {
+      "status": "PASS",
+      "localArtifact": "final-server-regression.log",
+      "sha256": "2c3b666d6bc5c38ce176d9e5020f0b67445c1107405f18bf77c77cc390f71bc9"
+    },
+    "roomContractSync": {
+      "status": "PASS",
+      "localArtifact": "final-room-contract-sync.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "diffWhitespace": {
+      "status": "PASS",
+      "localArtifact": "final-diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "strictCardCertification": {
+      "status": "PASS",
+      "localArtifact": "final-strict-certification.log",
+      "sha256": "1759f790ff9fff49c0832ef6c72b2acb63881761595cc998db2eb15451b15139",
+      "failedRawCards": 0,
+      "failedCardDeckChecks": 0
+    }
+  },
+  "strictCertification": {
+    "currentTotals": {
+      "decks": 175,
+      "cardDeckChecks": 14566,
+      "passedCardDeckChecks": 14566,
+      "failedCardDeckChecks": 0,
+      "uniqueCards": 6474,
+      "uniquePassed": 6474,
+      "uniqueFailed": 0,
+      "rawCards": 32136,
+      "rawPassed": 32136,
+      "rawFailed": 0,
+      "inactiveRawCards": 25662,
+      "inactiveRawPassed": 25662,
+      "inactiveRawFailed": 0,
+      "oracleBatchCards": 28202
+    },
+    "originalExitCode": 1,
+    "originalTotals": {
+      "decks": 175,
+      "cardDeckChecks": 14566,
+      "passedCardDeckChecks": 14566,
+      "failedCardDeckChecks": 0,
+      "uniqueCards": 6474,
+      "uniquePassed": 6474,
+      "uniqueFailed": 0,
+      "rawCards": 32136,
+      "rawPassed": 32112,
+      "rawFailed": 24,
+      "inactiveRawCards": 25662,
+      "inactiveRawPassed": 25638,
+      "inactiveRawFailed": 24,
+      "oracleBatchCards": 28202
+    },
+    "originalFailures": [
+      {
+        "name": "Carnival Elephant Meteor",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Contortionist Otter Storm",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Cursed Firebreathing Yogurt",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Elemental Time Flamingo",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Eternal Acrobat Toast",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Geek Lotus Warrior",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Happy Dead Squirrel",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Jetpack Death Seltzer",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Lightning Storm",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Notorious Sliver War",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Playable Delusionary Hydra",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Primal Elder Kitty",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Sassy Gremlin Blood",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Snazzy Aether Homunculus",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Spooky Clown Mox",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Squid Fire Knight",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Trained Blessed Mind",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Unglued Pea-Brained Dinosaur",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Unhinged Beast Hunt",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Unique Charmed Pants",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Unstable Robot Dragon",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Urza's Saga",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Land proizvodi manu u Oracle tekstu, ali nema mana putanju"
+        ]
+      },
+      {
+        "name": "Vampire Champion Fury",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      },
+      {
+        "name": "Wrinkly Monkey Shenanigans",
+        "active": false,
+        "status": "FAIL",
+        "issues": [
+          "Oracle ima 1 aktiviranih sposobnosti, izvr\u0161nih putanja je 0"
+        ]
+      }
+    ],
+    "originalArtifact": "original-strict-certification.json",
+    "originalArtifactSha256": "33415df11b124e0f47add1d3daeee827aa164ff6e1ec17df0d6c1e7aefef1bea"
+  },
+  "generatedRoomContract": {
+    "path": "logic.js",
+    "sha256": "49f80434c2e3acf6f7d9ad4f734bcb59d1a41b279ba0248ba87158ee8c4724c5",
+    "generatedFrom": "src/modules/multiplayer.js",
+    "sourceSha256": "c979e7098b7e85eaa2975a072af4ff038344e72cf153d38f1c81880ebc995824",
+    "behavior": "Retains the same validated auxiliaryV87 custom-deck sections as the browser contract."
+  },
+  "changedServedRuntimeJS": [
+    {
+      "path": "src/modules/ai-v2.js",
+      "sha256": "fd7c7171c2f38f32226c324ed59ff97b21effe6f69fef1d00b7962b4bbbc0c9c"
+    },
+    {
+      "path": "src/modules/blc-dsc-fic-rules.js",
+      "sha256": "6513e52f6d862e9d564c1d09c35139a8d483b12d246608d02114df59767350a4"
+    },
+    {
+      "path": "src/modules/c15-c16-precon-rules.js",
+      "sha256": "672bdb19c3bc2c5ac4e144035cbfc245e98f8be4768b803ccdab227366f393d6"
+    },
+    {
+      "path": "src/modules/clb-40k-integration.js",
+      "sha256": "500efe07349a8f499e484f6172f9bbfef24cfdfd1866aab8a36162feb2e950c4"
+    },
+    {
+      "path": "src/modules/clb-initiative.js",
+      "sha256": "d43d336d94b7e631cc2e71d04b4de681237a77df71fa5b83653b8313891d47be"
+    },
+    {
+      "path": "src/modules/engine.js",
+      "sha256": "18ef36e6d768baecfb4fd0bdc6bdd06b05f52c3d63f66450670ab1cc00f222fc"
+    },
+    {
+      "path": "src/modules/engine2.js",
+      "sha256": "1863c63b8ad2e8029666b4b35113a15dd90c7d012c7d1a5e2b3ab769fd897230"
+    },
+    {
+      "path": "src/modules/lands.js",
+      "sha256": "dafb0a6bdb4eb3cbfa48447e5726f883f144a90468c776f7f468ea17a53ed480"
+    },
+    {
+      "path": "src/modules/main.js",
+      "sha256": "87db2048687bc250b91a5a2b068131dcf6f723ff388352b751cf423f960e169d"
+    },
+    {
+      "path": "src/modules/oracle-catalog.js",
+      "sha256": "8fff65baaec02002ee56081485fba4ac80cf2263b849fce44e939d4cec802eca"
+    },
+    {
+      "path": "src/modules/oracle-mechanics.js",
+      "sha256": "a085e72b8190b9d2b218f1392bc7025ffb7eaa3668f6b444395d4e072eae0151"
+    },
+    {
+      "path": "src/modules/oracle-spell-v4.js",
+      "sha256": "a744a226310c79fd4c5652999f556213fa9fc8eb91e917bd99a01fb0b5d916e3"
+    },
+    {
+      "path": "src/modules/oracle-v20-damage.js",
+      "sha256": "adbbc31e9085af47aed743f701fb919ca3943404fd3c9133701895c13b64ee67"
+    },
+    {
+      "path": "src/modules/oracle-v20-spells.js",
+      "sha256": "d5e6b9bad44ccc914811e87f7b629f8811b6821460fd210b18e877a73b163095"
+    },
+    {
+      "path": "src/modules/oracle-v28-common.js",
+      "sha256": "18e2d5c834526c55cccfe25f69c7cd5a1c31e19e498312949ad8e49f3f64619f"
+    },
+    {
+      "path": "src/modules/oracle-v66-common.js",
+      "sha256": "34207b10f06e6adca014336c9890ff24a037bd265799a8d3fff1e3ddacef2aa8"
+    },
+    {
+      "path": "src/modules/oracle-v8-source-prevention.js",
+      "sha256": "c2fba2486eecfb0c1c8148c166e06dede904522617425efc48b2f4beb9106069"
+    },
+    {
+      "path": "src/modules/oracle-v84-common.js",
+      "sha256": "9fdbf867ba59406b4c74623000708376256242430f4286ff7480e6e75b9c352c"
+    },
+    {
+      "path": "src/modules/oracle-v87-common.js",
+      "sha256": "8a9c3ac19f8a593fa146ca2ad9b6f0d4aabb8511c19c7aa984b9ddc5c9764f41"
+    },
+    {
+      "path": "src/modules/oracle-v88-common.js",
+      "sha256": "3494f21493c60c4d15e330d9df9455e581bf913adf955a49fbbc1edb5a03dc1c"
+    },
+    {
+      "path": "src/modules/oracle-v89-banding.js",
+      "sha256": "c1c4797a90d429b36b3470ce2f343d11662431041e7aa4bee805f6e0b46db12d"
+    },
+    {
+      "path": "src/modules/oracle-v89-common.js",
+      "sha256": "bb16ba0e5b4456c6c304dbca615c6bcd20c554c897bb412c68f880148ac7bbf0"
+    },
+    {
+      "path": "src/modules/oracle-v91-common.js",
+      "sha256": "5387404fbe8c59c46ddcbca0ba78a9820d0e0bcc2f0a54ed2b36c4176195783e"
+    },
+    {
+      "path": "src/modules/oracle-v92-planeswalkers.js",
+      "sha256": "2eb98cfeba3b9ee299f57a63f91ae771c1a6482a04e45cb9a1401356dbab683c"
+    },
+    {
+      "path": "src/modules/oracle-v97-paper-gap.js",
+      "sha256": "8a804ed52b69f8521df1fe85a553e2d765f52f854849c6fe3644c92a6a835b09"
+    },
+    {
+      "path": "src/modules/pom-payments.js",
+      "sha256": "6a94b98f46fda777fcb2588cce4fc872d2feea0cd89008ef01c5683814ecb9ec"
+    },
+    {
+      "path": "src/modules/save-game.js",
+      "sha256": "e421bf064bf26b3933c98f142e6c60f65b78b2868fd9dd72af83523715163e5d"
+    },
+    {
+      "path": "src/modules/save-state.js",
+      "sha256": "0c06bbbd8967793870a262df3cf23cd1165fce5d610513b5dd2fc2d10225ae52"
+    },
+    {
+      "path": "src/modules/scripts-c13-td0-sld-creatures.js",
+      "sha256": "b0d6a5e550f42b993da1b2c1b80e43be96097cb1a7699fcec20cd99c79a4d664"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-combat.js",
+      "sha256": "af0cb367b7559f6f09ae5ed39e5299d6515d4b108eb8761b25fc23cb27d9c77d"
+    },
+    {
+      "path": "src/modules/scripts-cmd-sld-advanced.js",
+      "sha256": "7396b8e908d7c037e71fa8b3ef28d243c6f9295e5dc7a846f142c8f810b88ca6"
+    },
+    {
+      "path": "src/modules/scripts-cmd-sld-creatures.js",
+      "sha256": "f49ceb536001bdd6b1bd23a4ff6cc08717bf3a1d92bbca1445fc5c24e6d4cfd7"
+    },
+    {
+      "path": "src/modules/scripts-cmm-creatures.js",
+      "sha256": "b5628f0c04a3092f009898e7ff454c58380bcd91473789552399ec2272b016ec"
+    },
+    {
+      "path": "src/modules/scripts-coven.js",
+      "sha256": "1568d23c452b9ead3da4b8e1fe6e247b4e2ef0418b60602aa465ad8028150098"
+    },
+    {
+      "path": "src/modules/scripts-elements.js",
+      "sha256": "1dfc695da5b45a0d1cadcd5cbe6c2af142761fdd05aa2c494dbe423257841828"
+    },
+    {
+      "path": "src/modules/scripts-pom-creatures.js",
+      "sha256": "c412ffa3b11450a90ac99f2895e0555acd58bbdd17d6512e2db0bf6d78aa6c62"
+    },
+    {
+      "path": "src/modules/scripts-quandrix.js",
+      "sha256": "63df66ddd647001808305de18b85678e8de8eccdc5c60a60de34c1572cb691b8"
+    },
+    {
+      "path": "src/modules/scripts-scions.js",
+      "sha256": "fc62c65a5d683da8bc16ca251df0aaabf0f2d790aee17561cf1e16a588d9ca67"
+    },
+    {
+      "path": "src/modules/scripts-starter-precons.js",
+      "sha256": "839949d0ac6fb84a152401b955ec15082551095c03f23e28264286f6aa2b4e60"
+    },
+    {
+      "path": "src/modules/scripts-sultai.js",
+      "sha256": "d836cedb027ea664ae765c746ba87aae1d5a53159e419e773afb158cd6537a5b"
+    },
+    {
+      "path": "src/modules/scripts-temur.js",
+      "sha256": "93e367ff1aa7b179d1d7546acabd2a437d2c4fafdf917c1245b67525ef0705de"
+    },
+    {
+      "path": "src/modules/scripts-world-shaper.js",
+      "sha256": "3dd5d8c159706b5c5261046aade82521e19ddb9aff98d4baaa782bd0960d417f"
+    },
+    {
+      "path": "src/modules/scripts_bello_valg.js",
+      "sha256": "2534634cd865e2714491a747f07efda94ec6f119787581d4a99344f5879cbffd"
+    },
+    {
+      "path": "src/modules/scripts_hazel_abzan.js",
+      "sha256": "d15f3b1bdeda3d46969703634497a59c30c5db2358d6416c9454b5c3214b2432"
+    },
+    {
+      "path": "src/modules/scripts_stella.js",
+      "sha256": "4dfa8397bb1c1058d60fba6fe3a64a5ab5dc8f7b525b720864afe9a67a8ebd63"
+    },
+    {
+      "path": "src/modules/scripts_v7a.js",
+      "sha256": "b1080ebd150bb22b497ef91897946416227bb0153e3b695fd3dca5e4b80be330"
+    },
+    {
+      "path": "src/modules/scripts_v7c.js",
+      "sha256": "6619a2eea28b0badc1b77867850a590f99809d4045f1cba79eaebdcd7488aa92"
+    },
+    {
+      "path": "src/modules/scripts_v9a.js",
+      "sha256": "6340d80deb2632c74648639b012e94c40a46c48a7ea0cace0621c3cb1fed2069"
+    },
+    {
+      "path": "src/modules/scripts_v9b.js",
+      "sha256": "fc993e173d34055e1a31f69ac4188ec751af0b70eb58b15c8fc5e4facef8fad3"
+    },
+    {
+      "path": "src/modules/scripts_zin_morska.js",
+      "sha256": "ae2be042a696f1a7a5d57f1cdf7e03ad5961a2202b20ee886ae19e5196967a35"
+    },
+    {
+      "path": "src/modules/ui.js",
+      "sha256": "d6bbd6d7f6cdfb480b035eded3e7fbfb6c9d9a38afefd52f978194956c93fbfd"
+    },
+    {
+      "path": "src/modules/util.js",
+      "sha256": "a1582b5a5f1c44b60068f81602d0d83eed807d1bd8ff7c9a3a3d9391974f1d1c"
+    },
+    {
+      "path": "src/modules/who-lcc-mkc-integration.js",
+      "sha256": "3f6e52d20243f6303446956779f33b54f9c1acfea6b68d2a62ff0be084db95c2"
+    },
+    {
+      "path": "src/modules/znc-khc-rules.js",
+      "sha256": "34719fff5d60456defe00a966f48c6257c95ce3788bee740ae131a1d51638c7b"
+    }
+  ],
+  "limits": [
+    "This is a bounded four-hour behavior audit, not proof of every card interaction.",
+    "Controlled browser routes and account flows are not additional complete matches.",
+    "Catalog inventory/strict certification measure structure and pinned-source coverage, not all rules behavior.",
+    "Earlier original-version failures and infrastructure interruptions remain explicitly listed."
+  ],
+  "checkExecutionReceipts": {
+    "javascriptSyntax": {
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "localArtifact": "final-syntax-check.log",
+      "startedUtc": "2026-10-10T10:34:33.513250+00:00",
+      "finishedUtc": "2026-10-10T10:34:35.559572+00:00"
+    },
+    "sourceAudit": {
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "run",
+        "audit"
+      ],
+      "localArtifact": "final-source-audit.log",
+      "startedUtc": "2026-10-10T10:34:35.559845+00:00",
+      "finishedUtc": "2026-10-10T10:34:37.165064+00:00"
+    },
+    "roomContractSync": {
+      "exitCode": 0,
+      "command": [
+        "node",
+        "scripts/sync-online-room.mjs",
+        "--check"
+      ],
+      "localArtifact": "final-room-contract-sync.log",
+      "startedUtc": "2026-10-10T10:34:37.165329+00:00",
+      "finishedUtc": "2026-10-10T10:34:37.199527+00:00"
+    },
+    "multiplayerParity": {
+      "exitCode": 0,
+      "command": [
+        "node",
+        "--max-old-space-size=3072",
+        "--test",
+        "--test-concurrency=1",
+        "--test-reporter=tap",
+        "tests/multiplayer-parity.test.mjs"
+      ],
+      "localArtifact": "final-multiplayer-parity.tap",
+      "startedUtc": "2026-10-10T10:34:37.200009+00:00",
+      "finishedUtc": "2026-10-10T10:34:46.852595+00:00"
+    },
+    "serverRegression": {
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "run",
+        "test:server"
+      ],
+      "localArtifact": "final-server-regression.log",
+      "startedUtc": "2026-10-10T10:34:46.852880+00:00",
+      "finishedUtc": "2026-10-10T10:34:50.321057+00:00"
+    },
+    "strictCardCertification": {
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "run",
+        "certify:strict"
+      ],
+      "localArtifact": "final-strict-certification.log",
+      "startedUtc": "2026-10-10T10:34:50.321396+00:00",
+      "finishedUtc": "2026-10-10T10:34:59.295394+00:00"
+    },
+    "catalogExport": {
+      "exitCode": 0,
+      "command": [
+        "node",
+        "--max-old-space-size=3072",
+        "scripts/export-card-catalog.mjs",
+        "--source-file=.local/oracle-live-20261009090154.jsonl.gz",
+        "--source-sha256=0ca0d50138e5cf10e8d713e1169ebf2ffc928caaaae71292e0e62a793d1348be",
+        "--paper-source-file=.local/default-cards-live-20261009090544.jsonl.gz",
+        "--paper-source-sha256=d8e1f9730bd76d593a58100d3dbb3645a0d9182420c4835584c83ee89ef51227"
+      ],
+      "localArtifact": "final-catalog-export.log",
+      "startedUtc": "2026-10-10T10:34:59.295664+00:00",
+      "finishedUtc": "2026-10-10T10:35:14.992123+00:00"
+    },
+    "diffWhitespace": {
+      "exitCode": 0,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "localArtifact": "final-diff-check.log",
+      "startedUtc": "2026-10-10T10:35:14.992412+00:00",
+      "finishedUtc": "2026-10-10T10:35:15.177046+00:00"
+    }
+  }
+}
