@@ -2928,7 +2928,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const map = el('div', 'combatmap');
         map.appendChild(el('div', 'combatmaptitle', `Combat · ${esc(this.phaseName(g))}`));
         const lanes = new Map();
+        // Tapped-and-attacking entrants are registered before their entry
+        // choices finish. Preview only the currently available battlefield.
+        const battlefield = new Set(g.bf());
         for (const attacker of g.combat.attackers) {
+          if (!battlefield.has(attacker)) continue;
           const target = attacker.attacking;
           if (!target) continue;
           if (!lanes.has(target)) lanes.set(target, []);

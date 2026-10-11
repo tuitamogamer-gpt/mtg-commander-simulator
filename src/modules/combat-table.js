@@ -200,8 +200,9 @@ function combatLedger(ui, game, root) {
     : game.step === 'blockers' ? 2 : 1;
   summary.append(node('h3', '', 'Combat'), steps(active));
   const groups = new Map();
+  const battlefield = new Set(game.bf());
   for (const attacker of game.combat.attackers) {
-    if (!attacker.attacking || attacker.zone !== 'battlefield') continue;
+    if (!attacker.attacking || !battlefield.has(attacker)) continue;
     if (!groups.has(attacker.attacking)) groups.set(attacker.attacking, []);
     groups.get(attacker.attacking).push(attacker);
   }
