@@ -97,6 +97,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
     for (const key of keys) {
       if (TOKEN_FACE_FIELDS.has(key) || TOKEN_CREATION_FIELDS.has(key)) continue;
+      // Ordinary face-down copies explicitly carry ward:null. Rebuilt vanilla
+      // token faces omit it; both initialize to no ward in characteristic layers.
+      if (key === 'ward' && before[key] == null && after[key] == null) continue;
       if (!sameRuleValue(before[key], after[key])) return false;
     }
     return true;

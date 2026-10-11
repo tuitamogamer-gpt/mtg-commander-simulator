@@ -75,27 +75,43 @@ test('Prismari Artistry ima službenih 100 karata, 87 jedinstvenih i puni spells
 });
 
 test('Veyran duplira magecraft, prowess i Manaform; Manaform koristi stvarno potrošenu manu', async () => {
-  const { game, players: [prismari] } = rulesGame([], 2);
+  const { game, players: [prismari, opponent] } = rulesGame([
+    (g, q) => q.type === 'chooseTargets' && q.candidates.includes(opponent) ? [opponent] : defaultDecision(g, q),
+  ], 2);
   const veyran = permanent(game, prismari, 'Veyran, Voice of Duality');
+  const prowess = permanent(game, prismari, 'Monastery Swiftspear');
   permanent(game, prismari, 'Archmage Emeritus');
   permanent(game, prismari, 'Manaform Hellkite');
+  const lands = Array.from({ length: 3 }, () => permanent(game, prismari, 'Mountain'));
   for (let i = 0; i < 6; i++) inZone(prismari, 'Island', 'library');
-  const spell = inZone(prismari, 'Prismari Charm', 'exile');
-  const data = { player: prismari, card: spell, isInstantSorcery: true, so: { manaSpent: 3 } };
+  const spell = inZone(prismari, 'Fireball', 'hand');
 
-  await game.emit('cast', data);
-  await game.emit('castIS', data);
+  assert.equal(await game.castSpell(prismari, spell, { from: 'hand', xVal: 2, quickTargets: [opponent] }), true);
+  assert.equal(spell.castMeta.manaSpent, 3, 'X=2 plus {R} is paid through native mana sources');
+  assert.equal(lands.every(card => card.tapped), true);
   await resolveAll(game);
+  assert.equal(spell.zone, 'graveyard');
+  assert.equal(opponent.life, 38, 'the paid spell resolves normally');
   assert.equal(tokenCount(game, prismari, 'Dragon'), 2, 'Veyran pravi dva Manaform triggera');
   assert.equal(game.creatures(prismari).filter(card => card.isToken && card.hasSub('Dragon')).every(card => card.power === 3), true);
   assert.equal(prismari.hand.length, 2, 'Archmage Emeritus vuče dvaput');
   assert.equal(veyran.power, 4, 'Veyranov vlastiti magecraft okida dvaput');
+  assert.equal(prowess.power, 3, 'prowess also triggers twice for the paid sorcery');
 
   const tokensBeforeFreeSpell = prismari.turnState.tokensCreated;
-  await game.emit('cast', { player: prismari, card: spell, isInstantSorcery: true, so: { manaSpent: 0 } });
+  const freeSpell = inZone(prismari, 'Gut Shot', 'hand');
+  const lifeBefore = prismari.life;
+  assert.equal(await game.castSpell(prismari, freeSpell, { from: 'hand', quickTargets: [opponent] }), true);
+  assert.equal(freeSpell.castMeta.manaSpent, 0, 'Phyrexian life payment spends no mana despite mana value one');
+  assert.equal(prismari.life, lifeBefore - 2);
   await resolveAll(game);
+  assert.equal(freeSpell.zone, 'graveyard');
+  assert.equal(opponent.life, 37);
   assert.equal(prismari.turnState.tokensCreated, tokensBeforeFreeSpell + 2, 'Veyran pravi i dva 0/0 Manaform tokena');
   assert.equal(tokenCount(game, prismari, 'Dragon'), 2, '0/0 tokeni zatim nestaju kroz state-based action');
+  assert.equal(prismari.hand.length, 4);
+  assert.equal(veyran.power, 6);
+  assert.equal(prowess.power, 5);
 });
 
 test('Galazeth daje dodatnu mana sposobnost svakom artefaktu, a Goldspan reaguje samo na spell target', async () => {

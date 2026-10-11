@@ -355,8 +355,18 @@ test('Quandrix utility lands nude tačne mana i player-choice putanje', async ()
   const { game, players: [quandrix, opponent] } = rulesGame();
   const coast = permanent(game, quandrix, 'Yavimaya Coast');
   const colored = game.manaSources(quandrix, null).find(source => source.card === coast && source.produce.some(option => option.G));
-  await colored.m.onProduce(game, coast, quandrix, { G: 1 });
-  assert.equal(quandrix.life, 39);
+  assert.ok(colored);
+  assert.equal(await game.activateAbility(quandrix, {card: coast, manaAbility: true, manaSource: colored}), true);
+  assert.equal(quandrix.life, 39); assert.equal(quandrix.pool.G, 1); assert.equal(coast.tapped, true);
+  game.untap(coast);
+  const colorless = game.manaSources(quandrix, null).find(source => source.card === coast && source.produce.some(option => option.C));
+  assert.ok(colorless);
+  assert.equal(await game.activateAbility(quandrix, {card: coast, manaAbility: true, manaSource: colorless}), true);
+  assert.equal(quandrix.life, 39, 'native colorless production does not charge life');
+  assert.equal(quandrix.pool.C, 1); assert.equal(coast.tapped, true);
+  const creature = inZone(quandrix, 'Grizzly Bears', 'hand');
+  assert.equal(await game.castSpell(quandrix, creature, {from: 'hand'}), true); await resolveAll(game);
+  assert.equal(creature.zone, 'battlefield'); assert.equal(quandrix.pool.C + quandrix.pool.G, 0);
   const turbulent = new MTG.CardInst(MTG.DEFS['Turbulent Wilderness'], quandrix); turbulent.zone = 'nowhere';
   await game.move(turbulent, 'battlefield', { ctrl: quandrix });
   assert.equal(turbulent.tapped, true);
@@ -365,10 +375,21 @@ test('Quandrix utility lands nude tačne mana i player-choice putanje', async ()
   await game.move(second, 'battlefield', { ctrl: quandrix });
   assert.equal(second.tapped, false);
   const refuge = permanent(game, quandrix, "Alchemist's Refuge");
-  await refuge.def.abilities[0].run({ g: game, src: refuge, you: quandrix, targets: [] });
   game.turnPlayer = opponent; game.phase = 'main1';
   const sorcery = inZone(quandrix, 'Oversimplify', 'hand');
-  assert.equal(game.canCastTiming(quandrix, sorcery, null), true);
+  quandrix.pool.C = 3; quandrix.pool.G = 2; quandrix.pool.U = 2;
+  assert.equal(game.canCastTiming(quandrix, sorcery, {}), false);
+  assert.equal(await game.castSpell(quandrix, sorcery, {from: 'hand'}), false, 'mana alone cannot cast a sorcery during the other player’s turn');
+  assert.equal(quandrix.pool.C + quandrix.pool.G + quandrix.pool.U, 7); assert.equal(sorcery.zone, 'hand');
+  const activation = game.activatableList(quandrix).find(row => row.card === refuge && row.ability === refuge.def.abilities[0]);
+  assert.ok(activation); assert.equal(await game.activateAbility(quandrix, activation), true); await resolveAll(game);
+  assert.equal(refuge.tapped, true); assert.equal(quandrix.pool.G, 1); assert.equal(quandrix.pool.U, 1);
+  assert.equal(game.canCastTiming(quandrix, sorcery, {}), true);
+  assert.equal(await game.castSpell(quandrix, sorcery, {from: 'hand'}), true); await resolveAll(game);
+  assert.equal(sorcery.zone, 'graveyard'); assert.equal(sorcery.castMeta.manaSpent, 5);
+  assert.equal(quandrix.pool.C + quandrix.pool.G + quandrix.pool.U, 0);
+  const later = inZone(quandrix, 'Oversimplify', 'hand'); game.turnNo++;
+  assert.equal(game.canCastTiming(quandrix, later, {}), false, 'the paid Refuge permission expires with its turn');
 });
 
 test('Quandrix bot bira X i modalne mete bez fallback odluke', async () => {

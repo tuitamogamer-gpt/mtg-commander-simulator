@@ -2872,13 +2872,27 @@ async function fireGenericEvent(MTG,context,source,operation){
     const player=filter.controller==='opponent'?b:a;context.eventPlayer=player;
 
     if(event==='unlockDoor'){
-      await resolveAll(game);fund(a,100);game.turnPlayer=a;game.phase='main1';
+      // Room entry can resolve other triggers before the fully-unlocked one.
+      // Record the actual targets while each native Stack object still exists.
+      const settleRoom=()=>settleWithStackWitness(game,context.oracleStackWitness);
+      await settleRoom();fund(a,100);game.turnPlayer=a;game.phase='main1';
       const room=zoneCard(MTG,a,'Bottomless Pool // Locker Room','hand');
       const alt=room.def.altCosts.find(row=>row.bdfDoor==='left');assert.ok(alt);
-      assert.equal(await game.castSpell(a,room,{from:'hand',alt}),true);await resolveAll(game);
+      // Decline an earlier optional graveyard return so the source remains
+      // available for the distinct fully-unlocked trigger under test.
+      const decide=a.controller.decide;
+      a.controller.decide=async function(g,q){
+        if(operation.zone==='graveyard'&&operation.optional&&q.aiHint?.kind==='optTrigger'&&q.aiHint.src===source){
+          assert.ok(q.options.some(option=>option.key==='no'));return 'no';
+        }
+        return decide.call(this,g,q);
+      };
+      try{assert.equal(await game.castSpell(a,room,{from:'hand',alt}),true);await settleRoom();}
+      finally{a.controller.decide=decide;}
+      if(operation.zone==='graveyard')assert.equal(source.zone,'graveyard');
       context.unlockDrawBaselineV10=a.hand.length;
       const action=game.activatableList(a).find(row=>row.card===room&&row.oracleUnlockRoomV20==='right');assert.ok(action);
-      assert.equal(await game.activateAbility(a,action),true);await resolveAll(game);assert.equal(room.meta.bdfUnlocked.length,2);return;
+      assert.equal(await game.activateAbility(a,action),true);await settleRoom();assert.equal(room.meta.bdfUnlocked.length,2);return;
     }
 
     if(event==='landPlayed'){const land=zoneCard(MTG,player,'Forest','hand');assert.equal(await game.playLand(player,land),true);return;}
@@ -3849,6 +3863,8 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     if (expectedKind && !witnessedObject && object && object.kind === expectedKind && object.srcCard === source &&
         (!operationRun || object.run === operationRun) && Array.isArray(object.targets)) {
       witnessedObject=object;
+      if(operation.event==='unlockDoor'&&operation.eventFilter?.kind==='observation-v9')
+        before.counterChangeEvidenceIndex=context.counterChangeEvidence.length;
       const sourceVersion=object.ctx?.sourceZoneVersion;
       if(sourceVersion!==undefined&&sourceVersion!==source.zoneVersion){
         const snapshot=source.battlefieldLKI?.get(sourceVersion);
@@ -3884,6 +3900,8 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
       if(context.eventCard&&!before.cards.has(context.eventCard))before.cards.set(context.eventCard,context.eventCardBefore||cardState(context.eventCard));
     }
   };
+
+  context.oracleStackWitness=stackTargets;
 
   if(operation.kind==='spell-generic'){
     // A printed "cast from anywhere other than your hand" branch is only
@@ -4246,6 +4264,8 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
   }
 
   assert.ok(source, `${entry.raw.name}/${role}: source exists`);
+  if(operation.event==='unlockDoor'&&operation.eventFilter?.kind==='observation-v9')
+    assert.ok(witnessedObject,entry.raw.name+': the actual fully-unlocked trigger is witnessed before resolution');
   if(operation.optionalOnceProof)assert.ok(trace.some(row=>row.query.aiHint?.kind==='optTrigger'&&
     row.query.aiHint.src===source&&row.result==='yes'),entry.raw.name+'/'+role+': optional effect is accepted during trigger resolution');
   if(operation.modalTrigger)assert.ok(witnessedObject,entry.raw.name+': modal trigger has an actual Stack witness');
