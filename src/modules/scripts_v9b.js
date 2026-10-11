@@ -2294,17 +2294,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const card = ctx.targets[0];
         if (!card || card.zone !== 'graveyard' || ctx.you.turnState.spellsCast > 0) return;
-        const canPay = ctx.g.canPayMana(ctx.you, ctx.g.spellCost(ctx.you, card, { from: 'graveyard' }), { card });
-        if (!canPay) return;
+        const choices = MTG.OracleV8PlayPermissions.preview(ctx, [card], { free: false }, {});
+        if (!choices.length) return;
         const choice = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseOption', prompt: `Conduit of Worlds: cast ${card.name}?`,
           options: [{ key: 'yes', label: `Cast ${card.name}` }, { key: 'no', label: 'Do not cast' }],
           aiHint: { kind: 'conduitCast', card },
         });
         if (choice !== 'yes') return;
-        ctx.you.turnState.cantCastAdditional = true;
-        const ok = await ctx.g.castSpell(ctx.you, card, { from: 'graveyard', ignoreAdditionalCastLock: true });
-        if (!ok) ctx.you.turnState.cantCastAdditional = false;
+        const cast = await MTG.OracleV8PlayPermissions.castOne(ctx, [card], { free: false, selected: true }, {});
+        if (cast) ctx.you.turnState.cantCastAdditional = true;
       },
       aiScore: (g, c, p) => p.graveyard.some(x => !x.is('Land') && U.mv(x.def.cost || '') >= 4) && p.turnState.spellsCast === 0 ? 4 : 0,
     }],

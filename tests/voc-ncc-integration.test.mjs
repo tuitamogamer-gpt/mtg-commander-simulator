@@ -57,7 +57,15 @@ for(const role of ['human','ai']){
   const f=setup(role);await play(f,'Rhythm of the Wild');f.decide=(p,q)=>q.type==='chooseOption'&&q.prompt.includes('riot')?'counter':undefined;const c=await play(f,'Grizzly Bears');assert.equal(c.counters['+1/+1'],1);const other=card(f,'Colossal Dreadmaw','hand');fuel(f.a);await f.game.castSpell(f.a,other,{from:'hand'});assert.equal(await f.game.counterStackObject(f.game.stack.at(-1)),false);await settle(f.game);assert.equal(other.zone,'battlefield');
  });
  test(role+': Archon prevents life loss but preserves combat damage, lifelink and monarchy change',async()=>{
-  const f=setup(role);await play(f,'Archon of Coronation');const c=card(f,'Vampire Nighthawk','battlefield',f.b),life=f.a.life,enemy=f.b.life;await f.game.damagePlayer(c,f.a,2,{combat:true});assert.equal(f.a.life,life);assert.equal(f.b.life,enemy+2);assert.equal(f.game.monarch,f.b);
+  const f=setup(role);await play(f,'Archon of Coronation');
+  const c=card(f,'Vampire Nighthawk','battlefield',f.b),life=f.a.life,enemy=f.b.life;
+  assert.ok(f.game.monarch===f.a,'Archon makes its controller the monarch');
+  await f.game.damagePlayer(c,f.a,2,{combat:true});
+  assert.equal(f.a.life,life);assert.equal(f.b.life,enemy+2);
+  assert.ok(f.b.turnState.combatDamageHits.some(hit=>hit.card===c&&hit.player===f.a&&hit.n===2),'the protected monarch still takes combat damage');
+  assert.ok(f.game.monarch===f.a,'combat damage queues the crown transfer without resolving it');
+  await settle(f.game);
+  assert.ok(f.game.monarch===f.b,'the native combat-damage trigger transfers the crown on resolution');
  });
  test(role+': Turfs targets each player’s land and transfers the defender’s contested land',async()=>{
   const f=setup(role),a=card(f,'Forest'),b=card(f,'Island','battlefield',f.b),h=body(f);await play(f,'Turf War');assert.equal(a.counters.contested,1);assert.equal(b.counters.contested,1);f.decide=(p,q)=>q.type==='chooseCards'&&q.prompt.startsWith('Turf War')?[b]:undefined;await event(f,'damageToPlayer',{src:h,player:f.b,n:2,combat:true});assert.equal(b.ctrl,f.a);assert.equal(b.tapped,false);

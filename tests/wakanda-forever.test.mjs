@@ -101,9 +101,14 @@ test("T'Challa makes tapped Vibranium on entry and attack, and its mana only pay
   const genericOne = { generic: 1, x: 0, pips: [] };
   assert.equal(game.canPayMana(wakanda, genericOne, { card: new MTG.CardInst(MTG.DEFS['Sol Ring'], wakanda) }), true);
   assert.equal(game.canPayMana(wakanda, genericOne, { card: new MTG.CardInst(MTG.DEFS['Harmonize'], wakanda) }), false);
-  const expensiveArtifact = new MTG.CardInst(MTG.DEFS['Shuri\'s Fabricator'], wakanda);
-  await game.emit('cast', { player: wakanda, card: expensiveArtifact, mv: expensiveArtifact.mv });
+  const expensiveArtifact = inZone(wakanda, "Shuri's Fabricator", 'hand');
+  for (let i = 0; i < 3; i++) permanent(game, wakanda, 'Forest');
+  assert.equal(await game.castSpell(wakanda, expensiveArtifact, { from: 'hand' }), true);
+  assert.equal(expensiveArtifact.castMeta.manaSpent, 4);
+  assert.equal(vibranium[0].tapped, true, 'the artifact actually uses restricted Vibranium mana');
   await resolveAll(game);
+  assert.equal(expensiveArtifact.zone, 'battlefield');
+  assert.equal(game.bf().filter(card => card.name === 'Vibranium Token').length, 4);
   assert.equal(tchalla.counters['+1/+1'], 2);
 });
 

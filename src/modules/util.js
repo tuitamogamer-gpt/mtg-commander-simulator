@@ -1195,9 +1195,10 @@ const UI_ENGLISH_COMPILED_RULES = [
   if (source === 'Nema') source = 'Nema(?! Siltlurker)';
   if (source === uiWord('Tri').source) source = uiWord('Tri(?!-Sentinel)').source;
   // Escape name spaces to keep this single-word rule after complete phrases.
-  if (source === uiWord('da').source) source = uiWord('da(?!(?<=Leonardo\\x20da)\\x20Vinci(?![\\p{L}\\p{N}_-]))').source;
+  if (source === uiWord('da').source) source = uiWord('da(?!(?<=Leonardo\\x20da)\\x20Vinci(?![\\p{L}\\p{N}_-]))(?!(?<=Ezio\\x20Auditore\\x20da)\\x20Firenze(?![\\p{L}\\p{N}_-]))').source;
   const whitespaceRule = source.startsWith('(\\s)');
-  const rightBoundary = source.includes('(?=\\d)') ? '' : '(?![\\p{L}\\p{N}_-])';
+  // English possessives (including letter names such as "u's") are whole words.
+  const rightBoundary = source.includes('(?=\\d)') ? '' : "(?![\\p{L}\\p{N}_-]|['’]s(?![\\p{L}\\p{N}_-]))";
   const bounded = whitespaceRule ? source : `(?<![\\p{L}\\p{N}_-])(?:${source})${rightBoundary}`;
   return [new RegExp(bounded, pattern.flags.includes('u') ? pattern.flags : pattern.flags + 'u'), replacement, source.includes(' '), source.replace(/\(\?[=!<].*?\)/g, '').length];
 }).sort((a, b) => Number(b[2]) - Number(a[2]) || b[3] - a[3]);
