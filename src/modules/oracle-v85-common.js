@@ -28,7 +28,7 @@
  const healEarlierDamage=(g,d,s)=>{if(d.batch){let seen=healedBatches.get(d.batch);if(!seen)healedBatches.set(d.batch,seen=new Set());const key=s.iid+':'+s.zoneVersion;if(seen.has(key))return d.n;seen.add(key);}s.damage=0;s.deathtouched=false;return d.n;};
  const recordDamage=G.recordDamageResult;
  G.recordDamageResult=function(src,target,n,opts){
-  if(src&&n>0){const snap=src._oracleDamageSnapshot||opts?._damageBatch?.snapshots?.get(src),version=snap?.zoneVersion??src.zoneVersion;
+  if(src instanceof M.CardInst&&n>0){const snap=src._oracleDamageSnapshot||opts?._damageBatch?.snapshots?.get(src),version=snap?.zoneVersion??src.zoneVersion;
    if(src.zoneVersion===version){if(target instanceof M.CardInst&&target.is('Creature')&&(target.iid!==src.iid||target.zoneVersion!==version))src.meta.wolverineDamageV85={turn:this.turnNo,version};
     if(opts?.combat&&target instanceof M.Player){let r=src.meta.combatPlayersV85;if(!r||r.turn!==this.turnNo||r.version!==version)r=src.meta.combatPlayersV85={turn:this.turnNo,version,players:[]};if(!r.players.includes(target.idx))r.players.push(target.idx);}
    }

@@ -40,8 +40,14 @@ for(const role of ['human','ai']){
  });
  test(`Emerge ${role}: compounded sacrifices cannot reuse one permanent`,async()=>{
   const ctx=ready(role,'Emerge Double Sacrifice'),high=own(ctx,'Emerge Fodder Seven');
+  assert.equal(ctx.game.castableList(ctx.a).some(row=>row.card===ctx.source),false,'one creature cannot pay both sacrifices');
   assert.equal(await cast(ctx),false);assert.equal(high.zone,'battlefield');assert.equal(ctx.a.pool.G+ctx.a.pool.U,2);
   const other=own(ctx,'Emerge Fodder Zero');
+  ctx.a.pool.G=0;
+  assert.equal(ctx.game.castableList(ctx.a).some(row=>row.card===ctx.source),false,'Emerge cannot reduce a missing colored symbol');
+  assert.equal(await cast(ctx),false);assert.equal(high.zone,'battlefield');assert.equal(other.zone,'battlefield');
+  ctx.a.pool.G=1;
+  assert.ok(ctx.game.castableList(ctx.a).some(row=>row.card===ctx.source&&row.alt?.oracleEmergeCost),'preflight includes the remaining Emerge reduction');
   if(role==='human'){const decide=ctx.a.controller.decide.bind(ctx.a.controller);ctx.a.controller.decide=async(g,q)=>q.type==='chooseCards'&&q.aiHint?.kind==='addlSac'&&q.from.includes(other)?[other]:decide(g,q);}
   assert.equal(await cast(ctx),true);assert.equal(stack(ctx).oracleV4AdditionalCost.sacrifices.length,2);assert.equal(high.zone,'graveyard');assert.equal(other.zone,'graveyard');await settle(ctx.game);
  });

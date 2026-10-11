@@ -24,7 +24,7 @@ async function setup(role,name){
  try{await assert.rejects(game.runTurn(),error=>error===stop);}finally{game.emit=original;}
  game.phase='main1';game.step='';mana(a);f.source=source;return f;
 }
-function raw(f){const {source}=f;if(source.zone==='graveyard')return {card:source,gyAbility:true};const idx=source.def.abilities.findIndex(ability=>ability.cond);assert.ok(idx>=0,source.name+': conditional ability');return {card:source,ability:source.def.abilities[idx],idx};}
+function raw(f){const {source}=f;if(source.zone==='graveyard')return {card:source,gyAbility:true};const idx=source.def.abilities.findIndex(ability=>ability.oracleOperation?.activationCondition);assert.ok(idx>=0,source.name+': printed activation prerequisite');assert.equal(typeof source.def.abilities[idx].cond,'function');return {card:source,ability:source.def.abilities[idx],idx};}
 function offered(f){const descriptor=raw(f);return f.game.activatableList(f.a).find(row=>row.card===f.source&&(descriptor.gyAbility?row.gyAbility:row.ability===descriptor.ability));}
 async function reject(f,descriptor=raw(f)){
  const pool={...f.a.pool},life=f.a.life,tapped=f.source.tapped;

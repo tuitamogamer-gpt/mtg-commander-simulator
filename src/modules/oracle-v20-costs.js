@@ -174,7 +174,13 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     script.playTop=(g,s,c,p)=>!!prior?.(g,s,c,p)||live(s)&&s.ctrl===p&&(!op.condition||h.genericCondition(g,s,op.condition,p))&&(op.any||c.is('Land')&&land&&land(g,Object.assign(Object.create(c),{zone:'battlefield'}),p,s)||!c.is('Land')&&spell&&spell(g,{kind:'spell',card:c,ctrl:p,castOpts:{}},p,s));return true;
    }
    if(op.kind==='cast-permission-v20'){if(op.includeForeignV65!==undefined&&(op.includeForeignV65!==true||op.from!=='exile'||op.self||!op.filter))throw Error('Invalid foreign exile casting permission');const index=(script.oracleCastPermissionsV20||=[]).length;script.oracleCastPermissionsV20.push({...op,filter:op.filter&&h.genericTargetSpec(op.filter,[],0).filter,payment:op.additionalCosts&&M.compileOracleAdditionalCosts(op.additionalCosts)});if(op.costIncreaseV20){const prior=script.selfCostAdjust;script.selfCostAdjust=(g,c,p,a)=>(prior?.(g,c,p,a)||0)+(a.starterPermission==='oracle-v20'&&a.v20Source===c.iid&&a.v20Permission===index?op.costIncreaseV20.n*h.genericAmount(op.costIncreaseV20.count,{g,src:c,you:p,targets:[]}):0);}return true;}
-   if(op.kind==='ability-floor-cost-v20'){(script.oracleAbilityFloorV20||=[]).push({filter:h.genericTargetSpec(op.filter,[],0).filter,n:op.n});return true;}
+   if(op.kind==='ability-floor-cost-v20'){
+    const spec=h.genericTargetSpec(op.filter,[],0);
+    // A target spec keeps its zone separately from its type/control filter.
+    // "Creatures" and "artifacts" here mean battlefield permanents.
+    const filter=(g,c,p,s)=>(spec.zone!=='battlefield'||c?.zone==='battlefield')&&spec.filter(g,c,p,s);
+    (script.oracleAbilityFloorV20||=[]).push({filter,n:op.n});return true;
+   }
    if(op.kind==='mechanic-impending-v20'){script.oracleImpendingV20=op;
     (script.altCosts||=[]).push({oracleImpendingV20:true,altCostStr:op.cost,label:'Impending '+op.n+' — '+op.cost});
     const prior=script.asEnters;script.asEnters=async(g,c,...args)=>{if(prior)await prior(g,c,...args);c.meta.oracleImpendingV20=c.castMeta?.alt?.oracleImpendingV20===true;g.recalc();};

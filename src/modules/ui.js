@@ -2431,6 +2431,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.manaMode = this.manaMode === 'manual' ? 'auto' : 'manual';
         localStorage.setItem('mtgManaMode', this.manaMode);
         if (this.me) this.me.manualMana = this.manaMode === 'manual';
+        MTG.captureAccountSideAction?.({ type: 'settings', manaMode: this.manaMode });
         this.toast(this.manaMode === 'manual' ? '🖐 Manual mana enabled.' : '✨ Automatic mana enabled.');
         this.render();
       };
@@ -3105,7 +3106,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       resourceZone.appendChild(el('div', 'boardlanelabel', 'LANDS · MANA'));
       const landStrip = el('div', 'landstrip');
       const groups = this.landGroups(g, me);
-      for (const [name, lands] of Object.entries(groups)) {
+      // A target is one permanent, even when equal-name lands usually share a
+      // compact chip. Keep each legal/selected copy reachable during targeting.
+      const landEntries = Object.entries(groups).flatMap(([name, lands]) =>
+        this.pending?.q.type === 'chooseTargets' && lands.some(card => this.isCandidate(card) || this.selectedTargetIndex(card) >= 0)
+          ? lands.map(card => [name, [card]]) : [[name, lands]]);
+      for (const [name, lands] of landEntries) {
         const untapped = lands.filter(l => !l.tapped).length;
         const lc = el('div', 'landstack' + (untapped === 0 ? ' tapped' : ''));
         lc.dataset.iid = String(lands[0].iid);
@@ -3890,6 +3896,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             () => this.resolvePending({ kind: 'pass' }), 'primary'));
           row.appendChild(btn('🔕 Stop interrupting me', () => {
             this.prioMode = 'off';
+            MTG.captureAccountSideAction?.({ type: 'settings', prioMode: this.prioMode });
             this.toast('🔕 No more prompts. Stop manually with 🖐️ or the R key.');
             this.resolvePending({ kind: 'pass' });
           }));
@@ -6127,6 +6134,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         row.onclick = () => {
           this.prioMode = mode.key;
           localStorage.setItem('mtgStopProfile', mode.key);
+          MTG.captureAccountSideAction?.({ type: 'settings', prioMode: this.prioMode });
           this.showStops = false;
           this.toast(`${mode.icon} Stops: ${mode.label}`);
           this.render();

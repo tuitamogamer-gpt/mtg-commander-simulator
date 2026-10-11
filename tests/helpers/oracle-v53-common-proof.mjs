@@ -40,7 +40,7 @@ export async function proveCommonV53(M,name,role,positive=true,h,assert=strict){
  }else if(name==='Carrion Locust'){
   const dead=put(M,b,positive?def('V53 dead creature'):M.DEFS.Forest,'graveyard'),life=b.life;await cast(name,{aim:[dead]});assert.equal(dead.zone,'exile');assert.equal(b.life,life-(positive?1:0));
  }else if(name==='Norika Yamazaki, the Poet'){
-  const c=await cast(),enchantment=put(M,a,def('V53 grave enchantment',['Enchantment'],{cost:'{W}'}),'graveyard'),samurai=donor(a,{subtypes:['Samurai']}),ally=donor();aims=[enchantment];await attack(positive?[samurai]:[samurai,ally]);g.phase='main2';g.step='main';assert.equal(g.castableList(a).some(r=>r.card===enchantment),positive);if(positive)await cast(enchantment.def,{card:enchantment});assert.equal(c.kw('vigilance'),true);
+  const c=await cast(),enchantment=put(M,a,def('V53 grave enchantment',['Enchantment'],{cost:'{W}'}),'graveyard'),samurai=donor(a,{subtypes:['Samurai']}),ally=donor();aims=[enchantment];await attack(positive?[samurai]:[samurai,ally]);g.phase='main2';g.step='main';const offer=g.castableList(a).find(r=>r.card===enchantment);assert.equal(!!offer,positive);if(positive)await cast(enchantment.def,{card:enchantment,opts:{from:offer.from,alt:offer.alt}});assert.equal(c.kw('vigilance'),true);
  }else if(name==='Roving Keep'){
   const c=await cast();assert.equal(g.canAttackAtAll(c),false);await activate(c);assert.equal(c.power,7);assert.equal(c.kw('trample'),true);assert.equal(g.canAttackAtAll(c),true);
  }else if(name==='Furnace Punisher'){

@@ -21,7 +21,7 @@ export async function proveExtraV74(M,name,role,positive=true,h){
  if(name==='Colossal Skyturtle'){
   const casted=await source();assert.equal(casted.kw('flying'),true);assert.ok(casted.def.ward||casted.cur.wardCost);
   const c=put(M,a,name,'hand'),target=positive?put(M,a,'Forest','graveyard'):donor();aim=[target];
-  const rows=g.activatableList(a).filter(r=>r.card===c&&r.handAbility);assert.equal(rows.length,2);const row=rows.find(r=>r.idx===(positive?'hand0':'hand1'));assert.ok(row);
+  const rows=g.activatableList(a).filter(r=>r.card===c&&r.handAbility);assert.equal(rows.length,positive?2:1);assert.equal(rows.some(r=>r.idx==='hand0'),positive,'return-card Channel is offered only with a legal graveyard target');const row=rows.find(r=>r.idx===(positive?'hand0':'hand1'));assert.ok(row);
   const before=total(a);assert.equal(await g.activateAbility(a,row),true);assert.equal(c.zone,'graveyard');assert.equal(total(a),before-(positive?3:2));await settle(g);assert.equal(target.zone,'hand');
   assert.equal(await g.activateAbility(a,row),false,'cannot activate discarded card again');
  }else if(name==='Cryptic Cruiser'){

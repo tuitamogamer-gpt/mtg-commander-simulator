@@ -1881,6 +1881,11 @@ for (const role of ['human', 'ai']) test(`v8 storage mana ${role}: the controlle
   const source = put(game, a, 'V8 Effects Activation Storage Mana');
   game.addCounters(source, 'storage', 3, false, a);
   if (role === 'human') state.storageN = 2;
+  else {
+    const decide = a.controller.decide.bind(a.controller);
+    a.controller.decide = (g, query) => decide(g, query.aiHint?.kind === 'storageManaAmount'
+      ? {...query, options: query.options.filter(option => option.n > 0)} : query);
+  }
   const action = game.activatableList(a).find(row => row.card === source && row.manaAbility && row.manaSource.m.storageCounterMana);
   assert.ok(action, 'the flexible storage mana ability is exposed through the real mana action');
   assert.equal(await game.activateAbility(a, action), true);
@@ -1902,6 +1907,23 @@ test('v8 storage mana supports the printed zero choice without inventing mana', 
   assert.ok(action); assert.equal(await game.activateAbility(a, action), true);
   assert.equal(source.tapped, true); assert.equal(source.counters.storage || 0, 0);
   assert.equal(Object.values(a.pool).reduce((sum, n) => sum + n, 0), 0); assert.equal(game.stack.length, 0);
+});
+
+test('v8 storage mana ai: choosing zero preserves available storage counters', async () => {
+  const {game, a, trace} = context('ai');
+  const source = put(game, a, 'V8 Effects Activation Storage Mana');
+  game.addCounters(source, 'storage', 3, false, a);
+  const decide = a.controller.decide.bind(a.controller);
+  a.controller.decide = (g, query) => decide(g, query.aiHint?.kind === 'storageManaAmount'
+    ? {...query, options: query.options.filter(option => option.n === 0)} : query);
+  const action = game.activatableList(a).find(row => row.card === source && row.manaAbility && row.manaSource.m.storageCounterMana);
+  assert.ok(action); assert.equal(await game.activateAbility(a, action), true);
+  const choice = trace.find(row => row.query.aiHint?.kind === 'storageManaAmount');
+  assert.ok(choice); assert.equal(choice.query.options.find(option => option.key === choice.answer)?.n, 0);
+  assert.equal(a.controller instanceof MTG.AIController, true);
+  assert.equal(source.tapped, true); assert.equal(source.counters.storage, 3);
+  assert.equal(Object.values(a.pool).reduce((sum, n) => sum + n, 0), 0);
+  assert.equal(game.stack.length, 0);
 });
 
 for (const role of ['human', 'ai']) test(`v8 storage mana ${role}: automatic payment removes exactly the mana actually produced`, async () => {

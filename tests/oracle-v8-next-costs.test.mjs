@@ -209,7 +209,7 @@ test('next costs validator rejects cross-mechanic reservations, duplicate plans 
   await ctx.game.move(permanent,'hand');await ctx.game.move(permanent,'battlefield',{ctrl:ctx.a});
   assert.equal(MTG.validateOracleAdditionalCostPlans(costCtx),false);
   assert.equal(mana(ctx),2);assert.equal(source.zone,'hand');assert.equal(permanent.zone,'battlefield');
-  assert.equal(MTG.validateOracleAdditionalCostPlans({so:{}}),true,'casts with no Oracle plans preserve their existing behavior');
+  assert.equal(MTG.validateOracleAdditionalCostPlans({...costCtx,so:{}}),true,'casts with no Oracle plans preserve their existing behavior');
 });
 
 test('next costs cancel before mana or objects are spent if a controller returns duplicate or insufficient cards',async()=>{

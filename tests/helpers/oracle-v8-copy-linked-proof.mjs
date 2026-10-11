@@ -11,6 +11,7 @@ const definition = card => card && (card.isCopyOf || card.def);
 const state = card => ({card, zone: card.zone, version: card.zoneVersion, controller: card.ctrl, owner: card.owner,
   definition: definition(card), power: card.power, toughness: card.toughness, tapped: card.tapped,
   damage: card.damage, counters: {...card.counters}, sick: card.sick, attacking: card.attacking,
+  types: [...(card.cur?.types || card.def?.types || [])],
   keywords: [...(card.cur?.kw || card.def?.kws || [])]});
 const links = game => (game.oracleLinkedExiles || []).map(record => ({...record, cards: record.cards.map(entry => ({...entry}))}));
 const durationLinks = game => (game.oracleExileDurations || []).map(record => ({...record, cards: record.cards.map(entry => ({...entry}))}));
@@ -216,14 +217,19 @@ export async function assertCopyLinkedEffect(MTG, context, entry, effect, label,
       const after = row.afterSources.find(subject => subject.card === before.card);
       assert.ok(after, label + ': recipient after copy'); assertCopyValues(after, model, effect.modifications || {}, label);
       assert.equal(after.version, before.version, label + ': same battlefield incarnation');
-      assert.equal(after.owner, before.owner, label + ': ownership preserved'); assert.equal(after.controller, before.controller, label + ': controller preserved');
+      assert.ok(after.owner === before.owner, label + ': ownership preserved for ' + before.card.name);
+      assert.ok(after.controller === before.controller, label + ': controller preserved for ' + before.card.name);
       assert.equal(after.tapped, before.tapped, label + ': tapped status preserved'); assert.equal(after.damage, before.damage, label + ': damage preserved');
       assert.deepEqual(after.counters, before.counters, label + ': counters preserved');
-      assert.equal(after.sick, before.sick, label + ': control duration preserved'); assert.equal(after.attacking, before.attacking, label + ': combat status preserved');
+      assert.equal(after.sick, before.sick, label + ': control duration preserved');
+      // CR 506.4: copying a noncreature or a Battle removes an attacker from
+      // combat. Creature copies retain their original attacking destination.
+      const expectedAttack = after.types.includes('Creature') && !after.types.includes('Battle') ? before.attacking : null;
+      assert.ok(after.attacking === expectedAttack, label + ': copied types determine combat status for ' + before.card.name);
       const layer = row.copyLayers.find(layer => layer.iid === before.card.iid && layer.zoneVersion === before.version);
       assert.ok(layer, label + ': copy effect is tied to the actual battlefield incarnation');
       assert.equal(layer.expires, effect.duration === 'eot' ? 'eot' : effect.duration === 'next-turn' ? 'untilTurnOf' : 'object');
-      if (effect.duration === 'next-turn') assert.equal(layer.whoTurn, row.you);
+      if (effect.duration === 'next-turn') assert.ok(layer.whoTurn === row.you, label + ': copy duration follows its controller');
       if (effect.modifications?.retainAbility) {
         const ability = row.context.ability || row.context.oracleOriginTrigger;
         assert.ok(ability, label + ': retained originating ability is captured');
@@ -248,7 +254,7 @@ export async function assertCopyLinkedEffect(MTG, context, entry, effect, label,
       for (const copy of copies) {
         assigned.add(copy);
         assertCopyValues(copy, model, effect.modifications || {}, label);
-        assert.equal(copy.owner, controller, label + ': creating player owns the token');
+        assert.ok(copy.owner === controller, label + ': creating player owns the token');
         if (effect.tapped) assert.equal(copy.tapped, true);
         if (effect.haste) assert.ok(copy.keywords.includes('haste'));
       }
@@ -265,7 +271,7 @@ export async function assertCopyLinkedEffect(MTG, context, entry, effect, label,
     for (const {card, zoneVersion} of cards) {
       assert.equal(card.zone, effect.to, label + ': exact linked card returns to its printed destination');
       assert.ok(card.zoneVersion > zoneVersion, label + ': returning creates a new zone object');
-      if (effect.to === 'battlefield') {assert.equal(card.ctrl, effect.controller === 'owner' ? card.owner : row.you); if (effect.tapped) assert.equal(card.tapped, true);}
+      if (effect.to === 'battlefield') {assert.ok(card.ctrl === (effect.controller === 'owner' ? card.owner : row.you), label + ': returned card has the expected controller'); if (effect.tapped) assert.equal(card.tapped, true);}
     }
     return true;
   }
@@ -280,7 +286,7 @@ export async function assertCopyLinkedEffect(MTG, context, entry, effect, label,
   for (const {card, zoneVersion} of entries) {assert.equal(card.zone, 'exile', label + ': victim exiled'); assert.equal(card.zoneVersion, zoneVersion);}
   if (effect.action === 'linked-exile-until') {
     await game.move(row.source, 'exile');
-    for (const {card} of entries) {assert.equal(card.zone, 'battlefield', label + ': immediate duration return'); assert.equal(card.ctrl, card.owner);}
+    for (const {card} of entries) {assert.equal(card.zone, 'battlefield', label + ': immediate duration return'); assert.ok(card.ctrl === card.owner, label + ': immediate return restores owner control');}
   }
   return true;
 }

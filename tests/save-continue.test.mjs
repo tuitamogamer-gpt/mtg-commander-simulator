@@ -177,3 +177,35 @@ test('a resumed imported deck remains self-contained after saving again without 
   delete MTG.DECKS[name];delete MTG.DECK_META[name];
   assert.equal(MTG.validateAccountSave(JSON.parse(JSON.stringify(second))).setup.deck,name);
 });
+
+test('Continue uses the carried imported list when the library reuses its name', () => {
+  const MTG = loadEngine(), name = 'Saved Forest Workshop';
+  const record = card => ({schema:'commander-deck/v1',id:`deck-save-${card === 'Sol Ring' ? 'original' : 'replacement'}`,name,
+    commanders:['Dwynen, Gilt-Leaf Daen'],cards:[
+      {name:'Dwynen, Gilt-Leaf Daen',n:1,section:'Commander'},
+      {name:card,n:1,section:'Main'},{name:'Forest',n:98,section:'Main'},
+    ]});
+  const original = record('Sol Ring'), replacement = record('Arcane Signet');
+  const setup = {deck:name,commanders:original.commanders,ai:1,aiDecks:['Elven Council'],aiStyles:['balanced'],seed:'31'};
+  try {
+    assert.equal(MTG.hydrateImportedDeckLibrary([original],{source:'guest'}).entries[0].ready,true);
+    const saved = MTG.buildAccountSave({turnNo:0},setup,[],'match-carried-deck-collision-01');
+    assert.equal(MTG.hydrateImportedDeckLibrary([replacement],{source:'guest'}).entries[0].ready,true);
+    const currentDeck = MTG.DECKS[name];
+    assert.throws(()=>MTG.validateAccountSave({...JSON.parse(JSON.stringify(saved)),decisions:null}),/decision history/);
+    assert.equal(MTG.DECKS[name],currentDeck,'rejecting an invalid save does not replace the current runtime deck');
+    const resumed = MTG.validateAccountSave(JSON.parse(JSON.stringify(saved)));
+    const game = new MTG.Game({seed:31,paced:false});
+    const player = game.addPlayer('You',MTG.DECKS[name],null,false);
+    player.chosenCommanders = resumed.setup.commanders;
+    game.buildDeck(player,player.deck,MTG.DEFS);
+    assert.equal(player.library.some(card=>card.name==='Sol Ring'),true,'the original match list is rebuilt');
+    assert.equal(player.library.some(card=>card.name==='Arcane Signet'),false,'the newer library list does not replace the saved match');
+    const again = MTG.buildAccountSave(game,resumed.setup,[],resumed.matchId);
+    assert.deepEqual(JSON.parse(JSON.stringify(again.setup.importedDecks)),[original],'repeated saves keep the original list');
+    assert.deepEqual(JSON.parse(JSON.stringify(MTG.importedDeckRecordFor(name))),replacement,'Continue does not overwrite the library record');
+  } finally {
+    MTG.hydrateImportedDeckLibrary([],{source:'guest'});
+    delete MTG.DECKS[name]; delete MTG.DECK_META[name];
+  }
+});

@@ -688,13 +688,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       life: 0, choices: [], selections: [], reservedCards: [],
       allowSourceReturn: ctx.allowSourceReturn === true, allowSourceSacrifice: ctx.allowSourceSacrifice === true};
     const search = (remaining, plan) => {
-      if (!remaining.length) return game.canPayMana(player, ctx.manaCost,
-        {card: source, castOpts: ctx.castOpts || {}, xVal: ctx.x || 0},
-        {xVal: ctx.x || 0, protectedSacrifices: [...plan.reservedCards, ...plan.sacrifices, ...plan.returns,
-          ...plan.discards, ...plan.exiles, ...plan.handExiles],
-          reservedLife: (ctx.manaCost.lifeCost || 0) + plan.life,
-          reservedLifePlansV92: [{life: ctx.manaCost.lifeCost || 0},
-            {life: plan.life, remove: [...plan.sacrifices, ...plan.returns]}]});
+      if (!remaining.length) {
+        const payable = (mana, emerge = []) => game.canPayMana(player, mana,
+          {card: source, castOpts: ctx.castOpts || {}, xVal: ctx.x || 0},
+          {xVal: ctx.x || 0, protectedSacrifices: [...plan.reservedCards, ...plan.sacrifices, ...emerge, ...plan.returns,
+            ...plan.discards, ...plan.exiles, ...plan.handExiles],
+            reservedLife: (mana.lifeCost || 0) + plan.life,
+            reservedLifePlansV92: [{life: mana.lifeCost || 0},
+              {life: plan.life, remove: [...plan.sacrifices, ...emerge, ...plan.returns]}]});
+        // Printed additional costs are chosen before Emerge's sacrifice.
+        // Reserve a distinct remaining creature and include its reduction in
+        // preflight and the AI's additional-cost choices, without spending it.
+        if (ctx.castOpts?.oracleEmergeCost && !ctx.so?.oracleEmergePayment) {
+          const reserved = new Set([source, ...plan.reservedCards, ...plan.sacrifices, ...plan.returns,
+            ...plan.discards, ...plan.exiles, ...plan.handExiles]);
+          return game.creatures(player).some(creature => !reserved.has(creature) && game.canSacrificeCost(creature) &&
+            payable({...ctx.manaCost, xReduction: (ctx.manaCost.xReduction || 0) + Math.max(0, Number(creature.mv) || 0)}, [creature]));
+        }
+        return payable(ctx.manaCost);
+      }
       const [cost, ...tail] = remaining, key = allocationKey(cost.kind);
       if (key) {
         const pool = costPool(game, player, source, cost, plan), {min} = costQuantity(cost, ctx);

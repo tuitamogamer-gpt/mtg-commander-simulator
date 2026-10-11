@@ -81,13 +81,15 @@ function combatFixture({ mode = 'end', zone = 'command', blocked = false, afford
     },
   });
   a.controller = ui.controllerFor(a);
-  const emit = game.emit.bind(game);
-  game.emit = async (event, data, ...rest) => {
-    if (event === 'damageToPlayer' && data.src === ninja) {
-      damage.push({ target: data.player, amount: data.n, tapped: ninja.tapped,
+  // Capture the actual UI damage receipt. Simultaneous combat queues and then
+  // replays trigger events through emit(), which is not a second damage hit.
+  const note = game.note.bind(game);
+  game.note = (event, data) => {
+    if (event === 'gameEffect' && data.kind === 'damage' && data.source === ninja && data.targetKind === 'player') {
+      damage.push({ target: data.targetPlayer, amount: data.amount, tapped: ninja.tapped,
         attacking: ninja.attacking, pool: { ...a.pool }, landTaps: lands.map(card => card.tapped) });
     }
-    return emit(event, data, ...rest);
+    return note(event, data);
   };
   return { ...f, attacker, ninja, lands, revealed, ui, windows, questions, damage };
 }
@@ -111,6 +113,8 @@ for (const mode of ['end', 'off']) {
     assert.equal(f.ninja.zone, 'battlefield');
     assert.equal(f.ninja.cmdCasts, 3, 'ninjutsu is an activation and does not add a command-zone cast');
     assert.equal(f.damage.length, 1);
+    assert.equal(f.damage[0].amount, 1);
+    assert.equal(f.damage[0].target, f.b);
     assert.equal(f.damage[0].attacking, f.b, 'the returned attacker keeps its original defender');
     assert.equal(f.damage[0].tapped, true);
     assert.deepEqual(f.damage[0].landTaps, [true, true]);

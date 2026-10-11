@@ -395,14 +395,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Scurry of Squirrels'] = {
     triggers: [
-      {
-        on: 'attacks', filter: (g, self, d) => d.card === self, desc: 'Myriad ×2',
+      ...Array.from({ length: 2 }, () => ({
+        on: 'attacks', desc: 'Myriad',
+        filter: (g, self, d) => {
+          if (d.card !== self) return false;
+          // The defending player belongs to this attack event even if the
+          // attacker or its planeswalker/Battle destination later leaves.
+          d.scurryDefendingPlayer ??= MTG.defendingPlayerV92(d.defender || self.attacking);
+          return true;
+        },
         run: async ctx => {
           const g = ctx.g, self = ctx.src, p = ctx.you;
-          // "Myriad, myriad": defending player je i pw-kontrolor; svaka kopija je "you may"
-          const tgt = self.attacking instanceof MTG.Player ? self.attacking : (self.attacking && self.attacking.ctrl);
+          // Each printed myriad instance is its own counterable trigger.
+          const tgt = ctx.data.scurryDefendingPlayer;
           if (!tgt) return;
-          for (let round = 0; round < 2; round++) {
+          const copied = MTG.C1719.snapshotCopy(self, ctx.sourceZoneVersion);
+          await g.withBattlefieldEntryBatch(async () => {
             for (const o of E.eachOpp(g, p)) {
               if (o === tgt || o.lost) continue;
               const go = (await p.controller.decide(g, {
@@ -411,15 +419,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 aiHint: { kind: 'myriadCopy', src: self, opponent: o },
               })) === 'yes';
               if (!go) continue;
-              const made = await g.copyPermanentToken(self, p, {
-                tapped: true, attacking: o,
-                chooseAttacking: (game, token) => game.chooseAttackingDestination(p, o, token, `Myriad — ${self.name}`),
+              const made = await g.makeTokens(copied, p, {
+                copyOf: copied, tapped: true, attacking: o,
+                chooseAttacking: (game, token) => game.chooseAttackingDestination(p, o, token, `Myriad — ${self.name}`, { allowBattles: false }),
               });
               for (const m of made) m.meta.exileEndCombat = true;
             }
-          }
+          });
         },
-      },
+      })),
       {
         on: 'combatDamageToPlayer', filter: (g, self, d) => d.card === self, desc: '+1/+1 counter',
         targets: [T.yourCreature({ prompt: 'Counter on:', aiHint: { goal: 'buff' } })],

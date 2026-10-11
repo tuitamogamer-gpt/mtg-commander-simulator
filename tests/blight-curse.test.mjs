@@ -365,15 +365,27 @@ test('Puca broji sve vrste countera, zaključava target i ne troši once-per-tur
   assert.equal(firstPucaTrigger.targets[0], target);
   await game.move(target, 'exile');
   await resolveAll(game);
-  assert.notEqual(puca.meta._pucaReturnTurn, game.turnNo);
 
   target = inZone(blight, 'Arcane Signet', 'graveyard');
   const second = permanent(game, blight, 'Dusk Urchins');
   second.counters.charge = 2;
   await game.destroy(second);
   await resolveAll(game);
-  assert.equal(target.zone, 'hand');
-  assert.equal(puca.meta._pucaReturnTurn, game.turnNo);
+  assert.equal(target.zone, 'hand', 'a fizzled first trigger leaves the once-per-turn action available');
+
+  target = inZone(blight, 'Mind Stone', 'graveyard');
+  const third = permanent(game, blight, 'Dusk Urchins');
+  third.counters.charge = 2;
+  await game.destroy(third);
+  await resolveAll(game);
+  assert.equal(target.zone, 'graveyard', 'a successful return prevents another return during the same turn');
+
+  game.turnNo++;
+  const fourth = permanent(game, blight, 'Dusk Urchins');
+  fourth.counters.charge = 2;
+  await game.destroy(fourth);
+  await resolveAll(game);
+  assert.equal(target.zone, 'hand', 'a new turn permits another return');
 });
 
 test('Blight AI bira preživljavajućeg jeftinog primaoca, korisne Eventide countere i smislen Glissa mod', async () => {

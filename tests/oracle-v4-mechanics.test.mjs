@@ -287,12 +287,13 @@ for (const role of ['human', 'ai']) {
     const damageResults = [];
     game.onEvent = event => {
       if (event.type === 'gameEffect' && event.kind === 'damage' && event.target === opponent) {
-        damageResults.push({ poison: opponent.poison, life: opponent.life,
+        damageResults.push({ poison: opponent.poison,
           toxic: event.toxic, pending: game.pendingTriggers.length, stack: game.stack.length });
       }
     };
     await attackUnblocked(game, player, card);
-    assert.deepEqual(damageResults, [{ poison: 10, life: 39, toxic: 1, pending: 0, stack: 0 }]);
+    assert.deepEqual(damageResults, [{ poison: 10, toxic: 1, pending: 0, stack: 0 }]);
+    assert.equal(opponent.life, 39, 'combat batch commits its life loss before returning priority');
     assert.equal(opponent.lost, true, 'poison SBA is complete before a toxic response window could exist');
     assertSettledRole(game, player, role);
   });
@@ -507,15 +508,17 @@ for (const role of ['human', 'ai']) {
 test('extort pays hybrid mana, drains every opponent, and gains the total life lost', async () => {
   const { game, players: [caster, opponentA, opponentB] } = gameWithPlayers(3);
   const extort = put(game, caster, scriptedDef('Extort permanent', [{ kind: 'mechanic-extort' }]));
-  const spell = put(game, caster, baseDef('Cast spell', {}, { types: ['Sorcery'], power: undefined, toughness: undefined }), 'hand');
+  const spell = put(game, caster, MTG.DEFS.Ornithopter, 'hand');
   caster.pool.W = 1;
-  await game.emit('cast', { player: caster, card: spell });
+  assert.equal(await game.castSpell(caster, spell, {from: 'hand'}), true);
   await resolveAll(game);
   assert.equal(caster.pool.W, 0);
   assert.equal(opponentA.life, 39);
   assert.equal(opponentB.life, 39);
   assert.equal(caster.life, 42);
   assert.equal(extort.zone, 'battlefield');
+  assert.equal(spell.zone, 'battlefield', 'the actual spell resolves after its extort trigger');
+  assert.ok(spell.castMeta, 'the cast follows the normal payment route');
 });
 
 test('delve/improvise/affinity descriptors join payment paths and typecycling searches instead of drawing', async () => {
