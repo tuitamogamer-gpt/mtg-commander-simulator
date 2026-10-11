@@ -41,6 +41,22 @@ test('localization preserves Leonardo da Vinci while translating surrounding wor
   assert.equal(MTG.uiText('da uđe untapped?'), 'so it enters untapped?');
 });
 
+test('localization preserves Ezio Auditore da Firenze inside translated prompts', () => {
+  const name = 'Ezio Auditore da Firenze';
+  assert.equal(MTG.uiText(name), name);
+  assert.equal(MTG.uiText(`Ti biraš ${name}`), `You choose ${name}`);
+  assert.equal(MTG.uiText(`da ${name}`), `to ${name}`);
+});
+
+test('localization preserves English letter possessives and still translates quoted Bosnian words', () => {
+  for (const apostrophe of ["'", '’']) {
+    const oracle = `Tap up to X target creatures, where X is the number of u${apostrophe}s in name stickers on this enchantment.`;
+    assert.equal(MTG.uiText(oracle), oracle);
+  }
+  assert.equal(MTG.uiText("'u' ruci"), "'in' hand");
+  assert.equal(MTG.uiText('u ruci'), 'in hand');
+});
+
 test('browser text-state mirrors the English presentation used by the visible UI', () => {
   const mainSource = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   assert.match(mainSource, /prompt: pending\.prompt \? MTG\.uiText\(pending\.prompt\) : null/);

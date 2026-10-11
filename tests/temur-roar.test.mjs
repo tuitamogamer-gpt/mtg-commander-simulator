@@ -278,7 +278,10 @@ test('resource, graveyard, and command-zone Dragon paths resolve without manual 
 });
 
 test('Dragon cost, cast, targeting, upkeep, landfall, and riot/monstrosity hooks execute', async () => {
-  const { game, players: [temur, opponent] } = rulesGame([], 2);
+  let regent;
+  const { game, players: [temur, opponent] } = rulesGame([null,
+    (g, q) => q.type === 'chooseTargets' && q.candidates.includes(regent) ? [regent] : defaultDecision(g, q),
+  ], 2);
   const servant = permanent(game, temur, "Dragonlord's Servant");
   const lore = inZone(temur, 'Draconic Lore', 'hand');
   const dragon = inZone(temur, 'Rapacious Dragon', 'hand');
@@ -288,14 +291,24 @@ test('Dragon cost, cast, targeting, upkeep, landfall, and riot/monstrosity hooks
   assert.equal(game.spellCost(temur, lore).generic, 3);
 
   const mauler = permanent(game, temur, 'Taurean Mauler');
-  const regent = permanent(game, temur, 'Thunderbreak Regent');
+  regent = permanent(game, temur, 'Thunderbreak Regent');
   const eshki = permanent(game, temur, "Eshki, Temur's Roar");
   for (let i = 0; i < 3; i++) inZone(temur, 'Forest', 'library');
-  const castCard = new MTG.CardInst(MTG.DEFS['Dragonlord Atarka'], temur);
-  await game.emit('cast', { player: temur, card: castCard, isCreature: true, mv: 7, so: { from: 'hand' } });
-  await game.emit('cast', { player: opponent, card: new MTG.CardInst(MTG.DEFS['Sol Ring'], opponent), isCreature: false, mv: 1, so: { from: 'hand' } });
-  await game.emit('targeted', { card: regent, byPlayer: opponent, src: castCard, isSpell: true });
+  const castCard = inZone(temur, 'Dragonlord Atarka', 'hand');
+  for (const name of ['Forest', 'Forest', 'Forest', 'Forest', 'Forest', 'Mountain']) permanent(game, temur, name);
+  assert.equal(await game.castSpell(temur, castCard, { from: 'hand' }), true);
+  assert.equal(castCard.castMeta.manaSpent, 6, 'Servant reduces the actual Dragon payment by one generic mana');
   await resolveAll(game);
+  assert.equal(castCard.zone, 'battlefield');
+  const shock = inZone(opponent, 'Shock', 'hand');
+  permanent(game, opponent, 'Mountain');
+  const lifeBeforeTarget = opponent.life;
+  assert.equal(await game.castSpell(opponent, shock, { from: 'hand', quickTargets: [regent] }), true);
+  assert.equal(shock.castMeta.manaSpent, 1);
+  await resolveAll(game);
+  assert.equal(shock.zone, 'graveyard');
+  assert.equal(regent.damage, 2, 'the opposing spell actually targets and damages Regent');
+  assert.equal(opponent.life, lifeBeforeTarget - 3, 'Regent punishes the opposing spell target');
   assert.equal(eshki.counters['+1/+1'], 1); assert.ok(opponent.life < 37); assert.equal(mauler.counters['+1/+1'], 1);
 
   for (let i = 0; i < 6; i++) permanent(game, temur, i % 2 ? 'Forest' : 'Mountain');
@@ -337,9 +350,12 @@ test('territorial, Broodcaller, Hammerhead, Keiga, and Frontier Siege choices us
 
   const bounce = permanent(game, opponent, 'Arcane Signet');
   const hammerhead = permanent(game, temur, 'Hammerhead Tyrant');
-  const spell = new MTG.CardInst(MTG.DEFS['Rapacious Dragon'], temur);
-  await game.emit('cast', { player: temur, card: spell, isCreature: true, mv: 5, so: { from: 'hand' } });
+  const spell = inZone(temur, 'Rapacious Dragon', 'hand');
+  for (let i = 0; i < 5; i++) permanent(game, temur, 'Mountain');
+  assert.equal(await game.castSpell(temur, spell, { from: 'hand' }), true);
+  assert.equal(spell.castMeta.manaSpent, 5);
   await resolveAll(game); assert.equal(bounce.zone, 'hand');
+  assert.equal(spell.zone, 'battlefield', 'Hammerhead observes a paid spell that resolves normally');
 
   victim = permanent(game, opponent, 'Dragonmaster Outcast');
   const keiga = permanent(game, temur, 'Keiga, the Tide Star');

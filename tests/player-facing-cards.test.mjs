@@ -35,12 +35,20 @@ function unreadable(text) {
   return null;
 }
 
-function defaultAnswer(question, player) {
+function isChainOfSmogCopy(question) {
+  return question.type === 'chooseOption' && question.aiHint?.kind === 'confirm' &&
+    question.aiHint.src?.name === 'Chain of Smog' && question.prompt === 'Chain of Smog: Copy this spell?';
+}
+
+function defaultAnswer(question, player, decisions) {
   switch (question.type) {
     case 'chooseOption':
       // Repetition is optional and has dedicated card tests. Always choosing
       // the first option would repeat Trade Secrets forever inside resolveTop.
       if (question.aiHint?.kind === 'tradeSecrets') return 'no';
+      // A copy can offer another copy even when nobody has cards to discard.
+      // Exercise one copy, then make the optional decision that ends the chain.
+      if (isChainOfSmogCopy(question)) return decisions.chainOfSmogCopies++ === 0 ? 'yes' : 'no';
       return (question.options[0] || {}).key;
     case 'chooseMulti': return (question.options || []).slice(0, question.min || 1).map(option => option.key);
     case 'chooseTargets': return (question.candidates || [])
@@ -61,11 +69,12 @@ function defaultAnswer(question, player) {
 function fundedTable(capture) {
   const game = new MTG.Game({ seed: 13, paced: false, maxTurns: 100 });
   const players = [];
+  const decisions = { chainOfSmogCopies: 0 };
   for (let index = 0; index < 2; index++) {
     players.push(game.addPlayer(index ? 'Rival' : 'You', { name: index ? 'Rival' : 'You' }, {
       decide: async (currentGame, question) => {
         capture(question);
-        return defaultAnswer(question, players[index]);
+        return defaultAnswer(question, players[index], decisions);
       },
     }, index > 0));
   }
@@ -212,4 +221,48 @@ test('dinamični iznos u plaćanju se prikazuje kao broj, ne kao interni objekat
   assert.ok(payLabel, 'plaćanje mora biti ponuđeno');
   assert.doesNotMatch(payLabel, /\[object /);
   assert.match(payLabel, /^Pay: draw \d+$/);
+});
+
+test('player-facing Chain of Smog controller resolves one paid spell and one optional copy', async () => {
+  const { game, me, permanent, zoneCard } = fundedTable(() => {});
+  game.emptyPool();
+  for (const card of [...game.battlefield]) await game.move(card, 'exile');
+  const lands = [permanent(me, 'Swamp'), permanent(me, 'Swamp')];
+  const discarded = [...me.hand];
+  const card = zoneCard(me, 'Chain of Smog', 'hand');
+  const answers = [];
+  for (const player of game.players) {
+    const decide = player.controller.decide.bind(player.controller);
+    player.controller.decide = async (currentGame, question) => {
+      const answer = await decide(currentGame, question);
+      if (isChainOfSmogCopy(question)) answers.push(answer);
+      return answer;
+    };
+  }
+  const copies = [];
+  const emit = game.emit.bind(game);
+  game.emit = async (event, data) => {
+    if (event === 'spellCopied' && data.so.card === card) copies.push(data.so);
+    return emit(event, data);
+  };
+  const castsBefore = me.turnState.spellsCast;
+  game.recalc();
+  assert.equal(await game.castSpell(me, card, { from: 'hand', quickTargets: [me] }), true);
+  await settle(game);
+  assert.equal(card.castMeta.manaSpent, 2);
+  assert.ok(lands.every(land => land.tapped));
+  assert.equal(Object.values(me.pool).reduce((total, mana) => total + mana, 0), 0);
+  assert.deepEqual(answers, ['yes', 'no']);
+  assert.equal(copies.length, 1);
+  assert.equal(copies[0].isCopy, true);
+  assert.equal(copies[0].ctrl.idx, me.idx);
+  assert.equal(copies[0].targets[0].idx, me.idx);
+  assert.equal(me.turnState.spellsCast, castsBefore + 1, 'the copy is not cast');
+  assert.equal(discarded.length, 4);
+  assert.ok(discarded.every(discard => discard.zone === 'graveyard'));
+  assert.equal(me.hand.length, 0);
+  assert.equal(card.zone, 'graveyard');
+  assert.equal(game.stack.length, 0);
+  assert.equal(game.pendingTriggers.length, 0);
+  assert.equal(game._decisionFallbacks || 0, 0);
 });
