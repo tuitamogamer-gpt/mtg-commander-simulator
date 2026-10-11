@@ -20,9 +20,10 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   return result;
  };
  const advance=G.advanceTurnPlayer;G.advanceTurnPlayer=function(p){if(sources(this,'cdkSkipExtraTurns').length&&this.extraTurns?.length){this.lg("Gerrard's Hourglass Pendant skips the extra turns.");this.extraTurns=[];}return advance.call(this,p);};
- const lose=G.playerLoses;G.playerLoses=async function(p,why){
-  const thrones=sources(this,'cdkThrone',p);if(thrones.length&&this.canLoseGame(p)){const selected=await this.chooseReplacement(p,thrones.map(src=>({src,key:src.iid,label:src.name})),'loseGame',1);await this.move(selected.src,'exile');p.life=1;return;}
-  const holder=this.initiative===p,result=await lose.call(this,p,why);if(holder&&p.lost){const next=this.turnPlayer===p?this.nextPlayer(p):this.turnPlayer;if(next&&!next.lost)await this.takeInitiative(next);}return result;
+ const lose=G.playerLoses;G.playerLoses=async function(p,why,opts={}){
+  if(this.gameOver||p.lost)return;
+  const thrones=sources(this,'cdkThrone',p);if(!opts.replacementsChecked&&!/conced|quit/i.test(why||'')&&thrones.length&&(opts.stateBasedLoss||this.canLoseGame(p))){const selected=await this.chooseReplacement(p,thrones.map(src=>({src,key:src.iid,label:src.name})),'loseGame',1);await this.move(selected.src,'exile');p.life=1;return;}
+  const holder=this.initiative===p,result=await lose.call(this,p,why,opts);if(holder&&p.lost){const next=this.turnPlayer===p?this.nextPlayer(p):this.turnPlayer;if(next&&!next.lost)await this.takeInitiative(next);}return result;
  };
  C.openingPermanents=async g=>{for(const p of g.players)for(const c of p.hand.slice().filter(c=>c.def.cdkLeyline))if(await C.yes({g,src:c,you:p},'Begin with '+c.name+' on the battlefield?'))await g.putPermanentOntoBattlefield(c,p);};
  const recalc=G.recalc;G.recalc=function(){const prev=new Map((this.battlefield||[]).filter(c=>c.zone==='battlefield').map(c=>[c,{player:c.ctrl,v:c.zoneVersion,kharn:c.def.cdkKharn&&!c.cur?.abilitiesDisabled}]));const result=recalc.call(this);

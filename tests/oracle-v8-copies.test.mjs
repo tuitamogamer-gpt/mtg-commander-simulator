@@ -249,7 +249,7 @@ test('v8 copies next-own end step waits, and an end-combat delay uses the real c
   await cast(ctx, 'Next Own'); const own = tokens(game)[0];
   await game.emit('endStep', {player: b}); await settle(game); assert.equal(own.zone, 'battlefield'); assert.equal(game.delayed.length, 1);
   await game.emit('endStep', {player: a}); await settle(game); assert.equal(own.zone, 'ceased');
-  await cast(ctx, 'Combat'); const combat = tokens(game)[0]; game.combat = {attackers: [], defenders: []};
+  await cast(ctx, 'Combat'); const combat = tokens(game)[0]; game.combat = {attackers: [], defenders: new Map()};
   await game.endCombatStep(a); await settle(game); assert.equal(combat.zone, 'ceased'); assert.equal(game.combat, null);
 });
 
@@ -270,7 +270,7 @@ test('v8 copies delayed sacrifice cannot sacrifice a token another player now co
 
 test('v8 copies tapped-and-attacking chooses a legal defender without declaring an attack', async () => {
   const ctx = context(), {game, a, b} = ctx, original = put(game, a, creature('Copy Attacking'));
-  game.phase = 'combat'; game.step = 'blockers'; game.combat = {attackers: [original], defenders: []}; original.attacking = b;
+  game.phase = 'combat'; game.step = 'blockers'; game.combat = {attackers: [original], defenders: new Map()}; original.attacking = b;
   const events = [], emit = game.emit.bind(game); game.emit = async (name, data) => {events.push({name, data}); return emit(name, data);};
   await cast(ctx, 'Attacking'); const copy = tokens(game)[0];
   assert.equal(copy.tapped, true); assert.ok([ctx.b, ctx.c].includes(copy.attacking)); assert.ok(game.combat.attackers.includes(copy));

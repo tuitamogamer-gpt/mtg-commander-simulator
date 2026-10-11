@@ -1251,9 +1251,11 @@ for (const role of ['human', 'ai']) {
     const source = put(ctx.game, ctx.b, 'Grizzly Bears');
     const target = put(ctx.game, ctx.a, 'Wall of Omens');
     ctx.game.untilEffects.push({kind: 'redirectAllDamage', who: ctx.a, iid: target.iid, zoneVersion: target.zoneVersion, expires: 'eot'});
-    const opts = {deferSBA: true};
-    const dealt = await ctx.game.damagePlayer(source, ctx.a, 2, opts);
-    assert.equal(opts._damageFinalTarget, target);
+    const hits = [], emit = ctx.game.emit.bind(ctx.game);
+    ctx.game.emit = async (name, data) => { if (name === 'dealtDamage' && data.src === source && !hits.includes(data)) hits.push(data); return emit(name, data); };
+    const dealt = await ctx.game.damagePlayer(source, ctx.a, 2, {deferSBA: true});
+    assert.equal(hits.length, 1); assert.ok(hits[0].target === target, 'the native damage event identifies the redirected recipient');
+    assert.equal(hits[0].n, dealt);
     assert.equal(ctx.a.life, 40);
     assert.ok([2, 3].includes(dealt), 'either legal ordering applies doubling and creature reduction once');
     assert.equal(target.damage, dealt);
@@ -1377,7 +1379,8 @@ for (const role of ['human', 'ai']) {
     const ctx = context(role);
     const creature = await paidCast(ctx, 'Attack Unless');
     await settle(ctx.game);
-    assert.equal(ctx.game.isForcedToAttack(creature), true);
+    assert.equal(ctx.game.hasAttackRequirement(creature), true);
+    assert.equal(ctx.game.isForcedToAttack(creature), false, 'a printed requirement is not an executable attack while sick');
     assert.equal(creature.sick, true);
     await ctx.game.combatPhase(ctx.a);
     assert.equal(ctx.decisions.some(row => row.query.type === 'attackers' && row.query.eligible.includes(creature)), false, 'a requirement cannot make a sick creature eligible');
@@ -1391,6 +1394,9 @@ for (const role of ['human', 'ai']) {
     await settle(ctx.game);
     assert.equal(ctx.game.isForcedToAttack(conditional), false);
     await ctx.game.gainLife(ctx.a, 5);
+    assert.equal(ctx.game.hasAttackRequirement(conditional), true);
+    assert.equal(ctx.game.isForcedToAttack(conditional), false, 'the conditional requirement also preserves summoning sickness');
+    conditional.sick = false;
     assert.equal(ctx.game.isForcedToAttack(conditional), true);
     assert.equal(conditional.power, 4);
     assert.equal(conditional.kw('flying'), true);
@@ -2062,12 +2068,17 @@ for (const role of ['human', 'ai']) {
     ctx.a.pool.C = 1;
     const action = ctx.game.activatableList(ctx.a).find(row => row.card === equipment && row.equip);
     assert.ok(action);
+    const decisionStart = ctx.decisions.length;
     assert.equal(await ctx.game.activateAbility(ctx.a, action), true);
     await settle(ctx.game);
-    assert.equal(equipment.attachedTo, host.iid);
-    assert.equal(await ctx.game.damageCreature(enemy, host, 3, {deferSBA: true}), 1, 'the flat reduction prevents two');
+    const choice = ctx.decisions.slice(decisionStart).find(row => row.query.type === 'chooseTargets');
+    assert.ok(choice, 'the actual controller chooses an equip target');
+    const selected = [choice.result].flat()[0], other = selected === host ? nextHost : host;
+    assert.ok(selected === host || selected === nextHost); assert.equal(equipment.attachedTo, selected.iid);
+    assert.equal(ctx.a.pool.C, 0, 'the actual equip activation pays its one-mana cost');
+    assert.equal(await ctx.game.damageCreature(enemy, selected, 3, {deferSBA: true}), 1, 'the chosen host gets the flat two-damage reduction');
     await ctx.game.move(aura, 'exile');
-    assert.equal(await ctx.game.damageCreature(enemy, nextHost, 1), 1, 'the unattached creature gets no Equipment protection');
+    assert.equal(await ctx.game.damageCreature(enemy, other, 1), 1, 'the other creature gets no Equipment protection');
   });
 
   test(`v8 ${role}: friendly-damage prevention checks the source and recipient controllers independently`, async () => {

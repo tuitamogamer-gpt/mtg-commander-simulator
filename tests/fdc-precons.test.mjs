@@ -8,6 +8,17 @@ const tokens = (f, type, p = f.a) => f.game.creatures(p).filter(c => c.isToken &
 const empty = p => {for (const k of Object.keys(p.pool)) p.pool[k] = 0; p.poolMeta = [];};
 const aim = (f, ...chosen) => {f.decide = (p, q) => q.type === 'chooseTargets' ? chosen.filter(c => q.candidates.includes(c)).slice(0, q.max) : undefined;};
 const yes = (p, q) => q.type === 'chooseOption' && q.options.some(o => o.key === 'yes') ? 'yes' : undefined;
+const assertPromisedCard = (f, spell, before) => {
+  const choice = f.trace.find(row => /Choose the opponent promised the gift/.test(row.q.prompt || ''));
+  assert.ok(choice, 'the casting player chooses the gift recipient');
+  const recipient = Number(choice.result);
+  assert.equal(spell.castMeta.bdfGiftPlayer, recipient, 'the cast retains the selected recipient');
+  assert.ok(f.a.opponents(f.game).some(player => player.idx === recipient));
+  for (const player of f.a.opponents(f.game)) {
+    assert.equal(player.hand.length, before.get(player) + (player.idx === recipient ? 1 : 0),
+      player.name + ': only the promised opponent draws');
+  }
+};
 
 test('FDC preserves five complete official lists, reuses 304 identities and adds 17 native definitions', () => {
   const intake = buildIntake(M), initial = JSON.parse(fs.readFileSync(sourceDir + '/intake.json'));
@@ -75,8 +86,9 @@ for (const role of ['human', 'ai']) {
   });
   test(role + ': Consumed by Greed sacrifices greatest power and returns the gifted graveyard target', async () => {
     const f = setup(role), small = body(f, f.b), big = card(f, 'Gigantosaurus', 'battlefield', f.b), dead = card(f, 'Wind Drake', 'graveyard'); aim(f, f.b, dead);
-    const before = f.b.hand.length; await play(f, 'Consumed by Greed', {alt: {bdfGift: true}});
-    assert.equal(big.zone, 'graveyard'); assert.equal(small.zone, 'battlefield'); assert.equal(dead.zone, 'hand'); assert.equal(f.b.hand.length, before + 1);
+    const before = new Map(f.a.opponents(f.game).map(player => [player, player.hand.length]));
+    const spell = await play(f, 'Consumed by Greed', {alt: {bdfGift: true}});
+    assert.equal(big.zone, 'graveyard'); assert.equal(small.zone, 'battlefield'); assert.equal(dead.zone, 'hand'); assertPromisedCard(f, spell, before);
   });
   test(role + ': Consumed by Greed works without a gift or a graveyard card', async () => {
     const f = setup(role), victim = body(f, f.b); aim(f, f.b); const before = f.b.hand.length;
@@ -162,8 +174,9 @@ for (const role of ['human', 'ai']) {
     await play(f, 'Dragon Whelp', {card: dragon}); assert.equal(sarkhan.counters['+1/+1'], 1); assert.ok(sarkhan.hasSub('Dragon')); assert.ok(sarkhan.kw('flying')); assert.ok(sarkhan.hasSub('Human'));
   });
   test(role + ': Scrapshooter gives the promised card and destroys an opposing artifact', async () => {
-    const f = setup(role), artifact = card(f, 'Sol Ring', 'battlefield', f.b); aim(f, artifact); const hand = f.b.hand.length;
-    const shooter = await play(f, 'Scrapshooter', {alt: {bdfGift: true}}); assert.ok(shooter.kw('reach')); assert.equal(artifact.zone, 'graveyard'); assert.equal(f.b.hand.length, hand + 1);
+    const f = setup(role), artifact = card(f, 'Sol Ring', 'battlefield', f.b); aim(f, artifact);
+    const before = new Map(f.a.opponents(f.game).map(player => [player, player.hand.length]));
+    const shooter = await play(f, 'Scrapshooter', {alt: {bdfGift: true}}); assert.ok(shooter.kw('reach')); assert.equal(artifact.zone, 'graveyard'); assertPromisedCard(f, shooter, before);
   });
   test(role + ': Scrapshooter without a gift keeps opposing permanents intact', async () => {
     const f = setup(role), artifact = card(f, 'Sol Ring', 'battlefield', f.b); await play(f, 'Scrapshooter'); assert.equal(artifact.zone, 'battlefield'); assert.equal(f.b.hand.length, 0);

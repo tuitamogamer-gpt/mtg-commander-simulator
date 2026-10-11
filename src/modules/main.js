@@ -2175,8 +2175,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const ui = new MTG.UI();
     if (typeof state.arenaDragEnabled === 'boolean') ui.arenaDragEnabled = state.arenaDragEnabled;
-    if (resumeSave?.setup.manaMode === 'manual' || resumeSave?.setup.manaMode === 'auto') ui.manaMode = resumeSave.setup.manaMode;
-    if (resumeSave?.setup.prioMode) ui.prioMode = resumeSave.setup.prioMode;
+    if (resumeSave) Object.assign(ui, MTG.accountSaveSettingsAt(resumeSave,
+      restoringBoard ? replayingBoardTail ? replayCursor : resumeSave.decisions.length : 0));
     let gameRef = null;
     let liveArena = null;
     let saveSetup = null;
@@ -2257,7 +2257,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 const side = savedTimeline[replayCursor];
                 replayCursor += 1;
                 ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
-                await MTG.replayAccountSideAction(game, p, side.action);
+                const replayed = await MTG.replayAccountSideAction(game, p, side.action);
+                if (side.action.type === 'settings') Object.assign(ui, replayed);
               }
               if (replayCursor < savedTimeline.length) {
                 const recorded = savedTimeline[replayCursor];
@@ -2320,7 +2321,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     saveSetup = state.onlineBridge ? null : {
       deck: state.deck,
-      commanders: ui.me.commanders.map(card => card.name),
+      commanders: MTG.canonicalCommanderNames(ui.me.deck, ui.me.commanders.map(card => card.name)),
       ai: aiDecks.length,
       aiDecks: aiDecks.slice(),
       aiStyles: actualAIPlayers.map(player => player.requestedAIStyle || player.aiStyle || 'balanced'),
@@ -2328,8 +2329,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       sumPartnerDamage: !!state.sumPartnerDamage,
       diplomacyEnabled: !!state.diplomacyEnabled,
       difficulty: state.difficulty || 'normal',
-      manaMode: ui.manaMode,
-      prioMode: ui.prioMode,
+      manaMode: resumeSave?.setup.manaMode || ui.manaMode,
+      prioMode: resumeSave?.setup.prioMode || ui.prioMode,
       seed: String(seed),
       createdAt: matchCreatedAt,
       // Continue may enter the table before My Library finishes loading.

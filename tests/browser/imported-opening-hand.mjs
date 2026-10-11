@@ -101,7 +101,7 @@ async function fromLibrary() {
   await page.locator('.deckspotlightcontinue').click();
   await page.locator('[data-ai-count="1"]').click();
   await page.locator('.botfields .deckselect').first().selectOption('Quick Draw');
-  await page.locator('.podstage .pbtn.start:visible').click();
+  await page.locator('.podstage .pbtn.start:visible, .podstage .setupnext:visible').click();
   await page.locator('.reviewstart').click();
   return opening('library-ui');
 }

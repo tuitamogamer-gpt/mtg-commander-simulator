@@ -7,7 +7,7 @@ async function shot(name){await page.screenshot({path:out+'/'+name+'.png',animat
 async function read(){return page.evaluate(()=>({done:__hold.done,error:__hold.error,zone:__hold.card.zone,spent:__hold.card.castMeta?.manaSpent,cast:__hold.ok,pending:_ui.pending?.q.type,options:(_ui.pending?.q.casts?.length||0)+(_ui.pending?.q.acts?.length||0),stack:_game.stack.map(s=>s.kind),life:__hold.human.life,hold:_ui.holdNext,mode:_ui.prioMode,tapped:__hold.lands.every(c=>c.tapped)}));}
 try{
  for(const [mode,width]of [['hold',1440],['hold',390],['full',1440],['full',390],['auto',1440]]){
-  const label=mode+'-'+width;await page.setViewportSize({width,height:width===390?844:1000});await page.goto(base);await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry');
+  const label=mode+'-'+width;await page.setViewportSize({width,height:width===390?844:1000});await page.goto(base);await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry:visible');
   await page.evaluate(mode=>{
    const root=document.querySelector('#game');root.replaceWith(root.cloneNode(false));document.body.classList.add('game-active');document.querySelector('#setup').style.display='none';document.querySelector('#game').style.display='flex';
    const ui=new MTG.UI(),game=new MTG.Game({seed:83522,paced:true,onEvent:event=>{if(event.type==='battlefieldArrival')ui.showBattlefieldArrival(event);ui.queueRender();}});
@@ -35,5 +35,5 @@ try{
   const result=await read();assert.equal(result.error,null);assert.equal(result.cast,true);assert.equal(result.zone,'battlefield');assert.equal(result.stack.length,0);assert.equal(result.pending,undefined);assert.equal(result.spent,2);await shot(label+'-resolved');results.push({label,...result});console.log('PASS',label);
  }
  assert.deepEqual(errors,[]);fs.writeFileSync(out+'/report.json',JSON.stringify({results,errors},null,2));
-}catch(error){await page.screenshot({path:out+'/failure.png'});fs.writeFileSync(out+'/failure.json',JSON.stringify({message:error.stack,errors,state:await read()},null,2));throw error;}
+}catch(error){await page.screenshot({path:out+'/failure.png'});fs.writeFileSync(out+'/failure.json',JSON.stringify({message:error.stack,errors,state:await read().catch(()=>null)},null,2));throw error;}
 finally{await browser.close();if(server)await new Promise(resolve=>server.close(resolve));}

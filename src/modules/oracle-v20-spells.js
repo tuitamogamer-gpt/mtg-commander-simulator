@@ -368,9 +368,11 @@
    }
    if(effect.action==='player-group-v20'){
     const players=h.genericEffectSubjects(ctx,effect.who),excluded=effect.excludeTarget===undefined?[]:h.genericEffectSubjects(ctx,effect.excludeTarget);
-    const e=effect.effect,cards=ctx.g.bf().filter(card=>players.includes(card.ctrl)&&!excluded.includes(card)&&e.filters.some(filter=>h.genericTargetSpec(filter,[],0).filter(ctx.g,card,ctx.you,ctx.src)));
+    const {filters,...e}=effect.effect,cards=ctx.g.bf().filter(card=>players.includes(card.ctrl)&&!excluded.includes(card)&&filters.some(filter=>h.genericTargetSpec(filter,[],0).filter(ctx.g,card,ctx.you,ctx.src)));
     if(e.operation!=='pump')throw new Error('Unsupported player group operation');
     const multiplier=e.multiplier?h.genericAmount(e.multiplier,ctx):1;
+    // The group is already selected. A retained filter would make each
+    // individual pump select the entire battlefield again.
     for(const card of cards)await h.runGenericEffect({...ctx,targets:[card]},{...e,action:'pump',target:0,power:h.genericAmount(e.power,ctx,true)*multiplier,toughness:h.genericAmount(e.toughness,ctx,true)*multiplier});
     return true;
    }

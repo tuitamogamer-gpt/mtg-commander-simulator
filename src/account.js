@@ -350,6 +350,8 @@ function renderEntry() {
 
 async function syncLocalFavorites() {
   if (!state.user || smokeMode === 'profile') return;
+  const ownerId = state.user.id;
+  const ownerGeneration = identityGeneration;
   let decks = [];
   try {
     const parsed = JSON.parse(localStorage.getItem('mtgDeckFavorites') || '[]');
@@ -357,6 +359,7 @@ async function syncLocalFavorites() {
   } catch {}
   try {
     const result = await request('favorites', { decks });
+    if (state.user?.id !== ownerId || identityGeneration !== ownerGeneration) return;
     state.profile = result.profile;
     emit();
   } catch {}

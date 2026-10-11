@@ -4,7 +4,11 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const M=MTG,C=M.LC,SC=M.SCRIPTS,T=M.T,E=M.E,L=C.loyalty;
  const cw=()=>T.permanent((g,c)=>c.is('Creature')||c.is('Planeswalker'));
  const ownWalker=(extra={})=>({...T.permanent(),filter:(g,c,p,s)=>c.ctrl===p&&c!==s&&c.is('Planeswalker'),...extra});
- const emblem=(ctx,name,triggers=[],extra={},p=ctx.you)=>p.emblems.push({name,source:ctx.src,triggers,...extra});
+ const emblem=(ctx,name,triggers=[],extra={},p=ctx.you)=>{
+  const created=new M.CardInst({name,cost:null,types:[],subtypes:[],super:[],kws:[]},p);
+  Object.assign(created,{zone:'command',timestamp:ctx.g.nextOracleTimestamp(),source:ctx.src,triggers,...extra});
+  return p.emblems.push(created);
+ };
  const castEmblem=(ctx,name,n,noncreature=false)=>emblem(ctx,name,[{on:'cast',filter:(g,e,d,p)=>d.player===p&&(!noncreature||!d.isCreature),desc:'This emblem deals '+n+' damage',targets:[T.any()],run:ctx=>ctx.targets[0]&&ctx.g.damageAny(ctx.src,ctx.targets[0],n)}]);
  const wizard=C.registerToken('lcWizard',C.token('Wizard',['Wizard'],1,1,['R'],[],{tokenImageName:'CMM Wizard',mana:{cost:{tap:true},produce:[{R:1}],restrict:(g,so)=>!!so?.card&&!so.isAbility&&g.castHasType(so.card,so.castOpts||{},'Planeswalker')}}));
  SC['Commodore Guff']={canBeCommander:true,triggers:[C.step('endStep','Put a loyalty counter on another planeswalker',ctx=>ctx.targets[0]&&C.add(ctx,ctx.targets[0],'loyalty'),{targets:[ownWalker()]})],abilities:[L(1,'Create a Wizard that produces mana for planeswalkers',ctx=>ctx.g.makeTokens(wizard,ctx.you)),L(-3,'Draw and deal damage for each planeswalker you control',async ctx=>{const n=C.walkers(ctx.g,ctx.you).length;await ctx.g.draw(ctx.you,n,ctx.src);await C.damage(ctx,ctx.you.opponents(ctx.g),n);})]};

@@ -25,6 +25,18 @@ function fixture(role = 'human') {
   return f;
 }
 
+async function assertTurnUseSpent(f) {
+  const { game, a, b, source } = f;
+  const anotherSpell = put(M, game, a, 'Opt', 'graveyard');
+  a.pool.U = 1;
+  await game.loseLife(b, 1, source);
+  await game.flushTriggers();
+  assert.equal(game.stack.some(so => so.srcCard === source), false,
+    'another life-loss event cannot offer a second cast during the same turn');
+  assert.equal(anotherSpell.zone, 'graveyard');
+  assert.equal(a.pool.U, 1);
+}
+
 for (const role of ['human', 'ai']) {
   test(`${role}: Emet-Selch casts Snuff Out by paying 4 life with no available mana`, async () => {
     const f = fixture(role), { game, a, b } = f;
@@ -39,8 +51,8 @@ for (const role of ['human', 'ai']) {
     await settle(game);
     assert.equal(f.victim.zone, 'graveyard');
     assert.equal(spell.zone, 'exile');
-    assert.equal(f.source.meta._emetCastTurn, game.turnNo);
     assert.equal(b.life, 39);
+    await assertTurnUseSpent(f);
   });
 
   test(`${role}: Emet-Selch casts a split removal from the graveyard on an opponent's turn`, async () => {
@@ -102,7 +114,6 @@ test('Emet-Selch: an unaffordable target leaves the turn use and the card availa
   const spell = put(M, game, a, 'Vindicate', 'graveyard');
   await f.trigger();
   assert.equal(spell.zone, 'graveyard');
-  assert.notEqual(f.source.meta._emetCastTurn, game.turnNo);
   a.pool.W = 1; a.pool.B = 1;
   await f.trigger(); await settle(game);
   assert.equal(f.victim.zone, 'graveyard');
@@ -125,7 +136,7 @@ for (const response of ['Counterspell', 'Reprieve']) {
     assert.equal(f.victim.zone, 'battlefield');
     assert.equal(spell.zone, response === 'Counterspell' ? 'exile' : 'hand');
     assert.equal(spell.meta.exileIfStackLeaves, undefined);
-    assert.equal(f.source.meta._emetCastTurn, game.turnNo);
+    await assertTurnUseSpent(f);
   });
 }
 
@@ -164,7 +175,11 @@ test('Emet-Selch: an aborted removal cast spends no life or mana and leaves no p
   assert.equal(spell.zone, 'graveyard');
   assert.equal(spell.meta.exileIfStackLeaves, undefined);
   assert.equal(game.castableList(a).some(entry => entry.card === spell), false);
-  assert.notEqual(f.source.meta._emetCastTurn, game.turnNo);
+  a.controller.decide = decide;
+  await f.trigger(); await settle(game);
+  assert.equal(a.life, 36, 'an aborted cast leaves the life-cost cast available this turn');
+  assert.equal(f.victim.zone, 'graveyard');
+  assert.equal(spell.zone, 'exile');
 });
 
 test('Emet-Selch: no Swamp means Snuff Out cannot use its life alternative', async () => {
@@ -175,7 +190,11 @@ test('Emet-Selch: no Swamp means Snuff Out cannot use its life alternative', asy
   assert.equal(spell.zone, 'graveyard');
   assert.equal(a.life, 40);
   assert.ok(game.log.some(row => /Snuff Out cannot be cast now/.test(row.msg)));
-  assert.notEqual(f.source.meta._emetCastTurn, game.turnNo);
+  put(M, game, a, 'Swamp').tapped = true;
+  await f.trigger(); await settle(game);
+  assert.equal(a.life, 36, 'an unavailable alternative cost does not consume the turn use');
+  assert.equal(f.victim.zone, 'graveyard');
+  assert.equal(spell.zone, 'exile');
 });
 
 test('Emet-Selch: the selected graveyard object cannot be replaced by a new incarnation', async () => {

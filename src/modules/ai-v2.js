@@ -2929,7 +2929,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const entryValue = hasEntry && roles.some(role =>
       ['card-draw', 'single-target-removal', 'ramp', 'token-maker', 'recursion'].includes(role)) ? 5 : 0;
     const legendConflict = (base.super || []).includes('Legendary') &&
-      !game.bf().some(card => card.ctrl === player && card.def.ignoreLegendRuleCreatures);
+      !game.bf().some(card => card.ctrl === player && card.def.ignoreLegendRuleCreatures && !card.cur?.abilitiesDisabled);
     const hasBody = (base.types || []).includes('Creature') && !legendConflict &&
       (Number.isNaN(Number(base.toughness)) || Number(base.toughness) > 0);
     const attacksNow = hasBody && hint.haste && game.turnPlayer === player && game.phase === 'main1' &&

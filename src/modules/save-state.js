@@ -39,24 +39,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function tokenKeyOf(def) {
-    if(def.bomTokenKey&&MTG.TOKENS[def.bomTokenKey])return def.bomTokenKey;
     for (const [key, candidate] of Object.entries(MTG.TOKENS || {})) if (candidate === def) return key;
-    // Scripts also build tokens inline. A catalog token with the same printed
-    // face is the same object for every purpose that matters here.
+    const face = JSON.stringify(tokenFace(def));
+    const matches = candidate => {
+      // The saved face is restored after the catalog identity. A transformed
+      // Incubator therefore compares against the catalog token's back face.
+      const restored = def.oracleFace && candidate.oracleFaces
+        ? MTG.OracleV8Faces.faceDefinition(candidate.oracleFaces, def.oracleFace) : candidate;
+      return restored && JSON.stringify(tokenFace(restored)) === face && sameTokenRules(def, restored);
+    };
+    if (def.bomTokenKey && MTG.TOKENS[def.bomTokenKey] && matches(MTG.TOKENS[def.bomTokenKey])) return def.bomTokenKey;
+    // Scripts also build tokens inline. Match the complete printed face so
+    // equal-name tokens with different colors or keywords stay distinct.
     for (const [key, candidate] of Object.entries(MTG.TOKENS || {})) {
-      if (candidate.name === def.name &&
-        String(candidate.power) === String(def.power) && String(candidate.toughness) === String(def.toughness) &&
-        (candidate.types || []).join(',') === (def.types || []).join(',') &&
-        (candidate.subtypes || []).join(',') === (def.subtypes || []).join(',')) return key;
+      if (matches(candidate)) return key;
     }
     return null;
   }
 
-  // Last resort for an inline token with no catalog twin: write down its face.
-  // Abilities created by the script are lost, the body is not.
+  // An inline token with no catalog twin can save its printed face only when
+  // the snapshot guard confirms it carries no additional unsupported rules.
   function tokenFace(def) {
     return {
       name: def.name,
+      cost: def.cost ?? null,
+      ...(def.tokenImageName ? {tokenImageName: def.tokenImageName} : {}),
       ...(def.rulesNoName ? {rulesNoName:true} : {}),
       types: (def.types || []).slice(),
       subtypes: (def.subtypes || []).slice(),
@@ -69,7 +76,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   }
 
-  const COPY_FACE_FIELDS = ['name', 'cost', 'types', 'subtypes', 'super', 'power', 'toughness', 'colorsOverride', 'kws', 'oracle'];
+  const TOKEN_FACE_FIELDS = new Set(['name', 'cost', 'tokenImageName', 'rulesNoName', 'types', 'subtypes', 'super', 'power', 'toughness', 'colorsOverride', 'colors', 'kws', 'oracle']);
+  // Definitions receive casting hooks even for vanilla tokens. Tokens cannot
+  // be cast from another zone, so those spell-only hooks have no later effect.
+  const TOKEN_CREATION_FIELDS = new Set(['isTokenDef', 'defaultTokenName', 'explicitTokenName', 'bomTokenKey', 'castCond', 'prepareTargets']);
+  function sameRuleValue(before, after, seen = new Set()) {
+    if (Object.is(before, after)) return true;
+    if (!before || !after || typeof before !== 'object' || typeof after !== 'object' || seen.has(before)) return false;
+    if (Array.isArray(before) !== Array.isArray(after)) return false;
+    if (Array.isArray(before) && before.length !== after.length) return false;
+    if (!Array.isArray(before) && (Object.getPrototypeOf(before) !== Object.prototype || Object.getPrototypeOf(after) !== Object.prototype)) return false;
+    const keys = Object.keys(before);
+    if (keys.length !== Object.keys(after).length) return false;
+    seen.add(before);
+    const same = keys.every(key => Object.hasOwn(after, key) && sameRuleValue(before[key], after[key], seen));
+    seen.delete(before);
+    return same;
+  }
+  function sameTokenRules(before, after) {
+    const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
+    for (const key of keys) {
+      if (TOKEN_FACE_FIELDS.has(key) || TOKEN_CREATION_FIELDS.has(key)) continue;
+      if (!sameRuleValue(before[key], after[key])) return false;
+    }
+    return true;
+  }
+
+  const COPY_FACE_FIELDS = ['name', 'cost', 'tokenImageName', 'types', 'subtypes', 'super', 'power', 'toughness', 'colorsOverride', 'kws', 'oracle'];
   function copyOverrides(def, base) {
     const out = {};
     for (const key of COPY_FACE_FIELDS) if (def[key] !== undefined && JSON.stringify(def[key]) !== JSON.stringify(base[key])) {
@@ -97,10 +130,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return def;
   }
 
+  function printedDefinition(card) {
+    const face = card.faceDown && !card.isToken ? card.meta.faceDownDef || card.def : card.def;
+    let printed = face?.c1719Unflipped || face;
+    while (printed?.stickerBaseV87 || printed?.exchangeBaseV87 || printed?.c1719TextBase || printed?.lastVoyageBaseV87)
+      printed = printed.stickerBaseV87 || printed.exchangeBaseV87 || printed.c1719TextBase || printed.lastVoyageBaseV87;
+    return printed;
+  }
+
+  function unsupportedTokenDefinition(card) {
+    if (!card.isToken) return false;
+    const printed = printedDefinition(card);
+    if (tokenKeyOf(printed)) return false;
+    // Compare the actual reconstruction route, including data-only rule flags
+    // and added closures. Unsupported definitions keep the prior checkpoint
+    // and replay native token creation instead of silently dropping abilities.
+    if (!printed.rulesNoName && card.isCopyOf && MTG.DEFS[card.isCopyOf.name]) {
+      const copyOf = card.isCopyOf.name;
+      return !sameTokenRules(printed, copiedDefinition({copyOf, copyOverrides: copyOverrides(printed, MTG.DEFS[copyOf])}));
+    }
+    const catalog = MTG.DEFS[printed.name];
+    return catalog ? JSON.stringify(tokenFace(printed)) !== JSON.stringify(tokenFace(catalog)) || !sameTokenRules(printed, catalog)
+      : !sameTokenRules(printed, tokenFace(printed));
+  }
+
   // Every card is written as "what it is" plus "how it sits on the table".
-  function captureCard(card) {
-    const face=card.faceDown&&!card.isToken?card.meta.faceDownDef||card.def:card.def;
-    let printed = face?.c1719Unflipped || face;while(printed?.stickerBaseV87||printed?.exchangeBaseV87||printed?.c1719TextBase||printed?.lastVoyageBaseV87)printed=printed.stickerBaseV87||printed.exchangeBaseV87||printed.c1719TextBase||printed.lastVoyageBaseV87;
+  function captureCard(card, game) {
+    const printed = printedDefinition(card);
     // Double-faced cards are catalogued under their "Front // Back" name; the
     // current face is saved separately as oracleFace. Saving the face name
     // made every checkpoint with such a card fail ("not in this build").
@@ -109,10 +165,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const identity = { name: catalogName };
     if (card.isToken) {
       identity.token = tokenKeyOf(printed);
-      // A token copy of a real card keeps that card's name; anything else that
-      // is not a catalog token is not portable.
-      identity.copyOf = !printed.rulesNoName && card.isCopyOf && card.isCopyOf.name || null;
-      if (identity.copyOf && MTG.DEFS[identity.copyOf]) {
+      // Catalog copies can rebuild their rules by name. Copies of inline
+      // tokens instead carry the same validated face as their original token.
+      identity.copyOf = !printed.rulesNoName && card.isCopyOf && MTG.DEFS[card.isCopyOf.name] ? card.isCopyOf.name : null;
+      if (identity.copyOf) {
         const overrides = copyOverrides(printed, MTG.DEFS[identity.copyOf]);
         if (Object.keys(overrides).length) identity.copyOverrides = overrides;
       }
@@ -159,6 +215,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(card.oraclePrototypeV10)entry.oraclePrototypeV10=true;
     if (card.oracleTransformCount) entry.oracleTransformCount = Number(card.oracleTransformCount) || 0;
     const meta = plainMeta(card.meta);
+    const expiredGrant = expiredCompiledExilePermission(game, card);
+    if (expiredGrant) for (const key of EXILE_GRANT_META_FIELDS) delete meta[key];
+    // Play permissions point at the player who received the effect, which may
+    // differ from the exiled card's owner. JSON cannot carry that live Player
+    // reference, or Infinity used by a permission with no expiry.
+    if (!expiredGrant && card.zone === 'exile' && card.meta?.playableBy instanceof MTG.Player) entry.exilePlayPlayer = card.meta.playableBy.idx;
+    if (!expiredGrant && card.zone === 'exile' && card.meta?.playableUntil === Infinity) entry.exilePlayForever = true;
     const entryFormV26=MTG.OracleV26Common?.captureForm(card);
     if(entryFormV26){
       entry.oracleEntryFormV26=entryFormV26;
@@ -442,6 +505,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const validManaAmounts = amounts => amounts && typeof amounts === 'object' && !Array.isArray(amounts) &&
     Object.entries(amounts).every(([color,n]) => ['W','U','B','R','G','C'].includes(color) && Number.isSafeInteger(n) && n >= 0);
 
+  const EXILE_GRANT_META_FIELDS = ['oracleExilePermissionV22', 'playableBy', 'playableUntil', 'playableUntilOwnTurn', 'freePlay', 'anyColor', 'spellsOnly', 'playableCondition'];
+  const EXILE_GRANT_FIELDS = new Set(['player', 'source', 'sourceVersion', 'controlEpoch', 'duration', 'turn', 'ownTurn', 'max', 'filter', 'free', 'anyColor', 'used', 'closed']);
+  function expiredCompiledExilePermission(game, card) {
+    const grant = card.meta?.oracleExilePermissionV22, r = grant?.record;
+    if (!r || !(r.player instanceof MTG.Player)) return false;
+    if (card.zone !== 'exile' || card.zoneVersion !== grant.version || r.closed || r.max !== null && r.used?.length >= r.max) return true;
+    if (r.duration === 'eot') return game.turnNo > r.turn;
+    if (r.duration === 'next-turn' || r.duration === 'only-next-turn') return r.player.turnsStarted > r.ownTurn + 1;
+    if (r.duration === 'next-turn-start') return r.player.turnsStarted >= r.ownTurn + 1;
+    if (r.duration === 'source-control') return r.source?.zone !== 'battlefield' || r.source.zoneVersion !== r.sourceVersion ||
+      r.source.ctrl !== r.player || (r.source.meta.oracleDurationControl?.epoch || 0) !== r.controlEpoch;
+    return false;
+  }
+  function unsupportedCompiledExilePermission(game, card) {
+    const meta = card.meta || {}, grant = meta.oracleExilePermissionV22;
+    if (!grant || expiredCompiledExilePermission(game, card)) return false;
+    const r = grant.record;
+    // Only an unlimited, unfiltered scalar expiry survives without its live
+    // shared grant record. Permanent spell grants are similarly independent
+    // of their departed source; permanent-source links replay conservatively.
+    if (!r || !(r.player instanceof MTG.Player) || r.player !== meta.playableBy || r.max !== null || r.filter ||
+      Reflect.ownKeys(r).some(key => !EXILE_GRANT_FIELDS.has(key)) ||
+      !!r.free !== !!meta.freePlay || !!r.anyColor !== !!meta.anyColor) return true;
+    if (r.duration === 'eot') return meta.playableUntil !== r.turn || meta.playableUntilOwnTurn !== undefined;
+    if (r.duration === 'next-turn') return meta.playableUntilOwnTurn !== r.ownTurn + 1 || meta.playableUntil !== undefined;
+    if (r.duration === 'persistent' && r.source?.def?.types?.some(type => type === 'Instant' || type === 'Sorcery'))
+      return meta.playableUntil !== Infinity || meta.playableUntilOwnTurn !== undefined;
+    return true;
+  }
+  function unsupportedExilePlayCondition(game, card) {
+    const meta = card.meta || {};
+    if (expiredCompiledExilePermission(game, card)) return false;
+    if (typeof meta.playableCondition !== 'function') return false;
+    // Prepared spells rebuild this known source-bound condition below.
+    if (card.isCopySpell && meta.preparedBy && MTG.E.preparedSpellDefinitions?.[meta.oraclePreparedDefinitionV10 || card.name]) return false;
+    if (meta.playableUntilOwnTurn !== undefined && meta.playableBy instanceof MTG.Player)
+      return meta.playableBy.turnsStarted <= meta.playableUntilOwnTurn;
+    return meta.playableUntil === undefined || meta.playableUntil >= game.turnNo;
+  }
+
   MTG.gameStateSnapshotBlockers = function (game) {
     const blockers = [];
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
@@ -450,10 +553,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // A physical entry copy needs both its original card definition and its
     // active copy lifetime. Saving just the current catalog name loses both.
     if (game.battlefield.some(card => card.isCopyOf && !card.isToken)) blockers.push('an unsupported non-token copy');
+    const unsupportedTokens = game.battlefield.filter(unsupportedTokenDefinition);
+    if (unsupportedTokens.some(card => card.isCopyOf)) blockers.push('an unsupported token copy ability');
+    if (unsupportedTokens.some(card => !card.isCopyOf)) blockers.push('an unsupported inline token ability');
     if (game.battlefield.some(card => card.meta?.oracleCopyState)) blockers.push('an unsupported temporary-copy history');
     // A mana receipt may contain a frozen executable spending restriction and
     // source-dependent riders. Keeping only its amount would change the game.
     if (game.players.some(player => (player.poolMeta || []).some(row => Number(row.n) > 0))) blockers.push('floating mana with source-dependent rules');
+    if (game.players.some(player => player.exile.some(card => unsupportedExilePlayCondition(game, card)))) blockers.push('an unsupported exile play condition');
+    if (game.players.some(player => player.exile.some(card => unsupportedCompiledExilePermission(game, card)))) blockers.push('an unsupported compiled exile permission');
     if (currentExileDurations(game).some(row => !portableExileDuration(row)) ||
       currentExileDurations(game).length > MAX_BASE_PT_EFFECTS) blockers.push('an unsupported exile duration');
     if (currentLinkedExiles(game).some(row => !portableLinkedExile(row) || !game.byIid(row.sourceIid)) ||
@@ -519,10 +627,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const blockers = MTG.gameStateSnapshotBlockers(game);
     if (blockers.length) return null;
     const cards = [];
-    for (const card of game.battlefield) cards.push(captureCard(card));
+    for (const card of game.battlefield) cards.push(captureCard(card, game));
     for (const player of game.players) {
       for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command', 'attractionDeckV87', 'junkyardV87', 'outsideGameV87']) {
-        for (const card of player[zone]||[]) cards.push({...captureCard(card),...(['attractionDeckV87','junkyardV87','outsideGameV87'].includes(zone)?{auxiliaryZoneV87:zone}:{})});
+        for (const card of player[zone]||[]) cards.push({...captureCard(card, game),...(['attractionDeckV87','junkyardV87','outsideGameV87'].includes(zone)?{auxiliaryZoneV87:zone}:{})});
       }
     }
     return {
@@ -609,6 +717,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'invalid base power/toughness effects.');
     const attackRestrictions = snapshot.attackRestrictions ?? [];
     const seat = index => Number.isSafeInteger(index) && index >= 0 && index < game.players.length;
+    assert(Array.isArray(snapshot.cards) && snapshot.cards.every(card =>
+      (card.exilePlayPlayer === undefined || card.zone === 'exile' && seat(card.exilePlayPlayer)) &&
+      (card.exilePlayForever === undefined || card.zone === 'exile' && card.exilePlayForever === true)), 'invalid exile play permission.');
     const exileDurations = snapshot.exileDurations ?? [];
     const savedCards = new Map((snapshot.cards || []).map(card => [card.iid, card]));
     assert(Array.isArray(exileDurations) && exileDurations.length <= MAX_BASE_PT_EFFECTS && exileDurations.every(row =>
@@ -719,6 +830,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(entry.oraclePrototypeV10){assert(card.def.oraclePrototypeV10&&['battlefield','stack'].includes(card.zone),'invalid prototype state');card.def=MTG.oraclePrototypeDefinitionV10(card.def);card.oraclePrototypeV10=true;}
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
+      if (entry.exilePlayPlayer !== undefined) card.meta.playableBy = game.players[entry.exilePlayPlayer];
+      if (entry.exilePlayForever) card.meta.playableUntil = Infinity;
       if (card.faceDown && card.zone === 'battlefield' && !card.isToken) {
         card.meta.faceDownDef = MTG.DEFS[entry.name];
         card.def = game.faceDownCreatureDef(card.meta.faceDownKind || 'manifest');

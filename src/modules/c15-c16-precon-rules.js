@@ -88,7 +88,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   const resolveTop=G.resolveTop;
   G.resolveTop=async function(){const previous=this.c1516Resolving;this.c1516Resolving=this.stack.at(-1);try{return await resolveTop.call(this);}finally{this.c1516Resolving=previous;}};
   const losses=G.playerLoses;
-  G.playerLoses=async function(p,why){if(!p.lost&&(!this.canLoseGame||this.canLoseGame(p)||/conced|quit/i.test(why||'')))await this.emit('c1516PlayerLoses',{player:p});return losses.call(this,p,why);};
+  G.playerLoses=async function(p,why,opts={}){if(!opts.prepareLoss&&!this.gameOver&&!p.lost&&(opts.stateBasedLoss||!this.canLoseGame||this.canLoseGame(p)||/conced|quit/i.test(why||'')))await this.emit('c1516PlayerLoses',{player:p});return losses.call(this,p,why,opts);};
   const destroyed=async(g,rows,source,controller,justice)=>{
     if(!source||!controller)return;
     for(const r of rows)if(r.card.zoneVersion!==r.version&&!r.snap.types.includes('Creature')&&r.snap.ctrl!==controller){

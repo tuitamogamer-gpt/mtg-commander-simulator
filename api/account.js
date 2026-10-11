@@ -90,6 +90,10 @@ export class MemoryAccountStore {
   async saveGame(id, save) { this.saves.set(id, clone(save)); }
   async getSave(id) { return clone(this.saves.get(id)) || null; }
   async deleteSave(id) { this.saves.delete(id); }
+  async deleteSaveIfMatch(id, matchId) {
+    if (this.saves.get(id)?.matchId !== matchId) return false;
+    return this.saves.delete(id);
+  }
   async getDecks(id) {
     return [...(this.decks.get(id) || new Map()).values()]
       .map(clone)
@@ -172,6 +176,17 @@ export class UpstashAccountStore {
   async saveGame(id, save) { await this.redis.set(saveKey(id), save); }
   async getSave(id) { return this.redis.get(saveKey(id)); }
   async deleteSave(id) { await this.redis.del(saveKey(id)); }
+  async deleteSaveIfMatch(id, matchId) {
+    // Completion can race with another tab saving a new match. Compare and
+    // clear together so finishing the old match cannot erase that checkpoint.
+    const script = `
+      local raw = redis.call('GET', KEYS[1])
+      if not raw then return 0 end
+      local ok, save = pcall(cjson.decode, raw)
+      if not ok or type(save) ~= 'table' or save.matchId ~= ARGV[1] then return 0 end
+      return redis.call('DEL', KEYS[1])`;
+    return Number(await this.redis.eval(script, [saveKey(id)], [matchId])) === 1;
+  }
   async getDecks(id) {
     const rows = await this.redis.hgetall(deckLibraryKey(id));
     return Object.values(rows || {}).map(row => {
@@ -699,8 +714,7 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
           return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload your profile and try again.', ownerId: user.id }, sessionHeaders);
         const match = cleanMatch(body);
         const recorded = await store.completeMatch(user.id, match);
-        const activeSave = await store.getSave(user.id);
-        if (activeSave && activeSave.matchId === match.matchId) await store.deleteSave(user.id);
+        await store.deleteSaveIfMatch(user.id, match.matchId);
         return send(response, 200, { ok: true, ownerId: user.id, recorded, ...(await accountSnapshot(store, user)) }, sessionHeaders);
       }
       if (action === 'favorites') {

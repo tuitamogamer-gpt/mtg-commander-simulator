@@ -251,7 +251,9 @@
     if(event==='blocks'||event==='becomesBlocked'){
       const c=event==='blocks'?data.blocker:data.attacker;if(c){const old=c.meta.v94WiitigoCombat;if(old?.version!==c.zoneVersion)c.meta.v94WiitigoCombat={version:c.zoneVersion,n:0};c.meta.v94WiitigoCombat.n++;}
     }
-    if(['dealtDamage','damageToPlayer'].includes(event)&&data.n>0&&data.src){
+    // Incarnation histories require card metadata. Plain-object damage
+    // sources, including legacy emblems, must not enter these observers.
+    if(['dealtDamage','damageToPlayer'].includes(event)&&data.n>0&&data.src instanceof M.CardInst){
       const source=data.src,snap=data.sourceSnapshot||source._oracleDamageSnapshot,version=snap?.zoneVersion??source.zoneVersion,victim=event==='damageToPlayer'?data.player:data.target;
       if(victim instanceof M.CardInst&&victim.is('Creature')){const rows=(victim.meta.v94DamageSources||[]).filter(r=>r.turn===this.turnNo&&r.victimVersion===victim.zoneVersion);if(!rows.some(r=>r.iid===source.iid&&r.version===version))rows.push({iid:source.iid,version,victimVersion:victim.zoneVersion,turn:this.turnNo});victim.meta.v94DamageSources=rows;}
       if((snap?.def||source.def).v94Fallen&&(victim instanceof M.Player||victim?.is?.('Planeswalker'))){const old=source.meta.v94FallenDamage;if(old?.version!==version)source.meta.v94FallenDamage={version,rows:[]};const rows=source.meta.v94FallenDamage.rows;if(!rows.some(r=>r.card===victim&&(victim instanceof M.Player||current(r))))rows.push(victim instanceof M.Player?{card:victim}:ref(victim));}

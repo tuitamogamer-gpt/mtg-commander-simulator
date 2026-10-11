@@ -627,10 +627,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function stripExportSuffixes(value) {
     let name = String(value || '').trim();
-    const commanderTagged = /(?:\*\s*(?:CMDR|COMMANDER|C)\s*\*|\[\s*commander\s*\]|#\s*commander)\s*$/i.test(name);
-    name = name.replace(/\s*(?:\*\s*(?:CMDR|COMMANDER|C|F|FOIL)\s*\*|\[\s*commander\s*\]|#\s*commander)\s*$/gi, '').trim();
-    name = name.replace(/\s*\[[A-Za-z0-9]{2,8}:?[^\]]*\]\s*$/, '').trim();
-    name = name.replace(/\s*\([A-Za-z0-9]{2,8}\)(?:\s+[A-Za-z0-9★#-]+)?\s*$/, '').trim();
+    let commanderTagged = false;
+    // Exporters can put foil, commander and printing metadata in either
+    // order. Peel each trailing suffix without losing an earlier marker.
+    while (name) {
+      const before = name;
+      commanderTagged ||= /(?:\*\s*(?:CMDR|COMMANDER|C)\s*\*|\[\s*commander\s*\]|#\s*commander)\s*$/i.test(name);
+      name = name.replace(/\s*(?:\*\s*(?:CMDR|COMMANDER|C|F|FOIL)\s*\*|\[\s*commander\s*\]|#\s*commander)\s*$/i, '').trim();
+      if (name !== before) continue;
+      name = name.replace(/\s*\[[A-Za-z0-9]{2,8}:?[^\]]*\]\s*$/, '').trim();
+      if (name !== before) continue;
+      name = name.replace(/\s*\([A-Za-z0-9]{2,8}\)(?:\s+[A-Za-z0-9★#-]+)?\s*$/, '').trim();
+      if (name === before) break;
+    }
     return { name, commanderTagged };
   }
 

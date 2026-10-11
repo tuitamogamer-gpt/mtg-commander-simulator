@@ -251,10 +251,18 @@ for(const role of ['human','ai']){
   const f=context(M,role);for(let i=0;i<3;i++)put(M,f.game,f.b,'Island','hand');await cast(f,"Laquatus's Creativity",[f.b]);await settle(f.game);assert.equal(f.b.hand.length,3);assert.equal(f.b.graveyard.length,3);assert.equal(f.b.library.length,27);assertGameStateInvariants(f.game);
  });
  test(role+': Public Execution remembers the destroyed creature controller and excludes the original object',async()=>{
-  const f=context(M,role,2),victim=creature(f,f.b),ally=creature(f,f.b),unrelated=creature(f,f.others[1]),own=creature(f,f.a);await cast(f,'Public Execution',[victim]);await settle(f.game);assert.equal(victim.zone,'graveyard');assert.equal(ally.power,1);assert.equal(unrelated.power,3);assert.equal(own.power,3);assertGameStateInvariants(f.game);
+  const f=context(M,role,2),victim=creature(f,f.b),allies=[creature(f,f.b),creature(f,f.b)],unrelated=creature(f,f.others[1]),own=creature(f,f.a);
+  await cast(f,'Public Execution',[victim]);await settle(f.game);
+  assert.equal(victim.zone,'graveyard');
+  for(const ally of allies)assert.equal(ally.power,1,'each other creature gets -2/-0 exactly once');
+  assert.equal(unrelated.power,3);assert.equal(own.power,3);assertGameStateInvariants(f.game);
  });
  test(role+': Public Execution preserves an indestructible original and only weakens its other creatures',async()=>{
-  const f=context(M,role),victim=creature(f,f.b,{kws:['indestructible']}),ally=creature(f,f.b);await cast(f,'Public Execution',[victim]);await settle(f.game);assert.equal(victim.zone,'battlefield');assert.equal(victim.power,3);assert.equal(ally.power,1);assertGameStateInvariants(f.game);
+  const f=context(M,role),victim=creature(f,f.b,{kws:['indestructible']}),allies=[creature(f,f.b),creature(f,f.b)],own=creature(f,f.a);
+  await cast(f,'Public Execution',[victim]);await settle(f.game);
+  assert.equal(victim.zone,'battlefield');assert.equal(victim.power,3);
+  for(const ally of allies)assert.equal(ally.power,1,'each other creature gets -2/-0 exactly once');
+  assert.equal(own.power,3);assertGameStateInvariants(f.game);
  });
  test(role+': multi-recipient bite simultaneously damages every legal locked target',async()=>{
   const f=context(M,role),source=creature(f,f.a,{power:4}),one=creature(f,f.b),two=creature(f,f.b);await cast(f,'Betrayal at the Vault',[source,one,two]);await settle(f.game);assert.equal(one.damage,4);assert.equal(two.damage,4);assert.equal(source.damage,0);assertGameStateInvariants(f.game);

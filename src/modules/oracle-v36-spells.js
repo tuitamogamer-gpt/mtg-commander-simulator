@@ -48,7 +48,7 @@
       const run=(effects,targets=ctx.targets)=>h.runGenericEffects({...ctx,targets},effects,true);
       switch(e.mode){
         case 'temporary-land-mana':
-          g.untilEffects.push({kind:'oracleTemporaryManaBonusV36',expires:'eot',subtype:e.subtype,iid:ctx.src.iid,zoneVersion:ctx.sourceZoneVersion,name:ctx.src.name,def:{c1719LandMana:{fixed:{[e.color]:1}}},cur:{super:[]}});break;
+          g.untilEffects.push({kind:'oracleTemporaryManaBonusV36',expires:'eot',subtype:e.subtype,iid:ctx.src.iid,zoneVersion:ctx.sourceZoneVersion,name:ctx.src.name,...M.C1719Mana.temporarySource(ctx),def:{c1719LandMana:{fixed:{[e.color]:1}}},cur:{super:[]}});break;
         case 'three-damage':await g.damageBatch([0,1,2].flatMap(i=>subjects(i).map(target=>({src,target,n:i+1}))),{deferSBA:true});break;
         case 'pay-life-counter-source':
           for(const player of players())if(g.canPayLife(player,5)&&await yes(ctx,player,'Pay 5 life to counter this spell?',{life:5})){await g.loseLife(player,5,ctx.src.name);const object=ctx.data?.so;if(object)await g.counterStackObject(object,{source:ctx.src});break;}break;

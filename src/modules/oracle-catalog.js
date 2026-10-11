@@ -515,7 +515,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(target.attackedThisTurn&&(candidate.attackedTurn??candidate.meta?._attackedTurn)!==game.turnNo)return false;
       if(target.unblockedV10&&(!candidate.attacking||candidate.wasBlocked||!game.combat?.blockersDeclared))return false;
       if(target.blockedV12&&(!candidate.attacking||!candidate.wasBlocked))return false;
-      if(target.combatPartnerV12&&candidate.blocking!==source?.iid&&source?.blocking!==candidate.iid)return false;
+      if(target.combatPartnerV12){
+        const departed=eventData?.oracleSourceCapture?.departureSnapshotV10;
+        if(departed?.iid===source?.iid&&departed.combatPartnersV12){
+          if(!departed.combatPartnersV12.some(partner=>partner.iid===candidate.iid&&partner.zoneVersion===candidate.zoneVersion))return false;
+        }else if(candidate.blocking!==source?.iid&&source?.blocking!==candidate.iid)return false;
+      }
       if(target.hasToxicV10!==undefined&&(MTG.oracleToxicValueV10(candidate)>0)!==target.hasToxicV10)return false;
       if (playerTarget) {
         if (!(candidate instanceof MTG.Player)) return false;
@@ -910,6 +915,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       definition.oracleSplit&&(castOpts.splitHalf||castOpts.splitFuse)?MTG.colorsOfCost(game.oracleSplitPrintedCost(card,castOpts)):
       definition.colorsOverride||MTG.colorsOfCost(definition.cost||'');
     const view=Object.defineProperties(Object.create(card),{
+      zone:{value:'stack'},
       castMeta:{value:{spellColors:colors}},
       ...(castOpts.faceDownCast||adventure?{
         def:{value:{...definition,super:[],subtypes:adventure?['Adventure']:[]}},
@@ -945,6 +951,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function genericInlineToken(token) {
+    const predefined=MTG.OracleV8PredefinedTokens?.inlineDefinition(token);
+    if(predefined)return predefined;
     // Three historical v5 manifests stored the type word after the creature
     // subtypes. Preserve those manifests while correcting their runtime type.
     const extra=(token.subtypes||[]).filter(type=>['artifact','enchantment'].includes(type));

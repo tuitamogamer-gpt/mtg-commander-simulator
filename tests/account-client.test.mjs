@@ -190,6 +190,36 @@ test('logout clears local identity only when the server confirms logout or LOCAL
   assert.equal(networkFailureClient.api.user.id, 'owner-a', 'unconfirmed logout must preserve the signed-in identity');
 });
 
+test('a delayed favorites response cannot replace the next account profile', async () => {
+  const oldFavorites = deferred();
+  const oldProfile = { ...profile, lifetimeScore: 900 };
+  const newProfile = { ...profile, lifetimeScore: 25 };
+  let sessionCalls = 0;
+  let favoritesCalls = 0;
+  const { api } = createAccountClient(async request => {
+    if (request.action === 'session') {
+      sessionCalls += 1;
+      const initial = sessionCalls === 1;
+      return { status: 200, payload: { ok: true, user: user(initial ? 'owner-a' : 'owner-b'), profile: initial ? oldProfile : newProfile, save: null } };
+    }
+    if (request.action === 'favorites') {
+      favoritesCalls += 1;
+      if (favoritesCalls === 1) return oldFavorites.promise;
+      return { status: 200, payload: { ok: true, profile: newProfile } };
+    }
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  assert.equal(favoritesCalls, 1);
+  await api.refresh();
+  assert.equal(api.user.id, 'owner-b');
+  assert.equal(api.profile.lifetimeScore, 25);
+  oldFavorites.resolve({ status: 200, payload: { ok: true, profile: oldProfile } });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(api.user.id, 'owner-b');
+  assert.equal(api.profile.lifetimeScore, 25, 'account A favorites must not overwrite account B statistics');
+});
+
 test('account/library lifecycle keeps recovery, cross-tab sync, and active custom games fail-safe', () => {
   assert.match(accountSource, /await gameLoader\(state\.save\)/, 'restore failures must enter the account recovery path');
   assert.match(accountSource, /Cannot continue[\s\S]*account-clear-save/, 'a failed legacy restore remains deletable');

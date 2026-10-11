@@ -141,15 +141,20 @@ test("Windgrace's Judgment: mete moraju biti kod različitih protivnika (engine 
 });
 
 test('Scurry of Squirrels myriad okida i kad napada planeswalkera', async () => {
-  const { game, players: [me, oppA] } = rulesGame();
+  const { game, players: [me, oppA, oppB, oppC] } = rulesGame();
   const scurry = permanent(game, me, 'Scurry of Squirrels');
   const pw = addSynthetic(game, oppA, synthetic('Test Walker', { types: ['Planeswalker'], power: 0, toughness: 0 }));
+  pw.counters.loyalty = 4;
+  game.phase = 'combat'; game.step = 'attackers';
   game.combat = { attackers: [scurry], blockers: new Map() };
   scurry.attacking = pw;
-  await game.emit('attacks', { card: scurry });
+  game.recordCombatDestination(scurry);
+  await game.emit('attacks', { card: scurry, player: me, defender: pw });
   await resolveAll(game);
   const copies = game.bf().filter(c => c.isToken && c.name === scurry.name);
   assert.equal(copies.length, 4, 'myriad ×2 prema 2 preostala protivnika = 4 kopije');
+  assert.equal(pw.zone, 'battlefield');
+  for (const opponent of [oppB, oppC]) assert.equal(copies.filter(c => c.attacking === opponent).length, 2);
   assert.ok(copies.every(c => c.meta.exileEndCombat), 'kopije se egzilaju na kraju combata');
 });
 

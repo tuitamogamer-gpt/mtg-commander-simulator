@@ -37,9 +37,13 @@ The importer also accepts:
 | --- | --- |
 | `1 Card Name` or `1x Card Name` | A quantity and card name. A name without a quantity means one copy. |
 | `1 Your Commander *CMDR*` | Marks a commander without needing a separate section. `*COMMANDER*`, `*C*`, `[Commander]` and `# Commander` are also accepted at the end of a line. |
-| `1 Sol Ring (C21) 263 *F*` | Common set, collector-number and foil suffixes are stripped. |
+| `1 Sol Ring (C21) 263 *F*` | Common set, collector-number and foil suffixes are stripped. These suffixes can be combined with a commander marker in either order. |
 | `Commander`, `Commanders`, `Deck`, `Mainboard`, `Main` | Supported section headings, with an optional trailing colon. |
-| `Sideboard`, `Considering`, `Maybeboard`, `Companion`, `Token`, `Tokens` | These sections are ignored. `SB:` lines are also ignored. Return to a main section before listing more deck cards. |
+| `Sideboard`, `Outside game` | Kept outside the starting 100 cards for supported outside-game effects, with at most 500 auxiliary cards. |
+| `Companion` | One companion outside the starting deck; its printed deck condition and color identity are checked. |
+| `Attractions`, `Sticker sheets` | Separate supplementary lists, each limited to 500 entries and checked for its required card types and distinct names. |
+| `Considering`, `Maybeboard`, `Token`, `Tokens` | These sections and `SB:` lines are ignored. Return to a main section before listing more deck cards. |
+| `1 Cryptic Spires [colors=U,B]` | Records its two chosen colors. A commander such as The Prismatic Piper or Faceless One uses one color, for example `[colors=R]`. |
 | A blank line, or a line beginning `# ` or `// ` | Ignored. |
 
 For two commanders, put both under the Commander heading or tag both. Each must appear once, and their printed pairing rules must permit the combination. Names resolve against the local catalog, including case and common punctuation normalization. For an unrecognized double-faced or split card, use the exact name from the [card catalog](card-catalog.md).

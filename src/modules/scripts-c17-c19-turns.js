@@ -8,12 +8,11 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  G.activatableList=function(p,...args){
   const out=activatable.call(this,p,...args);
   if(this.combat&&['blockers','firstStrike','damage','endCombat'].includes(this.step)){
-   const attackers=this.combat.attackers.filter(c=>c.ctrl===p&&c.zone==='battlefield'&&c.attacking&&!c.wasBlocked&&!c.blockedBy.length);
-   if(attackers.length)for(const c of p.command){
+   for(const c of p.command){
     if(!c.def.c1719CommanderNinjutsu||c.zone!=='command')continue;
     const ninjutsu=typeof c.def.ninjutsu==='string'?{cost:c.def.ninjutsu}:c.def.ninjutsu;
-    const cost=this.abilityManaCost(p,c,ninjutsu.cost,{ability:{ninjutsu:true}});
-    if(this.canPayMana(p,cost,{card:c,isAbility:true}))out.push({card:c,ninjutsu:true,ninjutsuCost:ninjutsu.cost,ninjutsuAttackers:attackers});
+    const attackers=this.ninjutsuAttackers(p,c,ninjutsu.cost);
+    if(attackers.length)out.push({card:c,ninjutsu:true,ninjutsuCost:ninjutsu.cost,ninjutsuAttackers:attackers});
    }
   }
   return out;

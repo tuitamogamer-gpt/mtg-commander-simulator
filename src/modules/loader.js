@@ -775,6 +775,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     add(U.colorsOfCost((rules.match(/\{[^}]+\}/g) || []).join('')));
     add(def.colorIdentityExtra);
     add(def._ci);
+    // Commander identity includes both printed faces of a double-faced card,
+    // including a back face's color indicator. Meld results are not a second
+    // face of either component and must not contribute their colors here.
+    if (['modal_dfc', 'transform'].includes(def.oracleFaces?.layout)) {
+      for (const face of def.oracleFaces.faces) if (face.def && face.def !== def) {
+        add(MTG.cardColorIdentity(face.def));
+        add(face.def.colorsOverride);
+      }
+    }
     const landColors = { Plains: 'W', Island: 'U', Swamp: 'B', Mountain: 'R', Forest: 'G' };
     for (const subtype of def.subtypes || []) if (landColors[subtype]) found.add(landColors[subtype]);
     return COLORS.filter(color => found.has(color));
@@ -823,6 +832,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     names = (names || []).filter(Boolean);
     if (!names.length) return { ok: false, why: 'No commander selected.' };
     if (names.length > 2) return { ok: false, why: 'Choose no more than two commanders.' };
+    // Imported lists retain their pregame choices in the deck, while the
+    // shared catalog keeps the printed definitions. Setup, AI and Live use
+    // the same chosen identities as import validation without mutating it.
+    const chosenColors = deckData.auxiliaryV87?.colors;
+    if (chosenColors) {
+      let adjusted;
+      for (const name of ['Cryptic Spires', 'The Prismatic Piper', 'Faceless One']) {
+        const colors = chosenColors[name], count = name === 'Cryptic Spires' ? 2 : 1;
+        if (!defs[name] || name !== 'Cryptic Spires' && !names.includes(name) ||
+            !Array.isArray(colors) || colors.length !== count || new Set(colors).size !== count ||
+            colors.some(color => !COLORS.includes(color))) continue;
+        adjusted ||= Object.create(defs);
+        adjusted[name] = { ...defs[name], colorIdentityExtra: colors.slice() };
+      }
+      if (adjusted) defs = adjusted;
+    }
     const pool = {};
     for (const entry of (deckData.cards || [])) pool[entry.name] = (pool[entry.name] || 0) + entry.n;
     for (const n of names) {
@@ -846,11 +871,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Preserve the printed default pair as well as the Turtle Power pairing.
   MTG.defaultCommanders = function (deckData, defs) {
-    const names = deckData && deckData.name === 'Turtle Power'
+    const names = deckData?.custom && deckData.commanders?.length
+      ? deckData.commanders.slice()
+      : deckData && deckData.name === 'Turtle Power'
       ? ['Leonardo, the Balance', 'Michelangelo, the Heart']
       : [deckData && deckData.commander, deckData && deckData.partner].filter(Boolean);
     return MTG.validateCommanders(deckData, names, defs || MTG.DEFS).ok
       ? names : [deckData.commander];
+  };
+
+  // Saved and live selections may use a DFC's displayed front-face name.
+  // Resolve it to this deck's physical row while preserving exact legacy
+  // printing names that are already present in the list.
+  MTG.canonicalCommanderNames = function (deckData, names) {
+    const rows = new Set((deckData?.cards || []).map(entry => entry.name));
+    return (names || []).map(name => {
+      if (rows.has(name)) return name;
+      const resolved = MTG.resolveDeckCardName?.(name);
+      return rows.has(resolved) ? resolved : name;
+    });
   };
 
   // AI/nasumičan izbor: face commander, ili slučajan legalan (par ako može)
@@ -987,7 +1026,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const players = [];
     const humanP = g.addPlayer(opts.humanName || names[0], MTG.DECKS[opts.humanDeck], null, !opts.humanController);
     humanP.onlineSeat = 0;
-    if (opts.humanCommanders && opts.humanCommanders.length) humanP.chosenCommanders = opts.humanCommanders.slice(0, 2);
+    if (opts.humanCommanders && opts.humanCommanders.length)
+      humanP.chosenCommanders = MTG.canonicalCommanderNames(humanP.deck, opts.humanCommanders.slice(0, 2));
     players.push(humanP);
     const remoteSpecs = Array.isArray(opts.remoteHumans)
       ? opts.remoteHumans.slice(0, 3)
@@ -999,7 +1039,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const player = g.addPlayer(remote.name || `Player ${seat + 1}`, MTG.DECKS[remote.deck], null, false);
       player.onlineSeat = seat;
       player.onlineConnected = true;
-      if (remote.commanders && remote.commanders.length) player.chosenCommanders = remote.commanders.slice(0, 2);
+      if (remote.commanders && remote.commanders.length)
+        player.chosenCommanders = MTG.canonicalCommanderNames(player.deck, remote.commanders.slice(0, 2));
       players.push(player);
       return player;
     });
@@ -1009,7 +1050,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const dk = opts.aiDecks[botIndex];
       const q = g.addPlayer(opts.aiNames?.[botIndex] || names[botIndex + 1] + '', MTG.DECKS[dk], null, true);
       q.onlineSeat = opts.aiSeats?.[botIndex] ?? botIndex + remotePlayers.length + 1;
-      if (opts.aiCommanders?.[botIndex]?.length) q.chosenCommanders = opts.aiCommanders[botIndex].slice(0, 2);
+      if (opts.aiCommanders?.[botIndex]?.length)
+        q.chosenCommanders = MTG.canonicalCommanderNames(q.deck, opts.aiCommanders[botIndex].slice(0, 2));
       let st = (opts.aiStyles && opts.aiStyles[botIndex]) || 'random';
       q.requestedAIStyle = st;
       if (st === 'random') st = styleKeys.length ? styleKeys[Math.floor(g.rnd() * styleKeys.length)] : 'balanced';

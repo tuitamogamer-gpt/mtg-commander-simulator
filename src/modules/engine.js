@@ -5,6 +5,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // Most keywords need only membership. Each instance of myriad creates
+  // a separate trigger, so retain its multiplicity through ordinary keyword
+  // grants while preserving the Set API used by characteristic layers.
+  class KeywordSet extends Set {
+    add(keyword) {
+      if (keyword === 'myriad') this.myriadInstances = (this.myriadInstances || 0) + 1;
+      return super.add(keyword);
+    }
+    delete(keyword) {
+      if (keyword === 'myriad') this.myriadInstances = 0;
+      return super.delete(keyword);
+    }
+    clear() {
+      this.myriadInstances = 0;
+      super.clear();
+    }
+  }
+
   // CR 603.2h tracks the source controller who performed the optional action.
   // Older saves lack that controller, so retain their used-turn restriction.
   MTG.triggerActionUsed = (record, turn, player, version) => {
@@ -99,7 +117,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // distinguish it from the new object represented by the same card later.
       this.zoneVersion = 0;
       this.attacking = null;        // player or planeswalker iid during combat
-      this.blocking = null;         // iid of attacker
+      this.blocking = null;         // attacker iid; true if blocking no attacker; null if not blocking
       this.blockedBy = [];
       this.cur = null;              // derived characteristics (recalc)
       this.commander = false;
@@ -816,6 +834,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         isToken: card.isToken, power: card.power, toughness: card.toughness,
         toxic: MTG.oracleToxicValueV10?.(card)??Math.max(0,Number(card.def.toxic)||0),
         tapped: !!card.tapped, blocking: card.blocking,
+        // Departure triggers need the combat relation before zone movement
+        // clears it, including every attacker blocked by a multi-blocker.
+        combatPartnersV12: [...new Set([...card.blockedBy, ...(card.blocking ? (this.combat?.attackers || this.bf()).filter(attacker=>attacker.blockedBy.includes(card)) : [])])]
+          .map(partner=>({iid:partner.iid,zoneVersion:partner.zoneVersion})),
         enchanted: activeAttachments.some(source=>source.hasSub('Aura')),
         equipped: activeAttachments.some(source=>source.hasSub('Equipment')),
         commander: card.commander, attacking: card.attacking, plus1: card.plus1(),
@@ -937,12 +959,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               : toZone === 'hand' ? "returns to its owner's hand"
                 : toZone === 'library' ? "goes to its owner's library"
                   : 'leaves the battlefield';
-        this.lg(`${card.name} ${verb}.`);
+        const reason = opts.departureReason ? ` (${opts.departureReason})` : '';
+        this.lg(`${card.name} ${verb}${reason}.`);
         const coveredByBoardWipeVisual = card.meta._boardWipeVisualTurn === this.turnNo;
         if (!opts.suppressVisualEffect && !coveredByBoardWipeVisual) {
           this.note('gameEffect', {
             kind: 'zoneMove', card, cardId: card.iid, cardName: card.name,
             fromZone, toZone, fromPlayer: snap.ctrl, toPlayer: card.owner,
+            reason: opts.departureReason || null,
           });
         }
         // The marker belongs only to this simultaneous departure. A card that
@@ -2929,10 +2953,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.blocking = null;
       card.blockedBy = [];
       card.wasBlocked = false;
-      // One blocker can block several attackers. Its scalar field names one
-      // remaining attacker; the authoritative relations stay in blockedBy.
+      // CR 509.1g: a blocker stays blocking when all its attackers leave
+      // combat. Use true rather than a former iid so a returning attacker's
+      // new object cannot become its combat partner. Multi-block relations
+      // remain authoritative in blockedBy, with one current iid when present.
       for (const blocker of blockers) blocker.blocking = this.combat?.attackers
-        .find(attacker => attacker.blockedBy.includes(blocker))?.iid || null;
+        .find(attacker => attacker.blockedBy.includes(blocker))?.iid || true;
     }
 
     tap(card, { deferEvent = false, attackerDeclaration = false } = {}) {
@@ -3159,7 +3185,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cur = {
           types: d.types.slice(), subtypes: d.subtypes.slice(), super: (d.super || []).slice(),
           colors: MTG.WLM?.commanderColor(c) || (d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || '')),
-          kw: new Set(d.kws || []),
+          kw: new KeywordSet(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
           cantAttack: false, cantBlock: false, cantUntap: false, blockOnlyFlying: false,
           cantSacrifice: false, mustAttack: false, mustBeBlocked: false, lure: false,
@@ -3167,7 +3193,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           allCreatureTypesFromOtherEffects: false, suppressPrintedChangeling: false,
           extraAbilities: [], extraTriggers: [], extraZoneReplacements: [], extraStaticAbilitiesV66: [], wardCost: d.ward || null, extraWards: [], extraMana: [], oracleNumericKeywordsV10: [], oracleHexproofV10: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
-          protectionFrom: [],
+          protectionFrom: (d.protectionFrom || []).slice(),
           abilitiesDisabled: false, activationDisabled: false,
           attackTaxes: [], loyalty: c.counters['loyalty'] || 0,
         };
@@ -4264,8 +4290,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for(const card of this.bf())if(card.def.oracleStartEnginesV10&&!card.cur.abilitiesDisabled&&card.ctrl.counters.speed===undefined){
             card.ctrl.counters.speed=1;this.note('speed',{player:card.ctrl,value:1});any=true;
           }
-          // players lose
-          for (const p of this.players) {
+          // Determine simultaneous losses before any departing player's
+          // permanents remove a "can't lose" effect (CR 704.3). In particular,
+          // an opponent protected by Abyssal Persecutor can win when its
+          // controller leaves, before another state-based action is checked.
+          const playerLosses = [];
+          for (const p of this.apnapFrom(this.turnPlayer || this.players[0])) {
             if (p.lost) continue;
             let dead = false, why = '';
             if (p.life <= 0&&!MTG.OracleV20Rules?.survivesZero(this,p)) { dead = true; why = 'life reached 0'; }
@@ -4286,8 +4316,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (dmg >= 21) { dead = true; why = 'commander damage (21+)'; }
               }
             }
-            if (dead && (!this.canLoseGame || this.canLoseGame(p))) { await this.playerLoses(p, why); any = true; }
+            if (dead && (!this.canLoseGame || this.canLoseGame(p))) playerLosses.push({player: p, why});
           }
+          // Replacement effects apply before the simultaneous departures.
+          // A donated Golden Throne must still protect its controller even
+          // when its owner is another player leaving in this same event.
+          const departures = [];
+          for (const loss of playerLosses) {
+            if (await this.playerLoses(loss.player, loss.why, {stateBasedLoss: true, prepareLoss: true})) departures.push(loss);
+            any = true;
+          }
+          for (const {player, why} of departures)
+            await this.playerLoses(player, why, {stateBasedLoss: true, replacementsChecked: true, deferGameOver: true});
+          if (playerLosses.some(({player}) => player.lost)) this.checkGameEndAfterPlayerLoss();
           if (this.gameOver) return;
           if (await this.performPermanentStateBasedActions()) any = true;
         }
@@ -4303,7 +4344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // not erase Undying/Persist LKI, and a dying lord or death-trigger source
       // must not change later members of this same pass.
       const battlefield = this.bf();
-      const moves = new Map(), preventions = [], counterPairs = [], detach = [], ceaseBestow = [];
+      const moves = new Map(), reasons = new Map(), preventions = [], counterPairs = [], detach = [], ceaseBestow = [];
       const deathtouchChecks = [];
       const armorDestructions = [], armorPreventions = [];
       const commanderMoves = [];
@@ -4329,9 +4370,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const pairs = Math.min(card.counters['+1/+1'] || 0, card.counters['-1/-1'] || 0);
         if (pairs) counterPairs.push({card, pairs});
         if (card.is('Creature')) {
-          if (card.toughness <= 0) moves.set(card, 'graveyard');
+          if (card.toughness <= 0) {
+            moves.set(card, 'graveyard');
+            reasons.set(card, `${card.toughness} toughness`);
+          }
           else if (card.damage > 0 && card.damage >= this.lethalDamageThreshold(card) && MTG.oracleDamageLethalAllowedV88?.(this,card)!==false || card.deathtouched) {
             deathtouchChecks.push(card);
+            reasons.set(card, card.deathtouched ? 'deathtouch damage' :
+              `lethal damage: ${card.damage} marked, ${this.lethalDamageThreshold(card)} required`);
             if (card.kw('indestructible')) {
               // Marked damage remains until cleanup. Deathtouch only checks
               // damage since the previous SBA check (CR 704.5h).
@@ -4377,7 +4423,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const controller = list[0].ctrl;
         if(this.untilEffects.some(effect=>effect.kind==='oracleLegendRuleOffV60'&&effect.who===controller))continue;
         if(battlefield.some(card=>card.ctrl===controller&&!card.phasedOut&&!card.cur?.abilitiesDisabled&&card.def.oracleControllerLegendRuleOffV60))continue;
-        if (list[0].is('Creature') && battlefield.some(card => card.ctrl === controller && card.def.ignoreLegendRuleCreatures)) continue;
+        if (list[0].is('Creature') && battlefield.some(card => card.ctrl === controller &&
+          card.def.ignoreLegendRuleCreatures && !card.cur.abilitiesDisabled)) continue;
         if(list.every(c=>c.hasSub('Sliver'))&&battlefield.some(c=>c.ctrl===controller&&c.def.lcGravemother&&!c.cur.abilitiesDisabled))continue;
         const worth = card => (card.isToken ? 0 : 1000) + (card.commander ? 500 : 0) +
           (card.counters['+1/+1'] || 0) * 10 + card.attachments.length * 5 + card.toughness;
@@ -4390,7 +4437,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
           if (picked?.length === 1 && list.includes(picked[0])) keep = picked[0];
         }
-        for (const card of list) if (card !== keep) moves.set(card, 'graveyard');
+        for (const card of list) if (card !== keep) {
+          moves.set(card, 'graveyard');
+          reasons.set(card, 'legend rule');
+        }
       }
       if (armorDestructions.length) {
         const plan=await MTG.C1719.planDestruction(this,armorDestructions.filter(c=>!moves.has(c)),{noShield:true});
@@ -4453,7 +4503,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const entry = batch.find(row => row.card === card);
             if (kind === 'sacrifice') this.lg(`${U.playerVerb(entry.ctrl, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
             const version=card.zoneVersion;
-            await this.move(card, 'graveyard');
+            await this.move(card, 'graveyard', {departureReason: reasons.get(card)});
             if (kind === 'sacrifice') await this.emit('sacrificed', {player: entry.ctrl, card, snap: entry.snap});
             if (kind === 'destroy'&&card.zoneVersion!==version) await this.emit('destroyedV74', {player: entry.ctrl, card, snap: entry.snap});
           }
@@ -4466,8 +4516,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
 
-    async playerLoses(p, why) {
-      if (p.lost || this.canLoseGame && !this.canLoseGame(p) && !/conced|quit/i.test(why||'')) return;
+    async playerLoses(p, why, opts = {}) {
+      if (this.gameOver || p.lost || !opts.stateBasedLoss && this.canLoseGame && !this.canLoseGame(p) && !/conced|quit/i.test(why||'')) return;
+      if (opts.prepareLoss) return true;
       p.lost = true;
       this.lg(`☠️ ${U.playerVerb(p, 'lose', 'loses')} (${why}).`, 'lose');
       await this.emit('playerLost',{player:p});
@@ -4511,6 +4562,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.recalc();
       await this.flushRuleEvents();
       await this.emit('afcPlayerLost',{player:p});
+      if (!opts.deferGameOver) this.checkGameEndAfterPlayerLoss();
+    }
+
+    checkGameEndAfterPlayerLoss() {
+      if (this.gameOver) return;
       const alive = this.alivePlayers();
       if (alive.length <= 1) {
         this.gameOver = true;

@@ -33,7 +33,17 @@ for(const role of ['human','ai']){
   const ctx=setup(role),{game,a,b}=ctx;await cast(ctx,'Notion Thief');fund(b);const other=put(M,game,b,'Notion Thief','hand');assert.equal(await game.castSpell(b,other,{from:'hand'}),true);await settle(game);const ownHand=a.hand.length,otherHand=b.hand.length;assert.equal(await game.draw(a,1),1);assert.equal(a.hand.length,ownHand+1);assert.equal(b.hand.length,otherHand);assert.equal(game.gameOver,false);
  });
  test(`${role}: a resolved Plagiarize still replaces draws after its controller leaves multiplayer`,async()=>{
-  const ctx=setup(role,2),{game,a,b}=ctx;ctx.choice.target=b;await cast(ctx,'Plagiarize');assert.ok(game.untilEffects.some(effect=>effect.kind==='oracleDrawReplacement'&&effect.playerSeat===b.idx));await game.playerLoses(a,'replacement creator departed');const hand=b.hand.length;assert.equal(await game.draw(b,1),0);assert.equal(b.hand.length,hand);assert.equal(game.gameOver,false);
+  const ctx=setup(role,2),{game,a,b}=ctx;ctx.choice.target=b;
+  const source=await cast(ctx,'Plagiarize');
+  const target=role==='human'?b:ctx.trace.find(row=>row.q.type==='chooseTargets')?.result?.[0];
+  assert.ok(target instanceof M.Player&&target!==a,'native cast chooses an opponent');
+  assert.ok(game.untilEffects.some(effect=>effect.kind==='oracleDrawReplacement'&&effect.sourceCard===source&&effect.playerSeat===target.idx));
+  const other=game.players.find(player=>player!==a&&player!==target);
+  await game.playerLoses(a,'replacement creator departed');
+  const hand=target.hand.length,otherHand=other.hand.length;
+  assert.equal(await game.draw(target,1),0);assert.equal(target.hand.length,hand);
+  assert.equal(await game.draw(other,1),1);assert.equal(other.hand.length,otherHand+1);
+  assert.equal(game.gameOver,false);
  });
  test(`${role}: an unused paid Words replacement expires during real cleanup`,async()=>{
   const ctx=setup(role),{game,a,b}=ctx;game.turnPlayer=a;let activated=false;game.combatPhase=async()=>{};game.mainPhase=async()=>{if(activated)return;activated=true;const source=await cast(ctx,'Words of Worship');await activate(ctx,source);};await game.runTurn();assert.equal(game.phase,'cleanup');assert.equal(activated,true);assert.equal(game.untilEffects.some(effect=>effect.kind==='oracleDrawReplacement'),false);const life=a.life,hand=a.hand.length;await game.draw(a,1);assert.equal(a.life,life);assert.equal(a.hand.length,hand+1);

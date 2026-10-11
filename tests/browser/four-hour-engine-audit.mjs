@@ -10,7 +10,7 @@ import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const output = `${root}output/extended-engine-audit-2026-10-10/browser`;
+const output = process.env.AUDIT_BROWSER_OUTPUT || `${root}output/extended-engine-audit-2026-10-10/browser`;
 mkdirSync(output, { recursive: true });
 const runId = `${Date.now()}-${(process.env.AUDIT_FLOW || process.env.AUDIT_SCENARIO || 'complete').replace(/[^a-z0-9_-]+/gi,'_')}`;
 function writeReport() {
@@ -78,6 +78,7 @@ const scenarios = [
   { label: 'flashback-fifth-graveyard', source: 'Think Twice', zone: 'graveyard', route: 'main', lands: ['Island','Forest','Forest'], action: /Alternative cost/ },
   { label: 'abort-cast-no-payment', source: 'Swords to Plowshares', zone: 'hand', route: 'priority', targetName: 'Grizzly Bears', lands: ['Plains'], action: /^Cast/, abort: true },
   { label: 'modal-discard-cost', source: 'Lightning Axe', zone: 'hand', route: 'priority', targetName: 'Grizzly Bears', lands: ['Mountain'], action: /^Cast/, discard: 'Forest' },
+  { label: 'split-consign-hand', source: 'Consign // Oblivion', zone: 'hand', route: 'priority', humanSeat: 3, targetSeat: 1, targetName: 'Grizzly Bears', lands: ['Island','Forest'], action: /Consign|Alternative cost|^Cast/ },
   { label: 'split-aftermath-graveyard', source: 'Consign // Oblivion', zone: 'graveyard', route: 'main', humanSeat: 1, targetSeat: 3, lands: ['Swamp','Swamp','Forest','Forest','Forest'], action: /Aftermath|Oblivion|Alternative cost/ },
 ];
 
@@ -109,7 +110,7 @@ async function fixture(scenario) {
     const ui = new MTG.UI(), g = new MTG.Game({ seed: 102709, paced: true, onEvent: () => ui.queueRender() });
     const players = Array.from({length: 4}, (_, idx) => g.addPlayer(idx === (scenario.humanSeat || 0) ? 'You' : `Native AI ${idx}`, { name: 'Quick Draw' }, null, idx !== (scenario.humanSeat || 0)));
     const human = players[scenario.humanSeat || 0], bot = players[scenario.targetSeat ?? ((human.idx + 1) % 4)];
-    ui.game = g; ui.me = human; ui.prioMode = 'end'; human.controller = ui.controllerFor(human);
+    ui.game = g; ui.me = human; ui.prioMode = scenario.label.startsWith('split-') ? 'full' : 'end'; human.controller = ui.controllerFor(human);
     for (const player of players.filter(p => p !== human)) player.controller = new MTG.AIController(player, { difficulty: 'normal', style: 'aggressive' });
     g.turnPlayer = human; g.turnNo = 9; g.phase = scenario.route === 'main' ? 'main1' : 'combat';
     g.step = scenario.route === 'main' ? 'main' : 'blockers'; g.speedFactor = 0;
@@ -472,11 +473,31 @@ try {
     await page.locator('.sheet').waitFor();
     const action = page.locator('.sheetacts button:not(:disabled)').filter({ hasText: scenario.action }).first();
     assert.equal(await action.count(), 1, `${scenario.label}: the legal native action is visible`);
+    if (scenario.label.startsWith('split-')) {
+      await page.waitForFunction(() => {
+        const image = document.querySelector('.sheet .sheetimg');
+        return image?.complete && image.naturalWidth > 1 && image.getAttribute('src') !== MTG.CARD_IMAGE_PLACEHOLDER;
+      }, null, { timeout: 60000 });
+    }
     if(scenario.route==='tribalMana')assert.equal(await page.locator('.sheetacts button:not(:disabled)').filter({hasText:/face.down|Morph/i}).count(),0,'floating Elf-restricted mana cannot pay a typeless Morph spell');
     if (scenario.label === 'fifth-activation') assert.equal(await page.locator('.sheetacts .abilitybtn:not(:disabled)').count(), 5);
     await shot(`${scenario.label}-available`);
     await action.click();
     let intermediate;
+    if (scenario.label.startsWith('split-')) {
+      for (let n = 0; n < 100 && !await page.evaluate(() =>
+        (_ui.pending?.q || _ui.react?.q)?.type === 'priority' && _game.stack.some(object => object.card === __gap.source)); n++) await progress(scenario);
+      assert.equal(await page.evaluate(() => _game.stack.some(object => object.card === __gap.source)), true, 'the paid split half waits on the native stack');
+      await page.locator('.mobileviewtab[data-view="stack"]').click();
+      await page.locator('.sidebar .stackitem').filter({ visible: true }).first().click();
+      await page.waitForFunction(() => {
+        const image = document.querySelector('.sheet .sheetimg');
+        return image?.complete && image.naturalWidth > 1 && image.getAttribute('src') !== MTG.CARD_IMAGE_PLACEHOLDER;
+      }, null, { timeout: 60000 });
+      intermediate = { stackImage: await page.locator('.sheet .sheetimg').getAttribute('src'), stackState: await state() };
+      await shot(`${scenario.label}-paid-stack-image`);
+      await page.locator('.sheet').getByRole('button', { name: 'Close', exact: true }).click();
+    }
     if(scenario.hold){
       for(let n=0;n<100&&!(await page.evaluate(()=>_ui.pending?.q.type==='priority'&&__gap.source.zone==='stack'));n++)await progress(scenario);
       const held=await state();assert.equal(held.pending,'priority');assert.equal(held.holdNext,false);assert.equal(held.priorityMode,'off');assert.deepEqual(held.stack,['Think Twice']);
@@ -518,7 +539,8 @@ try {
     if (scenario.label === 'flashback-fifth-graveyard') { assert.equal(result.source.zone, 'exile'); assert.deepEqual(result.hand, ['Forest']); assert.ok(result.lands.every(c => c.tapped)); assert.equal(result.casts[0].from, 'graveyard'); }
     if (scenario.abort) { assert.equal(result.source.zone, 'hand'); assert.equal(result.target.zone, 'battlefield'); assert.ok(result.lands.every(c => !c.tapped)); assert.deepEqual(result.casts.map(row => row.ok), [false]); }
     if (scenario.label === 'modal-discard-cost') { assert.equal(result.source.zone, 'graveyard'); assert.equal(result.target.zone, 'graveyard'); assert.equal(result.sacrifice.zone, 'graveyard'); assert.ok(result.lands.every(c => c.tapped)); }
-    if (scenario.label === 'split-aftermath-graveyard') { assert.equal(result.source.zone, 'exile'); assert.equal(result.enemyHand.length, 1); assert.ok(result.lands.every(c => c.tapped)); assert.equal(result.casts[0].from, 'graveyard'); }
+    if (scenario.label === 'split-consign-hand') { assert.equal(result.source.zone, 'graveyard'); assert.equal(result.source.manaSpent, 2); assert.equal(result.target.zone, 'hand'); assert.ok(result.lands.every(c => c.tapped)); assert.equal(result.casts[0].from, 'hand'); }
+    if (scenario.label === 'split-aftermath-graveyard') { assert.equal(result.source.zone, 'exile'); assert.equal(result.source.manaSpent, 5); assert.equal(result.enemyHand.length, 1); assert.ok(result.lands.every(c => c.tapped)); assert.equal(result.casts[0].from, 'graveyard'); }
     await shot(`${scenario.label}-resolved`); results.push({ label: scenario.label, before, intermediate, result });
     writeReport();
     console.log(`PASS ${scenario.label}: mobile native action, payment and resolution`);

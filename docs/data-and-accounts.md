@@ -27,6 +27,8 @@ The Redis session entry uses a 30-day expiry refreshed when the session is read;
 
 Account data, saved decks, statistics, and the active Solo save do not have an automatic account-wide expiry in this implementation. Deleting a saved deck removes that deck record; replacing or clearing a Solo save affects the active checkpoint. Neither action deletes the account.
 
+A Solo save carries the imported lists used by that match. Continue keeps those lists even if My Library later contains another deck with the same name; starting a new game uses the current library list. Changes to manual mana and priority stops are recorded with the match, so Continue restores their timing alongside the saved actions.
+
 ## Current account limits
 
 There is no built-in email verification, password reset/change, or self-service account deletion. Do not assume an emailed recovery link is available. Use guest play if you do not want to create a stored account.

@@ -70,8 +70,34 @@ export async function proveCommonV48(M,name,role,positive=true,h,assert=strict){
  }else if(['Savor the Moment','Final Fortune','Last Chance',"Warrior's Oath"].includes(name)){
   const land=permanent(M,g,a,M.DEFS.Forest);g.tap(land);await cast();g.scheduleExtraTurn(b);g.advanceTurnPlayer(a);assert.equal(g.turnPlayer,b);await blankTurn();assert.equal(g.turnPlayer,a);assert.equal(a.lost,false);let observed=false;g.mainPhase=async()=>{observed=true;assert.equal(land.tapped,name==='Savor the Moment');};g.combatPhase=async()=>{};await g.runTurn();await settle(g);assert.equal(observed,true);assert.equal(a.lost,name!=='Savor the Moment');
  }else if(name==='Corporeal Projection'||name==='Duke Ulder Ravengard'){
-  const third=g.addPlayer('Third',{name:'Third'},b.controller,false);while(third.library.length<30)put(M,third,'Forest');const ally=donor(a,{mustAttack:true}),other=donor();let c;if(name==='Corporeal Projection'){c=await cast(name,{aim:positive?[ally]:[],opts:positive?{}:{alt:{overloaded:true,altCostStr:'{3}{U}{U}{R}{R}'}}});assert.equal(other.kw('myriad'),!positive);}else{c=await cast();aims=[ally];await g.emit('beginCombat',{player:a});await settle(g);assert.equal(ally.kw('haste'),true);}
-  assert.equal(ally.kw('myriad'),true);yes='yes';let copies=0;const make=g.copyPermanentToken.bind(g);g.copyPermanentToken=async(card,...args)=>{const result=await make(card,...args);if(card===ally)copies+=result.length;return result;};await g.combatPhase(a);await settle(g);assert.equal(copies,1);assert.equal(g.bf().some(c=>c.isToken&&c.meta.exileEndCombat),false);
+  const third=g.addPlayer('Third',{name:'Third'},b.controller,false);while(third.library.length<30)put(M,third,'Forest');const ally=donor(a,{name:'V48 myriad ally',mustAttack:true}),other=donor();let c;if(name==='Corporeal Projection'){c=await cast(name,{aim:positive?[ally]:[],opts:positive?{}:{alt:{overloaded:true,altCostStr:'{3}{U}{U}{R}{R}'}}});assert.equal(other.kw('myriad'),!positive);assert.equal(ally.kw('myriad'),true);}else{c=await cast();aims=[ally];}
+  yes='yes';const copies=[],departures=[];let defendingPlayer;
+  const emit=g.emit.bind(g);
+  g.emit=async(event,data,...args)=>{
+   if(event==='attacks'&&data.card===ally){
+    defendingPlayer=M.defendingPlayerV92(data.defender);
+    assert.equal(ally.kw('myriad'),true);
+    if(name==='Duke Ulder Ravengard')assert.equal(ally.kw('haste'),true);
+   }
+   if(event==='etb'&&data.card.isToken&&data.card.name===ally.name){
+    const token=data.card;
+    copies.push({card:token,attacking:token.attacking});
+    assert.equal(g.step,'attackers','myriad resolves during combat');
+    assert.ok(token.ctrl===a,'myriad token remains under the attacking player\'s control');assert.equal(token.tapped,true);
+    assert.equal(token.isCopyOf?.name,ally.name);
+    assert.equal(token.power,Number(ally.def.power));assert.equal(token.toughness,Number(ally.def.toughness));
+   }
+   if(event==='lto'&&copies.some(copy=>copy.card===data.card))departures.push({to:data.to,step:g.step});
+   return emit(event,data,...args);
+  };
+  // Resolve the real attack trigger before damage and end-of-combat cleanup.
+  // Duke's grant comes from combatPhase's own beginning-of-combat trigger.
+  g.priorityRound=M.Game.prototype.priorityRound.bind(g);
+  await g.combatPhase(a);await settle(g);
+  assert.ok([b,third].includes(defendingPlayer));assert.equal(copies.length,1);
+  assert.ok(copies[0].attacking===[b,third].find(player=>player!==defendingPlayer),'myriad token attacks the other opponent');
+  assert.equal(departures.length,1);assert.equal(departures[0].to,'exile');assert.equal(departures[0].step,'endCombat');
+  assert.equal(g.bf().some(c=>c.isToken&&c.meta.exileEndCombat),false);
  }else throw Error('Missing v48 proof '+name);
  assertGameStateInvariants(g);assert.equal(a.controller instanceof M.AIController,role==='ai');return f;
 }

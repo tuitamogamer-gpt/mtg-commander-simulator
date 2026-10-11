@@ -162,8 +162,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card;
   }
 
+  function savedSettings(entry) {
+    const settings = {};
+    if (entry.manaMode !== undefined) {
+      assert(['auto', 'manual'].includes(entry.manaMode), 'mana mode is invalid.');
+      settings.manaMode = entry.manaMode;
+    }
+    if (entry.prioMode !== undefined) {
+      assert(MTG.PRIO_MODES.some(mode => mode.key === entry.prioMode), 'priority mode is invalid.');
+      settings.prioMode = entry.prioMode;
+    }
+    assert(Object.keys(settings).length, 'recorded settings are missing.');
+    return settings;
+  }
+
+  // Mana mode changes which questions the engine asks. Restore the mode at
+  // the board's timeline offset, then replay later changes alongside actions.
+  // This also handles old checkpoint-only saves, which skip the whole tail.
+  MTG.accountSaveSettingsAt = function (save, index) {
+    assert(Number.isInteger(index) && index >= 0 && index <= save.decisions.length,
+      'the settings decision offset is invalid.');
+    const settings = {manaMode: save.setup.manaMode || 'auto', prioMode: save.setup.prioMode || 'end'};
+    for (const entry of save.decisions.slice(0, index)) {
+      if (entry?.kind === 'side' && entry.action?.type === 'settings') Object.assign(settings, savedSettings(entry.action));
+    }
+    return settings;
+  };
+
   MTG.portableAccountSideAction = function (game, player, entry) {
     assert(game && player && entry && entry.type, 'side action is invalid.');
+    if (entry.type === 'settings') return {type: 'settings', ...savedSettings(entry)};
     if (entry.type === 'lastResort') {
       const action = JSON.parse(JSON.stringify(entry.action || {}));
       let cardRef = null;
@@ -188,6 +216,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.replayAccountSideAction = async function (game, player, saved) {
     assert(saved && saved.type, 'recorded side action is invalid.');
+    if (saved.type === 'settings') {
+      const settings = savedSettings(saved);
+      if (settings.manaMode) player.manualMana = settings.manaMode === 'manual';
+      return settings;
+    }
     if (saved.type === 'lastResort') {
       const action = JSON.parse(JSON.stringify(saved.action || {}));
       if (saved.cardRef) action.cardToken = `c:${restoreCardRef(game, saved.cardRef).iid}`;
@@ -232,14 +265,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const name of names) {
       if (seen.has(name) || !MTG.DECKS?.[name]?.custom) continue;
       seen.add(name);
-      let record = MTG.importedDeckRecordFor?.(name);
-      if (!record) {
-        const carried = (setup.importedDecks || []).find(candidate => candidate?.name === name);
-        if (carried) {
-          const validation = MTG.validateImportedDeckRecord(carried);
-          if (validation.ok) record = validation.record;
-        }
-      }
+      // A resumed match owns its original list even if My Library now contains
+      // another import with that name. Never rewrite its next checkpoint with
+      // the current library version.
+      const carried = (setup.importedDecks || []).find(candidate => candidate?.name === name);
+      let record = null;
+      if (carried) {
+        const validation = MTG.validateImportedDeckRecord(carried);
+        assert(validation.ok, `the saved imported deck ${name} is unavailable.`);
+        record = validation.record;
+      } else record = MTG.importedDeckRecordFor?.(name);
       if (record) records.push(record);
     }
     return records;
@@ -289,27 +324,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   };
 
-  function adoptSavedImportedDecks(save) {
+  function validateSavedImportedDecks(save) {
     const records = Array.isArray(save.setup?.importedDecks) ? save.setup.importedDecks.slice(0, 4) : [];
-    const failures = [];
+    const names = new Set([save.setup.deck, ...save.setup.aiDecks]);
+    const validated = new Map();
     for (const record of records) {
       const name = record && record.name;
-      if (!name || MTG.DECKS?.[name]) continue;
-      const result = MTG.adoptImportedDeckRecord?.(record) || { ok: false, error: 'decklists cannot be read in this build.' };
-      if (!result.ok) failures.push(`${name}: ${result.error}`);
+      if (!name || !names.has(name)) continue;
+      assert(!validated.has(name), `the saved imported deck ${name} appears more than once.`);
+      const result = MTG.validateImportedDeckRecord(record);
+      assert(result.ok, `the saved imported deck ${name} is unavailable (${result.errors?.[0]?.message || 'decklist cannot be read'}).`);
+      assert(!MTG.DECKS?.[name] || MTG.DECKS[name].custom, `the saved imported deck ${name} conflicts with a built-in deck.`);
+      validated.set(name, result);
     }
-    return failures.length ? ` (${failures.join('; ')})` : '';
+    return validated;
   }
 
   MTG.validateAccountSave = function (save) {
     assert(save && save.schema === 'commander-save/v1' && save.mode === 'solo', 'unsupported checkpoint format.');
     assert(save.setup && typeof save.setup === 'object', 'setup settings are missing.');
-    // Imported decks carried by the checkpoint are registered first: after that
-    // every seat is checked the same way, built-in or not.
-    const adopted = adoptSavedImportedDecks(save);
-    assert(MTG.DECKS?.[save.setup.deck], `the saved human deck is unavailable.${adopted}`);
     assert(Array.isArray(save.setup.aiDecks) && save.setup.aiDecks.length >= 1 && save.setup.aiDecks.length <= 3, 'AI seats are invalid.');
-    assert(save.setup.aiDecks.every(name => MTG.DECKS?.[name]), `a saved AI deck is unavailable.${adopted}`);
+    const imported = validateSavedImportedDecks(save);
+    assert(imported.has(save.setup.deck) || MTG.DECKS?.[save.setup.deck], 'the saved human deck is unavailable.');
+    assert(save.setup.aiDecks.every(name => imported.has(name) || MTG.DECKS?.[name]), 'a saved AI deck is unavailable.');
     assert(new Set([save.setup.deck, ...save.setup.aiDecks]).size === save.setup.aiDecks.length + 1, 'saved decks must remain unique.');
     assert(Array.isArray(save.decisions) && save.decisions.length <= 5000, 'decision history is invalid.');
     if (save.state) assert(save.state.format >= 2 && Array.isArray(save.state.cards) && Array.isArray(save.state.players),
@@ -318,6 +355,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       save.checkpointTimelineIndex >= 0 && save.checkpointTimelineIndex <= save.decisions.length,
       'the board checkpoint decision offset is invalid.');
     MTG.validateAISkillSetup(save.setup.aiStyles || [], save.setup.aiCustomSkills || []);
+    // Only a complete valid checkpoint may replace a same-name runtime deck.
+    // My Library keeps its own record and re-registers it on a fresh launch.
+    for (const validation of imported.values()) MTG.registerImportedDeck(validation, {replace: true});
     return save;
   };
 })();

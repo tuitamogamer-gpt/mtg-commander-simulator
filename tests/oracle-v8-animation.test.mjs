@@ -134,8 +134,17 @@ for (const role of ['human', 'ai']) {
     const ctx = setup(role), land = put(ctx, 'Animation Persistent'); await activate(ctx, land); await cleanup(ctx);
     assert.equal(land.is('Creature'), true); assert.equal(land.hasSub('Elf'), true);
     await ctx.game.move(land, 'hand'); await ctx.game.putPermanentOntoBattlefield(land, ctx.a); assert.equal(land.is('Creature'), false);
-    const artifact = put(ctx, 'Animation Loss'); await activate(ctx, artifact); assert.equal(artifact.kw('flying'), true);
-    await activate(ctx, artifact, 1); assert.equal(artifact.kw('flying'), false); assert.equal(artifact.power, 3); assert.equal(artifact.toughness, 2);
+    const artifact = put(ctx, 'Animation Loss');
+    // Fund only this declared activation. Extra floating mana lets the real
+    // AI legally activate the second animation in the priority window.
+    const animate = async index => {
+      ctx.a.pool.C = 1;
+      const action = ctx.game.activatableList(ctx.a).find(row => row.card === artifact && row.ability === artifact.def.abilities[index]);
+      assert.ok(action); assert.equal(await ctx.game.activateAbility(ctx.a, action), true); await settle(ctx);
+      assert.equal(ctx.a.pool.C, 0, 'the selected animation spends its actual one-mana cost');
+    };
+    await animate(0); assert.equal(artifact.kw('flying'), true);
+    await animate(1); assert.equal(artifact.kw('flying'), false); assert.equal(artifact.power, 3); assert.equal(artifact.toughness, 2);
   });
   test(role + ': paid X and infect animation use actual payment and both damage destinations', async () => {
     const ctx = setup(role), variable = put(ctx, 'Animation X'); await activate(ctx, variable);

@@ -20,7 +20,9 @@
    if(annotation&&one)config.colors[one.name]=colorList(annotation[1]);
    if(section==='main'){main.push(without);continue;}
    if(!one){errors.push(problem('auxiliary-card','Invalid auxiliary card on line '+(lineNo+1)+'.'));continue;}
-   if(section==='companion'){if(config.companion||one.n!==1)errors.push(problem('companion-count','Choose exactly one companion.'));config.companion=one.name;}else for(let n=0;n<one.n;n++)config[section].push(one.name);
+   if(section==='companion'){if(config.companion||one.n!==1)errors.push(problem('companion-count','Choose exactly one companion.'));config.companion=one.name;}
+   else if(config[section].length+one.n>500)errors.push(problem('auxiliary-list',section+' must contain no more than 500 cards.'));
+   else for(let n=0;n<one.n;n++)config[section].push(one.name);
   }
   const result=parse(main.join('\n'));result.auxiliaryV87=config;result.auxiliaryErrorsV87=errors;return result;
  };
@@ -57,7 +59,7 @@
  }
  M.OracleV87.validateAuxiliary=validateConfig;
  const validate=M.validateImportedDeck;M.validateImportedDeck=function(parsed,options){
-  const raw=parsed?.auxiliaryV87||{},chosen=plain(raw.colors)?raw.colors:{},original=M.DEFS;let defs=original;for(const [name,colors]of Object.entries(chosen))if(defs[name]&&Array.isArray(colors)&&['Cryptic Spires','The Prismatic Piper','Faceless One'].includes(name)){if(defs===original)defs={...original};defs[name]={...defs[name],colorIdentityExtra:colors};}
+  const raw=parsed?.auxiliaryV87||{},chosen=plain(raw.colors)?raw.colors:{},original=M.DEFS;let defs=original;for(const [rawName,colors]of Object.entries(chosen)){const name=M.resolveDeckCardName(rawName)||rawName;if(defs[name]&&Array.isArray(colors)&&['Cryptic Spires','The Prismatic Piper','Faceless One'].includes(name)){if(defs===original)defs={...original};defs[name]={...defs[name],colorIdentityExtra:colors};}}
   M.DEFS=defs;let result;try{result=validate.call(this,parsed,options);}finally{M.DEFS=original;}
   const aux=validateConfig(raw,result.draftDeck,defs),identity=result.summary.colorIdentity;
   if(aux.config.companion&&M.cardColorIdentity(defs[aux.config.companion]).some(c=>!identity.includes(c)))aux.errors.push(problem('companion-color','The companion is outside the commanders’ color identity.',aux.config.companion));
