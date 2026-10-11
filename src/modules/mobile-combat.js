@@ -160,7 +160,10 @@ export function createMobileCombat(ui, game, root, pd) {
   }
   if (!pd) {
     const history = node('div', 'ct-mobile-combat-history');
-    const attackers = game.phase === 'combat' ? (game.combat?.attackers || []).filter(card => card.zone === 'battlefield' && card.attacking) : [];
+    // Entry choices can run after an entrant joins combat but before it is
+    // available on the battlefield with its final characteristics.
+    const battlefield = new Set(game.bf());
+    const attackers = game.phase === 'combat' ? (game.combat?.attackers || []).filter(card => battlefield.has(card) && card.attacking) : [];
     if (!attackers.length) {
       history.append(node('p', 'ct-mobile-combat-empty', game.phase === 'combat'
         ? 'Waiting for attackers. Combat choices will open here when it is your turn to decide.'
