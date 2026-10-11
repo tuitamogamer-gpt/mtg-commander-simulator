@@ -6183,9 +6183,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const so = {
         kind: 'ability', name: `${c.name} — Ninjutsu`, ctrl: p, ctx, targets: [], srcCard: c,
         run: async abilityCtx => {
-          if (c.zone !== sourceZone || c.zoneVersion !== abilityCtx.sourceZoneVersion || !abilityCtx.g.combat) return;
-          if (!commanderNinjutsu && !abilityCtx.you.hand.includes(c)) return;
-          await abilityCtx.g.move(c, 'battlefield', { ctrl: abilityCtx.you, tapped: true, attacking: abilityCtx.attacked, attackingZoneVersion: abilityCtx.attackedZoneVersion });
+          // AI snapshots share this function but clone its context. Resolve
+          // their source card without moving the live game's physical card.
+          const source = abilityCtx.src;
+          if (source.zone !== sourceZone || source.zoneVersion !== abilityCtx.sourceZoneVersion || !abilityCtx.g.combat) return;
+          if (!commanderNinjutsu && !abilityCtx.you.hand.includes(source)) return;
+          await abilityCtx.g.move(source, 'battlefield', { ctrl: abilityCtx.you, tapped: true, attacking: abilityCtx.attacked, attackingZoneVersion: abilityCtx.attackedZoneVersion });
         },
       };
       this.stack.push(so);
