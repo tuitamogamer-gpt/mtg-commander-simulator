@@ -201,3 +201,25 @@ test('predefined Junk reuse rejects extra callable or undefined recipe fields an
     if(recipe.keywords.length)assert.equal(token.kw('indestructible'),true);
   }
 });
+
+for(const kind of ['morph','disguise'])test(`a paid ${kind} copy distinguishes absent ward from an active ward cost in save reconstruction`,async()=>{
+  const f=table();for(let i=0;i<3;i++){f.put('Wastes');f.put('Island');}
+  const name=kind==='morph'?'Abzan Guide':M.DEFS['Fugitive Codebreaker']?'Fugitive Codebreaker':'Fugitive Codebreaker // Fugitive Codebreaker';
+  const source=f.put(name,'hand'),offer=f.game.castableList(f.player).find(row=>row.card===source&&row.alt?.faceDownCast===kind);
+  assert.ok(offer,'the printed card offers its native face-down casting route');
+  assert.equal(await f.game.castSpell(f.player,source,{from:'hand',alt:offer.alt}),true);
+  assert.equal(source.castMeta.manaSpent,3);assert.equal(source.faceDown,true);
+  const spell=await f.cast('Quasiduplicate',{quickTargets:[source]});assert.equal(spell.castMeta.manaSpent,3);
+  const copy=f.game.bf().find(card=>card.isToken);assert.ok(copy);assert.equal(copy.faceDown,false);
+  assert.deepEqual(Array.from(M.OracleV8NameGroups.names(copy)),[]);assert.equal(copy.power,2);assert.equal(copy.toughness,2);
+  if(kind==='morph'){
+    assert.equal(copy.def.ward,null);assert.equal(copy.cur.wardCost,null);
+    const next=f.restore(),restored=next.game.byIid(copy.iid);
+    assert.deepEqual(Array.from(M.OracleV8NameGroups.names(restored)),[]);assert.equal(restored.cur.wardCost,null);
+    assert.equal(restored.power,2);assert.equal(restored.toughness,2);assert.equal(restored.faceDown,false);
+  }else{
+    assert.equal(copy.cur.wardCost.mana,'{2}');
+    assert.ok(M.gameStateSnapshotBlockers(f.game).includes('an unsupported token copy ability'));
+    assert.equal(M.captureGameState(f.game),null,'an active ward cost cannot disappear from the copied token');
+  }
+});

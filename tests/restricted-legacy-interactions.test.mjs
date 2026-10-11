@@ -84,7 +84,12 @@ for (const role of ['human', 'ai']) {
     const spell = card(f, 'Immortal Obligation', 'hand');
     assert.equal(f.game.legalTargets(spell.def.targets[0], spell, f.a).includes(own), false); target(f, c);
     await cast(f, spell); await settle(f.game); await f.game.move(c, 'exile'); await f.game.putPermanentOntoBattlefield(c, f.b);
-    assert.equal(f.game.isGoaded(c), false); assert.equal(f.game.canAttackTarget(c, f.a), true);
+    assert.equal(f.game.isGoaded(c), false); assert.equal(c.counters.duty || 0, 0);
+    assert.equal(c.sick, true); assert.equal(f.game.canAttackTarget(c, f.a), false, 'the returned incarnation is summoning sick');
+    f.game.turnPlayer = f.b;
+    const fervor = await play(f, 'Fervor', {player: f.b});
+    assert.equal(fervor.castMeta.manaSpent, 3); assert.equal(c.kw('haste'), true);
+    assert.equal(f.game.canAttackTarget(c, f.a), true);
   });
   test(`${role}: Escort sees its Spirit type and counters during ETB; blinking resets its creature types`, async () => {
     const f = setup(role), c = await play(f, 'Otherworldly Escort');

@@ -440,21 +440,38 @@ test('Elrond second creature, Gorbag nested reward, and Grishnákh temporary the
 });
 
 test('Sauron, Lord of the Rings cast package and commander-death Ring trigger both resolve', async () => {
-  const { game, players: [sauron, opponent] } = rulesGame();
-  const source = permanent(game, sauron, 'Sauron, Lord of the Rings');
+  let victim;
+  const { game, players: [sauron, opponent] } = rulesGame([
+    (g, q) => q.type === 'chooseTargets' && q.candidates.includes(victim) ? [victim] : defaultDecision(g, q),
+  ]);
+  const source = inZone(sauron, 'Sauron, Lord of the Rings', 'hand');
   permanent(game, sauron, 'Mauhúr, Uruk-hai Captain');
+  const lands = ['Island', 'Island', 'Island', 'Island', 'Island', 'Island', 'Swamp', 'Mountain']
+    .map(name => permanent(game, sauron, name));
   for (const name of ['Island', 'Mountain', 'Aegis Turtle', 'Swamp', 'Elite Vanguard']) inZone(sauron, name, 'library');
 
-  await source.def.triggers[0].run({ g: game, you: sauron, src: source, data: { card: source } });
-  assert.ok(game.creatures(sauron).some(card => card.hasSub('Army') && card.counters['+1/+1'] >= 5));
+  assert.equal(await game.castSpell(sauron, source, { from: 'hand' }), true);
+  assert.equal(source.castMeta.manaSpent, 8);
+  assert.equal(lands.every(card => card.tapped), true);
+  await resolveAll(game);
+  assert.equal(source.zone, 'battlefield');
+  assert.ok(game.creatures(sauron).some(card => card.hasSub('Army') && card.counters['+1/+1'] === 6),
+    'paid cast trigger amasses five with one additional counter from Mauhúr');
+  assert.equal(sauron.library.length, 0, 'the cast trigger mills all five cards');
   assert.ok(game.creatures(sauron).some(card => ['Aegis Turtle', 'Elite Vanguard'].includes(card.name)), 'milled creature is reanimated');
 
-  await game.emit('dies', {
-    card: null,
-    snap: { commander: true, ctrl: opponent, types: ['Creature'], super: ['Legendary'] },
-  });
-  await resolveAll(game);
-  assert.equal(sauron.ringLevel, 1);
+  for (const commander of [false, true]) {
+    victim = permanent(game, opponent, commander ? "Yuriko, the Tiger's Shadow" : 'Elite Vanguard', { commander });
+    const murder = inZone(sauron, 'Murder', 'hand');
+    for (let i = 0; i < 3; i++) permanent(game, sauron, 'Swamp');
+    assert.equal(await game.castSpell(sauron, murder, { from: 'hand', quickTargets: [victim] }), true);
+    assert.equal(murder.castMeta.manaSpent, 3);
+    await resolveAll(game);
+    assert.equal(murder.zone, 'graveyard');
+    assert.equal(victim.zone, commander ? 'command' : 'graveyard');
+    assert.equal(sauron.ringLevel || 0, commander ? 1 : 0,
+      'only an opposing commander death triggers the Ring, including return to command zone');
+  }
 });
 
 test('Sauron, the Necromancer makes attacking Wraith copies and honors both delayed-exile branches', async () => {

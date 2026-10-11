@@ -79,13 +79,17 @@ test('main menu decklist import is a persistent fail-closed library gateway with
 
 test('first-game onboarding explains the complete user decision model without external AI claims', () => {
   const home = main.slice(main.indexOf('function renderMainMenu'), main.indexOf('function renderSetup'));
-  assert.match(home, /Your deck is complete/);
-  assert.match(home, /You control one seat/);
-  assert.match(home, /HOLD opens priority/);
-  assert.match(home, /Proceed protects clarity/);
-  assert.match(home, /without an external model API/);
-  assert.doesNotMatch(home, /[—–]/);
-  assert.match(home, /U\.enhanceDialog\(overlay, dialog/);
+  const guideStart = home.indexOf('const openGuide =');
+  const guideEnd = home.indexOf('const openDeckImport =', guideStart);
+  assert.ok(guideStart >= 0 && guideEnd > guideStart, 'the onboarding guide has an explicit source boundary');
+  const guide = home.slice(guideStart, guideEnd);
+  assert.match(guide, /Your deck is complete/);
+  assert.match(guide, /You control one seat/);
+  assert.match(guide, /HOLD opens priority/);
+  assert.match(guide, /Proceed protects clarity/);
+  assert.match(guide, /without an external model API/);
+  assert.doesNotMatch(guide, /[—–]/);
+  assert.match(guide, /U\.enhanceDialog\(overlay, dialog/);
   assert.match(publicEntry, /Your deck is complete/);
   assert.match(publicEntry, /HOLD opens priority/);
   assert.match(publicEntry, /dialog\.setAttribute\('role', 'dialog'\)/);

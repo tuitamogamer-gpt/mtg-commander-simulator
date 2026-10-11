@@ -66,6 +66,10 @@ for (const role of ['human', 'ai']) {
     const f = setup(role), c = card(f, 'Grizzly Bears', 'graveyard', f.b), own = body(f), pw = walk(f); target(f, c);
     await play(f, 'Immortal Obligation');
     assert.equal(c.zone, 'battlefield'); assert.equal(c.ctrl, f.b); assert.equal(c.counters.duty, 1); assert.ok(f.game.isGoaded(c));
+    assert.equal(c.sick, true); assert.equal(f.game.canAttackTarget(c, f.others[1]), false, 'goad does not bypass summoning sickness');
+    f.game.turnPlayer = f.b;
+    const fervor = await play(f, 'Fervor', {player: f.b});
+    assert.equal(fervor.castMeta.manaSpent, 3); assert.equal(c.kw('haste'), true);
     assert.equal(f.game.canAttackTarget(c, f.a), false); assert.equal(f.game.canAttackTarget(c, pw), false);
     assert.equal(f.game.canBlock(c, own), false); assert.equal(f.game.canAttackTarget(c, f.others[1]), true);
     f.game.removeCounters(c, 'duty', 1); f.game.addCounters(c, 'duty', 1); f.game.recalc();
