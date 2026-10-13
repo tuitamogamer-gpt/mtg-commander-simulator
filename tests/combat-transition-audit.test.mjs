@@ -207,7 +207,11 @@ test('an attacker gained during blockers stops attacking its new controller', as
   assert.equal(attacker.ctrl === f.a, true); assert.equal(attacker.zone, 'battlefield'); assert.equal(blocker.zone, 'battlefield');
   assert.equal(attacker.damage, 0); assert.equal(blocker.damage, 0); assert.equal(f.a.life, 40);
   const snapshot = f.snapshots.find(row => row.step === 'damage');
-  assert.equal(snapshot.cards.find(card => card.iid === blocker.iid).blocking, null);
+  assert.equal(snapshot.cards.find(card => card.iid === blocker.iid).blocking, true,
+    'CR 509.1g: the blocker stays blocking after its attacker leaves combat');
+  assert.equal(snapshot.cards.find(card => card.iid === attacker.iid).attacking, null,
+    'the gained attacker has no remaining attack destination');
+  assert.equal(blocker.blocking, null, 'blocking status clears when native combat ends');
 });
 
 test('an ordinary simultaneous 2/2 combat still trades both creatures', async t => {

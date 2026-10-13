@@ -351,11 +351,13 @@ export function createAccountStoreFromEnv(env = process.env) {
 }
 
 function parseCookies(header = '') {
-  return Object.fromEntries(String(header).split(';').map(part => {
+  return Object.fromEntries(String(header).split(';').flatMap(part => {
     const index = part.indexOf('=');
-    if (index < 0) return ['', ''];
-    return [part.slice(0, index).trim(), decodeURIComponent(part.slice(index + 1).trim())];
-  }).filter(([key]) => key));
+    const key = index < 0 ? '' : part.slice(0, index).trim();
+    if (!key) return [];
+    try { return [[key, decodeURIComponent(part.slice(index + 1).trim())]]; }
+    catch { return []; }
+  }));
 }
 
 function sessionCookie(token, request, maxAge = SESSION_TTL_SECONDS) {
@@ -377,7 +379,27 @@ function sameOrigin(request) {
 }
 
 async function readBody(request) {
-  if (request.body && typeof request.body === 'object') return request.body;
+  const validate = body => {
+    if (!body || typeof body !== 'object' || Array.isArray(body))
+      throw Object.assign(new Error('Request body must be a JSON object.'), { status: 400 });
+    if (byteSize(body) > MAX_BODY_BYTES)
+      throw Object.assign(new Error('Request is too large.'), { status: 413 });
+    return body;
+  };
+  const parse = value => {
+    try { return JSON.parse(value); }
+    catch { throw Object.assign(new Error('Request body must be valid JSON.'), { status: 400 }); }
+  };
+  // Hosting can supply an already parsed body instead of a readable stream.
+  // Both paths enforce the same object contract and byte limit.
+  if (request.body !== undefined) {
+    if (typeof request.body === 'string' || Buffer.isBuffer(request.body)) {
+      if (Buffer.byteLength(request.body) > MAX_BODY_BYTES)
+        throw Object.assign(new Error('Request is too large.'), { status: 413 });
+      return validate(parse(request.body.toString()));
+    }
+    return validate(request.body);
+  }
   let size = 0;
   const chunks = [];
   for await (const chunk of request) {
@@ -386,8 +408,7 @@ async function readBody(request) {
     chunks.push(chunk);
   }
   if (!chunks.length) return {};
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); }
-  catch { throw Object.assign(new Error('Request body must be valid JSON.'), { status: 400 }); }
+  return validate(parse(Buffer.concat(chunks).toString('utf8')));
 }
 
 async function passwordDigest(password, salt) {
