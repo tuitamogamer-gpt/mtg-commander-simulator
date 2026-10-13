@@ -13,12 +13,13 @@ async function openServer(t) {
   return { store, origin: `http://127.0.0.1:${server.address().port}` };
 }
 
-async function parsedRequest(body) {
+async function parsedRequest(body, bodyGetter) {
   const store = new MemoryAccountStore();
   let pings = 0;
   store.ping = async () => { pings++; return 'PONG'; };
   const handler = createAccountHandler({ store, limiter: null });
   const request = { method: 'POST', url: '/api/account', headers: { host: 'account.test' }, body };
+  if (bodyGetter) Object.defineProperty(request, 'body', { get: bodyGetter });
   let payload;
   const headers = new Map();
   const response = {
@@ -104,5 +105,35 @@ test('valid hosting parsed, string and buffer bodies retain normal account valid
     assert.equal(result.status, 401);
     assert.equal(result.pings, 1);
     assert.equal(result.payload.error, 'Email or password is incorrect.');
+  }
+});
+
+test('hosting body accessors preserve JSON errors and size errors as client responses', async () => {
+  for (const error of [new SyntaxError('Invalid JSON'),
+    Object.assign(new Error('Invalid JSON'), { statusCode: 400 }),
+    Object.assign(new Error('Payload too large'), { statusCode: 413 })]) {
+    let reads = 0;
+    const result = await parsedRequest(undefined, () => { reads++; throw error; });
+    assert.equal(result.status, error.statusCode || 400);
+    assert.equal(result.pings, 0);
+    assert.equal(reads, 1);
+    assert.equal(result.payload.error, result.status === 413 ? 'Request is too large.' : 'Request body must be valid JSON.');
+  }
+});
+
+test('hosting body is read once and unknown accessor failures remain server errors', async () => {
+  let reads = 0;
+  const valid = await parsedRequest(undefined, () => {
+    reads++;
+    return { action: 'login', email: 'missing@example.com', password: 'strong-pass-2026' };
+  });
+  assert.equal(valid.status, 401);
+  assert.equal(reads, 1);
+  for (const error of [new Error('Unexpected adapter failure'),
+    Object.assign(new Error('Unexpected adapter status'), { statusCode: 503 })]) {
+    const result = await parsedRequest(undefined, () => { throw error; });
+    assert.equal(result.status, 500);
+    assert.equal(result.pings, 0);
+    assert.equal(result.payload.error, 'Account service is temporarily unavailable.');
   }
 });

@@ -36,3 +36,11 @@ Local logs and screenshots: `/workspace/scratch/improvement-round-2026-10-13/`. 
 The full repository test suite and 175-deck full-match simulation were not run in this round. Certification does not prove every possible interaction. No card catalog, dependency or lockfile changes were made. Browser fixtures exercise native paid actions and the actual decision Promise; they do not establish a complete match or multiplayer socket pass.
 
 After this source commit deploys through the existing Git integration, production acceptance must establish the exact merged SHA, READY state and canonical alias, then run the browser script against the public site. That run compares all four changed UI/engine/style assets with this checkout. Production deployment identity and results are recorded in the PR and local release evidence after publication; this pre-deployment document does not claim they already passed.
+
+## Production request-parser follow-up
+
+Production account checks on merged revision `b60cb960ad1ec608e384d1c6df91acb25e0daae1` passed eight of nine cases. Malformed JSON (`{`) returned 500 because Vercel's lazy `request.body` accessor throws `Invalid JSON` with `statusCode: 400` before the application's JSON parser runs. Signed-out sessions, malformed cookies and the five non-object JSON values already returned their expected responses with no-store caching.
+
+The follow-up reads the hosting body once inside a narrow guard, translating SyntaxError and accessor status codes 400/413 into the existing client responses. Unknown accessor failures remain 500. Two real-accessor regression tests failed before the correction; the corrected account cohort passes **21/21**, including the existing registration, authentication, saves and logout tests. Syntax and whitespace checks pass. The broader 127-test and browser results above retain their original-source provenance; they were not repeated for this account-only correction.
+
+The nine unauthenticated production checks must be repeated after the follow-up deployment. Local receipts are `reliability/hosting-getter-red.log`, `reliability/hosting-getter-green.log` and `reliability/production-account.json` under the evidence directory above.

@@ -392,13 +392,20 @@ async function readBody(request) {
   };
   // Hosting can supply an already parsed body instead of a readable stream.
   // Both paths enforce the same object contract and byte limit.
-  if (request.body !== undefined) {
-    if (typeof request.body === 'string' || Buffer.isBuffer(request.body)) {
-      if (Buffer.byteLength(request.body) > MAX_BODY_BYTES)
+  let hostedBody;
+  try { hostedBody = request.body; }
+  catch (error) {
+    const status = error instanceof SyntaxError ? 400 : error?.statusCode;
+    if (status !== 400 && status !== 413) throw error;
+    throw Object.assign(new Error(status === 413 ? 'Request is too large.' : 'Request body must be valid JSON.'), { status });
+  }
+  if (hostedBody !== undefined) {
+    if (typeof hostedBody === 'string' || Buffer.isBuffer(hostedBody)) {
+      if (Buffer.byteLength(hostedBody) > MAX_BODY_BYTES)
         throw Object.assign(new Error('Request is too large.'), { status: 413 });
-      return validate(parse(request.body.toString()));
+      return validate(parse(hostedBody.toString()));
     }
-    return validate(request.body);
+    return validate(hostedBody);
   }
   let size = 0;
   const chunks = [];
