@@ -107,14 +107,14 @@ function hideLoading() {
   page.querySelectorAll('[data-menu-action]').forEach(button => { button.disabled = false; });
 }
 
-globalThis.MTGAccount?.setGameLoader(async save => {
+globalThis.MTGAccount?.setGameLoader(async (save, options) => {
   // Continue from the profile: the veil must never outlive the attempt. A
   // checkpoint that no longer restores used to leave the deck loading message
   // on screen with the page inert, hiding the real error.
   try {
     await loadGame(null);
     if (!globalThis.MTG?.resumeAccountSave) throw new Error('The saved-game module did not finish loading.');
-    return await globalThis.MTG.resumeAccountSave(save);
+    return await globalThis.MTG.resumeAccountSave(save, options);
   } finally {
     hideLoading();
   }

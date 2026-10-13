@@ -272,6 +272,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       completedTombV79: !!player.completedTombV79,
       skipUntapOnce: !!player.skipUntapOnce,
       turnsStarted: Number(player.turnsStarted) || 0,
+      ...(player.cantCastUntilTurnStart !== undefined ? {cantCastUntilTurnStart: player.cantCastUntilTurnStart} : {}),
       lastTurnSpellsCast: Number(player.lastTurnSpellsCast) || 0,
       noMaxHandForever: !!player.noMaxHandForever,
       noMaxHandTimestampV74: player.noMaxHandTimestampV74||0,
@@ -709,6 +710,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.ticket??0)&&(player.counters?.ticket??0)>=0), 'invalid ticket counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.rad??0)&&(player.counters?.rad??0)>=0), 'invalid player rad counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
+    assert(snapshot.players.every(player => player.cantCastUntilTurnStart === undefined ||
+      Number.isSafeInteger(player.cantCastUntilTurnStart) && player.cantCastUntilTurnStart >= 0), 'invalid player casting restriction.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
     assert(snapshot.randomState === undefined || validRandomState(snapshot.randomState), 'invalid random state.');
     const landTypeEffects=snapshot.landTypeEffects??[];
@@ -927,6 +930,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.completedTombV79=saved.completedTombV79??false;
       player.skipUntapOnce = saved.skipUntapOnce;
       player.turnsStarted = saved.turnsStarted;
+      player.cantCastUntilTurnStart = saved.cantCastUntilTurnStart;
       player.lastTurnSpellsCast = saved.lastTurnSpellsCast;
       player.noMaxHandForever = saved.noMaxHandForever;
       player.noMaxHandTimestampV74 = saved.noMaxHandTimestampV74||0;
@@ -986,6 +990,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       players: game.players.map(player => ({
         idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, rad: player.counters?.rad || 0, lost: !!player.lost, enduringStory: !!player.enduringStory, maximumHandSizeReductionV64: player.maximumHandSizeReductionV64||0, spellsCastThisGameV64: player.spellsCastThisGameV64??null,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
+        cantCastUntilTurnStart: player.cantCastUntilTurnStart ?? null,
         yidaroCyclesV79: player.yidaroCyclesV79||0, completedTombV79: !!player.completedTombV79,
         ticketsV87: player.counters?.ticket || 0, stickerSheetsV87: player.availableStickerSheetsV87 || [], companionV87: player.companionV87?.iid ?? null,
         auxiliaryZonesV87: ['attractionDeckV87','junkyardV87','outsideGameV87'].map(zone=>(player[zone]||[]).map(card=>`${card.name}#${card.iid}`).join(',')),

@@ -29,8 +29,9 @@ flowchart LR
 All browsers can use the optional account API for libraries and favorites. The
 Solo arrow also includes private Save & Continue; Live uses its room state.
 
-There is no application build step, external AI inference service, or Supabase
-integration. `index.html` loads the source modules directly. The static client can
+The frontend uses source modules directly, with no bundler, external AI inference
+service, or Supabase integration. The production build only generates immutable
+version metadata for diagnostic reports. The static client can
 run without either backend; accounts and internet multiplayer need their respective
 server endpoints.
 
@@ -83,7 +84,10 @@ silently fall back to volatile memory.
 
 Deploy the repository root with the lockfile dependencies and a supported Node.js
 version satisfying `engines.node`. Use the static/Other project setup, with the
-repository root as the static output and no framework build command. The `api/`
+repository root as the static output and the `npm run build` command configured
+in `vercel.json`. It writes `src/build-info.js` from the package version and
+`VERCEL_GIT_COMMIT_SHA`; a Vercel build without a valid revision fails explicitly.
+Local play can use the tracked unversioned fallback without running this command. The `api/`
 directory supplies the two Node.js endpoints. Do not point the output directory
 at `dist/`: that directory is for the optional ZIP package.
 

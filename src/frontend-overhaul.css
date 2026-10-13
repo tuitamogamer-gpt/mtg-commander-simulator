@@ -2450,3 +2450,20 @@ button.dungeonroom:hover { background: #2f5346; }
 .renderrecoverydetails { margin-top: 16px; font-size: 12px; }
 .renderrecoverydetails summary { cursor: pointer; padding: 8px 0; }
 .renderrecoverydetails pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.problemreport { box-sizing: border-box; width: min(100%, 540px); max-height: calc(100 * var(--dvhu) - 32px); overflow-y: auto; text-align: left; }
+.problemreport p { line-height: 1.5; }
+.problemreport textarea { display: block; box-sizing: border-box; width: 100%; min-height: 112px; margin: 8px 0 12px; padding: 12px; border: 1px solid var(--border, #435260); border-radius: 10px; background: var(--surface, #111920); color: var(--text, #f1f3f5); font: inherit; font-size: 16px; resize: vertical; }
+.problemreportprivacy { color: var(--muted, #a5b1bb); font-size: 13px; }
+.problemreportreplay { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; line-height: 1.5; }
+.problemreportreplay input { flex: 0 0 auto; margin-top: 5px; }
+.problemreport .btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.problemreport .pbtn { min-height: 44px; }
+.problemreportstatus { overflow-wrap: anywhere; }
+.problemreportdescription { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.waitownership { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 0 0 6px; font: 500 12px/1.4 var(--ds-font-body, sans-serif); overflow-wrap: anywhere; }
+.waitownership strong { color: var(--ds-brass-bright, #edb375); font-weight: 700; }
+.waitownership span { color: var(--ds-copy, #d4d9d0); }
+.waitownership[data-wait-kind='player'] strong { color: var(--ds-text, #edf0e9); }
+.modal > .waitownership { margin-bottom: 8px; }

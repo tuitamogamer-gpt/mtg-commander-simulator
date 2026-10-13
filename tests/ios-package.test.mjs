@@ -24,9 +24,13 @@ test('offline bundle contains runtime modules and assets, without server or work
     context.skip('Generated bundle absent; run npm run ios:bundle to validate its contents.');
     return;
   }
-  for (const path of ['index.html', 'logic.js', 'src/app.js', 'src/data.js', 'mobile/offline.js', 'assets/audio/manifest.json']) {
+  for (const path of ['index.html', 'logic.js', 'src/app.js', 'src/build-info.js', 'src/data.js', 'mobile/offline.js', 'assets/audio/manifest.json']) {
     await access(join(root, path));
   }
+  const metadata = {};
+  vm.runInNewContext(await readFile(join(root, 'src/build-info.js'), 'utf8'), metadata);
+  assert.equal(Object.isFrozen(metadata.MTG.BUILD_INFO), true);
+  assert.notEqual(metadata.MTG.BUILD_INFO.source, 'development', 'The bundle must generate its own source identity.');
   const names = await readdir(root);
   for (const name of ['api', '.env', '.git', 'node_modules', '.local', 'tests', 'ios']) assert.ok(!names.includes(name), name);
   const files = await readdir(join(root, 'src'), { recursive: true, withFileTypes: true });

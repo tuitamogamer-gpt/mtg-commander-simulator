@@ -491,7 +491,7 @@ Recovery preserves hidden-information boundaries: it does not reveal opponents' 
 
 ## Run locally
 
-Use **Git**, **Node.js 22 or newer**, **npm**, and **Python 3**. Serve the repository over HTTP; opening `index.html` directly as a `file://` URL is not the supported startup path. The frontend uses native browser ES modules, so there is no frontend build step.
+Use **Git**, **Node.js 22 or newer**, **npm**, and **Python 3**. Serve the repository over HTTP; opening `index.html` directly as a `file://` URL is not the supported startup path. The frontend uses native browser ES modules. Local play needs no build; production runs `npm run build` to stamp the loaded version into diagnostic reports.
 
 ### Windows PowerShell
 
@@ -593,7 +593,7 @@ See the [iOS guide](docs/ios.md) for signing, simulator/device verification, exp
 | Imported decks | Stored in this browser and website origin | Owner-bound library synced through the account; up to 40 decks |
 | Favorites | Browser-local preferences | Synced through the account |
 | Custom AI skills and pod presets | Browser-local; export skill JSON for backup | Remain browser-local |
-| Solo Save & Continue | No durable account checkpoint | One private Solo checkpoint per account |
+| Solo Save & Continue | One recovery checkpoint in this browser | One private cloud checkpoint, plus device recovery while a save is pending |
 | Match history and lifetime statistics | No account history | Finished Solo wins award 100 points; losses award 25; retries do not count twice |
 | Commander Live | Reconnect to a room with the original active host | Same room model; signing in does not add host migration or durable Live resume |
 
@@ -611,19 +611,23 @@ Guest and account deck libraries are separate; signing in does not silently merg
 | Play is waiting | Check the decision panel, Stack review, negotiation, HOLD/priority stop, or recovery pause. Confirm the pending action; use **Finish recovery & resume** after Last Resort. |
 | Live loses its connection | Keep the original host tab active and allow reconnection. Use the visible **Resume** control when available; a closed or refreshed host cannot be replaced by another player. |
 | A saved deck seems missing | Check the account, browser, and website origin. Guest and account libraries are separate. |
-| A debug import starts at turn one | That is expected: debug reports reproduce setup, while account Save & Continue restores a private checkpoint. |
+| A debug import starts at turn one | Public snapshots reproduce setup. Use **Open problem replay** for a report with recorded Solo decisions, or Continue for a saved game. |
 
 ### Report a reproducible bug
 
-**Game Menu → Download debug snapshot** exports a share-safe `mtg-commander-debug/v1` report with the seed, public state, recent public log, and AI decisions. **Import debug snapshot** restores the setup and starts a deterministic game from turn one; it does not restore a midgame private save. Online snapshots are not accepted by the Solo replay importer.
+**Game Menu → Report a problem** captures the current Solo checkpoint, recorded choices, and loaded game version. Add a description and download the report; nothing is sent automatically. **Include Solo replay** attaches all saved cards and choices, including hidden cards. Uncheck it for public diagnostics only. Live reports contain public diagnostics only.
+
+Open a downloaded Solo report under **Setup → Support & Diagnostics → Open problem replay**, then choose **Start diagnostic replay**. It restores the checkpoint and replays recorded decisions without replacing your normal save or updating profile statistics. A different game version can stop replay at a changed decision. A report captures completed decisions; it cannot restore an in-progress JavaScript call or guarantee reproduction of a timing-dependent failure.
+
+The existing **Download debug snapshot** exports the public `mtg-commander-debug/v1` format. **Import debug snapshot** restores its setup and seed from turn one.
 
 [Open an issue](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues) with:
 
 - The card/deck names, game mode, browser, and device.
 - Steps to reproduce, followed by expected and actual behavior.
-- A share-safe debug report or screenshot when available.
+- A problem report or screenshot when available; choose whether to include private Solo cards.
 
-Review attachments before posting. Do not publish private saves, room invitations, passwords, session cookies, or server credentials. [Judge and Last Resort](#judge-and-last-resort-recovery) can help you continue a game after a rules issue; a bug report helps fix its cause.
+Review attachments before posting, especially an opted-in Solo replay. Do not publish room invitations, passwords, session cookies, or server credentials. [Judge and Last Resort](#judge-and-last-resort-recovery) can help you continue a game after a rules issue; a bug report helps fix its cause.
 
 ## Verification and release
 

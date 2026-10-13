@@ -68,10 +68,13 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     if(!Number.isInteger(n)||n<0||n>max)throw Error('Invalid join forces payment');if(n&&await ctx.g.payMana(p,M.parseCost('{'+n+'}'),{card:ctx.src,isAbility:true}))total+=n;
   }for(const p of ctx.g.apnapFrom(ctx.you))await run(p,total);}
   const uiControllers=new WeakMap();
-  G.c1516Decide=async function(p,q,raw){
+  G.c1516DecisionActor=function(p,q){
     const controlled=this.c1516ActiveControl?.subject===p.idx?this.players[this.c1516ActiveControl.controller]:null;
     const blockEffect=q.type==='blockers'?this.untilEffects.filter(e=>e.kind==='c1516ChooseBlocks'&&e.who!==p&&!e.who.lost).at(-1):null;
-    const actor=blockEffect?.who||controlled,delegate=actor&&!actor.lost?actor._controller:raw;
+    return blockEffect?.who||controlled;
+  };
+  G.c1516Decide=async function(p,q,raw){
+    const actor=this.c1516DecisionActor(p,q),delegate=actor&&!actor.lost?actor._controller:raw;
     const ui=uiControllers.get(delegate)||uiControllers.get(actor||p),previous=ui?.me;
     if(ui&&ui.me!==p){ui.me=p;ui.render();}
     try{

@@ -1,3 +1,4 @@
+import './build-info.js';
 import './modules/util.js';
 import './catalog-summary.js';
 import './modules/creature-types.js';
@@ -691,6 +692,7 @@ import './modules/multiplayer.js';
 import './modules/multiplayer-ui.js';
 import './modules/save-game.js';
 import './modules/save-state.js';
+import './modules/problem-report.js';
 import './modules/loader.js';
 import './modules/arena-render.js';
 import './modules/dungeon-guide.js';
