@@ -644,7 +644,7 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
       const body = request.method === 'POST' ? await readBody(request) : {};
       const action = cleanText(body.action || url.searchParams.get('action') || 'session', 40);
       const deckLibraryRequest = ['decks', 'upsertDeck', 'deleteDeck'].includes(action);
-      ownerBoundRequest = ['save', 'clearSave', 'completeMatch', 'decks', 'upsertDeck', 'deleteDeck'].includes(action);
+      ownerBoundRequest = ['save', 'clearSave', 'completeMatch', 'favorites', 'decks', 'upsertDeck', 'deleteDeck'].includes(action);
       const cookies = parseCookies(request.headers.cookie);
       const rawSession = cookies[SESSION_COOKIE] || '';
 
@@ -746,10 +746,13 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
         return send(response, 200, { ok: true, ownerId: user.id, recorded, ...(await accountSnapshot(store, user)) }, sessionHeaders);
       }
       if (action === 'favorites') {
+        responseOwnerId = user.id;
+        if (body.expectedOwnerId !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload your profile and try again.', ownerId: user.id }, sessionHeaders);
         const names = Array.isArray(body.decks)
           ? [...new Set(body.decks.map(name => cleanText(name, 120)).filter(Boolean))].slice(0, 27) : [];
         await store.setFavoriteDecks(user.id, names);
-        return send(response, 200, { ok: true, profile: await store.getProfile(user.id) }, sessionHeaders);
+        return send(response, 200, { ok: true, ownerId: user.id, profile: await store.getProfile(user.id) }, sessionHeaders);
       }
       return send(response, 400, { ok: false, error: 'Unknown account action.' }, sessionHeaders);
     } catch (error) {

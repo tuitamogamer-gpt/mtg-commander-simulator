@@ -88,7 +88,7 @@ test('account deck operations wait for initial identity and serialize read/write
   const { api, requests } = createAccountClient(async request => {
     calls.push(request.action);
     if (request.action === 'session') return initialSession.promise;
-    if (request.action === 'favorites') return { status: 200, payload: { ok: true, profile } };
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: request.body.expectedOwnerId, profile } };
     if (request.action === 'upsertDeck') return { status: 201, payload: { ok: true, ownerId: 'owner-a', deck: deck('deck-new-0001') } };
     if (request.action === 'decks') return deckRead.promise;
     if (request.action === 'deleteDeck') return { status: 200, payload: { ok: true, ownerId: 'owner-a', deleted: true, deckId: request.body.deckId } };
@@ -128,7 +128,7 @@ test('a server owner mismatch discards stale decks, refreshes the session, and r
       const ownerId = sessionCalls === 1 ? 'owner-a' : 'owner-b';
       return { status: 200, payload: { ok: true, user: user(ownerId), profile, save: null } };
     }
-    if (request.action === 'favorites') return { status: 200, payload: { ok: true, profile } };
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: request.body.expectedOwnerId, profile } };
     if (request.action === 'decks') return { status: 200, payload: { ok: true, ownerId: 'owner-b', decks: [deck('wrong-owner-deck')] } };
     throw new Error(`Unexpected action ${request.action}`);
   });
@@ -145,7 +145,7 @@ test('checkpoint and match writes are serialized and remain bound to their captu
   const pendingSave = deferred();
   const { api, requests } = createAccountClient(async request => {
     if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile, save: null } };
-    if (request.action === 'favorites') return { status: 200, payload: { ok: true, profile } };
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: request.body.expectedOwnerId, profile } };
     if (request.action === 'save') return pendingSave.promise;
     if (request.action === 'completeMatch') return { status: 200, payload: { ok: true, ownerId: 'owner-a', recorded: true, profile, save: null } };
     throw new Error(`Unexpected action ${request.action}`);
@@ -168,7 +168,7 @@ test('checkpoint and match writes are serialized and remain bound to their captu
 test('logout clears local identity only when the server confirms logout or LOCAL_SESSION_CLEARED', async () => {
   const localClearClient = createAccountClient(async request => {
     if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile, save: null } };
-    if (request.action === 'favorites') return { status: 200, payload: { ok: true, profile } };
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: request.body.expectedOwnerId, profile } };
     if (request.action === 'logout') return { status: 503, payload: { ok: false, code: 'LOCAL_SESSION_CLEARED', error: 'Cleanup failed.' } };
     throw new Error(`Unexpected action ${request.action}`);
   });
@@ -181,7 +181,7 @@ test('logout clears local identity only when the server confirms logout or LOCAL
 
   const networkFailureClient = createAccountClient(async request => {
     if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile, save: null } };
-    if (request.action === 'favorites') return { status: 200, payload: { ok: true, profile } };
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: request.body.expectedOwnerId, profile } };
     if (request.action === 'logout') throw new Error('network unavailable');
     throw new Error(`Unexpected action ${request.action}`);
   });
@@ -205,7 +205,7 @@ test('a delayed favorites response cannot replace the next account profile', asy
     if (request.action === 'favorites') {
       favoritesCalls += 1;
       if (favoritesCalls === 1) return oldFavorites.promise;
-      return { status: 200, payload: { ok: true, profile: newProfile } };
+      return { status: 200, payload: { ok: true, ownerId: 'owner-b', profile: newProfile } };
     }
     throw new Error(`Unexpected action ${request.action}`);
   });
@@ -214,10 +214,155 @@ test('a delayed favorites response cannot replace the next account profile', asy
   await api.refresh();
   assert.equal(api.user.id, 'owner-b');
   assert.equal(api.profile.lifetimeScore, 25);
-  oldFavorites.resolve({ status: 200, payload: { ok: true, profile: oldProfile } });
+  oldFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: oldProfile } });
   await new Promise(resolve => setImmediate(resolve));
   assert.equal(api.user.id, 'owner-b');
   assert.equal(api.profile.lifetimeScore, 25, 'account A favorites must not overwrite account B statistics');
+});
+
+for (const action of ['save', 'clearSave', 'completeMatch']) test(`a delayed same-owner session snapshot cannot undo a confirmed ${action}`, async () => {
+  const pendingSession = deferred();
+  const oldSave = { matchId: 'match-old-0001' };
+  const newSave = { matchId: 'match-new-0002' };
+  const oldProfile = { ...profile, gamesPlayed: 1, lifetimeScore: 25 };
+  const newProfile = { ...profile, gamesPlayed: 2, lifetimeScore: 125 };
+  let sessionCalls = 0, currentProfile = oldProfile;
+  const { api } = createAccountClient(async request => {
+    if (request.action === 'session') return ++sessionCalls === 1
+      ? { status: 200, payload: { ok: true, user: user('owner-a'), profile: oldProfile, save: oldSave } }
+      : pendingSession.promise;
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: 'owner-a', profile: currentProfile } };
+    if (request.action === 'save') return { status: 200, payload: { ok: true, ownerId: 'owner-a', save: newSave } };
+    if (request.action === 'clearSave') return { status: 200, payload: { ok: true, ownerId: 'owner-a', save: null } };
+    if (request.action === 'completeMatch') {
+      currentProfile = newProfile;
+      return { status: 200, payload: { ok: true, ownerId: 'owner-a', recorded: true, profile: newProfile, save: null } };
+    }
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  const refreshing = api.refresh();
+  if (action === 'save') await api.saveGame(newSave, 'owner-a');
+  else if (action === 'clearSave') await api.clearSave('owner-a');
+  else await api.completeMatch({ matchId: oldSave.matchId, won: true }, 'owner-a');
+  const expectedSave = action === 'save' ? newSave : null;
+  assert.equal(api.save, expectedSave);
+  pendingSession.resolve({ status: 200, payload: { ok: true, user: user('owner-a'), profile: oldProfile, save: oldSave } });
+  await refreshing;
+  assert.equal(api.save, expectedSave, 'an earlier response cannot restore a deleted checkpoint or replace the new checkpoint');
+  if (action === 'completeMatch') assert.equal(api.profile.lifetimeScore, newProfile.lifetimeScore);
+});
+
+test('a delayed same-owner favorites response cannot undo completed-match statistics', async () => {
+  const pendingFavorites = deferred();
+  const oldProfile = { ...profile, gamesPlayed: 1, lifetimeScore: 25 };
+  const newProfile = { ...profile, gamesPlayed: 2, lifetimeScore: 125 };
+  const { api, requests } = createAccountClient(async request => {
+    if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile: oldProfile, save: null } };
+    if (request.action === 'favorites') return pendingFavorites.promise;
+    if (request.action === 'completeMatch') return { status: 200, payload: { ok: true, ownerId: 'owner-a', recorded: true, profile: newProfile, save: null } };
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  await api.completeMatch({ matchId: 'match-statistics-0001', won: true }, 'owner-a');
+  assert.equal(api.profile.lifetimeScore, 125);
+  pendingFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: oldProfile } });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(api.profile.lifetimeScore, 125);
+  assert.equal(requests.find(request => request.action === 'favorites').body.expectedOwnerId, 'owner-a');
+});
+
+test('a newer local save does not suppress a session snapshot for a different account', async () => {
+  const pendingSession = deferred();
+  const otherSave = { matchId: 'match-owner-b-0001' };
+  let sessionCalls = 0;
+  const { api } = createAccountClient(async request => {
+    if (request.action === 'session') return ++sessionCalls === 1
+      ? { status: 200, payload: { ok: true, user: user('owner-a'), profile, save: null } }
+      : pendingSession.promise;
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: request.body.expectedOwnerId, profile } };
+    if (request.action === 'save') return { status: 200, payload: { ok: true, ownerId: 'owner-a', save: { matchId: 'match-owner-a-0001' } } };
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  const refreshing = api.refresh();
+  await api.saveGame({ matchId: 'match-owner-a-0001' }, 'owner-a');
+  pendingSession.resolve({ status: 200, payload: { ok: true, user: user('owner-b'), profile, save: otherSave } });
+  await refreshing;
+  assert.equal(api.user.id, 'owner-b');
+  assert.equal(api.save, otherSave);
+});
+
+test('a failed checkpoint write still allows a newer same-owner session snapshot', async () => {
+  const pendingSession = deferred();
+  const serverSave = { matchId: 'match-other-tab-0001' };
+  let sessionCalls = 0;
+  const { api } = createAccountClient(async request => {
+    if (request.action === 'session') return ++sessionCalls === 1
+      ? { status: 200, payload: { ok: true, user: user('owner-a'), profile, save: null } }
+      : pendingSession.promise;
+    if (request.action === 'favorites') return { status: 200, payload: { ok: true, ownerId: 'owner-a', profile } };
+    if (request.action === 'save') return { status: 503, payload: { ok: false, error: 'Storage unavailable.', ownerId: 'owner-a' } };
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  const refreshing = api.refresh();
+  await assert.rejects(api.saveGame({ matchId: 'match-failed-0001' }, 'owner-a'), /Storage unavailable/);
+  pendingSession.resolve({ status: 200, payload: { ok: true, user: user('owner-a'), profile, save: serverSave } });
+  await refreshing;
+  assert.equal(api.save, serverSave);
+});
+
+test('older favorites cannot prevent a newer session from showing another tab match statistics', async () => {
+  const pendingSession = deferred(), oldFavorites = deferred(), newFavorites = deferred();
+  const oldProfile = { ...profile, lifetimeScore: 25 };
+  const newProfile = { ...profile, lifetimeScore: 125 };
+  let sessionCalls = 0, favoritesCalls = 0;
+  const { api } = createAccountClient(async request => {
+    if (request.action === 'session') return ++sessionCalls === 1
+      ? { status: 200, payload: { ok: true, user: user('owner-a'), profile: oldProfile, save: null } }
+      : pendingSession.promise;
+    if (request.action === 'favorites') return ++favoritesCalls === 1 ? oldFavorites.promise : newFavorites.promise;
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  const refreshing = api.refresh();
+  oldFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: oldProfile } });
+  await new Promise(resolve => setImmediate(resolve));
+  pendingSession.resolve({ status: 200, payload: { ok: true, user: user('owner-a'), profile: newProfile, save: null } });
+  await refreshing;
+  assert.equal(api.profile.lifetimeScore, 125);
+  newFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: newProfile } });
+  await new Promise(resolve => setImmediate(resolve));
+});
+
+for (const mismatchedSuccess of [false, true]) test(`favorites ${mismatchedSuccess ? 'response-owner mismatch' : 'owner rejection'} refreshes identity without committing another profile`, async () => {
+  const wrongProfile = { ...profile, lifetimeScore: 900 };
+  const nextProfile = { ...profile, lifetimeScore: 25 };
+  let sessionCalls = 0, favoritesCalls = 0;
+  const { api, requests } = createAccountClient(async request => {
+    if (request.action === 'session') return { status: 200, payload: { ok: true,
+      user: user(++sessionCalls === 1 ? 'owner-a' : 'owner-b'), profile: nextProfile, save: null } };
+    if (request.action === 'favorites') {
+      if (++favoritesCalls === 1) return mismatchedSuccess
+        ? { status: 200, payload: { ok: true, ownerId: 'owner-b', profile: wrongProfile } }
+        : { status: 409, payload: { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', ownerId: 'owner-b', error: 'Your signed-in account changed.' } };
+      return { status: 200, payload: { ok: true, ownerId: 'owner-b', profile: nextProfile } };
+    }
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  const observed = [];
+  api.onChange(snapshot => observed.push(snapshot.profile?.lifetimeScore));
+  await api.whenReady();
+  for (let n = 0; n < 20 && (api.user?.id !== 'owner-b' || api.loading); n++)
+    await new Promise(resolve => setImmediate(resolve));
+  assert.equal(api.user.id, 'owner-b');
+  assert.equal(api.profile.lifetimeScore, 25);
+  assert.equal(observed.includes(900), false, 'a mismatched successful payload is rejected before commit');
+  assert.equal(sessionCalls, 2);
+  const favorites = requests.filter(request => request.action === 'favorites');
+  assert.equal(favorites[0].body.expectedOwnerId, 'owner-a');
+  assert.equal(favorites[1].body.expectedOwnerId, 'owner-b');
 });
 
 test('account/library lifecycle keeps recovery, cross-tab sync, and active custom games fail-safe', () => {

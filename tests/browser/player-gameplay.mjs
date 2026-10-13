@@ -14,7 +14,7 @@ await once(server, 'listening');
 const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
 const out = process.env.PLAYER_GAMEPLAY_QA_OUTPUT || 'output/web-game/player-gameplay';
 mkdirSync(out, { recursive: true });
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_EXECUTABLE ? { executablePath: process.env.BROWSER_EXECUTABLE } : {}) });
 const page = await browser.newPage({ viewport: {
   width: Number(process.env.ARENA_VIEWPORT_WIDTH || 1440),
   height: Number(process.env.ARENA_VIEWPORT_HEIGHT || 1000),

@@ -16,6 +16,8 @@ let saveChain = Promise.resolve();
 let deckChain = Promise.resolve();
 let sessionRequestGeneration = 0;
 let identityGeneration = 0;
+let saveMutationGeneration = 0;
+let profileMutationGeneration = 0;
 let settleInitialReady;
 let initialReadySettled = false;
 const initialReady = new Promise(resolve => { settleInitialReady = resolve; });
@@ -122,6 +124,8 @@ function smokeSnapshot() {
 
 async function refresh() {
   const generation = ++sessionRequestGeneration;
+  const saveGeneration = saveMutationGeneration;
+  const profileGeneration = profileMutationGeneration;
   state.loading = true;
   emit();
   try {
@@ -129,7 +133,12 @@ async function refresh() {
       ? smokeSnapshot()
       : smokeMode === 'guest' ? { user: null, profile: null, save: null } : await request('session');
     if (generation !== sessionRequestGeneration) return false;
-    applySessionSnapshot(result);
+    const sameOwner = !!state.user && state.user.id === result.user?.id;
+    applySessionSnapshot({
+      ...result,
+      ...(sameOwner && saveGeneration !== saveMutationGeneration ? { save: state.save } : {}),
+      ...(sameOwner && profileGeneration !== profileMutationGeneration ? { profile: state.profile } : {}),
+    });
     state.available = true;
     state.error = '';
     if (state.user) void syncLocalFavorites();
@@ -352,17 +361,27 @@ async function syncLocalFavorites() {
   if (!state.user || smokeMode === 'profile') return;
   const ownerId = state.user.id;
   const ownerGeneration = identityGeneration;
+  const profileGeneration = profileMutationGeneration;
+  const sessionGeneration = sessionRequestGeneration;
   let decks = [];
   try {
     const parsed = JSON.parse(localStorage.getItem('mtgDeckFavorites') || '[]');
     if (Array.isArray(parsed)) decks = parsed;
   } catch {}
   try {
-    const result = await request('favorites', { decks });
+    const result = await request('favorites', { decks, expectedOwnerId: ownerId });
     if (state.user?.id !== ownerId || identityGeneration !== ownerGeneration) return;
+    if (sessionGeneration !== sessionRequestGeneration) return;
+    if (result.ownerId !== ownerId) await recoverAccountOwnerMismatch();
+    if (profileGeneration !== profileMutationGeneration) return;
     state.profile = result.profile;
+    profileMutationGeneration += 1;
     emit();
-  } catch {}
+  } catch (error) {
+    if (accountOwnerChanged(error) && state.user?.id === ownerId && identityGeneration === ownerGeneration) {
+      try { await recoverAccountOwnerMismatch(); } catch {}
+    }
+  }
 }
 
 function accountOwnerChanged(error) {
@@ -409,6 +428,8 @@ async function runOwnedProfileOperation(expectedOwnerId, operation, commit) {
     if (result?.ownerId !== expectedOwnerId || state.user?.id !== expectedOwnerId || identityGeneration !== ownerGeneration) {
       return recoverAccountOwnerMismatch();
     }
+    if (Object.hasOwn(result, 'save')) saveMutationGeneration += 1;
+    if (Object.hasOwn(result, 'profile')) profileMutationGeneration += 1;
     return commit(result, expectedOwnerId);
   } catch (error) {
     if (accountOwnerChanged(error) || state.user?.id !== expectedOwnerId || identityGeneration !== ownerGeneration) {

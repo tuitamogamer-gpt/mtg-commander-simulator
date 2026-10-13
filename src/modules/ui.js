@@ -615,7 +615,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolvePendingEntry(pd, val) {
       if (!pd) return;
       const i = (this.pendings || []).indexOf(pd);
-      if (i >= 0) this.pendings.splice(i, 1);
+      if (i < 0) return;
+      this.pendings.splice(i, 1);
       this.sheet = null;
       this.attackPicker = null;
       pd.resolve(val);
@@ -4164,7 +4165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               `<span>${index + 1}</span><b>${esc(target.name || target.card && target.card.name || 'Stack object')}</b>${additions ? `<small>${esc(additions)}</small>` : ''}<i>×</i>`);
             chip.type = 'button';
             chip.title = `Remove ${proliferate ? 'proliferate choice' : 'target'} ${index + 1}`;
-            chip.onclick = () => this.removeTargetCandidate(target);
+            chip.onclick = () => { if (this.pending === pd) this.removeTargetCandidate(target); };
             picked.appendChild(chip);
           });
           if (!pd.sel.length) picked.appendChild(el('div', 'targetpickempty', proliferate
@@ -4178,6 +4179,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             for (const { player, zone, cards } of zones) {
               const label = player === this.me ? `your ${zone}` : `${player.name}'s ${zone}`;
               const open = btn(`Open ${esc(label)} <span>${cards.length} legal</span>`, () => {
+                if (this.pending !== pd) return;
                 this.zoneBrowse = { player, zone }; this.render();
               }, 'targetzoneopen');
               open.dataset.targetZone = zone;
@@ -4188,7 +4190,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           const actions = el('div', 'btnrow targetpromptactions');
           if (q.cancelable) actions.appendChild(btn('Abort cast ↩', () => {
-            this.resolvePendingEntry(pd, { kind: 'cancel' });
+            if (this.pending === pd) this.resolvePendingEntry(pd, { kind: 'cancel' });
           }, 'danger'));
           const confirm = btn(
             pd.sel.length < min ? `Choose ${min - pd.sel.length} target${min - pd.sel.length === 1 ? '' : 's'}`
@@ -4198,10 +4200,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               : pd.sel.length
               ? `${q.cancelable ? 'Lock & cast with' : 'Lock'} ${pd.sel.length} target${pd.sel.length === 1 ? '' : 's'} ✓`
               : (q.cancelable ? 'Cast with no targets ✓' : 'Choose no targets ✓'),
-            () => this.resolvePending(pd.sel.slice()), 'primary');
+            () => { if (this.pending === pd) this.resolvePendingEntry(pd, pd.sel.slice()); }, 'primary');
           confirm.disabled = pd.sel.length < min;
           actions.appendChild(confirm);
-          if (pd.sel.length) picked.appendChild(btn('Clear', () => { pd.sel = []; this.render(); }, 'targetclear'));
+          if (pd.sel.length) picked.appendChild(btn('Clear', () => { if (this.pending === pd) { pd.sel = []; this.render(); } }, 'targetclear'));
           bar.appendChild(actions);
           break;
         }
@@ -4317,7 +4319,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ov = el('div', 'overlay');
       const m = el('div', 'modal');
       ov.appendChild(m);
-      const btn = (label, fn, cls) => { const b = el('button', 'pbtn ' + (cls || ''), label); b.onclick = fn; return b; };
+      const answer = value => { if (this.pending === pd) this.resolvePendingEntry(pd, value); };
+      // Each view belongs to one engine question. Late handlers from a
+      // replaced dialog must not answer or edit the next pending decision.
+      for (const type of ['click', 'input', 'change', 'keydown']) ov.addEventListener(type, event => {
+        if (this.pending !== pd) { event.preventDefault(); event.stopImmediatePropagation(); }
+      }, true);
+      const btn = (label, fn, cls) => {
+        const b = el('button', 'pbtn ' + (cls || ''), label);
+        b.onclick = (...args) => { if (this.pending === pd) return fn(...args); };
+        return b;
+      };
 
       if (q.type === 'effectReview') {
         if (q.effectKind === 'resolutionRecap') {
@@ -4635,7 +4647,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             selectedKey: pd.dungeonKey, selectedRoom: pd.dungeonRoom,
             onTab: key => { pd.dungeonKey = key; }, onRoom: key => { pd.dungeonRoom = key; },
             rulesOpen: pd.dungeonRulesOpen, onRules: open => { pd.dungeonRulesOpen = open; },
-            onChoose: key => this.resolvePending(key) }));
+            onChoose: answer }));
           return ov;
         }
         if (q.diplomacyCampaign) {
@@ -4727,7 +4739,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return ov;
         }
         for (const o of q.options) {
-          const visualOption = this.renderVisualChoiceOption(o, () => this.resolvePending(o.key));
+          const visualOption = this.renderVisualChoiceOption(o, () => answer(o.key));
           if (visualOption) {
             m.classList.add('cardchoicemodal');
             m.appendChild(visualOption);

@@ -2312,10 +2312,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (opts.combat && damagedMonarch === p && combatSource?.types.includes('Creature')) {
         // CR 725.2: each creature's damage creates a source-less ability
         // controlled by the monarch. Simultaneous hits all observe the crown
-        // at damage time, and each damaging controller is fixed then.
-        const controller = combatSource.ctrl;
-        this.queueTrigger({ctrl:p,name:'Monarch — combat damage changes the crown',run:async ctx=>{
-          await ctx.g.becomeMonarch(controller,{reason:'combat damage',source:src});
+        // at damage time. Its recipient uses the damaging creature's current
+        // controller, or that incarnation's departure-time LKI (CR 608.2h).
+        const damageCard = this.byIid(src.iid) || src;
+        this.queueTrigger({ctrl:p,name:'Monarch — combat damage changes the crown',
+          data:{damageCard,damageCardZoneVersion:combatSource.zoneVersion,damageController:combatSource.ctrl},run:async ctx=>{
+          const {damageCard:card,damageCardZoneVersion:version,damageController} = ctx.data;
+          const controller = card.zone==='battlefield'&&card.zoneVersion===version
+            ? card.ctrl : card.battlefieldLKI?.get(version)?.ctrl || damageController;
+          await ctx.g.becomeMonarch(controller,{reason:'combat damage',source:card});
         }});
       }
       const damagedInitiative=opts._damageBatch?opts._damageBatch.initiative:this.initiative;
@@ -2325,7 +2330,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const controller=combatSource.ctrl,controllers=opts._damageBatch?.initiativeControllers;
         if(!controllers?.has(controller)){
           controllers?.add(controller);
-          this.queueTrigger({ctrl:p,name:'Take the initiative after combat damage',run:ctx=>ctx.g.takeInitiative(controller)});
+          this.queueTrigger({ctrl:p,name:'Take the initiative after combat damage',data:{damageController:controller},run:ctx=>ctx.g.takeInitiative(ctx.data.damageController)});
         }
       }
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;

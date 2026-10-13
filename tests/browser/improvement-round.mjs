@@ -28,7 +28,7 @@ const browser = await chromium.launch({headless: true,
 });
 const page = await browser.newPage({viewport: {width: 390, height: 844}, hasTouch: true, reducedMotion: 'reduce'});
 const errors = [], checks = [], sources = [];
-const sourceNames = ['ui.js', 'engine2.js', 'clb-40k-integration.js', 'frontend-overhaul.css'];
+const sourceNames = ['ui.js', 'engine.js', 'engine2.js', 'clb-40k-integration.js', 'frontend-overhaul.css', 'account.js'];
 page.on('pageerror', error => errors.push(error.message));
 page.on('response', response => {
   const name = new URL(response.url()).pathname.split('/').at(-1);
@@ -142,7 +142,7 @@ try {
   assert.deepEqual(errors, []);
   const loaded = await Promise.all(sources);
   if (target) for (const name of sourceNames) {
-    const path = name.endsWith('.css') ? 'src/' + name : 'src/modules/' + name;
+    const path = name.endsWith('.css') || name === 'account.js' ? 'src/' + name : 'src/modules/' + name;
     const expected = createHash('sha256').update(readFileSync(root + path)).digest('hex');
     assert.ok(loaded.some(row => row.name === name && row.status === 200 && row.sha256 === expected), `Shipped ${name} matches local source`);
   }
