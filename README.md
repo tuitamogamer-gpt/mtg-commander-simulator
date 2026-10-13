@@ -659,6 +659,10 @@ Browser acceptance scripts live in [tests/browser](tests/browser/). They require
 
 `node tests/browser/decision-callbacks.mjs` checks stale callbacks against a real paid Rolling Thunder split and sequential human choices. It supports the same browser/production variables; use `DECISION_OUTPUT` for receipts and screenshots.
 
+`node tests/browser/priority-actions.mjs` checks paid reaction controls, retained callbacks, and keyboard input while Help is open. It supports the same browser/production variables; use `PRIORITY_OUTPUT` for receipts.
+
+The focused account concurrency checks use a local `redis-server` when available. Set `REDIS_SERVER_BINARY` to its executable to run the real Redis/Lua checks. The helper uses a private Unix socket with TCP and persistence disabled; unavailable Redis is reported as skipped coverage.
+
 For a public application release, follow [PUBLIC_RELEASE.md](PUBLIC_RELEASE.md), including:
 
 ```bash

@@ -14,6 +14,9 @@ const state = {
 let gameLoader = null;
 let saveChain = Promise.resolve();
 let deckChain = Promise.resolve();
+let favoriteChain = Promise.resolve();
+let pendingFavoriteWrite = null;
+let favoriteMutationGeneration = 0;
 let sessionRequestGeneration = 0;
 let identityGeneration = 0;
 let saveMutationGeneration = 0;
@@ -62,6 +65,9 @@ function applySessionSnapshot(result) {
   state.profile = result.profile || null;
   state.save = result.save || null;
   state.saveError = '';
+  if (state.user && Array.isArray(state.profile?.favoriteDecks)) {
+    try { localStorage.setItem('mtgDeckFavorites', JSON.stringify(state.profile.favoriteDecks)); } catch {}
+  }
 }
 
 async function request(action, payload = null, query = null) {
@@ -126,6 +132,7 @@ async function refresh() {
   const generation = ++sessionRequestGeneration;
   const saveGeneration = saveMutationGeneration;
   const profileGeneration = profileMutationGeneration;
+  const favoriteGeneration = favoriteMutationGeneration;
   state.loading = true;
   emit();
   try {
@@ -134,14 +141,17 @@ async function refresh() {
       : smokeMode === 'guest' ? { user: null, profile: null, save: null } : await request('session');
     if (generation !== sessionRequestGeneration) return false;
     const sameOwner = !!state.user && state.user.id === result.user?.id;
+    let profile = sameOwner && profileGeneration !== profileMutationGeneration ? state.profile : result.profile;
+    const pendingFavorites = sameOwner && pendingFavoriteWrite?.ownerId === result.user?.id ? pendingFavoriteWrite : null;
+    if (sameOwner && profile && (pendingFavorites || favoriteGeneration !== favoriteMutationGeneration))
+      profile = { ...profile, favoriteDecks: pendingFavorites?.decks || state.profile?.favoriteDecks || [] };
     applySessionSnapshot({
       ...result,
       ...(sameOwner && saveGeneration !== saveMutationGeneration ? { save: state.save } : {}),
-      ...(sameOwner && profileGeneration !== profileMutationGeneration ? { profile: state.profile } : {}),
+      profile,
     });
     state.available = true;
     state.error = '';
-    if (state.user) void syncLocalFavorites();
   } catch (error) {
     if (generation !== sessionRequestGeneration) return false;
     state.available = false;
@@ -277,7 +287,6 @@ function renderModal(view, content) {
       finishInitialReady();
       emit();
       renderModal('profile', content);
-      void syncLocalFavorites();
       announceSessionChange();
     } catch (problem) {
       error.textContent = problem.message;
@@ -368,20 +377,29 @@ async function syncLocalFavorites() {
     const parsed = JSON.parse(localStorage.getItem('mtgDeckFavorites') || '[]');
     if (Array.isArray(parsed)) decks = parsed;
   } catch {}
-  try {
-    const result = await request('favorites', { decks, expectedOwnerId: ownerId });
-    if (state.user?.id !== ownerId || identityGeneration !== ownerGeneration) return;
-    if (sessionGeneration !== sessionRequestGeneration) return;
-    if (result.ownerId !== ownerId) await recoverAccountOwnerMismatch();
-    if (profileGeneration !== profileMutationGeneration) return;
-    state.profile = result.profile;
-    profileMutationGeneration += 1;
-    emit();
-  } catch (error) {
-    if (accountOwnerChanged(error) && state.user?.id === ownerId && identityGeneration === ownerGeneration) {
-      try { await recoverAccountOwnerMismatch(); } catch {}
+  const write = { ownerId, decks };
+  pendingFavoriteWrite = write;
+  favoriteChain = favoriteChain.catch(() => {}).then(async () => {
+    try {
+      if (state.user?.id !== ownerId || identityGeneration !== ownerGeneration) return;
+      const result = await request('favorites', { decks, expectedOwnerId: ownerId });
+      if (state.user?.id !== ownerId || identityGeneration !== ownerGeneration) return;
+      if (result.ownerId !== ownerId) await recoverAccountOwnerMismatch();
+      if (pendingFavoriteWrite !== write) return;
+      state.profile = sessionGeneration === sessionRequestGeneration && profileGeneration === profileMutationGeneration
+        ? result.profile : { ...state.profile, favoriteDecks: result.profile.favoriteDecks };
+      favoriteMutationGeneration += 1;
+      try { localStorage.setItem('mtgDeckFavorites', JSON.stringify(result.profile.favoriteDecks)); } catch {}
+      emit();
+    } catch (error) {
+      if (accountOwnerChanged(error) && state.user?.id === ownerId && identityGeneration === ownerGeneration) {
+        try { await recoverAccountOwnerMismatch(); } catch {}
+      }
+    } finally {
+      if (pendingFavoriteWrite === write) pendingFavoriteWrite = null;
     }
-  }
+  });
+  return favoriteChain;
 }
 
 function accountOwnerChanged(error) {

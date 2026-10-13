@@ -1388,7 +1388,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (!isOriginalGraveyardObject(ctx.src, ctx.data)) return;
                 ctx.g.lg(`${ctx.src.name} se vraća (undying).`);
                 await returnDead(ctx, {
-                  ctrl: snap.owner, additionalCounters: { '+1/+1': 1 }, additionalCounterBy: snap.owner,
+                  ctrl: ctx.data.snap.owner, additionalCounters: { '+1/+1': 1 }, additionalCounterBy: ctx.data.snap.owner,
                 });
               },
             });
@@ -1401,9 +1401,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (!isOriginalGraveyardObject(ctx.src, ctx.data)) return;
                 ctx.g.lg(`${ctx.src.name} se vraća (persist).`);
                 await returnDead(ctx, {
-                  ctrl: snap.owner,
+                  ctrl: ctx.data.snap.owner,
                   additionalCounters: { '-1/-1': 1 },
-                  additionalCounterBy: snap.owner,
+                  additionalCounterBy: ctx.data.snap.owner,
                 });
               },
             });

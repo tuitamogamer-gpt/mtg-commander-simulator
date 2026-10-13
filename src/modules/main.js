@@ -75,6 +75,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   let importedLibraryRefresh = Promise.resolve();
   let importedLibraryGeneration = 0;
   let activeGameLibraryOwner = null;
+  let refreshSetupFavorites = null;
 
   function currentImportedLibraryOwner() {
     if (globalThis.MTGAccount?.loading) return 'loading';
@@ -190,6 +191,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function renderMainMenu() {
+    refreshSetupFavorites = null;
     const root = $('#setup');
     const bootPage = root.querySelector('.mainmenu-boot');
     const nDecks = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).length;
@@ -649,6 +651,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.showSetup = renderSetup;
 
   function renderSetup(options = {}) {
+    refreshSetupFavorites = null;
     const root = $('#setup');
     root.innerHTML = '';
     root.removeAttribute('aria-busy');
@@ -1086,6 +1089,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       favorite.setAttribute('aria-label', favorite.title);
       favorite.setAttribute('aria-pressed', state.favorites.has(name) ? 'true' : 'false');
       favorite.onclick = () => {
+        refreshFavorites();
         if (state.favorites.has(name)) state.favorites.delete(name); else state.favorites.add(name);
         localStorage.setItem('mtgDeckFavorites', JSON.stringify([...state.favorites]));
         favorite.textContent = state.favorites.has(name) ? '★' : '☆';
@@ -1280,6 +1284,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
     };
+    const refreshFavorites = () => {
+      if (!head.isConnected || root.dataset.appView !== 'setup' || window._game) return;
+      try {
+        const favorites = JSON.parse(localStorage.getItem('mtgDeckFavorites') || '[]');
+        if (!Array.isArray(favorites)) return;
+        state.favorites = new Set(favorites);
+      } catch {
+        return;
+      }
+      deckCatalog.forEach(record => {
+        const button = record.element.querySelector('.deckfavorite');
+        const selected = state.favorites.has(record.name);
+        button.textContent = selected ? '★' : '☆';
+        button.title = `${selected ? 'Remove' : 'Add'} ${record.name} ${selected ? 'from' : 'to'} favorites`;
+        button.setAttribute('aria-label', button.title);
+        button.setAttribute('aria-pressed', String(selected));
+      });
+      filterDecks({ resetPage: false });
+    };
+    refreshSetupFavorites = refreshFavorites;
     deckBrowseBar.querySelector('.decksort').onchange = event => {
       state.deckSort = event.target.value;
       U.savePlayerPreferences({ deckSort: state.deckSort });
@@ -2152,6 +2176,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       MTG.registerImportedDeck(validation, { replace: true });
     }
     U.rememberDeck(state.deck);
+    refreshSetupFavorites = null;
     const resumeSave = state.resumeSave ? MTG.validateAccountSave(state.resumeSave) : null;
     // New checkpoints retain their exact random stream and the absolute
     // timeline offset. Replay only the actions since the safe turn boundary.
@@ -2359,18 +2384,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     let gameAccountOwnerId = globalThis.MTGAccount?.user?.id || null;
     let accountBindingDisabled = false;
+    let accountBindingMessage = 'Profile changed · saves paused';
     const accountCanWrite = () => !accountBindingDisabled
       && !!gameAccountOwnerId
       && globalThis.MTGAccount?.user?.id === gameAccountOwnerId;
-    const disableAccountBinding = () => {
+    const disableAccountBinding = (message = 'Profile changed · saves paused') => {
       if (accountBindingDisabled) return;
       accountBindingDisabled = true;
+      accountBindingMessage = message;
       clearTimeout(saveTimer);
-      ui.accountSaveStatus = { state: 'error', text: 'Profile changed · saves paused' };
+      ui.accountSaveStatus = { state: 'error', text: accountBindingMessage };
       ui.queueRender();
     };
     const writeAccountSave = async ({ notify = false } = {}) => {
-      if (!accountCheckpointEnabled || g.gameOver || !accountCanWrite()) return false;
+      if (!accountCheckpointEnabled || g.gameOver || !accountCanWrite()) {
+        if (accountBindingDisabled) {
+          ui.accountSaveStatus = { state: 'error', text: accountBindingMessage };
+          ui.queueRender();
+        }
+        return false;
+      }
       clearTimeout(saveTimer);
       ui.accountSaveStatus = { state: 'saving', text: 'Saving…' };
       ui.queueRender();
@@ -2382,8 +2415,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ui.queueRender();
         return true;
       } catch (error) {
+        if (error.code === 'MATCH_ALREADY_COMPLETED') {
+          disableAccountBinding('Match finished · saves paused');
+          ui.toast(error.message);
+          return false;
+        }
         ui.accountSaveStatus = accountBindingDisabled
-          ? { state: 'error', text: 'Profile changed · saves paused' }
+          ? { state: 'error', text: accountBindingMessage }
           : { state: 'error', text: 'Save failed' };
         ui.toast(`Save failed: ${error.message}`);
         ui.queueRender();
@@ -5238,6 +5276,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   };
   window.addEventListener('mtg:account-change', () => {
+    refreshSetupFavorites?.();
     if (!entryInitialized || !MTG.CARD_CATALOG) return;
     const owner = currentImportedLibraryOwner();
     if (window._game && owner === activeGameLibraryOwner) return;

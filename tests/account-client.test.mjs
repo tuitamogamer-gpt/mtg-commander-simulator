@@ -18,10 +18,11 @@ function response(payload, status = 200) {
   return { ok: status >= 200 && status < 300, status, async json() { return payload; } };
 }
 
-function createAccountClient(handleRequest, { offlineIOS = false } = {}) {
+function createAccountClient(handleRequest, { offlineIOS = false, favorites } = {}) {
   const requests = [];
   const listeners = new Map();
   const local = new Map();
+  if (favorites !== undefined) local.set('mtgDeckFavorites', JSON.stringify(favorites));
   const document = {
     readyState: 'complete',
     activeElement: null,
@@ -66,7 +67,7 @@ function createAccountClient(handleRequest, { offlineIOS = false } = {}) {
   context.window = context;
   context.globalThis = context;
   vm.runInNewContext(accountSource, context, { filename: 'src/account.js' });
-  return { api: context.MTGAccount, requests, listeners };
+  return { api: context.MTGAccount, requests, listeners, local };
 }
 
 const user = id => ({ id, displayName: `Player ${id}`, email: `${id}@example.com`, createdAt: '2026-08-30T00:00:00.000Z' });
@@ -210,6 +211,8 @@ test('a delayed favorites response cannot replace the next account profile', asy
     throw new Error(`Unexpected action ${request.action}`);
   });
   await api.whenReady();
+  void api.syncLocalFavorites();
+  await new Promise(resolve => setImmediate(resolve));
   assert.equal(favoritesCalls, 1);
   await api.refresh();
   assert.equal(api.user.id, 'owner-b');
@@ -264,6 +267,7 @@ test('a delayed same-owner favorites response cannot undo completed-match statis
     throw new Error(`Unexpected action ${request.action}`);
   });
   await api.whenReady();
+  void api.syncLocalFavorites();
   await api.completeMatch({ matchId: 'match-statistics-0001', won: true }, 'owner-a');
   assert.equal(api.profile.lifetimeScore, 125);
   pendingFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: oldProfile } });
@@ -326,12 +330,14 @@ test('older favorites cannot prevent a newer session from showing another tab ma
     throw new Error(`Unexpected action ${request.action}`);
   });
   await api.whenReady();
+  void api.syncLocalFavorites();
   const refreshing = api.refresh();
   oldFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: oldProfile } });
   await new Promise(resolve => setImmediate(resolve));
   pendingSession.resolve({ status: 200, payload: { ok: true, user: user('owner-a'), profile: newProfile, save: null } });
   await refreshing;
   assert.equal(api.profile.lifetimeScore, 125);
+  void api.syncLocalFavorites();
   newFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: newProfile } });
   await new Promise(resolve => setImmediate(resolve));
 });
@@ -354,15 +360,130 @@ for (const mismatchedSuccess of [false, true]) test(`favorites ${mismatchedSucce
   const observed = [];
   api.onChange(snapshot => observed.push(snapshot.profile?.lifetimeScore));
   await api.whenReady();
+  await api.syncLocalFavorites();
   for (let n = 0; n < 20 && (api.user?.id !== 'owner-b' || api.loading); n++)
     await new Promise(resolve => setImmediate(resolve));
   assert.equal(api.user.id, 'owner-b');
   assert.equal(api.profile.lifetimeScore, 25);
   assert.equal(observed.includes(900), false, 'a mismatched successful payload is rejected before commit');
   assert.equal(sessionCalls, 2);
+  await api.syncLocalFavorites();
   const favorites = requests.filter(request => request.action === 'favorites');
   assert.equal(favorites[0].body.expectedOwnerId, 'owner-a');
   assert.equal(favorites[1].body.expectedOwnerId, 'owner-b');
+});
+
+test('a fresh signed-in browser restores cloud favorites without publishing an empty local collection', async () => {
+  const cloud = { ...profile, favoriteDecks: ['Quick Draw'] };
+  const { api, requests, local } = createAccountClient(async request => {
+    if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile: cloud, save: null } };
+    throw new Error(`Unexpected session-side write ${request.action}`);
+  });
+  await api.whenReady();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), ['Quick Draw']);
+  assert.deepEqual(Array.from(api.profile.favoriteDecks), ['Quick Draw']);
+  assert.deepEqual(requests.map(request => request.action), ['session']);
+});
+
+test('guest favorites remain local until sign-in and each new account restores its own preferences', async () => {
+  const snapshots = [
+    { user: null, profile: null, save: null },
+    { user: user('owner-a'), profile: { ...profile, favoriteDecks: ['Quick Draw'] }, save: null },
+    { user: user('owner-b'), profile: { ...profile, favoriteDecks: ['Elven Council'] }, save: null },
+  ];
+  const { api, requests, local } = createAccountClient(async request => {
+    assert.equal(request.action, 'session');
+    return { status: 200, payload: { ok: true, ...snapshots.shift() } };
+  }, { favorites: ['Local guest favorite'] });
+  await api.whenReady();
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), ['Local guest favorite']);
+  await api.refresh();
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), ['Quick Draw']);
+  await api.refresh();
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), ['Elven Council']);
+  assert.equal(api.user.id, 'owner-b');
+  assert.equal(requests.some(request => request.action === 'favorites'), false);
+});
+
+test('a failed session refresh keeps the last restored favorites and identity', async () => {
+  let sessions = 0;
+  const { api, requests, local } = createAccountClient(async request => {
+    assert.equal(request.action, 'session');
+    if (++sessions > 1) throw new Error('Network unavailable.');
+    return { status: 200, payload: { ok: true, user: user('owner-a'), profile: { ...profile, favoriteDecks: ['Quick Draw'] }, save: null } };
+  });
+  await api.whenReady();
+  await api.refresh();
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), ['Quick Draw']);
+  assert.equal(api.user.id, 'owner-a');
+  assert.equal(requests.length, 2);
+});
+
+test('same-owner refresh preserves pending explicit stars and newer match statistics when the write finishes', async () => {
+  const pendingFavorites = deferred();
+  const oldProfile = { ...profile, lifetimeScore: 25, favoriteDecks: ['Quick Draw'] };
+  const desired = ['Quick Draw', 'Elven Council'];
+  let sessions = 0;
+  const { api, requests, local } = createAccountClient(async request => {
+    if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'),
+      profile: ++sessions === 1 ? oldProfile : { ...oldProfile, lifetimeScore: 125 }, save: null } };
+    if (request.action === 'favorites') return pendingFavorites.promise;
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  local.set('mtgDeckFavorites', JSON.stringify(desired));
+  const writing = api.syncLocalFavorites();
+  while (!requests.some(request => request.action === 'favorites')) await Promise.resolve();
+  await api.refresh();
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), desired);
+  assert.equal(api.profile.lifetimeScore, 125);
+  pendingFavorites.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: { ...oldProfile, favoriteDecks: desired } } });
+  await writing;
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), desired);
+  assert.deepEqual(Array.from(api.profile.favoriteDecks), desired);
+  assert.equal(api.profile.lifetimeScore, 125);
+  assert.equal(requests.filter(request => request.action === 'favorites').length, 1);
+});
+
+test('rapid explicit favorite edits reach the server in click order and retain the latest pending collection', async () => {
+  const firstWrite = deferred();
+  const first = ['Quick Draw', 'Elven Council'], last = [...first, 'Doom Prevails'];
+  let writes = 0;
+  const { api, requests, local } = createAccountClient(async request => {
+    if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile: { ...profile, favoriteDecks: ['Quick Draw'] }, save: null } };
+    if (request.action === 'favorites') return ++writes === 1 ? firstWrite.promise
+      : { status: 200, payload: { ok: true, ownerId: 'owner-a', profile: { ...profile, favoriteDecks: last } } };
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  local.set('mtgDeckFavorites', JSON.stringify(first));
+  const writingFirst = api.syncLocalFavorites();
+  while (writes < 1) await Promise.resolve();
+  local.set('mtgDeckFavorites', JSON.stringify(last));
+  const writingLast = api.syncLocalFavorites();
+  await Promise.resolve();
+  assert.equal(writes, 1);
+  await api.refresh();
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), last);
+  firstWrite.resolve({ status: 200, payload: { ok: true, ownerId: 'owner-a', profile: { ...profile, favoriteDecks: first } } });
+  await Promise.all([writingFirst, writingLast]);
+  assert.deepEqual(requests.filter(request => request.action === 'favorites').map(request => Array.from(request.body.decks)), [first, last]);
+  assert.deepEqual(JSON.parse(local.get('mtgDeckFavorites')), last);
+  assert.deepEqual(Array.from(api.profile.favoriteDecks), last);
+});
+
+test('a completed-match save rejection preserves the current different save and signed-in identity', async () => {
+  const nextSave = { matchId: 'match-next-0002' };
+  const { api } = createAccountClient(async request => {
+    if (request.action === 'session') return { status: 200, payload: { ok: true, user: user('owner-a'), profile, save: nextSave } };
+    if (request.action === 'save') return { status: 409, payload: { ok: false, code: 'MATCH_ALREADY_COMPLETED', ownerId: 'owner-a', error: 'This match has already finished.' } };
+    throw new Error(`Unexpected action ${request.action}`);
+  });
+  await api.whenReady();
+  await assert.rejects(api.saveGame({ matchId: 'match-old-0001' }, 'owner-a'), error => error.code === 'MATCH_ALREADY_COMPLETED');
+  assert.equal(api.user.id, 'owner-a');
+  assert.equal(api.save, nextSave);
 });
 
 test('account/library lifecycle keeps recovery, cross-tab sync, and active custom games fail-safe', () => {

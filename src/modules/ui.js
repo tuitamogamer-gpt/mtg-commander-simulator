@@ -1578,6 +1578,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (canAct) {
         const respond = el('button', 'pbtn actionrespond', '⚡ Open responses');
         respond.onclick = () => {
+          if (reaction ? this.react !== reaction || this.pending : this.pending !== pending) return;
           this.actionStageDismissed.add(top);
           if (reaction) this.takeReactWindow(); else this.render();
         };
@@ -1585,6 +1586,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const proceed = el('button', 'pbtn primary', 'Proceed ▶');
       proceed.onclick = () => {
+        if (reaction ? this.react !== reaction || this.pending : this.pending !== pending) return;
         this.actionStageDismissed.add(top);
         if (reaction) this.skipReactWindow();
         else this.resolvePendingEntry(pending, { kind: 'pass' });
@@ -2318,6 +2320,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // its primary action (for example: open a hand card and cast it at once).
         if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest &&
           ev.target.closest('button, [role="button"], a[href], input, textarea, select, [contenteditable="true"]')) return;
+        // Reading an information panel does not answer the gameplay question
+        // behind it. Its focused controls and Escape still own their keys.
+        if ((ev.key === ' ' || ev.key === 'Enter') &&
+          (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp ||
+            this.showJudge || this.showStops || this.diplomacyComposer)) return;
         // R = reaguj / armiraj HOLD; Space u prozoru reakcije = pusti dalje
         if (ev.key === 'r' || ev.key === 'R') {
           if (this.react) { this.takeReactWindow(); ev.preventDefault(); return; }
@@ -3893,14 +3900,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const row = el('div', 'btnrow');
           if (canAct) {
             const yes = el('button', 'pbtn primary', preTurn ? '🎴 PLAY SOMETHING' : '⚡ RESPOND');
-            yes.onclick = () => this.takeReactWindow();
+            yes.onclick = () => { if (this.react === w && !this.pending) this.takeReactWindow(); };
             row.appendChild(yes);
           }
           // Kad nemam čime da odgovorim, jedino dugme je Proceed — ali igra i
           // dalje čeka mene, bez odbrojavanja.
           const no = el('button', 'pbtn' + (canAct ? '' : ' primary'),
             preTurn ? 'Continue to my turn ▶' : 'Proceed ▶');
-          no.onclick = () => this.skipReactWindow();
+          no.onclick = () => { if (this.react === w && !this.pending) this.skipReactWindow(); };
           row.appendChild(no);
           bar.appendChild(row);
           return bar;
@@ -3912,7 +3919,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const q = pd.q;
       const btn = (label, fn, cls) => {
         const b = el('button', 'pbtn ' + (cls || ''), label);
-        b.onclick = fn;
+        b.onclick = (...args) => { if (this.pending === pd) return fn(...args); };
         return b;
       };
       if (this.manualPick) {

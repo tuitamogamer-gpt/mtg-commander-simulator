@@ -28,7 +28,7 @@ const browser = await chromium.launch({headless: true,
 });
 const page = await browser.newPage({viewport: {width: 390, height: 844}, hasTouch: true, reducedMotion: 'reduce'});
 const errors = [], checks = [], sources = [];
-const sourceNames = ['ui.js', 'engine.js', 'engine2.js', 'clb-40k-integration.js', 'frontend-overhaul.css', 'account.js'];
+const sourceNames = ['ui.js', 'engine.js', 'engine2.js', 'oracle-mechanics.js', 'main.js', 'clb-40k-integration.js', 'frontend-overhaul.css', 'account.js'];
 page.on('pageerror', error => errors.push(error.message));
 page.on('response', response => {
   const name = new URL(response.url()).pathname.split('/').at(-1);
