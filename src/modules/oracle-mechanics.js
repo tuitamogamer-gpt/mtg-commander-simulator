@@ -382,7 +382,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.meta.tempHaste=true;card.meta.unearth=true;
         const identity=objectIdentity(card);
         ctx.g.delayed.push({on:'endStep',once:true,name:'Unearth exile',src:card,ctrl:ctx.you,run:async next=>{
-          if(sameBattlefieldObject(next.g,card,identity))await next.g.move(card,'exile');
+          if(sameBattlefieldObject(next.g,next.src,identity))await next.g.move(next.src,'exile');
         }});ctx.g.recalc();
       }};return true;
     }

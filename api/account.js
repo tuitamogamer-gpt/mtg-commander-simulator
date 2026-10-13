@@ -43,6 +43,12 @@ function emptyProfile() {
   return { gamesPlayed: 0, wins: 0, losses: 0, lifetimeScore: 0 };
 }
 
+function completedMatchSaveError() {
+  return Object.assign(new Error('This match has already finished. Start a new Solo game to save again.'), {
+    status: 409, code: 'MATCH_ALREADY_COMPLETED',
+  });
+}
+
 function normalizedProfile(raw = {}) {
   const number = key => Math.max(0, Number(raw[key]) || 0);
   const gamesPlayed = number('gamesPlayed');
@@ -87,7 +93,10 @@ export class MemoryAccountStore {
   async createSession(hash, record) { this.sessions.set(hash, clone(record)); }
   async getSession(hash) { return clone(this.sessions.get(hash)) || null; }
   async deleteSession(hash) { this.sessions.delete(hash); }
-  async saveGame(id, save) { this.saves.set(id, clone(save)); }
+  async saveGame(id, save) {
+    if (this.completed.get(id)?.has(save.matchId)) throw completedMatchSaveError();
+    this.saves.set(id, clone(save));
+  }
   async getSave(id) { return clone(this.saves.get(id)) || null; }
   async deleteSave(id) { this.saves.delete(id); }
   async deleteSaveIfMatch(id, matchId) {
@@ -173,7 +182,18 @@ export class UpstashAccountStore {
     return session;
   }
   async deleteSession(hash) { await this.redis.del(sessionKey(hash)); }
-  async saveGame(id, save) { await this.redis.set(saveKey(id), save); }
+  async saveGame(id, save) {
+    // Another tab may still be playing a match already completed elsewhere.
+    // Check its terminal record and write together, preserving the raw JSON.
+    const script = `
+      if redis.call('SISMEMBER', KEYS[1], ARGV[1]) == 1 then return 0 end
+      redis.call('SET', KEYS[2], ARGV[2])
+      return 1`;
+    const result = await this.redis.eval(script,
+      [completedKey(id), saveKey(id)], [save.matchId, JSON.stringify(save)]);
+    if (result === 0) throw completedMatchSaveError();
+    if (result !== 1) throw new Error('Redis did not confirm the save-game write.');
+  }
   async getSave(id) { return this.redis.get(saveKey(id)); }
   async deleteSave(id) { await this.redis.del(saveKey(id)); }
   async deleteSaveIfMatch(id, matchId) {
@@ -760,6 +780,7 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
       return send(response, error.status || 500, {
         ok: false,
         error: error.status ? error.message : 'Account service is temporarily unavailable.',
+        ...(error.code === 'MATCH_ALREADY_COMPLETED' ? { code: error.code } : {}),
         ...(ownerBoundRequest ? { ownerId: responseOwnerId } : {}),
       });
     }
