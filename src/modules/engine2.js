@@ -5383,8 +5383,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (co.dash) {
       card.meta.tempHaste = true;this.recalc();
       const zoneVersion=card.zoneVersion;
-      this.delayed.push({on:'endStep',once:true,src:card,ctrl:p,name:'Dash: return to hand',run:async ctx=>{
-        if(card.zone==='battlefield'&&card.zoneVersion===zoneVersion)await ctx.g.move(card,'hand');
+      this.delayed.push({on:'endStep',once:true,src:card,ctrl:p,sourceZoneVersion:zoneVersion,name:'Dash: return to hand',run:async ctx=>{
+        if(ctx.src.zone==='battlefield'&&ctx.src.zoneVersion===ctx.sourceZoneVersion)await ctx.g.move(ctx.src,'hand');
       }});
     }
     queueEvokeSacrifice(card);

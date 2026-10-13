@@ -156,7 +156,10 @@ test('account API registers, authenticates, saves, scores once, syncs favorites,
   assert.equal(saved.payload.ownerId, libraryOwner(login));
   assert.equal(saved.payload.save.summary.turn, 8);
   assert.equal(saved.payload.save.summary.decisionCount, 1);
-  const favorites = await call('favorites', { decks: ['Quandrix Unlimited', 'Elven Council', 'Quandrix Unlimited'] }, login.cookie);
+  const favorites = await call('favorites', {
+    expectedOwnerId: libraryOwner(login), decks: ['Quandrix Unlimited', 'Elven Council', 'Quandrix Unlimited'],
+  }, login.cookie);
+  assert.equal(favorites.payload.ownerId, libraryOwner(login));
   assert.deepEqual(favorites.payload.profile.favoriteDecks, ['Elven Council', 'Quandrix Unlimited']);
 
   const completed = await completeAccountMatch(call, login, {
@@ -261,6 +264,55 @@ test('save, completeMatch, and clearSave reject a stale expected owner before mu
   const formerSnapshot = await call('session', null, accountA.cookie);
   assert.equal(formerSnapshot.payload.profile.gamesPlayed, 0);
   assert.equal(formerSnapshot.payload.save, null);
+});
+
+test('favorites require the expected account owner before changing preferences', async t => {
+  const { call } = await openServer(t);
+  const accountA = await call('register', { displayName: 'Former Favorite Owner', email: 'favorites-former@example.com', password: 'strong-pass-2026' });
+  const accountB = await call('register', { displayName: 'Current Favorite Owner', email: 'favorites-current@example.com', password: 'strong-pass-2026' });
+  const ownerA = libraryOwner(accountA);
+  const ownerB = libraryOwner(accountB);
+  await completeAccountMatch(call, accountB, {
+    matchId: 'match-favorites-completed-01', deck: 'Quick Draw', commanders: ['Stella Lee, Wild Card'], won: true, turns: 10,
+  });
+  await saveCheckpoint(call, accountB, checkpoint('match-favorites-active-0002'));
+  await call('favorites', { expectedOwnerId: ownerB, decks: ['Quick Draw'] }, accountB.cookie);
+  const beforeA = (await call('session', null, accountA.cookie)).payload;
+  const beforeB = (await call('session', null, accountB.cookie)).payload;
+
+  for (const [label, owner] of [['missing', undefined], ['stale', ownerA]]) {
+    await t.test(`${label} owner is rejected without changing either account`, async () => {
+      const result = await call('favorites', { expectedOwnerId: owner, decks: ['Elven Council'] }, accountB.cookie);
+      assert.equal(result.response.status, 409);
+      assert.equal(result.payload.code, 'ACCOUNT_OWNER_MISMATCH');
+      assert.equal(result.payload.ownerId, ownerB);
+      assert.deepEqual((await call('session', null, accountA.cookie)).payload, beforeA);
+      assert.deepEqual((await call('session', null, accountB.cookie)).payload, beforeB);
+    });
+  }
+
+  await t.test('matching owner changes only favorites and receives the authenticated owner', async () => {
+    const result = await call('favorites', {
+      expectedOwnerId: ownerB, decks: ['Elven Council', 'Quick Draw', 'Elven Council'],
+    }, accountB.cookie);
+    assert.equal(result.response.status, 200);
+    assert.equal(result.payload.ownerId, ownerB);
+    assert.deepEqual(result.payload.profile, {
+      ...beforeB.profile, favoriteDecks: ['Elven Council', 'Quick Draw'],
+    });
+    assert.deepEqual((await call('session', null, accountB.cookie)).payload, {
+      ...beforeB, profile: result.payload.profile,
+    });
+    assert.deepEqual((await call('session', null, accountA.cookie)).payload, beforeA);
+  });
+
+  await t.test('signed-out request includes a null owner and changes neither account', async () => {
+    const result = await call('favorites', { expectedOwnerId: ownerB, decks: ['Doom Prevails'] });
+    assert.equal(result.response.status, 401);
+    assert.equal(result.payload.ownerId, null);
+    assert.deepEqual((await call('session', null, accountB.cookie)).payload.profile.favoriteDecks, ['Elven Council', 'Quick Draw']);
+    assert.deepEqual((await call('session', null, accountA.cookie)).payload, beforeA);
+  });
 });
 
 test('imported deck library persists normalized records per account and owns metadata', async t => {

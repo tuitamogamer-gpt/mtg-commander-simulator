@@ -657,6 +657,8 @@ Browser acceptance scripts live in [tests/browser](tests/browser/). They require
 
 `node tests/browser/improvement-round.mjs` checks a paid creature-type choice, keyboard search, and view recovery at phone and desktop widths. Set `BROWSER_EXECUTABLE` to an installed Chromium path when needed, `ROUND_OUTPUT` for screenshots and results, or `GAME_URL=https://www.mtgpod.xyz` to verify production behavior and compare its loaded application sources with the current checkout.
 
+`node tests/browser/decision-callbacks.mjs` checks stale callbacks against a real paid Rolling Thunder split and sequential human choices. It supports the same browser/production variables; use `DECISION_OUTPUT` for receipts and screenshots.
+
 For a public application release, follow [PUBLIC_RELEASE.md](PUBLIC_RELEASE.md), including:
 
 ```bash
