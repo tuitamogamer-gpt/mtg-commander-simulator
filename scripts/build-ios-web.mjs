@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { writeBuildInfo } from './build-info.mjs';
 
 export const repository = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const allowedExtensions = new Set(['.html', '.js', '.css', '.json', '.svg', '.webp', '.jpg', '.jpeg', '.png', '.mp3', '.mp4', '.wav', '.ogg', '.woff', '.woff2']);
@@ -37,6 +38,7 @@ export async function buildIOSWeb() {
   for (const directory of ['src', 'assets', 'mobile']) {
     await copyRuntimeTree(join(repository, directory), join(output, directory));
   }
+  await writeBuildInfo(join(output, 'src/build-info.js'));
   await cp(join(repository, 'logic.js'), join(output, 'logic.js'));
   await writeFile(join(output, 'index.html'), makeOfflineHTML(await readFile(join(repository, 'index.html'), 'utf8')));
 

@@ -5,6 +5,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // Explanations retain only public event-time facts. These plain values can
+  // cross an AI snapshot or replay report without sharing live game objects.
+  const triggerOriginCard = card => card && ({
+    iid: card.iid ?? null, zoneVersion: card.zoneVersion ?? null,
+    name: card.zone === 'hand' ? 'Card in hand' : card.zone === 'library' ? 'Card in library'
+      : card.faceDown || card.meta?.faceDownDef || card.sourceMeta?.faceDownDef
+      ? (card.zone === 'battlefield' && (card.is?.('Creature') || card.types?.includes('Creature')) ? 'Face-down creature' : 'Face-down card')
+      : card.name || 'Card',
+  });
+
   // Most keywords need only membership. Each instance of myriad creates
   // a separate trigger, so retain its multiplicity through ordinary keyword
   // grants while preserving the Set API used by characteristic layers.
@@ -307,9 +317,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const player = this;
       const wrapper = Object.create(raw);
       wrapper.decide = async (game, question) => {
-        const answer = MTG.normalizeDecision(question, await (game.c1516Decide ? game.c1516Decide(player,question,raw) : raw.decide(game, question)), game, player);
-        MTG.ResolutionRecap?.choice(game, player, question, answer);
-        return answer;
+        let observe, token;
+        try {
+          observe = game.uiHooks?.decisionWait;
+          if (observe) {
+            const actor = game.c1516DecisionActor?.(player, question);
+            token = observe('begin', game, actor && !actor.lost ? actor : player, question);
+          }
+        } catch { /* Presentation cannot interrupt a decision. */ }
+        try {
+          const answer = MTG.normalizeDecision(question, await (game.c1516Decide ? game.c1516Decide(player,question,raw) : raw.decide(game, question)), game, player);
+          MTG.ResolutionRecap?.choice(game, player, question, answer);
+          return answer;
+        } finally {
+          try { observe?.('end', game, token); } catch { /* Preserve the answer or original controller error. */ }
+        }
       };
       this._controllerWrapped = { raw, wrapper };
       return wrapper;
@@ -2360,7 +2382,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         source: src || null, amount: n, combat: !!opts.combat,
         combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0, infect, toxic,
       });
-      await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat });
+      await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat, combatStep: opts.combatStep || null });
       await this.emitOracleDamage(oracleHit);
       if (!opts.deferSBA) await this.checkSBA();
       return n;
@@ -3607,6 +3629,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // instant or sorcery. Prowess lives on `castNonCreature`, Manaform on
         // `cast`, and other engines use castFirst/castSecond.
         let times = nativeTimes;
+        const additional = [];
+        const explainAdditional = (source, count) => {
+          if (count > 0) additional.push({source: triggerOriginCard(source), count});
+        };
         // Leave triggers look back at the battlefield immediately before
         // departure, including doublers that leave in the same instruction.
         // Reuse each view so filters can still distinguish "another" source.
@@ -3635,21 +3661,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           (name === 'spellCopied' || name === 'targeted' || name === 'cast' || name.startsWith('cast'));
         const castOrCopyController = data && (data.player || data.ctrl || data.byPlayer);
         if (observedSource.zone==='battlefield' && castOrCopyIS && castOrCopyController === observedSource.ctrl) {
-          times += nativeTimes * activeDoublers.filter(v => v.def.doublesMagecraft && v.ctrl === observedSource.ctrl).length;
+          const sources = activeDoublers.filter(v => v.def.doublesMagecraft && v.ctrl === observedSource.ctrl);
+          times += nativeTimes * sources.length;
+          for (const source of sources) explainAdditional(source, nativeTimes);
         }
         for (const doubler of activeDoublers) {
           if (observedSource.zone==='battlefield' && doubler.ctrl === observedSource.ctrl && doubler.def.doubleTriggerFilter &&
-            doubler.def.doubleTriggerFilter(this, doubler, observedSource, name, data)) times += nativeTimes;
+            doubler.def.doubleTriggerFilter(this, doubler, observedSource, name, data)) {
+            times += nativeTimes;
+            explainAdditional(doubler, nativeTimes);
+          }
         }
-        times += nativeTimes * (MTG.OracleV20Permanents?.additionalTriggers(this,card,name,data,history,t) || 0);
+        const otherAdditional = nativeTimes * (MTG.OracleV20Permanents?.additionalTriggers(this,card,name,data,history,t) || 0);
+        times += otherAdditional;
+        explainAdditional(null, otherAdditional);
         // Krang: draw-uzrokovani trigeri tvojih permanenata okidaju dodatni put
-        if (observedSource.zone==='battlefield' && name === 'draw') times += nativeTimes * activeDoublers.filter(v => v.def.doubleDrawTriggers && v.ctrl === observedSource.ctrl).length;
+        if (observedSource.zone==='battlefield' && name === 'draw') {
+          const sources = activeDoublers.filter(v => v.def.doubleDrawTriggers && v.ctrl === observedSource.ctrl);
+          times += nativeTimes * sources.length;
+          for (const source of sources) explainAdditional(source, nativeTimes);
+        }
         // An explicit trigger limit also constrains additional-trigger effects.
         // A trigger for the first occurrence of an event can still be doubled.
         if (t.oncePerTurn && !t.firstTimeEachTurn || t.oncePerObjectTriggerV53) times = Math.min(1, times);
+        const total = Math.ceil(times), nativeCount = Math.min(total, Math.ceil(nativeTimes));
+        let additionalCount = total - nativeCount;
+        const appliedAdditional = additional.flatMap(row => {
+          const count = Math.min(additionalCount, Math.ceil(row.count));
+          additionalCount -= count;
+          return count > 0 ? [{source: row.source, count}] : [];
+        });
         for (let i = 0; i < times; i++) {
+          let remaining = i - nativeCount;
+          const addedBy = appliedAdditional.find(row => {
+            if (remaining < 0) return false;
+            if (remaining < row.count) return true;
+            remaining -= row.count; return false;
+          });
           this.queueTrigger({
             src: card,
+            triggerOrigin: {
+              event: name, turn: this.turnNo, combat: !!data?.combat,
+              combatStep: data?.combatStep || data?.step || null,
+              source: triggerOriginCard(observedSource), cause: triggerOriginCard(data?.src || data?.card) || null,
+              player: data?.player instanceof Player ? {index: data.player.idx, name: data.player.name} : null,
+              amount: typeof data?.n === 'number' ? data.n : null,
+              nativeCount, index: i + 1, total,
+              additional: appliedAdditional, addedBy: addedBy?.source || null,
+            },
             ...(history ? {sourceZoneVersion: history.zoneVersion, sourceMeta: history.sourceMeta,
               sourceCopying: history.copying, sourceCopyEpoch: history.copyEpoch,
               sourceAttachedTo: history.attachedTo, sourceAttachedToZoneVersion: history.attachedHostVersion} : {}),
@@ -3772,6 +3831,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (ctrl.lost) return;
       const ctx = {
         g: this, src: tr.src, you: ctrl, data: tr.data, targets: [],
+        ...(tr.triggerOrigin ? {triggerOrigin: tr.triggerOrigin} : {}),
         // A triggered ability belongs to the exact source object that created
         // it. CardInst instances are reused across zones, so scripts that need
         // to re-check an intervening-if condition at resolution must also be

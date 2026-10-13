@@ -170,7 +170,7 @@ test('Support & diagnostics exposes a share-safe JSON debug download', () => {
 
 test('Main Page imports a validated v1 snapshot into an explicit replay review', () => {
   assert.match(mainSource, /class="debugimportbtn">↺ Import debug snapshot/);
-  assert.match(mainSource, /MTG\.parseDebugBundle\(await file\.text\(\)\)/);
+  assert.match(mainSource, /MTG\.parseDebugBundle\(input\)/);
   assert.match(mainSource, /state\.seed = String\(replay\.seed\)/);
   assert.match(mainSource, /state\.aiDecks = Array\.from/);
   assert.match(mainSource, /state\.aiStyles = Array\.from/);

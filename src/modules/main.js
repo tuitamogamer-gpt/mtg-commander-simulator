@@ -643,6 +643,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.showMainMenu = renderMainMenu;
   MTG.exitToMainMenu = () => {
     if (window._game) {
+      MTG.discardActiveLocalRecovery?.();
+      window._accountGameCleanup?.();
       location.replace(location.pathname);
       return;
     }
@@ -1699,10 +1701,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const diagnostics = el('details', 'supportdiagnostics');
     diagnostics.innerHTML = `
-      <summary><span>Support &amp; Diagnostics</span><small>Replay a share-safe debug snapshot</small></summary>
+      <summary><span>Support &amp; Diagnostics</span><small>Open a problem replay or public snapshot</small></summary>
       <div class="supportdiagnosticsbody">
-        <p>Import restores the same public setup and seed from turn 1. Hidden card identities are never included.</p>
+        <p>Public snapshots restore the setup and seed from turn 1. Solo problem replays include saved cards and recorded choices so you can return to the reported decision.</p>
         <button type="button" class="debugimportbtn">↺ Import debug snapshot</button>
+        <button type="button" class="problemimportbtn debugimportbtn">Open problem replay</button>
         <input type="file" class="debugimportfile" accept="application/json,.json" hidden>
         <div class="debugimportstatus" role="status" aria-live="polite" hidden></div>
       </div>`;
@@ -1956,19 +1959,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       setSetupStage('review');
     };
     importButton.onclick = () => importFile.click();
+    const problemImportButton = diagnostics.querySelector('.problemimportbtn');
+    problemImportButton.onclick = () => importFile.click();
     importFile.onchange = async () => {
       const file = importFile.files && importFile.files[0];
       if (!file) return;
       importButton.disabled = true;
+      problemImportButton.disabled = true;
       showImportStatus(`Reading ${file.name}…`, false);
       try {
-        if (file.size > 2 * 1024 * 1024) throw new Error('Debug snapshot: the selected file is larger than 2 MB.');
-        applyDebugReplay(MTG.parseDebugBundle(await file.text()));
+        if (file.size > MTG.PROBLEM_REPORT_MAX_BYTES) throw new Error('The selected file is larger than 10 MB.');
+        const contents = await file.text();
+        const input = JSON.parse(contents);
+        if (input?.schema === MTG.PROBLEM_REPORT_SCHEMA) {
+          const problem = MTG.parseProblemReport(contents);
+          const capturedTurn = Number(problem.checkpoint.turn) || Number(problem.save.summary?.turn) || 0;
+          showImportStatus(`Solo replay ready · captured at turn ${capturedTurn}. ${problem.versionMismatch
+            ? 'This report uses a different game version; its replay may stop at the first changed decision. '
+            : ''}Opening a diagnostic replay does not update your saved game or profile stats.`, false);
+          if (problem.description) {
+            const description = el('p', 'problemreportdescription');
+            description.textContent = problem.description;
+            importStatus.appendChild(description);
+          }
+          const open = el('button', 'pbtn primary', 'Start diagnostic replay');
+          open.onclick = () => {
+            if (!open.isConnected) return;
+            open.disabled = true;
+            try { MTG.resumeAccountSave(problem.save, { diagnosticReplay: true }); }
+            catch (error) { open.disabled = false; showImportStatus(error.message, true); }
+          };
+          importStatus.appendChild(open);
+        } else applyDebugReplay(MTG.parseDebugBundle(input));
       } catch (error) {
         state.applyingReplay = false;
         showImportStatus(error && error.message ? error.message : 'Debug snapshot: import failed.', true);
       } finally {
         importButton.disabled = false;
+        problemImportButton.disabled = false;
         importFile.value = '';
       }
     };
@@ -2199,6 +2227,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const aiDecks = state.onlineBridge ? state.aiDecks.slice() : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
+    ui.diagnosticReplay = state.diagnosticReplay === true;
+    if (ui.diagnosticReplay) ui.accountSaveStatus = { state: 'paused', text: 'Diagnostic replay · saving disabled' };
     if (typeof state.arenaDragEnabled === 'boolean') ui.arenaDragEnabled = state.arenaDragEnabled;
     if (resumeSave) Object.assign(ui, MTG.accountSaveSettingsAt(resumeSave,
       restoringBoard ? replayingBoardTail ? replayCursor : resumeSave.decisions.length : 0));
@@ -2367,7 +2397,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // lists when this browser has not loaded or does not own those library rows.
     const customDecksInPlay = [state.deck, ...(aiDecks || [])]
       .filter(name => name && MTG.DECKS[name]?.custom);
-    const accountCheckpointEnabled = !!saveSetup &&
+    const accountCheckpointEnabled = !state.diagnosticReplay && !!saveSetup &&
       customDecksInPlay.every(name => !!MTG.importedDeckRecordFor?.(name) ||
         saveSetup.importedDecks.some(record => record.name === name && MTG.validateImportedDeckRecord(record).ok));
     // The board as of the last turn boundary. A resume restores this directly;
@@ -2385,9 +2415,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let gameAccountOwnerId = globalThis.MTGAccount?.user?.id || null;
     let accountBindingDisabled = false;
     let accountBindingMessage = 'Profile changed · saves paused';
+    let recoveryDiscarded = false;
+    let cloudSavePending = false;
+    let cloudWriteGeneration = 0;
+    let reconnectSaveInFlight = false;
+    const captureActiveSoloSave = game => {
+      if (!saveSetup || game && game !== g) return null;
+      return MTG.buildAccountSave(g, saveSetup, recordedTimeline, matchId, latestBoardState, latestBoardTimelineIndex);
+    };
     const accountCanWrite = () => !accountBindingDisabled
+      && accountCheckpointEnabled
       && !!gameAccountOwnerId
       && globalThis.MTGAccount?.user?.id === gameAccountOwnerId;
+    const captureLocalRecovery = () => {
+      const account = globalThis.MTGAccount;
+      if (!accountCheckpointEnabled || recoveryDiscarded || accountBindingDisabled || g.gameOver
+        || (gameAccountOwnerId ? !accountCanWrite() : account?.user || account?.loading)) return { saved: false };
+      const save = captureActiveSoloSave();
+      return { save, ...(account?.saveLocalRecovery?.(save, gameAccountOwnerId || 'guest') || { saved: false }) };
+    };
     const disableAccountBinding = (message = 'Profile changed · saves paused') => {
       if (accountBindingDisabled) return;
       accountBindingDisabled = true;
@@ -2405,13 +2451,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return false;
       }
       clearTimeout(saveTimer);
+      const generation = ++cloudWriteGeneration;
+      const local = captureLocalRecovery();
+      const save = local.save || captureActiveSoloSave();
+      cloudSavePending = true;
       ui.accountSaveStatus = { state: 'saving', text: 'Saving…' };
       ui.queueRender();
       try {
-        await globalThis.MTGAccount.saveGame(
-          MTG.buildAccountSave(g, saveSetup, recordedTimeline, matchId, latestBoardState, latestBoardTimelineIndex), gameAccountOwnerId);
-        ui.accountSaveStatus = { state: 'saved', text: `Saved · turn ${g.turnNo}` };
-        if (notify) ui.toast('Solo game saved to your profile.');
+        const confirmed = await globalThis.MTGAccount.saveGame(save, gameAccountOwnerId);
+        if (confirmed !== true) throw new Error('The cloud save was not confirmed. Sign in again and retry.');
+        if (local.saved) globalThis.MTGAccount.clearLocalRecovery?.(gameAccountOwnerId, { matchId, revision: local.revision });
+        if (generation === cloudWriteGeneration) {
+          cloudSavePending = false;
+          ui.accountSaveStatus = { state: 'saved', text: `Saved · turn ${save.summary?.turn ?? g.turnNo}` };
+        }
+        if (notify && generation === cloudWriteGeneration) ui.toast('Solo game saved to your profile.');
         ui.queueRender();
         return true;
       } catch (error) {
@@ -2422,20 +2476,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         ui.accountSaveStatus = accountBindingDisabled
           ? { state: 'error', text: accountBindingMessage }
-          : { state: 'error', text: 'Save failed' };
+          : { state: 'error', text: local.saved ? 'Saved on this device · cloud pending' : 'Save failed' };
         ui.toast(`Save failed: ${error.message}`);
         ui.queueRender();
         return false;
       }
     };
     queueAccountSave = ({ immediate = false, notify = false } = {}) => {
-      if (!accountCheckpointEnabled || g.gameOver || !accountCanWrite()) return;
+      if (!accountCheckpointEnabled || g.gameOver || accountBindingDisabled || recoveryDiscarded) return;
+      const local = captureLocalRecovery();
+      if (!accountCanWrite()) {
+        if (local.saved || local.error) {
+          ui.accountSaveStatus = local.saved
+            ? { state: 'saved', text: `Saved on this device · turn ${g.turnNo}` }
+            : { state: 'error', text: 'Device backup unavailable' };
+          ui.queueRender();
+        }
+        return;
+      }
+      cloudSavePending = true;
+      cloudWriteGeneration += 1;
+      ui.accountSaveStatus = { state: 'saving', text: local.saved ? 'Saved on this device · cloud pending' : 'Cloud save pending' };
+      ui.queueRender();
       clearTimeout(saveTimer);
       if (immediate) void writeAccountSave({ notify });
       else saveTimer = setTimeout(() => void writeAccountSave(), 450);
     };
     let matchRecorded = false;
     completeAccountMatch = () => {
+      if (accountCheckpointEnabled) globalThis.MTGAccount?.clearLocalRecovery?.(gameAccountOwnerId || 'guest', { matchId });
       if (matchRecorded || !saveSetup || !accountCanWrite()) return Promise.resolve(false);
       matchRecorded = true;
       clearTimeout(saveTimer);
@@ -2477,6 +2546,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (window._accountGameCleanup) window._accountGameCleanup();
     let lastObservedAccountOwner = gameAccountOwnerId;
     const accountChange = event => {
+      if (ui.diagnosticReplay) return;
       const ownerId = event.detail?.user?.id || null;
       if (!accountBindingDisabled && ownerId && gameAccountOwnerId && ownerId !== gameAccountOwnerId) {
         disableAccountBinding();
@@ -2501,14 +2571,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       queueAccountSave({ immediate: true });
       return true;
     };
+    const retryPendingCloudSave = async () => {
+      if (!cloudSavePending || reconnectSaveInFlight || g.gameOver || !accountCanWrite()) return;
+      reconnectSaveInFlight = true;
+      try { await writeAccountSave(); }
+      finally { reconnectSaveInFlight = false; }
+    };
+    const discardActiveLocalRecovery = () => {
+      // The guest Main menu action explicitly warns that this table is lost.
+      // Signed-in Save & exit keeps any revision newer than its cloud receipt.
+      if (!gameAccountOwnerId && accountCheckpointEnabled) {
+        globalThis.MTGAccount?.clearLocalRecovery?.('guest', { matchId });
+        recoveryDiscarded = true;
+      }
+    };
     MTG.captureAccountSideAction = captureAccountSideAction;
+    MTG.discardActiveLocalRecovery = discardActiveLocalRecovery;
     window.addEventListener('mtg:account-change', accountChange);
+    window.addEventListener('online', retryPendingCloudSave);
+    window.addEventListener('pagehide', captureLocalRecovery);
     window._accountGameCleanup = () => {
       clearTimeout(saveTimer);
       window.removeEventListener('mtg:account-change', accountChange);
+      window.removeEventListener('online', retryPendingCloudSave);
+      window.removeEventListener('pagehide', captureLocalRecovery);
       if (MTG.captureAccountSideAction === captureAccountSideAction) delete MTG.captureAccountSideAction;
+      if (MTG.captureActiveSoloSave === captureActiveSoloSave) delete MTG.captureActiveSoloSave;
+      if (MTG.discardActiveLocalRecovery === discardActiveLocalRecovery) delete MTG.discardActiveLocalRecovery;
     };
-    MTG.activeAccountMatch = { matchId, setup: saveSetup, decisions: recordedTimeline };
+    MTG.activeAccountMatch = { matchId, setup: ui.diagnosticReplay ? null : saveSetup, decisions: recordedTimeline };
+    MTG.captureActiveSoloSave = captureActiveSoloSave;
     if (state.onlineBridge && state.onlineBridge.setManualActionHandler) {
       state.onlineBridge.setManualActionHandler(async request => {
         const actor = g.players.find(player => (player.onlineSeat ?? player.idx) === request.seat && !player.isAI);
@@ -2563,7 +2655,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     MTG.audio?.attach(ui.game);
     void MTG.audio?.unlock();
     ui.render();
-    if (accountCheckpointEnabled && !resumeSave && globalThis.MTGAccount?.user) queueAccountSave({ immediate: true });
+    if (accountCheckpointEnabled && !resumeSave) queueAccountSave({ immediate: true });
     if (resumeSave && replayingSave) {
       ui.accountReplay = { current: 0, total: savedTimeline.length };
       ui.toast(`Restoring ${savedTimeline.length - replayCursor} saved actions since the checkpoint…`);
@@ -4737,7 +4829,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return imported;
   };
 
-  MTG.resumeAccountSave = function (save) {
+  MTG.resumeAccountSave = function (save, options = {}) {
+    if (options.expectedOwnerId && (globalThis.MTGAccount?.loading
+      || (globalThis.MTGAccount?.user?.id || 'guest') !== options.expectedOwnerId))
+      throw new Error('Your profile changed before this table could be restored. Please try again.');
+    if (options.localRecovery) {
+      const current = globalThis.MTGAccount?.getLocalRecovery?.();
+      if (!current || current.ownerId !== options.expectedOwnerId || current.save.matchId !== options.matchId
+        || current.revision !== options.revision || save.matchId !== options.matchId)
+        throw new Error('The device checkpoint changed while the game was loading. Choose Continue on this device again.');
+    }
     const checkpoint = MTG.validateAccountSave(save);
     document.querySelector('.account-overlay')?.remove();
     document.body.classList.remove('account-dialog-open');
@@ -4746,6 +4847,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       mode: 'solo',
       ai: checkpoint.setup.aiDecks.length,
       resumeSave: checkpoint,
+      diagnosticReplay: options.diagnosticReplay === true,
     });
   };
 

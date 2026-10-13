@@ -487,7 +487,7 @@ test('a completed-match save rejection preserves the current different save and 
 });
 
 test('account/library lifecycle keeps recovery, cross-tab sync, and active custom games fail-safe', () => {
-  assert.match(accountSource, /await gameLoader\(state\.save\)/, 'restore failures must enter the account recovery path');
+  assert.match(accountSource, /await gameLoader\(continueSave,\s*\{\s*expectedOwnerId:\s*continueOwnerId\s*\}\)/, 'restore failures enter recovery and retain the captured account owner');
   assert.match(accountSource, /Cannot continue[\s\S]*account-clear-save/, 'a failed legacy restore remains deletable');
   assert.match(accountSource, /catch \(error\) \{[\s\S]*logout\.disabled = false;[\s\S]*return;[\s\S]*applySessionSnapshot\(\{ user: null/s, 'failed logout must not present a false signed-out state');
   assert.match(accountSource, /new BroadcastChannel\('mtg-account-session\/v1'\)/);

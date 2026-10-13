@@ -27,6 +27,10 @@ const initialReady = new Promise(resolve => { settleInitialReady = resolve; });
 const listeners = new Set();
 const smokeMode = new URLSearchParams(location.search).get('accountSmoke');
 const ACCOUNT_SYNC_KEY = 'mtg-account-session-sync/v1';
+const LOCAL_RECOVERY_PREFIX = 'mtg-solo-recovery/v1/';
+const MAX_LOCAL_SAVE_BYTES = 1_750_000;
+let localRecoveryError = '';
+let localRecoveryRevision = 0;
 const esc = value => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const formatDate = value => {
   const date = value ? new Date(value) : null;
@@ -54,12 +58,77 @@ function queueDeckOperation(operation) {
   return deckChain;
 }
 
+function recoveryOwner(allowLoading = false) {
+  if (state.loading && (!allowLoading || !state.user)) return null;
+  return state.user?.id || 'guest';
+}
+
+function recoveryKey(ownerId) {
+  return LOCAL_RECOVERY_PREFIX + encodeURIComponent(ownerId);
+}
+
+function utf8Bytes(value) {
+  return typeof TextEncoder === 'function' ? new TextEncoder().encode(value).byteLength
+    : encodeURIComponent(value).replace(/%[\dA-F]{2}/g, '_').length;
+}
+
+function recoverySave(value) {
+  const valid = save => save && typeof save === 'object' && !Array.isArray(save) &&
+    save.schema === 'commander-save/v1' && save.mode === 'solo' && save.setup &&
+    typeof save.setup === 'object' && !Array.isArray(save.setup) && typeof save.matchId === 'string' &&
+    /^[a-zA-Z0-9-]{16,80}$/.test(save.matchId) && Array.isArray(save.decisions) && save.decisions.length <= 5000;
+  if (!valid(value)) throw new Error('This game cannot be stored for device recovery.');
+  const wire = JSON.stringify(value);
+  if (utf8Bytes(wire) > MAX_LOCAL_SAVE_BYTES) throw new Error('This game is too large for device recovery.');
+  const save = JSON.parse(wire);
+  if (!valid(save)) throw new Error('This game cannot be stored for device recovery.');
+  return save;
+}
+
+function readLocalRecovery(ownerId) {
+  try {
+    const raw = localStorage.getItem(recoveryKey(ownerId));
+    if (raw === null) return null;
+    if (utf8Bytes(raw) > MAX_LOCAL_SAVE_BYTES + 16_000) throw new Error();
+    const record = JSON.parse(raw);
+    if (!record || record.version !== 1 || record.ownerId !== ownerId ||
+      typeof record.revision !== 'string' || !record.revision || record.revision.length > 128) throw new Error();
+    return { ownerId, revision: record.revision, save: recoverySave(record.save) };
+  } catch {
+    throw new Error('The recovery on this device could not be read.');
+  }
+}
+
+function clearLocalRecoveryRecord(ownerId, condition = {}) {
+  try {
+    if (!condition || typeof condition !== 'object' || Array.isArray(condition))
+      return { cleared: false, error: 'A matching device checkpoint is required.' };
+    const { matchId, revision } = condition;
+    if (typeof matchId !== 'string' || !/^[a-zA-Z0-9-]{16,80}$/.test(matchId))
+      return { cleared: false, error: 'A matching device checkpoint is required.' };
+    const record = readLocalRecovery(ownerId);
+    if (!record || record.save.matchId !== matchId || revision !== undefined && record.revision !== revision)
+      return { cleared: false, error: '' };
+    localStorage.removeItem(recoveryKey(ownerId));
+    return { cleared: true, error: '' };
+  } catch {
+    return { cleared: false, error: 'The recovery on this device could not be removed.' };
+  }
+}
+
 function applySessionSnapshot(result) {
   const previousOwner = state.user?.id || null;
   const nextOwner = result.user?.id || null;
   if (previousOwner !== nextOwner) {
     identityGeneration += 1;
     state.decks = [];
+    localRecoveryError = '';
+  }
+  const active = globalThis.MTG?.activeAccountMatch;
+  if (!previousOwner && nextOwner && initialReadySettled && active?.setup &&
+    typeof globalThis.MTG?.captureActiveSoloSave === 'function') {
+    const cleared = clearLocalRecoveryRecord('guest', { matchId: active.matchId });
+    if (cleared.error) localRecoveryError = cleared.error;
   }
   state.user = result.user || null;
   state.profile = result.profile || null;
@@ -297,15 +366,20 @@ function renderModal(view, content) {
   const switcher = content.querySelector('.account-switch');
   if (switcher) switcher.onclick = () => renderModal(view === 'register' ? 'login' : 'register', content);
   const continueButton = content.querySelector('.account-continue');
+  const continueSave = state.save;
+  const continueOwnerId = state.user?.id;
+  const continueOwnerGeneration = identityGeneration;
+  const sameContinue = () => state.user?.id === continueOwnerId && identityGeneration === continueOwnerGeneration &&
+    state.save?.matchId === continueSave?.matchId;
   if (continueButton) continueButton.onclick = async () => {
-    if (!gameLoader || !state.save?.setup) return;
+    if (!gameLoader || !continueSave?.setup) return;
     continueButton.disabled = true; continueButton.textContent = 'Restoring table…';
     closeModal();
     try {
-      await gameLoader(state.save);
-      state.saveError = '';
+      await gameLoader(continueSave, { expectedOwnerId: continueOwnerId });
+      if (sameContinue()) state.saveError = '';
     } catch (error) {
-      state.saveError = error && error.message || 'This saved game can no longer be restored.';
+      if (sameContinue()) state.saveError = error && error.message || 'This saved game can no longer be restored.';
       emit();
       modalShell('profile');
     }
@@ -355,7 +429,9 @@ function renderEntry() {
       : '<i>♙</i><span>Sign in</span>';
     button.onclick = () => modalShell(state.user ? 'profile' : 'login');
   }
-  document.querySelector('.mainmenu-account-return')?.remove();
+  document.querySelector('.mainmenu-account-return:not(.mainmenu-device-return)')?.remove();
+  document.querySelector('.mainmenu-device-return')?.remove();
+  document.querySelector('.mainmenu-device-recovery-error')?.remove();
   const actions = document.querySelector('#setup[data-app-view="home"] #primary-actions');
   if (actions && state.user && state.save) {
     const card = document.createElement('button');
@@ -363,6 +439,29 @@ function renderEntry() {
     card.innerHTML = `<i>↻</i><span><b>Continue ${esc(state.save.summary?.deck || 'saved game')}</b><small>Turn ${Number(state.save.summary?.turn) || 0} · ${esc((state.save.summary?.commanders || []).join(' + '))}</small></span>`;
     card.onclick = () => modalShell('profile');
     actions.prepend(card);
+  }
+  if (actions && !state.loading) {
+    let recovery;
+    try { recovery = api.getLocalRecovery(); }
+    catch (error) { localRecoveryError = error.message; }
+    if (recovery) {
+      const card = document.createElement('button');
+      card.type = 'button'; card.className = 'mainmenu-account-return mainmenu-device-return';
+      card.innerHTML = '<i>↻</i><span><b>Continue on this device</b><small>A checkpoint kept in this browser</small></span>';
+      card.onclick = async () => {
+        card.disabled = true;
+        try { await api.resumeLocalRecovery(recovery.ownerId, { matchId: recovery.save.matchId, revision: recovery.revision }); }
+        catch (error) { localRecoveryError = error.message; renderEntry(); }
+      };
+      actions.prepend(card);
+    }
+    if (localRecoveryError) {
+      const hint = document.createElement('p');
+      hint.className = 'mainmenu-device-recovery-error';
+      hint.setAttribute('role', 'alert');
+      hint.textContent = localRecoveryError;
+      actions.prepend(hint);
+    }
   }
 }
 
@@ -490,6 +589,55 @@ const api = {
   render() { renderEntry(); },
   setGameLoader(loader) { gameLoader = loader; renderEntry(); },
   onChange(listener) { listeners.add(listener); return () => listeners.delete(listener); },
+  saveLocalRecovery(save, ownerId) {
+    if (!ownerId || ownerId !== recoveryOwner(true))
+      return { saved: false, revision: null, error: 'The player identity changed. Device recovery was not saved.' };
+    try {
+      const checkpoint = recoverySave(save);
+      const revision = typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID()
+        : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${++localRecoveryRevision}`;
+      localStorage.setItem(recoveryKey(ownerId), JSON.stringify({ version: 1, ownerId, revision, save: checkpoint }));
+      localRecoveryError = '';
+      renderEntry();
+      return { saved: true, revision, error: '' };
+    } catch {
+      return { saved: false, revision: null, error: 'Device recovery could not be saved in this browser.' };
+    }
+  },
+  getLocalRecovery() {
+    const ownerId = recoveryOwner();
+    return ownerId ? readLocalRecovery(ownerId) : null;
+  },
+  clearLocalRecovery(ownerId, condition = {}) {
+    const currentOwner = recoveryOwner(true) || (!state.user && initialReadySettled ? 'guest' : null);
+    if (!ownerId || ownerId !== currentOwner)
+      return { cleared: false, error: 'The player identity changed. Device recovery was not removed.' };
+    const result = clearLocalRecoveryRecord(ownerId, condition);
+    if (result.cleared) { localRecoveryError = ''; renderEntry(); }
+    return result;
+  },
+  async resumeLocalRecovery(expectedOwnerId = null, condition = {}) {
+    if (!condition || typeof condition !== 'object' || Array.isArray(condition))
+      throw new Error('The device checkpoint could not be selected. Please try again.');
+    const { matchId, revision } = condition;
+    if (expectedOwnerId !== null && expectedOwnerId !== recoveryOwner())
+      throw new Error('The player identity changed. Reload this page and try again.');
+    const recovery = api.getLocalRecovery();
+    if (!recovery) throw new Error('No device recovery is available for this player.');
+    if (matchId !== undefined && recovery.save.matchId !== matchId || revision !== undefined && recovery.revision !== revision)
+      throw new Error('The device checkpoint changed. Choose Continue on this device again.');
+    if (!gameLoader) throw new Error('The game module is not ready. Please try again.');
+    try {
+      const result = await gameLoader(recovery.save, { expectedOwnerId: recovery.ownerId, localRecovery: true,
+        matchId: recovery.save.matchId, revision: recovery.revision });
+      if (result === false) throw new Error();
+      localRecoveryError = '';
+      renderEntry();
+      return result;
+    } catch {
+      throw new Error('The recovery on this device could not be restored. Your checkpoint is still kept.');
+    }
+  },
   async logout() {
     try {
       if (smokeMode !== 'profile') await request('logout', {});
@@ -523,7 +671,10 @@ const api = {
           emit();
           return true;
         }
-      );
+      ).catch(error => {
+        if (error.code === 'MATCH_ALREADY_COMPLETED') api.clearLocalRecovery(ownerId, { matchId: save?.matchId });
+        throw error;
+      });
     });
     return saveChain;
   },
@@ -531,14 +682,17 @@ const api = {
     await initialReady;
     const ownerId = expectedOwnerId || state.user?.id || null;
     if (!ownerId || !state.user) return false;
+    const clearedMatchId = state.save?.matchId;
     if (smokeMode === 'profile') {
       if (state.user.id !== ownerId) return recoverAccountOwnerMismatch();
+      if (clearedMatchId) api.clearLocalRecovery(ownerId, { matchId: clearedMatchId });
       state.save = null; state.saveError = ''; emit(); return true;
     }
     saveChain = saveChain.catch(() => {}).then(() => runOwnedProfileOperation(
       ownerId,
       currentOwnerId => request('clearSave', { expectedOwnerId: currentOwnerId }),
       () => {
+        if (clearedMatchId) api.clearLocalRecovery(ownerId, { matchId: clearedMatchId });
         state.save = null;
         state.saveError = '';
         emit();
@@ -594,12 +748,14 @@ const api = {
     if (smokeMode === 'profile') {
       if (state.user.id !== ownerId) return recoverAccountOwnerMismatch();
       state.profile = { ...state.profile, gamesPlayed: state.profile.gamesPlayed + 1, wins: state.profile.wins + (match.won ? 1 : 0), losses: state.profile.losses + (match.won ? 0 : 1), lifetimeScore: state.profile.lifetimeScore + (match.won ? 100 : 25) };
+      api.clearLocalRecovery(ownerId, { matchId: match.matchId });
       state.save = null; emit(); return true;
     }
     saveChain = saveChain.catch(() => {}).then(() => runOwnedProfileOperation(
       ownerId,
       currentOwnerId => request('completeMatch', { ...match, expectedOwnerId: currentOwnerId }),
       result => {
+        api.clearLocalRecovery(ownerId, { matchId: match.matchId });
         state.profile = result.profile;
         state.save = result.save;
         state.saveError = '';

@@ -31,7 +31,7 @@ function harness() {
 const nodes = root => root ? [root, ...(root.children || []).flatMap(nodes)] : [];
 const search = ui => nodes(ui.view).find(node => node.type === 'search');
 const options = ui => nodes(ui.view).filter(node => node.tagName === 'button' && node.dataset.choiceKey);
-const status = ui => nodes(ui.view).find(node => node.attributes.role === 'status');
+const status = ui => nodes(ui.view).find(node => node.classList?.contains('choice-search-status'));
 const input = (node, value) => {node.value = value; node.listeners.input({});};
 const enter = node => {let prevented = false; node.listeners.keydown({key: 'Enter', preventDefault() {prevented = true;}}); return prevented;};
 

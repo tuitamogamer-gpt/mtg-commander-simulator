@@ -9,6 +9,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const COLHEX = { W: '#e8e3c8', U: '#4a90d9', B: '#7a5f8a', R: '#d95a4a', G: '#5aa860', C: '#9a9a9a' };
   const MANA_SYM = { W: '☀', U: '💧', B: '💀', R: '🔥', G: '🌳', C: '◇' };
   const MANA_NAMES = { W: 'white', U: 'blue', B: 'black', R: 'red', G: 'green', C: 'colorless' };
+  const decisionWaits = new WeakMap();
+  const decisionWaitViews = new WeakMap();
 
   const $ = (sel) => document.querySelector(sel);
   const el = (tag, cls, html) => {
@@ -527,6 +529,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     controllerFor(p) {
       const ui = this;
+      if (p.game && this.game === p.game) this.bindDecisionWaits(p.game);
       const controller = {
         decide(g, q) {
           return new Promise(resolve => {
@@ -624,6 +627,92 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     scrollPromptIntoView() { }
+
+    bindDecisionWaits(game) {
+      if (!game || game._simulation || game.onlinePresentation || decisionWaitViews.get(game) === this) return;
+      decisionWaitViews.set(game, this);
+      game.uiHooks = game.uiHooks || {};
+      game.uiHooks.decisionWait = (phase, currentGame, playerOrToken, question) => {
+        if (currentGame !== game || currentGame._simulation) return;
+        const waits = decisionWaits.get(game) || [];
+        let token;
+        if (phase === 'begin') {
+          if (this.game !== game) return;
+          token = {player: playerOrToken, question};
+          waits.push(token); decisionWaits.set(game, waits);
+        } else {
+          const index = waits.indexOf(playerOrToken);
+          if (index >= 0) waits.splice(index, 1);
+          if (!waits.length) decisionWaits.delete(game);
+        }
+        // This observer has no rules authority. A view failure must leave the
+        // same answer/error and the exact engine continuation intact.
+        if (this.game === game && (typeof window === 'undefined' || !window._ui || window._ui === this)) {
+          try { this.queueRender(); } catch { /* The normal view can be retried. */ }
+        }
+        return token;
+      };
+    }
+
+    decisionWaitDescription(question) {
+      const q = question || {};
+      if (q.type === 'chooseOption' && ['chooseType', 'creatureType'].includes(q.aiHint?.kind)) return 'Choose a creature type.';
+      if (q.type === 'chooseCards' && q.aiHint?.kind === 'ninjutsuReturn') return 'Choose an unblocked attacker to return.';
+      if (q.type === 'chooseX' && q.allocation?.kind === 'damage') return 'Assign damage to the selected targets.';
+      if (q.type === 'effectReview' && q.effectKind === 'resolutionRecap') return 'Review the result, then Proceed.';
+      return ({
+        main: 'Choose your next main-phase action.', priority: 'Choose a response or Proceed.',
+        mulligan: 'Keep your opening hand or mulligan.', bottomCards: 'Choose cards to put on the bottom.',
+        chooseTargets: 'Choose targets and confirm.', choosePlayer: 'Choose a player.',
+        chooseCards: 'Choose cards and confirm.', chooseOption: 'Choose an option.',
+        chooseMulti: 'Choose the options to use.', chooseX: 'Choose a number.',
+        chooseManaSources: 'Choose mana sources for this payment.',
+        attackers: 'Choose attackers and defenders, then confirm.', blockers: 'Choose blockers, then confirm.',
+        orderTriggers: 'Choose the order of triggered abilities.', scry: 'Choose which cards stay on top.',
+        cardReveal: 'Review the shown cards, then Proceed.', combatReview: 'Review the declared attack, then Proceed.',
+        effectReview: 'Review the announced effect, then Proceed.', threatAlert: 'Review the announced action, then Proceed.',
+        diplomacyReview: 'Review the offer, then make your choice.', manualResolve: 'Finish the manual effect, then confirm.',
+      })[q.type] || 'A player decision is waiting.';
+    }
+
+    waitStatus(game = this.game) {
+      const state = (kind, title, detail = '', player = null, questionType = null) => ({
+        kind, title, detail, playerId: player?.idx ?? null, playerName: player?.name || null, questionType,
+      });
+      if (!game) return state('idle', 'No game is open.');
+      if (game.gameOver) return state('complete', 'The game is over.');
+      if (this.fatalError) return state('paused', 'The game is paused.', 'Open the game menu for recovery.');
+      if (game.lastResortPaused) return state('paused', 'Last Resort is paused.', 'Close Last Resort to continue.');
+      // A turn-control effect temporarily makes ui.me the subject seat. The
+      // registered local human and routed chooser still own the decision.
+      const viewer = game.players?.find(player => !player.isAI && MTG.C1516?.uiControllers.get(player) === this) || this.me;
+      const chooser = question => game.players?.find(player => player.idx === question.c1516ControlledBy && !player.lost) || viewer;
+      if (this.pending) return state('human', 'Waiting for you', this.decisionWaitDescription(this.pending.q), chooser(this.pending.q), this.pending.q.type);
+      if (this.react) return state('human', 'Waiting for you', 'Choose whether to respond or Proceed.', chooser(this.react.q), 'priority');
+      if (this.accountReplay) return state('replay', 'Restoring your saved game', `${this.accountReplay.current} / ${this.accountReplay.total} recorded actions.`);
+      const resolving = game.c1516Resolving;
+      const source = resolving?.card || resolving?.srcCard || resolving?.ctx?.src;
+      const resolutionName = source?.faceDown ? 'a face-down spell or ability'
+        : resolving?.name || game._resolutionRecap?.name || 'the current effect';
+      const resolution = game._stackResolutionDepth || resolving ? `Resolving ${resolutionName}.` : '';
+      const wait = decisionWaits.get(game)?.at(-1);
+      if (wait && wait.player !== viewer) return state('player', `Waiting for ${wait.player.name}`,
+        `${this.decisionWaitDescription(wait.question)}${resolution ? ` ${resolution}` : ''}`, wait.player, wait.question.type);
+      if (wait) return state('applying', 'Applying your choice', resolution, viewer, wait.question.type);
+      if (resolution) return state('resolution', resolutionName ? `Resolving ${resolutionName}` : 'Resolving an effect');
+      if (game._placingTriggers?.length) return state('triggers', 'Putting triggered abilities on the stack.');
+      const holder = game.priorityState?.holder;
+      if (holder) return state('priority', `${holder === this.me ? 'You have' : `${holder.name} has`} priority.`, '', holder, 'priority');
+      return state('between', 'Between decisions', `${game.turnPlayer?.name ? `${game.turnPlayer.name} · ` : ''}${this.phaseName(game)}`);
+    }
+
+    renderWaitStatus(game, detail = false) {
+      const status = this.waitStatus(game);
+      const node = el('div', 'waitownership', `<strong>${esc(status.title)}</strong>${detail && status.detail ? `<span>${esc(status.detail)}</span>` : ''}`);
+      node.dataset.testid = 'wait-status'; node.dataset.waitKind = status.kind;
+      node.setAttribute('role', 'status'); node.setAttribute('aria-live', 'polite'); node.setAttribute('aria-atomic', 'true');
+      return node;
+    }
 
     // ---------- rendering ----------
     queueRender() {
@@ -956,6 +1045,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     render() {
       try {
+        if (this.game) this.bindDecisionWaits(this.game);
         this.renderArena();
         this.clearRenderRecovery();
         return true;
@@ -1540,6 +1630,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       art.innerHTML = `${cardArtHTML(source)}`;
       stage.appendChild(art);
       const info = el('div', 'actionstageinfo');
+      info.appendChild(this.renderWaitStatus(g));
       info.appendChild(el('div', 'actionstageeyebrow', `${esc(kind)} · ${esc(top.ctrl ? top.ctrl.name : '')}`));
       info.appendChild(el('div', 'actionstagename', esc(this.stackDisplayName(top))));
       if (top.isCopy) {
@@ -2611,6 +2702,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     renderQuickMenu(g) {
       if (!this.quickMenuOpen) return null;
+      if (this.quickMenuOpen === 'report') return this.renderProblemReport(g);
       if (this.quickMenuOpen === 'backgrounds') return this.renderArenaBackgrounds();
       if (this.quickMenuOpen === 'playmats') return this.renderPlaymats();
       if (this.quickMenuOpen === 'audio') return this.renderAudioSettings();
@@ -2727,6 +2819,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         account.open('profile');
       });
       section('Help & recovery');
+      action('Report a problem', 'Describe what happened and attach a Solo replay', () => this.openProblemReport(g));
       action('Support & diagnostics', 'Download share-safe debug snapshot', () => this.downloadDebugSnapshot(g));
       if (MTG.DECKS[this.me?.deckName]?.custom || this.pending?.q.type === 'manualResolve') {
         const canUseJudge = () => ['main', 'manualResolve'].includes(this.pending?.q.type);
@@ -2807,6 +2900,78 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       modal.appendChild(row);
       ov.appendChild(modal);
       return ov;
+    }
+
+    captureProblemReport(g) {
+      let save = null;
+      try { save = MTG.captureActiveSoloSave?.(g) || null; } catch {}
+      return MTG.buildProblemReport(g, MTG.renderGameState(), {
+        save, presentationError: this.renderRecoveryDiagnostics(g),
+      });
+    }
+
+    openProblemReport(g) {
+      try {
+        const captured = this.captureProblemReport(g);
+        this.problemReportDraft = { captured, description: '', includeReplay: !!captured.replay };
+        this.quickMenuOpen = 'report';
+        this.render();
+      } catch (error) { this.toast(`Report could not be prepared: ${error.message}`); }
+    }
+
+    downloadProblemReport(report) {
+      const body = JSON.stringify(report, null, 2) + '\n';
+      const blob = new Blob([body], { type: 'application/json' });
+      if (blob.size > MTG.PROBLEM_REPORT_DOWNLOAD_MAX_BYTES) throw new Error('This report is larger than 8 MB. Download public diagnostics without the Solo replay.');
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = `commander-problem-${report.createdAt.replace(/[^\dT]/g, '-')}.json`;
+      document.body.appendChild(link);
+      try { link.click(); } finally { link.remove(); setTimeout(() => URL.revokeObjectURL(href), 1000); }
+    }
+
+    renderProblemReport(g) {
+      const draft = this.problemReportDraft;
+      if (!draft) { this.quickMenuOpen = false; return null; }
+      const overlay = el('div', 'quickmenuov overlay dark');
+      const panel = el('section', 'modal problemreport');
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', 'true');
+      panel.setAttribute('aria-label', 'Report a problem');
+      const captured = draft.captured;
+      panel.innerHTML = `<h2 class="mtitle">Report a problem</h2>
+        <p>Captured at turn ${Number(captured.diagnostics.checkpoint.turn) || 0}. Describe what you expected and what happened.</p>
+        <label for="problem-description">What happened?</label>
+        <textarea id="problem-description" data-testid="problem-description" maxlength="2000" rows="4" placeholder="For example: I returned an attacker for Yuriko, but she did not enter."></textarea>
+        <p class="problemreportprivacy">The downloaded file can be attached to your support message. Nothing is sent automatically.</p>`;
+      const description = panel.querySelector('textarea');
+      description.value = draft.description;
+      description.oninput = () => { draft.description = description.value; };
+      if (captured.replay) {
+        const label = el('label', 'problemreportreplay');
+        const input = document.createElement('input'); input.type = 'checkbox'; input.checked = draft.includeReplay;
+        input.onchange = () => { draft.includeReplay = input.checked; };
+        label.append(input, document.createTextNode('Include Solo replay — all saved cards and recorded choices'));
+        panel.appendChild(label);
+      } else panel.appendChild(el('p', 'problemreportprivacy', esc(captured.replayUnavailable)));
+      const status = el('p', 'problemreportstatus'); status.setAttribute('role', 'status');
+      const row = el('div', 'btnrow');
+      const close = el('button', 'pbtn', 'Cancel');
+      close.onclick = () => { this.quickMenuOpen = false; this.problemReportDraft = null; this.render(); };
+      const download = el('button', 'pbtn primary', 'Download report');
+      download.onclick = () => {
+        if (this.problemReportDraft !== draft || this.quickMenuOpen !== 'report') return;
+        try {
+          this.downloadProblemReport(MTG.problemReportForDownload(captured, draft.description, draft.includeReplay));
+          this.quickMenuOpen = false; this.problemReportDraft = null;
+          this.toast('Report downloaded. Attach the file when describing this problem.');
+          this.render();
+        } catch (error) { status.textContent = error.message; }
+      };
+      row.append(close, download); panel.append(status, row); overlay.appendChild(panel);
+      overlay.onclick = event => { if (event.target === overlay) close.click(); };
+      return overlay;
     }
 
     downloadDebugSnapshot(g) {
@@ -3855,6 +4020,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderPromptBar(g) {
       const bar = el('div', 'promptbar');
       const pd = this.pending;
+      bar.appendChild(this.renderWaitStatus(g, !pd && !this.react));
       if (!pd) {
         // prozor za reakciju — ne blokira, samo ponudi
         if (this.react) {
@@ -3912,8 +4078,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           bar.appendChild(row);
           return bar;
         }
-        const hint = this.holdNext ? '🖐️ HOLD armed. Stopping at the next priority window.' : '⏳ Opponents are playing…';
-        bar.appendChild(el('div', 'ptext dim', g.gameOver ? 'The game is over.' : hint));
+        if (this.holdNext && !g.gameOver) bar.appendChild(el('div', 'ptext dim', '🖐️ HOLD armed. Stopping at the next priority window.'));
         return bar;
       }
       const q = pd.q;
@@ -4326,6 +4491,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ov = el('div', 'overlay');
       const m = el('div', 'modal');
       ov.appendChild(m);
+      m.appendChild(this.renderWaitStatus(g));
       const answer = value => { if (this.pending === pd) this.resolvePendingEntry(pd, value); };
       // Each view belongs to one engine question. Late handlers from a
       // replaced dialog must not answer or edit the next pending decision.
@@ -4585,7 +4751,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         pd.order.forEach((tr, index) => {
           const row = el('div', 'triggerorderrow');
           row.appendChild(el('div', 'triggerordern', String(index + 1)));
-          row.appendChild(el('div', 'triggerordertext', `<b>${esc(tr.src ? tr.src.name : 'Trigger')}</b><span>${esc(tr.name || 'trigger')}</span>`));
+          const origin = tr.triggerOrigin, explanation = [];
+          if (origin?.event === 'damageToPlayer' && origin.combat && origin.cause && origin.player) {
+            const step = origin.combatStep === 'first' ? ' during first-strike damage' : origin.combatStep === 'normal' ? ' during normal damage' : '';
+            explanation.push(`${origin.cause.name} dealt ${origin.amount} combat damage to ${origin.player.name}${step}.`);
+          } else if (origin?.event === 'etb' && origin.cause) {
+            explanation.push(`${origin.cause.name} entered the battlefield.`);
+          }
+          if (origin?.total > 1) explanation.push(`Trigger ${origin.index} of ${origin.total} from this event.`);
+          if (origin?.index > origin.nativeCount) explanation.push(origin.addedBy
+            ? `Additional trigger from ${origin.addedBy.name}.`
+            : 'Additional trigger from another trigger effect.');
+          const sourceName = origin?.source?.name || (tr.src?.faceDown ? 'Face-down card' : tr.src?.name || 'Trigger');
+          row.appendChild(el('div', 'triggerordertext', `<b>${esc(sourceName)}</b><span>${esc(tr.name || 'trigger')}</span>` +
+            (explanation.length ? `<span class="triggerorigin">${explanation.map(esc).join(' ')}</span>` : '')));
           const controls = el('div', 'triggerordercontrols');
           const up = btn('↑', () => {
             if (index > 0) [pd.order[index - 1], pd.order[index]] = [pd.order[index], pd.order[index - 1]];

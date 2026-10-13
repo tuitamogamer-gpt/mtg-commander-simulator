@@ -1327,7 +1327,8 @@ MTG.devotionPips = function (str, colors) {
 MTG.deepClone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
 // Debug snapshots are designed to be safe to share with a bug report. The
-// seed and public table state are enough to reproduce a game, so never export
+// seed and public table state reproduce the setup; a separate opt-in Solo
+// problem report carries the recorded choices. Never export here
 // a player's hand, their exile identities, or controller-only face-down data.
 MTG.redactDebugState = function (state) {
   const copy = MTG.deepClone(state || {});

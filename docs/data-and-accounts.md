@@ -4,7 +4,7 @@ This page describes the current implementation. It is a technical data inventory
 
 ## Playing without an account
 
-Guest Solo play does not require registration or an external AI service. The browser stores preferences (including the Command Table's Table/Focus view), guest imported decks, custom AI skills, and saved pod presets on the current website origin. Clearing site data or using another browser/device can remove or hide these records.
+Guest Solo play does not require registration or an external AI service. The browser stores preferences (including the Command Table's Table/Focus view), guest imported decks, custom AI skills, saved pod presets, and a Solo recovery checkpoint on the current website origin. Clearing site data or using another browser/device can remove or hide these records.
 
 A different domain is a different browser storage origin. Moving the website does not automatically move guest libraries or custom skills. Keep original decklist text and skill JSON files so you can import them again. An account library and a guest library are separate; signing in does not silently merge the guest library into the account.
 
@@ -20,7 +20,7 @@ The account service stores:
 | Password salt and scrypt hash | Password authentication; passwords are not stored as plain text. |
 | Hashed session token and expiry | Identify the signed-in account. The browser cookie is HttpOnly and SameSite=Lax, with Secure enabled for HTTPS requests. |
 | Imported deck records and favorites | Restore the owner's library and preferences across signed-in sessions. An account can retain up to 40 imported decks. |
-| One private Solo save | Resume that account's current Solo game. It contains private game information and must not be published as a debug report. |
+| One private Solo save | Resume that account's current Solo game. It contains private game information; the optional problem replay also includes that information. |
 | Match IDs, totals, commander statistics, and recent results | Track completed matches without counting a retry twice. The recent-match list is bounded; cumulative totals and deduplication IDs are retained. |
 
 The Redis session entry uses a 30-day expiry refreshed when the session is read; the browser cookie has a 30-day Max-Age. This is not a guarantee of an uninterrupted login. Successful logout invalidates the current session and clears its cookie. If storage is unavailable during logout, the browser cookie is still cleared and the service reports that server-side session invalidation failed. Account responses use no-store caching.
@@ -28,6 +28,14 @@ The Redis session entry uses a 30-day expiry refreshed when the session is read;
 Account data, saved decks, statistics, and the active Solo save do not have an automatic account-wide expiry in this implementation. Deleting a saved deck removes that deck record; replacing or clearing a Solo save affects the active checkpoint. Neither action deletes the account.
 
 A Solo save carries the imported lists used by that match. Continue keeps those lists even if My Library later contains another deck with the same name; starting a new game uses the current library list. Changes to manual mana and priority stops are recorded with the match, so Continue restores their timing alongside the saved actions.
+
+## Device recovery
+
+Solo keeps a private checkpoint in browser storage before the cloud-save delay and on page exit. On the home screen, **Continue on this device** explicitly restores that checkpoint. Guests and each signed-in profile have separate records; a profile's record is offered only after the current session identifies the same owner. These browser records are not encrypted account storage and remain subject to access by someone using the same browser profile.
+
+A confirmed cloud save clears only its acknowledged device revision, preserving a newer pending checkpoint. Failed cloud saves retain the device copy when browser storage succeeds, and an online event retries a pending cloud save. **Save & Exit** requires a confirmed cloud save. Completing a game or explicitly exiting without saving discards its matching device recovery. A quota or storage error cannot provide a local backup, and deleting site data removes it.
+
+Recovery uses the existing safe board checkpoint and completed decision history. It does not preserve a running JavaScript call or an unfinished choice; a rules change can prevent an older decision from replaying.
 
 ## Current account limits
 
@@ -45,6 +53,8 @@ Redis room state expires 24 hours after the most recent state write. This expiry
 
 ## Reporting a problem
 
-Prefer **Game Menu → Download debug snapshot**, which exports the share-safe public debug format with private card identities redacted. The separate debug importer restores its deterministic setup from turn one; it does not restore an account's private save.
+**Game Menu → Report a problem** downloads a description, loaded build identity, and public diagnostics. Its optional Solo replay includes private saved cards, deck lists, and completed decisions; the checkbox identifies that content before download. Nothing is submitted automatically. Live reports do not attach a private replay. **Open problem replay** launches a diagnostic game with cloud saves, device recovery, and profile-result writes disabled.
 
-Review your description and screenshots before submitting a public issue. Do not include private room invitations, account save payloads, passwords, cookies, Redis configuration, or environment files.
+**Download debug snapshot** remains available for public diagnostics with private card identities redacted. The public snapshot importer restores its deterministic setup from turn one.
+
+Review descriptions, screenshots, and opted-in Solo replay attachments before submitting a public issue. Do not include private room invitations, passwords, cookies, Redis configuration, or environment files.
