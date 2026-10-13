@@ -46,10 +46,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return eq.def.equip;
   }
 
-  function equipTargetSpec(player) {
+  function equipTargetSpec() {
     return {
       what: 'creature', prompt: 'Stvorenje koje kontrolišeš',
-      filter: (g, target) => target.zone === 'battlefield' && target.ctrl === player && target.is('Creature'),
+      filter: (g, target, controller) => target.zone === 'battlefield' && target.ctrl === controller && target.is('Creature'),
     };
   }
 
@@ -136,7 +136,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function equipCandidates(game, equipment, player) {
-    const spec = equipTargetSpec(player);
+    const spec = equipTargetSpec();
     return game.legalTargets(spec, equipment, player).filter(target =>
       target.iid !== equipment.attachedTo &&
       // Probe with the same spending context as the actual equip payment, so
@@ -6216,7 +6216,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (entry.equip) {
       if (c.zone!=='battlefield'||c.ctrl!==p||c.cur?.abilitiesDisabled||!c.hasSub('Equipment')||!(this.c1719EquipTiming?.(p)??(this.turnPlayer===p&&!this.stack.length&&['main1','main2'].includes(this.phase)))) return false;
-      const spec = equipTargetSpec(p);
+      const spec = equipTargetSpec();
       // Nudimo samo legalne ciljane mete čiju equip cijenu igrač može platiti.
       const cands = equipCandidates(this, c, p);
       if (!cands.length) return false;
@@ -6275,9 +6275,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         targets: ctx.targets, srcCard: c, targetSpecs: [spec],
         targetIdentities: ctx.targetIdentities,
         run: async equipCtx => {
+          const equipment = equipCtx.src;
           const host = equipCtx.targets[0];
-          if (!host || c.zone !== 'battlefield' || c.zoneVersion !== equipCtx.sourceZoneVersion) return;
-          if (await equipCtx.g.attach(c, host)) equipCtx.g.lg(`${c.name} → ${host.name}.`);
+          if (!host || equipment.zone !== 'battlefield' || equipment.zoneVersion !== equipCtx.sourceZoneVersion) return;
+          if (await equipCtx.g.attach(equipment, host)) equipCtx.g.lg(`${equipment.name} → ${host.name}.`);
         },
       };
       await this.emit('targeted', {
@@ -7611,22 +7612,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             // Adding a new time counter in response does not undo the fact
             // that the last counter was removed; the cast trigger only cares
             // that this card is still in exile when it resolves.
-            onlyIf: () => c.zone === 'exile' && c.zoneVersion === version,
+            onlyIf: (game, source) => source.zone === 'exile' && source.zoneVersion === version,
             run: async castCtx => {
-              if (c.zone !== 'exile' || c.zoneVersion !== version) return;
+              const card = castCtx.src, player = castCtx.you;
+              if (card.zone !== 'exile' || card.zoneVersion !== version) return;
               // Suspend ignores normal timing, but it does not bypass effects
               // that prohibit this player from casting spells. castSpell then
               // remains authoritative for targets, modes and other legal
               // choices; if it returns false, the card simply stays exiled.
               const castProhibited =
-                (p.cantCastUntilTurnStart && p.turnsStarted < p.cantCastUntilTurnStart) ||
-                (p.turnState && p.turnState.cantCastAdditional) ||
-                castCtx.g.bf().some(source => locksOpponentsOnControllersTurn(castCtx.g, source, p));
-              if(c.def.oracleSuspendOptionalV20){const choice=await p.controller.decide(castCtx.g,{type:'chooseOption',options:[{key:'yes',label:'Cast '+c.name},{key:'no',label:'Leave it in exile'}],prompt:'Suspend: cast '+c.name+' without paying its mana cost?',aiHint:{kind:'freeCast',card:c}});if(choice!=='yes'||c.zone!=='exile'||c.zoneVersion!==version)return;}
-              const cast = !castProhibited && await castCtx.g.castSpell(p, c, {
+                (player.cantCastUntilTurnStart && player.turnsStarted < player.cantCastUntilTurnStart) ||
+                (player.turnState && player.turnState.cantCastAdditional) ||
+                castCtx.g.bf().some(source => locksOpponentsOnControllersTurn(castCtx.g, source, player));
+              if(card.def.oracleSuspendOptionalV20){const choice=await player.controller.decide(castCtx.g,{type:'chooseOption',options:[{key:'yes',label:'Cast '+card.name},{key:'no',label:'Leave it in exile'}],prompt:'Suspend: cast '+card.name+' without paying its mana cost?',aiHint:{kind:'freeCast',card}});if(choice!=='yes'||card.zone!=='exile'||card.zoneVersion!==version)return;}
+              const cast = !castProhibited && await castCtx.g.castSpell(player, card, {
                 alt: { free: true, suspend: true }, from: 'exile',
               });
-              if (!cast) castCtx.g.lg(`${p.name} cannot cast ${c.name}; it remains in exile with no time counters.`);
+              if (!cast) castCtx.g.lg(`${player.name} cannot cast ${card.name}; it remains in exile with no time counters.`);
             },
           });
   };
@@ -7647,13 +7649,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         src: c,
         ctrl: p,
         name: `${c.name} — Suspend: remove a time counter`,
-        onlyIf: () => c.zone === 'exile' && c.zoneVersion === suspendedZoneVersion &&
-          c.meta && c.meta.suspended > 0,
+        onlyIf: (game, source) => source.zone === 'exile' && source.zoneVersion === suspendedZoneVersion &&
+          source.meta && source.meta.suspended > 0,
         run: async removeCtx => {
-          if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion ||
-              !c.meta || c.meta.suspended <= 0) return;
-          MTG.CWW?.syncTime(c);
-          removeCtx.g.removeCounters(c,'time',1);
+          const card = removeCtx.src;
+          if (card.zone !== 'exile' || card.zoneVersion !== suspendedZoneVersion ||
+              !card.meta || card.meta.suspended <= 0) return;
+          MTG.CWW?.syncTime(card);
+          removeCtx.g.removeCounters(card,'time',1);
         },
       });
     }

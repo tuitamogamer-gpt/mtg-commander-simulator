@@ -165,6 +165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.lastResortStatus = null;
       this.syncError = null;
       this.fatalError = null;
+      this.renderError = null;
       this.reducedMotion = localStorage.getItem('mtgReducedMotion') === '1';
       if (document.body && document.body.classList) document.body.classList.toggle('reduced-motion', this.reducedMotion);
       // Optional, sticky second input path. It never owns rules state: every
@@ -953,6 +954,151 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     render() {
+      try {
+        this.renderArena();
+        this.clearRenderRecovery();
+        return true;
+      } catch (error) {
+        // A failed view must not reject the human decision promise or unwind
+        // an engine action that is already waiting for that exact decision.
+        this.renderError = error;
+        try { this.showRenderRecovery(error); }
+        catch (recoveryError) { console.error('Could not display view recovery', recoveryError); }
+        return false;
+      }
+    }
+
+    showRenderRecovery(error) {
+      if (!document.body || !document.createElement) return;
+      const message = this.renderRecoveryDiagnostics(this.game, error)?.message || 'Unknown view error';
+      const waiting = !this.fatalError && !!(this.pending || this.react);
+      const copy = this.fatalError
+        ? 'The game could not continue. You can retry the view or download a snapshot for support.'
+        : waiting ? 'Your decision is still waiting. Retry the view, then make your choice.'
+          : 'Retry the view to see the current table.';
+      if (this.renderRecoveryOverlay?.isConnected) {
+        this.renderRecoveryCopy.textContent = copy;
+        this.renderRecoveryDetails.textContent = message;
+        return;
+      }
+      // Use plain DOM here: card rendering, localization and the normal
+      // dialog helpers may themselves be the source of the presentation error.
+      const node = (tag, cls, text) => {
+        const element = document.createElement(tag);
+        if (cls) element.className = cls;
+        if (text !== undefined) element.textContent = text;
+        return element;
+      };
+      const overlay = node('div', 'overlay dark renderrecoveryov');
+      overlay.setAttribute('data-testid', 'view-recovery');
+      const dialog = node('section', 'modal renderrecovery');
+      dialog.setAttribute('role', 'alertdialog');
+      dialog.setAttribute('aria-modal', 'true');
+      dialog.setAttribute('aria-label', 'Table view recovery');
+      dialog.appendChild(node('h2', 'mtitle', 'The table view could not be shown'));
+      this.renderRecoveryCopy = node('p', 'renderrecoverycopy', copy);
+      this.renderRecoveryCopy.id = 'view-recovery-description';
+      dialog.setAttribute('aria-describedby', this.renderRecoveryCopy.id);
+      dialog.appendChild(this.renderRecoveryCopy);
+      const actions = node('div', 'renderrecoveryactions');
+      const retry = node('button', 'pbtn primary', 'Retry view');
+      retry.type = 'button';
+      retry.setAttribute('data-testid', 'retry-view');
+      retry.onclick = () => this.render();
+      actions.appendChild(retry);
+      if (this.game) {
+        const debug = node('button', 'pbtn', 'Download debug snapshot');
+        debug.type = 'button';
+        debug.onclick = () => {
+          try { this.downloadDebugSnapshot(this.game); }
+          catch (downloadError) { this.showRenderRecovery(downloadError); }
+        };
+        actions.appendChild(debug);
+      }
+      dialog.appendChild(actions);
+      const details = node('details', 'renderrecoverydetails');
+      details.appendChild(node('summary', '', 'Error details'));
+      this.renderRecoveryDetails = node('pre', '', message);
+      details.appendChild(this.renderRecoveryDetails);
+      dialog.appendChild(details);
+      overlay.appendChild(dialog);
+      overlay.addEventListener('keydown', event => {
+        // Recovery owns keyboard input; stale arena shortcuts cannot answer
+        // the engine decision while its view is unavailable.
+        event.stopPropagation();
+        if (event.key !== 'Tab') return;
+        const controls = [...dialog.querySelectorAll('button, summary')];
+        const first = controls[0], last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      });
+      const arena = document.querySelector('#game');
+      if (arena) {
+        this.renderRecoveryArena = {node: arena, inert: arena.inert, ariaHidden: arena.getAttribute('aria-hidden'),
+          focus: document.activeElement, question: this.pending?.q || this.react?.q};
+        arena.inert = true;
+        arena.setAttribute('aria-hidden', 'true');
+      }
+      this.renderRecoveryOverlay = overlay;
+      document.body.appendChild(overlay);
+      retry.focus({preventScroll: true});
+    }
+
+    clearRenderRecovery() {
+      const overlay = this.renderRecoveryOverlay;
+      const restoreFocus = overlay?.isConnected && (overlay.contains(document.activeElement) || document.activeElement === document.body);
+      overlay?.remove();
+      const arena = this.renderRecoveryArena;
+      if (arena) {
+        arena.node.inert = arena.inert;
+        if (arena.ariaHidden === null) arena.node.removeAttribute('aria-hidden');
+        else arena.node.setAttribute('aria-hidden', arena.ariaHidden);
+      }
+      this.renderRecoveryOverlay = null;
+      this.renderRecoveryArena = null;
+      this.renderRecoveryCopy = null;
+      this.renderRecoveryDetails = null;
+      this.renderError = null;
+      if (restoreFocus && arena?.node.isConnected) this.restoreRenderRecoveryFocus(arena);
+    }
+
+    restoreRenderRecoveryFocus(arena) {
+      const root = arena.node, previous = arena.focus;
+      if (root.inert) {
+        // An existing outer dialog may have made the arena inert before the
+        // failure. Keep it inert and return focus to that dialog if possible.
+        if (previous?.isConnected && !root.contains(previous)) previous.focus?.({preventScroll: true});
+        return;
+      }
+      const question = this.pending?.q || this.react?.q;
+      const surface = this.fatalError ? root.querySelector('.fatalrecovery')
+        : this.pending ? root.querySelector('.overlay .modal, .overlay .sheet, .reveal') || root.querySelector('.promptbar')
+          : this.react ? root.querySelector('.actionstage, .promptbar.reacting') : null;
+      const retained = previous?.isConnected && !previous.disabled && question === arena.question &&
+        surface?.contains(previous) ? previous : null;
+      const target = retained || surface?.querySelector('input:not(:disabled), textarea:not(:disabled), select:not(:disabled)') ||
+        surface?.querySelector('button:not(:disabled), [tabindex="0"]');
+      target?.focus({preventScroll: true});
+    }
+
+    renderRecoveryDiagnostics(g, error = this.renderError) {
+      if (!error) return null;
+      const names = new Set();
+      const hide = card => {
+        for (const definition of [card, card?.meta?.faceDownDef, card?.meta?.characteristicOriginalDef,
+          ...(card?.oracleFaces?.faces || []).map(face => face.def)])
+          if (definition?.name) names.add(definition.name);
+      };
+      for (const player of (g?.players || [])) for (const zone of ['hand', 'library', 'exile'])
+        for (const card of (player[zone] || [])) hide(card);
+      for (const card of (g?.battlefield || [])) if (card.faceDown) hide(card);
+      let message = String(error.message || error);
+      for (const name of [...names].sort((a, b) => b.length - a.length)) message = message.split(name).join('[private card]');
+      return {kind: 'presentation', name: ['Error', 'TypeError', 'ReferenceError', 'RangeError', 'SyntaxError'].includes(error.name)
+        ? error.name : 'Error', message: message.slice(0, 2000), decisionType: this.pending?.q.type || this.react?.q.type || null};
+    }
+
+    renderArena() {
       const g = this.game;
       if (!g) return;
       if (this.fatalError || g.gameOver) this.closeCommandPalette?.();
@@ -2136,7 +2282,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this._keysInit) return;
       this._keysInit = true;
       document.addEventListener('keydown', ev => {
-        if ((typeof window !== 'undefined' && window._ui !== this) || ev.defaultPrevented || this.commandPaletteOpen) return;
+        if ((typeof window !== 'undefined' && window._ui !== this) || ev.defaultPrevented || this.commandPaletteOpen || this.renderRecoveryOverlay?.isConnected) return;
         if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'k') {
           ev.preventDefault(); this.openCommandPalette(); return;
         }
@@ -2657,6 +2803,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     downloadDebugSnapshot(g) {
       const bundle = MTG.buildDebugBundle(g, MTG.renderGameState());
+      const presentationError = this.renderRecoveryDiagnostics(g);
+      if (presentationError) bundle.presentationError = presentationError;
       const blob = new Blob([JSON.stringify(bundle, null, 2) + '\n'], { type: 'application/json' });
       const href = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -4537,10 +4685,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           m.classList.add('cardchoicemodal');
           m.appendChild(decisionCards);
         }
-        if(q.searchableChoices){
-          const input=el('input');input.type='search';input.placeholder='Search card names';input.setAttribute('aria-label','Card name');
-          const list=el('div','searchchoices');const renderChoices=()=>{list.replaceChildren();const value=input.value.toLowerCase();for(const option of q.options.filter(o=>o.label.toLowerCase().includes(value)).slice(0,50))list.appendChild(btn(esc(option.label),()=>this.resolvePending(option.key),'wide'));};
-          input.addEventListener('input',renderChoices);m.appendChild(input);m.appendChild(list);renderChoices();return ov;
+        const creatureTypes = ['chooseType', 'creatureType'].includes(q.aiHint?.kind) &&
+          q.options.every(option => MTG.CREATURE_SUBTYPES.has(option.key));
+        if (q.searchableChoices || creatureTypes && q.options.length > 50) {
+          const input = el('input', 'choice-search-input');
+          input.type = 'search'; input.autocomplete = 'off';
+          input.placeholder = creatureTypes ? 'Search creature types' : 'Search card names';
+          input.setAttribute('aria-label', creatureTypes ? 'Creature type' : 'Card name');
+          input.value = pd.choiceSearch || '';
+          const list = el('div', 'searchchoices');
+          const status = el('p', 'choice-search-status');
+          status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+          const matching = () => {
+            const value = input.value.trim().toLowerCase();
+            return q.options.filter(option => String(option.label ?? option.key).toLowerCase().includes(value));
+          };
+          const choose = option => {
+            if (this.pending === pd) this.resolvePendingEntry(pd, option.key);
+          };
+          const renderChoices = () => {
+            list.replaceChildren();
+            const matches = matching(), visible = matches.slice(0, 50);
+            const noun = creatureTypes ? (matches.length === 1 ? 'creature type' : 'creature types')
+              : (matches.length === 1 ? 'card name' : 'card names');
+            status.textContent = matches.length
+              ? `${matches.length} matching ${noun}.${matches.length > visible.length ? ' Showing the first 50; search to narrow the list.' : ''}`
+              : `No ${creatureTypes ? 'creature types' : 'card names'} match your search.`;
+            for (const option of visible) {
+              const optionButton = btn(esc(option.label), () => choose(option), 'wide');
+              optionButton.dataset.choiceKey = String(option.key);
+              list.appendChild(optionButton);
+            }
+          };
+          input.addEventListener('input', () => { pd.choiceSearch = input.value; renderChoices(); });
+          input.addEventListener('keydown', event => {
+            const matches = matching();
+            if (event.key === 'Enter' && matches.length === 1) { event.preventDefault(); choose(matches[0]); }
+          });
+          m.appendChild(input); m.appendChild(status); m.appendChild(list);
+          renderChoices();
+          return ov;
         }
         for (const o of q.options) {
           const visualOption = this.renderVisualChoiceOption(o, () => this.resolvePending(o.key));

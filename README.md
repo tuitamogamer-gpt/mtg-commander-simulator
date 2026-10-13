@@ -640,8 +640,11 @@ On Windows PowerShell, substitute `npm.cmd` for `npm` in this section.
 | --- | --- |
 | `npm run check` | Parse the JavaScript source and check syntax. |
 | `npm run test:baseline` | Check deck sizes, card definitions, commanders, and the built-in deck inventory. |
+| `npm run test:focused` | Run bounded regressions for pending UI decisions, AI simulation isolation, accounts, saves, combat, ninjutsu, and Suspend. |
 | `npm test` | Run the Node test suite for rules, AI, imports, accounts, and Live. Includes the long all-deck headless simulation. |
 | `npm run test:ai` | Run AI V2 checks and the headless deck simulation. |
+| `npm run test:ai:unit` | Run AI V2 unit checks without the all-deck simulation. |
+| `npm run test:ai:games` | Run the long all-deck headless simulation independently. |
 | `npm run test:server` | Run focused Live server, action replay, room lease, and reconnect tests with local test stores. |
 | `npm run audit` | Audit source and built-in deck coverage. |
 | `npm run certify:strict` | Run strict executable card certification. |
@@ -651,6 +654,8 @@ On Windows PowerShell, substitute `npm.cmd` for `npm` in this section.
 The full suite can take substantially longer than focused checks. A stopped run is incomplete, even when earlier checks passed. Certification records project coverage; it does not prove every possible card interaction.
 
 Browser acceptance scripts live in [tests/browser](tests/browser/). They require Playwright and its browser binaries separately; Playwright is not a project dependency. `PLAYWRIGHT_MODULE` can point to an installed `playwright/index.mjs`. The [release guide](PUBLIC_RELEASE.md#browser-acceptance) lists the scripts and required gameplay, mobile, privacy, and reconnect scenarios.
+
+`node tests/browser/improvement-round.mjs` checks a paid creature-type choice, keyboard search, and view recovery at phone and desktop widths. Set `BROWSER_EXECUTABLE` to an installed Chromium path when needed, `ROUND_OUTPUT` for screenshots and results, or `GAME_URL=https://www.mtgpod.xyz` to verify production behavior and compare its loaded application sources with the current checkout.
 
 For a public application release, follow [PUBLIC_RELEASE.md](PUBLIC_RELEASE.md), including:
 

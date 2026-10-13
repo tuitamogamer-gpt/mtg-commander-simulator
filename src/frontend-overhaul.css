@@ -2434,3 +2434,19 @@ button.dungeonroom:hover { background: #2f5346; }
 @media (max-width: 1100px), (max-height: 820px) {
   #setup .controlintro { position: static; }
 }
+
+.choice-search-input { box-sizing: border-box; width: 100%; min-height: 44px; padding: 11px 13px; border: 1px solid var(--border, #435260); border-radius: 12px; background: var(--surface, #111920); color: var(--text, #f1f3f5); font: inherit; font-size: 16px; }
+.choice-search-input::placeholder { color: var(--muted, #a5b1bb); opacity: 1; }
+.choice-search-status { margin: 8px 0 12px; color: var(--muted, #a5b1bb); font-size: 13px; line-height: 1.45; }
+.searchchoices { display: grid; gap: 8px; }
+
+/* Presentation recovery lives outside the arena so a failed table render
+   cannot hide its controls or leave the old table accepting input. */
+.overlay.renderrecoveryov { z-index: 100000; padding: 16px; box-sizing: border-box; }
+.renderrecoveryov .modal.renderrecovery { width: min(100%, 540px); max-height: calc(100 * var(--dvhu) - 32px); box-sizing: border-box; }
+.renderrecoverycopy { margin: 0 0 16px; line-height: 1.5; }
+.renderrecoveryactions { display: flex; flex-wrap: wrap; gap: 8px; }
+.renderrecoveryactions .pbtn { min-height: 44px; }
+.renderrecoverydetails { margin-top: 16px; font-size: 12px; }
+.renderrecoverydetails summary { cursor: pointer; padding: 8px 0; }
+.renderrecoverydetails pre { white-space: pre-wrap; overflow-wrap: anywhere; }
