@@ -571,7 +571,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     focusDecisionView() {
       this.mobileView = 'mine';
       this.utilityDrawerOpen = false;
-      this.quickMenuOpen = false;
+      // A report describes its captured checkpoint while a newly arriving
+      // engine decision can safely wait for the player to finish writing.
+      if (this.quickMenuOpen !== 'report' || !this.problemReportDraft) this.quickMenuOpen = false;
     }
 
     // ---------- prozor za reakciju (auto mod) ----------
@@ -1309,6 +1311,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this._arenaRenderContext = context;
       this._arenaSurfaceContext = surfaces;
       liveRoot.querySelectorAll('.overlay, .quickmenuov').forEach(overlay => {
+        if (this.quickMenuOpen === 'report' && this.problemReportDraft && overlay._problemReportDraft !== this.problemReportDraft) return;
         const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
         if (dialog) U.enhanceDialog(overlay, dialog);
       });
@@ -2911,6 +2914,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     openProblemReport(g) {
+      if (typeof window !== 'undefined' && window._ui !== this) return;
       try {
         const captured = this.captureProblemReport(g);
         this.problemReportDraft = { captured, description: '', includeReplay: !!captured.replay };
@@ -2935,6 +2939,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const draft = this.problemReportDraft;
       if (!draft) { this.quickMenuOpen = false; return null; }
       const overlay = el('div', 'quickmenuov overlay dark');
+      overlay._problemReportDraft = draft;
+      const isCurrent = () => this.problemReportDraft === draft && this.quickMenuOpen === 'report' &&
+        (typeof window === 'undefined' || window._ui === this);
       const panel = el('section', 'modal problemreport');
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-modal', 'true');
@@ -2947,21 +2954,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <p class="problemreportprivacy">The downloaded file can be attached to your support message. Nothing is sent automatically.</p>`;
       const description = panel.querySelector('textarea');
       description.value = draft.description;
-      description.oninput = () => { draft.description = description.value; };
+      description.oninput = () => { if (isCurrent()) draft.description = description.value; };
       if (captured.replay) {
         const label = el('label', 'problemreportreplay');
         const input = document.createElement('input'); input.type = 'checkbox'; input.checked = draft.includeReplay;
-        input.onchange = () => { draft.includeReplay = input.checked; };
+        input.onchange = () => { if (isCurrent()) draft.includeReplay = input.checked; };
         label.append(input, document.createTextNode('Include Solo replay — all saved cards and recorded choices'));
         panel.appendChild(label);
       } else panel.appendChild(el('p', 'problemreportprivacy', esc(captured.replayUnavailable)));
       const status = el('p', 'problemreportstatus'); status.setAttribute('role', 'status');
       const row = el('div', 'btnrow');
       const close = el('button', 'pbtn', 'Cancel');
-      close.onclick = () => { this.quickMenuOpen = false; this.problemReportDraft = null; this.render(); };
+      close.onclick = () => {
+        if (!isCurrent()) return;
+        this.quickMenuOpen = false; this.problemReportDraft = null; this.render();
+      };
       const download = el('button', 'pbtn primary', 'Download report');
       download.onclick = () => {
-        if (this.problemReportDraft !== draft || this.quickMenuOpen !== 'report') return;
+        if (!isCurrent()) return;
         try {
           this.downloadProblemReport(MTG.problemReportForDownload(captured, draft.description, draft.includeReplay));
           this.quickMenuOpen = false; this.problemReportDraft = null;
@@ -2971,6 +2981,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       row.append(close, download); panel.append(status, row); overlay.appendChild(panel);
       overlay.onclick = event => { if (event.target === overlay) close.click(); };
+      overlay.addEventListener('keydown', event => {
+        // Typing, shortcuts and Escape belong to this editor, never to the
+        // waiting gameplay decision underneath it. Native controls and the
+        // dialog's Tab trap still handle their own keys before this bubbles.
+        event.stopPropagation();
+        if (event.key === 'Escape') { event.preventDefault(); close.click(); }
+      });
       return overlay;
     }
 

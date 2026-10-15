@@ -101,6 +101,32 @@ test('guest device recovery is synchronous, survives reload, and never uploads o
   assert.deepEqual(c.requests.map(request => request.action), ['session']);
 });
 
+test('device backup encodes the full checkpoint once and preserves escaped metadata and toJSON output', async () => {
+  const ownerId = 'owner/"\\🥷\u2028';
+  const c = client({ ownerId });
+  await c.api.whenReady();
+  const expected = checkpoint();
+  expected.setup.deck = 'Deck "},"save":null,"note":"<>&🥷\u2028';
+  let toJSONCalls = 0;
+  const save = { ...checkpoint(), toJSON() { toJSONCalls++; return expected; } };
+  const json = vm.runInContext('JSON', c.context);
+  const stringify = json.stringify;
+  let checkpointEncodings = 0;
+  json.stringify = function (value, ...args) {
+    if (value?.schema === 'commander-save/v1' || value?.save?.schema === 'commander-save/v1') checkpointEncodings++;
+    return stringify(value, ...args);
+  };
+  let written;
+  try { written = c.api.saveLocalRecovery(save, ownerId); }
+  finally { json.stringify = stringify; }
+  assert.equal(written.saved, true);
+  assert.equal(toJSONCalls, 1);
+  assert.equal(checkpointEncodings, 1, 'each synchronous backup traverses the full checkpoint only once');
+  const stored = JSON.parse(c.local.get(key(ownerId)));
+  assert.deepEqual(stored, { version: 1, ownerId, revision: written.revision, save: expected });
+  assert.deepEqual(copy(c.api.getLocalRecovery().save), expected);
+});
+
 test('initial loading and settled owner boundaries prevent cross-owner recovery reads and writes', async () => {
   const ready = deferred();
   let pending = ready;
@@ -226,7 +252,7 @@ test('successful and duplicate match completion clear only their own recovery', 
       ? { payload: { ok: true, ownerId: 'owner-a', recorded, save: checkpoint(matchN), profile } } : null });
     await c.api.whenReady();
     c.api.saveLocalRecovery(checkpoint(localMatch), 'owner-a');
-    assert.equal(await c.api.completeMatch({ matchId: matchM }, 'owner-a'), recorded);
+    assert.equal(await c.api.completeMatch({ matchId: matchM }, 'owner-a'), true);
     assert.equal(c.api.getLocalRecovery()?.save.matchId || null, localMatch === matchM ? null : matchN);
   }
 });

@@ -86,8 +86,13 @@ async function stableRender(label, { botLog = false } = {}) {
       '.myboard', '.myboard .mini', '.myboard .mini img', '.myboard .ct-portrait',
       '.oppsouter', '.opprow .ct-portrait', '.ct-seat-ribbon .ct-portrait'];
     const tracked = selectors.map(selector => ({ selector, node: document.querySelector(selector) }));
-    const focused = document.querySelector('.hand .hcard');
+    // The mobile target layout intentionally hides the hand. Exercise an
+    // actual visible opponent target instead of trying to focus a hidden card.
+    const focused = [...document.querySelectorAll('.hand .hcard, .oppsouter .mini.targetable')]
+      .find(node => node.getClientRects().length > 0);
+    if (!focused) throw Error('No visible card control for the refresh focus check');
     focused.focus({ preventScroll: true });
+    if (document.activeElement !== focused) throw Error('The refresh focus check must start on a focused visible control');
     const removed = [];
     const observer = new MutationObserver(records => {
       for (const record of records) for (const node of record.removedNodes) {
@@ -124,7 +129,7 @@ async function stableRender(label, { botLog = false } = {}) {
   assert.equal(result.motion, false, 'System reduced motion must not mask rerender animation');
   assert.ok(result.nodes.every(node => node.exists && node.connected && node.same), `${label}: stable DOM nodes ${JSON.stringify(result.nodes)}`);
   assert.deepEqual(result.removed, [], `${label}: unchanged regions must never be removed from the live DOM`);
-  assert.equal(result.focused, true, `${label}: focus remains on the same hand control`);
+  assert.equal(result.focused, true, `${label}: focus remains on the same visible card control`);
   for (const position of result.scroll) {
     assert.equal(position.afterX, position.x, `${label}: ${position.className} horizontal scroll`);
     assert.equal(position.afterY, position.y, `${label}: vertical scroll ${JSON.stringify(position)}`);

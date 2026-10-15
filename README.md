@@ -61,6 +61,8 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
+- **15 October gameplay polish:** stable problem-report editing, confirmed match results with retryable recovery, and less local-save serialization. [Release checks](reports/releases/2026-10-15-gameplay-polish.md)
+
 - **9 October catalog completion:** the latest 1,021 definitions in batches 0264–0266 complete the pinned paper/Commander comparison. [Validation report](reports/oracle-import/validation-0264-0266.md)
 - **Engine behavior audit:** actual payment, priority, copied spells, combat, triggers, zone identity and account save/continue are checked beyond catalog inventory. [10 October audit](reports/releases/2026-10-10-extended-engine-audit.md)
 - **1,000 additional Oracle cards:** batches 0249–0258, bringing the installed catalog to 29,799 definitions. Complete source records, native rules, and human/local hard-AI execution evidence are retained in the [validation report](reports/oracle-import/validation-0258.md).
