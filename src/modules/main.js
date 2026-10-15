@@ -2503,37 +2503,57 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else saveTimer = setTimeout(() => void writeAccountSave(), 450);
     };
     let matchRecorded = false;
+    let matchCompletionInFlight = null;
     completeAccountMatch = () => {
-      if (accountCheckpointEnabled) globalThis.MTGAccount?.clearLocalRecovery?.(gameAccountOwnerId || 'guest', { matchId });
-      if (matchRecorded || !saveSetup || !accountCanWrite()) return Promise.resolve(false);
-      matchRecorded = true;
+      if (accountCheckpointEnabled && !gameAccountOwnerId) {
+        globalThis.MTGAccount?.clearLocalRecovery?.('guest', { matchId });
+        recoveryDiscarded = true;
+      }
+      if (matchRecorded) return Promise.resolve(true);
+      if (matchCompletionInFlight) return matchCompletionInFlight;
+      if (!saveSetup || !accountCanWrite()) return Promise.resolve(false);
       clearTimeout(saveTimer);
-      return globalThis.MTGAccount.completeMatch({
+      matchCompletionInFlight = globalThis.MTGAccount.completeMatch({
         matchId,
         deck: saveSetup.deck,
         commanders: saveSetup.commanders,
         won: g.winner === ui.me,
         turns: g.turnNo,
-      }, gameAccountOwnerId).then(() => {
-        ui.accountSaveStatus = { state: 'complete', text: 'Stats updated' };
-        ui.queueRender();
+      }, gameAccountOwnerId).then(confirmed => {
+        if (confirmed !== true) throw new Error('The match result was not confirmed. Sign in again and retry.');
+        matchRecorded = true;
+        recoveryDiscarded = true;
+        globalThis.MTGAccount.clearLocalRecovery?.(gameAccountOwnerId, { matchId });
+        if (window._ui === ui && window._game === g) {
+          ui.accountSaveStatus = { state: 'complete', text: 'Stats updated' };
+          ui.queueRender();
+        }
         return true;
       }).catch(error => {
-        matchRecorded = false;
-        ui.accountSaveStatus = accountBindingDisabled
-          ? { state: 'error', text: 'Profile changed · saves paused' }
-          : { state: 'error', text: 'Stats pending' };
+        if (window._ui === ui && window._game === g) {
+          ui.accountSaveStatus = accountBindingDisabled
+            ? { state: 'error', text: accountBindingMessage }
+            : { state: 'error', text: 'Stats pending' };
+          ui.queueRender();
+        }
         console.error('Commander profile stats update failed:', error);
         return false;
-      });
+      }).finally(() => { matchCompletionInFlight = null; });
+      return matchCompletionInFlight;
     };
     // An eliminated seat can leave a game the remaining players keep going.
     // The loss is recorded exactly like any other completed match before the
     // page returns to the profile view.
     MTG.leaveAsLoss = async () => {
+      // A detached callback is already handled; returning false would make
+      // the UI fall back to exiting the replacement table.
+      if (window._ui !== ui || window._game !== g) return true;
       if (!ui.me || !ui.me.lost) return false;
       clearTimeout(saveTimer);
-      try { await completeAccountMatch(); } catch (error) { console.error(error); }
+      const needsConfirmation = accountCanWrite();
+      const confirmed = await completeAccountMatch();
+      if (window._ui !== ui || window._game !== g) return true;
+      if (needsConfirmation && confirmed !== true) throw new Error('The match result was not confirmed. Try again before leaving.');
       // Keep the address the player arrived with and only add the marker the
       // entry page consumes, so a signed-in seat lands on its profile.
       const params = new URLSearchParams(location.search);

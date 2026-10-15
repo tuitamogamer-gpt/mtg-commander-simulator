@@ -29,7 +29,7 @@ const browser = await chromium.launch({headless: true,
 const page = await browser.newPage({viewport: {width: 390, height: 844}, hasTouch: true, reducedMotion: 'reduce'});
 const errors = [], checks = [], sources = [];
 const entrySources = new Set(['frontend-overhaul.css', 'account.js', 'public-entry.js', 'app.js']);
-const sourceNames = ['ui.js', 'engine.js', 'engine2.js', 'oracle-mechanics.js', 'main.js', 'clb-40k-integration.js',
+const sourceNames = ['arena-render.js', 'ui.js', 'engine.js', 'engine2.js', 'oracle-mechanics.js', 'main.js', 'clb-40k-integration.js',
   'save-state.js', 'problem-report.js', 'c15-c16-precon-rules.js', ...entrySources];
 page.on('pageerror', error => errors.push(error.message));
 page.on('response', response => {

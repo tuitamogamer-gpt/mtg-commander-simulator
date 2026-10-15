@@ -72,7 +72,7 @@ function utf8Bytes(value) {
     : encodeURIComponent(value).replace(/%[\dA-F]{2}/g, '_').length;
 }
 
-function recoverySave(value) {
+function recoverySave(value, serialize = false) {
   const valid = save => save && typeof save === 'object' && !Array.isArray(save) &&
     save.schema === 'commander-save/v1' && save.mode === 'solo' && save.setup &&
     typeof save.setup === 'object' && !Array.isArray(save.setup) && typeof save.matchId === 'string' &&
@@ -82,7 +82,7 @@ function recoverySave(value) {
   if (utf8Bytes(wire) > MAX_LOCAL_SAVE_BYTES) throw new Error('This game is too large for device recovery.');
   const save = JSON.parse(wire);
   if (!valid(save)) throw new Error('This game cannot be stored for device recovery.');
-  return save;
+  return serialize ? wire : save;
 }
 
 function readLocalRecovery(ownerId) {
@@ -593,10 +593,13 @@ const api = {
     if (!ownerId || ownerId !== recoveryOwner(true))
       return { saved: false, revision: null, error: 'The player identity changed. Device recovery was not saved.' };
     try {
-      const checkpoint = recoverySave(save);
+      const checkpoint = recoverySave(save, true);
       const revision = typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID()
         : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${++localRecoveryRevision}`;
-      localStorage.setItem(recoveryKey(ownerId), JSON.stringify({ version: 1, ownerId, revision, save: checkpoint }));
+      // The checkpoint has already been encoded, size-checked and validated
+      // after toJSON. Reuse those exact bytes instead of walking it again.
+      const metadata = JSON.stringify({ version: 1, ownerId, revision });
+      localStorage.setItem(recoveryKey(ownerId), metadata.slice(0, -1) + ',"save":' + checkpoint + '}');
       localRecoveryError = '';
       renderEntry();
       return { saved: true, revision, error: '' };
@@ -755,12 +758,15 @@ const api = {
       ownerId,
       currentOwnerId => request('completeMatch', { ...match, expectedOwnerId: currentOwnerId }),
       result => {
+        if (typeof result.recorded !== 'boolean') throw new Error('The match result was not confirmed. Please retry.');
         api.clearLocalRecovery(ownerId, { matchId: match.matchId });
         state.profile = result.profile;
         state.save = result.save;
         state.saveError = '';
         emit();
-        return result.recorded;
+        // A duplicate is also a confirmed result: the server has already
+        // recorded it and must not award the match a second time.
+        return true;
       }
     ));
     return saveChain;

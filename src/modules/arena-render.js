@@ -77,6 +77,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             old.onerror = next.onerror; old.onload = next.onload;
             result = old;
           } else if ((options.retain || options.retainSurfaces) && next.closest(stableAreas) && same(old, next)) result = old;
+          // A report captures one immutable game checkpoint. Its controls only
+          // edit that exact draft, so keep the connected editor even when an
+          // underlying decision changes; replacing it interrupts text input.
+          else if (options.sameGame && old._problemReportDraft && old._problemReportDraft === next._problemReportDraft) result = old;
           // A pending recap is stable in Solo too: keep its open details,
           // reading position and one-time entrance through incidental renders.
           else if (options.retain && (options.live || old.matches('.resolutionrecapoverlay')) && old.matches('.overlay, .quickmenuov') && sameDialog(old, next)) result = old;
