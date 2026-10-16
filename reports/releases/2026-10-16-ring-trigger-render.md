@@ -1,0 +1,9 @@
+# Ring trigger ordering — 16 October 2026
+
+The simultaneous-trigger dialog could throw `Cannot read properties of undefined (reading 'nativeCount')` when a delayed trigger had no optional origin metadata. The left operand of a comparison used optional chaining, but its right operand still read `origin.nativeCount`. The renderer now checks that the origin exists before comparing its counts. Trigger creation, ordering, and resolution rules are unchanged.
+
+The native regression reproduces the failure during Galadriel, Elven-Queen's combat as a level-2 Ring-bearer, alongside Celeborn the Wise. The Ring's native delayed draw/discard trigger has no origin metadata; Celeborn's ordinary trigger does. Rendering preserves the waiting game, and the selected order resolves through scry, draw/discard, and combat damage. Existing Yuriko/Roaming Throne provenance, render recovery, and stale-control regressions also pass: 26 tests total.
+
+A separate browser regression uses Galadriel and Tome of Legends. The previous UI reproduces the reported error at 390 pixels. The fixed UI passes at 390 and 1440 pixels: the player reorders the actual trigger objects, confirms the original waiting decision, discards for the Ring, and finishes combat without recovery or page errors. Loaded `ui.js`, `engine.js`, and `engine2.js` hashes are checked. This reproduces the reported failure mechanism; the screenshot does not establish which other permanents were on that particular battlefield.
+
+Syntax/whitespace checks, iOS bundle/package checks, and a complete Solo game with rematch accompany the fix. Evidence is recorded under `/workspace/scratch/trigger-origin-fix-2026-10-16/`. The PR records the exact production revision and fresh canonical-URL browser verification after the existing Git-to-Vercel deployment. Browser verification uses Chromium; no native Safari run is claimed.
