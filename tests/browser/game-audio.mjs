@@ -8,8 +8,9 @@ import express from 'express';
 import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 const pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const out = `${root}output/game-audio/${process.env.BROWSER || 'chromium'}`; mkdirSync(out, { recursive: true });
-const browser = await pw[process.env.BROWSER || 'chromium'].launch({ headless: true });
+const out = process.env.AUDIO_OUTPUT || `${root}output/game-audio/${process.env.BROWSER || 'chromium'}`; mkdirSync(out, { recursive: true });
+const browser = await pw[process.env.BROWSER || 'chromium'].launch({ headless: true,
+  ...(process.env.BROWSER_EXECUTABLE ? { executablePath: process.env.BROWSER_EXECUTABLE } : {}) });
 const server = process.env.GAME_URL ? null : express()
   .use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }))
   .use(express.static(root)).listen(0, '127.0.0.1');
@@ -43,12 +44,14 @@ try {
     }
     assert.equal(await page.evaluate(() => _ui.pending?.q.type), 'main');
     await page.waitForFunction(() => MTG.audio.status().state === 'playing');
+    assert.equal(await page.evaluate(() => MTG.audio.preferences.track), 'council-at-dusk');
+    assert.equal(await page.evaluate(() => MTG.audio.preferences.narration), 0);
     await page.evaluate(() => { window.__audioPending = _ui.pending; window.__audioDecisionCount = MTG.activeAccountMatch.decisions.length; });
     await click(page.locator('.menubutton')); await click(page.locator('.audiosettingsopen'));
     const panel = page.locator('.audiopanel');
     assert.equal(await panel.getAttribute('role'), 'dialog');
     assert.equal(await panel.getAttribute('aria-modal'), 'true');
-    for (const id of ['astral-library', 'ember-sanctum', 'moonlit-grove']) {
+    for (const id of ['council-at-dusk', 'aether-tides', 'emberwatch', 'astral-library', 'ember-sanctum', 'moonlit-grove']) {
       await click(page.locator(`[data-track="${id}"]`));
       await page.waitForFunction(id => MTG.audio.musicId === id && MTG.audio.state === 'playing', id);
     }
@@ -60,21 +63,36 @@ try {
       await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
       assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), id);
     }
+    await page.locator('#audio-effect').selectOption('voice/your-turn');
+    assert.equal(await page.locator('.audiopreview').isDisabled(), true, 'Narration starts off');
+    await page.locator('#audio-narration').fill('42');
+    await page.locator('#audio-effects').fill('0');
+    assert.equal(await page.locator('.audiopreview').isDisabled(), false, 'Voice volume is independent of effects');
+    for (const id of ['your-turn', 'victory', 'defeat']) {
+      await page.locator('#audio-effect').selectOption('voice/' + id);
+      await click(page.locator('.audiopreview'));
+      await page.waitForFunction(id => MTG.audio.history.at(-1)?.id === id && MTG.audio.history.at(-1)?.channel === 'voice', id);
+      assert.equal(await page.evaluate(() => MTG.audio.status().activeNarration), 1);
+      assert.ok(await page.evaluate(() => MTG.audio.musicBus.gain.value < MTG.audio.preferences.music / 100), 'Music softens during narration');
+    }
     await click(page.locator('.audiomute'));
     await page.waitForFunction(() => MTG.audio.preferences.muted, null, { timeout: 5000 });
     assert.equal(await page.locator('.audiopreview').isDisabled(), true);
     await page.waitForTimeout(650);
     assert.equal(await page.evaluate(() => MTG.audio.voices.size), 0);
+    assert.equal(await page.evaluate(() => MTG.audio.status().activeNarration), 0);
     await click(page.locator('.audiomute')); await page.waitForTimeout(1600);
     assert.equal(await page.evaluate(() => MTG.audio.musicVoices.size), 1);
     await page.locator('#audio-effects').focus();
     await page.keyboard.press('Home'); assert.equal(await page.evaluate(() => MTG.audio.preferences.effects), 0);
     await page.keyboard.press('ArrowRight'); assert.equal(await page.evaluate(() => MTG.audio.preferences.effects), 1);
     await page.locator('#audio-effects').fill('35');
+    await page.locator('#audio-narration').fill('0');
+    await page.locator('#audio-effect').selectOption('combat');
     assert.equal(await page.evaluate(() => _ui.pending === __audioPending && MTG.activeAccountMatch.decisions.length === __audioDecisionCount), true);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     await page.screenshot({ path: `${out}/${width}-audio-menu.png` });
-    check(`${width}: track switching, independent levels, mute, touch/keyboard and pending decision preservation`);
+    check(`${width}: six tracks, opt-in Fish voices, independent levels, mute, touch/keyboard and pending decision preservation`);
     if (width === 390) {
       await page.setViewportSize({ width: 320, height: 568 });
       const fit = await page.locator('.audiofooter').boundingBox(); assert.ok(fit.y >= 0 && fit.y + fit.height <= 568);
@@ -172,10 +190,16 @@ try {
         await click(page.locator(`.hand [data-iid="${state.cast}"]`).first());
         await click(page.locator('.sheetacts button').filter({ hasText: /^Cast/ }).first());
       } else if (state.pending === 'attackers') {
-      await openCombatOverview(page);
-        await click(page.locator('.attackalloclane.player'));
-        await click(page.locator(`[data-attacker="${state.attacker}"]`));
-        await click(page.getByRole('button', { name: /^Confirm attack/ }));
+        if (width === 390) {
+          await click(page.locator('.ct-defender-choice').first());
+          await click(page.locator(`.ct-mobile-combat-card[data-iid="${state.attacker}"]`));
+          await click(page.getByRole('button', { name: /^Attack \(1\)/ }));
+        } else {
+          await openCombatOverview(page);
+          await click(page.locator('.attackalloclane.player'));
+          await click(page.locator(`[data-attacker="${state.attacker}"]`));
+          await click(page.getByRole('button', { name: /^Confirm attack/ }));
+        }
       } else {
         if (state.pending === 'combatReview') { reviewSeen = true; await page.screenshot({ path: `${out}/${width}-combat-review.png` }); }
         const proceed = page.getByRole('button', { name: /^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/ }).filter({ visible: true });

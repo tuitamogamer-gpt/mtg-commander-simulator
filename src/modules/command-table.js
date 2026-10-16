@@ -183,6 +183,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.append(enlarge);
         if (partnerNames) commanderState?.remove();
         else if (commanderState) identity.append(commanderState);
+        // Public shortcuts share the effects row instead of consuming another
+        // grid row and hiding the bottom of cards behind the land dock.
+        const dungeon = head.querySelector(':scope > .dungeonbadge');
+        if (metadata && dungeon) metadata.append(dungeon);
         if (metadata) head.querySelector('.oppname')?.append(metadata);
       }
       const landCount = row.querySelector('.oppLands');
