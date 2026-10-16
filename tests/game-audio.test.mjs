@@ -160,6 +160,117 @@ test('the next player’s turn cancels a pending or playing your-turn announceme
   assert.equal(f.audio.narration, null, 'An announcement still playing stops when the turn changes');
   f.audio.dispose();
 });
+
+test('major-play commentary shares an eighteen-second cooldown and never interrupts speech', async () => {
+  const f = audioFixture(); let clock = 0;
+  f.env.performance = { now: () => clock };
+  f.audio.configure({ narration: 40, effects: 0 }); await f.audio.unlock();
+  await f.audio.playNarration('massive-hit');
+  assert.equal(f.audio.narrationId, 'massive-hit');
+  clock = 1000; await f.audio.playNarration('board-wipe');
+  assert.equal(f.audio.narrationId, 'massive-hit', 'Even a different major play cannot interrupt an active line');
+  f.audio.narration.stop();
+  clock = 17999; await f.audio.playNarration('army-built');
+  assert.equal(f.audio.history.length, 1);
+  clock = 18000; await f.audio.playNarration('board-wipe');
+  assert.equal(f.audio.narrationId, 'board-wipe');
+  assert.deepEqual(Array.from(f.audio.history, row => row.id), ['massive-hit', 'board-wipe']);
+  clock = 37000; await f.audio.playNarration('huge-summon');
+  assert.equal(f.audio.narrationId, 'board-wipe', 'The speech guard remains after the cooldown expires');
+  f.audio.narration.stop();
+  await f.audio.previewNarration('clutch-counter');
+  assert.equal(f.audio.narrationId, 'clutch-counter', 'Explicit previews remain available during the automatic cooldown');
+  f.audio.dispose();
+});
+
+test('results preempt commentary, and later turn or commentary events cannot interrupt the result', async () => {
+  const f = audioFixture(), listener = {}; let clock = 0;
+  f.env.performance = { now: () => clock }; f.game.viewer = listener;
+  f.audio.configure({ narration: 40, effects: 0 }); await f.audio.unlock();
+  await f.audio.playNarration('huge-summon');
+  f.audio.handle({ type: 'gameover', winner: listener }, f.game); await flush();
+  assert.equal(f.audio.narrationId, 'victory');
+  clock = 20000; await f.audio.playNarration('comeback');
+  f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
+  assert.equal(f.audio.narrationId, 'victory');
+  f.audio.narration.stop();
+  await f.audio.playNarration('army-built');
+  assert.equal(f.audio.history.length, 2, 'Game over also blocks comments after the result line ends');
+  f.audio.attach({ viewer: listener });
+  await f.audio.playNarration('army-built');
+  assert.equal(f.audio.narrationId, 'army-built', 'A new match starts with a fresh commentary cooldown');
+  f.audio.dispose();
+});
+
+test('keyword sounds rely on captured public facts and never inspect hidden card traits', () => {
+  const hidden = { get def() { throw new Error('Hidden definition read'); }, get cur() { throw new Error('Hidden traits read'); },
+    get kw() { throw new Error('Hidden keyword read'); } };
+  for (const keyword of ['flying', 'vigilance', 'haste', 'menace', 'reach', 'first-strike', 'double-strike', 'trample', 'lifelink', 'deathtouch', 'infect', 'wither', 'proliferate']) {
+    assert.deepEqual(cues({ type: 'gameEffect', kind: 'keywordResolved', source: hidden, audioFacts: { keywords: [keyword] } }), ['keyword-' + keyword]);
+  }
+  assert.deepEqual(cues({ type: 'gameEffect', kind: 'keywordResolved', source: hidden }), []);
+  assert.deepEqual(cues({ type: 'gameEffect', kind: 'keywordResolved', audioFacts: { keywords: ['unknown', '../flying'] } }), []);
+  assert.deepEqual(cues({ type: 'log', audioFacts: { keywords: ['flying'] } }), []);
+  assert.deepEqual(cues({ type: 'combat', kind: 'attackersDeclared', count: 5,
+    audioFacts: { keywords: ['vigilance', 'flying', 'double-strike'] } }), ['keyword-double-strike', 'combat']);
+});
+
+test('spoken play comments require actual outcome facts and meaningful thresholds', () => {
+  const comment = audioFacts => U.audioCommentaryForEvent({ type: 'gameEffect', audioFacts });
+  assert.equal(comment({ actualDamageToPlayer: 11 }), null);
+  assert.equal(comment({ actualDamageToPlayer: 12 }), 'massive-hit');
+  assert.equal(comment({ removedCount: 4 }), null);
+  assert.equal(comment({ removedCount: 5 }), 'board-wipe');
+  assert.equal(comment({ counteredSpellManaValue: 5 }), null);
+  assert.equal(comment({ counteredSpellManaValue: 6 }), 'clutch-counter');
+  assert.equal(comment({ power: 7, toughness: 9 }), null);
+  assert.equal(comment({ power: 8, toughness: 1 }), 'huge-summon');
+  assert.equal(comment({ power: 1, toughness: 10 }), 'huge-summon');
+  assert.equal(comment({ creatureTokensCreated: 4 }), null);
+  assert.equal(comment({ creatureTokensCreated: 5 }), 'army-built');
+  assert.equal(comment({ lifeGained: 7, lifeBefore: 8, lifeAfter: 15 }), null);
+  assert.equal(comment({ lifeGained: 8, lifeBefore: 11, lifeAfter: 19 }), null);
+  assert.equal(comment({ lifeGained: 8, lifeBefore: 6, lifeAfter: 14 }), null);
+  assert.equal(comment({ lifeGained: 8, lifeAfter: 18 }), null);
+  assert.equal(comment({ lifeGained: 8, lifeBefore: 10, lifeAfter: 18 }), 'comeback');
+  assert.equal(comment({ actualDamageToPlayer: Infinity, removedCount: '20', power: NaN }), null);
+  assert.equal(U.audioCommentaryForEvent({ type: 'gameEffect', kind: 'boardWipe', count: 30 }), null, 'Candidate lists do not prove that a wipe succeeded');
+  assert.equal(U.audioCommentaryForEvent({ type: 'gameEffect', kind: 'damagePrevented', amount: 30 }), null);
+  assert.equal(U.audioCommentaryForEvent({ type: 'log', audioFacts: { removedCount: 30 } }), null);
+});
+
+test('automatic play comments stay opt-in and exclude replay and AI simulations', async () => {
+  const f = audioFixture(); f.game.viewer = {};
+  f.audio.configure({ effects: 0 }); await f.audio.unlock();
+  const event = { type: 'gameEffect', kind: 'damage', audioFacts: { actualDamageToPlayer: 12 } };
+  f.audio.handle(event, f.game); await flush();
+  assert.equal(f.audio.history.length, 0);
+  f.audio.configure({ narration: 40 });
+  f.audio.handle(event, f.game, { replay: true });
+  f.audio.handle(event, { _simulation: true });
+  f.game._simulation = true; f.audio.handle(event, f.game); await flush();
+  assert.equal(f.audio.history.length, 0);
+  delete f.game._simulation; f.audio.handle(event, f.game); await flush();
+  assert.equal(f.audio.narrationId, 'massive-hit');
+  assert.equal(f.audio.history.at(-1).channel, 'voice');
+  f.audio.dispose();
+});
+
+test('a pending major-play comment cannot play over the game result', async () => {
+  const f = audioFixture(), pending = new Map(), listener = {}; f.game.viewer = listener;
+  f.audio.configure({ narration: 40, effects: 0 }); await f.audio.unlock(); await flush();
+  const fetch = f.env.fetch;
+  f.env.fetch = url => url.includes('/voice/') ? new Promise(resolve => pending.set(url, resolve)) : fetch(url);
+  const respond = id => pending.get('./assets/audio/voice/' + id + '.mp3')({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) });
+  f.audio.handle({ type: 'gameEffect', audioFacts: { creatureTokensCreated: 5 } }, f.game);
+  assert.equal(f.audio.narrationId, 'army-built');
+  f.audio.handle({ type: 'gameover', winner: listener }, f.game);
+  respond('army-built'); await flush(); assert.equal(f.audio.history.length, 0);
+  respond('victory'); await flush();
+  assert.deepEqual(Array.from(f.audio.history, row => row.id), ['victory']);
+  assert.equal(f.audio.narrationId, 'victory');
+  f.audio.dispose();
+});
 test('public actions produce distinct cues without inspecting hidden identities', () => {
   const effect = props => cues({ type: 'gameEffect', ...props });
   assert.deepEqual(cues({ type: 'cardPlayed', kind: 'land' }), []);

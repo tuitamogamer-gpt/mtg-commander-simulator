@@ -43,6 +43,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : Object.entries(subject.counters || {}).filter(([, n]) => n > 0).map(([kind]) => kind),
       }));
       for(const row of additions)row.kinds=row.kinds.filter(kind=>row.target instanceof MTG.Player?g.canPutPlayerCountersV66(row.target,kind):g.canPutCountersV18(row.target,kind));
+      // Preserve actual public quantities for sound before SBAs can remove a
+      // recipient. Eligibility alone is insufficient when replacements add zero.
+      const audioCounterState = subject => ({...(subject.counters || {}),
+        ...(subject instanceof MTG.Player ? {poison: subject.poison || 0} : {})});
+      const audioBefore = new Map(chosen.map(subject => [subject, audioCounterState(subject)]));
       for (const subject of chosen) {
         if (subject instanceof MTG.Player) {
           if ((subject.poison || 0) > 0&&g.canPutPlayerCountersV66(subject,'poison')) {
@@ -62,11 +67,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           else g.addCounters(subject, kind, 1, false, p);
         }
       }
+      const audioAdded = chosen.some(subject => Object.entries(audioCounterState(subject))
+        .some(([kind, n]) => n > (audioBefore.get(subject)[kind] || 0)));
       g.recalc();
       await g.checkSBA();
       g.note('gameEffect', {
         kind: 'proliferate', player: p, pass: pass + 1, repeats,
         subjects: chosen.slice(), additions, count: chosen.length,
+        audioFacts: {keywords: audioAdded ? ['proliferate'] : []},
       });
       g.lg(`${p.name} proliferates (${chosen.length} chosen).`);
       await g.emit('proliferatedV9',{player:p});

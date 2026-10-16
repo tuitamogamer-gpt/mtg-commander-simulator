@@ -5,6 +5,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // Audio consumes completed public facts, never mutable card definitions or
+  // private identities. The same narrow boundary is applied again in Live.
+  const audioKeywords = new Set(['flying', 'vigilance', 'haste', 'menace', 'reach',
+    'first-strike', 'double-strike', 'trample', 'lifelink', 'deathtouch', 'infect', 'wither', 'proliferate']);
+  const audioNumbers = ['actualDamageToPlayer', 'removedCount', 'counteredSpellManaValue',
+    'power', 'toughness', 'lifeBefore', 'lifeAfter', 'lifeGained', 'creatureTokensCreated'];
+  U.sanitizeAudioFacts = value => {
+    if (!value || typeof value !== 'object') return undefined;
+    const result = {};
+    if (Array.isArray(value.keywords)) {
+      const keywords = [...new Set(value.keywords.filter(keyword => audioKeywords.has(keyword)))];
+      if (keywords.length) result.keywords = Object.freeze(keywords);
+    }
+    for (const key of audioNumbers) if (typeof value[key] === 'number' && Number.isFinite(value[key])) result[key] = value[key];
+    return Object.keys(result).length ? Object.freeze(result) : undefined;
+  };
+  const publicAudioSource = card => !!card && !card.faceDown && !['hand', 'library'].includes(card.zone);
+  const audioDeathtouch = new WeakSet();
+  const damageAudioSource = (src, opts) => opts._damageBatch?.audioSources?.get(src) ?? publicAudioSource(src);
+
   // Explanations retain only public event-time facts. These plain values can
   // cross an AI snapshot or replay report without sharing live game objects.
   const triggerOriginCard = card => card && ({
@@ -693,7 +713,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.log.length > 900) this.log.splice(0, 200);
       this.onEvent({ type: 'log', msg, cls });
     }
-    note(type, data) { this.onEvent(Object.assign({ type }, data)); }
+    note(type, data) {
+      const event = Object.assign({ type }, data);
+      if (event.audioFacts) event.audioFacts = U.sanitizeAudioFacts(event.audioFacts);
+      this.onEvent(event);
+    }
 
     // Jedinstven, uvijek vidljiv kanal za efekte koje je ranije bilo lako
     // propustiti u logu (kopije, counteri, privremeno/dodijeljene sposobnosti).
@@ -1172,6 +1196,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             card, player: card.ctrl, kind,
             power: card.is('Creature') ? card.power : null,
             toughness: card.is('Creature') ? card.toughness : null,
+            audioFacts: publicAudioSource(card) && card.is('Creature')
+              ? { power: card.power, toughness: card.toughness } : undefined,
           });
         }
         // Permanent koji NIJE bačen (reanimacija, "put onto the battlefield",
@@ -1807,7 +1833,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const m of made) names[m.name] = (names[m.name] || 0) + 1;
         const label = Object.entries(names).map(([k, v]) => v > 1 ? `${v}× ${k}` : k).join(', ');
         this.lg(opts.fromSpellCopy ? `${label} enters as a token copy.` : `${U.playerVerb(ctrl, 'create', 'creates')} ${label}.`, 'token');
-        if (!opts.fromSpellCopy) await this.emit('tokensCreated', { ctrl, tokens: made });
+        if (!opts.fromSpellCopy) {
+          this.note('gameEffect', {kind: 'tokenCreation', player: ctrl,
+            audioFacts: {creatureTokensCreated: made.filter(card => publicAudioSource(card) && card.is('Creature')).length}});
+          await this.emit('tokensCreated', { ctrl, tokens: made });
+        }
         // "Whenever you create a token" triggers once for each token, even
         // when one instruction creates a batch. Keep the existing batch event
         // for effects that say "one or more" and expose a per-token event for
@@ -2104,7 +2134,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
 
-    async gainLife(p, n, srcCard) {
+    async gainLife(p, n, srcCard, opts = {}) {
       if (n <= 0 || !this.canGainLife(p)) return 0;
       const used = new Set();
       while (n > 0) {
@@ -2116,12 +2146,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!Number.isFinite(n) || n < 0) throw new Error('Invalid life replacement result');
       }
       if (!(n > 0)) return 0;
+      const lifeBefore = p.life;
       p.life += n;
       const first = !p.turnState.gainedLifeFirst;
       p.turnState.gainedLifeFirst = true;
       p.turnState.lifeGained += n;
       this.recalc();
       this.note('life', { p });
+      this.note('gameEffect', {kind: 'lifeGain', player: p, amount: n,
+        audioFacts: {lifeBefore, lifeAfter: p.life, lifeGained: n,
+          keywords: opts.lifelink && (opts.audioPublicSource ?? publicAudioSource(srcCard)) ? ['lifelink'] : []}});
       await this.emit('lifeGain', { player: p, n, first, srcCard });
       return n;
     }
@@ -2231,10 +2265,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     lethalDamageThreshold(card) {
       return MTG.OracleV74Static?.lethalThreshold(this,card) ?? card.toughness;
     }
+    damageAudioFacts(src, target, n, opts = {}, extraKeywords = []) {
+      const keywords = damageAudioSource(src, opts) ? [...(opts.audioKeywords || []), ...extraKeywords] : [];
+      if (damageAudioSource(src, opts) && opts.audioTrampleTarget === target) keywords.push('trample');
+      return {keywords, ...(target instanceof Player ? {actualDamageToPlayer: n} : {})};
+    }
     async applyDamageLifelink(src,n,opts={}){
       if(!this.damageSourceTrait(src,'lifelink',opts))return;
       if(opts._damageBatch){const batch=opts._damageBatch;batch.lifelink.set(src,(batch.lifelink.get(src)||0)+n);}
-      else await this.gainLife(src.ctrl,n,src,{lifelink:true});
+      else await this.gainLife(src.ctrl,n,src,{lifelink:true,audioPublicSource:damageAudioSource(src,opts)});
     }
     async withOracleDamageBatch(run){
       if(this._oracleDamageBatch)return run();
@@ -2256,12 +2295,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async _dealDamageBatch(hits,opts={}){
       // A single instruction damages each recipient once per source. Snapshot
       // amounts and source keywords before wither/counters change the board.
-      const grouped=[],batch={traits:new Map(),lifelink:new Map(),lifeLoss:new Map(),snapshots:new Map(),lifeAtStart:new Map(this.alivePlayers().map(player=>[player,player.life])),monarch:this.monarch,initiative:this.initiative,initiativeControllers:new Set(),lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
+      const grouped=[],batch={traits:new Map(),audioSources:new Map(),lifelink:new Map(),lifeLoss:new Map(),snapshots:new Map(),lifeAtStart:new Map(this.alivePlayers().map(player=>[player,player.life])),monarch:this.monarch,initiative:this.initiative,initiativeControllers:new Set(),lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
       for(const hit of hits){
         if(!hit.target||!(hit.n>0))continue;
         const existing=grouped.find(row=>row.src===hit.src&&row.target===hit.target);
         if(existing)existing.n+=hit.n;else grouped.push({...hit});
         const replacementSource=opts._damageReplacementSource?.src===hit.src?opts._damageReplacementSource:null;
+        if (!batch.audioSources.has(hit.src)) batch.audioSources.set(hit.src, publicAudioSource(hit.src));
         if(hit.src&&!batch.traits.has(hit.src))batch.traits.set(hit.src,replacementSource?.traits||{controller:hit.src.ctrl,toxic:MTG.oracleToxicValueV10?.(hit.src)??0,keywords:new Set(['lifelink','deathtouch','wither','infect'].filter(keyword=>this.damageSourceTrait(hit.src,keyword)))});
         if(hit.src instanceof CardInst&&!batch.snapshots.has(hit.src))batch.snapshots.set(hit.src,replacementSource?.snapshot||hit.src._oracleDamageSnapshot||this.snapshot(hit.src,false));
       }
@@ -2269,7 +2309,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let total=0;
       try{
         for(const hit of grouped)total+=await this.damageAny(hit.src,hit.target,hit.n,{...opts,...hit.opts,_damageBatch:batch,deferSBA:true});
-        for(const [src,n]of batch.lifelink)await this.gainLife(batch.traits.get(src).controller,n,src,{lifelink:true});
+        for(const [src,n]of batch.lifelink)await this.gainLife(batch.traits.get(src).controller,n,src,{lifelink:true,audioPublicSource:batch.audioSources.get(src)});
         // CR 120.4c: process the results of simultaneous damage together.
         // A life floor must see the event's prevention/lifelink gains before
         // replacing its total loss, regardless of the order of individual hits.
@@ -2381,6 +2421,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         kind: 'damage', targetKind: 'player', target: p, targetPlayer: p,
         source: src || null, amount: n, combat: !!opts.combat,
         combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0, infect, toxic,
+        audioFacts: this.damageAudioFacts(src, p, n, opts, infect ? ['infect'] : []),
       });
       await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat, combatStep: opts.combatStep || null });
       await this.emitOracleDamage(oracleHit);
@@ -2411,6 +2452,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
           source: src || null, amount: n, combat: !!opts.combat,
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
+          audioFacts: this.damageAudioFacts(src, target, n, opts),
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
       await this.emitOracleDamage(oracleHit);
@@ -2437,7 +2479,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (wither) {
         // Counters are a result of damage, so deathtouch still applies even
         // when the creature has no marked damage (CR 120.3d, 702.2b).
-        if (this.damageSourceTrait(src,'deathtouch',opts)) target.deathtouched = true;
+        if (this.damageSourceTrait(src,'deathtouch',opts)) {
+          if (!target.deathtouched) audioDeathtouch.delete(target);
+          if (damageAudioSource(src, opts)) audioDeathtouch.add(target);
+          target.deathtouched = true;
+        }
         await this.applyDamageLifelink(src,n,opts);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete (wither → -1/-1): ${target.name}.`, 'dmg');
         // Damage triggers see the event before its state-based deaths.
@@ -2448,6 +2494,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           source: src || null, amount: n, combat: !!opts.combat, wither: true,
           infect: this.damageSourceTrait(src,'infect',opts),
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
+          audioFacts: this.damageAudioFacts(src, target, n, opts,
+            this.damageSourceTrait(src,'infect',opts) ? ['infect'] : ['wither']),
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
       await this.emitOracleDamage(oracleHit);
@@ -2455,7 +2503,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return n;
       }
       target.damage += n;
-      if (this.damageSourceTrait(src,'deathtouch',opts)) target.deathtouched = true;
+      if (this.damageSourceTrait(src,'deathtouch',opts)) {
+        if (!target.deathtouched) audioDeathtouch.delete(target);
+        if (damageAudioSource(src, opts)) audioDeathtouch.add(target);
+        target.deathtouched = true;
+      }
       await this.applyDamageLifelink(src,n,opts);
       this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete: ${target.name}.`, 'dmg');
       target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
@@ -2463,6 +2515,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         kind: 'damage', targetKind: 'permanent', target, targetCard: target,
         source: src || null, amount: n, combat: !!opts.combat,
         combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
+        audioFacts: this.damageAudioFacts(src, target, n, opts),
       });
       await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
       await this.emitOracleDamage(oracleHit);
@@ -2850,6 +2903,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         doomed.push(card);
       }
+      const audioDepartures = doomed.map(card => ({card, version: card.zoneVersion}));
       const visualBatch = doomed.length >= 3;
       if (visualBatch) {
         for (const card of doomed) card.meta._boardWipeVisualTurn = this.turnNo;
@@ -2874,6 +2928,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         MTG.StateTriggers?.settle(this);
         await this.returnOracleExiles();
       }
+      if (visualBatch) this.note('gameEffect', {kind: 'boardWipeResolved',
+        audioFacts: {removedCount: audioDepartures.filter(({card, version}) => card.zoneVersion !== version).length}});
       return doomed.length;
     }
 
@@ -2886,6 +2942,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // "Exile all" je, kao destroy-all, simultan događaj. Zaključavanje svih
       // izvora prije prvog move() čuva LTB/dies semantiku board wipea.
       const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield');
+      const audioDepartures = unique.map(card => ({card, version: card.zoneVersion}));
       const visualBatch = unique.length >= 3;
       if (visualBatch) {
         for (const card of unique) card.meta._boardWipeVisualTurn = this.turnNo;
@@ -2903,6 +2960,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         MTG.StateTriggers?.settle(this);
         await this.returnOracleExiles();
       }
+      if (visualBatch) this.note('gameEffect', {kind: 'boardWipeResolved',
+        audioFacts: {removedCount: audioDepartures.filter(({card, version}) => card.zoneVersion !== version).length}});
       return unique.length;
     }
 
@@ -4515,7 +4574,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const changes = moves.size || preventions.length || armorPreventions.length || counterPairs.length || detach.length || ceaseBestow.length || commanderMoves.length;
       // An indestructible creature may have only a deathtouch marker to clear;
       // that does not cause another pass or erase its marked damage.
-      if (!changes) { for (const card of deathtouchChecks) card.deathtouched = false; return false; }
+      if (!changes) { for (const card of deathtouchChecks) { card.deathtouched = false; audioDeathtouch.delete(card); } return false; }
+      const publicDeathtouch = new Set(deathtouchChecks.filter(card => audioDeathtouch.has(card)));
       const previous = this._simultaneousLeaveSources;
       // Include survivors: leave triggers look back at all pre-event sources,
       // including a survivor whose granted ability disappears with its lord.
@@ -4526,7 +4586,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const {card, pairs} of counterPairs) {
           card.counters['+1/+1'] -= pairs; card.counters['-1/-1'] -= pairs;
         }
-        for (const card of deathtouchChecks) card.deathtouched = false;
+        for (const card of deathtouchChecks) { card.deathtouched = false; audioDeathtouch.delete(card); }
         for (const {card} of preventions) {
           // A distinct SBA that puts this permanent directly into a graveyard
           // is not stopped by its destruction replacement.
@@ -4560,6 +4620,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           this.note('gameEffect', {kind: 'boardWipe', mode: 'damage', cards: cards.slice(), count: cards.length,
             source: sourceId ? this.byIid(sourceId) : null});
         }
+        const audioDamageDepartures = new Map([...damageGroups.values()].flat().map(card => [card, card.zoneVersion]));
         await this.withGraveyardEntryBatch(async () => {
           for (const {card, zone, version} of commanderMoves)
             if (card.zone === zone && card.zoneVersion === version) await this.move(card, 'command');
@@ -4570,9 +4631,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const version=card.zoneVersion;
             await this.move(card, 'graveyard', {departureReason: reasons.get(card)});
             if (kind === 'sacrifice') await this.emit('sacrificed', {player: entry.ctrl, card, snap: entry.snap});
+            if (card.zoneVersion !== version && reasons.get(card) === 'deathtouch damage' && publicDeathtouch.has(card)) {
+              this.note('gameEffect', {kind: 'keywordResolved', audioFacts: {keywords: ['deathtouch']}});
+            }
             if (kind === 'destroy'&&card.zoneVersion!==version) await this.emit('destroyedV74', {player: entry.ctrl, card, snap: entry.snap});
           }
         });
+        for (const cards of damageGroups.values()) if (cards.length >= 3) {
+          this.note('gameEffect', {kind: 'boardWipeResolved', audioFacts: {
+            removedCount: cards.filter(card => card.zoneVersion !== audioDamageDepartures.get(card)).length,
+          }});
+        }
       } finally {
         this._simultaneousLeaveSources = previous;
         MTG.StateTriggers?.settle(this);

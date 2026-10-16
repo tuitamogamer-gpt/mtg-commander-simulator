@@ -156,6 +156,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const g = this.authority;
         const fields = ['type', 'p', 'card', 'src', 'source', 'target', 'targets', 'amount', 'n', 'kind', 'text', 'name', 'color', 'combat', 'player', 'winner', 'from', 'to', 'previous', 'current', 'phase', 'step', 'targetKind', 'targetCard', 'targetPlayer', 'toPlayer', 'fromZone', 'toZone', 'combatStep', 'combatIndex', 'previousLife', 'life', 'count', 'counter', 'delta', 'spellTypes', 'dungeon', 'room'];
         const entry = Object.fromEntries(fields.filter(key => event[key] !== undefined).map(key => [key, event[key]]));
+        const audioFacts = U.sanitizeAudioFacts(event.audioFacts);
+        if (audioFacts) entry.audioFacts = audioFacts;
         g._onlineEventSerial = (g._onlineEventSerial || 0) + 1;
         g._onlinePublicEvents = [...(g._onlinePublicEvents || []), { id: g._onlineEventSerial, event: entry }].slice(-24);
       }

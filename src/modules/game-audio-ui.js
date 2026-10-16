@@ -64,7 +64,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const preview = node('button', 'pbtn audiopreview', 'Test effects'); preview.type = 'button';
     preview.onclick = () => { void (picker.value.startsWith('voice/') ? audio.previewNarration(picker.value.slice(6)) : audio.preview(picker.value)); };
     actions.append(mute, preview); body.append(controls, pickerRow, actions, status);
-    body.appendChild(node('p', 'audiohint', 'Short effects mark the table’s big moments. Narration is off by default: turn it up to hear your turn, victory and defeat. Spoken cues never overlap; music softens briefly while they play.'));
+    body.appendChild(node('p', 'audiohint', 'Short effects mark combat abilities and big plays. Narration is off by default: turn it up for your turn, occasional comments on major plays, and game results. Spoken cues never overlap; music softens briefly while they play.'));
     const footer = node('footer', 'audiofooter');
     const back = node('button', 'pbtn', '← Arena controls'); back.type = 'button';
     back.onclick = () => { ui.quickMenuOpen = true; ui.render(); document.querySelector('.audiosettingsopen')?.focus({ preventScroll: true }); };

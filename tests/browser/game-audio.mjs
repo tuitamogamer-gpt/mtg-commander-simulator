@@ -18,6 +18,8 @@ if (server) await once(server, 'listening');
 const checks = [], errors = [];
 const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
 const manifest = JSON.parse(readFileSync(`${root}assets/audio/manifest.json`));
+const effectIds = manifest.tracks.filter(track => track.kind === 'sfx').map(track => track.id);
+const voiceIds = manifest.tracks.filter(track => track.kind === 'voice').map(track => track.id);
 const check = label => { checks.push(label); console.log('PASS ' + label); };
 let activePage;
 try {
@@ -58,7 +60,7 @@ try {
     await page.locator('#audio-music').fill('16'); await page.locator('#audio-effects').fill('35');
     await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
     assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), 'combat');
-    for (const id of ['venture', 'counters', 'counterspell', 'instant', 'sorcery', 'spell-copy', 'summon', 'heavy-impact', 'explosion', 'victory', 'defeat']) {
+    for (const id of effectIds.filter(id => id !== 'combat')) {
       await page.locator('#audio-effect').selectOption(id);
       await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
       assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), id);
@@ -69,7 +71,7 @@ try {
     await page.locator('#audio-narration').fill('42');
     await page.locator('#audio-effects').fill('0');
     assert.equal(await page.locator('.audiopreview').isDisabled(), false, 'Voice volume is independent of effects');
-    for (const id of ['your-turn', 'victory', 'defeat']) {
+    for (const id of voiceIds) {
       await page.locator('#audio-effect').selectOption('voice/' + id);
       await click(page.locator('.audiopreview'));
       await page.waitForFunction(id => MTG.audio.history.at(-1)?.id === id && MTG.audio.history.at(-1)?.channel === 'voice', id);
@@ -93,7 +95,7 @@ try {
     assert.equal(await page.evaluate(() => _ui.pending === __audioPending && MTG.activeAccountMatch.decisions.length === __audioDecisionCount), true);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     await page.screenshot({ path: `${out}/${width}-audio-menu.png` });
-    check(`${width}: six tracks, twelve exclusive effect previews, opt-in Fish voices, independent levels, mute and pending decision preservation`);
+    check(`${width}: six tracks, ${effectIds.length} exclusive effect previews, ${voiceIds.length} opt-in Fish voices, independent levels, mute and pending decision preservation`);
     if (width === 390) {
       await page.setViewportSize({ width: 320, height: 568 });
       const fit = await page.locator('.audiofooter').boundingBox(); assert.ok(fit.y >= 0 && fit.y + fit.height <= 568);
@@ -220,6 +222,68 @@ try {
     writeFileSync(`${out}/${width}-gameplay.json`, JSON.stringify(final, null, 2));
     writeFileSync(`${out}/${width}-state.json`, await page.evaluate(() => render_game_to_text()));
     check(`${width}: paid human/local AI, Stack, attack review, actual 6 damage, prevention, explosion and exile`);
+    // Drive the native outcome emitters into the real effects/narration graph.
+    // The game fixture owns its own state, leaving the UI's decisions untouched.
+    const outcomes = await page.evaluate(async () => {
+      const facts = [], audio = MTG.audio;
+      let game;
+      game = new MTG.Game({ seed: 90772, paced: false, onEvent: event => {
+        if (event.audioFacts) facts.push({ kind: event.kind, ...event.audioFacts });
+        audio.handle(event, game);
+      } });
+      const controller = { decide: async () => ({ kind: 'pass' }) };
+      const player = game.addPlayer('Listener', { name: 'Audio outcomes' }, controller, false);
+      const opponent = game.addPlayer('Opponent', { name: 'Audio outcomes' }, controller, true);
+      game.turnPlayer = player; game.turnNo = 5; game.phase = 'main1'; game.step = 'main';
+      const source = new MTG.CardInst({ name: 'Outcome fixture', cost: '{2}', types: ['Creature'],
+        subtypes: [], kws: ['lifelink'], power: 2, toughness: 3 }, player);
+      source.zone = 'battlefield'; source.sick = false; game.battlefield.push(source); game.recalc();
+      audio.attach(game); audio.configure({ music: 0, effects: 35, narration: 42 }); audio.history.length = 0;
+      const buses = [audio.effectsBus, audio.narrationBus];
+      const analysers = buses.map(bus => { const node = audio.context.createAnalyser(); node.fftSize = 1024; bus.connect(node); return node; });
+      const sample = async () => {
+        const peaks = [0, 0];
+        for (let n = 0; n < 15; n++) {
+          await new Promise(resolve => setTimeout(resolve, 20));
+          analysers.forEach((node, i) => {
+            const wave = new Float32Array(1024); node.getFloatTimeDomainData(wave);
+            peaks[i] = Math.max(peaks[i], ...wave.map(Math.abs));
+          });
+        }
+        return { effectsPeak: peaks[0], narrationPeak: peaks[1] };
+      };
+      game.untilEffects.push({ kind: 'preventAllCombat' });
+      await game.damagePlayer(source, opponent, 15, { combat: true });
+      const prevented = { ...(await sample()), history: audio.history.slice(), life: opponent.life };
+      game.untilEffects.length = 0;
+      await game.damagePlayer(source, opponent, 2, { combat: true });
+      const lifelink = { ...(await sample()), history: audio.history.slice(), life: player.life };
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await game.damagePlayer(source, opponent, 12);
+      const massiveHit = { ...(await sample()), history: audio.history.slice(), life: opponent.life,
+        activeNarration: audio.status().activeNarration };
+      await new Promise(resolve => setTimeout(resolve, 2200));
+      player.life = 5; await game.gainLife(player, 10);
+      const comeback = { ...(await sample()), history: audio.history.slice(), life: player.life,
+        activeNarration: audio.status().activeNarration };
+      buses.forEach((bus, i) => bus.disconnect(analysers[i]));
+      audio.attach(_game); audio.configure({ music: 16, narration: 0 });
+      return { prevented, lifelink, massiveHit, comeback, facts };
+    });
+    assert.equal(outcomes.prevented.life, 40); assert.deepEqual(outcomes.prevented.history, []);
+    assert.equal(outcomes.prevented.effectsPeak, 0); assert.equal(outcomes.prevented.narrationPeak, 0);
+    assert.equal(outcomes.lifelink.life, 42); assert.ok(outcomes.lifelink.effectsPeak > .0001);
+    assert.deepEqual(outcomes.lifelink.history.map(cue => cue.id), ['keyword-lifelink']);
+    assert.equal(outcomes.lifelink.narrationPeak, 0);
+    assert.equal(outcomes.massiveHit.life, 26); assert.equal(outcomes.massiveHit.activeNarration, 1);
+    assert.ok(outcomes.massiveHit.effectsPeak > .0001); assert.ok(outcomes.massiveHit.narrationPeak > .0001);
+    assert.ok(outcomes.massiveHit.history.some(cue => cue.id === 'explosion'));
+    assert.deepEqual(outcomes.massiveHit.history.filter(cue => cue.channel === 'voice').map(cue => cue.id), ['massive-hit']);
+    assert.equal(outcomes.comeback.life, 15); assert.equal(outcomes.comeback.activeNarration, 0);
+    assert.ok(outcomes.facts.some(fact => fact.lifeBefore === 5 && fact.lifeAfter === 15 && fact.lifeGained === 10));
+    assert.deepEqual(outcomes.comeback.history.filter(cue => cue.channel === 'voice').map(cue => cue.id), ['massive-hit']);
+    writeFileSync(`${out}/${width}-outcomes.json`, JSON.stringify(outcomes, null, 2));
+    check(`${width}: native lifelink and massive-hit outcomes produce audio; prevention stays silent and commentary cooldown suppresses a later comeback`);
     await context.close();
   }
   assert.deepEqual(errors, []);
