@@ -17,7 +17,23 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  S['Plasma Caster']={equip:'{2}',attachGrant:(g,c,h)=>{h.cur.power++;h.cur.toughness++;},triggers:[C.attack('Get two energy',ctx=>C.energy(ctx,2),{filter:(g,c,d)=>d.card.iid===c.attachedTo})],abilities:[{label:'Pay two energy; flip to exile a blocker or deal one damage',cost:{energy:2},targets:[T.creature({filter:(g,c,p,s)=>c.blocking===s.attachedTo})],run:async ctx=>{const win=(await ctx.g.flipCoin(ctx.you,{source:ctx.src})).won;if(win)await ctx.g.move(ctx.targets[0],'exile');else await ctx.g.damageAny(ctx.src,ctx.targets[0],1);}}]};
  S['Strong Back']={pomStrongBack:true,auraTarget:[T.creature()],attachGrant:(g,c,h)=>{const n=2*C.attachments(g,h).length;h.cur.power+=n;h.cur.toughness+=n;}};
  S['Nuka-Nuke Launcher']={equip:'{3}',attachGrant:(g,c,h)=>{h.cur.power+=3;h.cur.kw.add('intimidate');},triggers:[C.attack('Defender gets rad counters when casting through their next turn',ctx=>{const p=C.defender(ctx.data.card)||ctx.data.target;(ctx.g.pomNukeGrants||=[]).push({player:p.idx,throughTurn:p.turnsStarted+1,source:ctx.src.iid,controller:ctx.you.idx});},{filter:(g,c,d)=>d.card.iid===c.attachedTo})]};
- S['Overencumbered']={auraTarget:[T.opponent()],pomOverencumbered:true,triggers:[C.enterTrigger('The enchanted opponent creates a Clue, Food and Junk',async ctx=>{const p=ctx.src.meta.cursedPlayer;if(p)for(const def of [M.TOKENS.clue,M.TOKENS.food,C.junk])await C.make({...ctx,you:p},def);}),C.combat('Enchanted opponent pays per artifact or cannot attack this combat',async ctx=>{const p=ctx.data.player,n=C.artifacts(ctx.g,p).length;if(!await C.pay({...ctx,you:p},'{'+n+'}'))(ctx.g.pomNoAttack||=[]).push({player:p.idx,combat:ctx.g.cdkCombatSerial||0,turn:ctx.g.turnNo});},{filter:(g,c,d)=>d.player===c.meta.cursedPlayer})]};
+ S['Overencumbered']={auraTarget:[T.opponent()],pomOverencumbered:true,triggers:[C.enterTrigger('The enchanted opponent creates a Clue, Food and Junk',async ctx=>{const p=ctx.src.meta.cursedPlayer;if(p)for(const def of [M.TOKENS.clue,M.TOKENS.food,C.junk])await C.make({...ctx,you:p},def);}),C.combat('Enchanted opponent pays per artifact or cannot attack this combat',async ctx=>{
+  const p=ctx.data.player,n=C.artifacts(ctx.g,p).length,raw='{'+n+'}',cost=M.parseCost(raw),action={card:ctx.src,isAbility:true};
+  const affordable=ctx.g.canPayMana(p,cost,action),artifacts=n+' artifact'+(n===1?'':'s');
+  // Even an unaffordable payment needs visible feedback. Silently declining
+  // made the beginning-of-combat trigger look as though it never happened.
+  const options=affordable?[{key:'yes',label:'Pay '+raw},{key:'no',label:'Decline — no attacks this combat'}]
+    :[{key:'no',label:'Continue without attacking'}];
+  const prompt=affordable?'pay '+raw+' for '+artifacts+'? If you decline, your creatures cannot attack this combat.'
+    :'Cannot pay '+raw+' for '+artifacts+'. Your creatures cannot attack this combat.';
+  const answer=await C.option({...ctx,you:p},options,prompt,p,'optTrigger');
+  if(affordable&&answer==='yes'&&await ctx.g.payMana(p,cost,action)){
+   ctx.g.lg(ctx.src.name+': '+p.name+' paid '+raw+' for '+artifacts+'.');
+  }else{
+   (ctx.g.pomNoAttack||=[]).push({player:p.idx,combat:ctx.g.cdkCombatSerial||0,turn:ctx.g.turnNo});
+   ctx.g.lg(ctx.src.name+': '+p.name+(affordable?' did not pay ':' cannot pay ')+raw+'. Their creatures cannot attack this combat.');
+  }
+ },{filter:(g,c,d)=>d.player===c.meta.cursedPlayer})]};
  S['Hourglass of the Lost']={mana:{cost:{tap:true},produce:[{W:1}],afterProduce:(g,c,p)=>g.addCounters(c,'time',1,false,p)},abilities:[{label:'Remove X time counters and exile Hourglass; return nonland permanents of value X',sorcery:true,cost:{tap:true,exileSelf:true,oracleCounterPayment:{n:'chosen',kinds:['time'],self:true,among:false}},run:async ctx=>{const n=ctx.oracleCounterPayment?.reduce((n,r)=>n+r.n,0)||0;await C.enterMany(ctx,ctx.you.graveyard.filter(c=>!c.is('Land')&&C.permanent(ctx.g,c)&&c.mv===n));}}]};
  S['Mana Reflection']={pomManaReflection:true};
 })();

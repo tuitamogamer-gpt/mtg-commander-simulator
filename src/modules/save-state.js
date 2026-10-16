@@ -38,6 +38,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return out;
   }
 
+  const playerAuraSpec = def => {
+    const targets = def.auraTarget || (def.isPlayerAura && def.targets);
+    return def.subtypes?.includes('Aura') && Array.isArray(targets)
+      ? targets.find(target => ['player', 'opponent'].includes(target.what)) : undefined;
+  };
+
   function tokenKeyOf(def) {
     for (const [key, candidate] of Object.entries(MTG.TOKENS || {})) if (candidate === def) return key;
     const face = JSON.stringify(tokenFace(def));
@@ -218,6 +224,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(card.oraclePrototypeV10)entry.oraclePrototypeV10=true;
     if (card.oracleTransformCount) entry.oracleTransformCount = Number(card.oracleTransformCount) || 0;
     const meta = plainMeta(card.meta);
+    // Player-enchanting Auras need the same seat identity after JSON restore.
+    // Their live Player reference is circular and plainMeta cannot retain it.
+    delete meta.cursedPlayer;
+    if (card.zone === 'battlefield' && !card.faceDown && playerAuraSpec(card.def) && card.meta?.cursedPlayer instanceof MTG.Player)
+      entry.enchantedPlayer = card.meta.cursedPlayer.idx;
     const expiredGrant = expiredCompiledExilePermission(game, card);
     if (expiredGrant) for (const key of EXILE_GRANT_META_FIELDS) delete meta[key];
     // Play permissions point at the player who received the effect, which may
@@ -554,6 +565,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
+    if (game.battlefield.some(card => {
+      const spec = !card.faceDown && playerAuraSpec(card.def), host = card.meta?.cursedPlayer;
+      return spec && (!(host instanceof MTG.Player) || game.players[host.idx] !== host ||
+        !card.phasedOut && host.lost || spec.what === 'opponent' && host === card.ctrl);
+    })) blockers.push('a player Aura without a valid enchanted player');
     // A physical entry copy needs both its original card definition and its
     // active copy lifetime. Saving just the current catalog name loses both.
     if (game.battlefield.some(card => card.isCopyOf && !card.isToken)) blockers.push('an unsupported non-token copy');
@@ -726,6 +742,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(Array.isArray(snapshot.cards) && snapshot.cards.every(card =>
       (card.exilePlayPlayer === undefined || card.zone === 'exile' && seat(card.exilePlayPlayer)) &&
       (card.exilePlayForever === undefined || card.zone === 'exile' && card.exilePlayForever === true)), 'invalid exile play permission.');
+    for (const entry of snapshot.cards) {
+      let spec;
+      if (entry.zone === 'battlefield' && !entry.faceDown) {
+        let def = definitionFor(entry);
+        if (entry.oracleFace && def.oracleFaces) def = MTG.OracleV8Faces.faceDefinition(def.oracleFaces, entry.oracleFace);
+        spec = playerAuraSpec(def);
+      }
+      if (spec && entry.enchantedPlayer === undefined)
+        assert(false, `${entry.name} is missing its enchanted player; this older save cannot restore that attachment.`);
+      if (entry.enchantedPlayer !== undefined) {
+        const host = entry.enchantedPlayer, controller = entry.ctrl ?? entry.owner;
+        assert(spec && seat(host) && seat(controller) && (entry.phasedOut || !snapshot.players[host].lost) &&
+          (spec.what !== 'opponent' || host !== controller) && entry.attachedTo == null, 'invalid enchanted player.');
+      }
+    }
     const exileDurations = snapshot.exileDurations ?? [];
     const savedCards = new Map((snapshot.cards || []).map(card => [card.iid, card]));
     assert(Array.isArray(exileDurations) && exileDurations.length <= MAX_BASE_PT_EFFECTS && exileDurations.every(row =>
@@ -836,6 +867,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(entry.oraclePrototypeV10){assert(card.def.oraclePrototypeV10&&['battlefield','stack'].includes(card.zone),'invalid prototype state');card.def=MTG.oraclePrototypeDefinitionV10(card.def);card.oraclePrototypeV10=true;}
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
+      delete card.meta.cursedPlayer;
+      if (entry.enchantedPlayer !== undefined) card.meta.cursedPlayer = game.players[entry.enchantedPlayer];
       if (entry.exilePlayPlayer !== undefined) card.meta.playableBy = game.players[entry.exilePlayPlayer];
       if (entry.exilePlayForever) card.meta.playableUntil = Infinity;
       if (card.faceDown && card.zone === 'battlefield' && !card.isToken) {
@@ -1003,7 +1036,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // A counter kind sitting at zero is not a counter (CR 122.1c), so it is
         // not part of the state a save has to reproduce.
         Object.entries(card.counters || {}).filter(([, value]) => value).sort(),
-        card.attachedTo ?? null,card.is('Battle')?card.protector?.idx??null:null].join('|')).sort(),
+        card.attachedTo ?? null,card.is('Battle')?card.protector?.idx??null:null,
+        ...(!card.faceDown && playerAuraSpec(card.def) ? ['enchantedPlayer', card.meta?.cursedPlayer?.idx ?? null] : [])].join('|')).sort(),
       goads: game.untilEffects.filter(isPlainGoad).map(effect =>
         [effect.iid, effect.expires, effect.notPlayer ? effect.notPlayer.idx : '', effect.whoTurn ? effect.whoTurn.idx : ''].join('|')).sort(),
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),
