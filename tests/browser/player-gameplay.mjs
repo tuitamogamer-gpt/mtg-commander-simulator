@@ -22,6 +22,7 @@ const page = await browser.newPage({ viewport: {
 page.setDefaultTimeout(8000);
 const errors = [], requests = [], seen = new Set();
 let iterations = 0, lands = 0, spells = 0, attacks = 0, stale = 0, previous = '';
+let endingAudio = null;
 page.on('pageerror', e => errors.push(e.message));
 page.on('response', r => { if (r.status() >= 400) requests.push({ status: r.status(), url: r.url() }); });
 await page.addInitScript(() => {
@@ -118,6 +119,12 @@ try {
   }
   assert.equal(await page.evaluate(() => _game.gameOver), true, 'the full game finishes');
   assert.ok(lands >= 3 && spells >= 2 && attacks >= 1, 'real land, spell and combat input paths were exercised');
+  if (process.env.VERIFY_AUDIO_ENDING === '1') {
+    const expected = await page.evaluate(() => _game.winner ? (_game.winner === _game.human() ? 'victory' : 'defeat') : null);
+    if (expected) await page.waitForFunction(id => MTG.audio.history.some(cue => !cue.channel && cue.id === id), expected);
+    endingAudio = await page.evaluate(() => MTG.audio.history.filter(cue => !cue.channel && ['victory', 'defeat'].includes(cue.id)).map(cue => cue.id));
+    assert.deepEqual(endingAudio, expected ? [expected] : [], 'The actual completed match plays the local player’s result exactly once');
+  }
   assert.deepEqual(errors, []);
   for (let review = 0; review < 6; review++) {
     const proceed = page.locator('.resolutionrecapproceed:visible');
@@ -144,7 +151,7 @@ try {
     writeFileSync(`${out}/state.json`, await page.evaluate(() => render_game_to_text()));
     await page.screenshot({ path: `${out}/last-frame.png` });
   }
-  writeFileSync(`${out}/result.json`, JSON.stringify({ iterations, lands, spells, attacks, decisions: [...seen], errors, requests }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ iterations, lands, spells, attacks, decisions: [...seen], endingAudio, errors, requests }, null, 2));
   await browser.close();
   server.close();
 }

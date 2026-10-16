@@ -58,10 +58,11 @@ try {
     await page.locator('#audio-music').fill('16'); await page.locator('#audio-effects').fill('35');
     await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
     assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), 'combat');
-    for (const id of ['venture', 'counters', 'counterspell', 'instant']) {
+    for (const id of ['venture', 'counters', 'counterspell', 'instant', 'sorcery', 'spell-copy', 'summon', 'heavy-impact', 'explosion', 'victory', 'defeat']) {
       await page.locator('#audio-effect').selectOption(id);
       await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
       assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), id);
+      assert.ok(await page.evaluate(() => MTG.audio.voices.size <= 1), 'Previews replace the previous effect');
     }
     await page.locator('#audio-effect').selectOption('voice/your-turn');
     assert.equal(await page.locator('.audiopreview').isDisabled(), true, 'Narration starts off');
@@ -92,7 +93,7 @@ try {
     assert.equal(await page.evaluate(() => _ui.pending === __audioPending && MTG.activeAccountMatch.decisions.length === __audioDecisionCount), true);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     await page.screenshot({ path: `${out}/${width}-audio-menu.png` });
-    check(`${width}: six tracks, opt-in Fish voices, independent levels, mute, touch/keyboard and pending decision preservation`);
+    check(`${width}: six tracks, twelve exclusive effect previews, opt-in Fish voices, independent levels, mute and pending decision preservation`);
     if (width === 390) {
       await page.setViewportSize({ width: 320, height: 568 });
       const fit = await page.locator('.audiofooter').boundingBox(); assert.ok(fit.y >= 0 && fit.y + fit.height <= 568);
