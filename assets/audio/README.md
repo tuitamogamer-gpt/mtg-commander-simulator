@@ -1,8 +1,9 @@
 # Commander audio
 
 The October 16 pack adds three original instrumental loops, introduces versioned
-runtime effects, and adds three optional spoken cues made
-with Fish Studio's official Sarah voice. All assets are served with the game;
+runtime effects, and adds optional spoken cues made
+with Fish Studio's official Sarah voice. The keyword extension adds thirteen
+short effects and six comments for strong plays. All assets are served with the game;
 playback never contacts an audio provider or requires an account token.
 
 | New instrumental | Character |
@@ -65,6 +66,48 @@ The generator uses original deterministic synthesis and local FFmpeg mastering.
 The manifest records measurements and hashes; all earlier effect files and their
 provenance remain in `legacyTracks` for older cached clients. Listening impressions
 are not inferred from the measured loudness, spectral and tail checks.
+
+## Keyword effects and strong-play commentary
+
+Thirteen short effects cover flying, vigilance, haste, menace, reach, first
+strike, double strike, trample, lifelink, deathtouch, infect, wither and
+proliferate. The runtime plays one representative keyword sound per brief event
+batch; major impacts and game results retain priority. Effects follow public
+completed events: legal attacks/blocks, positive damage, successful life gain
+and actual deathtouch removal. Haste only sounds when it enables an otherwise
+summoning-sick attacker. Trample follows positive overflow at its assigned
+recipient; an unblocked trampler does not produce that cue.
+
+Six new English comments use the same Fish Studio Sarah voice:
+
+| Event | Condition | Spoken comment |
+| --- | --- | --- |
+| Heavy hit | At least 12 actual damage to a player | A devastating hit. |
+| Board wipe | At least 5 actual departures from one wipe | The battlefield has changed. |
+| Big spell countered | Public countered spell mana value at least 6 | A powerful spell, denied. |
+| Huge arrival | Public creature power at least 8 or toughness at least 10 | A formidable presence. |
+| Recovery | Gain at least 8 life, starting at 10 or less and ending at 15 or more | Back in the fight. |
+| Token army | At least 5 creature tokens created in one batch, excluding spell copies | An army takes shape. |
+
+Enable spoken comments using **Menu → Music & sound → Narration**; its default
+remains 0%. Comments share an 18-second cooldown and skip while another line is
+playing or loading. Victory/defeat announcements can replace commentary. Audio
+never delays a decision; replay, AI simulations and hidden tabs stay silent.
+Solo and Live consume immutable public facts rather than mutable card traits.
+
+The current manifest contains 6 music tracks, 25 effects and 9 voice clips.
+The keyword assets total about 108 KB and the six comments about 115 KB. They
+load on demand; no Fish account, provider request or key is needed for playback.
+Generate the original keyword effects with NumPy, SciPy and FFmpeg:
+
+```bash
+python3 scripts/generate-keyword-sfx.py --metadata output/keyword-sfx.json
+```
+
+The generator imports helpers from `generate-polished-sfx.py`; the manifest
+records both source hashes. Keywords use `keyword-*-v1.mp3` paths and preserve
+all existing music, effects and settings. Direct Safari testing is unavailable
+in this environment; automated playback checks use Chromium.
 
 ## Earlier pack provenance
 

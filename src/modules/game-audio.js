@@ -24,14 +24,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     { id: 'explosion', name: 'Explosion', cooldown: 2500 },
     { id: 'victory', name: 'Victory', cooldown: 2500 },
     { id: 'defeat', name: 'Defeat', cooldown: 2500 },
-  ].map(effect => Object.freeze({ ...effect, file: `sfx/${effect.id}-v3.mp3` })));
+    ...[
+      ['flying', 'Flying'], ['vigilance', 'Vigilance'], ['haste', 'Haste'], ['menace', 'Menace'],
+      ['reach', 'Reach'], ['first-strike', 'First strike'], ['double-strike', 'Double strike'],
+      ['trample', 'Trample'], ['lifelink', 'Lifelink'], ['deathtouch', 'Deathtouch'],
+      ['infect', 'Infect'], ['wither', 'Wither'], ['proliferate', 'Proliferate'],
+    ].map(([keyword, name]) => ({ id: 'keyword-' + keyword, name, keyword, cooldown: 1500, file: `sfx/keyword-${keyword}-v1.mp3` })),
+  ].map(effect => Object.freeze({ ...effect, file: effect.file || `sfx/${effect.id}-v3.mp3` })));
   U.VOICE_CUES = Object.freeze([
     { id: 'your-turn', name: 'Your turn' },
     { id: 'victory', name: 'Victory' },
     { id: 'defeat', name: 'Defeat' },
+    { id: 'massive-hit', name: 'A massive hit', kind: 'commentary' },
+    { id: 'board-wipe', name: 'The board clears', kind: 'commentary' },
+    { id: 'clutch-counter', name: 'A big spell countered', kind: 'commentary' },
+    { id: 'huge-summon', name: 'A huge creature arrives', kind: 'commentary' },
+    { id: 'comeback', name: 'Back in the game', kind: 'commentary' },
+    { id: 'army-built', name: 'An army arrives', kind: 'commentary' },
   ].map(Object.freeze));
   const EFFECTS = new Map(U.SOUND_EFFECTS.map(effect => [effect.id, effect]));
   const NARRATION = new Set(U.VOICE_CUES.map(cue => cue.id));
+  const COMMENTARY = new Set(U.VOICE_CUES.filter(cue => cue.kind === 'commentary').map(cue => cue.id));
+  const KEYWORD_ORDER = ['double-strike', 'first-strike', 'deathtouch', 'trample', 'lifelink', 'infect', 'wither', 'reach', 'menace', 'flying', 'haste', 'vigilance', 'proliferate'];
+  const publicAudioFacts = event => ['combat', 'gameEffect', 'battlefieldArrival'].includes(event?.type)
+    && event.audioFacts && typeof event.audioFacts === 'object' && !Array.isArray(event.audioFacts) ? event.audioFacts : null;
   const audioListener = game => game?.viewer || game?.human?.();
   const level = (value, fallback) => typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.min(100, Math.round(value))) : fallback;
@@ -46,9 +62,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (event.type === 'gameover' && event.winner) return event.winner === listener ? 'victory' : 'defeat';
     return null;
   };
+  U.audioCommentaryForEvent = event => {
+    const facts = publicAudioFacts(event);
+    if (!facts) return null;
+    const finite = key => typeof facts[key] === 'number' && Number.isFinite(facts[key]);
+    const atLeast = (key, threshold) => finite(key) && facts[key] >= threshold;
+    if (atLeast('removedCount', 5)) return 'board-wipe';
+    if (atLeast('counteredSpellManaValue', 6)) return 'clutch-counter';
+    if (atLeast('actualDamageToPlayer', 12)) return 'massive-hit';
+    if (atLeast('power', 8) || atLeast('toughness', 10)) return 'huge-summon';
+    if (atLeast('creatureTokensCreated', 5)) return 'army-built';
+    if (atLeast('lifeGained', 8) && finite('lifeBefore') && facts.lifeBefore <= 10 && atLeast('lifeAfter', 15)) return 'comeback';
+    return null;
+  };
   // Use only public event properties. Face-down identities, keywords and costs
   // must not influence a sound, even on the controller's own device.
-  U.audioCuesForEvent = (event, game) => {
+  const ordinaryCuesForEvent = (event, game) => {
     if (!event) return [];
     if (event.type === 'combat') return event.kind === 'attackersDeclared' && event.count > 0
       ? [{ id: 'combat', priority: 2, volume: .7 }] : [];
@@ -90,6 +119,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (event.kind === 'boardWipe' && (event.count ?? event.cards?.length ?? 0) >= 3) return [{ id: 'explosion', priority: 4 }];
     return [];
   };
+  U.audioCuesForEvent = (event, game) => {
+    const ordinary = ordinaryCuesForEvent(event, game), facts = publicAudioFacts(event);
+    const keyword = Array.isArray(facts?.keywords) && KEYWORD_ORDER.find(id => facts.keywords.includes(id));
+    // One keyword represents the moment; major impacts and game results keep
+    // their higher priority when several effects share the same sound batch.
+    return keyword ? [{ id: 'keyword-' + keyword, priority: 2.5, volume: .6 }, ...ordinary] : ordinary;
+  };
 
   class GameAudio {
     constructor(env = globalThis) {
@@ -124,6 +160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (game === this.game) return;
       this.revision++; this.clearEffects(); this.clearNarration(); this.stopMusic(); this.recent.clear();
       this.game = game; this.state = 'idle';
+      this.commentaryAt = -Infinity; this.resultAnnounced = false;
       if (game && this.unlocked) void this.syncMusic();
     }
     async unlock() {
@@ -224,14 +261,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     canPlay(channel = 'effects') {
-      return !!this.game && this.unlocked && this.context?.state === 'running' && !this.env.document?.hidden
+      return !!this.game && !this.game._simulation && this.unlocked && this.context?.state === 'running' && !this.env.document?.hidden
         && !this.preferences.muted && this.preferences[channel] > 0;
     }
     handle(event, game, { replay = false } = {}) {
-      if (game !== this.game || replay) return;
+      if (game !== this.game || replay || game?._simulation) return;
+      if (event?.type === 'gameover') {
+        this.resultAnnounced = true;
+        if (this.narrationId && !['victory', 'defeat'].includes(this.narrationId)) this.clearNarration();
+      }
       if (this.canPlay()) for (const cue of U.audioCuesForEvent(event, game)) this.enqueue(cue);
       if (this.canPlay('narration')) {
-        const id = U.audioVoiceForEvent(event, game);
+        const id = U.audioVoiceForEvent(event, game) || (audioListener(game) && U.audioCommentaryForEvent(event));
         if (event?.type === 'turn' && !id && this.narrationId === 'your-turn') this.clearNarration();
         if (id) void this.playNarration(id);
       }
@@ -332,7 +373,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async playNarration(id, { preview = false } = {}) {
       if (!NARRATION.has(id) || !this.canPlay('narration')) return;
       const now = this.env.performance.now(), key = 'voice/' + id;
-      if (!preview && (now - (this.recent.get(key) ?? -Infinity) < 5000 || id === 'your-turn' && this.narration)) return;
+      const commentary = COMMENTARY.has(id);
+      if (!preview && commentary && (this.resultAnnounced || this.narrationId || now - (this.commentaryAt ?? -Infinity) < 18000)) return;
+      if (!preview && (now - (this.recent.get(key) ?? -Infinity) < 5000 || id === 'your-turn' && (this.narrationId || this.resultAnnounced))) return;
+      if (!preview && commentary) this.commentaryAt = now;
       this.recent.set(key, now);
       // One spoken line at a time. Game end can replace an unfinished turn cue.
       this.clearNarration();

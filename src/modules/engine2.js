@@ -4957,6 +4957,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const resolving=this.c1516Resolving;
     const counterController=opts.controller||(resolving&&(resolving.card===opts.source||resolving.srcCard===opts.source||!opts.source)?resolving.ctrl:opts.source?.ctrl);
     const wasCast=so.kind==='spell'&&(!so.isCopy||!!so.bomCastCopy);
+    // Capture only public spell facts while X and the chosen face are still
+    // available on the stack. The destination may reset those characteristics.
+    const counteredSpellManaValue = so.kind === 'spell' && !so.card?.faceDown && !so.castOpts?.faceDownCast
+      ? this.stackSpellManaValue(so) : null;
     this.stack.splice(index, 1);
     const leavesStackExiled = so.kind === 'spell' && so.castOpts &&
       (so.castOpts.flashback || so.castOpts.jumpstart);
@@ -4971,6 +4975,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.note('gameEffect', {
       kind: 'counterspell', stackObject: so, card: so.card || null,
       source: opts.source || null, destination,
+      audioFacts: Number.isFinite(counteredSpellManaValue) ? {counteredSpellManaValue} : {},
     });
     this.note('stack', {});
     if(so.kind==='spell')await this.emit('oracleSpellCounteredV13',{card:so.card,player:so.ctrl,byPlayer:counterController||null,wasCast,so,source:opts.source||resolving?.card||resolving?.srcCard||null});
@@ -5059,11 +5064,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           spellColors: so.oracleDefinition?.colorsOverride || so.spellColors || card.castMeta?.spellColors || MTG.C1920.castColors(this, card, so.castOpts || {})},
       }) : card;
     if (so.countered) {
+      const counteredSpellManaValue = !card.faceDown && !so.castOpts?.faceDownCast
+        ? this.stackSpellManaValue(so) : null;
       const destination = so.castOpts && (so.castOpts.flashback || so.castOpts.jumpstart)
         ? 'exile' : 'graveyard';
       this.note('gameEffect', {
         kind: 'counterspell', stackObject: so, card: so.card || null,
         source: so.counterSource || null, destination,
+        audioFacts: Number.isFinite(counteredSpellManaValue) ? {counteredSpellManaValue} : {},
       });
       if (!so.isCopy) await this.move(card, destination);
       return;
@@ -8278,7 +8286,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const dp = MTG.defendingPlayerV92(c.attacking);
       if (dp) { dp.lastAttackers = dp.lastAttackers || new Set(); dp.lastAttackers.add(p); }
     }
-    this.note('combat', { kind: 'attackersDeclared', count: attackers.length });
+    const attackAudioKeywords = new Set();
+    for (const card of attackers) if (!card.faceDown) {
+      for (const keyword of ['flying', 'vigilance', 'menace']) if (card.kw(keyword)) attackAudioKeywords.add(keyword);
+      if (card.sick && card.kw('haste')) attackAudioKeywords.add('haste');
+    }
+    this.note('combat', { kind: 'attackersDeclared', count: attackers.length,
+      audioFacts: {keywords: [...attackAudioKeywords]} });
     await this.pace(p.isAI ? 1200 : 250);
     await this.reviewCombatWithHuman({ attackingPlayer: p, attackers: attackers.slice(), attackTaxPayments });
     if (this.gameOver || !this.combat) { this.combat = null; return; }
@@ -8409,7 +8423,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const a of this.combat.attackers) {
       if (a.blockedBy.length) this.lg(`🛡️ ${a.name} blocked by: ${a.blockedBy.map(b => b.name).join(', ')}.`, 'block');
     }
-    this.note('combat', {});
+    const reachBlockedFlying = this.combat.attackers.some(attacker => !attacker.faceDown && attacker.kw('flying') &&
+      attacker.blockedBy.some(blocker => !blocker.faceDown && blocker.kw('reach')));
+    this.note('combat', {kind: 'blockersDeclared', audioFacts: {keywords: reachBlockedFlying ? ['reach'] : []}});
     if (this.combat.attackers.some(a => a.blockedBy.length)) await this.pace(900);
     // REFLEKTOR: bot je blokirao TVOJE napadače
     {
@@ -8869,9 +8885,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       if (rem > 0 && a.kw('trample')) {
-        if(MTG.OracleBandingV89)plan.push(...MTG.OracleBandingV89.destinationAssignment(this,a,rem));
-        else if (a.attacking instanceof MTG.Player) plan.push({ src: a, target: a.attacking, n: rem, toPlayer: true });
-        else if (a.attacking && a.attacking.zone === 'battlefield') plan.push({ src: a, target: a.attacking, n: rem });
+        const overflow = MTG.OracleBandingV89 ? MTG.OracleBandingV89.destinationAssignment(this,a,rem)
+          : a.attacking instanceof MTG.Player ? [{ src: a, target: a.attacking, n: rem, toPlayer: true }]
+          : a.attacking && a.attacking.zone === 'battlefield' ? [{ src: a, target: a.attacking, n: rem }] : [];
+        // Carry the assigned recipient through redirection. The damage event
+        // reports trample only if positive damage actually reaches this target.
+        for (const hit of overflow) plan.push({...hit, audioTrampleTarget: hit.target});
       }
     }
     // CR 510.1d: a creature blocking several attackers assigns its power once,
@@ -8898,9 +8917,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // CR 510.2/120.4: source traits, lifelink and life loss belong to one
     // simultaneous event. Merely delaying SBAs would still let an earlier
     // loss change a later hit (Unlife) or hide simultaneous gains (Worship).
-    const damageHits = plan.map((d, combatIndex) => ({...d, opts: {
-      combat: true, combatStep: stepKind, combatIndex, damageResults: [],
-    }}));
+    const damageHits = plan.map((d, combatIndex) => {
+      const audioKeywords = [];
+      if (!d.src.faceDown) {
+        if (d.src.kw('double strike') && (stepKind === 'first' || d.src.meta._dealtFirstStrike)) audioKeywords.push('double-strike');
+        else if (stepKind === 'first' && d.src.kw('first strike')) audioKeywords.push('first-strike');
+      }
+      return {...d, opts: {
+        combat: true, combatStep: stepKind, combatIndex, damageResults: [],
+        audioKeywords, audioTrampleTarget: d.audioTrampleTarget,
+      }};
+    });
     await this.damageBatch(damageHits, { combat: true, deferSBA: true, combatStep: stepKind });
     // Redirection may send damage assigned to a creature to a player, or
     // divide one assignment. Combat triggers use the actual recipients.
