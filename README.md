@@ -61,6 +61,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
+- **16 October table and combat fixes:** card art without repeated name labels, stable Proceed panels, explicit Overencumbered payment feedback, and saved player-Aura attachments. [Release checks](reports/releases/2026-10-16-table-and-overencumbered.md)
 - **15 October gameplay polish:** stable problem-report editing, confirmed match results with retryable recovery, and less local-save serialization. [Release checks](reports/releases/2026-10-15-gameplay-polish.md)
 
 - **9 October catalog completion:** the latest 1,021 definitions in batches 0264–0266 complete the pinned paper/Commander comparison. [Validation report](reports/oracle-import/validation-0264-0266.md)
