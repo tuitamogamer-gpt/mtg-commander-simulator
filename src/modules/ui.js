@@ -4776,7 +4776,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             explanation.push(`${origin.cause.name} entered the battlefield.`);
           }
           if (origin?.total > 1) explanation.push(`Trigger ${origin.index} of ${origin.total} from this event.`);
-          if (origin?.index > origin.nativeCount) explanation.push(origin.addedBy
+          if (origin && origin.index > origin.nativeCount) explanation.push(origin.addedBy
             ? `Additional trigger from ${origin.addedBy.name}.`
             : 'Additional trigger from another trigger effect.');
           const sourceName = origin?.source?.name || (tr.src?.faceDown ? 'Face-down card' : tr.src?.name || 'Trigger');

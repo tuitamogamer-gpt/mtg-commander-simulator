@@ -199,3 +199,45 @@ test('actual trigger ordering UI explains each additional Throne trigger without
   assert.doesNotMatch(text, /copied ability|ability copy|doubled twice/);
   await settle(f.g);
 });
+
+test('native Ring-bearer combat orders a delayed trigger without origin alongside Celeborn and continues', async () => {
+  const f = table(161033);
+  const galadriel = f.put('Galadriel, Elven-Queen');
+  const celeborn = f.put('Celeborn the Wise');
+  f.g.addCounters(galadriel, '+1/+1', 2);
+  f.cards = (_p, q) => q.aiHint?.kind === 'ringBearer' ? [galadriel] : undefined;
+  await M.E7.ringTempts(f.g, f.a);
+  await M.E7.ringTempts(f.g, f.a);
+  assert.equal(f.a.ringLevel, 2);
+  f.attackers = () => [{card: galadriel, target: f.b}];
+  const decide = f.a.controller.decide;
+  let ordered = 0;
+  f.a.controller.decide = async (g, q) => {
+    if (q.type !== 'orderTriggers') return decide(g, q);
+    const ring = q.triggers.find(tr => tr.name === 'The Ring: draw, then discard');
+    assert.ok(ring, 'native Ring delayed trigger participates in simultaneous ordering');
+    assert.equal(ring.triggerOrigin, undefined, 'missing origin is valid engine output');
+    assert.ok(q.triggers.some(tr => tr.src === celeborn && tr.triggerOrigin));
+    const before = aiIsolationFingerprint(g);
+    const tree = renderOrder(g, q.triggers);
+    const all = node => [node, ...node.children.flatMap(all)];
+    const text = all(tree).map(node => node.innerHTML).join(' ');
+    assert.match(text, /The Ring: draw, then discard/);
+    assert.match(text, /Celeborn the Wise/);
+    assert.doesNotMatch(text, /Additional trigger/);
+    assert.equal(aiIsolationFingerprint(g), before, 'rendering preserves the waiting game');
+    ordered++;
+    return q.triggers.slice().reverse();
+  };
+  const libraryBefore = f.a.library.length, handBefore = f.a.hand.length, lifeBefore = f.b.life;
+  await f.g.combatPhase(f.a);
+  assert.equal(ordered, 1);
+  assert.equal(f.a.library.length, libraryBefore - 1, 'Ring draw resolves once');
+  assert.equal(f.a.hand.length, handBefore, 'Ring discard resolves once');
+  assert.equal(f.a.graveyard.length, 1);
+  assert.equal(celeborn.power, 4, 'Celeborn scry and its resulting pump resolve');
+  assert.equal(f.b.life, lifeBefore - 6, 'combat proceeds to damage');
+  assert.equal(f.g.stack.length, 0);
+  assert.equal(f.g.pendingTriggers.length, 0);
+  stable(f);
+});
