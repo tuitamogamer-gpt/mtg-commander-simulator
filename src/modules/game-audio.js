@@ -4,6 +4,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const U = MTG;
   U.MUSIC_TRACKS = Object.freeze([
+    { id: 'council-at-dusk', name: 'Council at Dusk', detail: 'Acoustic strings · a quiet, mystical council', tone: 'grove' },
+    { id: 'aether-tides', name: 'Aether Tides', detail: 'Airy keys · minimal astral ambience', tone: 'astral' },
+    { id: 'emberwatch', name: 'Emberwatch', detail: 'Warm embers · restrained low drums', tone: 'ember' },
     { id: 'moonlit-grove', name: 'Moonlit Grove', detail: 'Felt piano · wooden harp · 72 BPM', tone: 'grove' },
     { id: 'astral-library', name: 'Astral Library', detail: 'Dusty keys · glass chimes · 68 BPM', tone: 'astral' },
     { id: 'ember-sanctum', name: 'Ember Sanctum', detail: 'Nylon guitar · warm embers · 74 BPM', tone: 'ember' },
@@ -19,13 +22,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     { id: 'explosion', name: 'Explosion', cooldown: 2500 },
     { id: 'victory', name: 'Game end', cooldown: 2500 },
   ].map(Object.freeze));
+  U.VOICE_CUES = Object.freeze([
+    { id: 'your-turn', name: 'Your turn' },
+    { id: 'victory', name: 'Victory' },
+    { id: 'defeat', name: 'Defeat' },
+  ].map(Object.freeze));
   const EFFECTS = new Map(U.SOUND_EFFECTS.map(effect => [effect.id, effect]));
+  const NARRATION = new Set(U.VOICE_CUES.map(cue => cue.id));
   const level = (value, fallback) => typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.min(100, Math.round(value))) : fallback;
   U.normalizeAudioPreferences = raw => ({
-    track: U.MUSIC_TRACKS.some(item => item.id === raw?.track) ? raw.track : 'moonlit-grove',
-    music: level(raw?.music, 18), effects: level(raw?.effects, 38), muted: raw?.muted === true,
+    track: U.MUSIC_TRACKS.some(item => item.id === raw?.track) ? raw.track : 'council-at-dusk',
+    music: level(raw?.music, 18), effects: level(raw?.effects, 38), narration: level(raw?.narration, 0), muted: raw?.muted === true,
   });
+  U.audioVoiceForEvent = (event, game) => {
+    const listener = game?.viewer || game?.human?.();
+    if (!listener || !event) return null;
+    if (event.type === 'turn') return event.p === listener && !listener.lost ? 'your-turn' : null;
+    if (event.type === 'gameover' && event.winner) return event.winner === listener ? 'victory' : 'defeat';
+    return null;
+  };
   // Use only public event properties. Face-down identities, keywords and costs
   // must not influence a sound, even on the controller's own device.
   U.audioCuesForEvent = event => {
@@ -80,7 +96,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.gesture = () => { if (this.game) void this.unlock(); };
       this.visibility = () => {
         if (env.document.hidden) {
-          this.clearEffects();
+          this.clearEffects(); this.clearNarration();
           void this.context?.suspend().catch(() => {});
           this.notify();
         } else if (this.game && this.unlocked) void this.unlock();
@@ -95,11 +111,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { state: this.env.document?.hidden ? 'paused' : this.state, error: this.error,
         muted: this.preferences.muted, track: this.preferences.track,
         context: this.context?.state || 'locked', activeEffects: this.voices.size,
-        activeMusic: this.musicVoices.size, loaded: [...this.cache.keys()] };
+        activeMusic: this.musicVoices.size, activeNarration: this.narration ? 1 : 0, loaded: [...this.cache.keys()] };
     }
     attach(game) {
       if (game === this.game) return;
-      this.revision++; this.clearEffects(); this.stopMusic(); this.recent.clear();
+      this.revision++; this.clearEffects(); this.clearNarration(); this.stopMusic(); this.recent.clear();
       this.game = game; this.state = 'idle';
       if (game && this.unlocked) void this.syncMusic();
     }
@@ -112,10 +128,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!Context) { this.state = 'unavailable'; this.notify(); return false; }
           this.context = new Context();
           this.musicBus = this.context.createGain(); this.effectsBus = this.context.createGain();
+          this.narrationBus = this.context.createGain();
           const limiter = this.context.createDynamicsCompressor();
           limiter.threshold.value = -8; limiter.knee.value = 12; limiter.ratio.value = 5;
           limiter.attack.value = 0.003; limiter.release.value = 0.18;
-          this.musicBus.connect(limiter); this.effectsBus.connect(limiter); limiter.connect(this.context.destination);
+          this.musicBus.connect(limiter); this.effectsBus.connect(limiter); this.narrationBus.connect(limiter); limiter.connect(this.context.destination);
           this.applyVolumes();
         }
         if (this.context.state !== 'running') await this.context.resume();
@@ -134,8 +151,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     applyVolumes() {
       if (!this.context) return;
       const p = this.preferences, at = this.context.currentTime;
-      this.musicBus.gain.setTargetAtTime(p.muted ? 0 : p.music / 100, at, 0.08);
+      this.musicBus.gain.setTargetAtTime(p.muted ? 0 : p.music / 100 * (this.narration ? .35 : 1), at, 0.08);
       this.effectsBus.gain.setTargetAtTime(p.muted ? 0 : p.effects / 100, at, 0.02);
+      this.narrationBus.gain.setTargetAtTime(p.muted ? 0 : p.narration / 100, at, 0.02);
     }
     configure(changes) {
       this.preferences = U.normalizeAudioPreferences({ ...this.preferences, ...changes });
@@ -143,12 +161,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       try { this.env.localStorage.setItem('mtgAudioPreferences', JSON.stringify(this.preferences)); } catch { saved = false; }
       this.applyVolumes();
       if (this.preferences.muted || this.preferences.effects === 0) this.clearEffects();
+      if (this.preferences.muted || this.preferences.narration === 0) this.clearNarration();
       void this.syncMusic(); this.notify(); return saved;
     }
     async load(key) {
       if (this.cache.has(key)) return this.cache.get(key);
       const promise = (async () => {
-        const response = await this.env.fetch('./assets/audio/' + key + '.mp3');
+        const filename = key.startsWith('sfx/') ? key + '-v2' : key;
+        const response = await this.env.fetch('./assets/audio/' + filename + '.mp3');
         if (!response.ok) throw new Error('Audio download failed');
         return this.context.decodeAudioData(await response.arrayBuffer());
       })();
@@ -195,13 +215,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.stopMusic(0.2); this.state = 'error'; this.error = 'This track could not load. Choose it again to retry.'; this.notify();
       }
     }
-    canPlay() {
+    canPlay(channel = 'effects') {
       return !!this.game && this.unlocked && this.context?.state === 'running' && !this.env.document?.hidden
-        && !this.preferences.muted && this.preferences.effects > 0;
+        && !this.preferences.muted && this.preferences[channel] > 0;
     }
     handle(event, game, { replay = false } = {}) {
-      if (game !== this.game || replay || !this.canPlay()) return;
-      for (const cue of U.audioCuesForEvent(event)) this.enqueue(cue);
+      if (game !== this.game || replay) return;
+      if (this.canPlay()) for (const cue of U.audioCuesForEvent(event)) this.enqueue(cue);
+      if (this.canPlay('narration')) {
+        const id = U.audioVoiceForEvent(event, game);
+        if (event?.type === 'turn' && !id && this.narrationId === 'your-turn') this.clearNarration();
+        if (id) void this.playNarration(id);
+      }
     }
     enqueue(cue) {
       if (!EFFECTS.has(cue.id) || !this.canPlay()) return;
@@ -250,6 +275,48 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.effectsEpoch = (this.effectsEpoch || 0) + 1;
       this.env.clearTimeout(this.batchTimer); this.batchTimer = null; this.pending.clear();
       for (const source of this.voices) { try { source.stop(); } catch { /* Already ended. */ } }
+    }
+    clearNarration() {
+      this.narrationEpoch = (this.narrationEpoch || 0) + 1;
+      const source = this.narration; this.narration = null; this.narrationId = null;
+      if (source) { try { source.stop(); } catch { /* Already ended. */ } }
+      this.applyVolumes();
+    }
+    async playNarration(id, { preview = false } = {}) {
+      if (!NARRATION.has(id) || !this.canPlay('narration')) return;
+      const now = this.env.performance.now(), key = 'voice/' + id;
+      if (!preview && (now - (this.recent.get(key) ?? -Infinity) < 5000 || id === 'your-turn' && this.narration)) return;
+      this.recent.set(key, now);
+      // One spoken line at a time. Game end can replace an unfinished turn cue.
+      this.clearNarration();
+      this.narrationId = id;
+      const epoch = this.narrationEpoch, game = this.game;
+      try {
+        const buffer = await this.load(key);
+        if (!this.canPlay('narration') || game !== this.game || epoch !== this.narrationEpoch || this.env.performance.now() - now > 1500) {
+          if (epoch === this.narrationEpoch) this.narrationId = null;
+          return;
+        }
+        const source = this.context.createBufferSource();
+        source.buffer = buffer; source.connect(this.narrationBus); this.narration = source;
+        source.onended = () => {
+          source.disconnect();
+          if (this.narration === source) { this.narration = null; this.narrationId = null; this.applyVolumes(); this.notify(); }
+        };
+        this.applyVolumes(); source.start();
+        this.history.push({ id, channel: 'voice', at: Math.round(this.env.performance.now()) });
+        if (this.history.length > 40) this.history.shift();
+        this.notify();
+      } catch {
+        if (epoch !== this.narrationEpoch || game !== this.game) return;
+        this.narrationId = null;
+        this.error = 'A voice cue could not load. Use Test voice to retry.'; this.notify();
+      }
+    }
+    async previewNarration(id = 'your-turn') {
+      if (!NARRATION.has(id)) return;
+      await this.unlock(); this.error = '';
+      await this.playNarration(id, { preview: true });
     }
     async preview(id = 'combat') {
       if (!EFFECTS.has(id)) return;

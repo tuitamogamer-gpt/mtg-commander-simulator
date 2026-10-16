@@ -21,16 +21,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     close.onclick = dismiss; head.append(heading, close);
     const body = node('div', 'audiobody');
-    body.appendChild(node('p', 'audiointro', 'A quieter kind of magic. Original fantasy lo-fi for long games.'));
+    body.appendChild(node('p', 'audiointro', 'Original instrumentals for long games, crisp magical effects, and an optional voice at key moments.'));
     const tracks = node('div', 'audiotracks'); tracks.setAttribute('role', 'group'); tracks.setAttribute('aria-label', 'Background instrumental');
     const status = node('p', 'audiostatus'); status.setAttribute('role', 'status');
     let storageUnavailable = false;
     const change = changes => {
       storageUnavailable = !audio.configure(changes); void audio.unlock(); update();
     };
-    for (const [index, track] of MTG.MUSIC_TRACKS.entries()) {
+    for (const track of MTG.MUSIC_TRACKS) {
       const button = node('button', 'audiotrack'); button.type = 'button'; button.dataset.track = track.id; button.dataset.tone = track.tone;
-      const art = node('span', 'audiotrackart', ['♧', '✧', '◈'][index]); art.setAttribute('aria-hidden', 'true');
+      const art = node('span', 'audiotrackart', { grove: '♧', astral: '✧', ember: '◈' }[track.tone] || '♫'); art.setAttribute('aria-hidden', 'true');
       const label = node('span', 'audiotracklabel'); label.append(node('b', '', track.name), node('small', '', track.detail));
       const selected = node('span', 'audiotrackselected', '✓'); selected.setAttribute('aria-hidden', 'true');
       button.append(art, label, selected);
@@ -39,7 +39,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     body.appendChild(tracks);
     const controls = node('div', 'audiolevels');
     const sliders = {};
-    for (const [key, label] of [['music', 'Music volume'], ['effects', 'Sound effects volume']]) {
+    for (const [key, label] of [['music', 'Music volume'], ['effects', 'Sound effects volume'], ['narration', 'Narration volume · optional']]) {
       const row = node('div', 'audiolevel'), title = node('label', '', label), output = node('output', '');
       const input = node('input', ''); input.type = 'range'; input.id = 'audio-' + key;
       input.min = '0'; input.max = '100'; input.step = '1'; input.value = String(audio.preferences[key]);
@@ -54,12 +54,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const effect of MTG.SOUND_EFFECTS) {
       const option = node('option', '', effect.name); option.value = effect.id; picker.appendChild(option);
     }
+    const voices = node('optgroup', ''); voices.label = 'Voice cues';
+    for (const cue of MTG.VOICE_CUES) {
+      const option = node('option', '', cue.name); option.value = 'voice/' + cue.id; voices.appendChild(option);
+    }
+    picker.appendChild(voices); picker.onchange = () => update();
     pickerRow.append(pickerLabel, picker);
     const mute = node('button', 'pbtn audiomute'); mute.type = 'button'; mute.onclick = () => change({ muted: !audio.preferences.muted });
     const preview = node('button', 'pbtn audiopreview', 'Test effects'); preview.type = 'button';
-    preview.onclick = () => { void audio.preview(picker.value); };
+    preview.onclick = () => { void (picker.value.startsWith('voice/') ? audio.previewNarration(picker.value.slice(6)) : audio.preview(picker.value)); };
     actions.append(mute, preview); body.append(controls, pickerRow, actions, status);
-    body.appendChild(node('p', 'audiohint', 'Short cues mark combat, dungeon rooms, counters, counterspells and spellcasting. Big arrivals, 10+ damage, board wipes and game end keep their own effects. Repeated actions are grouped to keep the table calm.'));
+    body.appendChild(node('p', 'audiohint', 'Short effects mark the table’s big moments. Narration is off by default: turn it up to hear your turn, victory and defeat. Spoken cues never overlap; music softens briefly while they play.'));
     const footer = node('footer', 'audiofooter');
     const back = node('button', 'pbtn', '← Arena controls'); back.type = 'button';
     back.onclick = () => { ui.quickMenuOpen = true; ui.render(); document.querySelector('.audiosettingsopen')?.focus({ preventScroll: true }); };
@@ -82,13 +87,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // pointerdown (audio unlock) and pointerup. Keep unchanged controls intact.
       if (mute.textContent !== muteLabel) mute.textContent = muteLabel;
       mute.setAttribute('aria-pressed', String(p.muted));
-      preview.disabled = p.muted || p.effects === 0 || state.state === 'unavailable';
+      const voicePreview = picker.value.startsWith('voice/'), previewLabel = voicePreview ? 'Test voice' : 'Test effects';
+      if (preview.textContent !== previewLabel) preview.textContent = previewLabel;
+      preview.disabled = p.muted || p[voicePreview ? 'narration' : 'effects'] === 0 || state.state === 'unavailable';
       status.textContent = state.state === 'unavailable' ? 'Audio is unavailable in this browser.'
         : state.error || (storageUnavailable ? 'Applied for this session · device storage is unavailable'
           : p.muted ? 'All audio muted · saved on this device'
             : state.state === 'loading' ? 'Loading instrumental…'
               : state.context !== 'running' ? 'Choose a track or Test effects to start audio.'
-                : p.music === 0 ? 'Music off · effects keep their own volume'
+                : p.music === 0 ? 'Music off · effects and narration keep their own volume'
                   : 'Now playing · ' + MTG.MUSIC_TRACKS.find(track => track.id === p.track).name);
     }
     const unsubscribe = audio.subscribe(update);

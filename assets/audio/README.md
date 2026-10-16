@@ -1,5 +1,49 @@
 # Commander audio
 
+The October 16 pack adds three original instrumental loops, replaces the nine
+runtime effects with versioned files, and adds three optional spoken cues made
+with Fish Studio's official Sarah voice. All assets are served with the game;
+playback never contacts an audio provider or requires an account token.
+
+| New instrumental | Character |
+| --- | --- |
+| Council at Dusk | Soft plucked strings and keys, a quiet mystical council |
+| Aether Tides | Airy keys and floating astral ambience |
+| Emberwatch | Warm pads and restrained low drums |
+
+These instrumentals and effects are original deterministic synthesis, generated
+by `scripts/generate-original-audio.py`. They contain no sampled soundtrack or
+existing melody. Fish Studio provides the spoken cues only: “Your turn,”
+“Victory. Well played,” and “Defeat. A new challenge awaits.” The manifest records
+voice ID, exact text, source URL and task ID, as well as durations, file sizes and
+SHA-256 hashes for all current assets. Legacy effects and their provenance remain
+available for older cached clients.
+
+Menu → Music & sound offers six instrumentals, separate music/effects/narration
+volumes, mute, and previews. Existing track choices are preserved; Council at
+Dusk is the default for new settings. Music defaults to 18%, effects to 38%, and
+narration to 0% (off). Turn narration is for the local player only. A single voice
+plays at a time, with music briefly lowered while it speaks. Hidden tabs, mute,
+save replay and reconnect never replay missed announcements.
+
+New instrumentals use circular ambience and approximately -22 LUFS mastering;
+voice cues use -20 LUFS and a -3 dB true-peak target. A browser gesture unlocks
+playback. The runtime loads assets on demand, coalesces repeated effects, limits
+simultaneous effects, and suspends audio when the page is hidden. Voice and effect
+previews obey their own volume controls and the global mute control.
+
+To regenerate the new music/effects, run the deterministic generator with NumPy,
+SciPy and FFmpeg installed (see its `--help`). Fish voice sources are permanent
+URLs in the manifest; download and master with the recorded FFmpeg filter,
+44.1 kHz mono, libmp3lame at 96 kbps. Regenerating speech through Fish Studio is a
+separate paid operation; downloading these existing results is sufficient.
+
+Coverage: `tests/game-audio.test.mjs` and `tests/browser/game-audio.mjs` verify
+preferences, real MP3 decoding, output, mute/visibility, voice lifecycle, actual
+human/AI actions, Live listener ownership and decision preservation.
+
+## Earlier pack provenance
+
 Three original instrumentals and four milestone effects generated through the user's
 Higgsfield account on 7 September 2026, plus five action effects generated on
 20 September 2026. The model catalog and CLI were checked:

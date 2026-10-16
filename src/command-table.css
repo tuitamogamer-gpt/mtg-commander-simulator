@@ -630,7 +630,7 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   #game.command-table.ct-desktop-lands .landrow { align-items: stretch; gap: 8px; }
   #game.command-table.ct-desktop-lands .landrow > .playerrail:empty { display: none; }
 }
-@media (min-width: 901px) and (max-height: 760px) {
+@media (min-width: 901px) and (max-height: 800px) {
   body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .mini.sm { width: 36px !important; height: 50px !important; }
   body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .permanentpile.sm { width: 36px !important; }
   body.game-active #game.command-table.ct-desktop-lands :is(.landstrip, .oppresourcecards) { max-height: 66px; }
@@ -654,6 +654,9 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   #game.command-table.ct-desktop-lands .opphead .oppcmd { display: inline-flex; float: none; margin-left: 5px; white-space: nowrap; }
   #game.command-table.ct-desktop-lands .opphead .oppmeta { margin-top: 2px; flex-wrap: nowrap; }
   #game.command-table.ct-desktop-lands .opphead .oppmeta:empty { display: none; }
+  #game.command-table.ct-desktop-lands .opphead .oppmeta .dungeonbadge {
+    min-height: 24px; max-width: 118px; margin: 0; padding: 2px 5px; font-size: 10px;
+  }
   #game.command-table.ct-desktop-lands .opphead .oppmeta > .zbtn { min-height: 22px; padding: 2px 5px; font-size: 10px; line-height: 1.2; }
   #game.command-table.ct-desktop-lands .opphead > .tbtn.small { display: none; }
   #game.command-table.ct-desktop-lands .opphead .ct-turn-badge { margin-left: 4px; font-size: 0; }
@@ -1342,3 +1345,22 @@ body.game-active #game.command-table .ct-decision-rail .pbtn.primary:hover:not(:
   #game.command-table .hudaction, #game.command-table .ct-view-button, #game.command-table .pbtn { min-height: 44px !important; }
   #game.command-table .ct-player-head .zbtn, #game.command-table .opphead .oppmeta > .zbtn { min-height: 36px; }
 }
+
+/* Let the complete printed card set the frame height. The former fixed-height
+   face left a colored strip where the repeated name used to sit. Reserve the
+   normal card ratio while art loads; image failures keep their fallback face. */
+body.game-active #game.command-table :is(.mini, .hcard)[data-cname]:not(.facedown):has(> img:not(.imgfail):not([hidden])) {
+  height: auto !important; min-height: 0; aspect-ratio: auto;
+}
+body.game-active #game.command-table :is(.mini, .hcard):not(.facedown) > img:not(.imgfail):not([hidden]) {
+  position: relative; display: block; inset: auto; width: 100%; height: auto !important;
+  aspect-ratio: auto 488 / 680; object-fit: contain; border-radius: inherit; contain: inline-size;
+}
+body.game-active #game.command-table :is(.mini, .hcard)[data-cname]:not(.facedown):has(> img:not(.imgfail):not([hidden]))::before { display: none; }
+/* Damage text still sets a readable minimum width without using the image's
+   intrinsic pixel width or adding a second row below the printed card. */
+body.game-active #game.command-table .mini.has-marked-damage { display: grid; grid-template-columns: minmax(0, 1fr); }
+body.game-active #game.command-table .mini.has-marked-damage > :is(img, .markeddamagestats) { grid-area: 1 / 1; }
+body.game-active #game.command-table .mini.has-marked-damage > .markeddamagestats { align-self: start; }
+/* Rotation conveys tapped lands visually; their accessible label still says it. */
+#game.command-table .ct-land-state { display: none; }

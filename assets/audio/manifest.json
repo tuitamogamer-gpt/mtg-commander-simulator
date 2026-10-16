@@ -1,5 +1,5 @@
 {
-  "provider": "Higgsfield",
+  "provider": "Mixed — per-asset provenance below",
   "tracks": [
     {
       "id": "moonlit-grove",
@@ -13,7 +13,8 @@
       "file": "assets/audio/music/moonlit-grove.mp3",
       "seconds": 88.058776,
       "bytes": 1409401,
-      "sha256": "fe151e980cfcb36f82501addef27c4a8490180b312df0cea5f5501b72ee20fdc"
+      "sha256": "fe151e980cfcb36f82501addef27c4a8490180b312df0cea5f5501b72ee20fdc",
+      "provider": "Higgsfield"
     },
     {
       "id": "astral-library",
@@ -27,7 +28,8 @@
       "file": "assets/audio/music/astral-library.mp3",
       "seconds": 88.058776,
       "bytes": 1409401,
-      "sha256": "c5f23df950231d95e98cc216154d94b29e039b9a7ef28bc6fc49f644ce690c7e"
+      "sha256": "c5f23df950231d95e98cc216154d94b29e039b9a7ef28bc6fc49f644ce690c7e",
+      "provider": "Higgsfield"
     },
     {
       "id": "ember-sanctum",
@@ -41,8 +43,407 @@
       "file": "assets/audio/music/ember-sanctum.mp3",
       "seconds": 88.058776,
       "bytes": 1409401,
-      "sha256": "ff424d06883766901eb5bcabb23ab2fb887b3ed6cda3291f2dd66f118850a81a"
+      "sha256": "ff424d06883766901eb5bcabb23ab2fb887b3ed6cda3291f2dd66f118850a81a",
+      "provider": "Higgsfield"
     },
+    {
+      "id": "your-turn",
+      "kind": "voice",
+      "provider": "Fish Studio",
+      "voiceId": "933563129e564b19a115bedd57b7406a",
+      "voiceName": "Sarah — Fish Official",
+      "text": "[calm] Your turn.",
+      "taskId": "c54c8dffbb9642bab3a961753a4fb2d7",
+      "sourceUrl": "https://platform.r2.fish.audio/tasks/2026-10-16/c54c8dffbb9642bab3a961753a4fb2d7.mp3",
+      "generatedAt": "2026-10-16",
+      "mastering": "silenceremove=start_periods=1:start_duration=0.015:start_threshold=-48dB,loudnorm=I=-20:TP=-3:LRA=7,afade=t=in:d=0.008",
+      "file": "assets/audio/voice/your-turn.mp3",
+      "seconds": 0.835918,
+      "bytes": 10448,
+      "sha256": "8479ef3b1c2be2790c8056deaa1f0c5dab59724440485e31ce9cf4e32c6f497f"
+    },
+    {
+      "id": "victory",
+      "kind": "voice",
+      "provider": "Fish Studio",
+      "voiceId": "933563129e564b19a115bedd57b7406a",
+      "voiceName": "Sarah — Fish Official",
+      "text": "[warm] Victory. Well played.",
+      "taskId": "ee825c1e5e5a4c8599706cd96de00a11",
+      "sourceUrl": "https://platform.r2.fish.audio/tasks/2026-10-16/ee825c1e5e5a4c8599706cd96de00a11.mp3",
+      "generatedAt": "2026-10-16",
+      "mastering": "silenceremove=start_periods=1:start_duration=0.015:start_threshold=-48dB,loudnorm=I=-20:TP=-3:LRA=7,afade=t=in:d=0.008",
+      "file": "assets/audio/voice/victory.mp3",
+      "seconds": 1.724082,
+      "bytes": 21106,
+      "sha256": "503a3e66cd6dc36bfed1b539dcab5c97f15da1d5fdad5426935474fd4ea1a353"
+    },
+    {
+      "id": "defeat",
+      "kind": "voice",
+      "provider": "Fish Studio",
+      "voiceId": "933563129e564b19a115bedd57b7406a",
+      "voiceName": "Sarah — Fish Official",
+      "text": "[gentle] Defeat. A new challenge awaits.",
+      "taskId": "bb1be735c12a4cb38bc360c5056583f4",
+      "sourceUrl": "https://platform.r2.fish.audio/tasks/2026-10-16/bb1be735c12a4cb38bc360c5056583f4.mp3",
+      "generatedAt": "2026-10-16",
+      "mastering": "silenceremove=start_periods=1:start_duration=0.015:start_threshold=-48dB,loudnorm=I=-20:TP=-3:LRA=7,afade=t=in:d=0.008",
+      "file": "assets/audio/voice/defeat.mp3",
+      "seconds": 2.638367,
+      "bytes": 32077,
+      "sha256": "8ccd7a1890ddb5342ce379d15c384601ea8f0e4d878a180cc00cbf6683706d20"
+    },
+    {
+      "id": "council-at-dusk",
+      "title": "Council at Dusk",
+      "kind": "music",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "An original D-dorian council theme: softly damped harp, felt keys, warm suspended pads, round bass and brushed wooden percussion.",
+      "generatedAt": "2026-10-16T17:39:16.730488+00:00",
+      "file": "assets/audio/music/council-at-dusk.mp3",
+      "seconds": 87.272721,
+      "bytes": 1047972,
+      "sha256": "01b2a222e0384158c2cec01137e73961bf8f3bdde9b03b59d6711bdf802a5974",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -22.45,
+        "truePeakDb": -10.85,
+        "samplePeakDb": -10.85,
+        "rmsDb": -24.33,
+        "loopBoundaryDelta": 0.000989,
+        "loudnessRangeLu": 3.2
+      },
+      "bpm": 88,
+      "bars": 32,
+      "seamlessLoop": true,
+      "seed": 1601,
+      "loopMastering": "Circular instrument tails and reflections, with a 4 ms smooth codec-edge taper."
+    },
+    {
+      "id": "aether-tides",
+      "title": "Aether Tides",
+      "kind": "music",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "An original weightless E-minor astral theme: rounded glass keys, slow stereo pads, sparse bell answers, soft heartbeat bass and delicate filtered air.",
+      "generatedAt": "2026-10-16T17:39:16.473150+00:00",
+      "file": "assets/audio/music/aether-tides.mp3",
+      "seconds": 96.0,
+      "bytes": 1152670,
+      "sha256": "d50062f3eda784da845a9ca43c4fd34666f616aaba5ce8c5f1c207ffe82077ba",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -22.45,
+        "truePeakDb": -11.03,
+        "samplePeakDb": -11.03,
+        "rmsDb": -24.26,
+        "loopBoundaryDelta": 2.4e-05,
+        "loudnessRangeLu": 2.3
+      },
+      "bpm": 80,
+      "bars": 32,
+      "seamlessLoop": true,
+      "seed": 1602,
+      "loopMastering": "Circular instrument tails and reflections, with a 4 ms smooth codec-edge taper."
+    },
+    {
+      "id": "emberwatch",
+      "title": "Emberwatch",
+      "kind": "music",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "An original A-minor hearth theme: muted nylon-like plucks, low velvet keys, slow hand drums and warm bass, with a restrained melodic answer.",
+      "generatedAt": "2026-10-16T17:39:17.439505+00:00",
+      "file": "assets/audio/music/emberwatch.mp3",
+      "seconds": 85.333333,
+      "bytes": 1024775,
+      "sha256": "82ac4ffc074d444ea89ebb069dd0bdcd76f65b582a8586a0adda37eac5f3b272",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -22.45,
+        "truePeakDb": -10.57,
+        "samplePeakDb": -10.57,
+        "rmsDb": -24.08,
+        "loopBoundaryDelta": 0.000285,
+        "loudnessRangeLu": 3.1
+      },
+      "bpm": 90,
+      "bars": 32,
+      "seamlessLoop": true,
+      "seed": 1603,
+      "loopMastering": "Circular instrument tails and reflections, with a 4 ms smooth codec-edge taper."
+    },
+    {
+      "id": "summon",
+      "title": "Summon",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Warm rising portal, rounded arrival and three gently shimmering harmonics.",
+      "generatedAt": "2026-10-16T17:39:10.067099+00:00",
+      "file": "assets/audio/sfx/summon-v2.mp3",
+      "seconds": 1.9,
+      "bytes": 23554,
+      "sha256": "3209aa806c5a1b3e800d6ca92237044043bfacb64f3ce345287beb3a1bf0375f",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -19.01,
+        "truePeakDb": -8.55,
+        "samplePeakDb": -8.56,
+        "rmsDb": -21.86,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "summon"
+    },
+    {
+      "id": "heavy-impact",
+      "title": "Heavy Impact",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Compact low stone impact with a damped bronze resonance.",
+      "generatedAt": "2026-10-16T17:39:10.810256+00:00",
+      "file": "assets/audio/sfx/heavy-impact-v2.mp3",
+      "seconds": 0.95,
+      "bytes": 12269,
+      "sha256": "ff32f6d491f22b70659d6bf26b55f7881b001e35d1acb39a923e54b8d0f594ae",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -21.66,
+        "truePeakDb": -5.72,
+        "samplePeakDb": -5.72,
+        "rmsDb": -21.84,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "heavy-impact"
+    },
+    {
+      "id": "explosion",
+      "title": "Explosion",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Rounded fire burst, low bloom and a short scattering of soft embers.",
+      "generatedAt": "2026-10-16T17:39:11.339072+00:00",
+      "file": "assets/audio/sfx/explosion-v2.mp3",
+      "seconds": 1.55,
+      "bytes": 19479,
+      "sha256": "b4d2def82b1f8dd8cb34491e94baa476e3ec5ff771bf3d6602eb4f75b9519d8a",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -18.05,
+        "truePeakDb": -8.32,
+        "samplePeakDb": -8.33,
+        "rmsDb": -21.85,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "explosion"
+    },
+    {
+      "id": "victory",
+      "title": "Victory",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Original ascending five-note harp figure resolving to a gentle major-sixth chord.",
+      "generatedAt": "2026-10-16T17:39:11.886065+00:00",
+      "file": "assets/audio/sfx/victory-v2.mp3",
+      "seconds": 2.45,
+      "bytes": 30137,
+      "sha256": "b2e356c3c7e35fa7a4f1ae49950189df5c17e40d934edc99ca06a0d026c1a233",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -19.16,
+        "truePeakDb": -8.49,
+        "samplePeakDb": -8.5,
+        "rmsDb": -21.86,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "victory"
+    },
+    {
+      "id": "combat",
+      "title": "Combat",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Short blade swish into a controlled wooden and metallic shield strike.",
+      "generatedAt": "2026-10-16T17:39:12.326461+00:00",
+      "file": "assets/audio/sfx/combat-v2.mp3",
+      "seconds": 0.8,
+      "bytes": 10388,
+      "sha256": "099c949580275e671b5f91d289d20afc03f23df4cf10a87378317f77d238e933",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -20.02,
+        "truePeakDb": -5.52,
+        "samplePeakDb": -5.53,
+        "rmsDb": -21.87,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "combat"
+    },
+    {
+      "id": "venture",
+      "title": "Venture",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Low doorway movement and a small ascending luminous discovery phrase.",
+      "generatedAt": "2026-10-16T17:39:13.113012+00:00",
+      "file": "assets/audio/sfx/venture-v2.mp3",
+      "seconds": 1.8,
+      "bytes": 22300,
+      "sha256": "0e76ab5a38375268ddb525dbd890f11d56d9cae0e970dc4dbc7c29dc965e1268",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -19.21,
+        "truePeakDb": -10.73,
+        "samplePeakDb": -10.73,
+        "rmsDb": -21.86,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "venture"
+    },
+    {
+      "id": "counters",
+      "title": "Counters",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Soft token click with two compact crystalline overtones.",
+      "generatedAt": "2026-10-16T17:39:13.778576+00:00",
+      "file": "assets/audio/sfx/counters-v2.mp3",
+      "seconds": 0.52,
+      "bytes": 6940,
+      "sha256": "577e8c580476350cd14a97abd1b0ae09bf48f72410229474822360f67632d39b",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -18.51,
+        "truePeakDb": -13.53,
+        "samplePeakDb": -13.55,
+        "rmsDb": -21.86,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "counters"
+    },
+    {
+      "id": "counterspell",
+      "title": "Counterspell",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Inward arcane rush, muted snap and descending glass dissolve.",
+      "generatedAt": "2026-10-16T17:39:14.481997+00:00",
+      "file": "assets/audio/sfx/counterspell-v2.mp3",
+      "seconds": 1.150454,
+      "bytes": 14777,
+      "sha256": "be93c177a1374d34982ff181209184c1dcc406f253cde53307c9398a3918e4ba",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -18.48,
+        "truePeakDb": -8.32,
+        "samplePeakDb": -8.32,
+        "rmsDb": -21.85,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "counterspell"
+    },
+    {
+      "id": "instant",
+      "title": "Instant",
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-original-audio.py",
+      "method": "Deterministic additive/modal synthesis, original arrangement, stereo mixing and MP3 mastering; no external samples.",
+      "description": "Fast airy arcane flick with a warm, precise two-tone sparkle.",
+      "generatedAt": "2026-10-16T17:39:15.537597+00:00",
+      "file": "assets/audio/sfx/instant-v2.mp3",
+      "seconds": 0.7,
+      "bytes": 9134,
+      "sha256": "59af203177408fa700eeae917e61320e1e10384a75d869a055bf012e6c48f931",
+      "sourceSha256": "45a7e7bb4b5f1ad0f3d92bcf99ed0e4ff6e60c00b122b801ca3ac6327e1a4d1f",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -18.95,
+        "truePeakDb": -11.89,
+        "samplePeakDb": -11.9,
+        "rmsDb": -21.88,
+        "loopBoundaryDelta": null,
+        "loudnessRangeLu": 0.0
+      },
+      "eventId": "instant"
+    }
+  ],
+  "legacyTracks": [
     {
       "id": "summon",
       "model": "mirelo_text_to_audio",
@@ -54,7 +455,8 @@
       "file": "assets/audio/sfx/summon.mp3",
       "seconds": 2.612245,
       "bytes": 31704,
-      "sha256": "3f811180c50dac536985928d1d7ee25f80464c4029669e17160212c864804b4d"
+      "sha256": "3f811180c50dac536985928d1d7ee25f80464c4029669e17160212c864804b4d",
+      "provider": "Higgsfield"
     },
     {
       "id": "heavy-impact",
@@ -67,7 +469,8 @@
       "file": "assets/audio/sfx/heavy-impact.mp3",
       "seconds": 1.750204,
       "bytes": 21359,
-      "sha256": "fe8c6c0baabc8dfc3d1d17fd924347cbbe11d034cec4ea588838e3e88074ab04"
+      "sha256": "fe8c6c0baabc8dfc3d1d17fd924347cbbe11d034cec4ea588838e3e88074ab04",
+      "provider": "Higgsfield"
     },
     {
       "id": "explosion",
@@ -80,7 +483,8 @@
       "file": "assets/audio/sfx/explosion.mp3",
       "seconds": 2.847347,
       "bytes": 34525,
-      "sha256": "61647145c35316cea701333293ac5975d9c9a717ac7b60e87342245bb0df1370"
+      "sha256": "61647145c35316cea701333293ac5975d9c9a717ac7b60e87342245bb0df1370",
+      "provider": "Higgsfield"
     },
     {
       "id": "victory",
@@ -93,7 +497,8 @@
       "file": "assets/audio/sfx/victory.mp3",
       "seconds": 3.552653,
       "bytes": 42989,
-      "sha256": "788d898bdd30a40cac6b2b49ccd3e384123ff5c525917e5c51ba069b0ec0a036"
+      "sha256": "788d898bdd30a40cac6b2b49ccd3e384123ff5c525917e5c51ba069b0ec0a036",
+      "provider": "Higgsfield"
     },
     {
       "id": "combat",
@@ -106,7 +511,8 @@
       "file": "assets/audio/sfx/combat.mp3",
       "seconds": 1.277891,
       "bytes": 16030,
-      "sha256": "aa37d100d30c33482df01f11bdc11a24c53c2257b979d07a1e6ffe1062a7e6ea"
+      "sha256": "aa37d100d30c33482df01f11bdc11a24c53c2257b979d07a1e6ffe1062a7e6ea",
+      "provider": "Higgsfield"
     },
     {
       "id": "venture",
@@ -119,7 +525,8 @@
       "file": "assets/audio/sfx/venture.mp3",
       "seconds": 2.012494,
       "bytes": 25121,
-      "sha256": "6c4f6a9406f49e00e5f7bc5c4ac5e67612c52751e3264982788a3eddf2e7233a"
+      "sha256": "6c4f6a9406f49e00e5f7bc5c4ac5e67612c52751e3264982788a3eddf2e7233a",
+      "provider": "Higgsfield"
     },
     {
       "id": "counters",
@@ -132,7 +539,8 @@
       "file": "assets/audio/sfx/counters.mp3",
       "seconds": 0.234127,
       "bytes": 3492,
-      "sha256": "054f9e55c3e7aa2f5a2d518866f8abd979ea72d1915392ee64b7860b194321fe"
+      "sha256": "054f9e55c3e7aa2f5a2d518866f8abd979ea72d1915392ee64b7860b194321fe",
+      "provider": "Higgsfield"
     },
     {
       "id": "counterspell",
@@ -145,7 +553,8 @@
       "file": "assets/audio/sfx/counterspell.mp3",
       "seconds": 1.53,
       "bytes": 19165,
-      "sha256": "a5666abe6ead0dd73286d158aa3b149f96bf546a6fc3956a1bd5edc46c86859f"
+      "sha256": "a5666abe6ead0dd73286d158aa3b149f96bf546a6fc3956a1bd5edc46c86859f",
+      "provider": "Higgsfield"
     },
     {
       "id": "instant",
@@ -158,7 +567,8 @@
       "file": "assets/audio/sfx/instant.mp3",
       "seconds": 1.021678,
       "bytes": 13209,
-      "sha256": "11c2a4b59a43a38da3383b8d80ef614a9e4b4d4c6bd113e372d67dc125b1dfd4"
+      "sha256": "11c2a4b59a43a38da3383b8d80ef614a9e4b4d4c6bd113e372d67dc125b1dfd4",
+      "provider": "Higgsfield"
     }
   ]
 }

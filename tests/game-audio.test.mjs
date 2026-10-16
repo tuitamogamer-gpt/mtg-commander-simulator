@@ -39,8 +39,113 @@ function audioFixture() {
 
 test('audio preferences validate corrupt storage and clamp independent levels', () => {
   const p = U.normalizeAudioPreferences({ track: '../secret', music: -5, effects: Infinity, muted: 'true' });
-  assert.equal(p.track, 'moonlit-grove'); assert.equal(p.music, 0); assert.equal(p.effects, 38); assert.equal(p.muted, false);
+  assert.equal(p.track, 'council-at-dusk'); assert.equal(p.music, 0); assert.equal(p.effects, 38); assert.equal(p.muted, false);
   assert.equal(U.normalizeAudioPreferences({ music: 500 }).music, 100);
+  assert.equal(U.normalizeAudioPreferences({}).narration, 0);
+  assert.equal(U.normalizeAudioPreferences({ narration: 500 }).narration, 100);
+  assert.equal(U.normalizeAudioPreferences({ narration: '35' }).narration, 0);
+  for (const track of ['moonlit-grove', 'astral-library', 'ember-sanctum', 'council-at-dusk', 'aether-tides', 'emberwatch']) {
+    assert.equal(U.normalizeAudioPreferences({ track }).track, track, 'Existing and new track selections survive upgrades');
+  }
+});
+
+test('voice cues describe only the local seat’s public turn and game result', () => {
+  const local = { idx: 0 }, opponent = { idx: 1 }, solo = { human: () => local };
+  assert.equal(U.audioVoiceForEvent({ type: 'turn', p: local }, solo), 'your-turn');
+  assert.equal(U.audioVoiceForEvent({ type: 'turn', p: opponent }, solo), null);
+  assert.equal(U.audioVoiceForEvent({ type: 'gameover', winner: local }, solo), 'victory');
+  assert.equal(U.audioVoiceForEvent({ type: 'gameover', winner: opponent }, solo), 'defeat');
+  assert.equal(U.audioVoiceForEvent({ type: 'gameover', winner: null }, solo), null);
+  assert.equal(U.audioVoiceForEvent({ type: 'turn', p: local }, {}), null);
+  const live = { viewer: opponent, human: () => local };
+  assert.equal(U.audioVoiceForEvent({ type: 'turn', p: opponent }, live), 'your-turn');
+  assert.equal(U.audioVoiceForEvent({ type: 'gameover', winner: opponent }, live), 'victory');
+  assert.equal(U.audioVoiceForEvent({ type: 'gameover', winner: local }, live), 'defeat');
+  local.lost = true;
+  assert.equal(U.audioVoiceForEvent({ type: 'turn', p: local }, solo), null);
+});
+
+test('narration is opt-in, independent from effects, and master mute stops all channels', async () => {
+  const f = audioFixture(), listener = {}; f.game.human = () => listener;
+  await f.audio.unlock(); await flush();
+  f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
+  assert.equal(f.downloads.some(url => url.includes('/voice/')), false);
+  assert.ok(f.downloads.some(url => url.endsWith('/sfx/combat-v2.mp3')), 'New effects use a fresh asset URL');
+  f.audio.configure({ narration: 45, effects: 0 });
+  f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
+  assert.equal(f.audio.history.at(-1).channel, 'voice');
+  assert.equal(f.audio.history.at(-1).id, 'your-turn');
+  assert.equal(f.audio.narrationBus.gain.value, .45);
+  assert.equal(f.audio.effectsBus.gain.value, 0);
+  assert.ok(f.audio.musicBus.gain.value < f.audio.preferences.music / 100, 'Music ducks below the spoken line');
+  assert.equal(JSON.parse(f.saved.get('mtgAudioPreferences')).narration, 45);
+  f.audio.configure({ muted: true });
+  assert.equal(f.audio.narration, null); assert.equal(f.audio.narrationBus.gain.value, 0);
+  await f.audio.previewNarration('victory'); assert.equal(f.audio.history.length, 1);
+  f.audio.dispose();
+});
+
+test('spoken lines never overlap, duplicate events are quiet, and music returns after the line', async () => {
+  const f = audioFixture(), listener = {}; f.game.viewer = listener;
+  f.audio.configure({ narration: 40, effects: 0 }); await f.audio.unlock();
+  f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
+  const turn = f.audio.narration;
+  for (let i = 0; i < 10; i++) f.audio.handle({ type: 'turn', p: listener }, f.game);
+  await flush(); assert.equal(f.audio.history.length, 1);
+  f.audio.handle({ type: 'gameover', winner: listener }, f.game); await flush();
+  assert.notEqual(f.audio.narration, turn);
+  assert.equal(f.audio.status().activeNarration, 1);
+  assert.deepEqual(Array.from(f.audio.history, cue => cue.id), ['your-turn', 'victory']);
+  f.audio.narration.stop();
+  assert.equal(f.audio.status().activeNarration, 0);
+  assert.equal(f.audio.musicBus.gain.value, f.audio.preferences.music / 100);
+  await f.audio.previewNarration('defeat'); await f.audio.previewNarration('defeat');
+  assert.equal(f.audio.status().activeNarration, 1);
+  assert.deepEqual(Array.from(f.audio.history.slice(-2), cue => cue.id), ['defeat', 'defeat']);
+  f.audio.configure({ narration: 0 }); assert.equal(f.audio.status().activeNarration, 0);
+  f.audio.dispose();
+});
+
+test('narration respects autoplay, replay, stale loads, tab visibility and game changes', async () => {
+  const f = audioFixture(), listener = {}, pending = new Map(); f.game.viewer = listener;
+  f.audio.configure({ narration: 40, effects: 0 });
+  f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
+  assert.equal(f.downloads.length, 0, 'No media loads before the first interaction');
+  await f.audio.unlock(); await flush();
+  f.audio.handle({ type: 'turn', p: listener }, f.game, { replay: true });
+  f.audio.handle({ type: 'turn', p: listener }, {}); await flush();
+  assert.equal(f.audio.history.length, 0);
+  const fetch = f.env.fetch;
+  f.env.fetch = url => url.includes('/voice/') ? new Promise(resolve => pending.set(url, resolve)) : fetch(url);
+  f.audio.handle({ type: 'turn', p: listener }, f.game);
+  f.audio.handle({ type: 'gameover', winner: listener }, f.game);
+  const respond = id => pending.get('./assets/audio/voice/' + id + '.mp3')({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) });
+  respond('victory'); await flush(); respond('your-turn'); await flush();
+  assert.deepEqual(Array.from(f.audio.history, cue => cue.id), ['victory'], 'Late turn download cannot interrupt the result');
+  f.env.document.hidden = true; f.events.get('visibilitychange')(); await flush();
+  assert.equal(f.audio.narration, null); assert.equal(f.audio.context.state, 'suspended');
+  f.env.document.hidden = false; f.events.get('visibilitychange')(); await flush();
+  const loading = f.audio.previewNarration('defeat'); await flush();
+  f.audio.attach({ viewer: listener }); respond('defeat'); await loading;
+  assert.equal(f.audio.narration, null); assert.equal(f.audio.history.length, 1);
+  f.audio.dispose();
+});
+
+test('the next player’s turn cancels a pending or playing your-turn announcement', async () => {
+  const f = audioFixture(), listener = {}, opponent = {};
+  f.game.viewer = listener;
+  f.audio.configure({ narration: 40, effects: 0 }); await f.audio.unlock();
+  const fetch = f.env.fetch; let finish;
+  f.env.fetch = url => url.includes('/voice/') ? new Promise(resolve => { finish = resolve; }) : fetch(url);
+  f.audio.handle({ type: 'turn', p: listener }, f.game);
+  f.audio.handle({ type: 'turn', p: opponent }, f.game);
+  finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) }); await flush();
+  assert.equal(f.audio.history.length, 0, 'An obsolete turn cannot speak after its download completes');
+  await f.audio.previewNarration('your-turn');
+  assert.equal(f.audio.narrationId, 'your-turn', 'Preview remains available on another player’s turn');
+  f.audio.handle({ type: 'turn', p: opponent }, f.game);
+  assert.equal(f.audio.narration, null, 'An announcement still playing stops when the turn changes');
+  f.audio.dispose();
 });
 test('public actions produce distinct cues without inspecting hidden identities', () => {
   const effect = props => cues({ type: 'gameEffect', ...props });
@@ -106,7 +211,7 @@ test('rapid track switches discard stale downloads and keep only the latest musi
   await f.audio.unlock();
   f.audio.configure({ track: 'astral-library' }); f.audio.configure({ track: 'ember-sanctum' });
   const respond = id => requests.get('./assets/audio/music/' + id + '.mp3')({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) });
-  respond('ember-sanctum'); await flush(); respond('moonlit-grove'); respond('astral-library'); await flush();
+  respond('ember-sanctum'); await flush(); respond('council-at-dusk'); respond('astral-library'); await flush();
   assert.equal(f.audio.musicId, 'ember-sanctum'); assert.equal(f.audio.musicVoices.size, 1);
   assert.equal([...f.audio.cache.keys()].filter(key => key.startsWith('music/')).length, 1);
   f.audio.dispose();
@@ -208,16 +313,20 @@ test('paid instants, Adventures, successful counters, dungeon rooms and prolifer
 });
 
 test('Live forwards action cues to both seats once and keeps face-down spells silent', () => {
-  const M = loadEngine(), heard = [[], []];
+  const M = loadEngine(), heard = [[], []], spoken = [[], []];
   const game = new M.Game({ seed: 9079, paced: false });
   const host = game.addPlayer('Host', { name: 'Host deck' }, null, false);
   const guest = game.addPlayer('Guest', { name: 'Guest deck' }, null, false);
   host.onlineSeat = 0; guest.onlineSeat = 1; game.turnPlayer = host;
   class UI {
-    render() {} resolvePending() {} resolvePendingEntry() {} skipReactWindow() {} queueRender() {}
+    render() {} resolvePending() {} resolvePendingEntry() {} skipReactWindow() {} queueRender() {} showBanner() {}
   }
   const live = { ...M, UI, audio: { attach() {}, unlock() {},
-    handle(event, view) { heard[view.viewer.onlineSeat].push(...cues(event)); } } };
+    handle(event, view) {
+      heard[view.viewer.onlineSeat].push(...cues(event));
+      const voice = U.audioVoiceForEvent(event, view);
+      if (voice) spoken[view.viewer.onlineSeat].push(voice);
+    } } };
   const env = { MTG: live, window: {}, location: { href: 'http://localhost/' },
     document: { querySelector: () => ({ style: {} }), body: { classList: { add() {} } } } };
   vm.runInNewContext(readFileSync(new URL('../src/modules/multiplayer-arena.js', import.meta.url), 'utf8'), env);
@@ -239,6 +348,13 @@ test('Live forwards action cues to both seats once and keeps face-down spells si
   local.updateLocal(); remote.updateSnapshot(snapshot());
   remote.eventCursor = null; remote.updateSnapshot(snapshot());
   assert.deepEqual(heard, [['combat', 'venture', 'instant'], ['combat', 'venture', 'instant']]);
+  game.note('turn', { p: host });
+  game.note('gameover', { winner: guest });
+  remote.updateSnapshot(snapshot());
+  assert.deepEqual(spoken, [['your-turn', 'defeat'], ['victory']]);
+  local.updateLocal(); remote.updateSnapshot(snapshot());
+  remote.eventCursor = null; remote.updateSnapshot(snapshot());
+  assert.deepEqual(spoken, [['your-turn', 'defeat'], ['victory']], 'Reconnect never repeats old spoken cues');
 });
 
 test('paid human and local-AI actions keep routine plays and prevented damage silent', async () => {
