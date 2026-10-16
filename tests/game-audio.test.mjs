@@ -7,10 +7,10 @@ import { loadEngine } from './helpers/load-engine.mjs';
 const sandbox = { globalThis: null }; sandbox.globalThis = sandbox;
 vm.runInNewContext(readFileSync(new URL('../src/modules/game-audio.js', import.meta.url), 'utf8'), sandbox);
 const U = sandbox.MTG;
-const cues = event => Array.from(U.audioCuesForEvent(event), item => item.id);
-const flush = () => new Promise(resolve => setTimeout(resolve, 65));
+const cues = (event, game) => Array.from(U.audioCuesForEvent(event, game), item => item.id);
+const flush = () => new Promise(resolve => setTimeout(resolve, 100));
 
-function audioFixture() {
+function audioFixture({ asyncEnded = false } = {}) {
   const events = new Map(), downloads = [], sources = [], saved = new Map();
   const param = () => ({ value: 0, setTargetAtTime(value) { this.value = value; },
     setValueAtTime(value) { this.value = value; }, linearRampToValueAtTime(value) { this.value = value; }, cancelScheduledValues() {} });
@@ -20,7 +20,9 @@ function audioFixture() {
     createGain() { return node(); }
     createDynamicsCompressor() { return { ...node(), ...Object.fromEntries(['threshold','knee','ratio','attack','release'].map(key => [key, param()])) }; }
     createBufferSource() {
-      const source = { ...node(), playbackRate: param(), start() { sources.push(this); }, stop() { this.onended?.(); } };
+      const source = { ...node(), playbackRate: param(), start() { sources.push(this); }, stop() {
+        if (asyncEnded) setTimeout(() => this.onended?.(), 0); else this.onended?.();
+      } };
       return source;
     }
     async resume() { this.state = 'running'; }
@@ -65,12 +67,23 @@ test('voice cues describe only the local seat’s public turn and game result', 
   assert.equal(U.audioVoiceForEvent({ type: 'turn', p: local }, solo), null);
 });
 
+test('game-end effects reflect the local Solo or Live seat, while draws and observers stay neutral', () => {
+  const local = { idx: 0 }, opponent = { idx: 1 }, solo = { human: () => local };
+  assert.deepEqual(cues({ type: 'gameover', winner: local }, solo), ['victory']);
+  assert.deepEqual(cues({ type: 'gameover', winner: opponent }, solo), ['defeat']);
+  assert.deepEqual(cues({ type: 'gameover', winner: null }, solo), []);
+  assert.deepEqual(cues({ type: 'gameover', winner: opponent }, {}), []);
+  const live = { viewer: opponent, human: () => local };
+  assert.deepEqual(cues({ type: 'gameover', winner: local }, live), ['defeat']);
+  assert.deepEqual(cues({ type: 'gameover', winner: opponent }, live), ['victory']);
+});
+
 test('narration is opt-in, independent from effects, and master mute stops all channels', async () => {
   const f = audioFixture(), listener = {}; f.game.human = () => listener;
   await f.audio.unlock(); await flush();
   f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
   assert.equal(f.downloads.some(url => url.includes('/voice/')), false);
-  assert.ok(f.downloads.some(url => url.endsWith('/sfx/combat-v2.mp3')), 'New effects use a fresh asset URL');
+  assert.ok(f.downloads.some(url => url.endsWith('/sfx/combat-v3.mp3')), 'New effects use a fresh asset URL');
   f.audio.configure({ narration: 45, effects: 0 });
   f.audio.handle({ type: 'turn', p: listener }, f.game); await flush();
   assert.equal(f.audio.history.at(-1).channel, 'voice');
@@ -154,10 +167,10 @@ test('public actions produce distinct cues without inspecting hidden identities'
   assert.deepEqual(cues({ type: 'combat', kind: 'attackersDeclared', count: 10 }), ['combat']);
   assert.deepEqual(cues({ type: 'combat', kind: 'attackersDeclared', count: 0 }), []);
   assert.deepEqual(cues({ type: 'combat' }), []);
-  assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy' }), ['instant']);
+  assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy' }), ['spell-copy']);
   assert.deepEqual(cues({ type: 'dungeon', dungeon: 'Undercity', room: 'Secret Entrance' }), ['venture']);
   for (const type of ['Instant', 'Sorcery']) {
-    assert.deepEqual(cues({ type: 'cardPlayed', kind: 'spell', spellTypes: [type] }), ['instant']);
+    assert.deepEqual(cues({ type: 'cardPlayed', kind: 'spell', spellTypes: [type] }), [type.toLowerCase()]);
   }
   assert.deepEqual(effect({ kind: 'damage', amount: 0 }), []);
   assert.deepEqual(effect({ kind: 'damage', amount: 9, combat: true }), []);
@@ -166,6 +179,7 @@ test('public actions produce distinct cues without inspecting hidden identities'
   const hidden = { faceDown: true, get colors() { throw new Error('Hidden identity read'); }, get cur() { throw new Error('Hidden identity read'); } };
   assert.deepEqual(cues({ type: 'cardPlayed', kind: 'spell', card: hidden, get spellTypes() { throw new Error('Hidden types read'); } }), []);
   assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy', card: hidden }), []);
+  assert.deepEqual(cues({ type: 'effectNotice', kind: 'spellCopy', spell: { card: hidden } }), []);
   assert.deepEqual(effect({ kind: 'counterChange', card: Object.assign(Object.create(hidden), { zone: 'battlefield' }), amount: 2 }), ['counters']);
   assert.deepEqual(effect({ kind: 'counterChange', card: { zone: 'hand' }, amount: 2 }), []);
   assert.deepEqual(effect({ kind: 'counterChange', card: { zone: 'battlefield' }, amount: 0 }), []);
@@ -181,26 +195,26 @@ test('public actions produce distinct cues without inspecting hidden identities'
   for (const kind of ['commander', 'powerhouse']) assert.deepEqual(cues({ type: 'battlefieldArrival', kind, card: {} }), ['summon']);
   assert.deepEqual(effect({ kind: 'boardWipe', count: 2 }), []);
   assert.deepEqual(effect({ kind: 'boardWipe', count: 3 }), ['explosion']);
-  assert.deepEqual(cues({ type: 'gameover' }), ['victory']);
+  assert.deepEqual(cues({ type: 'gameover' }), []);
   assert.deepEqual(effect({ kind: 'damagePrevented', amount: 15 }), []);
   assert.deepEqual(effect({ kind: 'counterspell' }), ['counterspell']);
   assert.deepEqual(effect({ kind: 'zoneMove', fromZone: 'battlefield', toZone: 'graveyard' }), []);
   assert.deepEqual(effect({ kind: 'zoneMove', fromZone: 'battlefield', toZone: 'exile' }), []);
 });
 test('browser interaction unlocks lazy audio, levels persist, mute stops voices and replay stays quiet', async () => {
-  const f = audioFixture(); assert.equal(f.downloads.length, 0);
-  f.audio.handle({ type: 'gameover' }, f.game); await flush(); assert.equal(f.sources.length, 0);
+  const f = audioFixture(); f.game.viewer = {}; assert.equal(f.downloads.length, 0);
+  f.audio.handle({ type: 'gameover', winner: f.game.viewer }, f.game); await flush(); assert.equal(f.sources.length, 0);
   await f.audio.unlock(); await flush();
   assert.equal(f.audio.status().state, 'playing'); assert.equal(f.audio.musicVoices.size, 1);
   assert.equal(f.downloads.filter(url => url.includes('/music/')).length, 1);
-  f.audio.handle({ type: 'gameover' }, f.game, { replay: true });
-  f.audio.handle({ type: 'gameover' }, {});
+  f.audio.handle({ type: 'gameover', winner: f.game.viewer }, f.game, { replay: true });
+  f.audio.handle({ type: 'gameover', winner: f.game.viewer }, {});
   f.audio.handle({ type: 'cardPlayed' }, f.game); await flush(); assert.equal(f.audio.history.length, 0);
-  f.audio.handle({ type: 'gameover' }, f.game); await flush(); assert.equal(f.audio.history.at(-1).id, 'victory');
+  f.audio.handle({ type: 'gameover', winner: f.game.viewer }, f.game); await flush(); assert.equal(f.audio.history.at(-1).id, 'victory');
   f.audio.configure({ music: 0, effects: 63 }); await flush();
   assert.equal(f.audio.effectsBus.gain.value, .63); assert.equal(f.audio.musicBus.gain.value, 0);
   f.audio.configure({ muted: true }); assert.equal(f.audio.voices.size, 0);
-  f.audio.handle({ type: 'gameover' }, f.game); await flush(); assert.equal(f.audio.history.length, 1);
+  f.audio.handle({ type: 'gameover', winner: f.game.viewer }, f.game); await flush(); assert.equal(f.audio.history.length, 1);
   assert.equal(JSON.parse(f.saved.get('mtgAudioPreferences')).muted, true);
   f.audio.dispose(); assert.equal(f.events.size, 0);
 });
@@ -241,12 +255,99 @@ test('failed assets and blocked storage do not interrupt the game; user can retr
 });
 test('a major effect retires a quieter tail when the voice limit is full', async () => {
   const f = audioFixture(); await f.audio.unlock(); await flush();
-  for (let n = 0; n < 5; n++) await f.audio.play({ id: 'heavy-impact', priority: 1 });
-  assert.equal(f.audio.voices.size, 5);
+  for (const id of ['instant', 'sorcery', 'spell-copy']) await f.audio.play({ id, priority: 1 });
+  assert.equal(f.audio.voices.size, 3);
   await f.audio.play({ id: 'explosion', priority: 4 });
-  assert.equal(f.audio.voices.size, 5);
+  assert.equal(f.audio.voices.size, 1, 'Major events clear the quieter tails from the mix');
   assert.equal(f.audio.history.at(-1).id, 'explosion');
   f.audio.dispose();
+});
+
+test('bursts keep at most three effects and reserve space for the major event’s attack', async () => {
+  const f = audioFixture({ asyncEnded: true }); await f.audio.unlock(); await flush();
+  for (const id of ['instant', 'sorcery', 'spell-copy', 'counters']) {
+    await f.audio.play({ id, priority: 1 });
+    assert.ok(f.audio.voices.size <= 3);
+  }
+  await f.audio.play({ id: 'explosion', priority: 4 });
+  const length = f.audio.history.length;
+  await Promise.all(['instant', 'sorcery', 'spell-copy'].map(id => f.audio.play({ id, priority: 2 })));
+  assert.equal(f.audio.history.length, length, 'Quiet follow-up ticks cannot cover the major impact');
+  assert.equal(f.audio.voices.size, 1);
+  await new Promise(resolve => setTimeout(resolve, 190));
+  await f.audio.play({ id: 'sorcery', priority: 1 });
+  assert.equal(f.audio.history.at(-1).id, 'sorcery', 'Normal sounds resume after the short protection window');
+  f.audio.dispose();
+});
+
+test('a delayed minor download cannot obscure a newer major event', async () => {
+  const f = audioFixture(), pending = new Map();
+  f.audio.configure({ effects: 0 }); await f.audio.unlock(); await flush();
+  f.audio.configure({ effects: 38 });
+  const fetch = f.env.fetch;
+  f.env.fetch = url => url.includes('/sfx/') ? new Promise(resolve => pending.set(url, resolve)) : fetch(url);
+  const minor = f.audio.play({ id: 'spell-copy', priority: 2 });
+  const major = f.audio.play({ id: 'explosion', priority: 4 });
+  const respond = id => pending.get('./assets/audio/sfx/' + id + '-v3.mp3')({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) });
+  respond('explosion'); await major;
+  await new Promise(resolve => setTimeout(resolve, 190));
+  respond('spell-copy'); await minor;
+  assert.deepEqual(Array.from(f.audio.history, cue => cue.id), ['explosion']);
+  f.audio.dispose();
+});
+
+test('an older major download cannot rewind protection from a newer major event', async () => {
+  const f = audioFixture(), pending = new Map(); let clock = 0;
+  f.env.performance = { now: () => clock };
+  f.audio.configure({ effects: 0 }); await f.audio.unlock(); await flush(); f.audio.configure({ effects: 38 });
+  const fetch = f.env.fetch;
+  f.env.fetch = url => url.includes('/sfx/') ? new Promise(resolve => pending.set(url, resolve)) : fetch(url);
+  const respond = id => pending.get('./assets/audio/sfx/' + id + '-v3.mp3')({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) });
+  const olderMajor = f.audio.play({ id: 'explosion', priority: 4 });
+  clock = 190; const minor = f.audio.play({ id: 'instant', priority: 2 });
+  clock = 191; const newerMajor = f.audio.play({ id: 'summon', priority: 3 });
+  respond('summon'); await newerMajor;
+  clock = 192; respond('explosion'); await olderMajor;
+  clock = 400; respond('instant'); await minor;
+  assert.deepEqual(Array.from(f.audio.history, cue => cue.id), ['summon', 'explosion']);
+  f.audio.dispose();
+});
+
+test('effect previews are exclusive even before native onended callbacks arrive', async () => {
+  const f = audioFixture({ asyncEnded: true }); await f.audio.unlock(); await flush();
+  for (const id of ['victory', 'defeat', 'explosion']) await f.audio.play({ id, priority: 5 });
+  assert.equal(f.audio.voices.size, 3);
+  await f.audio.preview('instant');
+  assert.equal(f.audio.history.at(-1).id, 'instant');
+  assert.equal(f.audio.voices.size, 1);
+  await f.audio.preview('sorcery');
+  assert.equal(f.audio.history.at(-1).id, 'sorcery');
+  assert.equal(f.audio.voices.size, 1);
+  f.audio.configure({ muted: true });
+  assert.equal(f.audio.voices.size, 0);
+  f.audio.dispose();
+});
+
+test('mute, hiding and game changes discard delayed effect playback and stale errors', async () => {
+  for (const action of ['mute', 'hidden', 'game']) {
+    const f = audioFixture(); f.audio.configure({ effects: 0 }); await f.audio.unlock(); await flush();
+    f.audio.configure({ effects: 38 }); let respond;
+    f.env.fetch = () => new Promise(resolve => { respond = resolve; });
+    const playing = f.audio.play({ id: 'sorcery', priority: 1 });
+    if (action === 'mute') f.audio.configure({ muted: true });
+    if (action === 'hidden') { f.env.document.hidden = true; f.events.get('visibilitychange')(); }
+    if (action === 'game') f.audio.attach({});
+    respond({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) }); await playing;
+    assert.equal(f.audio.history.length, 0, action);
+    assert.equal(f.audio.voices.size, 0, action);
+    f.audio.dispose();
+  }
+  const f = audioFixture(); f.audio.configure({ effects: 0 }); await f.audio.unlock(); await flush();
+  f.audio.configure({ effects: 38 }); let fail;
+  f.env.fetch = () => new Promise((_resolve, reject) => { fail = reject; });
+  const playing = f.audio.play({ id: 'sorcery', priority: 1 });
+  f.audio.configure({ muted: true }); fail(new Error('late network failure')); await playing;
+  assert.equal(f.audio.error, ''); f.audio.dispose();
 });
 
 test('counter batches coalesce, counterspells take priority and previews can be repeated', async () => {
@@ -295,12 +396,19 @@ test('paid instants, Adventures, successful counters, dungeon rooms and prolifer
   events.length = 0;
   assert.equal(await game.counterStackObject(spell), false);
   assert.equal(events.some(event => cues(event).includes('counterspell')), false);
+  const divination = put('Divination'); player.pool.U = 3; events.length = 0;
+  assert.equal(await game.castSpell(player, divination, { from: 'hand' }), true);
+  assert.ok(events.some(event => event.type === 'cardPlayed' && cues(event).includes('sorcery')));
+  events.length = 0;
   const giant = put('Bonecrusher Giant'); player.pool.R = 2;
   assert.equal(await game.castSpell(player, giant, { from: 'hand', alt: { adventure: true, ...giant.def.adventure } }), true);
   const adventure = events.find(event => event.type === 'cardPlayed');
   assert.equal(giant.def.types.includes('Creature'), true);
   assert.deepEqual(Array.from(adventure.spellTypes), ['Instant']);
   assert.deepEqual(cues(adventure), ['instant']);
+  events.length = 0;
+  await game.copySpell(game.stack.at(-1), player);
+  assert.ok(events.some(event => cues(event).includes('spell-copy')), 'Native spell-copy notification uses its own cue');
   events.length = 0;
   await game.venture(player);
   assert.ok(events.some(event => cues(event).includes('venture')));
@@ -323,7 +431,7 @@ test('Live forwards action cues to both seats once and keeps face-down spells si
   }
   const live = { ...M, UI, audio: { attach() {}, unlock() {},
     handle(event, view) {
-      heard[view.viewer.onlineSeat].push(...cues(event));
+      heard[view.viewer.onlineSeat].push(...cues(event, view));
       const voice = U.audioVoiceForEvent(event, view);
       if (voice) spoken[view.viewer.onlineSeat].push(voice);
     } } };
@@ -352,6 +460,7 @@ test('Live forwards action cues to both seats once and keeps face-down spells si
   game.note('gameover', { winner: guest });
   remote.updateSnapshot(snapshot());
   assert.deepEqual(spoken, [['your-turn', 'defeat'], ['victory']]);
+  assert.deepEqual(heard.map(events => events.at(-1)), ['defeat', 'victory']);
   local.updateLocal(); remote.updateSnapshot(snapshot());
   remote.eventCursor = null; remote.updateSnapshot(snapshot());
   assert.deepEqual(spoken, [['your-turn', 'defeat'], ['victory']], 'Reconnect never repeats old spoken cues');
