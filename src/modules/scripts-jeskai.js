@@ -71,16 +71,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return game.castSpell(player, card, { from, free: true });
   }
 
-  async function exileUntilNonlandAndMayCast(game, player) {
-    const revealed = [];
+  async function exileUntilNonlandAndMayCast(game, player, source) {
     let hit = null;
     while (player.library.length) {
       const card = player.library[player.library.length - 1];
-      await game.move(card, 'exile');
-      revealed.push(card);
+      await game.move(card, 'exile', { revealFromLibrary: true, revealSource: source, revealController: player });
       if (!card.is('Land')) { hit = card; break; }
     }
-    if (revealed.length) await game.revealToHuman({ cards: revealed, ctrl: player, kind: 'reveal' });
     if (hit && hit.zone === 'exile') await mayCastFree(game, player, hit, 'exile');
   }
 
@@ -268,7 +265,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const target = ctx.targets[0];
       if (!target || target.zone !== 'battlefield') return;
       const controller = target.ctrl;
-      if (await ctx.g.destroy(target)) await exileUntilNonlandAndMayCast(ctx.g, controller);
+      if (await ctx.g.destroy(target)) await exileUntilNonlandAndMayCast(ctx.g, controller, ctx.src);
     },
   };
 

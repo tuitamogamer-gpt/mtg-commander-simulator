@@ -12,7 +12,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     colorIdentityExtra: ['U', 'R'],
     triggers: [{
       on: 'castSecond', desc: 'Impulse 1', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'next'); },
+      run: async ctx => { await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'next'); },
     }],
     abilities: [{
       label: 'Copy an instant or sorcery spell', cost: { tap: true },
@@ -358,8 +358,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const g = ctx.g, p = ctx.you, x = ctx.x || 0;
       const top = [];
       for (let i = 0; i < x && p.library.length; i++) {
-        const c = p.library.pop();
-        c.zone = 'exile'; p.exile.push(c); top.push(c);
+        const c = p.library[p.library.length - 1];
+        await g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: p });
+        top.push(c);
       }
       g.lg(`Epic Experiment (X=${x}): ${top.map(c => c.name).join(', ') || 'nothing'}.`);
       for (const c of top) {

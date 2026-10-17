@@ -7,7 +7,7 @@
  const yes=async(ctx,p,prompt)=>{const a=await p.controller.decide(ctx.g,{type:'chooseOption',options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],prompt:ctx.src.name+': '+prompt,aiHint:{kind:'optional'}});if(!['yes','no'].includes(a))throw Error('Invalid v75 choice');return a==='yes';};
  const late=(ctx,on,filter,run,more={})=>ctx.g.delayed.push({on,once:true,src:ctx.src,ctrl:ctx.you,name:ctx.src.name,filter,run,...more});
  const bottom=async(g,cards)=>{M.shuffle(cards,g.rnd);for(const c of cards)await g.move(c,'library',{toBottom:true});};
- const exileTop=async(ctx,n)=>{const rows=ctx.you.library.slice(-Math.max(0,n)).reverse().map(ref),out=[];if(n<=0)return out;for(const r of rows)if(present(r,'library')){await ctx.g.move(r.card,'exile');if(r.card.zone==='exile'&&r.card.zoneVersion===r.version+1)out.push(r.card);}return out;};
+ const exileTop=async(ctx,n)=>{const rows=ctx.you.library.slice(-Math.max(0,n)).reverse().map(ref),out=[];if(n<=0)return out;for(const r of rows)if(present(r,'library')){await ctx.g.move(r.card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(r.card.zone==='exile'&&r.card.zoneVersion===r.version+1)out.push(r.card);}return out;};
  const hauntPending=new WeakMap(),foodEntries=new WeakSet(),discardBatches=new WeakMap();
  const emit=G.emit;G.emit=async function(name,data,...args){if(name==='discarded'){const key=data.oracleBatch||data,rows=discardBatches.get(key)||[];rows.push(ref(data.card));discardBatches.set(key,rows);}return emit.call(this,name,data,...args);};
  const foodAbility={label:'Sacrifice this Food: gain 3 life',cost:{mana:'{2}',tap:true,sacSelf:true},run:ctx=>ctx.g.gainLife(ctx.you,3,ctx.src)};

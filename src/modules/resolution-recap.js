@@ -37,6 +37,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   MTG.ResolutionRecap = {
+    publicReveal(game, card, controller) {
+      const frame = game._resolutionRecap;
+      if (!frame || !card || card.faceDown) return;
+      frame.revealed.add(card);
+      frame.publicReveals.set(card, {card: cardView(card), manaValue: Number(card.mv) || 0,
+        zone: card.zone, owner: card.owner?.name || controller?.name || ''});
+    },
     choice(game, player, q, answer) {
       const frame = game._resolutionRecap;
       if (!frame || q.type !== 'chooseCards' || !Array.isArray(answer)) return;
@@ -101,11 +108,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const frame = this._resolutionRecap;
     if (frame && payload.kind !== 'look') {
       for (const card of payload.cards || []) if (!card.faceDown) {
-        frame.revealed.add(card);
         // Preserve the public face at the actual reveal, before later moves or
         // face changes. Lands are meaningful reveals too (mana value zero).
-        frame.publicReveals.set(card, {card: cardView(card), manaValue: Number(card.mv) || 0,
-          zone: card.zone, owner: card.owner?.name || payload.ctrl?.name || ''});
+        MTG.ResolutionRecap.publicReveal(this, card, payload.ctrl);
       }
       // Aggregate entries/search reveals after all instructions and state-based
       // actions. Looks and other mid-effect choices retain their own decisions.

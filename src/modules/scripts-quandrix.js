@@ -256,7 +256,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["Zimone's Hypothesis"] = { targets: [T.creature({ upTo: true, prompt: 'Optional +1/+1 counter', aiHint: { goal: 'buff' } })],
     prepareTargets: async ctx => { const k = await ctx.you.controller.decide(ctx.g, { type: 'chooseOption', prompt: 'Odd or even?', options: [{ key: 'odd', label: 'Odd' }, { key: 'even', label: 'Even' }], aiHint: { kind: 'oddEvenBounce' } }); ctx.so.quality = k === 'odd' ? 'odd' : 'even'; },
     resolve: async ctx => { if (ctx.targets[0]) ctx.g.addCounters(ctx.targets[0], '+1/+1', 1, false, ctx.you); const parity = ctx.so.quality === 'odd' ? 1 : 0; for (const c of ctx.g.creatures().filter(x => Math.abs(x.power) % 2 === parity).slice()) await ctx.g.move(c, 'hand'); } };
-  SC["Animist's Awakening"] = { xCost: true, resolve: async ctx => { const shown = []; for (let i = 0; i < (ctx.x || 0) && ctx.you.library.length; i++) shown.push(ctx.you.library.pop());
+  SC["Animist's Awakening"] = { xCost: true, resolve: async ctx => { const n = Math.max(0, Math.min(ctx.x || 0, ctx.you.library.length)), shown = n ? ctx.you.library.slice(-n).reverse() : [];
+    await ctx.g.revealToHuman({ cards: shown, ctrl: ctx.you, kind: 'reveal', includeLands: true, title: "Animist's Awakening" });
+    for (let i = 0; i < shown.length; i++) ctx.you.library.pop();
     const lands = shown.filter(c => c.is('Land')), rest = shown.filter(c => !c.is('Land')), entered = []; for (const c of lands) { c.zone = 'nowhere'; await ctx.g.move(c, 'battlefield', { ctrl: ctx.you, tapped: true }); if (c.zone === 'battlefield') entered.push(c); }
     U.shuffle(rest, ctx.g.rnd); for (const c of rest) { c.zone = 'library'; ctx.you.library.unshift(c); } if (ctx.you.graveyard.filter(c => c.is('Instant') || c.is('Sorcery')).length >= 2) for (const c of entered) c.tapped = false; ctx.g.recalc(); } };
   SC['Primal Might'] = { xCost: true, targets: [T.yourCreature({ prompt: 'Your creature for pump/fight', aiHint: { goal: 'fightMine' } }), T.oppCreature({ upTo: true, prompt: "Up to one opponent's creature", aiHint: { goal: 'removal' } })],
@@ -264,8 +266,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Entrancing Melody'] = { xCost: true, xValues: g => [...new Set(g.creatures().map(c => c.mv))], targets: (g, c, o) => [T.creature({ filter: (g2, x) => x.zone === 'battlefield' && x.is('Creature') && x.mv === (o.xVal || 0), prompt: `Creature MV=${o.xVal || 0}`, aiHint: { goal: 'steal' } })],
     resolve: async ctx => { const c = ctx.targets[0]; if (c?.zone === 'battlefield') { c.ctrl = ctx.you; c.sick = true; c.attacking = null; c.blocking = null; ctx.g.recalc(); } } };
   SC['Expansion Algorithm'] = { xCost: true, resolve: async ctx => { for (let i = 0; i < (ctx.x || 0); i++) await E.proliferate(ctx.g, ctx.you); } };
-  SC['Open the Way'] = { xCost: true, xValues: g => Array.from({ length: g.alivePlayers().length + 1 }, (_, i) => i), resolve: async ctx => { const lands = [], rest = [];
-    while (ctx.you.library.length && lands.length < (ctx.x || 0)) { const c = ctx.you.library.pop(); (c.is('Land') ? lands : rest).push(c); }
+  SC['Open the Way'] = { xCost: true, xValues: g => Array.from({ length: g.alivePlayers().length + 1 }, (_, i) => i), resolve: async ctx => { const lands = [], rest = [], revealed = [];
+    while (revealed.length < ctx.you.library.length && lands.length < (ctx.x || 0)) {
+      const c = ctx.you.library.at(-1 - revealed.length);
+      await ctx.g.revealToHuman({ cards: [c], ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Open the Way' });
+      revealed.push(c);
+      (c.is('Land') ? lands : rest).push(c);
+    }
+    for (let i = 0; i < revealed.length; i++) ctx.you.library.pop();
     for (const c of lands) { c.zone = 'nowhere'; await ctx.g.move(c, 'battlefield', { ctrl: ctx.you, tapped: true }); } U.shuffle(rest, ctx.g.rnd); for (const c of rest) { c.zone = 'library'; ctx.you.library.unshift(c); } } };
   SC['Oversimplify'] = { resolve: async ctx => { const totals = new Map(ctx.g.players.map(p => [p, 0])); for (const c of ctx.g.creatures().slice()) { const p = c.ctrl, power = Math.max(0, c.power); await ctx.g.exileCard(c); if (c.zone === 'exile' || c.zone === 'ceased') totals.set(p, totals.get(p) + power); }
     for (const p of ctx.g.alivePlayers()) await fractal(ctx.g, p, totals.get(p) || 0); } };

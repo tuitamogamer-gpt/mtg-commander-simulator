@@ -27,7 +27,7 @@
   }
   if(['exile-permission-v22','exile-cast-batch-v22','exile-selected-permission-v22'].includes(e.action)){
    const owners=e.who==='each-player'?ctx.g.players:e.who==='each-opponent'?ctx.g.players.filter(p=>p!==ctx.you):H.genericEffectSubjects(ctx,e.who??'you'),n=Math.max(0,Math.floor(H.genericAmount(e.n,ctx))),cards=[];
-   for(const owner of owners)for(const c of n?owner?.library?.slice(-n).reverse()||[]:[]){const version=c.zoneVersion;await ctx.g.move(c,'exile');if(c.zone==='exile'&&c.zoneVersion===version+1)cards.push(c);}
+   for(const owner of owners)for(const c of n?owner?.library?.slice(-n).reverse()||[]:[]){const version=c.zoneVersion;await ctx.g.move(c,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(c.zone==='exile'&&c.zoneVersion===version+1)cards.push(c);}
    if(e.action==='exile-permission-v22'){grant(ctx,cards,e);return true;}
    const versions=new Map(cards.map(c=>[c,c.zoneVersion]));
    if(e.action==='exile-selected-permission-v22'){

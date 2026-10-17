@@ -32,7 +32,7 @@
    M.shuffle(owner.library,ctx.g.rnd);return true;
   }
   if(effect.action==='exile-until-nonland-hit-v24'){
-   let value=null;while(ctx.you.library.length){const card=ctx.you.library.at(-1);await ctx.g.move(card,'exile');if(card.zone==='exile'&&!card.is('Land')){value=card.mv;break;}if(ctx.you.library.at(-1)===card)break;}
+   let value=null;while(ctx.you.library.length){const card=ctx.you.library.at(-1);await ctx.g.move(card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(card.zone==='exile'&&!card.is('Land')){value=card.mv;break;}if(ctx.you.library.at(-1)===card)break;}
    if(value!==null)await h.runGenericEffects(ctx,[{action:'damage',target:effect.target,n:value}]);return true;
   }
   if(effect.action!=='licid-transform-v24')return false;

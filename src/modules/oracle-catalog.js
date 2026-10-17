@@ -1167,7 +1167,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(effect.action==='empty-mana-v18'){for(const p of genericEffectSubjects(ctx,effect.target)){const lost=Object.values(p.pool).reduce((n,x)=>n+x,0);p.pool={W:0,U:0,B:0,R:0,G:0,C:0};p.poolMeta=[];p.persistMana={};ctx.g.note('mana',{p});await MTG.OracleV74Static?.unspentMana(ctx.g,p,lost);}return;}
     if(JSON.stringify(effect).includes('"kind":"chosen-subtype-v16"'))effect=bindChosenSubtypeV16(effect,subtypeChoiceV16(ctx.oracleSourceCapture,ctx.src));
     if(effect.action==='reveal-top-v16'){
-      for(const player of genericEffectSubjects(ctx,effect.who))if(player instanceof MTG.Player){const cards=player.library.slice(-genericAmount(effect.n,ctx));if(cards.length)await ctx.g.revealToHuman({cards,ctrl:player,kind:'reveal',includeLands:true});}return;
+      for(const player of genericEffectSubjects(ctx,effect.who))if(player instanceof MTG.Player){const cards=player.library.slice(-genericAmount(effect.n,ctx)).reverse();if(cards.length)await ctx.g.revealToHuman({cards,ctrl:player,kind:'reveal',includeLands:true});}return;
     }
     if(effect.action==='discard-except-v14'){
       for(const player of genericEffectSubjects(ctx,effect.who))if(player instanceof MTG.Player&&!player.lost){
@@ -1510,7 +1510,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(effect.action==='exile-top'){
       const players=effect.who==='you'?[ctx.you]:effect.who==='each-player'?ctx.g.apnapFrom(ctx.g.turnPlayer):effect.who==='each-opponent'?ctx.g.apnapFrom(ctx.g.turnPlayer).filter(player=>player!==ctx.you):genericEffectSubjects(ctx,effect.who),n=genericAmount(effect.n,ctx);
       for(const player of players)for(const card of n>0?player.library.slice(-n).reverse():[]){
-        await ctx.g.move(card,'exile');if(card.zone!=='exile'||!effect.permission)continue;
+        await ctx.g.move(card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(card.zone!=='exile'||!effect.permission)continue;
         card.meta.playableBy=ctx.you;card.meta.spellsOnly=!!effect.permission.spellsOnly;card.meta.anyColor=!!effect.permission.anyColor;
         if(effect.permission.nextOwnTurn)card.meta.playableUntilOwnTurn=ctx.you.turnsStarted+1;else card.meta.playableUntil=ctx.g.turnNo;
       }return;
@@ -1526,7 +1526,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const player=effect.who==='you'?ctx.you:genericEffectSubjects(ctx,effect.who)[0];if(!player)return;
       const cards=player.library.slice(-effect.n).reverse();if(!cards.length)return;
       if(effect.reveal)await ctx.g.revealToHuman({cards,ctrl:ctx.you,kind:'reveal',includeLands:true});
-      if(!ctx.you.isAI)await ctx.you.controller.decide(ctx.g,{type:'cardReveal',player:ctx.you,cards,kind:effect.reveal?'reveal':'look',private:!effect.reveal});
+      if(!effect.reveal&&!ctx.you.isAI)await ctx.you.controller.decide(ctx.g,{type:'cardReveal',player:ctx.you,cards,kind:'look',private:true});
       const card=cards[0],mv=card.mv;let moved=false;
       if(effect.destination&&(!effect.filter||genericResolutionTargetSpec(ctx,effect.filter,[],0).filter(ctx.g,card,ctx.you,ctx.src))){
         const selected=!effect.optionalMove||await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Move the inspected card?',options:[{key:'yes',label:'Move card'},{key:'no',label:'Leave card'}],aiHint:{kind:'optTrigger',src:ctx.src}})==='yes';

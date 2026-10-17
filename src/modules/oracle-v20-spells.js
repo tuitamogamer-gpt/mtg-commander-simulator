@@ -132,7 +132,7 @@
      }else if(effect.mode==='mill'){
       const card=player.library.at(-1),version=card?.zoneVersion,mv=card?.mv;await ctx.g.mill(player,1);if(card&&card.zone==='graveyard'&&card.zoneVersion===version+1&&matches(card)){if(effect.reward==='draw')await ctx.g.draw(ctx.you,1);else await ctx.g.gainLife(ctx.you,mv,ctx.src);}
      }else if(['top','until','tunnel'].includes(effect.mode)){
-      for(let i=0;i<(effect.prefixExile||0);i++){const card=player.library.at(-1);if(card)await ctx.g.move(card,'exile');}
+      for(let i=0;i<(effect.prefixExile||0);i++){const card=player.library.at(-1);if(card)await ctx.g.move(card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});}
       let cards=player.library.slice().reverse();if(effect.mode==='top')cards=cards.slice(0,effect.n);else{const index=cards.findIndex(matches);if(index>=0)cards=cards.slice(0,index+1);}
       const locked=cards.map(card=>({card,version:card.zoneVersion})),present=row=>row.card.zone==='library'&&row.card.zoneVersion===row.version&&player.library.includes(row.card);await ctx.g.revealToHuman({cards,ctrl:player,kind:'reveal',includeLands:true});
       if(effect.mode==='tunnel'&&!cards.some(matches))M.shuffle(player.library,ctx.g.rnd);
@@ -206,7 +206,7 @@
     const boundFilter=filter=>({...filter,...(filter.threshold==='X'?{threshold:h.genericAmount('X',ctx)}:{}),...(filter.alternatives?{alternatives:filter.alternatives.map(boundFilter)}:{})});
     for(const player of players(ctx,effect.who,h)){
      if(effect.revealHand||effect.lookHand)await ctx.g.revealToHuman({cards:player.hand.slice(),ctrl:effect.lookHand?ctx.you:player,kind:effect.lookHand?'look':'reveal',includeLands:true});
-     if(effect.revealTop)await ctx.g.revealToHuman({cards:player.library.slice(-effect.revealTop),ctrl:player,kind:'reveal',includeLands:true});
+     if(effect.revealTop)await ctx.g.revealToHuman({cards:player.library.slice(-effect.revealTop).reverse(),ctrl:player,kind:'reveal',includeLands:true});
      const from=effect.selections.flatMap(({zone,filter,top})=>(top?player[zone].slice(-top):player[zone]).filter(card=>h.genericTargetSpec({...boundFilter(filter),zone,controller:'any'},[],0).filter(ctx.g,card,player,ctx.src))),minimum=effect.optional?0:Math.min(1,from.length);
      const picked=from.length?await ctx.you.controller.decide(ctx.g,{type:'chooseCards',from,min:minimum,max:1,prompt:'Choose a card from the indicated zones',aiHint:{kind:effect.destination==='battlefield'?'recur':'bestCard'}}):[];
      if(!Array.isArray(picked)||picked.length<minimum||picked.length>1||picked.some(card=>!from.includes(card)))throw new Error('Invalid zone card choice');
@@ -248,7 +248,7 @@
     if(choice==='yes')await h.runGenericEffects(ctx,effect.effects,true);return true;
    }
    if(effect.action==='exile-choice-v20'){
-    const exiled=[];for(const card of ctx.you.library.slice(-h.genericAmount(effect.n,ctx)).reverse()){await ctx.g.move(card,'exile');if(card.zone==='exile')exiled.push(card);}
+    const exiled=[];for(const card of ctx.you.library.slice(-h.genericAmount(effect.n,ctx)).reverse()){await ctx.g.move(card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(card.zone==='exile')exiled.push(card);}
     if(!exiled.length)return true;
     const choice=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',from:exiled,min:1,max:1,prompt:'Choose an exiled card you may play',aiHint:{kind:'draw'}});
     if(!Array.isArray(choice)||choice.length!==1||!exiled.includes(choice[0]))throw new Error('Invalid exiled card choice');

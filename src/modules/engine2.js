@@ -4663,7 +4663,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let hit = null;
     while (p.library.length) {
       const c = p.library[p.library.length - 1];
-      await this.move(c, 'exile');
+      await this.move(c, 'exile', {revealFromLibrary: true, revealSource: fromCard, revealController: p});
       exiled.push(c);
       if (!c.is('Land') && U.mv(c.def.cost || '') < mv) { hit = c; break; }
     }

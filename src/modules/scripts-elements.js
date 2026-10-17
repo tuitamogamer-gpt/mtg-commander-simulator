@@ -259,7 +259,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Mill five, land to battlefield', filter: etbSelf,
       run: async ctx => {
-        const top = ctx.you.library.slice(-5); const lands = top.filter(card => card.is('Land'));
+        const top = ctx.you.library.slice(-5).reverse(); const lands = top.filter(card => card.is('Land'));
+        await ctx.g.revealToHuman({ cards: top, ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Cavalier of Thorns' });
         const pick = lands.length ? await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: lands, min: 0, max: 1,
           prompt: 'Cavalier: land onto battlefield', aiHint: { kind: 'bestLand' } }) : [];
         if (pick[0]) await ctx.g.move(pick[0], 'battlefield', { ctrl: ctx.you });
@@ -488,10 +489,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const type = await chooseType(ctx.g, ctx.you, ctx.src);
       const need = ctx.g.creatures(ctx.you).filter(card => card.hasSub(type)).length;
       const revealed = []; const hits = [];
-      while (ctx.you.library.length && hits.length < need) {
-        const card = ctx.you.library.pop(); revealed.push(card);
+      while (revealed.length < ctx.you.library.length && hits.length < need) {
+        const card = ctx.you.library.at(-1 - revealed.length);
+        await ctx.g.revealToHuman({ cards: [card], ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Kindred Summons' });
+        revealed.push(card);
         if (card.is('Creature') && card.hasSub(type)) hits.push(card);
       }
+      for (let i = 0; i < revealed.length; i++) ctx.you.library.pop();
       for (const card of hits) { card.zone = 'nowhere'; await ctx.g.move(card, 'battlefield', { ctrl: ctx.you }); }
       const rest = revealed.filter(card => !hits.includes(card)); U.shuffle(rest, ctx.g.rnd);
       for (const card of rest) { card.zone = 'library'; ctx.you.library.unshift(card); }
@@ -575,7 +579,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const sacrificed = pick[0]; if (!sacrificed) return;
         const types = (sacrificed.cur.subtypes || []).slice(); if (!await ctx.g.sacrifice(ctx.you, sacrificed)) return;
         const revealed = []; let hit = null;
-        while (ctx.you.library.length) { const card = ctx.you.library.pop(); revealed.push(card); if (card.is('Creature') && types.some(type => card.hasSub(type))) { hit = card; break; } }
+        while (revealed.length < ctx.you.library.length) {
+          const card = ctx.you.library.at(-1 - revealed.length);
+          await ctx.g.revealToHuman({ cards: [card], ctrl: ctx.you, kind: 'reveal', includeLands: true, title: "Descendants' Fury" });
+          revealed.push(card);
+          if (card.is('Creature') && types.some(type => card.hasSub(type))) { hit = card; break; }
+        }
+        for (let i = 0; i < revealed.length; i++) ctx.you.library.pop();
         if (hit) { hit.zone = 'nowhere'; await ctx.g.move(hit, 'battlefield', { ctrl: ctx.you }); }
         const rest = revealed.filter(card => card !== hit); U.shuffle(rest, ctx.g.rnd); for (const card of rest) { card.zone = 'library'; ctx.you.library.unshift(card); }
       },

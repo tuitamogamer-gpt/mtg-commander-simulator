@@ -53,7 +53,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function exileTopPlayable(game, player, source, until = game.turnNo) {
     const card = player.library.at(-1);
     if (!card) return null;
-    await game.move(card, 'exile');
+    await game.move(card, 'exile', { revealFromLibrary: true, revealSource: source, revealController: player });
     allowExilePlay(card, player, until, { impulseSource: source.iid });
     return card;
   }

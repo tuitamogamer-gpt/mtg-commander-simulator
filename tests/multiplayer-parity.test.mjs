@@ -205,7 +205,29 @@ test('every living human receives public reviews, while private looks reach only
   assert.deepEqual(decisions, [[guest.name, 'cardReveal']]);
   decisions.length = 0;
   await game.revealToHuman({ ctrl: guest, cards: [secret], kind: 'reveal' });
-  assert.deepEqual(decisions, [[host.name, 'cardReveal'], [observer.name, 'cardReveal']]);
+  assert.deepEqual(decisions, [host, guest, observer, host, guest, observer].map(player => [player.name, 'cardReveal']),
+    'each living human, including the library owner, acknowledges the start and the revealed card');
+});
+
+test('interactive library checkpoints round trip with their owner and only already revealed cards', () => {
+  const {game, host, guest, card} = table();
+  const shown = card('Forest', guest, 'exile');
+  const hidden = card('Swords to Plowshares', guest, 'library');
+  for (const revealStage of ['start', 'card']) {
+    const q = {type: 'cardReveal', kind: 'reveal', libraryReveal: true, revealStage,
+      revealAction: 'exile', libraryOwner: guest, ctrl: host, title: 'Etali',
+      cards: revealStage === 'start' ? [] : [shown]};
+    if (revealStage === 'card') q.card = shown;
+    const descriptor = M.onlineDecisionDescriptor(game, q, guest, 'library-' + revealStage);
+    const model = new M.OnlineArenaView(); model.update(plain(M.onlineGameViewFor(game, guest)), guest.onlineSeat);
+    const decision = model.decision(plain(descriptor));
+    assert.equal(decision.libraryReveal, true); assert.equal(decision.revealStage, revealStage);
+    assert.equal(decision.revealAction, 'exile'); assert.equal(decision.libraryOwner.name, guest.name);
+    assert.equal(decision.cards.length, revealStage === 'card' ? 1 : 0);
+    if (revealStage === 'card') assert.equal(decision.card.name, shown.name);
+    assert.equal(JSON.stringify(descriptor).includes(hidden.name), false);
+    assert.equal(M.validateOnlineDecisionResponse(descriptor.legal, null).ok, true);
+  }
 });
 
 test('completed attack tax receipts survive the Live combat review round trip', () => {

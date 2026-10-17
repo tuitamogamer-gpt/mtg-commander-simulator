@@ -64,8 +64,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const hits = [];
         for (const q of g.alivePlayers()) {
           if (!q.library.length) continue;
-          const c = q.library.pop();
-          c.zone = 'exile'; q.exile.push(c);
+          const c = q.library[q.library.length - 1];
+          await g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: p });
           g.lg(`Etali reveals: ${c.name} (${q.name}).`);
           if (!c.is('Land')) hits.push(c);
         }
@@ -551,7 +551,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'upkeep', desc: 'Impulse', filter: (g, self, d) => d.player === self.ctrl && self.meta.siegeMode === 'khans',
-        run: async ctx => { E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'this'); },
+        run: async ctx => { await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'this'); },
       },
       {
         on: 'lto', desc: '1 damage',
@@ -569,6 +569,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const g = ctx.g, p = ctx.you, c = ctx.data.card;
         if (!p.library.length) return;
         const top = p.library[p.library.length - 1];
+        await g.revealToHuman({ cards: [top], ctrl: p, kind: 'reveal', includeLands: true, title: 'Explore — Path of Discovery' });
         g.lg(`Explore: revealed ${top.name}.`);
         if (top.is('Land')) {
           p.library.pop(); top.zone = 'hand'; p.hand.push(top);
@@ -1109,16 +1110,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (k === 'dmg') await ctx.g.damageOpponents(ctx.src, ctx.you, 3);
         else {
-          const top = ctx.you.library.slice(-2).reverse();
+          const top = [];
+          for (let i = 0; i < 2 && ctx.you.library.length; i++) {
+            const card = ctx.you.library[ctx.you.library.length - 1];
+            await ctx.g.move(card, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
+            top.push(card);
+          }
           if (!top.length) return;
           const picked = await ctx.you.controller.decide(ctx.g, {
-            type: 'chooseCards', from: top, min: 1, max: 1, prompt: 'Keep to play:', aiHint: { kind: 'bestCard' },
+            type: 'chooseCards', from: top, min: 1, max: 1, prompt: 'Choose one exiled card to play:', aiHint: { kind: 'bestCard' },
           });
           const keep = picked[0] || top[0];
-          for (const c of top) ctx.you.library.splice(ctx.you.library.indexOf(c), 1);
-          keep.zone = 'exile'; ctx.you.exile.push(keep);
           keep.meta = { playableUntilOwnTurn: ctx.you.turnsStarted + 1, playableBy: ctx.you };
-          for (const c of top) if (c !== keep) { c.zone = 'library'; ctx.you.library.unshift(c); }
         }
       };
   SC['Tectonic Giant'] = {
@@ -1235,7 +1238,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Light Up the Stage'] = {
     altCosts: [{ label: 'Spectacle {R}', altCostStr: '{R}', cond: (g, p) => E.eachOpp(g, p).some(o => o.turnState.lifeLost > 0) }],
-    resolve: async ctx => { E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 2, 'next'); },
+    resolve: async ctx => { await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 2, 'next'); },
   };
   SC['Sadistic Shell Game'] = {
     resolve: async ctx => {
@@ -1361,8 +1364,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const p = ctx.you;
         if (!p.library.length) return;
-        const c = p.library.pop();
-        c.zone = 'exile'; p.exile.push(c);
+        const c = p.library[p.library.length - 1];
+        await ctx.g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: p });
         c.meta = { playableUntil: 9999, playableBy: p, needsOppLost: true, theaterSource: ctx.src.iid };
         ctx.g.lg(`Theater of Horrors: ${c.name} exiled.`);
       },

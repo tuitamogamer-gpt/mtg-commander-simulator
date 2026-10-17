@@ -227,7 +227,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Return Shigeki and reveal four', cost: { mana: '{1}{G}', tap: true, returnSelf: true },
       run: async ctx => {
-        const top = ctx.you.library.slice(-4);
+        const top = ctx.you.library.slice(-4).reverse();
+        await ctx.g.revealToHuman({ cards: top, ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Shigeki, Jukai Visionary' });
         const land = await chooseOne(ctx.g, ctx.you, top.filter(isLand), 'Choose a land to put onto the battlefield tapped',
           { kind: 'bestLand' }, true);
         if (land) await ctx.g.move(land, 'battlefield', { ctrl: ctx.you, tapped: true });
@@ -517,6 +518,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   } };
 
   SC['Grisly Salvage'] = { resolve: async ctx => {
+    await ctx.g.revealToHuman({ cards: ctx.you.library.slice(-5).reverse(), ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Grisly Salvage' });
     await topChoiceRestGraveyard(ctx.g, ctx.you, 5, card => card.is('Creature') || card.is('Land'),
       'Choose a creature or land to put into your hand');
   } };

@@ -1117,19 +1117,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => d.player === self.ctrl && d.mv >= 5,
       run: async ctx => {
         const g = ctx.g, so = ctx.data.so, spell = ctx.data.card;
-        const revealed = [];
         let match = null;
         for (const o of E.eachOpp(g, ctx.you)) {
           const top = o.library[o.library.length - 1];
           if (!top) continue;
-          revealed.push(top);
+          await g.revealToHuman({ cards: [top], ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Gandalf: opponents reveal' });
           g.lg(`${o.name} reveals ${top.name}.`);
           if (!match && top.def.types.some(t => spell.def.types.includes(t))) match = top;
-        }
-        // The reveal is the whole point of the trigger: show the human what
-        // came up instead of only logging it.
-        if (revealed.length) {
-          await g.revealToHuman({ cards: revealed, ctrl: revealed[0].owner, kind: 'reveal', includeLands: true, title: 'Gandalf: opponents reveal' });
         }
         if (match && so && g.stack.includes(so)) {
           g.lg(`Gandalf, Westward Voyager: ${match.name} shares a card type with ${spell.name}; the spell is copied and each opponent draws a card.`);
@@ -1484,6 +1478,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiHint: { kind: 'elvenFarsight', card: top },
       });
       if (reveal !== 'yes') return;
+      await ctx.g.revealToHuman({ cards: [top], ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Elven Farsight' });
       ctx.g.lg(`Elven Farsight reveals ${top.name}.`);
       if (top.is('Creature')) await ctx.g.draw(ctx.you, 1);
     },
@@ -1492,9 +1487,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     xCost: true,
     resolve: async ctx => {
       const x = ctx.x || 0;
-      const revealed = [];
-      for (let i = 0; i < x && ctx.you.library.length; i++) revealed.push(ctx.you.library.pop());
+      const n = Math.max(0, Math.min(x, ctx.you.library.length));
+      const revealed = n ? ctx.you.library.slice(-n).reverse() : [];
       ctx.g.lg(`Genesis Wave reveals ${revealed.length} cards.`);
+      await ctx.g.revealToHuman({ cards: revealed, ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Genesis Wave' });
       const eligible = revealed.filter(card => {
         const permanent = card.is('Creature') || card.is('Artifact') || card.is('Enchantment') || card.is('Land') || card.is('Planeswalker');
         return permanent && card.mv <= x && (!card.hasSub('Aura') || auraEntryCandidates(ctx.g, card, ctx.you).length > 0);
@@ -1512,6 +1508,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (host) auraHosts.set(card, host);
       }
       const entering = selected.filter(card => !card.hasSub('Aura') || auraHosts.has(card));
+      for (let i = 0; i < revealed.length; i++) ctx.you.library.pop();
       for (const card of entering) {
         card.zone = 'nowhere';
         await putPermanentDirectly(ctx.g, card, ctx.you, auraHosts.get(card));

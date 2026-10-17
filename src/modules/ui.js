@@ -558,7 +558,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // "Accept all": jedan klik pusti cijelu bujicu tokena i kopija koja
       // slijedi u istom potezu (Leitmotif Composer i slični prave po jedan
       // reveal na svaki spell). Vrijedi samo za taj potez.
-      if (q.type === 'cardReveal' && this.acceptAllReveals === g.turnNo) return null;
+      if (q.type === 'cardReveal' && !q.libraryReveal && this.acceptAllReveals === g.turnNo) return null;
       if (q.type === 'priority') {
         // ručni HOLD: staje tačno jednom, u bilo kom modu
         if (this.holdNext) { this.holdNext = false; this._forceStop = true; return undefined; }
@@ -662,6 +662,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q.type === 'chooseCards' && q.aiHint?.kind === 'ninjutsuReturn') return 'Choose an unblocked attacker to return.';
       if (q.type === 'chooseX' && q.allocation?.kind === 'damage') return 'Assign damage to the selected targets.';
       if (q.type === 'effectReview' && q.effectKind === 'resolutionRecap') return 'Review the result, then Proceed.';
+      if (q.type === 'cardReveal' && q.libraryReveal) return q.revealStage === 'start'
+        ? 'Reveal the next card from the library.' : 'Review the revealed card, then continue.';
       return ({
         main: 'Choose your next main-phase action.', priority: 'Choose a response or Proceed.',
         mulligan: 'Keep your opening hand or mulligan.', bottomCards: 'Choose cards to put on the bottom.',
@@ -1702,6 +1704,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let pd = null;
       for (let i = list.length - 1; i >= 0; i--) if (list[i].q.type === 'cardReveal') { pd = list[i]; break; }
       if (!pd) return null;
+      if (pd.q.libraryReveal) return this.renderLibraryRevealPopup(pd);
       const cards = pd.q.cards || [];
       if (!cards.length) return null;
       const who = pd.q.ctrl ? pd.q.ctrl.name : '';
@@ -1752,14 +1755,97 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const acceptAll = el('button', 'pbtn wide revealacceptall', 'Accept all this turn ⏩');
       acceptAll.title = 'Stop asking about tokens and copies entering play for the rest of this turn.';
       acceptAll.onclick = () => {
+        if (!(this.pendings || []).includes(pd)) return;
         this.acceptAllReveals = g.turnNo;
         for (const entry of (this.pendings || []).slice()) {
-          if (entry.q.type === 'cardReveal') this.resolvePendingEntry(entry, null);
+          if (entry.q.type === 'cardReveal' && !entry.q.libraryReveal) this.resolvePendingEntry(entry, null);
         }
       };
       foot.appendChild(acceptAll);
       pop.appendChild(foot);
       wrap.appendChild(pop);
+      return wrap;
+    }
+
+    // Each question is an engine checkpoint. Only cards already revealed by
+    // that checkpoint reach the view; the next card is never preloaded here.
+    renderLibraryRevealPopup(pd) {
+      const q = pd.q, cards = q.cards || [], starting = q.revealStage === 'start';
+      const current = starting ? null : q.card || cards[cards.length - 1];
+      const owner = (starting ? q.libraryOwner : current?.owner || q.libraryOwner)?.name || q.ctrl?.name || 'Player';
+      const exiling = q.revealAction === 'exile';
+      const wrap = el('div', 'stackpopwrap revealwrap libraryrevealwrap');
+      const pop = el('section', 'stackpop reveal libraryreveal');
+      pop.setAttribute('aria-label', q.title || 'Library reveal');
+      const head = el('div', 'libraryrevealhead');
+      head.appendChild(el('div', 'libraryrevealkicker', exiling ? 'Library → Exile' : 'From the library'));
+      head.appendChild(el('h2', 'libraryrevealtitle', esc(q.title || 'Library reveal')));
+      head.appendChild(el('div', 'libraryrevealowner', esc(owner) + ' · ' + (starting ? (exiling ? 'Top card' : 'Ready to reveal') : `Card ${cards.length}`)));
+      pop.appendChild(head);
+      const body = el('div', 'libraryrevealbody');
+      const stage = el('div', 'libraryrevealstage' + (starting ? ' is-ready' : ''));
+      if (current) {
+        const art = el('button', 'libraryrevealcard');
+        art.type = 'button';
+        art.setAttribute('aria-label', 'Inspect ' + current.name);
+        art.insertAdjacentHTML('beforeend', cardArtHTML(current).replace('loading="lazy"', 'loading="eager"'));
+        // A redraw can happen while an image loads or another UI panel opens.
+        // Retain elapsed time rather than replaying the entrance on every render.
+        pd.libraryRevealStartedAt ??= Date.now();
+        const elapsed = Math.max(0, Date.now() - pd.libraryRevealStartedAt);
+        if (elapsed < 480) {
+          art.classList.add('is-revealing');
+          art.style.animationDelay = `-${elapsed}ms`;
+        }
+        art.onclick = () => {
+          if (!(this.pendings || []).includes(pd)) return;
+          this.sheet = {card: current}; this.render();
+        };
+        stage.appendChild(art);
+      } else {
+        const back = el('div', 'libraryrevealback');
+        back.setAttribute('role', 'img');
+        back.setAttribute('aria-label', exiling ? 'Unrevealed top card' : 'Unrevealed card');
+        back.appendChild(el('span', 'libraryrevealbackmark', '◇'));
+        back.appendChild(el('span', 'libraryrevealbacklabel', exiling ? 'Top card' : 'Unrevealed card'));
+        stage.appendChild(back);
+      }
+      body.appendChild(stage);
+      const caption = el('div', 'libraryrevealcaption');
+      caption.setAttribute('aria-live', 'polite');
+      caption.appendChild(el('h3', '', esc(current?.name || 'Ready to reveal')));
+      caption.appendChild(el('p', '', esc(q.prompt || (starting
+        ? (exiling ? `Exile the top card of ${owner}'s library.` : `Reveal cards from ${owner}'s library.`) : 'Review this card, then continue.'))));
+      body.appendChild(caption);
+      if (cards.length) {
+        const history = el('div', 'libraryrevealhistory');
+        history.setAttribute('role', 'list');
+        history.setAttribute('aria-label', 'Cards revealed in order');
+        cards.forEach((card, index) => {
+          const item = el('div', 'libraryrevealhistoryitem');
+          item.setAttribute('role', 'listitem');
+          const inspect = el('button', 'libraryrevealhistorycard' + (card === current && index === cards.length - 1 ? ' is-current' : ''));
+          inspect.type = 'button';
+          inspect.setAttribute('aria-label', `${index + 1}. ${card.name}${card.owner?.name ? ' — ' + card.owner.name : ''}`);
+          inspect.title = `${index + 1}. ${card.name}${card.owner?.name ? ' · ' + card.owner.name : ''}`;
+          inspect.insertAdjacentHTML('beforeend', cardArtHTML(card));
+          inspect.appendChild(el('span', '', String(index + 1)));
+          inspect.onclick = () => {
+            if (!(this.pendings || []).includes(pd)) return;
+            this.sheet = {card}; this.render();
+          };
+          item.appendChild(inspect); history.appendChild(item);
+        });
+        body.appendChild(history);
+      }
+      pop.appendChild(body);
+      const foot = el('div', 'stackpopfoot libraryrevealfoot');
+      const next = el('button', 'pbtn primary wide libraryrevealnext', starting
+        ? (exiling ? 'Exile top card' : 'Reveal cards') : 'Continue ▶');
+      next.type = 'button';
+      next.onclick = () => this.resolvePendingEntry(pd, null);
+      foot.appendChild(next);
+      pop.appendChild(foot); wrap.appendChild(pop);
       return wrap;
     }
 
@@ -2382,6 +2468,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if ((typeof window !== 'undefined' && window._ui !== this) || ev.defaultPrevented || this.commandPaletteOpen || this.renderRecoveryOverlay?.isConnected) return;
         if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'k') {
           ev.preventDefault(); this.openCommandPalette(); return;
+        }
+        // Holding a key must not consume several library checkpoints at once.
+        if (ev.repeat && (ev.key === ' ' || ev.key === 'Enter') && this.pending?.q.libraryReveal) {
+          ev.preventDefault(); return;
         }
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(ev.target.tagName)) return;
         if (ev.target.isContentEditable || ev.metaKey || ev.ctrlKey || ev.altKey) return;
@@ -4397,6 +4487,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           break;
         }
         case 'cardReveal': {
+          if (q.libraryReveal) {
+            const current = q.revealStage === 'start' ? null : q.card || (q.cards || []).at(-1);
+            const owner = q.libraryOwner?.name || current?.owner?.name || q.ctrl?.name || 'Player';
+            bar.appendChild(el('div', 'ptext', `<b>${esc(q.title || 'Library reveal')}</b> · ${esc(owner)}: ` +
+              (current ? `${esc(current.name)}. Review the card, then continue.` : q.revealAction === 'exile' ? 'Exile the top card when ready.' : 'Reveal cards when ready.')));
+            break;
+          }
           // Tokeni/permanenti koji ulaze bez stacka: popup u sredini ekrana
           // ima Proceed, a prompt bar kaže šta je ušlo i kome pripada.
           const who = q.ctrl ? q.ctrl.name : 'Opponent';
