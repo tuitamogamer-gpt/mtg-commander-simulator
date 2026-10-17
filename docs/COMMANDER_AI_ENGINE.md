@@ -99,6 +99,12 @@ Threat uključuje lethal/commander damage, board/evasion, engine/combo role, han
 
 Removal se čuva bez dovoljno dobre mete. Counterspell se kažnjava bez protivničkog relevantnog stack objekta. Board wipe poredi vrijednost svih tabli, survival rizik i recovery; ne baca se samo zato što je legalan.
 
+Aetherize procjenjuje samo stvorenja koja trenutno napadaju. AI ga čuva kada nema napadača ili bi vratio samo vlastita stvorenja; napadači usmjereni na drugog protivnika i dalje ulaze u procjenu. Karta ostaje legalna bez meta i bez napadača prema pravilima igre.
+
+Skullclamp koristi poseban equip plan: potrošni token sa trenutnom toughness 1 ima prednost nad commanderom radi izvlačenja dvije karte. Plan uzima u obzir countere, antheme, vrijednost stvorenja, zamjene odlaska u groblje, blokiranje dies trigera i rizik od prazne biblioteke. Ponovo se procjenjuje nakon svake rezolucije, pa AI može premjestiti Skullclamp s commandera na token i nastaviti s narednim tokenom dok ima manu.
+
+Ciljane regresije: `tests/ai-aetherize.test.mjs` i `tests/ai-skullclamp.test.mjs`.
+
 ## Combat
 
 Attacker i blocker planovi koriste poseban inkrementalni beam. Napad ocjenjuje damage, commander lethal, block/trade rizik, threat mete i crackback. Blok procjenjuje lethal prevention, trade, engine preservation, commander damage, deathtouch i menace legalnost. Jedan plan može napasti više različitih branitelja ili planeswalkera.
