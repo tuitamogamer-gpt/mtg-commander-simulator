@@ -100,5 +100,5 @@
     if(!global&&!self)throw new Error('Unsupported zone replacement semantics');
     return operation;
   }
-  M.OracleV8ZoneReplacements={apply,compile};
+  M.OracleV8ZoneReplacements={apply,compile,matches};
 })(globalThis.MTG||={});

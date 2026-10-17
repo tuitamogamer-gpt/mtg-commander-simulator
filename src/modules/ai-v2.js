@@ -185,6 +185,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Jedino mjesto za neuobičajene semantičke dopune. Card skripte i dalje
   // opisuju pravila; ovi podaci služe samo evaluaciji.
   const CARD_ROLE_OVERRIDES = {
+    'Aetherize': { addRoles: ['board-wipe'] },
+    'Skullclamp': { addRoles: ['engine', 'card-draw', 'death-payoff'], addTags: ['sacrifice', 'death-triggers'] },
     'Blood Artist': { addRoles: ['engine', 'death-payoff', 'combo-piece'], addTags: ['sacrifice', 'death-triggers'] },
     'Viscera Seer': { addRoles: ['sacrifice-outlet', 'card-selection', 'combo-piece'], addTags: ['sacrifice', 'graveyard'] },
     'Ashnod\'s Altar': { addRoles: ['sacrifice-outlet', 'ramp', 'combo-piece'], addTags: ['artifacts', 'sacrifice'] },
@@ -2471,6 +2473,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (entry.crew && vehicleAttackValue(game, player, entry.card) <= 0) continue;
         if (isStationAbility(entry) && MTG.stationPlan(game, entry.card, player).score <= 0) continue;
         if (entry.ability?.aiSacrificeKind === 'scry' && MTG.sacrificeScryPlan(game, player).score <= 0) continue;
+        if (entry.equip && MTG.skullclampEquipPlan(game, player, entry.card)?.score <= 0) continue;
         // A legal sacrifice is not automatically a useful play. Filtering here
         // also prevents beam search from rewarding unusable temporary stats.
         if (MTG.sacrificePumpPlan(game, player, entry)?.score <= 0) continue;
@@ -2698,6 +2701,58 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     return threatened ? 5 + permanentGameValue(game, card, player) * 0.6 : -30;
+  };
+
+  function skullclampDeathDrawBlocked(game, host) {
+    const snap = game.snapshot(host, false);
+    if (MTG.OracleV20Permanents?.suppress(game, 'dies', {card: host, snap})) return true;
+    // Reuse the rules descriptor matcher, including its card/token and owner
+    // qualifications. A creature leaving for exile does not trigger Skullclamp.
+    const replaces = (operation, source) => operation.to !== 'graveyard' &&
+      MTG.OracleV8ZoneReplacements.matches(game, operation, source, source.ctrl, host, snap, 'battlefield', source.zoneVersion);
+    if ((snap.extraZoneReplacements || []).some(operation => replaces(operation, host))) return true;
+    if (game.untilEffects.some(effect => effect.kind === 'oracleDeathExile' &&
+      (effect.locked?.some(row => row.iid === host.iid && row.version === host.zoneVersion) ||
+        effect.scope && (effect.scope === 'all' || host.ctrl.idx !== effect.controller)) ||
+      effect.kind === 'zkCosmic' && effect.who === host.ctrl)) return true;
+    return game.bf().some(source => {
+      if (source.cur?.abilitiesDisabled) return false;
+      const def = source.def;
+      if ((def.oracleZoneReplacements || []).some(operation => replaces(operation, source))) return true;
+      if (def.c1719Slime && source.ctrl !== host.ctrl) return true;
+      if (def.afcLorcan && source.ctrl === host.ctrl && host.hasSub('Warlock')) return true;
+      // These native replacements affect creature cards, so token fodder
+      // still dies normally in front of Kalitas, Valentin or Dauthi Voidwalker.
+      return !host.isToken && (def.c1920Rayami ||
+        (def.fdcKalitas || def.bomValentin) && source.ctrl !== host.ctrl ||
+        def.opponentGraveyardVoid && source.ctrl !== host.owner);
+    });
+  }
+
+  function skullclampEquipValue(game, player, equipment, host) {
+    if (host.ctrl !== player || host.iid === equipment.attachedTo) return -100;
+    // Use live toughness: counters, anthems and other attachments can keep a
+    // printed 1/1 alive. Zero toughness ignores indestructible and shields.
+    const remaining = Number(host.toughness) - 1;
+    const dies = remaining <= 0 || Number(host.damage || 0) >= remaining && !damageProtectionSaves(host);
+    const value = permanentGameValue(game, host, player);
+    if (!dies) return equipment.attachedTo ? -9 : 2.5 + Math.min(2, value * 0.1);
+    if (host.commander || host.counters.finality > 0 || host.meta.unearth || skullclampDeathDrawBlocked(game, host) ||
+      immediateDrawWouldLose(game, player, 2)) return -100;
+    // A draw engine wants disposable bodies, not a valuable mana/death engine.
+    // Losing a real card costs more than consuming a token.
+    return 12 - value * 1.6 - (host.isToken ? 0 : 2);
+  }
+
+  MTG.skullclampEquipPlan = function (game, player, equipment, candidates = null) {
+    if (equipment?.name !== 'Skullclamp') return null;
+    const legal = candidates || game.legalTargets({what: 'creature',
+      filter: (g, target, controller) => target.zone === 'battlefield' && target.ctrl === controller && target.is('Creature'),
+    }, equipment, player);
+    const ranked = legal.filter(host => host.iid !== equipment.attachedTo)
+      .map(card => ({card, score: skullclampEquipValue(game, player, equipment, card)}))
+      .sort((a, b) => b.score - a.score || a.card.iid - b.card.iid);
+    return ranked[0] || {card: null, score: -100};
   };
 
   MTG.sacrificeScryValue = function (game, player, card) {
@@ -3135,6 +3190,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function boardWipeImpact(game, player, action) {
     const source = action.card;
     if (!source || !(source.is('Instant') || source.is('Sorcery'))) return null;
+    if (source.name === 'Aetherize') {
+      // Aetherize has no targets and is legal outside combat. Its value comes
+      // only from creatures currently attacking, never the whole board or a
+      // stale combat entry. Reuse wipe preservation for empty/own-only casts.
+      const attackers = new Set(game.phase === 'combat' ? (game.combat?.attackers || [])
+        .filter(card => card.zone === 'battlefield' && card.is('Creature') && card.attacking != null) : []);
+      return sweepBoardImpact(game, player, card => attackers.has(card));
+    }
     if (source.def.modes) {
       const modes = source.def.modes;
       const matchers = modes.list.map((option, index) => modes.aiHint?.kind === 'farewellModes'
@@ -3501,6 +3564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q.aiHint && q.aiHint.kind === 'equipTarget') {
         if (hostile) return -1000;
         const equipment = q.aiHint.card;
+        if (equipment?.name === 'Skullclamp') return skullclampEquipValue(game, player, equipment, target);
         const grants = equipment && equipment.def && equipment.def.oracleImplementation || [];
         const attachment = grants.filter(operation => operation.kind === 'attachment-grant');
         const power = attachment.reduce((sum, operation) => sum + Number(operation.power || 0), 0);
@@ -5523,10 +5587,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       if (entry.equip || ability?.equip) {
+        const clampPlan = entry.equip && MTG.skullclampEquipPlan(game, player, card);
+        if (clampPlan) breakdown.base = clampPlan.score;
         breakdown.synergy += profile.primarySynergies.includes('equipment') || profile.primarySynergies.includes('voltron') ? 3 : 1;
         const attachment = (card.def.oracleImplementation || [])
           .filter(operation => operation.kind === 'attachment-grant');
-        if (attachment.length) {
+        if (attachment.length && !clampPlan) {
           const toughness = attachment.reduce((sum, operation) => sum + Number(operation.toughness || 0), 0);
           const viable = game.creatures(player).filter(host => host.iid !== card.attachedTo &&
             Number(host.toughness || 0) - Number(host.damage || 0) + toughness > 0);
@@ -5534,7 +5600,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // Premještanje već prikačene opreme između dva jednako dobra
         // hosta ne smije pojesti cijelu main fazu.
-        if (card.attachedTo) breakdown.timing -= 9;
+        if (card.attachedTo && !clampPlan) breakdown.timing -= 9;
       }
       if (entry.crew) breakdown.combat += phase === 'main1' ? 2.5 : -0.5;
       // Do not crew a Vehicle and then spend its attack on a routine tap

@@ -841,6 +841,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (e.suspend) return 1.5;
       if (e.equip) {
+        const clampPlan = MTG.skullclampEquipPlan(g, this.p, c);
+        if (clampPlan) return clampPlan.score;
         const cands = g.creatures(this.p).filter(x => x.iid !== c.attachedTo);
         if (!cands.length) return 0;
         return c.attachedTo ? 0 : 2.5;
@@ -1054,6 +1056,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseTargets(g, q) {
       const kitt = MTG.kittKantoAIAction(g, this.p, q);
       if (kitt) return kitt.picks;
+      if (q.aiHint?.kind === 'equipTarget') {
+        const clampPlan = MTG.skullclampEquipPlan(g, this.p, q.aiHint.card, q.candidates);
+        if (clampPlan?.card) return [clampPlan.card];
+      }
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
       if(goal==='exchange-life-v18'){
