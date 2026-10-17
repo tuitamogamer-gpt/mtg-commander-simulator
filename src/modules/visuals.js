@@ -64,40 +64,74 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     overlay.dataset.dialogEnhanced = 'true';
     if (dialog.getAttribute('role') !== 'alertdialog') dialog.setAttribute('role', 'dialog');
     dialog.setAttribute('aria-modal', 'true');
-    const title = dialog.querySelector('[data-dialog-title], .mtitle, .gameover, .sname, h1, h2');
+    const title = dialog.querySelector('[data-dialog-title], .mtitle, .gameover, .sname, .stackpoptitle, h1, h2');
     if (title) {
       if (!title.id) title.id = `dialog-title-${Math.random().toString(36).slice(2, 9)}`;
       dialog.setAttribute('aria-labelledby', title.id);
-    } else dialog.setAttribute('aria-label', options.label || 'Dialog');
+    } else if (!dialog.getAttribute('aria-label')) dialog.setAttribute('aria-label', options.label || 'Dialog');
     const returnFocus = options.returnFocus || overlay._dialogReturnFocus || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     overlay._dialogReturnFocus = returnFocus;
     const focusable = () => [...dialog.querySelectorAll(
       'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex]:not([tabindex="-1"])',
-    )].filter(node => !node.hidden && node.getAttribute('aria-hidden') !== 'true' &&
-      (!dialog.classList.contains('dungeonmodal') || node.getClientRects().length > 0 &&
-        (!node.closest('details:not([open])') || node.tagName === 'SUMMARY')));
+    )].filter(node => {
+      if (node.hidden || node.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
+      if (node.tabIndex < 0 || globalThis.getComputedStyle?.(node).visibility === 'hidden') return false;
+      if (node.getClientRects && !node.getClientRects().length) return false;
+      // Closed details can contain focusable descendants that querySelectorAll
+      // still returns. Only that details element's own summary remains usable.
+      const closed = node.closest('details:not([open])');
+      return !closed || node === closed.querySelector('summary');
+    });
     dialog.addEventListener('keydown', event => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab' || overlay.inert) return;
       const nodes = focusable();
       if (!nodes.length) { event.preventDefault(); dialog.focus(); return; }
       const first = nodes[0], last = nodes[nodes.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      if (!dialog.contains(document.activeElement) || document.activeElement === dialog) {
+        event.preventDefault(); (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     });
     if (!dialog.hasAttribute('tabindex')) dialog.tabIndex = -1;
     requestAnimationFrame(() => {
-      if (!overlay.isConnected || dialog.contains(document.activeElement)) return;
+      if (!overlay.isConnected || overlay.inert || dialog.contains(document.activeElement)) return;
       (options.initialFocus || focusable()[0] || dialog).focus({ preventScroll: true });
     });
     if (returnFocus && returnFocus !== document.body) {
       const observer = new MutationObserver(() => {
         if (overlay.isConnected) return;
         observer.disconnect();
-        if (!overlay._dialogReplaced && returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
+        if (!overlay._dialogReplaced && returnFocus.isConnected && !returnFocus.closest('[inert]') &&
+            (!document.activeElement || document.activeElement === document.body)) returnFocus.focus({ preventScroll: true });
       });
       observer.observe(document.body, { childList: true, subtree: true });
     }
     return dialog;
+  };
+
+  // A visually covered table must also be unavailable to keyboard and assistive
+  // technology. Run after every arena commit, since the renderer may reuse nodes.
+  MTG.clearDialogOwnership = function clearDialogOwnership(root) {
+    if (!root) return;
+    for (const child of root.children) {
+      if (child.dataset.dialogInert === 'true') {
+        child.inert = false; delete child.dataset.dialogInert;
+        if (child.dataset.dialogHidden === 'true') { child.removeAttribute('aria-hidden'); delete child.dataset.dialogHidden; }
+      }
+    }
+  };
+  MTG.syncDialogOwnership = function syncDialogOwnership(root) {
+    if (!root) return;
+    MTG.clearDialogOwnership(root);
+    const surfaces = [...root.children].filter(node => node.matches('.overlay, .quickmenuov, .revealwrap, .logpanel'));
+    const layer = node => Number(globalThis.getComputedStyle?.(node).zIndex) || 0;
+    const top = surfaces.reduce((current, node) => !current || layer(node) >= layer(current) ? node : current, null);
+    for (const child of root.children) {
+      if (top && child !== top && !child.inert) {
+        child.inert = true; child.dataset.dialogInert = 'true';
+        if (!child.hasAttribute('aria-hidden')) { child.setAttribute('aria-hidden', 'true'); child.dataset.dialogHidden = 'true'; }
+      }
+    }
   };
 
   MTG.COMMANDER_INTROS = Object.freeze({

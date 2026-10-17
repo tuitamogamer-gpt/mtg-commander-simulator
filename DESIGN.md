@@ -33,7 +33,7 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 - Muted text must remain readable on the table. Never use low contrast as the only signal for disabled, selected or dangerous state.
 - Brass marks the human's current path; green marks valid progress/sync; red is reserved for danger, failure and destructive actions.
 
-### Palette (obsidian & ember, 2026-09-02)
+### Palette (obsidian & ember, refreshed 2026-10-17)
 
 - Every colour comes from `src/design-system.css`; stylesheets never hard-code the accent or the base. `--ds-table`, `--ds-panel`, `--ds-panel-raised` and `--ds-dialog` are one cool blue-black material; `--ds-accent` (ember `#e07a4a`), `--ds-accent-bright` and `--ds-accent-soft` are the only warm colours, with `--ds-*-rgb` triplets for tints. `--ds-brass` and `--ds-brass-bright` remain as aliases of the accent for older rules.
 - Surfaces: a fixed soft-light grain (`body::after`), radial ambient light in the accent hue, hairlines at 7–9% white, tinted shadows (`rgba(2, 6, 12, …)`), never pure black.
@@ -63,6 +63,8 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 
 `design-system.css` owns new tokens and shared primitives in cascade layers. Existing `styles.css` and `client-v3.css` remain the legacy compatibility layer while the interface is migrated. `frontend-overhaul.css` bridges older declarations; `command-table.css` follows it and owns the scoped Command Table composition. New one-off styling must not be added to `styles.css`.
 
+The experience sheets load after the mobile compatibility rules: `experience-theme.css` supplies shared readable surfaces and controls; `setup-experience.css`, `decision-experience.css`, `experience-tools.css`, `help-experience.css`, `account-experience.css`, and `live-experience.css` own their respective flows. They do not change battlefield grid placement. Keep selectors scoped and use fixed SVG dimensions inside grid controls so external symbol sprites cannot fall back to a 150px intrinsic height.
+
 ## JavaScript architecture
 
 Stay with vanilla JavaScript. Reusable presentation belongs in small factories or UI methods: stage navigation, dialog enhancement, public timeline rows, diagnostics and recovery. Do not move rules, legality or AI strategy into DOM code.
@@ -80,7 +82,7 @@ Stay with vanilla JavaScript. Reusable presentation belongs in small factories o
 - Desktop has three opponent zones, the human battlefield and hand, and a stable decision rail. The Table/Focus preference persists on the device. Target selection and combat assignment show all opponents even when Focus is selected.
 - Phones keep opponent summaries visible, with a selected public battlefield and the existing Mine / Table / Stack / Politics destinations at the bottom. Full-table navigation exposes every opponent. Crowded zones scroll at readable card sizes.
 - Required Stack review remains an explicit hard pause with its original Proceed/respond callbacks, presented in the desktop rail or the mobile decision tray. Reveal, combat and other required dialogs retain their existing engine semantics and accessible dismissal rules.
-- All card and commander images must come from Scryfall, including existing local copies. This applies to the main menu, player portraits, review seats and every game zone. Generated concept images are reference material only and must never replace any card or commander illustration.
+- All card and commander face images must come from Scryfall, including existing local copies. This applies to the main menu, player portraits, review seats and every game zone. Original generated card backs are allowed for concealed cards, unrevealed library checkpoints and unknown/random seat decoration; they never replace a face or commander illustration.
 - Scroll position is presentation state and survives ordinary arena renders. No opponent hand identity or library ordering is added to the new presentation model.
 
 ## Player tools
@@ -92,3 +94,14 @@ Stay with vanilla JavaScript. Reusable presentation belongs in small factories o
 - Hand sort, hand size, AI pacing and high contrast persist on the device. Draw-order sorting preserves the underlying hand array and card identities. Larger cards must still fit the reserved hand row.
 - Arena background is available in Menu and Find. The validated device preference selects one of six mana atmospheres or five local scenes, with independent 0–75% dimming. Selection updates the existing arena surface without answering or rebuilding a pending game decision; scene colors never replace the readable panel and action tokens. The picker keeps its footer visible while options scroll on compact screens.
 - Music & sound is available in Menu and Find. Quiet original instrumentals loop locally with independent music/effect levels and device mute. Settings never answer a pending decision. Sound effects are reserved for commander/powerhouse arrivals, actual hits of at least 10 damage, board wipes affecting at least three cards, and game end. Land/card plays, attack declarations, small hits, ordinary removal, counters and other routine actions stay silent. Coalesce simultaneous milestones and space repeated cues by 2.5 seconds. Hidden identities, save replay and AI simulations stay silent. Pause audio in hidden tabs, unlock it through browser interaction, and keep sound independent of reduced motion.
+
+## Experience upgrade (2026-10-17)
+
+- `experience-tools.js` presents Table, Appearance, Controls and Help tabs. Navigation retains existing table/session/recovery callbacks. Switches expose `aria-checked`; selects show every available value. Changing a preference never confirms a pending game question. Detached settings controls cannot affect a replacement table or a newly opened menu.
+- Card backs are an allowlisted cosmetic preference in `player-tools.js`. Obsidian, Astral and Ember originals and provenance live in `assets/cardbacks/`. Every hidden card uses the same selected image and generic accessible name, regardless of its identity. CSS background URLs are resolved against the document so reveal backs work in both hosted and packaged builds. The separate missing-card-art sentinel remains unchanged.
+- `help-experience.js` explains current controls and manual reveal checkpoints. Priority profile choices retain their original setting, recorded side action and selection behavior.
+- Card choices support keyboard selection, explicit selected state and visible disabled confirmation. Scry has named top/bottom and ordering controls; X accepts a validated integer or an explicitly legal sparse value. Presentation never invents legal choices.
+- Card inspection is two columns on desktop and image-first on phones. Zone search, type filters and sorting operate on already-visible cards and never reorder engine arrays. Inspection returns to the same pending reveal or filtered zone and restores focus to the invoking card.
+- Only the highest active inspection or required decision surface receives keyboard focus. Covered arena children are inert; temporary ownership attributes are cleared before reconciliation and restored in the same render. Dialog scroll position survives incidental renders.
+- Setup retains its selected deck and seat choices through Deck → Pod → Review. Import accepts a text file or pasted list, exposes all validation issues, and keeps saved decks searchable. Loading feedback reports real milestones rather than estimated percentages.
+- Live lobby controls show per-seat readiness, commander art, connection state and actionable waiting reasons. Busy actions preserve focus, failed copies offer a selectable invite, and late async completions cannot reopen an abandoned lobby. Auth, transport and game authority remain outside presentation code.

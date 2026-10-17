@@ -137,12 +137,17 @@ try {
       label: button.querySelector('span:last-of-type')?.textContent.trim(), disabled: button.disabled,
     })));
     await page.locator('.menubutton').click();
-    const menu = await page.locator('.quickmenuitem > span').allTextContents();
+    const menu = [];
+    for (const tab of ['Table', 'Appearance', 'Controls', 'Help']) {
+      await page.getByRole('tab', { name: tab, exact: true }).click();
+      menu.push(...await page.locator('.settingsactioncopy > span, .settingscopy > b').allTextContents());
+    }
     if (controls.length) {
       assert.deepEqual(toolbar, controls[0].toolbar, `${name} must receive the host toolbar`);
       for (const command of controls[0].menu) assert.ok(menu.includes(command), `${name} is missing host command: ${command}`);
     }
     controls.push({ name, toolbar, menu });
+    await page.getByRole('tab', { name: 'Controls', exact: true }).click();
     await page.getByRole('button', { name: /^Priority stops/ }).click();
     assert.equal(await page.evaluate(() => _ui.showStops), true, `${name} can open priority settings`);
     await page.keyboard.press('Escape');

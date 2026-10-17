@@ -35,6 +35,7 @@ const picker = () => page.locator('.arenabackgroundpicker');
 const choose = id => page.locator(`.arenabackgroundchoice[data-arena-background="${id}"]`).click();
 async function openPicker() {
   await page.locator('.menubutton').click();
+  await page.locator('[data-settings-tab="appearance"]').click();
   await page.locator('.arenabackgroundopen').click();
   await picker().waitFor({ state: 'visible' });
 }

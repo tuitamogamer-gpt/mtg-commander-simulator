@@ -374,6 +374,7 @@ async function importAndContinue() {
   await page.waitForTimeout(1000);
   console.log('INFO native autosave settled before exit');
   await page.locator('.menubutton').click(); page.once('dialog',d=>d.accept());
+  await page.getByRole('tab',{name:'Table',exact:true}).click();
   await page.locator('.quickmenuitem').filter({hasText:/^Main menu/}).click(); await page.locator('.mainmenu-account-return').waitFor({timeout:30000}); console.log('INFO saved return to menu');
   await page.reload(); await page.locator('.mainmenu-account-return').waitFor({timeout:60000}); await page.locator('.mainmenu-account-return').click();
   await page.locator('.account-continue').click(); await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
@@ -385,7 +386,7 @@ async function importAndContinue() {
   results.push({label:'account-custom-pod-save-continue-exact',before,after,checkpoint,fullMatches:0});
   console.log('PASS account-custom-pod-save-continue-exact: actual four-seat game, paid land action and identical native checkpoint after reload/continue');
   console.log('INFO continued account binding',JSON.stringify(await page.evaluate(()=>({loading:MTGAccount.loading,owner:MTGAccount.user?.id,active:MTG.activeAccountMatch?.setup.deck,library:MTG.getImportedDeckLibrary?.().entries.map(e=>({name:e.name,ready:e.ready})),record:!!MTG.importedDeckRecordFor?.(MTG.activeAccountMatch?.setup.deck),custom:MTG.DECKS[MTG.activeAccountMatch?.setup.deck]?.custom,status:_ui.accountSaveStatus,over:_game.gameOver}))));
-  await page.locator('.menubutton').click();await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();
+  await page.locator('.menubutton').click();await page.getByRole('tab',{name:'Table',exact:true}).click();await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();
   await page.locator('.mainmenu-account-return').waitFor({timeout:30000});await page.reload();
   await page.locator('.mainmenu-account-return').waitFor({timeout:60000});await page.locator('.mainmenu-account-return').click();
   await page.locator('.account-continue').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
@@ -425,7 +426,7 @@ async function importAndContinue() {
   assert.equal(await page.evaluate(()=>MTG.captureGameState(_game)),null,'floating source-dependent mana retains the previous portable checkpoint');
   await page.waitForTimeout(1000);const fallback=await page.evaluate(()=>({state:MTGAccount.save.state,index:MTGAccount.save.checkpointTimelineIndex,total:MTGAccount.save.decisions.length}));
   assert.deepEqual(fallback.state,portable.state);assert.equal(fallback.index,portable.index);assert.ok(fallback.total>portable.total);
-  await page.locator('.menubutton').click();await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();await page.locator('.mainmenu-account-return').waitFor({timeout:30000});await page.reload();
+  await page.locator('.menubutton').click();await page.getByRole('tab',{name:'Table',exact:true}).click();await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();await page.locator('.mainmenu-account-return').waitFor({timeout:30000});await page.reload();
   await page.locator('.mainmenu-account-return').waitFor({timeout:60000});await page.locator('.mainmenu-account-return').click();await page.locator('.account-continue').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
   const floatedAgain=await savedView();assert.deepEqual(floatedAgain,floating);
   await page.screenshot({path:`${output}/account-nonportable-mana-checkpoint-tail.png`,animations:'disabled'});

@@ -44,7 +44,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const attr of fresh.attributes) if (old.getAttribute(attr.name) !== attr.value) old.setAttribute(attr.name, attr.value);
     old._arenaDropTarget = fresh._arenaDropTarget;
   };
-  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .oppboardmain, .mybattlefieldmain, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .ct-review-body, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .resolutionrecapbody, .attackalloclanes, .attackpool, .sheet, .quickmenu, .audiobody, .dungeonmapscroll, .ct-mobile-combat-roster, .ct-mobile-combat-history, .ct-mobile-combat .ct-defender-choices, .ct-mobile-combat .ct-battle-line-cards';
+  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .oppboardmain, .mybattlefieldmain, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .ct-review-body, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .resolutionrecapbody, .attackalloclanes, .attackpool, .sheet, .quickmenu, .settingsbody, .cardbackbody, .guidebody, .prioritybody, .arenabackgroundbody, .audiobody, .dungeonmapscroll, .ct-mobile-combat-roster, .ct-mobile-combat-history, .ct-mobile-combat .ct-defender-choices, .ct-mobile-combat .ct-battle-line-cards';
   const path = (node, root) => {
     const parts = [];
     while (node && node !== root) {

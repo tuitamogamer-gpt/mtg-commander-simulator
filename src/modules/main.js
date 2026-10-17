@@ -206,6 +206,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     root.querySelector('.mainmenu-loadveil')?.remove();
     root.style.display = 'block';
     root.dataset.appView = 'home';
+    root.removeAttribute('role');
     root.dataset.setupStage = 'home';
     root.removeAttribute('aria-busy');
     $('#game').style.display = 'none';
@@ -269,7 +270,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
         <div class="mainmenu-visual-head"><span>FIND YOUR NEXT COMMANDER</span><div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana"><img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt=""></div></div>
         <div class="mainmenu-cardfan">${featuredCards}</div>
-        <div class="mainmenu-visual-foot"><div><b><span data-catalog-decks>${nDecks}</span> ready-to-play decks</b><small>Decklists, guides &amp; strategies</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Browse decks <span aria-hidden="true">↗</span></button></div>
+        <div class="mainmenu-visual-foot"><div><b><span data-catalog-decks>${nDecks}</span> ready-to-play decks</b><small>Decklists, guides &amp; strategies</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Browse decks <span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button></div>
       </div>
     </section>`;
     if (bootPage) {
@@ -345,16 +346,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <header>
           <span>BRING YOUR OWN DECK</span>
           <h2 id="deckimport-title">Import your decklist here</h2>
-          <p>Paste once, then play it again from your Library. Every save is checked for commander rules and complete engine support, and checked again before each game.</p>
+          <p>A home for your own decks. Paste a list or open a text file, check it, then keep it ready for your next table.</p>
         </header>
+        <nav class="decklibrarynav" aria-label="Your deck library"><a href="#decklibrary-title">Saved decks <span class="decklibrarynavcount">0</span></a><a href="#deckimport-form-title">Import a deck <span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></a></nav>
         <section class="mainmenu-decklibrary" aria-labelledby="decklibrary-title">
           <header><div><span>MY LIBRARY</span><h3 id="decklibrary-title">Imported decks</h3></div><small class="mainmenu-decklibrary-source">Loading…</small></header>
+          <div class="decklibrarysearchrow" hidden><label><span class="sr-only">Search your saved decks</span><input type="search" class="decklibrarysearch" placeholder="Find a deck or commander…" aria-label="Search your saved decks" autocomplete="off"></label><span class="decklibrarycount" role="status" aria-live="polite"></span></div>
           <div class="mainmenu-decklibrary-list" aria-live="polite"><p>Loading your imported decks…</p></div>
         </section>
         <div class="mainmenu-deckimport-grid">
           <form class="mainmenu-deckimport-form" novalidate>
+            <div class="deckimportformhead"><div><span>NEW TO YOUR LIBRARY</span><h3 id="deckimport-form-title">Bring a deck to the table</h3></div><button type="button" class="deckimportfilebutton">Open .txt file</button><input type="file" class="deckimportfile" accept="text/plain,.txt,.dec" hidden></div>
             <label><span>Deck name <small>optional</small></span><input class="mainmenu-deckimport-name" maxlength="80" autocomplete="off" placeholder="My Commander deck"></label>
-            <label><span>Commander decklist</span><textarea class="mainmenu-deckimport-text" spellcheck="false" autocapitalize="off" placeholder="Commander&#10;1 Your Commander *CMDR*&#10;&#10;Deck&#10;1 Sol Ring&#10;1 Command Tower&#10;..."></textarea></label>
+            <label><span>Commander decklist</span><textarea class="mainmenu-deckimport-text" spellcheck="false" autocapitalize="off" aria-describedby="deckimport-draft-count" placeholder="Commander&#10;1 Your Commander *CMDR*&#10;&#10;Deck&#10;1 Sol Ring&#10;1 Command Tower&#10;..."></textarea></label>
+            <div id="deckimport-draft-count" class="deckimportdraftcount"><span>Paste your exported decklist above.</span><small>100 cards including your commander</small></div>
             <details class="mainmenu-deckimport-aux"><summary>Attractions, stickers, companions and draft notes</summary><p>Add separate <strong>Attractions</strong>, <strong>Sticker sheets</strong>, <strong>Companion</strong> or <strong>Outside game</strong> sections below the 100-card deck. Attraction decks and sticker selections need at least ten different names. Three sticker sheets are selected at random for each game.</p><p>Record chosen colors on the card line, for example <code>1 Cryptic Spires [colors=W,U]</code>. In a <strong>Draft notes</strong> section, use <code>Lurking Automaton | count=7</code>, <code>Cogwork Tracker | player=2</code>, or <code>Volatile Chimera | exiled=Creature name; Another creature; Third creature</code>. Player numbers are seats 1–4; separate lists with semicolons. Notes are saved with the deck.</p></details>
             <div class="mainmenu-deckimport-result" role="status" aria-live="polite" tabindex="-1" data-state="idle"><p>Nothing is imported until the complete list passes every check.</p></div>
             <div class="mainmenu-deckimport-actions">
@@ -366,7 +371,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <span>BUILD ELSEWHERE</span>
             <h3>Need a decklist?</h3>
             <p>Build and tune it on Moxfield, export it as text, then paste that list here. Commander Simulator is the play table, not the deck builder.</p>
-            <a href="https://moxfield.com/" target="_blank" rel="noopener noreferrer">Build your deck on Moxfield <b aria-hidden="true">↗</b></a>
+            <a href="https://moxfield.com/" target="_blank" rel="noopener noreferrer">Build your deck on Moxfield <b aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></b></a>
             <ul>
               <li>Put one or two commanders under a Commander heading, or mark them with <code>*CMDR*</code>.</li>
               <li>The total must be exactly 100 cards including the commander.</li>
@@ -387,6 +392,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const saveButton = dialog.querySelector('.mainmenu-deckimport-start');
       const libraryList = dialog.querySelector('.mainmenu-decklibrary-list');
       const librarySource = dialog.querySelector('.mainmenu-decklibrary-source');
+      const librarySearch = dialog.querySelector('.decklibrarysearch');
+      const draftCount = dialog.querySelector('.deckimportdraftcount');
       let validatedText = '';
       let validatedName = '';
       let validatedDeck = null;
@@ -397,6 +404,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         overlay.dataset.librarySource = library.source;
         overlay.dataset.libraryCount = String(library.entries.length);
         overlay.dataset.libraryReady = String(readyCount);
+        dialog.querySelector('.decklibrarynavcount').textContent = String(library.entries.length);
+        dialog.querySelector('.decklibrarysearchrow').hidden = !library.entries.length;
         librarySource.textContent = library.source === 'loading'
           ? 'Checking your profile…'
           : library.source === 'account' ? 'Saved to your account' : 'Saved in this browser · sign in before importing to save to your account';
@@ -425,9 +434,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             : '<div class="mainmenu-decklibrary-empty"><strong>No imported decks yet</strong><p>Check a complete list below and save it once. It will appear here next time.</p></div>';
           return;
         }
-        libraryList.innerHTML = library.entries.map(entry => `
+        const query = librarySearch.value.trim().toLowerCase();
+        const matches = library.entries.filter(entry => `${entry.name} ${entry.commanders.join(' ')}`.toLowerCase().includes(query));
+        dialog.querySelector('.decklibrarycount').textContent = query ? `${matches.length} of ${library.entries.length}` : `${readyCount} ready to play`;
+        if (!matches.length) {
+          libraryList.innerHTML = '<div class="mainmenu-decklibrary-empty"><strong>No decks match that search</strong><p>Try a commander name, or clear the search to see your collection.</p><button type="button" class="decklibraryclear">Clear search</button></div>';
+          libraryList.querySelector('.decklibraryclear').onclick = () => { librarySearch.value = ''; renderLibrary(); librarySearch.focus(); };
+          return;
+        }
+        libraryList.innerHTML = matches.map(entry => `
           <article class="mainmenu-decklibrary-card${entry.ready ? '' : ' is-unavailable'}" data-deck-id="${escAttr(entry.id)}" data-ready="${entry.ready ? 'true' : 'false'}">
-            <div><small>${entry.ready ? 'READY TO PLAY' : 'ENGINE UPDATE NEEDED'}</small><h4>${esc(entry.name || 'Unnamed imported deck')}</h4><p>${esc(entry.commanders.join(' + ') || 'Commander unavailable')}</p>${entry.ready ? '' : `<span>${esc(entry.issues[0]?.message || 'This saved deck is not supported by the current engine.')}</span>`}</div>
+            ${entry.commanders[0] ? `<img class="decklibraryart" loading="lazy" src="${cardImg(entry.commanders[0])}" alt="" onerror="MTG.imgFail(this)">` : ''}
+            <div class="decklibrarycardcopy"><small>${entry.ready ? 'READY TO PLAY' : 'ENGINE UPDATE NEEDED'}</small><h4>${esc(entry.name || 'Unnamed imported deck')}</h4><p>${esc(entry.commanders.join(' + ') || 'Commander unavailable')}</p>${entry.ready ? '' : `<span>${esc(entry.issues[0]?.message || 'This saved deck is not supported by the current engine.')}</span>`}</div>
             <div class="mainmenu-decklibrary-card-actions">
               <button type="button" class="mainmenu-decklibrary-play" ${entry.ready ? '' : 'disabled'}>Choose deck</button>
               <button type="button" class="mainmenu-decklibrary-remove">Remove</button>
@@ -469,6 +487,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       const onLibraryChange = () => renderLibrary();
       window.addEventListener('mtg:deck-library-change', onLibraryChange);
+      librarySearch.oninput = renderLibrary;
+      dialog.querySelectorAll('.decklibrarynav a').forEach(link => {
+        link.onclick = event => {
+          event.preventDefault();
+          const heading = dialog.querySelector(link.getAttribute('href'));
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+          heading.scrollIntoView({ block: 'start', behavior: 'instant' });
+        };
+      });
 
       const close = () => {
         window.removeEventListener('mtg:deck-library-change', onLibraryChange);
@@ -486,6 +514,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         delete overlay.dataset.commanders;
         resultBox.dataset.state = 'idle';
         resultBox.innerHTML = '<p>Nothing is imported until the complete list passes every check.</p>';
+        const parsed = U.parseDeckText(textInput.value);
+        const total = parsed.cards.reduce((count, card) => count + card.n, 0);
+        draftCount.dataset.complete = String(total === 100);
+        draftCount.innerHTML = textInput.value.trim()
+          ? `<span><b>${total}</b> / 100 cards · ${parsed.commanders.length} commander${parsed.commanders.length === 1 ? '' : 's'} marked</span><small>Draft count · check the list to confirm it</small>`
+          : '<span>Paste your exported decklist above.</span><small>100 cards including your commander</small>';
       };
       const showValidation = validation => {
         saveButton.textContent = 'Save to My Library';
@@ -494,8 +528,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           overlay.dataset.inputCards = String(validation.summary.inputCards);
           overlay.dataset.commanders = validation.commanders.join(' + ');
           resultBox.dataset.state = 'error';
-          const shown = validation.errors.slice(0, 8);
-          resultBox.innerHTML = `<strong>Decklist needs attention</strong><ul>${shown.map(error => `<li>${esc(error.message)}</li>`).join('')}</ul>${validation.errors.length > shown.length ? `<p>And ${validation.errors.length - shown.length} more issue${validation.errors.length - shown.length === 1 ? '' : 's'}.</p>` : ''}`;
+          const shown = validation.errors.slice(0, 5);
+          const remaining = validation.errors.slice(shown.length);
+          resultBox.innerHTML = `<strong>Decklist needs attention</strong><p>${validation.summary.inputCards} cards read · ${validation.errors.length} issue${validation.errors.length === 1 ? '' : 's'} to review</p><ul>${shown.map(error => `<li>${esc(error.message)}</li>`).join('')}</ul>${remaining.length ? `<details class="deckimportissues"><summary>Show ${remaining.length} more issue${remaining.length === 1 ? '' : 's'}</summary><ul>${remaining.map(error => `<li>${esc(error.message)}</li>`).join('')}</ul></details>` : ''}`;
           validatedDeck = null;
           saveButton.disabled = true;
           return;
@@ -507,7 +542,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         overlay.dataset.inputCards = String(validation.summary.inputCards);
         overlay.dataset.commanders = validation.commanders.join(' + ');
         resultBox.dataset.state = 'ready';
-        resultBox.innerHTML = `<strong>Ready to play</strong><p>Save as: <b>${esc(U.availableImportedDeckName(validation.deck.name))}</b></p><p>${validation.summary.inputCards} cards · ${validation.summary.uniqueCards} unique · ${validation.summary.engineCertified} engine-certified · ${validation.interactions.contracts.length} interaction contracts</p><small>Commander: ${esc(validation.commanders.join(' + '))}</small>`;
+        resultBox.innerHTML = `<strong>Ready to play</strong><p>Save as: <b>${esc(U.availableImportedDeckName(validation.deck.name))}</b></p><p>${validation.summary.inputCards} cards · ${validation.summary.uniqueCards} unique · all cards supported</p><small>Commander: ${esc(validation.commanders.join(' + '))}</small>`;
         saveButton.disabled = false;
       };
 
@@ -520,6 +555,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       textInput.addEventListener('input', setDirty);
       nameInput.addEventListener('input', setDirty);
+      const fileButton = dialog.querySelector('.deckimportfilebutton');
+      const fileInput = dialog.querySelector('.deckimportfile');
+      fileButton.onclick = () => fileInput.click();
+      fileInput.onchange = async () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        fileButton.disabled = true;
+        fileButton.textContent = 'Reading file…';
+        const previousText = textInput.value;
+        try {
+          if (file.size > 1024 * 1024) throw new Error('Choose a decklist text file smaller than 1 MB.');
+          const contents = await file.text();
+          if (!overlay.isConnected) return;
+          if (textInput.value !== previousText) throw new Error('Your decklist changed while the file opened. Open the file again to replace it.');
+          textInput.value = contents;
+          setDirty();
+          textInput.focus();
+          resultBox.innerHTML = `<p>Opened <b>${esc(file.name)}</b>. Check the decklist when you are ready.</p>`;
+        } catch (error) {
+          resultBox.dataset.state = 'error';
+          resultBox.innerHTML = `<strong>File could not be opened</strong><p>${esc(error.message || 'Try exporting your deck as a text file.')}</p>`;
+        } finally {
+          fileInput.value = '';
+          fileButton.disabled = false;
+          fileButton.textContent = 'Open .txt file';
+        }
+      };
       form.onsubmit = event => {
         event.preventDefault();
         const validation = U.importCommanderDeck(textInput.value, {
@@ -577,7 +639,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       U.enhanceDialog(overlay, dialog, {
         label: 'Import Commander decklist',
-        initialFocus: textInput,
+        initialFocus: U.getImportedDeckLibrary().entries.length ? librarySearch : textInput,
         returnFocus: page.querySelector('.mainmenu-import-action'),
       });
       renderLibrary();
@@ -659,6 +721,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     root.removeAttribute('aria-busy');
     root.style.display = 'block';
     root.dataset.appView = 'setup';
+    root.setAttribute('role', 'main');
     document.body.classList.remove('game-active');
     document.body.classList.remove('deck-spotlight-open');
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
@@ -672,7 +735,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <button type="button" class="setupstep" data-step="pod"><span>2</span><b>Pod</b></button>
         <button type="button" class="setupstep" data-step="review"><span>3</span><b>Review</b></button>
       </nav>
-      <div class="menu-mana-showcase" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
+      <div class="menu-mana-showcase" role="img" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
         ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}
       </div>
       <div class="setuphero">
@@ -709,7 +772,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       diplomacyEnabled: false,
       arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
       applyingReplay: false,
-      search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
+      search: '', color: 'all', strategy: 'all', year: 'all', complexity: 'all', favoritesOnly: false,
       setupStage: 'deck', playstyle: 'all', deckPage: 1,
       favorites: new Set(savedFavorites),
       deckView: U.playerPreferences().deckView, deckSort: U.playerPreferences().deckSort,
@@ -806,13 +869,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const commanderCards = commanders.map(cardName => `
         <button type="button" class="deckspotlightcommanderart" data-card-preview="${escAttr(cardName)}" aria-label="Inspect ${escAttr(cardName)}">
           <img class="deckspotlightcard" src="${cardImg(cardName)}" alt="${escAttr(cardName)}" onerror="MTG.imgFail(this)">
-          <span>View card <b aria-hidden="true">↗</b></span>
+          <span>View card <b aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></b></span>
         </button>`).join('');
       const keyCards = guide.keys.map(cardName => `
         <figure class="deckspotlightkey">
           <button type="button" class="deckspotlightkeyart" data-card-preview="${escAttr(cardName)}" aria-label="Inspect ${escAttr(cardName)}">
             <img loading="eager" decoding="async" src="${cardImg(cardName)}" alt="${escAttr(cardName)}" onerror="MTG.imgFail(this)">
-            <span>View card <b aria-hidden="true">↗</b></span>
+            <span>View card <b aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></b></span>
           </button>
           <figcaption><small>${commanders.includes(cardName) ? 'COMMANDER' : deck.custom ? 'FROM YOUR DECK' : 'KEY CARD'}</small><b>${esc(cardName)}</b><span>${esc(typeLine(MTG.DEFS[cardName] || {}))}</span></figcaption>
         </figure>`).join('');
@@ -887,6 +950,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (dungeonCards.length) dialog.querySelector('[data-deck-dungeons]').appendChild(U.renderDungeonExplorer());
       document.body.classList.add('deck-spotlight-open');
       const content = dialog.querySelector('.deckspotlightcontent');
+      const sectionControls = [...dialog.querySelectorAll('[data-spotlight-section]')];
+      const syncSpotlightSection = () => {
+        const top = content.getBoundingClientRect().top + Math.min(140, content.clientHeight / 3);
+        let active = 'overview';
+        dialog.querySelectorAll('[data-spotlight-target]').forEach(section => {
+          if (section.getBoundingClientRect().top <= top) active = section.dataset.spotlightTarget;
+        });
+        if (content.scrollTop > 0 && content.scrollTop + content.clientHeight >= content.scrollHeight - 4) {
+          active = sectionControls.at(-1).dataset.spotlightSection;
+        }
+        sectionControls.forEach(button => {
+          if (button.dataset.spotlightSection === active) button.setAttribute('aria-current', 'location');
+          else button.removeAttribute('aria-current');
+        });
+      };
+      let sectionFrame = false;
+      content.addEventListener('scroll', () => {
+        if (sectionFrame) return;
+        sectionFrame = true;
+        requestAnimationFrame(() => { sectionFrame = false; if (dialog.isConnected) syncSpotlightSection(); });
+      }, { passive: true });
+      sectionControls[0]?.setAttribute('aria-current', 'location');
       dialog.querySelectorAll('[data-spotlight-section]').forEach(button => {
         button.onclick = () => {
           const section = dialog.querySelector(`[data-spotlight-target="${button.dataset.spotlightSection}"]`);
@@ -981,11 +1066,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const libraryEntry = deck.custom && U.getImportedDeckLibrary().entries.find(entry => entry.name === name && entry.ready);
       if (deck.custom && !libraryEntry) return [];
       const commanders = libraryEntry ? libraryEntry.commanders.slice() : MTG.defaultCommanders(deck, MTG.DEFS);
-      return [{ ...U.deckExplorerRecord(name, deck, MTG.DECK_META[name], commanders), deck, libraryEntry }];
+      return [{ ...U.deckExplorerRecord(name, deck, MTG.DECK_META[name], commanders), deck, libraryEntry,
+        complexity: U.DECK_GUIDES[name]?.complexity || 'Custom deck' }];
     });
+    const pilotCatalog = () => state.complexity === 'all' ? deckCatalog
+      : deckCatalog.filter(record => record.complexity === state.complexity);
     const releaseYears = [...new Set(deckCatalog.map(entry => entry.year).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
     const explorerHead = el('div', 'deckexplorerhead', `
-      <div><span class="eyebrow">Deck library</span><h2>Find your next deck</h2></div>
+      <div><span class="eyebrow">The collection</span><h2>Find your next deck</h2><p>Pick a commander. Explore the plan. Make it yours.</p></div>
       <div class="deckexploreractions">
         <button type="button" class="surprisedeck">↝ Surprise me</button>
       </div>`);
@@ -998,7 +1086,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const recentShelf = el('section', 'recentdecks');
     const recentNames = U.recentDecks().filter(name => MTG.DECKS[name] && !MTG.DECKS[name].custom);
     recentShelf.hidden = !recentNames.length;
-    recentShelf.innerHTML = `<span>Back to a favorite</span><div>${recentNames.slice(0, 4).map(name => `<button type="button" data-recent-deck="${escAttr(name)}"><img src="${commanderImg(name)}" alt=""><b>${esc(name)}</b><span>↗</span></button>`).join('')}</div>`;
+    recentShelf.innerHTML = `<span>Back to a favorite</span><div>${recentNames.slice(0, 4).map(name => `<button type="button" data-recent-deck="${escAttr(name)}"><img src="${commanderImg(name)}" alt=""><b>${esc(name)}</b><span><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button>`).join('')}</div>`;
     discovery.appendChild(recentShelf);
     const playstyleQuick = el('section', 'playstylequick');
     playstyleQuick.setAttribute('aria-labelledby', 'playstyle-title');
@@ -1018,12 +1106,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     left.appendChild(deckToolbar);
     const deckTools = el('div', 'decktools');
     deckTools.innerHTML = `
-      <label class="decksearch"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search decks or commanders" aria-label="Search decks, commanders, sets or themes" aria-describedby="deck-search-hint"><small id="deck-search-hint" class="sr-only">Search by deck, either partner commander, release set, or theme.</small></label>
+      <div class="decksearch"><label class="sr-only" for="deck-search">Search decks, commanders, sets or themes</label><span aria-hidden="true">⌕</span><input id="deck-search" type="search" placeholder="A deck, commander, or playstyle…" aria-label="Search decks, commanders, sets or themes" aria-describedby="deck-search-hint" autocomplete="off"><button type="button" class="decksearchclear" aria-label="Clear deck search" hidden>×</button><small id="deck-search-hint" class="sr-only">Search by deck, either partner commander, release set, or theme.</small></div>
       <button type="button" class="deckfiltertoggle" aria-expanded="false" aria-controls="deck-filter-options">Filters</button>
       <div class="deckfilteroptions" id="deck-filter-options">
       <label><span class="sr-only">Colors</span><select data-filter="color" aria-label="Filter by color"><option value="all">All colors</option>${Object.entries({ W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', C: 'Colorless' }).map(([color, label]) => `<option value="${color}">${label}</option>`).join('')}</select></label>
       <label><span class="sr-only">Strategy</span><select data-filter="strategy" aria-label="Filter by strategy"><option value="all">Strategy</option><option value="tokens">Tokens</option><option value="counters">Counters</option><option value="spells">Spells</option><option value="artifacts">Artifacts</option><option value="combat">Combat</option><option value="politics">Politics</option></select></label>
       <label><span class="sr-only">Year</span><select data-filter="year" aria-label="Filter by year"><option value="all">All years</option>${releaseYears.map(y => `<option value="${y}">${y}</option>`).join('')}</select></label>
+      <label><span class="sr-only">Pilot experience</span><select data-filter="complexity" aria-label="Filter by pilot experience"><option value="all">Any experience</option><option value="Approachable">Approachable</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="Custom deck">My imported decks</option></select></label>
       <button type="button" class="favoritefilter" aria-pressed="false">☆ Favorites</button>
       </div>`;
     deckToolbar.appendChild(deckTools);
@@ -1034,7 +1123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       deckTools.classList.toggle('filters-open', open);
     };
     const deckBrowseBar = el('div', 'deckbrowsebar');
-    deckBrowseBar.innerHTML = `<span class="deckresultcount" role="status" aria-live="polite" aria-atomic="true"></span><div class="deckbrowseoptions"><label>Sort <select class="decksort" aria-label="Sort decks"><option value="name">Name A–Z</option><option value="recent">Recently played</option><option value="newest">Newest first</option></select></label><div class="deckviewchoices" role="group" aria-label="Deck layout"><button type="button" data-deck-view="gallery">Grid</button><button type="button" data-deck-view="compact">Compact</button></div></div><div class="activefilters" aria-label="Active deck filters"></div>`;
+    deckBrowseBar.innerHTML = `<span class="deckresultcount" role="status" aria-live="polite" aria-atomic="true"></span><div class="deckbrowseoptions"><label>Sort <select class="decksort" aria-label="Sort decks"><option value="name">Name A–Z</option><option value="recent">Recently played</option><option value="newest">Newest first</option></select></label><div class="deckviewchoices" role="group" aria-label="Deck layout"><button type="button" data-deck-view="gallery">Grid</button><button type="button" data-deck-view="compact">Compact</button></div></div><div class="activefilters" role="group" aria-label="Active deck filters"></div>`;
     deckToolbar.appendChild(deckBrowseBar);
     deckBrowseBar.querySelector('.decksort').value = state.deckSort;
     deckBrowseBar.querySelectorAll('[data-deck-view]').forEach(button => {
@@ -1047,7 +1136,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
     });
     const deckPageSize = 24;
-    let browseResult = U.browseDecks(deckCatalog, state, U.recentDecks(), deckPageSize);
+    let browseResult = U.browseDecks(pilotCatalog(), state, U.recentDecks(), deckPageSize);
     const deckList = el('div', 'decklist');
     deckList.id = 'deck-results';
     deckList.setAttribute('role', 'list');
@@ -1082,8 +1171,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <div class="deckcmd"><b>${commanders.map(esc).join(' + ')}</b></div>
           <div class="deckcolors" aria-label="Color identity">${(record.colors.length ? record.colors : ['C']).map(c => `<img class="deckmana" src="./assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')}</div>
           <div class="deckstyle">${esc(meta.style || 'Your imported deck')}</div>
+          <span class="deckexperience">${esc(record.complexity)}</span>
           <div class="deckset">${esc(meta.set || 'My Library')}</div>
-          <span class="deckopen">Explore deck <span aria-hidden="true">↗</span></span>
+          <span class="deckopen">Explore deck <span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
         </div>`;
       const favorite = el('button', 'deckfavorite', state.favorites.has(name) ? '★' : '☆');
       favorite.type = 'button';
@@ -1188,6 +1278,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (state.color !== 'all') parts.push(deckTools.querySelector('[data-filter="color"]').selectedOptions[0].textContent);
       if (state.strategy !== 'all') parts.push(`${state.strategy} strategy`);
       if (state.year !== 'all') parts.push(`release year ${state.year}`);
+      if (state.complexity !== 'all') parts.push(state.complexity === 'Custom deck' ? 'imported decks' : `${state.complexity.toLowerCase()} decks`);
       if (state.favoritesOnly) parts.push('favorites only');
       return parts.length ? parts.join(' · ') : 'the current filters';
     };
@@ -1225,10 +1316,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const filterDecks = ({ resetPage = true } = {}) => {
       const focusedDeckControl = deckList.contains(document.activeElement) ? document.activeElement : null;
       if (resetPage) state.deckPage = 1;
-      browseResult = U.browseDecks(deckCatalog, state, U.recentDecks(), deckPageSize);
+      browseResult = U.browseDecks(pilotCatalog(), state, U.recentDecks(), deckPageSize);
       state.deckPage = browseResult.page;
-      const filterCount = [state.color, state.strategy, state.year].filter(value => value !== 'all').length + Number(state.favoritesOnly);
+      const filterCount = [state.color, state.strategy, state.year, state.complexity].filter(value => value !== 'all').length + Number(state.favoritesOnly);
       filterToggle.textContent = filterCount ? `Filters (${filterCount})` : 'Filters';
+      deckTools.querySelector('.decksearchclear').hidden = !state.search;
       const visible = browseResult.total;
       const pageEntries = new Set(browseResult.entries);
       deckCatalog.forEach(record => { record.element.hidden = !pageEntries.has(record); });
@@ -1250,7 +1342,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       noResults.hidden = visible !== 0;
       const activeFilters = deckBrowseBar.querySelector('.activefilters');
       activeFilters.replaceChildren();
-      for (const [key, label] of [['search', state.search], ['color', state.color !== 'all' ? deckTools.querySelector('[data-filter="color"]').selectedOptions[0].textContent : ''], ['strategy', state.strategy !== 'all' ? state.strategy : ''], ['year', state.year !== 'all' ? state.year : ''], ['favoritesOnly', state.favoritesOnly ? 'Favorites' : '']]) {
+      for (const [key, label] of [['search', state.search], ['color', state.color !== 'all' ? deckTools.querySelector('[data-filter="color"]').selectedOptions[0].textContent : ''], ['strategy', state.strategy !== 'all' ? state.strategy : ''], ['year', state.year !== 'all' ? state.year : ''], ['complexity', state.complexity !== 'all' ? state.complexity === 'Custom deck' ? 'My imported decks' : state.complexity : ''], ['favoritesOnly', state.favoritesOnly ? 'Favorites' : '']]) {
         if (!label) continue;
         const chip = el('button', 'filterchip');
         chip.type = 'button'; chip.textContent = `${label} ×`; chip.setAttribute('aria-label', `Remove ${label} filter`);
@@ -1320,6 +1412,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       button.onclick = () => deckList.querySelector(`.deckentry[data-deck="${CSS.escape(button.dataset.recentDeck)}"] .deckcard`)?.click();
     });
     deckTools.querySelector('input').oninput = e => { state.search = e.target.value.trim().toLowerCase(); filterDecks(); };
+    deckTools.querySelector('.decksearchclear').onclick = () => {
+      const search = deckTools.querySelector('input');
+      search.value = ''; state.search = ''; filterDecks(); search.focus();
+    };
     deckTools.querySelector('[data-filter="color"]').onchange = e => { state.color = e.target.value; filterDecks(); };
     deckTools.querySelector('[data-filter="strategy"]').onchange = e => {
       state.strategy = state.playstyle = e.target.value;
@@ -1327,6 +1423,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filterDecks();
     };
     deckTools.querySelector('[data-filter="year"]').onchange = e => { state.year = e.target.value; filterDecks(); };
+    deckTools.querySelector('[data-filter="complexity"]').onchange = e => { state.complexity = e.target.value; filterDecks(); };
     const favoriteFilter = deckTools.querySelector('.favoritefilter');
     favoriteFilter.onclick = () => {
       state.favoritesOnly = !state.favoritesOnly;
@@ -1336,11 +1433,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filterDecks();
     };
     const clearFilters = () => {
-      state.search = ''; state.color = 'all'; state.strategy = 'all'; state.year = 'all'; state.favoritesOnly = false;
+      state.search = ''; state.color = 'all'; state.strategy = 'all'; state.year = 'all'; state.complexity = 'all'; state.favoritesOnly = false;
       deckTools.querySelector('input').value = '';
       deckTools.querySelector('[data-filter="color"]').value = 'all';
       deckTools.querySelector('[data-filter="strategy"]').value = 'all';
       deckTools.querySelector('[data-filter="year"]').value = 'all';
+      deckTools.querySelector('[data-filter="complexity"]').value = 'all';
       favoriteFilter.classList.remove('on');
       favoriteFilter.setAttribute('aria-pressed', 'false');
       favoriteFilter.textContent = '☆ Favorites';
@@ -1424,7 +1522,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const tag = MTG.cmdTag(def);
         const chip = el('div', 'cmdchip');
         chip.innerHTML = `
-          <img loading="lazy" src="${artURL(nm)}" onerror="MTG.imgFail(this)">
+          <img loading="lazy" src="${artURL(nm)}" alt="${escAttr(nm)}" onerror="MTG.imgFail(this)">
           <div class="cmdchipinfo">
             <div class="cmdchipname">${esc(nm)}</div>
             <div class="cmdchiptype">${esc(typeLine(def))}</div>
@@ -1445,6 +1543,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (res) { state.commanders = res; renderCmdBox(); updateStartLabel(); }
       };
       cmdBox.appendChild(btn);
+      const selectedBar = root.querySelector('.setupmobilebar .mobiledeck');
+      if (selectedBar) selectedBar.innerHTML = `<img src="${cardImg(state.commanders[0])}" alt="" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(state.deck)}</b></span>`;
     }
 
     const opponentsLabel = el('div', 'seclabel', '<i>Pod</i> Opponents <em>Choose each AI deck</em>');
@@ -1473,7 +1573,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       balanced: 'Standard, balanced AI logic.',
       random: 'Each bot receives a random personality, revealed in game.',
     };
-    const renderBotStyles = () => {
+    const renderBotStyles = (focusSeat = null) => {
       botStyles.innerHTML = '';
       const botNames = ['AI Dragon', 'AI Wolf', 'AI Raven'];
       const deckNames = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).sort((a, b) => a.localeCompare(b));
@@ -1533,7 +1633,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         deckSelect.onchange = () => {
           state.aiDecks[i] = deckSelect.value;
-          renderBotStyles();
+          renderBotStyles(i);
         };
         deckField.appendChild(deckSelect);
 
@@ -1577,6 +1677,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         config.appendChild(row); config.appendChild(desc);
         botStyles.appendChild(config);
       }
+      if (Number.isInteger(focusSeat)) requestAnimationFrame(() => botStyles.querySelectorAll('.deckselect')[focusSeat]?.focus({ preventScroll: true }));
     };
     for (const n of [1, 2, 3]) {
       const b = el('button', 'pbtn choice' + (n === state.ai ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI players');
@@ -1655,18 +1756,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const DIFFICULTY_NOTES = {
       easy: {
         title: 'Easy', tag: 'learning table',
-        text: 'Bots look one step ahead at 4 candidate plays and gladly accept a slightly weaker line. They miss some lethal attacks and make loose trades. Pick this to learn a deck.',
-        facts: [['Lookahead', '1 step'], ['Candidate plays', '4'], ['Simulated lines', '3'], ['Mistakes', 'frequent']],
+        text: 'More room to learn your deck. Opponents plan fewer moves ahead, make looser trades, and leave more openings for you.',
       },
       normal: {
         title: 'Normal', tag: 'default',
-        text: 'Bots weigh 10 candidate plays up to 3 steps ahead and simulate 6 lines per decision. They take the best line most of the time, with a little variance.',
-        facts: [['Lookahead', '3 steps'], ['Candidate plays', '10'], ['Simulated lines', '6'], ['Mistakes', 'occasional']],
+        text: 'A balanced Commander table. Opponents plan ahead, develop their boards, and usually take a strong line while leaving some room for surprises.',
       },
       hard: {
         title: 'Hard', tag: 'competitive',
-        text: 'Bots weigh 18 candidate plays up to 4 steps ahead, simulate 9 lines and consider up to 14 targets. They almost always find the strongest line: open mana gets punished, bad attacks are refused and removal is saved for real threats.',
-        facts: [['Lookahead', '4 steps'], ['Candidate plays', '18'], ['Simulated lines', '9'], ['Mistakes', 'rare']],
+        text: 'A sharper challenge. Opponents consider more plays, protect valuable threats, and punish risky attacks. Complex turns can take longer to think through.',
       },
     };
     const diffRow = el('div', 'btnrow center difficultyrow');
@@ -1677,8 +1775,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const note = DIFFICULTY_NOTES[key] || DIFFICULTY_NOTES.normal;
       diffNote.classList.toggle('previewing', !!previewing);
       diffNote.innerHTML = `<b>${esc(note.title)}<em>${esc(note.tag)}${previewing ? ' · hover preview' : ' · selected'}</em></b>` +
-        `<p>${esc(note.text)}</p>` +
-        `<ul>${note.facts.map(([label, value]) => `<li><i>${esc(label)}</i>${esc(value)}</li>`).join('')}</ul>`;
+        `<p>${esc(note.text)}</p>`;
     };
     for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
@@ -1714,13 +1811,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const startBtn = el('button', 'pbtn primary start', 'Choose a deck first');
     startBtn.disabled = true;
-    const launchSelectedTable = () => {
+    let launchingTable = false;
+    const launchSelectedTable = async () => {
+      if (launchingTable) return;
+      launchingTable = true;
+      const launchButton = reviewStage.querySelector('.reviewstart');
+      if (launchButton) { launchButton.disabled = true; launchButton.textContent = state.mode === 'online' ? 'Opening your room…' : 'Shuffling your table…'; }
+      reviewStage.setAttribute('aria-busy', 'true');
+      const launchStatus = reviewStage.querySelector('.reviewlaunchstatus');
+      if (launchStatus) launchStatus.textContent = state.mode === 'online' ? 'Your room is opening. Invite your friends next.' : 'Preparing the decks. Your opening hand is next.';
+      // Let the real launch state paint before deck initialization begins.
+      await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
       try {
+        if (!launchButton?.isConnected || state.setupStage !== 'review') return;
         return state.mode === 'online' ? openOnlineLobby(state) : startGame(state);
       } catch (error) {
         setSetupStage('pod');
         diagnostics.open = true;
         showImportStatus(error?.message || 'The table could not start. Please select your deck again.', true);
+      } finally {
+        launchingTable = false;
+        reviewStage.removeAttribute('aria-busy');
       }
     };
     startBtn.onclick = () => setSetupStage('review');
@@ -1754,6 +1865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       randRow.hidden = state.mode === 'online';
       difficultyLabel.hidden = state.mode === 'online';
       diffRow.hidden = state.mode === 'online';
+      diffNote.hidden = state.mode === 'online';
       opponentsLabel.innerHTML = state.mode === 'online'
         ? `<i>Live pod</i> ${state.livePlayers} total seats <em>Add humans or bots in the lobby</em>`
         : '<i>Pod</i> Opponents <em>Choose each AI deck</em>';
@@ -1803,7 +1915,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const colors = (MTG.DECK_META[deck] || {}).colors || selected?.colors || [];
         // Use the official card-art resolver, including imported commanders.
         const art = lead ? `<img class="ct-review-art" src="${artURL(lead)}" alt="${escAttr(lead)}" onerror="MTG.imgFail(this)">`
-          : `<div class="ct-review-art ct-review-random">${U.icon('cards')}<span>${selected ? 'Commander chosen at start' : state.mode === 'online' ? 'Chooses after joining' : 'A surprise at the table'}</span></div>`;
+          : `<div class="ct-review-art ct-review-random"><img class="review-cardback" src="${escAttr(U.cardBackURL?.() || './assets/cardbacks/obsidian.webp')}" alt="Face-down deck"><span>${selected ? 'Commander chosen at start' : state.mode === 'online' ? 'Chooses after joining' : 'A surprise at the table'}</span></div>`;
         const commanderLabel = commandNames.map(value => value.split(',')[0]).join(' + ') || (selected ? 'Random commander' : deck);
         return `<article class="ct-review-seat${human ? ' is-human' : ''}">
           ${art}<span class="ct-review-number">${number}</span>
@@ -1831,7 +1943,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <div class="reviewactions">
           <button type="button" class="pbtn reviewback">← Back to pod</button>
           <button type="button" class="pbtn primary reviewstart">${state.mode === 'online' ? `Create ${state.livePlayers}-player room` : 'Start game'}</button>
-        </div>`;
+        </div>
+        <p class="reviewlaunchstatus" role="status" aria-live="polite">${state.mode === 'online' ? 'Next: invite your friends and assign the seats.' : 'Next: review your opening hand before the first turn.'}</p>`;
       if (state.mode === 'solo') {
         const save = el('form', 'savepodform');
         save.innerHTML = `<label for="pod-save-name">Keep this table for next time<small>Keep up to six pods on this device. Saves decks, seats and rules; each game gets a fresh shuffle.</small></label><div><input id="pod-save-name" type="text" maxlength="48" placeholder="Name this pod" aria-label="Saved pod name" required><button type="submit" class="pbtn">Save pod</button></div><p role="status" class="savepodstatus"></p>`;
@@ -1864,7 +1977,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mobileContinue.type = 'button';
     mobileContinue.disabled = true;
     mobileContinue.onclick = () => setSetupStage('pod');
+    const selectedDetails = el('button', 'setupselectiondetails', 'View deck');
+    selectedDetails.type = 'button';
+    selectedDetails.onclick = () => { if (state.deck) openDeckSpotlight(state.deck, selectedDetails); };
     mobileBar.appendChild(mobileDeck);
+    mobileBar.appendChild(selectedDetails);
     mobileBar.appendChild(mobileContinue);
     root.appendChild(mobileBar);
 
@@ -2036,7 +2153,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const row = el('div', 'savedpodrow');
         const open = el('button', 'savedpodopen');
         open.type = 'button';
-        open.innerHTML = `<span>${U.icon('player')}</span><div><b>${esc(pod.name)}</b><small>${esc(pod.setup.deck)} · ${U.podSnapshot(pod.setup).ai} AI</small></div><span>↗</span>`;
+        open.innerHTML = `<span>${U.icon('player')}</span><div><b>${esc(pod.name)}</b><small>${esc(pod.setup.deck)} · ${U.podSnapshot(pod.setup).ai} AI</small></div><span><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>`;
         open.onclick = () => applySavedPod(pod);
         const remove = el('button', 'savedpodremove', '×');
         remove.type = 'button'; remove.setAttribute('aria-label', `Remove saved pod ${pod.name}`);
@@ -2151,14 +2268,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   async function openOnlineLobby(state, roomCode = null) {
     const root = $('#setup');
+    root.removeAttribute('role');
     root.style.display = 'block';
     $('#game').style.display = 'none';
     document.body.classList.remove('game-active');
     if (typeof MTG.createHiggsfieldRoomClient !== 'function') {
       root.innerHTML = `
         <main class="online-lobby unavailable">
-          <header class="online-lobby-head"><button type="button" class="online-back">← Back</button><div><span>COMMANDER LIVE</span><h1>Live rooms open on the deployed game.</h1><p>The local build includes the complete multiplayer engine and UI. Open the Vercel preview or Higgsfield Games link to create or join an internet room.</p></div></header>
-          <section class="online-unavailable-card"><i></i><div><small>LOCAL PREVIEW</small><b>The online room service is not active on this origin</b><span>No account or external model service is required for guest play.</span></div></section>
+          <header class="online-lobby-head"><button type="button" class="online-back">← Back</button><div><span>COMMANDER LIVE</span><h1>Bring your friends to the hosted table.</h1><p>Live rooms are available at mtgpod.xyz. You can keep playing Solo in this copy.</p></div></header>
+          <section class="online-unavailable-card"><i></i><div><small>LIVE ROOMS</small><b>Open the hosted game to create or join a room</b><span>Guest play is available without an account.</span><a href="https://www.mtgpod.xyz/">Open mtgpod.xyz <span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></a></div></section>
         </main>`;
       root.querySelector('.online-back').onclick = renderSetup;
       return null;

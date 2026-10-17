@@ -1,0 +1,155 @@
+/* Arena preferences, original sleeves, and public-card search. */
+#game .experiencesettingsov { padding: 24px; align-items: center; }
+#game .quickmenu.experiencesettings {
+  width: min(760px, 100%); max-height: calc(100 * var(--dvhu) - 48px); display: flex; flex-direction: column;
+  overflow: hidden; border: 1px solid var(--ds-line); border-radius: 20px;
+  background: var(--ds-dialog); box-shadow: var(--ds-shadow-dialog);
+}
+#game .experiencesettings .quickmenuhead { padding: 22px 26px 20px; flex: none; background: linear-gradient(115deg, rgba(var(--ds-accent-rgb), .06), transparent 65%); }
+#game .experiencesettings .quickmenuhead h2 { margin: 6px 0 0; font-size: 28px; line-height: 1.15; }
+.settingstabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 8px 20px; border-bottom: 1px solid var(--ds-line-soft); flex: none; }
+.settingstab { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 46px; padding: 10px 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ds-muted); font-size: 13px; font-weight: 650; cursor: pointer; }
+.settingstab:hover { background: var(--ds-panel-raised); color: var(--ds-text); }
+.settingstab[aria-selected='true'] { color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .09); border-color: rgba(var(--ds-accent-rgb), .28); }
+.settingsicon { --settings-icon-size: 21px; width: var(--settings-icon-size); height: var(--settings-icon-size); flex: none; display: grid; place-items: center; color: inherit; }
+.settingsicon .gameicon { display: block; width: var(--settings-icon-size); height: var(--settings-icon-size); margin: 0; }
+.settingsbody { padding: 22px 26px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; scrollbar-gutter: stable; }
+.settingsintro { margin: 0 0 22px; }
+.settingsintro h3 { font: 600 22px/1.2 var(--ds-font-display); color: var(--ds-text); margin: 0 0 7px; letter-spacing: -.025em; }
+.settingsintro p, .settingsnote { margin: 0; font-size: 13px; line-height: 1.65; color: var(--ds-muted); }
+.settingsgroup { margin-top: 24px; }
+.settingsgroup h4 { margin: 0 0 10px; color: var(--ds-accent-soft); font-size: 11px; line-height: 1.4; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.settingscontext { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 1px solid var(--ds-line-soft); border-radius: 10px; background: var(--ds-panel); }
+.settingscontext > .settingsicon { color: var(--ds-accent-bright); }
+.settingscontext b { color: var(--ds-text); font-size: 14px; }
+.settingscontext > span:last-child { margin-left: auto; font: 500 12px var(--ds-font-mono); color: var(--ds-muted); }
+#game .quickmenuitem.settingsaction { display: flex; flex-direction: row; align-items: center; width: 100%; gap: 14px; min-height: 70px; padding: 14px 12px; background: transparent; border: 0; border-bottom: 1px solid var(--ds-line-soft); border-radius: 0; text-align: left; color: var(--ds-copy); }
+#game .settingsaction:hover { background: rgba(var(--ds-panel-raised-rgb), .7); border-radius: 8px; color: var(--ds-text); }
+#game .settingsaction > .settingsicon:first-child { color: var(--ds-accent-soft); }
+#game .settingsaction > .settingsicon:last-child { --settings-icon-size: 15px; margin-left: auto; color: var(--ds-muted); }
+#game .settingsaction .settingsactioncopy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 5px; }
+#game .settingsactioncopy > span { font-size: 14px; color: var(--ds-text); line-height: 1.35; }
+#game .settingsactioncopy > small { font-size: 12px; line-height: 1.5; color: var(--ds-muted); font-weight: 450; }
+.settingscardbackthumb { width: 31px; height: 44px; object-fit: cover; border-radius: 4px; flex: none; border: 1px solid var(--ds-line); }
+.settingsrow { display: flex; align-items: center; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--ds-line-soft); }
+.settingscopy { flex: 1; min-width: 0; }
+.settingscopy > b { display: block; font-size: 14px; color: var(--ds-text); line-height: 1.4; font-weight: 650; }
+.settingscopy > small { display: block; font-size: 12px; line-height: 1.6; color: var(--ds-muted); margin-top: 5px; }
+.settingsselect { width: 140px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--ds-line); border-radius: 8px; background: var(--ds-panel-raised); color: var(--ds-text); font-size: 13px; cursor: pointer; }
+.settingsswitch { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; min-width: 98px; padding: 6px 0 6px 8px; border: 0; background: transparent; cursor: pointer; color: var(--ds-muted); }
+.settingsswitchtrack { position: relative; width: 40px; height: 24px; background: var(--ds-line); border: 1px solid var(--ds-muted); border-radius: 20px; flex: none; transition: background var(--ds-t-fast); }
+.settingsswitchtrack::after { content: ''; position: absolute; width: 16px; height: 16px; top: 3px; left: 3px; border-radius: 50%; background: var(--ds-copy); transition: transform var(--ds-t-fast); }
+.settingsswitch[aria-checked='true'] { color: var(--ds-accent-bright); }
+.settingsswitch[aria-checked='true'] .settingsswitchtrack { background: var(--ds-accent); border-color: var(--ds-accent-bright); }
+.settingsswitch[aria-checked='true'] .settingsswitchtrack::after { background: var(--ds-accent-ink); transform: translateX(16px); }
+.settingsswitchvalue { width: 24px; font-size: 12px; font-weight: 650; text-align: left; }
+.settingsnote { margin-top: 12px; font-size: 12px; }
+.settingsadvanced { margin-top: 22px; border-bottom: 1px solid var(--ds-line-soft); }
+.settingsadvanced summary { cursor: pointer; min-height: 44px; padding: 12px 0; font-size: 13px; color: var(--ds-copy); }
+.settingsadvanced summary::marker { color: var(--ds-accent-soft); }
+.settingsadvancedbody { padding: 0 0 12px; }
+.settingsfooter { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 26px; border-top: 1px solid var(--ds-line); background: var(--ds-panel); }
+.settingsstatus { max-width: 350px; margin: 0; font-size: 11px; line-height: 1.6; color: var(--ds-muted); }
+.settingsdone { flex: none; min-width: 146px; }
+#game .cardbackov { padding: 24px; }
+#game .quickmenu.cardbackpicker { display: flex; flex-direction: column; width: min(800px, 100%); max-height: calc(100 * var(--dvhu) - 48px); border-radius: 20px; overflow: hidden; }
+.cardbackpicker .quickmenuhead { flex: none; padding: 22px 26px; }
+#game .cardbackpicker .quickmenuhead h2 { margin: 6px 0 0; font-size: 30px; }
+.cardbackbody { padding: 20px 26px; overflow-y: auto; overscroll-behavior: contain; }
+.cardbackintro { font-size: 14px; line-height: 1.65; color: var(--ds-muted); margin: 0 0 22px; max-width: 480px; }
+.cardbackgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.cardbackchoice { min-width: 0; display: flex; align-items: center; flex-direction: column; padding: 8px 8px 12px; border: 1px solid transparent; border-radius: 14px; background: transparent; color: var(--ds-text); cursor: pointer; transition: background var(--ds-t-base), border-color var(--ds-t-base); }
+.cardbackchoice:hover { background: var(--ds-panel-raised); }
+.cardbackchoice[aria-pressed='true'] { background: rgba(var(--ds-accent-rgb), .06); border-color: var(--ds-accent); }
+.cardbackpreview { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 8px; box-shadow: 0 12px 25px rgba(0,0,0,.3); transition: transform var(--ds-t-base); }
+.cardbackchoice:hover .cardbackpreview { transform: translateY(-3px); }
+.cardbackchoice b { margin-top: 16px; font: 600 20px var(--ds-font-display); letter-spacing: -.025em; }
+.cardbackchoice small { min-height: 34px; margin: 6px 0 10px; font-size: 11px; line-height: 1.6; color: var(--ds-muted); }
+.cardbackselected { min-width: 76px; padding: 7px 12px; border: 1px solid var(--ds-line); border-radius: 20px; font-size: 11px; line-height: 1.1; font-weight: 700; color: var(--ds-muted); }
+[aria-pressed='true'] > .cardbackselected { border-color: var(--ds-accent); color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb),.08); }
+.cardbackstatus { margin: 20px 0 0; color: var(--ds-muted); font-size: 12px; line-height: 1.6; }
+.cardbackfooter { display: flex; justify-content: space-between; gap: 12px; padding: 16px 26px; border-top: 1px solid var(--ds-line); background: var(--ds-panel); flex: none; }
+.cardbackfooter button { min-width: 120px; }
+.commandpaletteov { padding-top: max(24px, calc(9 * var(--dvhu))); }
+.commandpalette { width: 700px; max-height: calc(84 * var(--dvhu)); border-radius: 20px; }
+.commandpalettehead { font-size: 24px; letter-spacing: -.025em; padding: 22px 24px 16px; }
+.commandpalettehead small { font-size: 13px; letter-spacing: 0; line-height: 1.6; }
+.commandsearchwrap { position: relative; display: flex; gap: 8px; margin: 0 24px; }
+.commandsearchwrap .commandsearch { margin: 0; width: 100%; padding: 14px 60px 14px 16px; font-size: 16px; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-panel); color: var(--ds-text); }
+.commandsearch::-webkit-search-cancel-button { -webkit-appearance: none; }
+.commandclear { position: absolute; right: 5px; top: 4px; width: 44px; height: 44px; min-height: 44px; background: transparent; border: 0; color: var(--ds-copy); border-radius: 7px; cursor: pointer; }
+.commandclear:hover { background: var(--ds-panel-raised); }
+.commandclear[hidden] { display: none; }
+.commandstatus { padding: 13px 24px 8px; font-size: 12px; color: var(--ds-muted); }
+.commandresults { padding: 0 14px 12px; overscroll-behavior: contain; }
+.commandgroup { margin: 6px 0 16px; }
+.commandgrouphead { display: flex; align-items: center; justify-content: space-between; padding: 10px; gap: 10px; }
+.commandgrouphead h2, h2.commandgrouphead { color: var(--ds-accent-soft); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin: 0; }
+.commandgroupcount { color: var(--ds-muted); font: 500 11px var(--ds-font-mono); }
+.commandresult { min-height: 68px; padding: 10px; gap: 14px; border: 1px solid transparent; border-bottom-color: var(--ds-line-soft); border-radius: 8px; }
+.commandresult:hover, .commandresult.active { background: var(--ds-panel-raised); border-color: var(--ds-line); }
+.commandresulticon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; color: var(--ds-accent-soft); background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: 10px; }
+.commandresulticon .gameicon { width: 19px; height: 19px; margin: 0; }
+.commandresultcopy b { font-size: 14px; color: var(--ds-text); font-weight: 650; }
+.commandresultcopy small { font-size: 12px; line-height: 1.55; color: var(--ds-muted); margin-top: 4px; }
+.commandresultgo { width: 18px; flex: none; color: var(--ds-muted); }
+.commandresultgo .gameicon { width: 16px; height: 16px; }
+.commandempty { text-align: center; padding: 30px 20px; color: var(--ds-muted); font-size: 13px; line-height: 1.6; }
+.commandempty :is(h2, h3, b, strong) { display: block; font: 600 20px var(--ds-font-display); color: var(--ds-text); margin: 0 0 8px; }
+.commandemptyreset { min-height: 44px; padding: 10px 18px; margin-top: 12px; border: 1px solid var(--ds-line); border-radius: 8px; color: var(--ds-copy); background: var(--ds-panel-raised); cursor: pointer; }
+.commandfooter { display: flex; flex-wrap: wrap; gap: 16px; padding: 13px 24px; font-size: 11px; background: var(--ds-panel); border-top: 1px solid var(--ds-line-soft); color: var(--ds-muted); }
+.commandfooterhint { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.commandfooterhint kbd { display: inline-block; padding: 3px 5px; border: 1px solid var(--ds-line); border-radius: 4px; color: var(--ds-copy); background: var(--ds-dialog); font: 10px var(--ds-font-mono); }
+@media (prefers-reduced-motion: reduce) {
+  .cardbackchoice:hover .cardbackpreview, :is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled):is(:hover, :active) { transform: none; }
+}
+body.reduced-motion .cardbackchoice:hover .cardbackpreview,
+body.reduced-motion :is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled):is(:hover, :active) { transform: none; }
+@media (max-width: 700px) {
+  #game .experiencesettingsov, #game .cardbackov { padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)); }
+  #game .quickmenu.experiencesettings, #game .quickmenu.cardbackpicker { width: 100%; max-height: calc(100 * var(--dvhu) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); border-radius: 15px; }
+  #game .experiencesettings .quickmenuhead, .cardbackpicker .quickmenuhead { padding: 18px 16px; }
+  #game .experiencesettings .quickmenuhead h2, #game .cardbackpicker .quickmenuhead h2 { font-size: 25px; }
+  .settingstabs { padding: 8px; gap: 2px; }
+  .settingstab { flex-direction: column; gap: 4px; padding: 8px 3px; font-size: 11px; }
+  .settingstab .settingsicon { --settings-icon-size: 18px; }
+  .settingsbody { padding: 20px 16px; }
+  .settingsintro { margin-bottom: 18px; }
+  .settingsintro h3 { font-size: 21px; }
+  .settingsintro p { font-size: 12px; }
+  .settingsgroup { margin-top: 20px; }
+  .settingsrow { gap: 12px; padding: 17px 0; }
+  .settingsselect { width: 112px; padding: 10px 7px; }
+  .settingscopy > b { font-size: 13px; }
+  .settingscopy > small { font-size: 12px; }
+  .settingsswitch { min-width: 90px; }
+  .settingscontext { padding: 12px; gap: 8px; }
+  .settingscontext > span:last-child { font-size: 10px; }
+  #game .quickmenuitem.settingsaction { padding: 13px 4px; gap: 12px; }
+  #game .settingsactioncopy > span { font-size: 13px; }
+  .settingsfooter { flex-direction: column-reverse; padding: 12px 16px; gap: 8px; }
+  .settingsdone { width: 100%; }
+  .settingsstatus { font-size: 11px; text-align: center; min-height: 18px; }
+  .cardbackbody { padding: 18px 12px; }
+  .cardbackintro { font-size: 13px; padding: 0 4px; margin-bottom: 20px; }
+  .cardbackgrid { gap: 4px; }
+  .cardbackchoice { padding: 5px 5px 12px; border-radius: 10px; }
+  .cardbackpreview { border-radius: 5px; }
+  .cardbackchoice b { font-size: 17px; margin-top: 13px; }
+  .cardbackchoice small { font-size: 10px; min-height: 48px; margin: 7px 0; }
+  .cardbackselected { min-width: 62px; padding: 7px 8px; font-size: 10px; }
+  .cardbackstatus { padding: 0 4px; }
+  .cardbackfooter { padding: 14px 16px; }
+  .cardbackfooter button { flex: 1; min-width: 0; }
+  .commandpaletteov { padding: max(10px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom)); }
+  .commandpalette { max-height: calc(100 * var(--dvhu) - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); border-radius: 15px; }
+  .commandpalettehead { padding: 18px 16px 14px; font-size: 21px; }
+  .commandpalettehead small { font-size: 12px; }
+  .commandsearchwrap { margin: 0 16px; }
+  .commandstatus { padding: 12px 16px 5px; }
+  .commandresults { padding: 0 6px 10px; }
+  .commandresult { gap: 10px; }
+  .commandresultcopy b { font-size: 13px; }
+  .commandresultcopy small { font-size: 12px; }
+  .commandfooter { padding: 12px 16px; }
+}

@@ -33,6 +33,25 @@ function rememberOnboarding() {
 
 let gameLoad = null;
 let loadTrigger = null;
+let loadPhase = 'catalog';
+
+function updateLoadPhase(phase) {
+  loadPhase = phase;
+  const veil = root.querySelector('.mainmenu-loadveil');
+  if (!veil || veil.classList.contains('is-error')) return;
+  veil.dataset.loadPhase = phase;
+  const steps = ['catalog', 'table'];
+  veil.querySelectorAll('[data-load-step]').forEach(item => {
+    const current = item.dataset.loadStep === phase;
+    const complete = steps.indexOf(item.dataset.loadStep) < steps.indexOf(phase);
+    item.classList.toggle('is-current', current);
+    item.classList.toggle('is-complete', complete);
+    if (current) item.setAttribute('aria-current', 'step');
+    else item.removeAttribute('aria-current');
+  });
+  const status = veil.querySelector('.mainmenu-load-status');
+  if (status) status.textContent = phase === 'catalog' ? 'Loading the card collection…' : 'Preparing game controls and your table…';
+}
 
 function showLoading(mode) {
   if (page.contains(document.activeElement)) loadTrigger = document.activeElement;
@@ -41,8 +60,9 @@ function showLoading(mode) {
   veil.className = 'mainmenu-loadveil';
   veil.setAttribute('role', 'status');
   veil.setAttribute('aria-live', 'polite');
-  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : `Loading all ${MTG.landingCounts().decks} decks.`}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
+  veil.innerHTML = `<div class="mainmenu-load-panel"><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Opening your deck library.' : `Your next deck is waiting.`}</h2><p>This first visit may take a moment. Your decks and settings stay in place.</p><ol class="mainmenu-load-steps" aria-label="Loading steps"><li data-load-step="catalog"><b aria-hidden="true">1</b><span>Card collection<small>${MTG.landingCounts().decks} ready-to-play decks</small></span></li><li data-load-step="table"><b aria-hidden="true">2</b><span>Your table<small>Controls, rules and saved choices</small></span></li></ol><p class="mainmenu-load-status"></p></div>`;
   root.appendChild(veil);
+  updateLoadPhase(loadPhase);
   page.inert = true;
   root.setAttribute('aria-busy', 'true');
   page.querySelectorAll('[data-menu-action]').forEach(button => { button.disabled = true; });
@@ -84,6 +104,7 @@ async function loadGame(mode = null) {
     if (!gameLoad) {
       gameLoad = (async () => {
         await import('./data.js');
+        updateLoadPhase('table');
         await import('./app.js');
       })();
     }

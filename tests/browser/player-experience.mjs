@@ -1,4 +1,5 @@
-// PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs node tests/browser/player-experience.mjs
+// PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs [CHROMIUM_PATH=/path/to/chromium]
+// [GAME_QA_OUTPUT=/path/to/evidence] node tests/browser/player-experience.mjs
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -7,13 +8,15 @@ import express from 'express';
 import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const out = `${root}output/web-game/player-experience`;
+const out = process.env.GAME_QA_OUTPUT || `${root}output/web-game/player-experience`;
 mkdirSync(out, { recursive: true });
 const server = express().use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null })).use(express.static(root)).listen(0, '127.0.0.1');
 await once(server, 'listening');
 const base = `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true,
+  ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}) });
 const errors = [], requests = [], checks = [];
+let failure = null;
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
 await context.addInitScript(() => {
   localStorage.setItem('mtgOnboardingComplete', '1');
@@ -32,7 +35,7 @@ async function noOverflow(label) {
 async function openSetup() {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry:visible');
+  await page.locator('.deckentry:not([hidden]) .deckcard').first().waitFor({ state: 'visible', timeout: 60_000 });
 }
 async function openDiscovery() {
   if (!await page.locator('.deckdiscovery').evaluate(node => node.open))
@@ -99,7 +102,7 @@ try {
     assert.ok(dock.height <= 100 * dock.zoom && dock.imageHeight <= 52 * dock.zoom, `selected deck stays a compact dock at ${width}: ${JSON.stringify(dock)}`);
     assert.ok(dock.left >= 0 && dock.right <= width + 1 && dock.bottom <= height + 1, `selected deck dock fits ${width}`);
     await shot(`setup-${width}`);
-    await page.locator('.setupmobilebar button').click();
+    await page.locator('.setupmobilebar').getByRole('button', { name: 'Continue', exact: true }).click();
     await noOverflow(`pod ${width}`);
     await page.locator('.setupnext').scrollIntoViewIfNeeded();
     await page.locator('.setupnext').click();
@@ -145,9 +148,14 @@ try {
   await page.keyboard.press('Enter');
   assert.equal(await page.locator('.quickmenu').isVisible(), true);
   assert.equal(await page.evaluate(() => MTG.activeAccountMatch.decisions.length), decisionCount);
-  for (const label of ['High contrast', 'Hand card size', 'AI turn speed']) {
-    await page.locator('.quickmenuitem').filter({ has: page.locator('span', { hasText: label }) }).first().click();
-  }
+  await page.getByRole('tab', { name: 'Appearance', exact: true }).click();
+  await page.getByRole('switch', { name: 'High contrast', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Hand card size', exact: true }).selectOption('large');
+  await shot('settings-appearance');
+  await page.getByRole('tab', { name: 'Controls', exact: true }).click();
+  await page.getByRole('combobox', { name: 'AI turn speed', exact: true }).selectOption('slow');
+  assert.equal(await page.evaluate(() => _ui.speed), 'slow');
+  assert.equal(await page.evaluate(() => MTG.activeAccountMatch.decisions.length), decisionCount);
   assert.equal(await page.evaluate(() => document.body.classList.contains('high-contrast')), true);
   assert.equal(await page.evaluate(() => _ui.handSize), 'large');
   await shot('settings');
@@ -177,10 +185,17 @@ try {
   assert.equal((await state()).selectedDeck, 'Quick Draw');
   assert.equal(await page.evaluate(() => MTG.playerPreferences().handSort), 'mana');
   assert.equal(await page.evaluate(() => MTG.playerPreferences().handSize), 'large');
+  assert.equal(await page.evaluate(() => MTG.playerPreferences().contrast), true);
+  assert.equal(await page.evaluate(() => MTG.playerPreferences().speed), 'slow');
   check('recent deck landing shortcut and settings survive reload');
   assert.deepEqual(errors, []);
+} catch (error) {
+  failure = { message: error.message, stack: error.stack };
+  await shot('failure').catch(() => {});
+  writeFileSync(`${out}/failure.txt`, await page.locator('body').innerText().catch(() => 'Page unavailable'));
+  throw error;
 } finally {
-  writeFileSync(`${out}/result.json`, JSON.stringify({ checks, errors, requests }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: !failure, checks, errors, requests, failure }, null, 2));
   await browser.close();
   server.close();
 }

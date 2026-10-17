@@ -1,0 +1,367 @@
+/* Required choices and inspection surfaces. The table's zones keep their layout. */
+#game .modal[data-decision-type] {
+  padding: 22px;
+  border: 1px solid var(--ds-line);
+  background: var(--ds-dialog);
+  box-shadow: var(--ds-shadow-dialog);
+  max-height: calc(100 * var(--dvhu) - 24px);
+  box-sizing: border-box;
+}
+#game .overlay:has(> .modal[data-decision-type]) { align-items: center; padding: 12px; }
+#game .modal[data-decision-type] > .mtitle {
+  margin: 4px 0 16px;
+  font-family: var(--ds-font-display);
+  font-size: clamp(20px, calc(1.7 * var(--vwu)), 26px);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+#game .modal[data-decision-type] > .waitownership {
+  margin-bottom: 14px;
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--ds-line-soft);
+  background: transparent;
+}
+#game .modal[data-decision-type] :is(.orderhint, .manapickhint, .xvalidation) {
+  color: var(--ds-copy);
+  font-size: 13px;
+  line-height: 1.55;
+}
+#game .modal[data-decision-type] :is(.selectionreview, .manavalid) {
+  padding: 12px 14px;
+  margin: 12px 0;
+  border-radius: var(--ds-r-sm);
+  border: 1px solid var(--ds-line-soft);
+  background: var(--ds-panel);
+  color: var(--ds-copy);
+  font-size: 13px;
+  line-height: 1.45;
+}
+#game .selectionreview b { color: var(--ds-text); font-weight: 700; }
+#game .selectionreview span { margin-top: 4px; color: var(--ds-muted); }
+#game .decision-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-shrink: 0;
+}
+#game div.decision-footer {
+  padding: 14px 0 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--ds-line-soft);
+  background: var(--ds-dialog);
+  gap: 10px;
+}
+#game .decision-footer .pbtn, #game .pbtn.decision-footer { min-height: 46px; }
+#game .modal[data-decision-type] .pbtn:disabled {
+  opacity: 1;
+  color: var(--ds-muted);
+  background: var(--ds-panel-raised);
+  border-color: var(--ds-line-soft);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+#game :is(.cardselectionmodal, .scrydecision) { display: flex; flex-direction: column; width: min(850px, calc(100 * var(--vwu) - 32px)); }
+#game :is(.cardselectionmodal, .scrydecision) > :not(.cardgrid) { flex-shrink: 0; }
+#game :is(.cardselectionmodal, .scrydecision) > .cardgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(126px, 1fr));
+  grid-auto-rows: max-content;
+  align-content: start;
+  align-items: start;
+  gap: 12px;
+  max-height: min(460px, calc(54 * var(--dvhu)));
+  overflow: auto;
+  padding: 5px;
+  scrollbar-gutter: stable;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+#game :is(.cardselectionmodal, .scrydecision) .bigcard {
+  position: relative;
+  width: auto;
+  min-width: 0;
+  padding: 4px;
+  border: 1px solid var(--ds-line);
+  background: var(--ds-panel);
+  border-radius: 9px;
+  aspect-ratio: auto;
+  overflow: visible;
+}
+#game :is(.cardselectionmodal, .scrydecision) .bigcard > img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; border-radius: 6px; }
+#game :is(.cardselectionmodal, .scrydecision, .zonebrowser) .bigcard .bcname { position: static; min-height: 30px; box-sizing: content-box; display: flex; align-items: center; background: transparent; color: var(--ds-copy); white-space: normal; overflow-wrap: anywhere; }
+#game .scrydecision .bigcard.scrybottom { opacity: 1; }
+#game .scrydecision .bigcard.scrybottom > img { opacity: .6; }
+#game .scrydecision > .cardgrid { grid-template-columns: repeat(auto-fit, minmax(126px, 200px)); justify-content: center; }
+#game .cardselectionmodal .bigcard.selected {
+  border-color: var(--ds-accent-bright);
+  box-shadow: 0 0 0 2px rgba(var(--ds-accent-rgb), .2);
+}
+#game .cardselectionmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  color: var(--ds-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+#game .selected > .cardselectionmark { color: var(--ds-accent-bright); }
+#game .cardselectionmodal .bigcard[role="button"]:focus-visible {
+  outline: 3px solid var(--ds-focus);
+  outline-offset: 3px;
+}
+#game .bigcard .bcname { font-size: 12px; line-height: 1.35; padding: 7px 3px; }
+#game .scry-destination {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: .08em;
+}
+#game .scry-destination[aria-pressed="true"] { color: var(--ds-accent-bright); border-color: var(--ds-accent-soft); }
+#game .scrydecision .triggerordercontrols { justify-content: space-between; gap: 8px; padding-top: 6px; }
+#game :is(.scrydecision, .triggerordermodal) .triggerordercontrols button { min-width: 44px; min-height: 44px; }
+#game .triggerorderrow { padding: 12px; gap: 12px; border-color: var(--ds-line); background: var(--ds-panel); }
+#game .triggerordertext { font-size: 13px; line-height: 1.45; }
+#game .triggerordern { color: var(--ds-accent-soft); font-family: var(--ds-font-mono); }
+#game .manasourcerow { min-height: 74px; padding: 10px 12px; gap: 12px; border-color: var(--ds-line); background: var(--ds-panel); }
+#game .manasourcerow[aria-pressed="true"] { border-color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .09); }
+#game .manasourcerow small { font-size: 12px; line-height: 1.45; color: var(--ds-copy); }
+#game .manacheck { color: var(--ds-accent-bright); }
+#game .manavalid.ok { color: var(--ds-good); }
+#game .manavalid.bad { color: var(--ds-copy); }
+#game .xrow { gap: 14px; justify-content: center; align-items: center; margin: 22px 0 8px; }
+#game .xrow > button { width: 48px; min-width: 48px; height: 48px; }
+#game input.xinput {
+  width: 130px;
+  min-width: 0;
+  height: 68px;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-r-md);
+  background: var(--ds-panel);
+  color: var(--ds-text);
+  font: 600 30px/1 var(--ds-font-mono);
+  text-align: center;
+  appearance: textfield;
+}
+#game input.xinput::-webkit-inner-spin-button { appearance: none; }
+#game input.xinput[aria-invalid="true"] { border-color: var(--ds-danger); }
+#game .xvalidation { min-height: 22px; margin: 6px 0 18px; text-align: center; }
+#game .xcostsummary { margin: 16px 0; padding: 16px; border-color: var(--ds-line); background: var(--ds-panel); }
+
+/* Card inspection pairs artwork with readable rules and explicit legal actions. */
+#game .overlay.cardinspectionoverlay { z-index: 2300; align-items: center; padding: 18px; }
+#game .sheet.cardinspection {
+  display: grid;
+  grid-template-columns: minmax(150px, 235px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 18px 24px;
+  width: min(850px, calc(100 * var(--vwu) - 36px));
+  max-width: none;
+  max-height: calc(92 * var(--dvhu));
+  padding: 20px;
+  overflow: hidden;
+  border-radius: var(--ds-r-lg);
+  border: 1px solid var(--ds-line);
+  background: var(--ds-dialog);
+  box-shadow: var(--ds-shadow-dialog);
+}
+#game .cardinspectionhead, #game .zonebrowserhead {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ds-line-soft);
+}
+#game .cardinspectioncontext {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ds-accent-soft);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+#game .cardinspectioncontext span { color: var(--ds-copy); font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; }
+#game .cardinspectiontools { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+#game .cardinspectiontools .cardinspectionzoom { min-height: 44px; margin: 0; padding: 8px 13px; font-size: 12px; white-space: nowrap; letter-spacing: 0; }
+#game .cardinspectionclose {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--ds-line);
+  border-radius: 50%;
+  background: var(--ds-panel-raised);
+  color: var(--ds-copy);
+  font-size: 25px;
+  cursor: pointer;
+}
+#game .cardinspection > .sheetimg {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: min(390px, calc(52 * var(--dvhu)), 100%);
+  object-fit: contain;
+  align-self: stretch;
+  border-radius: 12px;
+}
+#game .cardinspection > .sheetinfo {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  min-height: 0;
+  max-height: min(390px, calc(52 * var(--dvhu)));
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
+}
+#game .cardinspection .sname { margin: 0 0 10px; font: 600 25px/1.15 var(--ds-font-display); letter-spacing: -.03em; color: var(--ds-text); }
+#game .cardinspection .stype { color: var(--ds-copy); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+#game .cardinspection .spt { margin: 12px 0; font: 600 20px/1.4 var(--ds-font-mono); color: var(--ds-text); }
+#game .cardinspectionlabel { display: block; margin-bottom: 8px; color: var(--ds-accent-soft); font: 700 10px/1.4 var(--ds-font-body); letter-spacing: .14em; text-transform: uppercase; }
+#game .cardinspectionoracle { padding-top: 16px; border-top: 1px solid var(--ds-line-soft); font-size: 14px; line-height: 1.65; color: var(--ds-copy); }
+#game .cardinspectionactions {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: calc(30 * var(--dvhu));
+  overflow-y: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--ds-line-soft);
+}
+#game .cardinspectionactions > .pbtn { flex: 1 1 220px; width: auto; min-height: 46px; margin: 0; white-space: normal; text-align: center; line-height: 1.4; }
+#game .cardinspectionactions > .cardinspectiondone { flex: 0 0 auto; min-width: 100px; }
+#game .cardinspectionactions > :not(.pbtn) { width: 100%; }
+#game .cardinspection .sheetkeywords { gap: 5px; margin: 10px 0 16px; }
+#game .cardinspection .sheetkeyword { font-size: 11px; padding: 5px 7px; border-color: var(--ds-line); }
+#game .sheet.cardinspection.sheetart-expanded { grid-template-columns: minmax(235px, 330px) minmax(0, 1fr); width: min(960px, calc(100 * var(--vwu) - 36px)); }
+#game .sheetart-expanded > .sheetimg, #game .sheetart-expanded > .sheetinfo { max-height: min(480px, calc(58 * var(--dvhu))); }
+#game .sheetart-expanded > .sheetimg { max-height: min(480px, calc(58 * var(--dvhu)), 100%); }
+
+/* Search never indexes an unknown face or a private library. */
+#game .zonebrowseroverlay { z-index: 2200; align-items: center; padding: 18px; }
+#game .sheet.zonebrowser {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(1000px, calc(100 * var(--vwu) - 36px));
+  max-width: none;
+  max-height: calc(90 * var(--dvhu));
+  padding: 22px;
+  overflow: hidden;
+  background: var(--ds-dialog);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-r-lg);
+  box-shadow: var(--ds-shadow-dialog);
+}
+#game .zonebrowserhead { flex-shrink: 0; padding-bottom: 14px; }
+#game .zonebrowserhead .mtitle { margin: 0; font: 600 26px/1.15 var(--ds-font-display); }
+#game .zonebrowserhead .mtitle span { margin-left: 9px; color: var(--ds-muted); font: 500 17px var(--ds-font-mono); }
+#game .zonebrowsertools { display: grid; grid-template-columns: minmax(160px, 1fr) auto auto; gap: 8px; flex-shrink: 0; }
+#game .zonebrowsertools :is(input, select) { min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-sm); background: var(--ds-panel); color: var(--ds-copy); font: 500 13px var(--ds-font-body); }
+#game .zonebrowserstatus { flex-shrink: 0; color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
+#game .zonebrowsergrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  grid-auto-rows: max-content;
+  align-content: start;
+  align-items: start;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 80px;
+  overflow-y: auto;
+  padding: 5px;
+  margin: 0;
+  scrollbar-gutter: stable;
+}
+#game .zonebrowsergrid .bigcard { width: auto; min-width: 0; padding: 4px; border: 1px solid var(--ds-line); border-radius: 9px; background: var(--ds-panel); aspect-ratio: auto; }
+#game .zonebrowsergrid .bigcard img { display: block; width: 100%; aspect-ratio: 5 / 7; height: auto; object-fit: contain; border-radius: 6px; }
+#game .zonebrowsergrid .bigcard:focus-visible { outline: 3px solid var(--ds-focus); outline-offset: 2px; }
+#game .zonebrowserempty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; min-height: 180px; padding: 24px; text-align: center; color: var(--ds-muted); font-size: 13px; }
+#game .zonebrowserempty b { color: var(--ds-text); font: 600 21px var(--ds-font-display); }
+#game .zonebrowserempty .pbtn { margin-top: 9px; min-height: 44px; }
+#game .zonebrowser > .decision-footer { margin: 0; min-height: 44px; }
+
+/* Library checkpoints share the same dialog material as decisions. */
+body.game-active #game .stackpop.libraryreveal {
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-r-lg);
+  background: var(--ds-dialog);
+  color: var(--ds-text);
+  box-shadow: var(--ds-shadow-dialog);
+}
+#game .libraryrevealhead {
+  border-color: var(--ds-line-soft);
+  background: linear-gradient(125deg, rgba(var(--ds-accent-rgb), .09), transparent 72%), var(--ds-panel);
+}
+#game .libraryrevealkicker { color: var(--ds-accent-soft); }
+#game .libraryrevealtitle, #game .libraryrevealcaption h3 { color: var(--ds-text); }
+#game .libraryrevealowner, #game .libraryrevealcaption p { color: var(--ds-copy); }
+#game .libraryrevealstage { background: radial-gradient(ellipse, rgba(var(--ds-accent-rgb), .08), transparent 72%); }
+#game .libraryrevealback { box-shadow: 5px 5px 0 -1px var(--ds-panel-raised), 6px 6px 0 var(--ds-line), 10px 10px 0 -1px var(--ds-panel), 0 18px 36px rgba(var(--ds-table-rgb), .5); }
+body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { border-color: var(--ds-line-soft); background: var(--ds-panel); }
+#game .libraryrevealhistorycard.is-current { outline-color: var(--ds-accent-bright); }
+#game .libraryrevealhistorycard > span { color: var(--ds-text); background: var(--ds-panel); }
+
+@media (max-width: 620px) {
+  #game .modal[data-decision-type] { padding: 16px; }
+  #game :is(.cardselectionmodal, .scrydecision) > .cardgrid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 9px; max-height: calc(49 * var(--dvhu)); }
+  #game .overlay.cardinspectionoverlay, #game .zonebrowseroverlay { padding: 8px; }
+  #game .sheet.cardinspection { grid-template-columns: minmax(100px, 36%) minmax(0, 1fr); width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; gap: 14px; border-radius: 16px; }
+  #game .cardinspection > .sheetimg { max-height: min(calc(47 * var(--dvhu)), 100%); }
+  #game .cardinspection > .sheetinfo { max-height: calc(52 * var(--dvhu)); padding-right: 0; }
+  #game .cardinspection .sname { font-size: 20px; }
+  #game .cardinspection .stype { font-size: 12px; }
+  #game .cardinspection .soracle { font-size: 13px; line-height: 1.6; }
+  #game .cardinspectionactions { max-height: calc(29 * var(--dvhu)); gap: 8px; padding-top: 12px; }
+  #game .cardinspectionactions > .pbtn { flex-basis: 100%; min-height: 44px; font-size: 13px; }
+  #game .cardinspectionactions > .cardinspectiondone { flex: 1 1 100%; }
+  #game .sheet.zonebrowser { width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; gap: 12px; }
+  #game .zonebrowsertools { grid-template-columns: 1fr 1fr; }
+  #game .zonebrowsersearch { grid-column: 1 / -1; }
+  #game .zonebrowsertools :is(input, select) { font-size: 16px; }
+  #game .zonebrowsergrid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 9px; }
+  #game .zonebrowserhead .mtitle { font-size: 23px; }
+}
+@media (max-width: 620px), (max-height: 480px) {
+  #game .sheet.cardinspection.sheetart-expanded { display: flex; flex-direction: column; width: min(760px, calc(100 * var(--vwu) - 16px)); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; overflow-y: auto; }
+  #game .sheetart-expanded > .cardinspectionhead { position: sticky; top: -14px; z-index: 3; margin: -14px -14px 0; padding: 14px 14px 12px; background: var(--ds-dialog); flex-shrink: 0; }
+  #game .sheetart-expanded > .sheetimg { width: min(100%, 330px); max-height: none; height: auto; aspect-ratio: 5 / 7; align-self: center; flex-shrink: 0; }
+  #game .sheetart-expanded > .sheetinfo { width: 100%; max-height: none; overflow: visible; flex-shrink: 0; }
+  #game .sheetart-expanded > .cardinspectionactions { position: sticky; bottom: -14px; margin: 0 -14px -14px; padding: 12px 14px 14px; background: var(--ds-dialog); z-index: 3; flex-shrink: 0; }
+}
+@media (forced-colors: active) {
+  #game :is(.bigcard.selected, .manasourcerow[aria-pressed="true"], .scry-destination[aria-pressed="true"]) { outline: 3px solid Highlight; outline-offset: -3px; }
+  #game .cardselectionmark { forced-color-adjust: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #game :is(.cardinspection, .zonebrowser, .cardselectionmodal, .scrydecision) { animation: none !important; scroll-behavior: auto; }
+}
+
+#game .logpanel.activitylog { z-index: 2200; inset: 24px; width: min(900px, calc(100 * var(--vwu) - 48px)); max-width: none; box-sizing: border-box; margin: auto; padding: 22px; gap: 14px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-lg); background: var(--ds-dialog); box-shadow: var(--ds-shadow-dialog); }
+#game .activitylog .mtitle { margin: 0; font: 600 25px/1.2 var(--ds-font-display); }
+#game .logsearch { flex-shrink: 0; width: 100%; box-sizing: border-box; min-height: 44px; padding: 12px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-sm); background: var(--ds-panel); color: var(--ds-text); font: 500 14px var(--ds-font-body); }
+#game .activitylogentries { min-height: 0; padding: 0 12px 12px; background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); overflow-y: auto; }
+#game .logturn { position: sticky; top: 0; padding: 12px 0 8px; color: var(--ds-accent-soft); background: var(--ds-panel); font: 600 11px var(--ds-font-mono); letter-spacing: .07em; }
+#game .activitylog .logline { padding: 9px 0; border-bottom: 1px solid var(--ds-line-soft); color: var(--ds-copy); font-size: 13px; line-height: 1.6; }
+#game .activitylog .logline:last-child { border-bottom: 0; }
+#game .logdiagnostics { color: var(--ds-muted); font-size: 12px; max-height: calc(25 * var(--dvhu)); overflow-y: auto; flex-shrink: 0; }
+#game .logdiagnostics summary { min-height: 32px; cursor: pointer; }
+@media (max-width: 620px) {
+  #game .logpanel.activitylog { inset: 8px; width: calc(100 * var(--vwu) - 16px); padding: 14px; gap: 12px; }
+  #game .logsearch { font-size: 16px; }
+}

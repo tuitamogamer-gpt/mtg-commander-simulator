@@ -146,6 +146,7 @@ try {
   for (const [width, height] of [[1440, 1024], [390, 844]]) {
     await page.setViewportSize({width, height});
     await page.locator('.menubutton').click();
+    await page.locator('[data-settings-tab="appearance"]').click();
     await page.locator('.playmatsopen').click();
     await page.getByRole('button', {name: 'Moonlit grove playmat', exact: true}).click();
     await page.locator('#playmat-strength').focus();

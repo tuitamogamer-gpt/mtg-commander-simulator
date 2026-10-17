@@ -285,8 +285,12 @@ function modalShell(view) {
   panel.onkeydown = event => {
     if (event.key === 'Escape') { event.preventDefault(); dismiss(); return; }
     if (event.key !== 'Tab') return;
-    const focusable = [...panel.querySelectorAll('button:not([disabled]), input:not([disabled])')];
-    if (!focusable.length) return;
+    const focusable = [...panel.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href]')]
+      .filter(node => !node.hidden && node.getClientRects().length);
+    if (!focusable.length) { event.preventDefault(); panel.focus(); return; }
+    if (!focusable.includes(document.activeElement)) {
+      event.preventDefault(); (event.shiftKey ? focusable.at(-1) : focusable[0]).focus(); return;
+    }
     if (event.shiftKey && document.activeElement === focusable[0]) { event.preventDefault(); focusable.at(-1).focus(); }
     else if (!event.shiftKey && document.activeElement === focusable.at(-1)) { event.preventDefault(); focusable[0].focus(); }
   };
@@ -298,17 +302,19 @@ function modalShell(view) {
 function authMarkup(mode) {
   const registering = mode === 'register';
   return `
-    <header class="account-auth-head"><span>COMMANDER PROFILE</span><h2 id="account-title">${registering ? 'Create your account.' : 'Welcome back.'}</h2><p>${registering ? 'Keep one Solo game in progress and build lifetime Commander stats.' : 'Continue your saved table and see every match add up.'}</p></header>
+    <header class="account-auth-head"><span>YOUR COMMANDER PROFILE</span><h2 id="account-title" tabindex="-1">${registering ? 'A place for your games.' : 'Welcome back.'}</h2><p>${registering ? 'Save your Solo game, keep your favourite decks close and follow your Commander history.' : 'Your saved table, favourite decks and match history are waiting.'}</p></header>
+    <ul class="account-benefits" aria-label="Account features"><li>Cloud saves</li><li>Deck favourites</li><li>Match history</li></ul>
     ${state.error ? `<p class="account-service-error" role="alert">${esc(state.error)}</p>` : ''}
-    <form class="account-form" data-auth-mode="${mode}">
-      ${registering ? '<label>Display name<input name="displayName" minlength="2" maxlength="32" autocomplete="nickname" required></label>' : ''}
-      <label>Email<input name="email" type="email" maxlength="254" autocomplete="email" required></label>
-      <label>Password<input name="password" type="password" minlength="8" maxlength="128" autocomplete="${registering ? 'new-password' : 'current-password'}" required></label>
-      <p class="account-form-error" role="alert"></p>
+    <form class="account-form" data-auth-mode="${mode}" aria-busy="false">
+      ${registering ? '<label>Display name<input name="displayName" minlength="2" maxlength="32" autocomplete="nickname" placeholder="How you appear at the table" required></label>' : ''}
+      <label>Email<input name="email" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" inputmode="email" placeholder="you@example.com" required></label>
+      <div class="account-field"><label for="account-password">Password</label><div class="account-password-field"><input id="account-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="${registering ? 'new-password' : 'current-password'}"${registering ? ' aria-describedby="account-password-hint"' : ''} required><button type="button" class="account-password-toggle" aria-controls="account-password" aria-label="Show password" aria-pressed="false">Show</button></div>${registering ? '<small id="account-password-hint" class="account-field-hint">Use at least 8 characters.</small>' : ''}</div>
+      <p class="account-form-error" role="alert" tabindex="-1"></p>
       <button type="submit" class="account-primary">${registering ? 'Create account' : 'Sign in'}</button>
     </form>
+    <p class="account-form-status" role="status" aria-live="polite"></p>
     <button type="button" class="account-switch">${registering ? 'Already have an account? Sign in' : 'New to Commander Simulator? Create account'}</button>
-    <small class="account-privacy">Your password is salted and hashed. Sessions use a secure HttpOnly cookie; saved games stay private to your account.</small>`;
+    <small class="account-privacy">Your saved games stay private to your account. You can also play Solo without signing in.</small>`;
 }
 
 function profileMarkup() {
@@ -319,9 +325,9 @@ function profileMarkup() {
   return `
     <header class="account-profile-head">
       <div class="account-avatar" aria-hidden="true">${esc(state.user.displayName.slice(0, 1).toUpperCase())}</div>
-      <div><span>COMMANDER PROFILE</span><h2 id="account-title">${esc(state.user.displayName)}</h2><p>${esc(state.user.email)} · Player since ${esc(formatDate(state.user.createdAt))}</p></div>
+      <div><span>COMMANDER PROFILE</span><h2 id="account-title" tabindex="-1">${esc(state.user.displayName)}</h2><p>${esc(state.user.email)}<br><span>Player since ${esc(formatDate(state.user.createdAt))}</span></p></div>
     </header>
-    ${save ? `<section class="account-continue-card"><div><small>ACTIVE SOLO SAVE · TURN ${Number(save.summary?.turn) || 0}</small><h3>${esc(save.summary?.deck || 'Saved Commander game')}</h3><p>${esc((save.summary?.commanders || []).join(' + '))} · ${Number(save.summary?.decisionCount) || 0} recorded actions replayed privately</p><span>Autosaved ${esc(formatDate(save.updatedAt))}</span>${state.saveError ? `<p class="account-service-error" role="alert">${esc(state.saveError)} Delete this old checkpoint to remove it safely.</p>` : ''}</div><div><button type="button" class="account-primary account-continue" ${state.saveError ? 'disabled' : ''}>${state.saveError ? 'Cannot continue' : 'Continue game'}</button><button type="button" class="account-clear-save">Delete save</button></div></section>` : '<section class="account-empty-save"><small>SAVE & CONTINUE</small><h3>No Solo game in progress.</h3><p>Start a Solo table while signed in. Every completed decision or manual table correction creates a private cloud checkpoint.</p></section>'}
+    ${save ? `<section class="account-continue-card"><div><small>${state.saveError ? 'SAVE NEEDS ATTENTION' : 'READY TO CONTINUE'} · TURN ${Number(save.summary?.turn) || 0}</small><h3>${esc(save.summary?.deck || 'Saved Commander game')}</h3><p>${esc((save.summary?.commanders || []).join(' + '))}</p><span>Saved to your account ${esc(formatDate(save.updatedAt))}</span>${state.saveError ? `<p class="account-service-error" role="alert">${esc(state.saveError)} Your save is still kept until you choose to delete it.</p>` : ''}</div><div><button type="button" class="account-primary account-continue" ${state.saveError ? 'disabled' : ''}>${state.saveError ? 'Cannot continue' : 'Continue game'}</button><button type="button" class="account-clear-save">Delete save</button><p class="account-form-error account-save-error" role="alert"></p></div></section>` : '<section class="account-empty-save"><small>SAVE & CONTINUE</small><h3>Your next table starts here.</h3><p>Start a Solo game while signed in. Progress saves after your decisions, so you can return to the table later.</p></section>'}
     <section class="account-stats" aria-label="Lifetime Commander statistics">
       <article><small>LIFETIME SCORE</small><strong>${Number(profile.lifetimeScore) || 0}</strong><span>100 per win · 25 per completed loss</span></article>
       <article><small>MATCHES</small><strong>${Number(profile.gamesPlayed) || 0}</strong><span>${Number(profile.wins) || 0} wins · ${Number(profile.losses) || 0} losses</span></article>
@@ -329,22 +335,46 @@ function profileMarkup() {
     </section>
     <section class="account-section"><header><div><small>FAVOURITE COMMANDERS</small><h3>Your most-played leaders</h3></div><span>Based on completed games</span></header><div class="account-commanders">${commanders.length ? commanders.map((entry, index) => `<article data-commander="${esc(entry.name)}"><i>${String(index + 1).padStart(2, '0')}</i><div><b>${esc(entry.name)}</b><span>${Number(entry.games) || 0} game${Number(entry.games) === 1 ? '' : 's'}</span></div></article>`).join('') : '<p>Complete a game to begin your commander history.</p>'}</div></section>
     <section class="account-section"><header><div><small>FAVOURITE DECKS</small><h3>Saved from Deck Explorer</h3></div></header><div class="account-deck-tags">${(profile.favoriteDecks || []).length ? profile.favoriteDecks.map(name => `<span>${esc(name)}</span>`).join('') : '<p>Star decks in Deck Explorer to sync them here.</p>'}</div></section>
-    <section class="account-section account-history"><header><div><small>RECENT MATCHES</small><h3>Your last results</h3></div></header>${recent.length ? `<ol>${recent.map(match => `<li><i class="${match.won ? 'win' : ''}">${match.won ? 'W' : 'L'}</i><span><b>${esc(match.deck)}</b><small>${esc((match.commanders || []).join(' + '))} · ${Number(match.turns) || 0} turns</small></span><strong>+${Number(match.score) || 0}</strong></li>`).join('')}</ol>` : '<p>No completed matches yet.</p>'}</section>
+    <section class="account-section account-history"><header><div><small>RECENT MATCHES</small><h3>Your last results</h3></div><span>Score earned</span></header>${recent.length ? `<ol>${recent.map(match => `<li><i class="${match.won ? 'win' : ''}" aria-label="${match.won ? 'Win' : 'Loss'}">${match.won ? 'W' : 'L'}</i><span><b>${esc(match.deck)}</b><small>${esc((match.commanders || []).join(' + '))} · ${Number(match.turns) || 0} turns</small></span><strong>+${Number(match.score) || 0}</strong></li>`).join('')}</ol>` : '<p>Finish a Solo game to see your results here.</p>'}</section>
     <footer class="account-profile-actions"><button type="button" class="account-logout">Sign out</button><p class="account-form-error account-logout-error" role="alert">${esc(state.error)}</p></footer>`;
 }
 
 function renderModal(view, content) {
   if (!content) return;
   if (view === 'profile' && state.user) content.innerHTML = profileMarkup();
-  else if (!state.available && !smokeMode) content.innerHTML = `<header class="account-auth-head"><span>COMMANDER PROFILE</span><h2 id="account-title">Profiles need the hosted build.</h2><p>Solo play remains available locally. The account service could not be reached from this copy.</p></header><p class="account-service-error">${esc(state.error)}</p>`;
+  else if (!state.available && !smokeMode) content.innerHTML = `<header class="account-auth-head"><span>COMMANDER PROFILE</span><h2 id="account-title" tabindex="-1">We couldn’t reach your profile.</h2><p>Try connecting again. You can still close this panel and play Solo.</p></header><p class="account-service-error" role="alert">${esc(state.error)}</p><button type="button" class="account-primary account-retry">Try again</button>`;
   else content.innerHTML = authMarkup(view === 'register' ? 'register' : 'login');
 
+  const retry = content.querySelector('.account-retry');
+  if (retry) retry.onclick = async () => {
+    if (retry.disabled) return;
+    retry.disabled = true; retry.textContent = 'Connecting…';
+    await refresh();
+    renderModal(state.user ? 'profile' : view, content);
+    content.querySelector('#account-title')?.focus({ preventScroll: true });
+  };
   const form = content.querySelector('.account-form');
+  const password = form?.querySelector('[name="password"]');
+  const passwordToggle = form?.querySelector('.account-password-toggle');
+  if (passwordToggle && password) passwordToggle.onclick = () => {
+    const visible = password.type === 'password';
+    password.type = visible ? 'text' : 'password';
+    passwordToggle.textContent = visible ? 'Hide' : 'Show';
+    passwordToggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+    passwordToggle.setAttribute('aria-pressed', String(visible));
+  };
+  const switcher = content.querySelector('.account-switch');
   if (form) form.onsubmit = async event => {
     event.preventDefault();
     const submit = form.querySelector('[type="submit"]');
     const error = form.querySelector('.account-form-error');
-    submit.disabled = true; submit.textContent = 'Working…'; error.textContent = '';
+    if (submit.disabled) return;
+    const status = content.querySelector('.account-form-status');
+    const registering = form.dataset.authMode === 'register';
+    submit.disabled = true; submit.textContent = registering ? 'Creating account…' : 'Signing in…'; error.textContent = '';
+    form.setAttribute('aria-busy', 'true');
+    if (status) status.textContent = registering ? 'Creating your Commander profile…' : 'Opening your Commander profile…';
+    if (switcher) switcher.disabled = true;
     try {
       const data = new FormData(form);
       const result = await request(form.dataset.authMode, Object.fromEntries(data.entries()));
@@ -356,15 +386,26 @@ function renderModal(view, content) {
       finishInitialReady();
       emit();
       renderModal('profile', content);
+      content.querySelector('#account-title')?.focus({ preventScroll: true });
       announceSessionChange();
     } catch (problem) {
       error.textContent = problem.message;
       submit.disabled = false;
       submit.textContent = form.dataset.authMode === 'register' ? 'Create account' : 'Sign in';
+      form.setAttribute('aria-busy', 'false');
+      if (status) status.textContent = '';
+      if (switcher) switcher.disabled = false;
+      error.focus({ preventScroll: true });
     }
   };
-  const switcher = content.querySelector('.account-switch');
-  if (switcher) switcher.onclick = () => renderModal(view === 'register' ? 'login' : 'register', content);
+  if (switcher) switcher.onclick = () => {
+    if (switcher.disabled) return;
+    const email = form?.querySelector('[name="email"]')?.value || '';
+    renderModal(view === 'register' ? 'login' : 'register', content);
+    const emailInput = content.querySelector('[name="email"]');
+    if (emailInput) emailInput.value = email;
+    content.querySelector('#account-title')?.focus({ preventScroll: true });
+  };
   const continueButton = content.querySelector('.account-continue');
   const continueSave = state.save;
   const continueOwnerId = state.user?.id;
@@ -387,17 +428,19 @@ function renderModal(view, content) {
   const clear = content.querySelector('.account-clear-save');
   if (clear) clear.onclick = async () => {
     if (!confirm('Delete this saved Solo game? This cannot be undone.')) return;
-    clear.disabled = true;
+    const errorNode = content.querySelector('.account-save-error');
+    clear.disabled = true; clear.textContent = 'Deleting…';
+    if (errorNode) errorNode.textContent = '';
     try { await api.clearSave(state.user?.id); renderModal('profile', content); }
     catch (error) {
       if (!state.user) renderModal('login', content);
-      else { clear.disabled = false; clear.textContent = error.message; }
+      else { clear.disabled = false; clear.textContent = 'Delete save'; if (errorNode) errorNode.textContent = error.message; }
     }
   };
   const logout = content.querySelector('.account-logout');
   if (logout) logout.onclick = async () => {
     const errorNode = content.querySelector('.account-logout-error');
-    logout.disabled = true;
+    logout.disabled = true; logout.textContent = 'Signing out…';
     if (errorNode) errorNode.textContent = '';
     try {
       const result = await api.logout();
@@ -409,6 +452,7 @@ function renderModal(view, content) {
     } catch (error) {
       state.error = error.message;
       logout.disabled = false;
+      logout.textContent = 'Sign out';
       if (errorNode) errorNode.textContent = error.message;
     }
   };

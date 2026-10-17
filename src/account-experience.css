@@ -1,0 +1,206 @@
+/* Account surfaces use the same materials as the table, with room to read. */
+.account-overlay {
+  color: var(--ds-text);
+  background: rgba(var(--ds-table-rgb), .88);
+  overscroll-behavior: contain;
+}
+
+.account-overlay .account-panel {
+  background: radial-gradient(ellipse at 100% 0, rgba(var(--ds-accent-rgb), .09), transparent 48%), var(--ds-dialog);
+  border-color: var(--ds-line);
+  border-radius: var(--ds-r-lg);
+  box-shadow: var(--ds-shadow-dialog);
+  scrollbar-color: var(--ds-line) transparent;
+  scrollbar-gutter: stable;
+}
+
+.account-panel:has(.account-auth-head) { width: min(620px, 100%); }
+.account-overlay .account-content { padding: 36px; }
+.account-overlay .account-close {
+  color: var(--ds-copy);
+  background: var(--ds-panel-raised);
+  border-color: var(--ds-line);
+  border-radius: var(--ds-r-md);
+}
+
+.account-overlay :is(button, input) {
+  transition: border-color var(--ds-t-fast), background-color var(--ds-t-fast), color var(--ds-t-fast), transform var(--ds-t-fast);
+}
+.account-overlay button:not(:disabled):hover { transform: translateY(-1px); }
+.account-overlay button:not(:disabled):active { transform: scale(.985); }
+.account-overlay :is(button, input):focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(var(--ds-accent-rgb), .22);
+}
+.account-overlay :is(button, input):disabled { cursor: wait; }
+.account-overlay .account-continue:disabled { cursor: not-allowed; }
+.account-overlay [tabindex="-1"]:focus { outline: none; box-shadow: none; }
+
+.account-overlay :is(.account-auth-head > span, .account-profile-head > div > span, .account-section header small, .account-continue-card small, .account-empty-save small, .account-stats small) {
+  color: var(--ds-accent-bright);
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: .1em;
+}
+.account-overlay .account-auth-head h2 {
+  margin: 14px 0 12px;
+  font-size: clamp(32px, 3.5 * var(--vwu), 44px);
+  line-height: 1.06;
+  text-wrap: balance;
+}
+.account-overlay :is(.account-auth-head p, .account-profile-head p) {
+  color: var(--ds-copy);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.account-benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ds-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.account-benefits li { display: flex; align-items: center; gap: 7px; }
+.account-benefits li::before { content: '✓'; color: var(--ds-good); font-weight: 800; }
+
+.account-overlay .account-form { max-width: none; margin-top: 28px; gap: 18px; }
+.account-overlay .account-form label { color: var(--ds-copy); font-size: 13px; line-height: 1.4; }
+.account-field { display: grid; gap: 7px; }
+.account-overlay .account-form input {
+  box-sizing: border-box;
+  min-height: 50px;
+  color: var(--ds-text);
+  background: var(--ds-panel);
+  border-color: var(--ds-line);
+  border-radius: var(--ds-r-sm);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.account-overlay .account-form input::placeholder { color: var(--ds-muted); font-size: 13px; opacity: 1; }
+.account-overlay .account-form input:hover { border-color: var(--ds-muted); }
+.account-overlay .account-form input:focus { border-color: var(--ds-accent); }
+.account-password-field { position: relative; min-width: 0; }
+.account-overlay .account-password-field input { padding-right: 80px; }
+.account-password-toggle {
+  position: absolute;
+  inset: 3px 3px 3px auto;
+  min-width: 64px;
+  min-height: var(--ds-touch);
+  padding: 0 12px;
+  color: var(--ds-copy);
+  background: var(--ds-panel-raised);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: 700 12px/1 var(--ds-font-body);
+  cursor: pointer;
+}
+.account-password-toggle[aria-pressed="true"] { color: var(--ds-accent-bright); border-color: var(--ds-accent); }
+.account-field-hint { color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
+.account-overlay .account-primary {
+  min-height: 50px;
+  color: var(--ds-accent-ink);
+  background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent));
+  border-color: var(--ds-accent);
+  border-radius: var(--ds-r-sm);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.account-overlay .account-form-error {
+  min-height: 0;
+  color: var(--ds-danger);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.account-overlay .account-form-error:empty { display: none; }
+.account-form-status { margin: 8px 0 0; min-height: 18px; color: var(--ds-muted); font-size: 12px; line-height: 1.5; text-align: center; }
+.account-overlay .account-switch {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  color: var(--ds-copy);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-r-sm);
+  font-size: 13px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.account-overlay .account-switch:hover { color: var(--ds-text); border-color: var(--ds-muted); background: var(--ds-panel-raised); }
+.account-overlay .account-privacy { max-width: none; margin-top: 20px; color: var(--ds-muted); font-size: 12px; text-align: center; }
+.account-overlay .account-service-error { color: var(--ds-danger); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.account-retry { margin-top: 12px; min-width: 160px; }
+
+.account-overlay .account-profile-head { align-items: center; }
+.account-overlay .account-profile-head h2 { margin-top: 5px; overflow-wrap: anywhere; }
+.account-profile-head p > span { color: var(--ds-muted); font-size: 12px; }
+.account-overlay .account-avatar {
+  color: var(--ds-accent-bright);
+  background: rgba(var(--ds-accent-rgb), .1);
+  border-color: rgba(var(--ds-accent-rgb), .35);
+  border-radius: var(--ds-r-lg);
+}
+.account-overlay :is(.account-continue-card, .account-empty-save) {
+  margin-top: 28px;
+  padding: 24px;
+  background: linear-gradient(110deg, rgba(var(--ds-accent-rgb), .1), transparent 80%), var(--ds-panel);
+  border-color: rgba(var(--ds-accent-rgb), .35);
+  border-radius: var(--ds-r-md);
+}
+.account-overlay .account-empty-save { border-color: var(--ds-line); background: var(--ds-panel); }
+.account-overlay :is(.account-continue-card h3, .account-empty-save h3, .account-section h3) { font-family: var(--ds-font-display); font-size: 21px; line-height: 1.25; }
+.account-overlay :is(.account-continue-card p, .account-empty-save p) { color: var(--ds-copy); font-size: 13px; line-height: 1.6; }
+.account-overlay .account-continue-card div:first-child > span { color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
+.account-overlay .account-continue-card .account-service-error { margin-top: 12px; color: var(--ds-danger); }
+.account-overlay .account-clear-save { color: var(--ds-muted); font-size: 12px; }
+.account-overlay .account-clear-save:hover { color: var(--ds-danger); }
+.account-overlay .account-stats { margin-top: 16px; gap: 12px; }
+.account-overlay .account-stats article { padding: 20px; background: var(--ds-panel); border-color: var(--ds-line-soft); border-radius: var(--ds-r-md); gap: 10px; }
+.account-overlay .account-stats small { color: var(--ds-muted); letter-spacing: .06em; }
+.account-overlay .account-stats strong { color: var(--ds-text); font: 600 30px/1.2 var(--ds-font-mono); font-variant-numeric: tabular-nums; }
+.account-overlay .account-stats article > span { margin-top: 0; color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
+.account-overlay .account-section { margin-top: 32px; }
+.account-overlay .account-section > header { border-color: var(--ds-line-soft); padding-bottom: 8px; }
+.account-overlay .account-section > header > span { font-size: 12px; }
+.account-overlay .account-commanders article { padding: 16px; background: var(--ds-panel); border-color: var(--ds-line-soft); border-radius: var(--ds-r-sm); }
+.account-overlay .account-commanders i { font: 600 12px/1 var(--ds-font-mono); }
+.account-overlay .account-commanders b { color: var(--ds-text); font-size: 13px; line-height: 1.5; white-space: normal; }
+.account-overlay .account-commanders span { color: var(--ds-muted); font-size: 12px; }
+.account-overlay :is(.account-commanders > p, .account-deck-tags > p, .account-history > p) { color: var(--ds-muted); font-size: 13px; line-height: 1.6; }
+.account-overlay .account-deck-tags > span { color: var(--ds-copy); background: var(--ds-panel-raised); border-color: var(--ds-line-soft); font-size: 12px; line-height: 1.4; }
+.account-overlay .account-history li { min-height: 66px; border-color: var(--ds-line-soft); }
+.account-overlay .account-history li > i { color: var(--ds-copy); background: var(--ds-panel-raised); }
+.account-overlay .account-history li > i.win { color: var(--ds-good); background: var(--ds-panel-raised); }
+.account-overlay .account-history li b { color: var(--ds-text); font-size: 13px; line-height: 1.5; white-space: normal; }
+.account-overlay .account-history li small { color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
+.account-overlay .account-history li strong { color: var(--ds-accent-bright); font: 500 14px/1.4 var(--ds-font-mono); }
+.account-overlay .account-profile-actions { align-items: center; flex-wrap: wrap; gap: 12px; padding-top: 12px; }
+.account-overlay .account-logout { min-width: 100px; padding: 10px 16px; color: var(--ds-copy); border: 1px solid var(--ds-line); border-radius: var(--ds-r-sm); font-size: 13px; text-decoration: none; }
+.account-overlay .account-logout:hover { color: var(--ds-text); background: var(--ds-panel-raised); }
+.account-overlay .account-logout-error:not(:empty) { flex-basis: 100%; }
+
+@media (max-width: 720px) {
+  .account-overlay .account-panel { border: 0; border-radius: 0; }
+  .account-overlay .account-content { padding: max(28px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+  .account-overlay .account-auth-head { padding-right: 44px; }
+  .account-overlay .account-auth-head h2 { font-size: 34px; }
+  .account-overlay .account-profile-head { align-items: flex-start; gap: 12px; }
+  .account-overlay .account-profile-head h2 { font-size: 28px; }
+  .account-overlay .account-profile-head p { font-size: 13px; }
+  .account-overlay :is(.account-continue-card, .account-empty-save) { padding: 20px; gap: 16px; }
+  .account-overlay .account-stats { gap: 10px; }
+  .account-overlay .account-stats article { padding: 16px; }
+  .account-overlay .account-stats article:first-child { min-height: 112px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-overlay :is(button, input) { transition: none; }
+  .account-overlay button:not(:disabled):is(:hover, :active) { transform: none; }
+}
+body.reduced-motion .account-overlay :is(button, input) { transition: none; }
+body.reduced-motion .account-overlay button:not(:disabled):is(:hover, :active) { transform: none; }

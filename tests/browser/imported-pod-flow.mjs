@@ -137,6 +137,7 @@ try {
   const unavailableJudge = await page.evaluate(() => {
     const ui = window._ui;
     ui.quickMenuOpen = true;
+    ui.arenaSettingsTab = 'help';
     try {
       const menu = ui.renderQuickMenu(window._game);
       const judge = [...menu.querySelectorAll('.quickmenuitem')].find(button => button.textContent.startsWith('Judge'));
@@ -156,6 +157,7 @@ try {
   assert.equal((await state(page)).pending.type, 'main');
   assert.equal(await page.locator('.promptbar').getByRole('button', { name: /Judge/ }).count(), 0);
   await page.locator('.menubutton').click();
+  await page.locator('[data-settings-tab="help"]').click();
   await page.locator('.quickmenuitem').filter({ hasText: /^Judge/ }).click();
   await page.getByText('⚒️ Judge panel: manual actions', { exact: true }).waitFor();
   assert.equal(await page.locator('.quickmenu').count(), 0, 'menu closes before Judge opens');

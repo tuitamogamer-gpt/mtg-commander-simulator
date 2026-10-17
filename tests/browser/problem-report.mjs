@@ -133,6 +133,7 @@ async function board() {
 
 async function reportDownload(replay, filename) {
   await page.locator('.menubutton').click();
+  await page.locator('[data-settings-tab="help"]').click();
   await page.getByRole('button', { name: /^Report a problem/ }).click();
   const dialog = page.getByRole('dialog', { name: 'Report a problem', exact: true });
   await dialog.locator('textarea').fill(description);
