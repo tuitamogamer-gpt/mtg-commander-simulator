@@ -1,0 +1,251 @@
+/* Commander Live: setup and connection surfaces only. Arena composition stays
+   owned by command-table.css. */
+.online-lobby {
+  min-height: calc(100 * var(--dvhu));
+  padding: clamp(20px, 3.5 * var(--vwu), 52px);
+  color: var(--ds-text);
+  background: radial-gradient(ellipse at 16% 0, rgba(var(--ds-accent-rgb), .09), transparent 52%), var(--ds-table);
+  font-family: var(--ds-font-body);
+}
+.online-lobby :is(button, input, select) { box-sizing: border-box; }
+.online-lobby :is(button, select, input):focus-visible,
+.online-reconnect-dialog button:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(var(--ds-accent-rgb), .2);
+}
+.online-lobby-head,
+.online-lobby .online-invite,
+.online-lobby .online-seats-heading,
+.online-lobby .online-seats,
+.online-lobby .online-lobby-actions,
+.online-lobby .online-host-note,
+.online-lobby .online-error { max-width: 1280px; margin-left: auto; margin-right: auto; }
+.online-lobby-head {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-color: var(--ds-line-soft);
+}
+.online-lobby .online-lobby-title > span,
+.online-lobby small,
+.online-reconnect-dialog > small {
+  color: var(--ds-accent-soft);
+  font: 750 11px/1.4 var(--ds-font-display);
+  font-stretch: 88%;
+  letter-spacing: .13em;
+}
+.online-lobby-head h1 {
+  margin: 7px 0 10px;
+  color: var(--ds-text);
+  font: 700 clamp(29px, 3.4 * var(--vwu), 45px)/1.08 var(--ds-font-display);
+  letter-spacing: -.035em;
+}
+.online-lobby-head p { max-width: 56ch; color: var(--ds-copy); font-size: 13px; line-height: 1.7; }
+.online-pod-summary { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; }
+.online-lobby .online-pod-summary > span { color: var(--ds-muted); font: 600 12px/1.5 var(--ds-font-body); letter-spacing: 0; }
+.online-pod-summary > span + span::before { content: '·'; margin-right: 16px; color: var(--ds-accent); }
+.online-lobby .online-room-state {
+  min-height: 36px;
+  padding: 8px 12px;
+  color: var(--ds-good);
+  border: 1px solid color-mix(in srgb, var(--ds-good) 25%, transparent);
+  background: color-mix(in srgb, var(--ds-good) 6%, var(--ds-panel));
+  font: 650 11px/1.4 var(--ds-font-body);
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+.online-lobby :is(.online-room-state, .onlineseatstatus, .online-guest-wait) i {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  box-shadow: none;
+}
+.online-lobby .online-room-state.paused { color: var(--ds-accent-bright); border-color: rgba(var(--ds-accent-rgb), .3); background: rgba(var(--ds-accent-rgb), .06); }
+.online-lobby :is(.online-back, .online-copy, .online-choice, .online-start),
+.online-reconnect-dialog .online-resume {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--ds-touch);
+  padding: 11px 16px;
+  color: var(--ds-copy);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-r-sm);
+  background: var(--ds-panel-raised);
+  font: 700 12px/1.4 var(--ds-font-body);
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: transform var(--ds-t-fast) var(--ds-ease), border-color var(--ds-t-fast), background var(--ds-t-fast);
+}
+.online-lobby :is(.online-back, .online-copy, .online-choice):hover:not(:disabled) { color: var(--ds-text); border-color: var(--ds-accent-soft); transform: translateY(-1px); }
+.online-lobby :is(.online-start, .online-copy),
+.online-reconnect-dialog .online-resume {
+  color: var(--ds-accent-ink);
+  border-color: var(--ds-accent);
+  background: linear-gradient(145deg, var(--ds-accent-bright), var(--ds-accent));
+  box-shadow: 0 5px 18px rgba(var(--ds-accent-rgb), .12);
+}
+.online-lobby .online-copy:hover:not(:disabled) { color: var(--ds-accent-ink); }
+.online-lobby .online-start:hover:not(:disabled),
+.online-reconnect-dialog .online-resume:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--ds-accent-bright); }
+.online-lobby button:active:not(:disabled), .online-reconnect-dialog button:active:not(:disabled) { transform: scale(.985); }
+.online-lobby button:disabled, .online-reconnect-dialog button:disabled {
+  opacity: 1;
+  color: var(--ds-muted);
+  background: var(--ds-panel-raised);
+  border-color: var(--ds-line-soft);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.online-lobby .online-invite {
+  gap: 0 24px;
+  padding: 22px 24px;
+  border: 1px solid rgba(var(--ds-accent-rgb), .24);
+  border-radius: var(--ds-r-md);
+  background: linear-gradient(110deg, rgba(var(--ds-accent-rgb), .055), transparent 68%), var(--ds-panel);
+  margin-bottom: 32px;
+}
+.online-invite-copy > strong { color: var(--ds-text); font: 700 20px/1.35 var(--ds-font-display); }
+.online-invite-copy > span { color: var(--ds-copy); font-size: 12px; line-height: 1.6; }
+.online-lobby .online-invite b { display: block; margin-top: 5px; color: var(--ds-muted); font: 500 11px/1.7 var(--ds-font-mono); user-select: all; }
+.online-invite-feedback { grid-column: 1 / -1; margin: 14px 0 0; color: var(--ds-good); font-size: 12px; line-height: 1.6; }
+.online-invite-feedback:empty { display: none; }
+.online-invite-manual { grid-column: 1 / -1; display: grid; gap: 8px; margin-top: 14px; color: var(--ds-copy); font-size: 12px; }
+.online-invite-manual input { width: 100%; min-width: 0; min-height: var(--ds-touch); padding: 10px 12px; color: var(--ds-text); background: var(--ds-table); border: 1px solid var(--ds-line); border-radius: var(--ds-r-sm); font: 500 12px/1.5 var(--ds-font-mono); }
+.online-seats-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 16px; }
+.online-seats-heading h2 { margin: 4px 0 0; font: 700 23px/1.2 var(--ds-font-display); letter-spacing: -.02em; }
+.online-seats-heading > span { color: var(--ds-muted); font-size: 12px; text-align: right; }
+.online-lobby .online-seats { gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
+.online-lobby[data-player-count="2"] .online-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.online-lobby[data-player-count="3"] .online-seats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.online-lobby .onlineseat {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 16px;
+  border: 1px solid var(--ds-line-soft);
+  border-radius: var(--ds-r-md);
+  background: var(--ds-panel);
+  box-shadow: none;
+}
+.online-lobby .onlineseat.mine { border-color: rgba(var(--ds-accent-rgb), .5); background: linear-gradient(180deg, rgba(var(--ds-accent-rgb), .045), transparent 55%), var(--ds-panel); }
+.onlineseattop { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.online-lobby .onlineseatnum { color: var(--ds-muted); font: 600 10px/1 var(--ds-font-body); letter-spacing: .1em; }
+.onlineseatnum b { margin-left: 4px; color: var(--ds-copy); font: 500 17px/1 var(--ds-font-mono); letter-spacing: -.03em; }
+.onlineseatidentity { color: var(--ds-muted); font-size: 11px; font-weight: 650; }
+.onlineseat.mine .onlineseatidentity { color: var(--ds-accent-bright); }
+.onlineseatart { position: relative; height: 160px; overflow: hidden; border-radius: var(--ds-r-sm); background: var(--ds-table); }
+.onlineseatart > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 10%; }
+.onlineseatart > img.full-card-art { object-position: center 15%; }
+.onlineseatart::after { content: ''; position: absolute; inset: 55% 0 0; background: linear-gradient(transparent, rgba(var(--ds-table-rgb), .3)); pointer-events: none; }
+.online-lobby .onlineseatempty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 160px; padding: 16px; box-sizing: border-box; color: var(--ds-muted); background: radial-gradient(ellipse, rgba(var(--ds-accent-rgb), .045), transparent); border: 1px dashed var(--ds-line); border-radius: var(--ds-r-sm); font: 500 12px/1.5 var(--ds-font-body); text-align: center; }
+.onlineseatempty .gameicon { width: 32px; height: 32px; color: var(--ds-accent-soft); opacity: .8; }
+.online-lobby .onlineseatcopy { gap: 6px; margin-top: 18px; }
+.online-lobby .onlineseatcopy small { font-size: 10px; color: var(--ds-muted); }
+.online-lobby .onlineseatcopy b { color: var(--ds-text); font: 700 22px/1.2 var(--ds-font-display); }
+.online-lobby .onlineseatcopy > span { overflow: visible; color: var(--ds-copy); font-size: 12px; line-height: 1.5; text-overflow: initial; white-space: normal; overflow-wrap: anywhere; }
+.online-lobby .onlineseatcopy > .onlineseatcommander { color: var(--ds-muted); }
+.online-lobby .onlineseatimported { justify-self: start; margin: 1px 0 0; padding: 3px 7px; color: var(--ds-accent-soft); background: rgba(var(--ds-accent-rgb), .06); border-color: rgba(var(--ds-accent-rgb), .2); font: 600 10px/1.4 var(--ds-font-body); text-transform: none; letter-spacing: 0; }
+.online-lobby .onlineseatstatus { gap: 7px; margin-top: 14px; color: var(--ds-muted); font: 650 11px/1.5 var(--ds-font-body); letter-spacing: 0; }
+.online-lobby .onlineseat.ready .onlineseatstatus { color: var(--ds-good); }
+.online-lobby .onlineseat.waiting .onlineseatstatus i { color: inherit; background: currentColor; }
+.onlineseatfields { display: grid; gap: 12px; margin-top: auto; padding-top: 18px; }
+.online-field { display: grid; min-width: 0; gap: 7px; color: var(--ds-copy); font-size: 11px; font-weight: 650; }
+.online-lobby :is(.online-deck-select, .online-seat-kind) {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  margin: 0;
+  padding: 10px 29px 10px 11px;
+  color: var(--ds-text);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-r-sm);
+  background-color: var(--ds-panel-raised);
+  font: 600 12px/1.5 var(--ds-font-body);
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.online-lobby select:hover:not(:disabled) { border-color: var(--ds-accent-soft); }
+.online-lobby select:disabled { color: var(--ds-muted); cursor: wait; }
+.onlineseathint { margin: auto 0 0; padding-top: 18px; color: var(--ds-muted); font-size: 12px; line-height: 1.6; }
+.online-lobby .online-lobby-actions { flex-wrap: wrap; gap: 18px; margin-top: 24px; padding: 22px 0; border-color: var(--ds-line-soft); background: transparent; }
+.online-ready-summary { flex: 1 1 280px; gap: 5px !important; }
+.online-lobby .online-lobby-actions b { color: var(--ds-text); font: 700 19px/1.35 var(--ds-font-display); }
+.online-lobby .online-lobby-actions span { color: var(--ds-copy); font-size: 12px; line-height: 1.6; }
+.online-ready-track { display: flex; gap: 5px; margin-top: 8px; }
+.online-ready-track i { width: 30px; height: 3px; border-radius: 2px; background: var(--ds-line); }
+.online-ready-track i.ready { background: var(--ds-good); }
+.online-lobby .online-start { min-width: 200px; min-height: 48px; }
+.online-seat-count { gap: 8px; }
+.online-lobby .online-guest-wait { max-width: 260px; color: var(--ds-good); font-size: 12px; line-height: 1.6; }
+.online-host-note { display: flex; gap: 8px; align-items: start; padding-top: 3px; color: var(--ds-muted); font-size: 12px; line-height: 1.6; }
+.online-host-note .gameicon { flex: none; width: 16px; height: 16px; margin-top: 2px; }
+.online-lobby .online-error { display: grid; gap: 4px; padding: 15px 18px; margin-bottom: 20px; color: var(--ds-danger); border: 1px solid color-mix(in srgb, var(--ds-danger) 35%, transparent); border-radius: var(--ds-r-sm); background: color-mix(in srgb, var(--ds-danger) 7%, var(--ds-panel)); font-size: 13px; line-height: 1.6; }
+.online-lobby :is(.online-waiting-game, .online-unavailable-card) { flex-direction: column; gap: 14px; max-width: 600px; min-height: 280px; margin: 50px auto; padding: 32px; color: var(--ds-text); border-color: var(--ds-line); border-radius: var(--ds-r-lg); background: var(--ds-panel); text-align: center; }
+.online-waiting-game h1 { margin: 0; font: 700 28px/1.25 var(--ds-font-display); letter-spacing: -.025em; }
+.online-waiting-game p { max-width: 45ch; margin: 0; color: var(--ds-copy); font-size: 13px; line-height: 1.7; }
+.online-reconnect-dialog { padding: 28px; color: var(--ds-text); background: var(--ds-dialog); border: 1px solid var(--ds-line); box-shadow: var(--ds-shadow-dialog); }
+.online-reconnect-dialog::backdrop { background: rgba(var(--ds-table-rgb), .78); backdrop-filter: blur(5px); }
+.online-reconnect-mark { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 18px; color: var(--ds-accent-bright); border: 1px solid rgba(var(--ds-accent-rgb), .2); border-radius: var(--ds-r-md); background: rgba(var(--ds-accent-rgb), .06); }
+.online-reconnect-mark .gameicon { width: 24px; height: 24px; }
+.online-reconnect-dialog h2 { margin: 8px 0 16px; font: 700 28px/1.2 var(--ds-font-display); letter-spacing: -.025em; }
+.online-reconnect-dialog p { color: var(--ds-copy); font-size: 13px; line-height: 1.7; }
+.online-reconnect-dialog .online-reconnect-status { color: var(--ds-text); }
+.online-reconnect-dialog .btnrow { margin-top: 22px; }
+.online-reconnect-dialog .online-resume { width: 100%; min-height: 48px; }
+.online-reconnect-dialog .online-reconnect-error { color: var(--ds-danger); }
+.online-reconnect-error:empty { display: none; }
+@media (max-width: 1050px) {
+  .online-lobby .online-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .online-lobby[data-player-count="3"] .online-seats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .online-lobby-head { grid-template-columns: auto minmax(0, 1fr); }
+  .online-lobby .online-room-state { grid-column: 2; justify-self: start; }
+}
+@media (max-width: 720px) {
+  .online-lobby { padding: 20px 16px 28px; }
+  .online-lobby-head { gap: 18px 12px; margin-bottom: 22px; padding-bottom: 22px; }
+  .online-lobby .online-back { grid-column: 1; grid-row: 1; justify-self: start; }
+  .online-lobby .online-room-state { grid-column: 2; grid-row: 1; justify-self: end; align-self: center; }
+  .online-lobby .online-lobby-title { grid-column: 1 / -1; grid-row: 2; }
+  .online-lobby-head h1 { font-size: 32px; }
+  .online-lobby .online-invite { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 18px; margin-bottom: 26px; }
+  .online-lobby .online-copy { justify-self: start; min-width: 160px; }
+  .online-lobby :is(.online-deck-select, .online-seat-kind, .online-invite-manual input) { font-size: 16px; }
+  .online-invite-feedback, .online-invite-manual { margin-top: 0; }
+  .online-seats-heading { align-items: start; flex-direction: column; gap: 8px; }
+  .online-seats-heading > span { text-align: left; }
+  .online-lobby[data-player-count] .online-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .online-lobby .onlineseat { padding: 12px; }
+  .online-lobby .onlineseatcopy b { font-size: 20px; }
+  .onlineseatart, .online-lobby .onlineseatempty { height: 135px; min-height: 135px; }
+  .online-lobby .online-lobby-actions { margin-top: 20px; padding-top: 20px; }
+  .online-lobby .online-start { flex: 1 1 100%; }
+  .online-ready-summary { flex-basis: 100%; }
+}
+@media (max-width: 460px) {
+  .online-lobby[data-player-count] .online-seats { grid-template-columns: minmax(0, 1fr); }
+  .online-lobby .onlineseat { display: grid; grid-template-columns: 84px minmax(0, 1fr); grid-template-rows: auto auto auto auto; gap: 0 14px; padding: 16px; }
+  .onlineseattop { grid-column: 1 / -1; }
+  .onlineseatart { grid-column: 1; grid-row: 2 / span 2; height: 112px; min-height: 112px; }
+  .online-lobby .onlineseatempty { height: 112px; min-height: 112px; }
+  .onlineseatempty span { display: none; }
+  .online-lobby .onlineseatcopy { grid-column: 2; grid-row: 2; margin-top: 0; gap: 4px; }
+  .online-lobby .onlineseatcopy b { white-space: normal; overflow-wrap: anywhere; }
+  .online-lobby .onlineseatstatus { grid-column: 2; grid-row: 3; align-self: end; margin-top: 8px; }
+  .onlineseatfields { grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+  .onlineseathint { grid-column: 1 / -1; }
+  .online-lobby .online-copy { width: 100%; }
+  .online-lobby .online-seat-count { width: 100%; }
+  .online-lobby .online-seat-count button { flex: 1; }
+  .online-reconnect-dialog { padding: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .online-lobby button, .online-reconnect-dialog button { transition: none !important; transform: none !important; }
+}
+body.reduced-motion .online-lobby button,
+body.reduced-motion .online-reconnect-dialog button { transition: none !important; transform: none !important; }

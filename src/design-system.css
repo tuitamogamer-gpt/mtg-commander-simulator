@@ -6,17 +6,17 @@
        one warm ember accent, mist text. Every stylesheet reads these tokens;
        no colour is hard-coded elsewhere. */
     --ds-table: #07090c;
-    --ds-panel: #0c1015;
-    --ds-panel-raised: #12181f;
-    --ds-dialog: #0f1419;
+    --ds-panel: #0e1319;
+    --ds-panel-raised: #18212b;
+    --ds-dialog: #111820;
     --ds-table-rgb: 7, 9, 12;
-    --ds-panel-rgb: 12, 16, 21;
-    --ds-panel-raised-rgb: 18, 24, 31;
-    --ds-line: #2a3440;
-    --ds-line-soft: #1a222b;
+    --ds-panel-rgb: 14, 19, 25;
+    --ds-panel-raised-rgb: 24, 33, 43;
+    --ds-line: #374452;
+    --ds-line-soft: #25303b;
     --ds-text: #f3f1ec;
-    --ds-copy: #c2c9d0;
-    --ds-muted: #8a96a3;
+    --ds-copy: #cbd2d9;
+    --ds-muted: #a1adba;
     --ds-accent: #e07a4a;
     --ds-accent-bright: #ffa878;
     --ds-accent-soft: #c99a86;
@@ -45,6 +45,13 @@
     --ds-r-md: 12px;
     --ds-r-lg: 18px;
     --ds-touch: 44px;
+    --ds-space-1: 4px;
+    --ds-space-2: 8px;
+    --ds-space-3: 12px;
+    --ds-space-4: 16px;
+    --ds-space-6: 24px;
+    --ds-space-8: 32px;
+    --card-back-image: url('../assets/cardbacks/obsidian.webp');
     --ds-shadow-dialog: 0 36px 110px rgba(2, 6, 12, .78), 0 0 0 1px rgba(255, 255, 255, .04);
 
     /* Motion: one easing family and three durations for the whole client. */

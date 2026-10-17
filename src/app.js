@@ -703,6 +703,8 @@ import './modules/player-tools.js';
 import './modules/game-audio.js';
 import './modules/game-audio-ui.js';
 import './modules/arena-tools.js';
+import './modules/experience-tools.js';
+import './modules/help-experience.js';
 import './modules/command-table.js';
 import './modules/landing.js';
 import './modules/multiplayer-presentation.js';

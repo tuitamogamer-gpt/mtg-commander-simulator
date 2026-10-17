@@ -179,106 +179,196 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     update();
     return overlay;
   };
+  // Explicit navigation replaces the current inspection surface. Keep engine
+  // questions, paused-game state, drafts, and the underlying table view intact.
+  U.UI.prototype.clearInspectionViews = function () {
+    this.dungeonPanel = null;
+    this.sheet = null;
+    this.zoneBrowse = null;
+    this.playerSheet = null;
+    this.lastResortConfirm = false;
+    this.quickMenuOpen = false;
+    this.showStops = false;
+    this.showJudge = false;
+    this.showHelp = false;
+    this.showLog = false;
+  };
   U.UI.prototype.openCommandPalette = function () {
     if (this.commandPaletteOpen || this.fatalError) return;
     this.commandPaletteOpen = true;
-    const ui = this, gameRoot = document.querySelector('#game');
-    const returnFocus = document.activeElement;
+    const ui = this, game = this.game, viewer = this.me;
+    const gameRoot = document.querySelector('#game');
+    const returnFocus = document.activeElement, wasInert = !!gameRoot?.inert;
     const overlay = node('div', 'commandpaletteov');
     const panel = node('section', 'commandpalette');
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-label', 'Find a card or command');
     const head = node('header', 'commandpalettehead');
-    const title = node('div', '', 'Find a card or command');
+    const title = node('div', 'commandpalettetitle', 'Find a card or command');
     const hint = node('small', '', 'Your hand, public zones, and table controls');
     title.appendChild(hint);
     const close = node('button', 'commandclose', '×');
     close.type = 'button';
     close.setAttribute('aria-label', 'Close search');
     head.append(title, close);
+    const search = node('div', 'commandsearchwrap');
     const input = node('input', 'commandsearch');
     input.type = 'search';
-    input.placeholder = 'Search cards, graveyard, settings…';
+    input.placeholder = 'Card name, zone, or setting';
     input.setAttribute('aria-label', 'Search cards and commands');
     input.setAttribute('aria-controls', 'command-results');
     input.autocomplete = 'off';
     input.spellcheck = false;
+    const clear = node('button', 'commandclear', 'Clear');
+    clear.type = 'button';
+    clear.setAttribute('aria-label', 'Clear search');
+    clear.hidden = true;
+    search.append(input, clear);
     const results = node('div', 'commandresults');
     results.id = 'command-results';
     const status = node('div', 'commandstatus');
     status.setAttribute('role', 'status');
-    const foot = node('footer', 'commandfooter', '↑ ↓ Navigate   ·   Enter Open   ·   Esc Close');
-    panel.append(head, input, status, results, foot);
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('aria-atomic', 'true');
+    const foot = node('footer', 'commandfooter');
+    for (const [key, label] of [['↑ ↓', 'Navigate'], ['Enter', 'Open'], ['Esc', 'Close']]) {
+      const item = node('span', 'commandfooterhint');
+      item.append(node('kbd', '', key), node('span', '', label));
+      foot.appendChild(item);
+    }
+    panel.append(head, search, status, results, foot);
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
-    gameRoot.inert = true;
-    let active = -1;
+    if (gameRoot) gameRoot.inert = true;
+    let active = -1, closed = false;
     const dismiss = () => {
+      if (closed) return;
+      closed = true;
       overlay.remove();
-      gameRoot.inert = false;
+      if (gameRoot) gameRoot.inert = wasInert;
       ui.commandPaletteOpen = false;
       ui.closeCommandPalette = null;
       if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
       else document.querySelector('.commandbutton')?.focus({ preventScroll: true });
     };
+    const isCurrent = () => !closed && overlay.isConnected && ui.closeCommandPalette === dismiss && ui.game === game && ui.me === viewer;
     ui.closeCommandPalette = dismiss;
     close.onclick = dismiss;
     overlay.onclick = event => { if (event.target === overlay) dismiss(); };
     const commands = [
-      ['Arena settings', 'Display, pacing, and accessibility', () => { ui.quickMenuOpen = true; ui.render(); }],
-      ['Music & sound', 'Fantasy lo-fi, volume, and mute', () => { ui.quickMenuOpen = 'audio'; ui.render(); }],
-      ['Arena background', 'Mana colors, scenes, and brightness', () => { ui.quickMenuOpen = 'backgrounds'; ui.render(); }],
-      ['Game log', 'Review every public event', () => ui.openUtility('log')],
-      ['Stack and table', 'Stack, commander damage, and threat', () => ui.openUtility('table')],
-      ['Priority stops', 'Choose when the game waits for you', () => { ui.showStops = true; ui.render(); }],
-      ['Help and shortcuts', 'Controls and a quick rules guide', () => { ui.showHelp = true; ui.render(); }],
-      ['Your graveyard', 'Browse cards in your graveyard', () => { ui.zoneBrowse = { player: ui.me, zone: 'graveyard' }; ui.render(); }],
+      ['settings', 'Arena settings', 'Display, pacing, and accessibility', 'menu', 'preferences options contrast motion speed', () => { ui.quickMenuOpen = true; ui.render(); }],
+      ['audio', 'Music & sound', 'Music, volume, and mute', 'mana', 'audio effects music sound volume mute', () => { ui.quickMenuOpen = 'audio'; ui.render(); }],
+      ['backgrounds', 'Arena background', 'Mana colors, scenes, and brightness', 'playmat', 'appearance theme wallpaper dim', () => { ui.quickMenuOpen = 'backgrounds'; ui.render(); }],
+      ['playmats', 'Playmats', 'Choose your battlefield material', 'playmat', 'play mats appearance table felt', () => { ui.quickMenuOpen = 'playmats'; ui.render(); }],
+      ['cardbacks', 'Card backs', 'Choose a sleeve for concealed cards', 'cards', 'cardbacks sleeves appearance deck', () => { ui.quickMenuOpen = 'cardbacks'; ui.render(); }],
+      ['log', 'Game log', 'Review every public event', 'log', 'history timeline activity', () => ui.openUtility('log')],
+      ['table', 'Stack and table', 'Stack, commander damage, and threat', 'stack', 'battlefield information', () => ui.openUtility('table')],
+      ['stops', 'Priority stops', 'Choose when the game waits for you', 'hold', 'pause response combat timing', () => { ui.showStops = true; ui.render(); }],
+      ['help', 'Help and shortcuts', 'Controls and a quick rules guide', 'info', 'keyboard how play instructions', () => { ui.showHelp = true; ui.render(); }],
+      ['graveyard', 'Your graveyard', 'Browse cards in your graveyard', 'graveyard', 'discard dead', () => { ui.zoneBrowse = { player: viewer, zone: 'graveyard' }; ui.render(); }],
     ];
+    const normalize = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const activate = run => {
+      if (!isCurrent()) return;
+      dismiss();
+      run();
+    };
     const draw = () => {
-      const query = input.value.trim().toLowerCase();
+      if (!isCurrent()) { dismiss(); return; }
+      const query = normalize(input.value.trim()), words = query.split(/\s+/).filter(Boolean);
+      const matches = value => words.every(word => normalize(value).includes(word));
       results.replaceChildren();
+      clear.hidden = !input.value;
       active = -1;
-      const actions = commands.filter(([label, description]) => `${label} ${description}`.toLowerCase().includes(query));
-      const cards = query ? U.searchableCards(ui.game, ui.me).filter(item => query.split(/\s+/).every(word => item.text.includes(word))) : [];
-      const add = (label, detail, run, card) => {
+      const actions = commands.filter(([, label, description, , aliases]) => matches(`${label} ${description} ${aliases}`));
+      const cards = query ? U.searchableCards(game, viewer).filter(item => matches(item.text)) : [];
+      const group = (name, count, key) => {
+        const section = node('section', 'commandgroup');
+        const heading = node('h2', 'commandgrouphead', name);
+        heading.id = `command-group-${key}`;
+        heading.appendChild(node('span', 'commandgroupcount', String(count)));
+        section.setAttribute('aria-labelledby', heading.id);
+        section.appendChild(heading);
+        results.appendChild(section);
+        return section;
+      };
+      const add = (parent, label, detail, run, card, icon, key) => {
         const button = node('button', 'commandresult');
         button.type = 'button';
         if (card) {
           button.dataset.cardId = String(card.iid);
           button.insertAdjacentHTML('beforeend', U.cardArtHTML(card));
-        } else button.appendChild(node('span', 'commandresulticon', '↗'));
+        } else {
+          button.dataset.command = key;
+          const symbol = node('span', 'commandresulticon');
+          symbol.innerHTML = U.icon(icon);
+          button.appendChild(symbol);
+        }
         const copy = node('span', 'commandresultcopy');
         copy.append(node('b', '', label), node('small', '', detail));
-        button.append(copy, node('span', 'commandresultgo', '↵'));
-        button.onclick = () => { dismiss(); run(); };
-        results.appendChild(button);
+        const go = node('span', 'commandresultgo');
+        go.innerHTML = U.icon('expand');
+        button.append(copy, go);
+        button.onclick = () => activate(run);
+        button.onfocus = () => {
+          const buttons = [...results.querySelectorAll('.commandresult')];
+          active = buttons.indexOf(button);
+          buttons.forEach((item, index) => item.classList.toggle('active', index === active));
+        };
+        parent.appendChild(button);
       };
-      actions.forEach(([label, detail, run]) => add(label, detail, run));
-      cards.slice(0, 40).forEach(({ card, zone, owner }) => add(card.name, `${zone} · ${(owner || card.ctrl || card.owner)?.name || ''}`, () => {
-        if (U.searchableCards(ui.game, ui.me).some(item => item.card === card)) {
-          ui.sheet = { card, fromSearch: true }; ui.render();
-        } else ui.toast('That card is no longer in a visible zone.');
-      }, card));
-      status.textContent = query ? `${cards.length} card${cards.length === 1 ? '' : 's'} · ${actions.length} command${actions.length === 1 ? '' : 's'}${cards.length > 40 ? ' · first 40 cards shown' : ''}` : 'Table shortcuts';
-      if (!results.childElementCount) results.appendChild(node('p', 'commandempty', 'No matches. Try a card name, a zone, or “settings”.'));
+      if (actions.length) {
+        const section = group('Commands', actions.length, 'commands');
+        actions.forEach(([key, label, detail, icon, , run]) => add(section, label, detail, () => {
+          ui.clearInspectionViews();
+          run();
+        }, null, icon, key));
+      }
+      if (cards.length) {
+        const section = group('Cards', cards.length, 'cards');
+        cards.slice(0, 40).forEach(({ card, zone, owner }) => add(section, card.name, `${zone} · ${(owner || card.ctrl || card.owner)?.name || ''}`, () => {
+          // A card can move while this dialog is open. Recheck public visibility
+          // at activation rather than trusting a result captured earlier.
+          if (U.searchableCards(game, viewer).some(item => item.card === card)) {
+            ui.clearInspectionViews();
+            ui.sheet = { card, fromSearch: true }; ui.render();
+          } else ui.toast('That card is no longer in a visible zone.');
+        }, card));
+      }
+      status.textContent = query ? `${cards.length} card${cards.length === 1 ? '' : 's'} · ${actions.length} command${actions.length === 1 ? '' : 's'}${cards.length > 40 ? ' · first 40 cards shown' : ''}` : 'Search by card name, zone, or setting';
+      if (!actions.length && !cards.length) {
+        const empty = node('div', 'commandempty');
+        empty.append(node('h2', '', 'No matches yet'), node('p', '', 'Try a card name, a zone, or a setting. Search includes your hand and cards you can inspect.'));
+        const reset = node('button', 'commandemptyreset', 'Show all commands');
+        reset.type = 'button';
+        reset.onclick = () => { if (isCurrent()) { input.value = ''; draw(); input.focus(); } };
+        empty.appendChild(reset);
+        results.appendChild(empty);
+      }
     };
     input.oninput = draw;
+    clear.onclick = () => { if (isCurrent()) { input.value = ''; draw(); input.focus(); } };
     panel.onkeydown = event => {
-      const buttons = [...results.querySelectorAll('button')];
+      if (!isCurrent()) return;
+      const buttons = [...results.querySelectorAll('.commandresult')];
       if (event.key === 'Escape' || ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k')) { event.preventDefault(); event.stopPropagation(); dismiss(); return; }
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && buttons.length) {
         event.preventDefault();
         const current = buttons.indexOf(document.activeElement);
         if (current >= 0) active = current;
-        active = Math.max(0, Math.min(buttons.length - 1, active + (event.key === 'ArrowDown' ? 1 : -1)));
-        buttons.forEach((button, i) => button.classList.toggle('active', i === active));
-        buttons[active]?.focus();
-        buttons[active]?.scrollIntoView({ block: 'nearest' });
+        const direction = event.key === 'ArrowDown' ? 1 : -1;
+        active = active < 0 ? (direction > 0 ? 0 : buttons.length - 1) : (active + direction + buttons.length) % buttons.length;
+        buttons[active].focus();
+        buttons[active].scrollIntoView({ block: 'nearest' });
       }
-      if (event.key === 'Enter' && event.target === input) { event.preventDefault(); buttons[0]?.click(); }
+      if ((event.key === 'Home' || event.key === 'End') && buttons.includes(document.activeElement)) {
+        event.preventDefault();
+        buttons[event.key === 'Home' ? 0 : buttons.length - 1]?.focus();
+      }
+      if (event.key === 'Enter' && event.target === input && !event.isComposing) { event.preventDefault(); buttons[active < 0 ? 0 : active]?.click(); }
       if (event.key === 'Tab') {
-        const controls = [close, input, ...buttons];
+        const controls = [close, input, ...(!clear.hidden ? [clear] : []), ...results.querySelectorAll('button')];
         if (event.shiftKey && event.target === controls[0]) { event.preventDefault(); controls.at(-1).focus(); }
         else if (!event.shiftKey && event.target === controls.at(-1)) { event.preventDefault(); close.focus(); }
       }

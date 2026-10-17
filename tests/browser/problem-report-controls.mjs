@@ -35,6 +35,7 @@ await page.addInitScript(() => {
 });
 async function openReport() {
   await page.locator('.menubutton').click();
+  await page.locator('[data-settings-tab="help"]').click();
   await page.getByRole('button', {name: /^Report a problem/}).click();
   await page.locator('#problem-description').waitFor();
 }

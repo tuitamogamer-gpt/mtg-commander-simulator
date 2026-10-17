@@ -41,8 +41,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const name = hidden ? 'Face-down card' : (typeof card === 'string' ? card : card?.name) || '?';
     const def = card?.def || card || {};
     const token = !hidden && !card?.faceDown && (card?.isToken || def.isTokenDef);
-    const url = hidden ? U.BLANK_PX : imgURL(token && def.tokenImageName || name);
-    const image = `<img loading="lazy" class="${escAttr(imageClass)}" src="${escAttr(url)}" alt="${escAttr(name)}" ${token ? 'data-token-art onerror="MTG.tokenArtFailed(this)"' : 'onerror="MTG.imgFail(this)"'}>`;
+    const url = hidden ? (U.cardBackURL?.() || U.BLANK_PX) : imgURL(token && def.tokenImageName || name);
+    const image = `<img loading="lazy" class="${escAttr(imageClass)}${hidden ? ' cardback-art' : ''}" src="${escAttr(url)}" alt="${escAttr(name)}" ${token ? 'data-token-art onerror="MTG.tokenArtFailed(this)"' : 'onerror="MTG.imgFail(this)"'}>`;
     if (!token) return image;
     const current = card.zone === 'battlefield' ? card.cur : null;
     const types = current?.types || def.types || [];
@@ -243,12 +243,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       node.setAttribute('aria-label', label);
       node.title = label;
       node.onkeydown = event => {
+        if (event.target !== node) return;
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
         event.stopPropagation();
         node.click();
       };
       return node;
+    }
+
+    // Inspection is presentation-only. Its dismissal must restore the exact
+    // waiting question without confirming it or clearing unrelated panels.
+    closeCardInspection(options = {}) {
+      const sheet = this.sheet;
+      if (!sheet) return;
+      this.sheet = null;
+      if (sheet.lastResort && this.lastResortActive) this.showJudge = true;
+      if (sheet.returnZone) this.zoneBrowse = sheet.returnZone;
+      this.render();
+      if (sheet.returnZoneCard) requestAnimationFrame(() => {
+        [...(document.querySelectorAll?.('[data-zone-card]') || [])]
+          .find(node => node.dataset.zoneCard === sheet.returnZoneCard)?.focus({preventScroll: true});
+      });
+      if (sheet.returnReveal) requestAnimationFrame(() => {
+        const candidates = document.querySelectorAll?.('[data-reveal-card]') || [];
+        const target = options.focusNext ? null : [...candidates].find(node => node.dataset.revealCard === sheet.returnReveal);
+        (target || document.querySelector('.libraryrevealnext, .reveal .pbtn.primary'))?.focus({preventScroll: true});
+      });
     }
 
     registerArenaDropTarget(node, target) {
@@ -1199,6 +1220,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.fatalError || g.gameOver) this.closeCommandPalette?.();
       const liveRoot = $('#game');
       if (!liveRoot) return;
+      // Remove only our temporary accessibility attributes before comparing
+      // retained arena nodes. The new owner is applied in this same render.
+      U.clearDialogOwnership?.(liveRoot);
       // Compose offscreen, including Command Table, before touching the arena.
       const root = liveRoot.cloneNode(false);
       // Završni rezultat je jedina blokirajuća informacija nakon kraja meča.
@@ -1246,21 +1270,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.appendChild(this.renderUtilityRail(g));
       this.initHoverPreview();
       this.initKeys();
-      if (this.sheet) root.appendChild(this.renderCardSheet(g));
-      if (this.playerSheet) root.appendChild(this.renderPlayerSheet(g));
-      if (this.zoneBrowse) root.appendChild(this.renderZoneBrowser(g));
-      if (this.showLog) root.appendChild(this.renderLog(g));
-      if (this.showHelp) root.appendChild(this.renderHelp(g));
-      if (this.showJudge) root.appendChild(this.renderJudge(g));
-      if (this.showStops) root.appendChild(this.renderStopSettings(g));
-      const quickMenu = this.renderQuickMenu(g);
-      if (quickMenu) root.appendChild(quickMenu);
-      const lastResortConfirm = this.renderLastResortConfirm();
-      if (lastResortConfirm) root.appendChild(lastResortConfirm);
-      const reveal = this.sheet?.fromSearch ? null : this.renderRevealPopup(g);
+      // Only the top inspection surface is interactive. The engine question
+      // remains pending underneath and reappears when this surface closes.
+      const inspection = this.dungeonPanel ? this.renderDungeonPanel()
+        : this.sheet ? this.renderCardSheet(g)
+        : this.zoneBrowse ? this.renderZoneBrowser(g)
+        : this.playerSheet ? this.renderPlayerSheet(g)
+        : this.lastResortConfirm ? this.renderLastResortConfirm()
+        : this.quickMenuOpen ? this.renderQuickMenu(g)
+        : this.showStops ? this.renderStopSettings(g)
+        : this.showJudge ? this.renderJudge(g)
+        : this.showHelp ? this.renderHelp(g)
+        : this.showLog ? this.renderLog(g) : null;
+      if (inspection) root.appendChild(inspection);
+      const reveal = inspection ? null : this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
-      const diplomacyModal = this.renderDiplomacyModal(g);
-      const modal = this.sheet?.fromSearch ? null : diplomacyModal || this.renderAttackersModal(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
+      const diplomacyModal = inspection ? null : this.renderDiplomacyModal(g);
+      const modal = inspection ? null : diplomacyModal || this.renderAttackersModal(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
@@ -1270,10 +1296,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const sp = blocked ? null : this.renderStackPopup(g);
       if (sp && !stage) root.appendChild(sp);
       if (modal) root.appendChild(modal);
-      if (this.dungeonPanel) root.appendChild(this.renderDungeonPanel());
       // Game-over overlay se sklanja dok je otvoren log/zona/sheet — inače je
       // prekrivao "View log" i igra je izgledala zamrznuto na kraju partije.
-      const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse ||
+      const gameOverHidden = !!inspection || this.showLog || this.sheet || this.playerSheet || this.zoneBrowse ||
         g._resolutionRecap || this.pending?.q.effectKind === 'resolutionRecap';
       if (g.gameOver && !gameOverHidden) root.appendChild(this.renderGameOver(g));
       // An eliminated seat is not a finished match: the remaining players keep
@@ -1312,11 +1337,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       this._arenaRenderContext = context;
       this._arenaSurfaceContext = surfaces;
-      liveRoot.querySelectorAll('.overlay, .quickmenuov').forEach(overlay => {
+      liveRoot.querySelectorAll('.overlay, .quickmenuov, .revealwrap, .logpanel').forEach(overlay => {
         if (this.quickMenuOpen === 'report' && this.problemReportDraft && overlay._problemReportDraft !== this.problemReportDraft) return;
-        const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
-        if (dialog) U.enhanceDialog(overlay, dialog);
+        const dialog = overlay.matches('.logpanel') ? overlay : overlay.querySelector('.modal, .sheet, .quickmenu, .reveal');
+        if (dialog) U.enhanceDialog(overlay, dialog, {
+          initialFocus: overlay.matches('.revealwrap') ? dialog.querySelector('.pbtn.primary') : undefined,
+        });
       });
+      U.syncDialogOwnership?.(liveRoot);
       this.fitBattlefieldLanes(liveRoot);
       this.initLaneFit();
       this.syncZoneEffects(g);
@@ -1742,7 +1770,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         info.appendChild(el('div', 'stackpopsub', esc(from) + (pd.q.kind === 'clash' ? ' · Mana value ' + card.mv : pt)));
         it.appendChild(info);
         if (n > 1) it.appendChild(el('div', 'stackpopidx', '×' + n));
-        it.onclick = () => { this.sheet = { card }; this.render(); };
+        it.dataset.revealCard = String(card.iid);
+        it.onclick = () => {
+          if (!(this.pendings || []).includes(pd)) return;
+          this.sheet = {card, returnReveal: String(card.iid)}; this.render();
+        };
+        this.makeKeyboardButton(it, `Inspect ${card.name}`);
         body.appendChild(it);
       }
       pop.appendChild(body);
@@ -1776,6 +1809,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const exiling = q.revealAction === 'exile';
       const wrap = el('div', 'stackpopwrap revealwrap libraryrevealwrap');
       const pop = el('section', 'stackpop reveal libraryreveal');
+      pop.setAttribute('role', 'dialog');
+      pop.setAttribute('aria-modal', 'true');
       pop.setAttribute('aria-label', q.title || 'Library reveal');
       const head = el('div', 'libraryrevealhead');
       head.appendChild(el('div', 'libraryrevealkicker', exiling ? 'Library → Exile' : 'From the library'));
@@ -1787,6 +1822,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (current) {
         const art = el('button', 'libraryrevealcard');
         art.type = 'button';
+        art.dataset.revealCard = String(current.iid);
         art.setAttribute('aria-label', 'Inspect ' + current.name);
         art.insertAdjacentHTML('beforeend', cardArtHTML(current).replace('loading="lazy"', 'loading="eager"'));
         // A redraw can happen while an image loads or another UI panel opens.
@@ -1799,15 +1835,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         art.onclick = () => {
           if (!(this.pendings || []).includes(pd)) return;
-          this.sheet = {card: current}; this.render();
+          this.sheet = {card: current, returnReveal: String(current.iid)}; this.render();
         };
         stage.appendChild(art);
       } else {
-        const back = el('div', 'libraryrevealback');
+        const back = el('div', 'libraryrevealback cardback-surface');
         back.setAttribute('role', 'img');
         back.setAttribute('aria-label', exiling ? 'Unrevealed top card' : 'Unrevealed card');
-        back.appendChild(el('span', 'libraryrevealbackmark', '◇'));
-        back.appendChild(el('span', 'libraryrevealbacklabel', exiling ? 'Top card' : 'Unrevealed card'));
         stage.appendChild(back);
       }
       body.appendChild(stage);
@@ -1826,13 +1860,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           item.setAttribute('role', 'listitem');
           const inspect = el('button', 'libraryrevealhistorycard' + (card === current && index === cards.length - 1 ? ' is-current' : ''));
           inspect.type = 'button';
+          inspect.dataset.revealCard = String(card.iid);
           inspect.setAttribute('aria-label', `${index + 1}. ${card.name}${card.owner?.name ? ' — ' + card.owner.name : ''}`);
           inspect.title = `${index + 1}. ${card.name}${card.owner?.name ? ' · ' + card.owner.name : ''}`;
           inspect.insertAdjacentHTML('beforeend', cardArtHTML(card));
           inspect.appendChild(el('span', '', String(index + 1)));
           inspect.onclick = () => {
             if (!(this.pendings || []).includes(pd)) return;
-            this.sheet = {card}; this.render();
+            this.sheet = {card, returnReveal: String(card.iid)}; this.render();
           };
           item.appendChild(inspect); history.appendChild(item);
         });
@@ -2478,12 +2513,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (ev.key === '/' || ev.key === '?') {
           ev.preventDefault();
           if (ev.key === '/') this.openCommandPalette();
-          else { this.showHelp = true; this.render(); }
+          else { this.clearInspectionViews?.(); this.showHelp = true; this.render(); }
           return;
         }
         if (ev.key === 'Escape') {
           if (this.dungeonPanel) { ev.preventDefault(); this.dungeonPanel = null; this.render(); return; }
-          if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge ||
+          if (this.sheet) { ev.preventDefault(); this.closeCardInspection({focusNext: true}); return; }
+          if (this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge ||
             this.showStops || this.diplomacyComposer || this.quickMenuOpen || this.lastResortConfirm || this.utilityDrawerOpen) {
             this.sheet = null; this.playerSheet = null; this.zoneBrowse = null;
             this.showLog = false; this.showHelp = false; this.showJudge = false; this.showStops = false;
@@ -2509,6 +2545,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if ((ev.key === ' ' || ev.key === 'Enter') &&
           (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp ||
             this.showJudge || this.showStops || this.diplomacyComposer)) return;
+        // Arrow keys belong to the visible information surface; they must not
+        // change an X choice that is temporarily hidden behind it.
+        if ((ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') &&
+          (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp ||
+            this.showJudge || this.showStops || this.diplomacyComposer || this.quickMenuOpen ||
+            this.lastResortConfirm || this.utilityDrawerOpen)) return;
         // R = reaguj / armiraj HOLD; Space u prozoru reakcije = pusti dalje
         if (ev.key === 'r' || ev.key === 'R') {
           if (this.react) { this.takeReactWindow(); ev.preventDefault(); return; }
@@ -4604,6 +4646,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!types.includes(q.type)) return null;
       const ov = el('div', 'overlay');
       const m = el('div', 'modal');
+      m.dataset.decisionType = q.type;
       ov.appendChild(m);
       m.appendChild(this.renderWaitStatus(g));
       const answer = value => { if (this.pending === pd) this.resolvePendingEntry(pd, value); };
@@ -4767,11 +4810,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const card of q.candidates || []) {
           const selected = pd.sel.includes(card);
           const row = el('button', 'manasourcerow' + (selected ? ' selected' : ''));
+          row.type = 'button';
+          row.setAttribute('aria-pressed', String(selected));
           const labels = (byCard.get(card) || []).map(source => manualManaSourceText(source)).join(' · ');
           row.innerHTML = `<span class="manacheck">${selected ? '✓' : ''}</span>` +
             `${cardArtHTML(card)}` +
             `<span><b>${esc(card.name)}</b><small>${esc(labels)}${card.tapped ? ' · TAPPED' : ''}</small></span>`;
           row.onclick = () => {
+            if (this.pending !== pd) return;
             if (selected) pd.sel.splice(pd.sel.indexOf(card), 1); else pd.sel.push(card);
             this.render();
           };
@@ -4780,11 +4826,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         m.appendChild(list);
         const preview = g.onlinePresentation ? g.session.preview({ cards: pd.sel }) : null;
         const valid = preview ? preview.valid : g.manualManaSelectionSolution(q.player, q.cost, q.forSpell, pd.sel, q.opts || {});
-        m.appendChild(el('div', 'manavalid ' + (preview?.pending ? 'pending' : valid ? 'ok' : 'bad'), preview?.pending
+        const validity = el('div', 'manavalid ' + (preview?.pending ? 'pending' : valid ? 'ok' : 'bad'), preview?.pending
           ? 'Checking selected mana sources…' : valid
           ? `✓ This selection pays the cost with ${pd.sel.length} source${pd.sel.length === 1 ? '' : 's'}.`
-          : '⚠ This selection cannot pay the cost exactly yet.'));
-        const actions = el('div', 'btnrow');
+          : 'Select sources that can pay the complete cost.');
+        validity.setAttribute('role', 'status'); validity.setAttribute('aria-live', 'polite');
+        m.appendChild(validity);
+        const actions = el('div', 'btnrow decision-footer');
         const confirm = btn('Tap selected sources ✓', () => this.resolvePendingEntry(pd, { cards: pd.sel.slice() }), 'primary');
         confirm.disabled = !valid;
         actions.appendChild(confirm);
@@ -4889,27 +4937,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             this.render();
           });
           up.disabled = index === 0; down.disabled = index === pd.order.length - 1;
+          up.title = `Move ${sourceName}: ${tr.name || 'trigger'} toward the bottom; resolves later`;
+          down.title = `Move ${sourceName}: ${tr.name || 'trigger'} toward the top; resolves earlier`;
+          up.setAttribute('aria-label', up.title); down.setAttribute('aria-label', down.title);
           controls.appendChild(up); controls.appendChild(down); row.appendChild(controls); list.appendChild(row);
         });
         m.appendChild(list);
-        m.appendChild(btn('Confirm order', () => this.resolvePending(pd.order.slice()), 'primary wide'));
+        m.appendChild(btn('Confirm order', () => this.resolvePending(pd.order.slice()), 'primary wide decision-footer'));
         return ov;
       }
 
       if (q.type === 'mulligan') {
         m.appendChild(el('div', 'mtitle', `Opening hand (${q.free ? 'free mulligan' : 'mulligan #' + (q.mulls + 1)})`));
         m.appendChild(this.cardGrid(g, q.player.hand, null));
-        const row = el('div', 'btnrow');
+        const row = el('div', 'btnrow decision-footer');
         row.appendChild(btn('Keep ✓', () => this.resolvePending(false), 'primary'));
         row.appendChild(btn('Mulligan ↺', () => this.resolvePending(true), 'danger'));
         m.appendChild(row);
         return ov;
       }
       if (q.type === 'bottomCards') {
+        m.classList.add('cardselectionmodal');
         m.appendChild(el('div', 'mtitle', `Put ${q.n} on the bottom of your library`));
         m.appendChild(this.cardGrid(g, q.player.hand, { min: q.n, max: q.n }));
-        m.appendChild(el('div', 'selectionreview', `<b>${pd.sel.length} / ${q.n} selected</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'Select the exact cards, then confirm.'}</span>`));
-        const row = el('div', 'btnrow');
+        const summary = el('div', 'selectionreview', `<b>${pd.sel.length} / ${q.n} selected</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'Select the exact cards, then confirm.'}</span>`);
+        summary.setAttribute('role', 'status'); m.appendChild(summary);
+        const row = el('div', 'btnrow decision-footer');
         const b = btn(`Confirm bottom cards (${pd.sel.length}/${q.n}) ✓`, () => { if (pd.sel.length === q.n) this.resolvePending(pd.sel.slice()); }, 'primary');
         b.disabled = pd.sel.length !== q.n;
         row.appendChild(b);
@@ -4917,12 +4970,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseCards') {
+        m.classList.add('cardselectionmodal');
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose cards') + ` (${q.min}-${q.max})`));
         if (q.ringChoice) m.appendChild(this.ringChoiceGuide(q));
         m.appendChild(this.cardGrid(g, q.from, { min: q.min, max: q.max }));
-        m.appendChild(el('div', 'selectionreview', `<b>${pd.sel.length} selected · ${pd.sel.length >= q.min ? 'ready to confirm' : `${q.min - pd.sel.length} more required`}</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'No cards selected.'}</span>`));
-        const row = el('div', 'btnrow');
-        if (pd.sel.length >= q.min) row.appendChild(btn(`Confirm ✓ (${pd.sel.length})`, () => this.resolvePending(pd.sel.slice()), 'primary'));
+        const summary = el('div', 'selectionreview', `<b>${pd.sel.length} selected · ${pd.sel.length >= q.min ? 'ready to confirm' : `${q.min - pd.sel.length} more required`}</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'Select cards above to make your choice.'}</span>`);
+        summary.setAttribute('role', 'status'); m.appendChild(summary);
+        const row = el('div', 'btnrow decision-footer');
+        const confirm = btn(`Confirm ✓ (${pd.sel.length})`, () => {
+          if (pd.sel.length >= q.min && pd.sel.length <= q.max) this.resolvePending(pd.sel.slice());
+        }, 'primary');
+        confirm.disabled = pd.sel.length < q.min || pd.sel.length > q.max;
+        row.appendChild(confirm);
         if (q.min === 0) row.appendChild(btn('None', () => this.resolvePending([])));
         // Sigurnosni izlaz: ako ponuda NE MOŽE zadovoljiti minimum (manje
         // karata nego što se traži), prozor ne smije zarobiti igru — vrati
@@ -5067,11 +5126,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (chosen.length > q.max) chosen.shift();
             this.render();
           }, 'wide' + (n ? ' selected' : ''));
+          if (!q.repeats) b.setAttribute('aria-pressed', String(n > 0));
+          else b.setAttribute('aria-label', `${o.label}; chosen ${n} time${n === 1 ? '' : 's'}`);
           m.appendChild(b);
         }
         const selectedLabels = chosen.map(key => q.options.find(option => option.key === key)?.label || key);
         m.appendChild(el('div', 'selectionreview', `<b>${chosen.length} selected</b><span>${selectedLabels.length ? selectedLabels.map(esc).join(' · ') : 'No options selected.'}</span>`));
-        if (chosen.length >= (q.min ?? 1)) m.appendChild(btn(`Confirm (${chosen.length}) ✓`, () => this.resolvePending(chosen.slice()), 'primary wide'));
+        const confirm = btn(`Confirm (${chosen.length}) ✓`, () => {
+          if (chosen.length >= (q.min ?? 1) && chosen.length <= (q.max ?? Infinity)) this.resolvePending(chosen.slice());
+        }, 'primary wide decision-footer');
+        confirm.disabled = chosen.length < (q.min ?? 1) || chosen.length > q.max;
+        m.appendChild(confirm);
         return ov;
       }
       if (q.type === 'chooseX') {
@@ -5126,6 +5191,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               const plus = btn('+', () => { pd.xVal = Math.min(q.max, pd.xVal + 1); this.render(); });
               minus.disabled = pd.xVal <= q.min;
               plus.disabled = pd.xVal >= q.max;
+              minus.setAttribute('aria-label', `Decrease damage to ${target.name}`);
+              plus.setAttribute('aria-label', `Increase damage to ${target.name}`);
               controls.appendChild(minus); controls.appendChild(plus);
               row.appendChild(controls);
             }
@@ -5154,29 +5221,66 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const index = Math.max(0, legalValues.indexOf(pd.xVal));
             pd.xVal = legalValues[Math.max(0, Math.min(legalValues.length - 1, index + delta))];
           } else pd.xVal = Math.max(q.min, Math.min(q.max, pd.xVal + delta));
+          delete pd.xDraft;
           this.render();
         };
         const minus = btn('−', () => stepX(-1));
         const plus = btn('+', () => stepX(1));
         minus.disabled = legalValues ? pd.xVal === legalValues[0] : pd.xVal <= q.min;
         plus.disabled = legalValues ? pd.xVal === legalValues[legalValues.length - 1] : pd.xVal >= q.max;
+        minus.setAttribute('aria-label', 'Decrease X'); plus.setAttribute('aria-label', 'Increase X');
+        const input = el('input', 'xval xinput');
+        input.type = 'number'; input.inputMode = 'numeric'; input.step = '1';
+        input.min = String(legalValues ? legalValues[0] : q.min);
+        input.max = String(legalValues ? legalValues.at(-1) : q.max);
+        input.value = pd.xDraft ?? String(pd.xVal);
+        input.setAttribute('aria-label', 'Value of X');
+        input.setAttribute('aria-describedby', 'x-value-validation');
         xrow.appendChild(minus);
-        xrow.appendChild(el('div', 'xval', String(pd.xVal)));
+        xrow.appendChild(input);
         xrow.appendChild(plus);
         m.appendChild(xrow);
+        const validation = el('p', 'xvalidation');
+        validation.id = 'x-value-validation'; validation.setAttribute('role', 'status');
+        m.appendChild(validation);
+        let costLine, costHint;
         if (q.cost?.x) {
           const summary = el('div', 'xcostsummary');
           summary.setAttribute('aria-live', 'polite');
-          summary.appendChild(el('div', 'manapickcost', `Mana cost for X=${pd.xVal}: ${costHTML(U.costStr(costAtX(q.cost, pd.xVal)))}`));
-          if (q.cost.x > 1) summary.appendChild(el('div', 'manapickhint',
-            `All ${q.cost.x} X symbols use the same value. ${q.cost.x} × ${pd.xVal} = ${q.cost.x * pd.xVal} mana before cost adjustments. The generic cost can be paid with any combination of mana colors.`));
+          costLine = el('div', 'manapickcost'); summary.appendChild(costLine);
+          if (q.cost.x > 1) { costHint = el('div', 'manapickhint'); summary.appendChild(costHint); }
           if (q.reason) summary.appendChild(el('div', 'manapickhint', esc(q.reason)));
           m.appendChild(summary);
         }
-        m.appendChild(btn(`Confirm X=${pd.xVal} ✓`, () => this.resolvePending(pd.xVal), 'primary wide'));
+        const confirm = btn(`Confirm X=${pd.xVal} ✓`, () => {
+          if (validateX()) this.resolvePending(pd.xVal);
+        }, 'primary wide decision-footer');
+        const validateX = () => {
+          if (this.pending !== pd) return false;
+          const draft = String(input.value).trim(), value = Number(draft);
+          const valid = draft !== '' && Number.isSafeInteger(value) &&
+            (legalValues ? legalValues.includes(value) : value >= q.min && value <= q.max);
+          confirm.disabled = !valid; input.setAttribute('aria-invalid', String(!valid));
+          validation.textContent = valid ? 'Type a value, or use − and +.' : legalValues
+            ? `Choose one of these values: ${legalValues.join(', ')}.` : `Enter a whole number from ${q.min} to ${q.max}.`;
+          if (valid) {
+            pd.xVal = value;
+            confirm.textContent = `Confirm X=${value} ✓`;
+            minus.disabled = value === Number(input.min); plus.disabled = value === Number(input.max);
+            if (costLine) costLine.innerHTML = `Mana cost for X=${value}: ${costHTML(U.costStr(costAtX(q.cost, value)))}`;
+            if (costHint) costHint.textContent = `All ${q.cost.x} X symbols use the same value. ${q.cost.x} × ${value} = ${q.cost.x * value} mana before cost adjustments. The generic cost can be paid with any combination of mana colors.`;
+          }
+          return valid;
+        };
+        input.oninput = () => { if (this.pending !== pd) return; pd.xDraft = input.value; validateX(); };
+        input.onkeydown = event => {
+          if (event.key === 'Enter') { event.preventDefault(); if (validateX()) confirm.click(); }
+        };
+        m.appendChild(confirm); validateX();
         return ov;
       }
       if (q.type === 'scry') {
+        m.classList.add('scrydecision');
         const surveil = !!q.surveil;
         const otherZone = surveil ? 'GRAVEYARD' : 'BOTTOM';
         pd.scryState = pd.scryState || q.cards.map(() => 'top');
@@ -5190,8 +5294,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const i = q.cards.indexOf(c);
           const cc = this.bigCardEl(c);
           cc.classList.add(pd.scryState[i] === 'top' ? 'scrytop' : 'scrybottom');
-          cc.appendChild(el('div', 'scrylabel', pd.scryState[i] === 'top' ? 'TOP' : otherZone));
-          cc.onclick = () => { pd.scryState[i] = pd.scryState[i] === 'top' ? 'bottom' : 'top'; this.render(); };
+          const destination = pd.scryState[i] === 'top' ? 'TOP' : otherZone;
+          const toggle = () => {
+            if (this.pending !== pd) return;
+            pd.scryState[i] = pd.scryState[i] === 'top' ? 'bottom' : 'top'; this.render();
+          };
+          const destinationButton = btn(destination, event => { event.stopPropagation(); toggle(); }, 'scry-destination');
+          destinationButton.setAttribute('aria-pressed', String(pd.scryState[i] === 'top'));
+          destinationButton.setAttribute('aria-label', `${c.name}: ${destination.toLowerCase()}. Move to ${pd.scryState[i] === 'top' ? otherZone.toLowerCase() : 'top'}`);
+          cc.appendChild(destinationButton);
+          cc.onclick = toggle;
           const controls = el('div', 'triggerordercontrols');
           const left = btn('←', event => {
             event.stopPropagation();
@@ -5204,6 +5316,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             this.render();
           });
           left.disabled = orderIndex === 0; right.disabled = orderIndex === pd.scryOrder.length - 1;
+          left.setAttribute('aria-label', `Move ${c.name} earlier`);
+          right.setAttribute('aria-label', `Move ${c.name} later`);
           controls.appendChild(left); controls.appendChild(right); cc.appendChild(controls);
           grid.appendChild(cc);
         });
@@ -5215,7 +5329,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             (pd.scryState[i] === 'top' ? top : bottom).push(c);
           });
           this.resolvePending({ top, bottom });
-        }, 'primary wide'));
+        }, 'primary wide decision-footer'));
         return ov;
       }
       return null;
@@ -5305,7 +5419,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cc = this.bigCardEl(c);
         if (selOpts) {
           if (pd.sel.includes(c)) cc.classList.add('selected');
+          cc.setAttribute('aria-pressed', String(pd.sel.includes(c)));
           cc.onclick = () => {
+            if (this.pending !== pd) return;
             if (pd.sel.includes(c)) pd.sel.splice(pd.sel.indexOf(c), 1);
             else {
               pd.sel.push(c);
@@ -5313,6 +5429,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }
             this.render();
           };
+          this.makeKeyboardButton(cc, `Select ${cc.dataset.cardName}`);
+          cc.appendChild(el('span', 'cardselectionmark', pd.sel.includes(c) ? '✓ Selected' : 'Select'));
         }
         grid.appendChild(cc);
       }
@@ -5326,6 +5444,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const name = hidden ? 'Face-down card' : (shown ? shown.name : (c.name || (c.card && c.card.name) || '?'));
       const faceDownNote = c instanceof MTG.CardInst && c.faceDown && shown ? ' · FACE-DOWN (vidljivo tebi)' : '';
       cc.dataset.cardName = name;
+      if (c.iid !== undefined || c.card?.iid !== undefined) cc.dataset.iid = String(c.iid ?? c.card.iid);
       cc.innerHTML = `
         ${cardArtHTML(c.faceDown && shown ? shown : c.card || c, '', hidden)}
         <div class="bcname">${esc(name + faceDownNote)}</div>`;
@@ -5910,8 +6029,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ---------- card sheet ----------
     renderCardSheet(g) {
       const { card } = this.sheet;
-      const ov = el('div', 'overlay');
-      ov.onclick = (e) => { if (e.target === ov) { this.sheet = null; this.render(); } };
+      const inspected = this.sheet;
+      const dismiss = () => { if (this.sheet === inspected) this.closeCardInspection(); };
+      const ov = el('div', 'overlay cardinspectionoverlay');
+      ov.onclick = (e) => { if (e.target === ov) dismiss(); };
       // sheet bez karte (npr. The Ring emblem)
       if (this.sheet.custom) {
         const cm = el('div', 'sheet');
@@ -5919,12 +6040,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ci.innerHTML = `<div class="sname">${this.sheet.custom.title}</div><div class="soracle">${this.sheet.custom.body}</div>`;
         cm.appendChild(ci);
         const cb = el('button', 'pbtn wide', 'Close');
-        cb.onclick = () => { this.sheet = null; this.render(); };
+        cb.onclick = dismiss;
         cm.appendChild(cb);
         ov.appendChild(cm);
         return ov;
       }
-      const m = el('div', 'sheet');
+      const m = el('div', 'sheet cardinspection');
+      if (inspected.artExpanded) m.classList.add('sheetart-expanded');
       ov.appendChild(m);
       const prepared = this.preparedSpellFor(g, card);
       if (prepared) m.classList.add('preparedsheet');
@@ -5936,13 +6058,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? { name: 'Face-down card', cost: null, super: [], types: ['Card'], subtypes: [], oracle: 'The identity of this card is unknown.' }
         : (mayLookFaceDown ? visibleFaceDownDef : card.def);
       const shownName = shownDef.name;
+      const header = el('header', 'cardinspectionhead');
+      header.appendChild(el('div', 'cardinspectioncontext', `${esc(card.zone === 'command' ? 'Command zone' : U.cap(card.zone || 'Card'))}<span>${esc((card.ctrl || card.owner)?.name || '')}</span>`));
+      const tools = el('div', 'cardinspectiontools');
+      const enlarge = el('button', 'pbtn cardinspectionzoom', inspected.artExpanded ? 'Compact view' : 'Enlarge card');
+      enlarge.type = 'button'; enlarge.setAttribute('aria-pressed', String(!!inspected.artExpanded));
+      enlarge.onclick = () => {
+        if (this.sheet !== inspected) return;
+        inspected.artExpanded = !inspected.artExpanded;
+        this.render();
+        requestAnimationFrame(() => {
+          if (this.sheet === inspected) document.querySelector('.cardinspectionzoom')?.focus({preventScroll: true});
+        });
+      };
+      tools.appendChild(enlarge);
+      const dismissTop = el('button', 'cardinspectionclose', '×');
+      dismissTop.type = 'button'; dismissTop.setAttribute('aria-label', 'Close card details');
+      dismissTop.onclick = dismiss; tools.appendChild(dismissTop); header.appendChild(tools); m.appendChild(header);
       m.insertAdjacentHTML('beforeend', cardArtHTML(card.faceDown && mayLookFaceDown ? shownDef : card, 'sheetimg', hiddenFaceDown));
       const info = el('div', 'sheetinfo');
       const useCurrentCharacteristics = card.zone === 'battlefield' && card.cur && !hiddenFaceDown;
       const shownTypes = useCurrentCharacteristics ? card.cur.types : shownDef.types;
       const shownSubtypes = useCurrentCharacteristics ? card.cur.subtypes : shownDef.subtypes;
       const typeLine = [(shownDef.super || []).join(' '), shownTypes.join(' '), shownSubtypes.length ? '- ' + shownSubtypes.join(' ') : ''].join(' ');
-      const landCreature = card.is('Land') && card.is('Creature');
+      const landCreature = !hiddenFaceDown && card.is('Land') && card.is('Creature');
       const suspendInHand = card.zone === 'hand' && card.def.suspend;
       const suspendInExile = card.zone === 'exile' && card.meta && Object.prototype.hasOwnProperty.call(card.meta, 'suspended');
       const suspendCount = suspendInExile ? Math.max(0, Number(card.meta.suspended) || 0) : 0;
@@ -5967,17 +6106,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         suspendState +
         `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
-        ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
+        ${card.is('Creature') && card.cur && (!hiddenFaceDown || card.zone === 'battlefield') ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
         ${markedDamage ? `<div class="smarkeddamage"><b>${markedDamage.amount} damage marked</b><span>${esc(markedDamage.detail)}</span></div>` : ''}
         ${sheetKeywords ? `<div class="sheetkeywords">${sheetKeywords}</div>` : ''}
         ${crewState}
         ${this.deathReturnState(card) ? `<div class="animatedpermanentstate">${esc(this.deathReturnState(card))}</div>` : ''}
-        <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
+        <div class="soracle cardinspectionoracle"><span class="cardinspectionlabel">Rules text</span>${esc(shownDef.oracle || 'No rules text.').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
       if((card.meta.stickersV87||[]).length)info.appendChild(el('div','soracle sticker-list-v87','<b>Stickers</b><br>'+card.meta.stickersV87.map(r=>esc(r.kind+': '+r.text)).join('<br>')));if(card.def.attractionLightsV87)info.appendChild(el('div','soracle attraction-lights-v87','Visit on: '+card.def.attractionLightsV87.join(', ')));
       m.appendChild(info);
       // actions
-      const acts = el('div', 'sheetacts');
+      const acts = el('div', 'sheetacts cardinspectionactions');
       if (prepared) acts.appendChild(this.renderPreparedSpell(g, card, prepared));
       const pd = this.pending;
       const actionQ = this.actionQuestion();
@@ -6103,12 +6242,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       const close = el('button', 'pbtn wide', this.sheet.lastResort && this.lastResortActive ? '← Back to Last Resort' : 'Close');
-      close.onclick = () => {
-        const backToRecovery = this.sheet && this.sheet.lastResort && this.lastResortActive;
-        this.sheet = null;
-        if (backToRecovery) this.showJudge = true;
-        this.render();
-      };
+      close.classList.add('cardinspectiondone');
+      close.textContent = this.sheet.lastResort && this.lastResortActive ? '← Back to Last Resort'
+        : this.sheet.returnZone ? '← Back to cards' : this.sheet.returnReveal ? 'Back to reveal' : 'Close';
+      close.onclick = dismiss;
       acts.appendChild(close);
       m.appendChild(acts);
       return ov;
@@ -6212,16 +6349,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     renderZoneBrowser(g) {
-      const { player, zone } = this.zoneBrowse;
-      const ov = el('div', 'overlay');
-      ov.onclick = (e) => { if (e.target === ov) { this.zoneBrowse = null; this.render(); } };
-      const m = el('div', 'sheet tall');
+      const state = this.zoneBrowse;
+      const { player, zone } = state;
+      const judgeReturn = state.judgeReturn;
+      const lastResort = state.lastResort && this.lastResortActive;
+      const returnPlayer = state.returnPlayer;
+      const dismiss = () => {
+        if (this.zoneBrowse !== state) return;
+        this.zoneBrowse = null;
+        if (lastResort) this.showJudge = true;
+        if (returnPlayer) this.playerSheet = returnPlayer;
+        this.render();
+      };
+      const ov = el('div', 'overlay zonebrowseroverlay');
+      ov.onclick = event => { if (event.target === ov) dismiss(); };
+      const m = el('div', 'sheet tall zonebrowser');
       ov.appendChild(m);
-      const names = { graveyard: 'Graveyard', exile: 'Exile', command: 'Command zone', junkyardV87:'Attraction junkyard',outsideGameV87:'Outside game' };
-      m.appendChild(el('div', 'mtitle', `${esc(player.name)}: ${names[zone] || zone} (${player[zone].length})`));
-      const grid = el('div', 'cardgrid');
-      const judgeReturn = this.zoneBrowse.judgeReturn;
-      const lastResort = this.zoneBrowse.lastResort && this.lastResortActive;
+      const names = { graveyard: 'Graveyard', exile: 'Exile', command: 'Command zone', junkyardV87: 'Attraction junkyard', outsideGameV87: 'Outside game' };
+      const title = names[zone] || U.cap(zone);
+      const count = player[zone]?.length || 0;
+      const head = el('header', 'zonebrowserhead');
+      head.appendChild(el('div', '', `<span class="cardinspectionlabel">${esc(player.name)}</span><h2 class="mtitle">${esc(title)} <span>${count}</span></h2>`));
+      const topClose = el('button', 'cardinspectionclose', '×');
+      topClose.type = 'button'; topClose.setAttribute('aria-label', `Close ${title.toLowerCase()}`);
+      topClose.onclick = dismiss; head.appendChild(topClose); m.appendChild(head);
       const pd = this.pending;
       const actionQ = this.actionQuestion();
       const choosingTargets = this.targetZoneCandidates(player, zone).length > 0 && !judgeReturn && !lastResort;
@@ -6230,83 +6381,136 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const guide = el('div', 'zonetargetguide');
         guide.appendChild(el('b', '', `Choose a card${pd.q.targetSteps > 1 ? ` · Target ${pd.q.targetStep} of ${pd.q.targetSteps}` : ''}`));
         guide.appendChild(el('div', '', esc(pd.q.prompt || 'Choose a highlighted card.')));
-        guide.appendChild(el('small', '', 'Cards marked CHOOSE are legal. Your selection will appear in the decision panel for confirmation.'));
+        guide.appendChild(el('small', '', 'Cards marked CHOOSE are legal. Review your selection in the decision panel.'));
         m.appendChild(guide);
       }
-      const visibleCards = lastResort
-        ? player[zone].filter(card => g.lastResortCardVisibleTo(card, this.me))
-        : player[zone];
-      for (const c of visibleCards) {
-        const cc = this.bigCardEl(c);
-        if (zone === 'exile' && c.meta && Object.prototype.hasOwnProperty.call(c.meta, 'suspended')) {
-          const count = Math.max(0, Number(c.meta.suspended) || 0);
-          cc.classList.add('suspendedcard');
-          cc.appendChild(el('div', 'zonesuspend', `⏳ ${count} TIME`));
-        }
-        if (lastResort) {
-          cc.classList.add('targetable', 'lastresortcard');
-          cc.appendChild(el('div', 'zoneplay', 'EDIT \u{1F6E0}\uFE0F'));
-          cc.onclick = () => {
-            this.zoneBrowse = null;
-            this.sheet = { card: c, lastResort: true };
-            this.render();
-          };
-        } else if (judgeReturn) {
-          cc.classList.add('targetable');
-          cc.onclick = async () => {
-            this.zoneBrowse = null;
-            await g.move(c, 'battlefield', { ctrl: player });
-            g.lg('⚒️ ručno: ' + c.name + ' vraćen na tablu.');
-            this.queueRender();
-          };
-        } else if (this.markSelectedTarget(cc, c)) {
-          this.makeKeyboardButton(cc, `Remove selected target: ${c.name}`);
-        } else if (this.isCandidate(c)) {
-          cc.classList.add('targetable');
-          cc.appendChild(el('div', 'zoneplay targetzonepick', 'CHOOSE'));
-          cc.onclick = () => { this.zoneBrowse = null; this.pickCandidate(c); };
-          this.makeKeyboardButton(cc, `Choose ${c.name} from ${zone}`);
-        }
-        else {
-          if (choosingTargets) cc.classList.add('targetineligible');
-          const playableNow = !!actionQ &&
-            ((actionQ.casts || []).some(entry => entry.card === c) || (actionQ.lands || []).includes(c));
-          cc.classList.add('inspectable');
-          if (playableNow) {
-            cc.classList.add('castable');
-            cc.appendChild(el('div', 'zoneplay', 'PLAY ▶'));
-          }
-          cc.onclick = () => {
-            this.zoneBrowse = null;
-            this.sheet = { card: c };
-            this.render();
-          };
-        }
-        grid.appendChild(cc);
+      // Even a stale or manually opened panel cannot inspect a hidden library
+      // or another player's hand. Search/sort only read already visible faces.
+      const privateZone = zone === 'library' || zone === 'hand' && player !== this.me;
+      const visibleCards = privateZone ? [] : lastResort
+        ? player[zone].filter(card => g.lastResortCardVisibleTo(card, this.me)) : player[zone] || [];
+      const records = visibleCards.map((card, index) => {
+        const shown = card.faceDown ? this.visibleFaceDownDef(card) : card.def;
+        const name = shown?.name || 'Face-down card';
+        const types = shown?.types || [];
+        const text = [name, types.join(' '), (shown?.subtypes || []).join(' '), shown?.oracle || ''].join(' ').toLowerCase();
+        const playable = !!actionQ && ((actionQ.casts || []).some(entry => entry.card === card) || (actionQ.lands || []).includes(card));
+        return {card, index, name, types, text, mv: shown ? U.mv(shown.cost || '') : null, playable};
+      });
+      const controls = el('div', 'zonebrowsertools');
+      const search = el('input', 'zonebrowsersearch');
+      search.type = 'search'; search.autocomplete = 'off'; search.spellcheck = false;
+      search.placeholder = 'Search name, type, or rules…'; search.value = state.query || '';
+      search.setAttribute('aria-label', `Search ${title.toLowerCase()}`);
+      const filter = el('select', 'zonebrowserfilter');
+      filter.setAttribute('aria-label', 'Filter cards');
+      for (const [value, label] of [['all', 'All cards'], ['creature', 'Creatures'], ['land', 'Lands'], ['noncreature', 'Noncreature spells'], ['playable', 'Playable now'], ...(choosingTargets ? [['targets', 'Legal targets']] : [])]) {
+        const option = el('option', '', label); option.value = value; filter.appendChild(option);
       }
-      const hiddenCount = lastResort ? player[zone].length - visibleCards.length : 0;
-      if (hiddenCount) grid.appendChild(el('div', 'hiddenzonecards', `${hiddenCount} hidden card${hiddenCount === 1 ? '' : 's'} locked \u00B7 identity not shown`));
-      if (!player[zone].length) grid.appendChild(el('div', 'emptyrow', 'Empty'));
-      m.appendChild(grid);
-      const returnPlayer = this.zoneBrowse.returnPlayer;
-      const close = el('button', 'pbtn wide', lastResort ? '\u2190 Back to Last Resort' : returnPlayer ? '\u2190 Back to player overview' : 'Close');
-      close.onclick = () => {
-        this.zoneBrowse = null;
-        if (lastResort) this.showJudge = true;
-        if (returnPlayer) this.playerSheet = returnPlayer;
-        this.render();
+      filter.value = state.filter || 'all';
+      const sort = el('select', 'zonebrowsersort'); sort.setAttribute('aria-label', 'Sort cards');
+      for (const [value, label] of [['zone', 'Zone order'], ['name', 'Name A–Z'], ['mana', 'Mana value']]) {
+        const option = el('option', '', label); option.value = value; sort.appendChild(option);
+      }
+      sort.value = state.sort || 'zone';
+      controls.appendChild(search); controls.appendChild(filter); controls.appendChild(sort);
+      if (!privateZone && count) m.appendChild(controls);
+      const status = el('div', 'zonebrowserstatus'); status.setAttribute('role', 'status');
+      m.appendChild(status);
+      const grid = el('div', 'cardgrid zonebrowsergrid'); m.appendChild(grid);
+      const draw = () => {
+        if (this.zoneBrowse !== state) return;
+        grid.replaceChildren();
+        const query = String(search.value || '').trim().toLowerCase();
+        const matches = records.filter(record => {
+          if (query && !query.split(/\s+/).every(word => record.text.includes(word))) return false;
+          if (filter.value === 'creature') return record.types.includes('Creature');
+          if (filter.value === 'land') return record.types.includes('Land');
+          if (filter.value === 'noncreature') return record.mv !== null && !record.types.includes('Creature') && !record.types.includes('Land');
+          if (filter.value === 'playable') return record.playable;
+          if (filter.value === 'targets') return this.isCandidate(record.card);
+          return true;
+        });
+        if (sort.value === 'name') matches.sort((a, b) => a.name.localeCompare(b.name) || a.index - b.index);
+        if (sort.value === 'mana') matches.sort((a, b) => (a.mv ?? Infinity) - (b.mv ?? Infinity) || a.index - b.index);
+        status.textContent = privateZone ? `${count} hidden card${count === 1 ? '' : 's'}. Identities are private.`
+          : `${matches.length} of ${records.length} card${records.length === 1 ? '' : 's'}${choosingTargets ? ' · choose a highlighted target' : ' · select a card to inspect'}`;
+        for (const {card: c, name, playable} of matches) {
+          const cc = this.bigCardEl(c); cc.dataset.zoneCard = String(c.iid);
+          // The tile's visible title and action label already name this card.
+          for (const image of cc.querySelectorAll('img')) image.alt = '';
+          if (zone === 'exile' && c.meta && Object.prototype.hasOwnProperty.call(c.meta, 'suspended')) {
+            const remaining = Math.max(0, Number(c.meta.suspended) || 0);
+            cc.classList.add('suspendedcard'); cc.appendChild(el('div', 'zonesuspend', `⏳ ${remaining} TIME`));
+          }
+          let actionLabel = `Inspect ${name}`;
+          if (lastResort) {
+            cc.classList.add('targetable', 'lastresortcard'); cc.appendChild(el('div', 'zoneplay', 'EDIT'));
+            cc.onclick = () => { if (this.zoneBrowse !== state) return; this.zoneBrowse = null; this.sheet = {card: c, lastResort: true, returnZone: state, returnZoneCard: String(c.iid)}; this.render(); };
+            actionLabel = `Edit ${name}`;
+          } else if (judgeReturn) {
+            cc.classList.add('targetable');
+            cc.onclick = async () => {
+              if (this.zoneBrowse !== state) return;
+              this.zoneBrowse = null; await g.move(c, 'battlefield', {ctrl: player});
+              g.lg('⚒️ ručno: ' + c.name + ' vraćen na tablu.'); this.queueRender();
+            };
+            actionLabel = `Return ${name} to the battlefield`;
+          } else if (this.markSelectedTarget(cc, c)) actionLabel = `Remove selected target: ${name}`;
+          else if (this.isCandidate(c)) {
+            cc.classList.add('targetable'); cc.appendChild(el('div', 'zoneplay targetzonepick', 'CHOOSE'));
+            cc.onclick = () => { if (this.zoneBrowse !== state || this.pending !== pd) return; this.zoneBrowse = null; this.pickCandidate(c); };
+            actionLabel = `Choose ${name} from ${zone}`;
+          } else {
+            if (choosingTargets) cc.classList.add('targetineligible');
+            cc.classList.add('inspectable');
+            if (playable) { cc.classList.add('castable'); cc.appendChild(el('div', 'zoneplay', 'PLAY ▶')); }
+            cc.onclick = () => { if (this.zoneBrowse !== state) return; this.zoneBrowse = null; this.sheet = {card: c, returnZone: state, returnZoneCard: String(c.iid)}; this.render(); };
+          }
+          const activate = cc.onclick;
+          cc.onclick = (...args) => {
+            if (this.zoneBrowse !== state || choosingTargets && this.pending !== pd) return;
+            if (!(player[zone] || []).includes(c)) return;
+            return activate?.(...args);
+          };
+          this.makeKeyboardButton(cc, actionLabel); grid.appendChild(cc);
+        }
+        const hiddenCount = privateZone ? count : lastResort ? count - visibleCards.length : 0;
+        if (hiddenCount) grid.appendChild(el('div', 'zonebrowserempty', `<b>Hidden cards</b><span>${hiddenCount} card${hiddenCount === 1 ? '' : 's'} remain private.</span>`));
+        if (!matches.length && !hiddenCount) {
+          const empty = el('div', 'zonebrowserempty', `<b>${count ? 'No matching cards' : `${esc(title)} is empty`}</b><span>${count ? 'Try another name or change the filter.' : 'Cards will appear here when they enter this zone.'}</span>`);
+          if (count) {
+            const clear = el('button', 'pbtn', 'Clear filters'); clear.type = 'button';
+            clear.onclick = () => { if (this.zoneBrowse !== state) return; search.value = ''; filter.value = 'all'; state.query = ''; state.filter = 'all'; draw(); search.focus(); };
+            empty.appendChild(clear);
+          }
+          grid.appendChild(empty);
+        }
       };
-      m.appendChild(close);
+      search.oninput = () => { if (this.zoneBrowse !== state) return; state.query = search.value; draw(); };
+      filter.onchange = () => { if (this.zoneBrowse !== state) return; state.filter = filter.value; draw(); };
+      sort.onchange = () => { if (this.zoneBrowse !== state) return; state.sort = sort.value; draw(); };
+      m.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault(); event.stopPropagation();
+        if (search.value) { search.value = ''; state.query = ''; draw(); search.focus(); } else dismiss();
+      });
+      const close = el('button', 'pbtn wide decision-footer', lastResort ? '← Back to Last Resort' : returnPlayer ? '← Back to player overview' : 'Done');
+      close.onclick = dismiss; m.appendChild(close); draw();
       return ov;
     }
 
     renderLog(g) {
-      const ov = el('div', 'logpanel');
-      const head = el('div', 'mtitle', '📜 Game log');
+      const ov = el('div', 'logpanel activitylog');
+      const head = el('header', 'zonebrowserhead');
+      head.appendChild(el('div', '', '<span class="cardinspectionlabel">Public table history</span><h2 class="mtitle">Game log</h2>'));
+      const dismiss = () => { this.showLog = false; this.render(); };
+      const topClose = el('button', 'cardinspectionclose', '×'); topClose.type = 'button';
+      topClose.setAttribute('aria-label', 'Close game log'); topClose.onclick = dismiss; head.appendChild(topClose);
       ov.appendChild(head);
       if (g.aiDecisionLog && g.aiDecisionLog.length) {
-        const aiBox = el('div', 'logbox');
-        aiBox.appendChild(el('div', 'logline effect', '<b>🧠 AI V2: latest decisions</b>'));
+        const aiBox = el('details', 'logdiagnostics');
+        aiBox.appendChild(el('summary', '', 'AI decision details'));
         for (const decision of g.aiDecisionLog.slice(-5).reverse()) {
           const alternatives = (decision.alternatives || []).slice(0, 2)
             .map(alt => `${esc(alt.action)} ${Number(alt.score).toFixed(1)}`).join(' · ');
@@ -6317,14 +6521,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         ov.appendChild(aiBox);
       }
-      const box = el('div', 'logbox');
-      for (let i = g.log.length - 1; i >= Math.max(0, g.log.length - 250); i--) {
-        const e = g.log[i];
-        box.appendChild(el('div', 'logline ' + (e.cls || ''), `<span class="lt">[${e.t}]</span> ${esc(e.msg)}`));
-      }
+      const search = el('input', 'logsearch'); search.type = 'search'; search.placeholder = 'Search players, cards, or events…';
+      search.setAttribute('aria-label', 'Search the game log'); search.value = this.logSearch || '';
+      const status = el('div', 'zonebrowserstatus'); status.setAttribute('role', 'status');
+      ov.appendChild(search); ov.appendChild(status);
+      const box = el('div', 'logbox activitylogentries');
+      const draw = () => {
+        box.replaceChildren();
+        const query = search.value.trim().toLowerCase();
+        const entries = g.log.slice(-250).reverse().filter(entry => !query || String(entry.msg).toLowerCase().includes(query));
+        status.textContent = `${entries.length} event${entries.length === 1 ? '' : 's'} · newest first${g.log.length > 250 ? ' · most recent 250 searched' : ''}`;
+        let previousTurn;
+        for (const entry of entries) {
+          if (entry.t !== previousTurn) { box.appendChild(el('div', 'logturn', `Turn ${esc(entry.t)}`)); previousTurn = entry.t; }
+          box.appendChild(el('div', 'logline ' + (entry.cls || ''), `<span>${esc(entry.msg)}</span>`));
+        }
+        if (!entries.length) box.appendChild(el('div', 'zonebrowserempty', `<b>${query ? 'No matching events' : 'The table is ready'}</b><span>${query ? 'Try another card or player name.' : 'Public actions will appear here as you play.'}</span>`));
+      };
+      search.oninput = () => { this.logSearch = search.value; draw(); };
+      ov.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); dismiss(); }
+      });
+      draw();
       ov.appendChild(box);
-      const close = el('button', 'pbtn wide', 'Close');
-      close.onclick = () => { this.showLog = false; this.render(); };
+      const close = el('button', 'pbtn wide decision-footer', 'Close');
+      close.onclick = dismiss;
       ov.appendChild(close);
       return ov;
     }

@@ -1,0 +1,99 @@
+/* Help and priority profiles share the existing dialog and table geometry. */
+#game .helpoverlay, #game .priorityoverlay { padding: 24px; }
+#game .sheet.helpguide, #game .modal.priorityguide {
+  width: min(790px, 100%); max-height: calc(100 * var(--dvhu) - 48px); margin: 0; padding: 0;
+  display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--ds-line);
+  border-radius: 20px; background: var(--ds-dialog); color: var(--ds-text); box-shadow: var(--ds-shadow-dialog);
+}
+#game .modal.priorityguide { width: min(730px, 100%); }
+.guidehead { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 18px; padding: 24px 28px 20px; border-bottom: 1px solid var(--ds-line-soft); background: linear-gradient(115deg, rgba(var(--ds-accent-rgb), .06), transparent 65%); }
+.guideheading { min-width: 0; }
+.guidekicker { display: block; color: var(--ds-accent-bright); font-size: 11px; font-weight: 700; line-height: 1.5; letter-spacing: .13em; text-transform: uppercase; }
+.guidetitle { margin: 7px 0 0; font: 600 30px/1.12 var(--ds-font-display); letter-spacing: -.035em; color: var(--ds-text); }
+.guideclose { width: 44px; height: 44px; min-width: 44px; flex: none; display: grid; place-items: center; border: 1px solid var(--ds-line); border-radius: 50%; color: var(--ds-copy); background: var(--ds-panel-raised); cursor: pointer; }
+#game .guideclose { font: 400 25px/1 var(--ds-font-body); }
+.guideclose:hover { color: var(--ds-text); border-color: var(--ds-accent-soft); }
+.guidenav { display: flex; flex: none; gap: 8px; padding: 12px 28px; border-bottom: 1px solid var(--ds-line-soft); }
+.guidenavlink { min-height: 44px; padding: 10px 16px; border: 1px solid var(--ds-line); border-radius: 8px; background: transparent; color: var(--ds-copy); font-size: 13px; font-weight: 600; cursor: pointer; }
+.guidenavlink:hover, .guidenavlink:focus-visible { border-color: var(--ds-accent-soft); color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .05); }
+.guidebody, .prioritybody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 24px 28px 28px; }
+.guideintro { font-size: 14px; line-height: 1.7; color: var(--ds-muted); margin: 0 0 28px; max-width: 540px; }
+.guidesection + .guidesection { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--ds-line); }
+.guidesectionhead { display: flex; align-items: center; gap: 13px; margin-bottom: 20px; }
+.guidesectionhead > .guideicon { width: 42px; height: 42px; color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .08); border: 1px solid rgba(var(--ds-accent-rgb), .22); border-radius: 10px; }
+.guidesectionhead h3 { margin: 0; color: var(--ds-text); font: 600 24px/1.2 var(--ds-font-display); letter-spacing: -.025em; }
+.guidesectionhead p { margin: 5px 0 0; font-size: 12px; line-height: 1.5; color: var(--ds-muted); }
+.guideicon { width: 21px; height: 21px; flex: none; display: grid; place-items: center; color: var(--ds-accent-soft); }
+.guideicon .gameicon { width: 20px; height: 20px; margin: 0; }
+.guideentry { display: flex; gap: 13px; padding: 14px 0; }
+.guideentry > .guideicon { margin-top: 2px; }
+.guideentrycopy { min-width: 0; }
+.guideentry h4, .guidereveal h4 { margin: 0 0 6px; font: 650 15px/1.4 var(--ds-font-body); color: var(--ds-text); letter-spacing: 0; }
+.guideentry p, .guidereveal p, .guidenote { margin: 0; font-size: 13px; line-height: 1.75; color: var(--ds-copy); }
+.guidereveal { margin: 20px 0 16px; padding: 22px; border: 1px solid rgba(var(--ds-accent-rgb), .3); border-radius: 12px; background: rgba(var(--ds-accent-rgb), .035); }
+.guidereveal > h4 { margin: 9px 0 20px; font: 600 22px/1.25 var(--ds-font-display); letter-spacing: -.02em; }
+.guiderevealsteps { list-style: none; counter-reset: reveal-step; padding: 0; margin: 0; display: grid; gap: 18px; }
+.guiderevealsteps li { display: flex; gap: 13px; counter-increment: reveal-step; }
+.guiderevealsteps li::before { content: counter(reveal-step); display: grid; place-items: center; width: 25px; height: 25px; flex: none; margin-top: 1px; border: 1px solid rgba(var(--ds-accent-rgb), .45); border-radius: 50%; color: var(--ds-accent-bright); font: 500 11px var(--ds-font-mono); }
+.guiderevealsteps b { display: block; color: var(--ds-text); font-size: 13px; line-height: 1.6; margin-bottom: 4px; }
+.guideshortcuts { margin: 0; }
+.guideshortcut { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--ds-line-soft); }
+.guideshortcut dt { display: flex; flex-wrap: wrap; gap: 6px; }
+.guideshortcut dd { margin: 0; color: var(--ds-copy); font-size: 13px; line-height: 1.7; }
+.guideshortcut kbd { display: inline-block; padding: 6px 8px; border: 1px solid var(--ds-line); border-bottom-width: 2px; border-radius: 5px; background: var(--ds-panel-raised); color: var(--ds-text); font: 500 11px/1.2 var(--ds-font-mono); white-space: nowrap; }
+.guidenote { margin-top: 18px; color: var(--ds-muted); font-size: 12px; }
+.guidefooter { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 28px; border-top: 1px solid var(--ds-line); background: var(--ds-panel); }
+.guidefooter .pbtn { min-height: 44px; min-width: 145px; }
+.priorityguide .stopintro { margin: 0 0 22px; color: var(--ds-muted); font-size: 14px; line-height: 1.7; }
+.priorityguide .stopprofiles { gap: 10px; margin: 0; }
+.priorityguide .stopprofile { grid-template-columns: 36px minmax(0, 1fr) 62px; gap: 13px; padding: 17px 16px; min-height: 84px; border: 1px solid var(--ds-line); border-radius: 11px; color: var(--ds-copy); background: var(--ds-panel); }
+.priorityguide .stopprofile:hover:not(:disabled) { background: var(--ds-panel-raised); border-color: var(--ds-accent-soft); }
+.priorityguide .stopprofile[aria-pressed='true'] { border-color: var(--ds-accent); background: linear-gradient(110deg, rgba(var(--ds-accent-rgb), .1), var(--ds-panel)); }
+.priorityguide .stopprofile .stopicon { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--ds-line-soft); border-radius: 9px; }
+.priorityguide .stopprofile b { font: 650 14px/1.45 var(--ds-font-body); letter-spacing: 0; text-transform: none; color: var(--ds-text); }
+.priorityguide .stopprofile small { margin-top: 6px; color: var(--ds-muted); font-size: 12px; line-height: 1.65; }
+.priorityguide .stopprofile i { color: var(--ds-muted); font: normal 650 11px/1.4 var(--ds-font-body); letter-spacing: 0; text-align: right; }
+.priorityguide .stopprofile[aria-pressed='true'] i { color: var(--ds-accent-bright); }
+.priorityguide .stopprofile:disabled { opacity: .5; cursor: not-allowed; }
+.prioritynote { display: flex; gap: 13px; padding: 20px 0 0; margin-top: 20px; border-top: 1px solid var(--ds-line-soft); }
+.prioritynote b { font-size: 13px; line-height: 1.6; color: var(--ds-text); }
+.prioritynote p { margin: 5px 0 0; font-size: 12px; line-height: 1.7; color: var(--ds-muted); }
+.priorityhint { font-size: 12px; line-height: 1.6; color: var(--ds-muted); max-width: 290px; }
+@media (max-width: 700px) {
+  #game .helpoverlay, #game .priorityoverlay { padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)); }
+  #game .sheet.helpguide, #game .modal.priorityguide { max-height: calc(100 * var(--dvhu) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); border-radius: 15px; }
+  .guidehead { padding: 20px 16px 18px; gap: 12px; }
+  .guidetitle { font-size: 26px; }
+  .guidekicker { font-size: 10px; }
+  .guidenav { gap: 5px; padding: 8px; }
+  .guidenavlink { flex: 1; min-width: 0; font-size: 12px; padding: 9px 6px; }
+  .guidebody, .prioritybody { padding: 20px 16px 24px; }
+  .guideintro { font-size: 13px; margin-bottom: 24px; }
+  .guidesectionhead h3 { font-size: 22px; }
+  .guideentry { gap: 10px; padding: 13px 0; }
+  .guideentry h4 { font-size: 14px; }
+  .guideentry p, .guidereveal p { font-size: 12px; line-height: 1.8; }
+  .guidereveal { padding: 18px 14px; }
+  .guidereveal > h4 { font-size: 21px; }
+  .guideshortcut { grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 14px 0; }
+  .guideshortcut dd { font-size: 12px; }
+  .guideshortcut kbd { font-size: 10px; padding: 6px; }
+  .guidefooter { padding: 13px 16px; gap: 10px; }
+  .guidefooter .pbtn { flex: 1; min-width: 0; padding-inline: 10px; font-size: 12px; }
+  .priorityguide .stopintro { font-size: 13px; margin-bottom: 18px; }
+  .priorityguide .stopprofile { grid-template-columns: 30px minmax(0, 1fr); column-gap: 10px; row-gap: 8px; padding: 14px 12px; }
+  .priorityguide .stopprofile .stopicon { width: 30px; height: 34px; align-self: start; }
+  .priorityguide .stopprofile b { font-size: 13px; }
+  .priorityguide .stopprofile small { font-size: 12px; }
+  .priorityguide .stopprofile i { grid-column: 2; justify-self: start; font-size: 11px; padding: 4px 8px; border: 1px solid var(--ds-line); border-radius: 5px; }
+  .priorityguide .stopprofile[aria-pressed='true'] i { border-color: rgba(var(--ds-accent-rgb), .4); }
+  .priorityfooter { flex-direction: column-reverse; gap: 8px; }
+  .priorityfooter .pbtn { width: 100%; flex: none; }
+  .priorityhint { text-align: center; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .helpguide *, .priorityguide * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+  .helpguide button:is(:hover, :active), .priorityguide button:is(:hover, :active) { transform: none !important; }
+}
+body.reduced-motion :is(.helpguide, .priorityguide) * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+body.reduced-motion :is(.helpguide, .priorityguide) button:is(:hover, :active) { transform: none !important; }

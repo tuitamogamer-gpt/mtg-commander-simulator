@@ -1,0 +1,79 @@
+/* Shared surfaces and legibility. Battlefield geometry belongs to command-table.css. */
+html { color-scheme: dark; scrollbar-color: var(--ds-line) transparent; }
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+button, input, select, textarea { font-family: var(--ds-font-body); }
+button, a, summary, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button:disabled { cursor: not-allowed; }
+::selection { background: rgba(var(--ds-accent-rgb), .32); color: var(--ds-text); }
+:is(button, a, input, select, textarea, summary, [role='button'], [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid var(--ds-focus); outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(var(--ds-accent-rgb), .19);
+}
+:is(input, select, textarea)::placeholder { color: var(--ds-muted); opacity: .85; }
+:is(.modal, .sheet, .quickmenu, .commandpalette, .logpanel, .reveal) {
+  color: var(--ds-text); background-color: var(--ds-dialog); border-color: var(--ds-line);
+  box-shadow: var(--ds-shadow-dialog);
+}
+:is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) :is(button, input, select, textarea) { font-family: var(--ds-font-body); }
+:is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) :is(.pbtn, .sbtn, .tbtn) {
+  min-height: var(--ds-touch); letter-spacing: .01em; font-size: 13px; font-weight: 650;
+  border-radius: var(--ds-r-sm); transition: background var(--ds-t-fast), border-color var(--ds-t-fast), transform var(--ds-t-fast);
+}
+#game.command-table :is(.modal, .sheet, .quickmenu, .reveal) :is(.pbtn, .sbtn, .tbtn) {
+  min-height: 44px; font-size: 13px; letter-spacing: .01em; padding: 11px 16px; border-radius: var(--ds-r-sm);
+}
+#game.command-table :is(.modal, .sheet, .quickmenu, .reveal) .pbtn.primary {
+  max-width: none; background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent)) !important;
+  color: var(--ds-accent-ink); border-color: var(--ds-accent-bright);
+}
+:is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) :is(.pbtn, .sbtn, .tbtn).primary {
+  color: var(--ds-accent-ink); background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent));
+  border-color: var(--ds-accent-bright); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 3px 12px rgba(var(--ds-accent-rgb),.1);
+}
+:is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) button:disabled { opacity: .48; box-shadow: none; }
+#game :is(.quickmenuhead, .modalhead, .sheethead) { border-bottom-color: var(--ds-line-soft); }
+#game :is(.quickmenuhead h2, .mtitle) { font-family: var(--ds-font-display); letter-spacing: -.035em; font-weight: 600; }
+#game .quickmenuhead > div > span { font-size: 11px; font-weight: 700; letter-spacing: .13em; color: var(--ds-accent-bright); }
+#game .quickmenuclose, .commandclose {
+  width: var(--ds-touch); height: var(--ds-touch); min-width: var(--ds-touch); flex: none;
+  color: var(--ds-copy); background: rgba(var(--ds-panel-raised-rgb), .8); border: 1px solid var(--ds-line); border-radius: 50%;
+  font: 400 24px/1 var(--ds-font-body); letter-spacing: 0;
+}
+#game .quickmenuclose:hover, .commandclose:hover { color: var(--ds-text); background: var(--ds-panel-raised); border-color: var(--ds-accent-soft); }
+#game :is(.arenabackgroundfooter, .audiosettingsfooter) { background: var(--ds-panel); border-top-color: var(--ds-line); }
+#game :is(.arenabackgroundfooter, .audiosettingsfooter) .pbtn { min-height: 44px; }
+#game :is(.arenabackgroundstatus, .arenabackgroundcaption span, .audiosettingsstatus, .audiosettingshint) { font-size: 12px; color: var(--ds-muted); line-height: 1.6; }
+#game :is(.arenabackgroundchoice, .playmatchoice)[aria-pressed='true'] { border-color: var(--ds-accent-bright); box-shadow: 0 0 0 2px rgba(var(--ds-accent-rgb), .16); }
+#game :is(.arenabackgroundchoice, .playmatchoice):focus-visible { outline-offset: 2px; }
+#game .hudaction { border-color: var(--ds-line-soft); color: var(--ds-copy); }
+#game .hudaction:hover { border-color: var(--ds-accent-soft); color: var(--ds-accent-bright); }
+#game .hudaction.on { border-color: var(--ds-accent); }
+#game .handtools { color: var(--ds-copy); }
+#game .handsort { color: var(--ds-copy); border-radius: 6px; }
+#game .handexpand { color: var(--ds-accent-bright); }
+#game :is(.zonecount, .oppsummary, .mobileviewtab) { transition: color var(--ds-t-fast), border-color var(--ds-t-fast), background var(--ds-t-fast); }
+#game .card img.cardback-art, #game .cardback-art {
+  object-fit: cover; opacity: 1 !important; filter: none !important; background: var(--ds-table);
+}
+.libraryrevealback.cardback-surface, .gamefx-flightcard.facedown, .online-card-back {
+  background: var(--card-back-image) center / cover no-repeat;
+  border: 1px solid rgba(var(--ds-accent-soft-rgb), .48);
+}
+.libraryrevealback.cardback-surface { outline: none; border-radius: 9px; }
+.libraryrevealback.cardback-surface::before, .libraryrevealback.cardback-surface::after { content: none; }
+body.high-contrast {
+  --ds-muted: #c0cbd6; --ds-copy: #e3e8ed; --ds-line: #657789; --ds-line-soft: #485969;
+}
+body.high-contrast :is(.quickmenu, .commandpalette, .sheet, .modal, .reveal) { border-color: var(--ds-line); background-color: var(--ds-dialog); }
+@media (hover: hover) {
+  :is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled):hover { transform: translateY(-1px); }
+}
+:is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled):active { transform: scale(.985); }
+@media (max-width: 700px) {
+  :is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) :is(input:not([type='range']), select, textarea) { font-size: 16px; }
+  #game .quickmenuov { padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) *, .gamefx-flightcard { animation: none !important; transition: none !important; }
+}
+body.reduced-motion :is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) *, body.reduced-motion .gamefx-flightcard { animation: none !important; transition: none !important; }

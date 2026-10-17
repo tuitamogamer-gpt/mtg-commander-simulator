@@ -86,6 +86,7 @@ try {
   await page.waitForFunction(()=>_ui.pending?.q.type==='chooseManaSources');
   await page.getByRole('button',{name:'Tap selected sources ✓',exact:true}).click(); await reachMain();
   await page.locator('.menubutton').click();
+  await page.locator('[data-settings-tab="controls"]').click();
   await page.locator('.quickmenuitem').filter({hasText:/^Priority stops/}).click();
   await page.locator('.stopprofile').filter({hasText:'Required actions only'}).click();
   const before=await view(); assert.equal(before.pool.C,1); assert.ok(before.battlefield.some(c=>c.name==='Moon-Circuit Hacker'));
@@ -96,6 +97,7 @@ try {
   await page.screenshot({path:`${output}/after-continue.png`,animations:'disabled'});
   assert.deepEqual(after,before,'Continue preserves the manual choice, mana payment and complete decision tail.');
   await page.locator('.menubutton').click();
+  await page.locator('[data-settings-tab="table"]').click();
   await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();
   await page.locator('.mainmenu-account-return').waitFor();
   await page.locator('[data-menu-action="import"]').first().click();

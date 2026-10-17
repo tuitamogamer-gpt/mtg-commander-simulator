@@ -12,6 +12,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     catch { return false; }
   };
   const choose = (value, values, fallback) => values.includes(value) ? value : fallback;
+  // One cosmetic back is used for every concealed card, independent of identity.
+  U.CARD_BACKS = Object.freeze([
+    { id: 'obsidian', label: 'Obsidian', detail: 'Emerald stone · antique brass', url: './assets/cardbacks/obsidian.webp' },
+    { id: 'astral', label: 'Astral', detail: 'Midnight indigo · silver starlight', url: './assets/cardbacks/astral.webp' },
+    { id: 'ember', label: 'Ember', detail: 'Black basalt · warm copper', url: './assets/cardbacks/ember.webp' },
+  ].map(item => Object.freeze(item)));
   U.ARENA_BACKGROUNDS = Object.freeze([
     { id: 'table', label: 'Commander table', group: 'Scenes', detail: 'The familiar stone battlefield' },
     { id: 'war-room', label: 'War room', group: 'Scenes', detail: 'Warm light over a waiting table' },
@@ -49,9 +55,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       arenaDim: U.normalizeArenaDim(raw.arenaDim),
       playmat: choose(raw.playmat, U.PLAYMATS.map(item => item.id), 'felt'),
       playmatStrength: U.normalizePlaymatStrength(raw.playmatStrength),
+      cardBack: choose(raw.cardBack, U.CARD_BACKS.map(item => item.id), 'obsidian'),
     };
   };
   U.savePlayerPreferences = changes => U.writePreference('mtgPlayerPreferences', { ...U.playerPreferences(), ...changes });
+  let sessionCardBack;
+  U.selectedCardBack = () => U.CARD_BACKS.find(item => item.id === (sessionCardBack || U.playerPreferences().cardBack)) || U.CARD_BACKS[0];
+  U.cardBackURL = () => U.selectedCardBack().url;
+  U.applyCardBack = () => {
+    if (typeof document === 'undefined') return;
+    // Custom-property URLs can be resolved by the consuming stylesheet. An
+    // absolute URL also works in the packaged app and avoids /src/assets/.
+    const url = typeof URL === 'function' && document.baseURI ? new URL(U.cardBackURL(), document.baseURI).href : U.cardBackURL();
+    document.documentElement?.style?.setProperty('--card-back-image', `url("${url}")`);
+  };
+  U.selectCardBack = id => {
+    sessionCardBack = U.CARD_BACKS.find(item => item.id === id)?.id || 'obsidian';
+    const saved = U.savePlayerPreferences({ cardBack: sessionCardBack });
+    U.applyCardBack();
+    return saved;
+  };
+  U.applyCardBack();
   U.recentDecks = () => {
     const raw = U.readPreference('mtgRecentDecks', []);
     return Array.isArray(raw) ? [...new Set(raw.filter(name => typeof name === 'string' && name.length < 160))].slice(0, 6) : [];

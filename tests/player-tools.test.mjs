@@ -14,6 +14,37 @@ function tools() {
 }
 const plain = value => JSON.parse(JSON.stringify(value));
 
+test('card backs use only approved local art and retain a session choice when storage is blocked', () => {
+  const { U, values, sandbox } = tools();
+  assert.equal(U.cardBackURL(), './assets/cardbacks/obsidian.webp');
+  values.set('mtgPlayerPreferences', JSON.stringify({ cardBack: 'https://untrusted.test/secret-name' }));
+  assert.equal(U.playerPreferences().cardBack, 'obsidian');
+  assert.equal(U.cardBackURL(), './assets/cardbacks/obsidian.webp');
+  assert.equal(U.selectCardBack('astral'), true);
+  U.savePlayerPreferences({ handSize: 'large' });
+  assert.equal(U.playerPreferences().cardBack, 'astral');
+  assert.equal(U.cardBackURL(), './assets/cardbacks/astral.webp');
+  sandbox.localStorage = { getItem() { throw Error('blocked'); }, setItem() { throw Error('quota'); } };
+  assert.equal(U.selectCardBack('ember'), false);
+  assert.equal(U.cardBackURL(), './assets/cardbacks/ember.webp');
+  U.selectCardBack('javascript:alert(1)');
+  assert.equal(U.cardBackURL(), './assets/cardbacks/obsidian.webp');
+  assert.equal(Object.isFrozen(U.CARD_BACKS), true);
+  assert.ok(U.CARD_BACKS.every(back => Object.isFrozen(back)));
+});
+
+test('card back CSS URLs resolve against the document for hosted and packaged entry points', () => {
+  const { U, sandbox } = tools();
+  let css;
+  sandbox.URL = URL;
+  sandbox.document = { baseURI: 'https://example.test/game/index.html', documentElement: { style: { setProperty(key, value) { if (key === '--card-back-image') css = value; } } } };
+  U.applyCardBack();
+  assert.equal(css, 'url("https://example.test/game/assets/cardbacks/obsidian.webp")');
+  sandbox.document.baseURI = 'file:///bundle/index.html';
+  U.selectCardBack('ember');
+  assert.equal(css, 'url("file:///bundle/assets/cardbacks/ember.webp")');
+});
+
 test('corrupt or unavailable browser storage cannot prevent player tools from loading', () => {
   const { U, values, sandbox } = tools();
   values.set('mtgPlayerPreferences', '{bad json');

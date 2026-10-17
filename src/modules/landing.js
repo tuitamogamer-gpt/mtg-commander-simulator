@@ -22,25 +22,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     </section>
 
     <section id="featured-decks" class="mainmenu-collection" aria-labelledby="collection-title">
-      <header class="mainmenu-collection-head"><div><h2 id="collection-title">Find your next deck</h2><p>Try a featured commander, or explore the full collection.</p></div><button type="button" data-menu-action="solo">All <span data-catalog-decks>${Number(deckCount)}</span> decks <span aria-hidden="true">↗</span></button></header>
+      <header class="mainmenu-collection-head"><div><h2 id="collection-title">Find your next deck</h2><p>Try a featured commander, or explore the full collection.</p></div><button type="button" data-menu-action="solo">All <span data-catalog-decks>${Number(deckCount)}</span> decks <span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button></header>
       <div class="mainmenu-deck-grid">
         <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="Elven Council" aria-label="Choose Elven Council, led by Galadriel, Elven-Queen">
-          <span class="mainmenu-deck-art"><img src="./assets/cards/art/galadriel-elven-queen-efb29b8818.webp" width="626" height="457" loading="lazy" decoding="async" alt="Galadriel, Elven-Queen"><span aria-hidden="true">↗</span></span>
+          <span class="mainmenu-deck-art"><img src="./assets/cards/art/galadriel-elven-queen-efb29b8818.webp" width="626" height="457" loading="lazy" decoding="async" alt="Galadriel, Elven-Queen"><span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
           <span class="mainmenu-deck-colors"><img src="./assets/mana/G.svg" alt="Green"><img src="./assets/mana/U.svg" alt="Blue"><span>ELVES &amp; POLITICS</span></span><b>Elven Council</b><span class="mainmenu-deck-description">Build your fellowship. Make the table choose.</span>
         </button>
         <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="Planar Portal" aria-label="Choose Planar Portal, led by Prosper, Tome-Bound">
-          <span class="mainmenu-deck-art"><img src="./assets/cards/art/prosper-tome-bound-afb30a621f.webp" width="626" height="457" loading="lazy" decoding="async" alt="Prosper, Tome-Bound"><span aria-hidden="true">↗</span></span>
+          <span class="mainmenu-deck-art"><img src="./assets/cards/art/prosper-tome-bound-afb30a621f.webp" width="626" height="457" loading="lazy" decoding="async" alt="Prosper, Tome-Bound"><span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
           <span class="mainmenu-deck-colors"><img src="./assets/mana/B.svg" alt="Black"><img src="./assets/mana/R.svg" alt="Red"><span>EXILE &amp; TREASURE</span></span><b>Planar Portal</b><span class="mainmenu-deck-description">Turn the unknown into your next advantage.</span>
         </button>
         <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="The Ruinous Powers" aria-label="Choose The Ruinous Powers, led by Abaddon the Despoiler">
-          <span class="mainmenu-deck-art"><img src="./assets/cards/art/abaddon-the-despoiler-b709a97527.webp" width="626" height="457" loading="lazy" decoding="async" alt="Abaddon the Despoiler"><span aria-hidden="true">↗</span></span>
+          <span class="mainmenu-deck-art"><img src="./assets/cards/art/abaddon-the-despoiler-b709a97527.webp" width="626" height="457" loading="lazy" decoding="async" alt="Abaddon the Despoiler"><span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
           <span class="mainmenu-deck-colors"><img src="./assets/mana/U.svg" alt="Blue"><img src="./assets/mana/B.svg" alt="Black"><img src="./assets/mana/R.svg" alt="Red"><span>CHAOS &amp; CASCADE</span></span><b>The Ruinous Powers</b><span class="mainmenu-deck-description">One spell. A chain reaction. Let chaos reign.</span>
         </button>
       </div>
     </section>
 
     <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
-      <div class="mainmenu-path-copy"><span>FIRST TIME HERE?</span><h2 id="first-pod-title">From deck to table</h2><p>Three steps to your first game.</p><button type="button" data-menu-action="tour">Open the first-game guide <span aria-hidden="true">↗</span></button></div>
+      <div class="mainmenu-path-copy"><span>FIRST TIME HERE?</span><h2 id="first-pod-title">From deck to table</h2><p>Three steps to your first game.</p><button type="button" data-menu-action="tour">Open the first-game guide <span aria-hidden="true"><svg class="ui-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button></div>
       <ol class="mainmenu-path-steps">
         <li><span aria-hidden="true">01</span><div><b>Choose your deck</b><p>Browse precons or open My Library to use an imported deck.</p></div></li>
         <li><span aria-hidden="true">02</span><div><b>Set up your table</b><p>Pick opponents, their decks, and the difficulty.</p></div></li>

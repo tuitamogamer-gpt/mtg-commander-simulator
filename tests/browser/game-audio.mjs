@@ -49,7 +49,9 @@ try {
     assert.equal(await page.evaluate(() => MTG.audio.preferences.track), 'council-at-dusk');
     assert.equal(await page.evaluate(() => MTG.audio.preferences.narration), 0);
     await page.evaluate(() => { window.__audioPending = _ui.pending; window.__audioDecisionCount = MTG.activeAccountMatch.decisions.length; });
-    await click(page.locator('.menubutton')); await click(page.locator('.audiosettingsopen'));
+    await click(page.locator('.menubutton'));
+    await click(page.locator('[data-settings-tab="appearance"]'));
+    await click(page.locator('.audiosettingsopen'));
     const panel = page.locator('.audiopanel');
     assert.equal(await panel.getAttribute('role'), 'dialog');
     assert.equal(await panel.getAttribute('aria-modal'), 'true');

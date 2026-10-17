@@ -278,6 +278,7 @@ try {
     assert.equal(await page.locator('.online-remote-game').count(), 0);
     assert.equal(await page.evaluate(seat => _ui.me.onlineSeat === seat && _ui.game.players.length === 4, seat), true);
     await page.locator('.menubutton').click();
+    await page.getByRole('tab', { name: 'Help', exact: true }).click();
     assert.equal(await page.getByRole('button', { name: /^Last Resort/ }).isEnabled(), true);
     await page.keyboard.press('Escape');
     await page.locator(`.hcard[data-iid="${fixture.land}"]`).click();

@@ -236,6 +236,7 @@ try {
 
   const hostPending = await host.evaluate(() => _ui.pending.q.onlineDecision.id);
   await guest.locator('.menubutton').click();
+  await guest.getByRole('tab', { name: 'Help', exact: true }).click();
   await guest.getByRole('button', { name: /^Last Resort/ }).click();
   await guest.locator('[data-testid="enable-last-resort"]').click();
   await until(() => guest.locator('.lastresortsheet').isVisible(), 'guest recovery panel');
@@ -252,6 +253,7 @@ try {
   await guest.locator(`.mini[data-iid="${ids.ring}"]`).click();
   await until(() => host.evaluate(id => _game.byIid(id).tapped, ids.ring), 'guest tap correction');
   await guest.locator('.menubutton').click();
+  await guest.getByRole('tab', { name: 'Help', exact: true }).click();
   await guest.getByRole('button', { name: /^Last Resort/ }).click();
   await guest.locator('[data-testid="finish-last-resort"]').click();
   await until(() => host.evaluate(() => !_game.lastResortPaused), 'recovery finishes');
@@ -266,7 +268,8 @@ try {
   });
   const dragSpell = dragFixture.spell;
   await guest.locator('.menubutton').click();
-  await guest.getByRole('button', { name: /^Arena drag controls/ }).click();
+  await guest.getByRole('tab', { name: 'Controls', exact: true }).click();
+  await guest.getByRole('switch', { name: 'Arena drag controls', exact: true }).click();
   await guest.keyboard.press('Escape');
   await guest.getByRole('button', { name: 'HOLD', exact: true }).click();
   await click(host, /^End turn/);
