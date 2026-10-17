@@ -127,3 +127,68 @@
   .resolutionrecapstats > div { display: flex; align-items: center; gap: 8px; }
   .resolutionrecapstats span { margin: 0; }
 }
+
+/* Public library reveals pause at each card, with one deliberate next step. */
+#game .libraryrevealwrap {
+  padding: 16px; background: radial-gradient(ellipse at center, #48301c25, #030705a8);
+}
+body.game-active #game .stackpop.libraryreveal {
+  width: min(480px, 100%); max-height: calc(100 * var(--dvhu) - 32px);
+  border: 1px solid #b98758a6; border-radius: 16px; animation: none;
+  color: #ecebe2; background: #141a18; box-shadow: 0 28px 100px #000c, 0 0 50px #b86e2420;
+}
+.libraryrevealhead { flex: 0 0 auto; padding: 18px 22px 14px; border-bottom: 1px solid #ffffff14; background: linear-gradient(115deg, #38281d, #1b231d 85%); }
+.libraryrevealkicker { color: #dfb27f; font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.libraryrevealtitle { margin: 6px 0; color: #fff0d4; font: 600 23px/1.2 var(--ds-font-display); overflow-wrap: anywhere; }
+.libraryrevealowner { color: #bec7b7; font-size: 12px; }
+.libraryrevealbody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 22px 14px; }
+.libraryrevealstage { display: grid; place-items: center; padding: 4px 12px 10px; perspective: 850px; background: radial-gradient(ellipse, #d6893020, transparent 68%); }
+.libraryrevealcard, .libraryrevealback { width: min(210px, calc(25 * var(--dvhu))); aspect-ratio: 5 / 7; border-radius: 10px; }
+.libraryrevealcard { display: block; position: relative; padding: 0; border: 0; cursor: zoom-in; background: #111; box-shadow: 0 15px 32px #0009, 0 0 24px #f5c16d1a; transform-origin: center; }
+.libraryrevealcard > img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+.libraryrevealback { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; border: 5px solid #17211e; outline: 1px solid #aa835863; background: repeating-linear-gradient(45deg, #ffffff04 0 2px, transparent 2px 12px), radial-gradient(ellipse, #345445, #182b24 75%); box-shadow: 7px 5px 0 -1px #26352c, 8px 6px 0 #7c74555e, 13px 10px 0 -1px #18251f, 0 18px 36px #0008; }
+.libraryrevealbackmark { display: grid; place-items: center; width: 90px; height: 116px; color: #ddc18c; border: 1px solid #d9bd7957; border-radius: 50%; font-size: 70px; line-height: 1; }
+.libraryrevealbacklabel { color: #decda7; font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+.libraryrevealcaption { margin-top: 12px; text-align: center; }
+.libraryrevealcaption h3 { margin: 0; color: #f7e8c9; font: 600 19px/1.25 var(--ds-font-display); overflow-wrap: anywhere; }
+.libraryrevealcaption p { margin: 8px 0 0; color: #bdc7b7; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.libraryrevealhistory { display: flex; gap: 9px; margin-top: 16px; padding: 3px 2px 5px; overflow-x: auto; overscroll-behavior-x: contain; }
+.libraryrevealhistoryitem { flex: 0 0 auto; }
+.libraryrevealhistorycard { display: block; position: relative; width: 43px; height: 60px; padding: 0; border: 1px solid #ffffff2b; border-radius: 4px; background: #151a17; cursor: zoom-in; }
+.libraryrevealhistorycard > img { display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: contain; }
+.libraryrevealhistorycard > span { position: absolute; bottom: -2px; right: -3px; min-width: 17px; padding: 2px 3px; border: 1px solid #9b8d6d; border-radius: 4px; background: #1c241f; color: #ffedc9; font-size: 10px; line-height: 1.1; }
+.libraryrevealhistorycard.is-current { outline: 2px solid #e8b978; outline-offset: 1px; }
+.libraryrevealcard:focus-visible, .libraryrevealhistorycard:focus-visible { outline: 3px solid #f4d48b; outline-offset: 4px; }
+body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { flex: 0 0 auto; padding: 12px 20px; background: #20291f; }
+#game .libraryrevealfoot .pbtn { min-height: 46px; font-size: 14px; letter-spacing: .02em; text-transform: none; }
+@keyframes libraryCardReveal {
+  from { opacity: 0; transform: translateX(-32px) translateY(8px) rotateY(-78deg) rotateZ(-5deg) scale(.94); }
+  55% { opacity: 1; }
+  to { opacity: 1; transform: translateX(0) translateY(0) rotateY(0) rotateZ(0) scale(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.reduced-motion) .libraryrevealcard.is-revealing { animation: libraryCardReveal .48s cubic-bezier(.16, 1, .3, 1) both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .libraryrevealcard.is-revealing { animation: none; }
+}
+@media (max-width: 520px), (max-height: 580px) {
+  #game .libraryrevealwrap { padding: 8px; }
+  body.game-active #game .stackpop.libraryreveal { max-height: calc(100 * var(--dvhu) - 16px); border-radius: 12px; }
+  .libraryrevealhead { padding: 13px 16px 10px; }
+  .libraryrevealtitle { font-size: 20px; }
+  .libraryrevealbody { padding: 12px 16px; }
+  .libraryrevealcaption { margin-top: 8px; }
+  .libraryrevealcaption h3 { font-size: 17px; }
+  .libraryrevealhistory { margin-top: 12px; }
+  body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { padding: 10px 14px; }
+}
+@media (max-height: 480px) {
+  .libraryrevealbody { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; }
+  .libraryrevealstage { grid-row: 1 / 3; padding: 0; }
+  .libraryrevealcard, .libraryrevealback { width: min(130px, calc(28 * var(--dvhu))); }
+  .libraryrevealcaption { margin: 0; text-align: left; }
+  .libraryrevealhistory { margin: 0; }
+  .libraryrevealbackmark { width: 56px; height: 72px; font-size: 44px; }
+  .libraryrevealbacklabel { font-size: 9px; }
+}

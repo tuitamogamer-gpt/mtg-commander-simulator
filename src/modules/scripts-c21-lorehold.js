@@ -39,7 +39,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }
   function grantExile(ctx,cards,opts={}){for(const card of cards)if(card.zone==='exile')Object.assign(card.meta,{playableBy:ctx.you,playableUntil:opts.forever?Number.MAX_SAFE_INTEGER:ctx.g.turnNo,
     ...(opts.free?{freePlay:true}:{}),...(opts.anyColor?{anyColor:true}:{}),...(opts.spellsOnly?{c21SpellsOnly:true,spellsOnly:true}: {})});}
-  async function exileTop(ctx,player,n){if(!(n>0))return [];const cards=player.library.slice(-n).reverse();await ctx.g.withC21ExileBatch(async()=>{for(const c of cards)if(c.zone==='library')await ctx.g.move(c,'exile');});return cards.filter(c=>c.zone==='exile');}
+  async function exileTop(ctx,player,n){if(!(n>0))return [];const cards=player.library.slice(-n).reverse();await ctx.g.withC21ExileBatch(async()=>{for(const c of cards)if(c.zone==='library')await ctx.g.move(c,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});});return cards.filter(c=>c.zone==='exile');}
   const loyalty=(n,label,run,extra={})=>({loyalty:n,sorcery:true,label,cost:{},run,aiScore:()=>n<0?5:3,...extra});
   const noAbilities=c=>{
     if(c.zone==='battlefield'&&c.cur){if(c.cur.kw.size||c.cur.extraAbilities?.length||c.cur.extraTriggers?.length||c.cur.extraMana?.length)return false;if(c.cur.abilitiesDisabled)return true;}

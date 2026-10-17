@@ -83,7 +83,7 @@
    const rest=top.filter(card=>!chosen.includes(card));if(op.rest==='graveyard')await game.withGraveyardEntryBatch(async()=>{for(const card of rest)await game.move(card,'graveyard');});else await bottom(game,p,rest);return 0;
   }
   if(op.mode==='impulse'){
-   for(const card of p.library.slice(-op.n).reverse()){await game.move(card,'exile');if(card.zone==='exile'){card.meta.playableBy=p;card.meta.playableUntil=game.turnNo;}}
+   for(const card of p.library.slice(-op.n).reverse()){await game.move(card,'exile',{revealFromLibrary:true,revealSource:src,revealController:p});if(card.zone==='exile'){card.meta.playableBy=p;card.meta.playableUntil=game.turnNo;}}
    return 0;
   }
   if(op.mode==='gain-life'){await game.gainLife(p,5,src);return 0;}

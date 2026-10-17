@@ -320,8 +320,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const g = ctx.g, exiled = [];
         for (const q of g.alivePlayers()) {
           while (q.library.length) {
-            const c = q.library.pop();
-            c.zone = 'exile'; q.exile.push(c);
+            const c = q.library.at(-1);
+            await g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
             if (!c.is('Land')) { exiled.push(c); break; }
           }
         }
@@ -539,7 +539,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (let i = 0; i < 4 && you.library.length; i++) {
         const c = you.library.pop(); c.zone = 'exile'; c.faceDown = true; you.exile.push(c); pileA.push(c);
       }
-      for (let i = 0; i < 4 && you.library.length; i++) { const c = you.library.pop(); c.zone = 'exile'; you.exile.push(c); pileB.push(c); }
+      for (let i = 0; i < 4 && you.library.length; i++) {
+        const c = you.library.at(-1);
+        await g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: you });
+        pileB.push(c);
+      }
       const chooser = await E.chooseOpponent(g, you, {
         prompt: 'Abstract Performance — which opponent chooses a pile?', goal: 'delegate',
       });
@@ -595,16 +599,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       U.shuffle(you.library, ctx.g.rnd);
       let hit = null;
       const bottom = [];
-      while (you.library.length) {
-        const c = you.library.pop();
+      while (you.library.length > bottom.length) {
+        const c = you.library[you.library.length - 1 - bottom.length];
+        await ctx.g.revealToHuman({ cards: [c], ctrl: you, kind: 'reveal', includeLands: true, title: 'Creative Technique' });
         if (!c.is('Land')) { hit = c; break; }
         bottom.push(c);
       }
+      for (const c of bottom) ctx.g.remove(c);
       U.shuffle(bottom, ctx.g.rnd);
       for (const c of bottom) you.library.unshift(c);
       if (hit) {
-        hit.zone = 'exile'; you.exile.push(hit);
-        await ctx.g.revealToHuman({ cards: [...bottom, hit], ctrl: you, kind: 'reveal' });
+        await ctx.g.move(hit, 'exile');
         const yes = await you.controller.decide(ctx.g, {
           type: 'chooseOption', prompt: `Creative Technique: cast ${hit.name} for free?`,
           options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
@@ -627,11 +632,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           aiHint: { kind: 'danceContinue', total, exiled: exiled.slice() },
         });
         if (more !== 'yes') break;
-        const top = you.library.pop();
+        const top = you.library.at(-1);
+        await g.move(top, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: you });
         const mv = U.mv(top.def.cost || '');
-        top.zone = 'exile'; you.exile.push(top);
         total += mv; exiled.push(top);
-        await g.revealToHuman({ cards: [top], ctrl: you, kind: 'reveal' });
       }
       g.lg(`Dance with Calamity: exiled ${exiled.length} (total mv ${total}).`);
       if (total <= 13) {

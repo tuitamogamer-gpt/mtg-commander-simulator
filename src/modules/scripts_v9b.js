@@ -160,9 +160,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function kangSuspend(ctx) {
     const you = ctx.you, g = ctx.g;
     while (you.library.length) {
-      const c = you.library.pop();
-      if (c.is('Land')) { c.zone = 'exile'; you.exile.push(c); continue; }
-      c.zone = 'exile'; you.exile.push(c);
+      const c = you.library.at(-1);
+      await g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: you });
+      if (c.is('Land')) continue;
       c.meta = { suspended: 2 };
       g.lg(`Kang Prime: ${c.name} suspended (2).`);
       break;
@@ -245,8 +245,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         let hit = null;
         while (you.library.length) {
-          const c = you.library.pop();
-          c.zone = 'exile'; you.exile.push(c);
+          const c = you.library.at(-1);
+          await g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: you });
           if (!c.is('Land')) { hit = c; break; }
         }
         if (!hit) return;
@@ -447,8 +447,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!ctx.you.library.length) return;
         const prev = ctx.src.meta._impulseIid && ctx.g.byIid(ctx.src.meta._impulseIid);
         if (prev && prev.meta) prev.meta.playableUntil = -1;   // stara prestaje važiti
-        const c = ctx.you.library.pop();
-        c.zone = 'exile'; ctx.you.exile.push(c);
+        const c = ctx.you.library.at(-1);
+        await ctx.g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
         c.meta = c.meta || {}; c.meta.playableBy = ctx.you; c.meta.playableUntil = 9999;
         ctx.src.meta._impulseIid = c.iid;
         ctx.g.lg(`Superior Foes: play ${c.name} until you exile another card.`);
@@ -934,7 +934,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           await ctx.g.sacrifice(ctx.you, ctx.src);
           const four = [];
           for (let i = 0; i < 4 && ctx.you.library.length; i++) {
-            const c = ctx.you.library.pop(); c.zone = 'exile'; ctx.you.exile.push(c); four.push(c);
+            const c = ctx.you.library.at(-1);
+            await ctx.g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
+            four.push(c);
           }
           for (const c of four.slice()) {
             if (c.is('Land')) { ctx.you.exile.splice(ctx.you.exile.indexOf(c), 1); c.zone = 'hand'; ctx.you.hand.push(c); continue; }
@@ -1531,8 +1533,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['The Five Arrive'] = {
     resolve: async ctx => {
-      const top = [];
-      for (let i = 0; i < 5 && ctx.you.library.length; i++) top.push(ctx.you.library.pop());
+      const top = ctx.you.library.slice(-5).reverse();
+      await ctx.g.revealToHuman({ cards: top, ctrl: ctx.you, kind: 'look', includeLands: true, title: 'The Five Arrive' });
       const permanents = top.filter(c => c.is('Creature') || c.is('Artifact') || c.is('Enchantment') || c.is('Land') || c.is('Planeswalker'));
       const chosen = permanents.length ? await ctx.you.controller.decide(ctx.g, {
         type: 'chooseCards', from: permanents, min: 0, max: permanents.length,
@@ -1541,6 +1543,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }) : [];
       const battlefield = new Set((chosen || []).filter(card => permanents.includes(card)));
       for (const c of top) {
+        ctx.g.remove(c);
         if (battlefield.has(c)) { c.zone = 'nowhere'; await ctx.g.move(c, 'battlefield', { ctrl: ctx.you }); }
         else { c.zone = 'hand'; ctx.you.hand.push(c); }
       }
@@ -1815,7 +1818,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const caster = ctx.data.player;
         if (!caster.library.length) return;
         const c = caster.library.at(-1), version = c.zoneVersion;
-        await ctx.g.move(c, 'exile');
+        await ctx.g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
         if (c.zone !== 'exile' || c.zoneVersion !== version + 1) return;
         const exileVersion = c.zoneVersion;
         if (!c.is('Land')) {
@@ -2250,10 +2253,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Wakanda Forever!'] = {
     resolve: async ctx => {
-      const top = [];
-      for (let i = 0; i < 6 && ctx.you.library.length; i++) top.push(ctx.you.library.pop());
+      const top = ctx.you.library.slice(-6).reverse();
       if (!top.length) return;
-      await ctx.g.revealToHuman({ cards: top, ctrl: ctx.you, kind: 'reveal' });
+      await ctx.g.revealToHuman({ cards: top, ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Wakanda Forever!' });
       const permanents = top.filter(card => card.is('Creature') || card.is('Artifact') || card.is('Enchantment') ||
         card.is('Land') || card.is('Planeswalker'));
       const battlefieldPick = permanents.length ? await ctx.you.controller.decide(ctx.g, {

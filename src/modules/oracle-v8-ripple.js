@@ -16,8 +16,7 @@
     if(!entries.length)return;
     const names=game.stack.includes(data.so)?spellNames(game,data.so):data.names;
     const reveal={cards:entries.map(entry=>entry.card),ctrl:player,kind:'reveal',includeLands:true,title:`Ripple ${data.n}`};
-    if(!player.isAI&&game.paced)await player.controller.decide(game,{...reveal,type:'cardReveal',player});
-    else await game.revealToHuman(reveal);
+    await game.revealToHuman(reveal);
     const matching=card=>M.OracleV8NameGroups.matches(names,M.OracleV8NameGroups.names(card));
     // Every iteration offers only this resolution's revealed cohort. Casting
     // may change the library or pay an additional cost, so recheck identity.

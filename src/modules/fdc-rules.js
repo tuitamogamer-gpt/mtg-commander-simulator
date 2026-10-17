@@ -24,7 +24,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function discoverTreasure(ctx) {
     const rows = []; let hit;
     for (const c of ctx.you.library.slice().reverse()) {
-      await ctx.g.move(c, 'exile');
+      await ctx.g.move(c, 'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});
       if (c.zone !== 'exile') continue;
       rows.push(C.row(c));
       if (!c.is('Land') && c.mv <= 10) {hit = c; break;}

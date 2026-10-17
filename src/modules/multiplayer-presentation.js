@@ -189,7 +189,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'effectKind', 'recap', 'eligible', 'forSpell', 'forced', 'free', 'from', 'kind', 'lands', 'max', 'min', 'mulls', 'n',
     'names', 'opponents', 'options', 'opts', 'player', 'potential', 'reason', 'repeats', 'revealedCards', 'source',
     'sources', 'spec', 'src', 'stackObject', 'status', 'sub', 'suggested', 'surveil', 'target', 'targets', 'title', 'triggers', 'values', 'quickTarget',
-    'targetStep', 'targetSteps', 'previousTargets', 'dungeonChoice', 'ringChoice', 'mutateChoice'];
+    'targetStep', 'targetSteps', 'previousTargets', 'dungeonChoice', 'ringChoice', 'mutateChoice',
+    'libraryReveal', 'revealStage', 'revealAction', 'libraryOwner'];
   const decisionTypes = new Set(['threatAlert', 'cardReveal', 'combatReview', 'effectReview', 'manualResolve', 'diplomacyReview',
     'mulligan', 'chooseOption', 'chooseMulti', 'chooseX', 'bottomCards', 'chooseCards', 'chooseTargets', 'chooseManaSources',
     'orderTriggers', 'scry', 'attackers', 'blockers', 'main', 'priority']);

@@ -439,7 +439,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(kind==='ingest') {
       push(script,'triggers',{
         on:'combatDamageToPlayer',desc:'Ingest',filter:(game,self,data)=>data.card===self,
-        run:async ctx=>{const card=ctx.data.player.library.at(-1);if(card) await ctx.g.move(card,'exile');},
+        run:async ctx=>{const card=ctx.data.player.library.at(-1);if(card) await ctx.g.move(card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});},
       });return true;
     }
 

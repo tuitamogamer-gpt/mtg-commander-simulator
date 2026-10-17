@@ -191,7 +191,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{ on: 'dies', desc: 'Blazing Sky choice', filter: (g, self, data) => data.card === self,
       modes: { list: [{ label: 'Exile the top two cards' }, { label: 'Create three Treasures' }] },
       run: async ctx => {
-        if (ctx.mode === 0) E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 2, 'next');
+        if (ctx.mode === 0) await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 2, 'next');
         else await ctx.g.makeTokens('treasure', ctx.you, { n: 3 });
       } }],
   };
@@ -286,7 +286,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             await ctx.g.damagePlayer(ctx.src, opponent, 4, { deferSBA: true });
           }
           await ctx.g.checkSBA();
-        } else E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'turn');
+        } else await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'turn');
       },
     }],
   };
@@ -577,7 +577,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Zenith Festival'] = {
     xCost: true, harmonize: { cost: '{X}{R}{R}' },
-    resolve: async ctx => { E.exileTopPlayable(ctx.g, ctx.you, ctx.src, ctx.x || 0, 'next'); },
+    resolve: async ctx => { await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, ctx.x || 0, 'next'); },
   };
   SC['Migration Path'] = {
     cycling: { cost: '{2}' },
@@ -607,9 +607,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? 'free' : 'wild');
       const wild = votes.get('wild') || 0, free = votes.get('free') || 0;
       const revealed = [], creatures = [];
-      while (ctx.you.library.length && creatures.length < wild) {
-        const card = ctx.you.library.pop(); revealed.push(card); if (card.is('Creature')) creatures.push(card);
+      while (revealed.length < ctx.you.library.length && creatures.length < wild) {
+        const card = ctx.you.library.at(-1 - revealed.length);
+        await ctx.g.revealToHuman({ cards: [card], ctrl: ctx.you, kind: 'reveal', includeLands: true, title: "Selvala's Stampede" });
+        revealed.push(card);
+        if (card.is('Creature')) creatures.push(card);
       }
+      for (let i = 0; i < revealed.length; i++) ctx.you.library.pop();
       for (const creature of creatures) { creature.zone = 'nowhere'; await ctx.g.move(creature, 'battlefield', { ctrl: ctx.you }); }
       const rest = revealed.filter(card => !creatures.includes(card));
       for (const card of rest) card.zone = 'library'; ctx.you.library.push(...rest); U.shuffle(ctx.you.library, ctx.g.rnd);
@@ -718,7 +722,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         let hit = null;
         while (ctx.you.library.length) {
-          const card = ctx.you.library.pop(); card.zone = 'exile'; ctx.you.exile.push(card);
+          const card = ctx.you.library.at(-1);
+          await ctx.g.move(card, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
           if (!card.is('Land')) { hit = card; break; }
         }
         if (!hit) return;

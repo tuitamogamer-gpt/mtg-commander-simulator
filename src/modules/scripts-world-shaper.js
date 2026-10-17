@@ -277,7 +277,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Top 4: a land to hand, the rest to graveyard', filter: etbSelf,
       run: async ctx => {
-        const top = ctx.you.library.slice(-4);
+        const top = ctx.you.library.slice(-4).reverse();
+        await ctx.g.revealToHuman({ cards: top, ctrl: ctx.you, kind: 'reveal', includeLands: true, title: 'Satyr Wayfinder' });
         const land = await chooseOne(ctx.g, ctx.you, top.filter(isLand), 'Satyr Wayfinder: land to hand', { kind: 'searchBasic' }, true);
         if (land) await ctx.g.move(land, 'hand');
         for (const card of top) if (card !== land && card.zone === 'library') await ctx.g.move(card, 'graveyard');
@@ -312,7 +313,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'sacrificed', desc: 'Exile the top card', filter: (game, card, data) => data.player === card.ctrl && !data.card.isToken,
       run: async ctx => {
         if (!ctx.you.library.length || ctx.src.zone !== 'battlefield') return;
-        const card = ctx.you.library.pop(); card.zone = 'exile'; ctx.you.exile.push(card);
+        const card = ctx.you.library[ctx.you.library.length - 1];
+        await ctx.g.move(card, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
         ctx.src.meta._evendoSacTurn = ctx.g.turnNo;
         card.meta.playableBy = ctx.you; card.meta.playableUntil = ctx.g.turnNo;
         const iid = ctx.src.iid;
@@ -769,7 +771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Splendid Reclamation'] = { resolve: async ctx => { await returnAllLands(ctx.g, ctx.you); } };
 
   SC['Escape to the Wilds'] = {
-    resolve: async ctx => { E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 5, 'next'); ctx.you.maxLands++; },
+    resolve: async ctx => { await E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 5, 'next'); ctx.you.maxLands++; },
   };
 
   SC['Planetary Annihilation'] = {

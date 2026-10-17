@@ -89,7 +89,7 @@
    const entries=cards.map(card=>({card,zone:'library',version:card.zoneVersion}));
    if(effect.visibility==='reveal')await ctx.g.revealToHuman({cards,ctrl:ctx.you,kind:'reveal'});
    else if(effect.visibility==='look'&&!ctx.you.isAI&&cards.length)await ctx.you.controller.decide(ctx.g,{type:'cardReveal',player:ctx.you,cards,kind:'look',private:true});
-   if(effect.visibility==='exile')for(const entry of entries)if(present(entry)){await ctx.g.move(entry.card,'exile');entry.zone='exile';entry.version=entry.card.zoneVersion;}
+   if(effect.visibility==='exile')for(const entry of entries)if(present(entry)){await ctx.g.move(entry.card,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});entry.zone='exile';entry.version=entry.card.zoneVersion;}
    // An until search grants casting permission only for its matching stop
    // card. Earlier exiled cards remain in the locked remainder cohort.
    const eligible=effect.until?entries.slice(-1).filter(entry=>helpers.target({...effect.until,controller:'any'},[],0,ctx.data).filter(ctx.g,entry.card,ctx.you,ctx.src)):entries;

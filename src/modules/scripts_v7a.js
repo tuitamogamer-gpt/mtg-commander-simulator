@@ -126,8 +126,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const exiled = [];
     let hit = null;
     while (p.library.length) {
-      const c = p.library.pop();
-      c.zone = 'exile'; exiled.push(c);
+      const c = p.library[p.library.length - 1];
+      await g.move(c, 'exile', { revealFromLibrary: true, revealSource: src, revealController: p });
+      exiled.push(c);
       if (!c.is('Land') && c.mv <= n) { hit = c; break; }
     }
     if (hit) {
@@ -138,15 +139,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiHint: { kind: 'freeCastOrHand', card: hit },
       });
       if (k === 'cast') {
-        hit.zone = 'nowhere';
         const ok = await g.castSpell(p, hit, { free: true, from: 'exile' });
-        if (!ok) { hit.zone = 'hand'; p.hand.push(hit); }
-      } else { hit.zone = 'hand'; p.hand.push(hit); }
+        if (!ok) await g.move(hit, 'hand');
+      } else await g.move(hit, 'hand');
     }
     // ostatak na dno u random redoslijedu
     const rest = exiled.filter(c => c !== hit && c.zone === 'exile');
     U.shuffle(rest, g.rnd);
-    for (const c of rest) { c.zone = 'library'; p.library.unshift(c); }
+    for (const c of rest) { g.remove(c); c.zone = 'library'; p.library.unshift(c); }
     g.lg(`${p.name}: discover ${n}${hit ? ` → ${hit.name}` : ' (nothing)'}.`);
   };
   E7.clash = async (g, p) => (await g.clash(p)).won;
@@ -1337,8 +1337,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const opponent = ctx.targets[0];
         if (!opponent) return;
         for (let i = 0; i < (ctx.x || 0) && opponent.library.length; i++) {
-          const card = opponent.library.pop();
-          card.zone = 'exile'; opponent.exile.push(card);
+          const card = opponent.library[opponent.library.length - 1];
+          await ctx.g.move(card, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
           card.meta = card.meta || {};
           card.meta.playableBy = ctx.you;
           card.meta.playableUntil = 9999;
@@ -1386,8 +1386,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (ctx.mode === 0) {
           if (ctx.targets[0]) E.goad(ctx.g, ctx.targets[0], ctx.you);
         } else if (victim && victim.library.length) {
-          const c = victim.library.pop();
-          c.zone = 'exile'; victim.exile.push(c);
+          const c = victim.library[victim.library.length - 1];
+          await ctx.g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
           c.meta.playableBy = ctx.you;
           c.meta.playableUntil = ctx.g.turnNo;
           c.meta.anyColor = true;
@@ -1499,8 +1499,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const names = new Set(ctx.g.bf().filter(c => c.ctrl === ctx.you && c.isToken).map(c => c.name));
           const n = names.size;
           for (let i = 0; i < n && ctx.you.library.length; i++) {
-            const c = ctx.you.library.pop();
-            c.zone = 'exile'; ctx.you.exile.push(c);
+            const c = ctx.you.library[ctx.you.library.length - 1];
+            await ctx.g.move(c, 'exile', { revealFromLibrary: true, revealSource: ctx.src, revealController: ctx.you });
             c.meta = c.meta || {};
             c.meta.playableBy = ctx.you;
             c.meta.playableUntil = 9999;

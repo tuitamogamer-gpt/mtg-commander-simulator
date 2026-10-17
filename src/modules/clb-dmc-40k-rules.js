@@ -18,7 +18,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const plague=token('Plaguebearer of Nurgle',['Demon'],1,3,['B'],[],{explicitTokenName:true,tokenImageName:'Plaguebearer of Nurgle'});
  const reveal=async(ctx,n,p=ctx.you)=>{const cards=p.library.slice(-n).reverse();await ctx.g.revealToHuman({cards,ctrl:p,kind:'reveal'});return cards;};
  const look=async(ctx,n,p=ctx.you)=>{const cards=p.library.slice(-n).reverse();if(!p.isAI&&cards.length)await p.controller.decide(ctx.g,{type:'cardReveal',player:p,cards,kind:'look',private:true});return cards;};
- const exileTop=async(ctx,n,p=ctx.you,opts={})=>{const cards=p.library.slice(-n).reverse(),out=[];for(const c of cards){await ctx.g.move(c,'exile');if(c.zone==='exile'){out.push(c);if(opts.play)C.playGrant(ctx,c,opts);}}return out;};
+ const exileTop=async(ctx,n,p=ctx.you,opts={})=>{const cards=p.library.slice(-n).reverse(),out=[];for(const c of cards){await ctx.g.move(c,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(c.zone==='exile'){out.push(c);if(opts.play)C.playGrant(ctx,c,opts);}}return out;};
  const returnLater=(ctx,c,to='battlefield',ctrl=c.owner,tapped=false)=>{const r=C.row(c);ctx.g.delayed.push({on:'endStep',once:true,src:ctx.src,ctrl:ctx.you,name:ctx.src.name+': return '+c.name,run:next=>C.current(r)&&(to==='battlefield'?next.g.putPermanentOntoBattlefield(c,ctrl,{tapped}):next.g.move(c,to))});};
  const emit=G.emit;
  G.emit=async function(name,data){

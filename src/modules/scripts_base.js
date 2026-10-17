@@ -390,12 +390,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   };
 
-  E.exileTopPlayable = function (g, p, card, n, duration) {
+  E.exileTopPlayable = async function (g, p, card, n, duration) {
     // exile top N, playable until end of (this|next) turn
     const out = [];
     for (let i = 0; i < n && p.library.length; i++) {
-      const c = p.library.pop();
-      c.zone = 'exile'; p.exile.push(c);
+      const c = p.library[p.library.length - 1];
+      await g.move(c, 'exile', { revealFromLibrary: true, revealSource: card, revealController: p });
       c.meta = c.meta || {};
       if (duration === 'next') c.meta.playableUntilOwnTurn = p.turnsStarted + 1;
       else c.meta.playableUntil = g.turnNo;

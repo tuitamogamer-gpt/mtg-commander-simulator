@@ -560,11 +560,11 @@ test('Ponder dozvoljava redoslijed vrha prije izvlačenja', async () => {
   assert.ok(me.library.includes(bottom) && me.library.includes(top));
 });
 
-test('"do kraja tvog sljedećeg poteza" koristi igračev sljedeći potez u multiplayeru', () => {
+test('"do kraja tvog sljedećeg poteza" koristi igračev sljedeći potez u multiplayeru', async () => {
   const { game, players: [me] } = rulesGame();
   me.turnsStarted = 4;
   const top = inLibrary(me, 'Think Twice');
-  MTG.E.exileTopPlayable(game, me, null, 1, 'next');
+  await MTG.E.exileTopPlayable(game, me, null, 1, 'next');
   assert.equal(top.meta.playableUntilOwnTurn, 5);
   assert.equal(top.meta.playableUntil, undefined, 'ne smije isteći nakon samo jednog globalnog turna');
 });
@@ -804,7 +804,7 @@ test('Finale of Promise zaključava graveyard mete i za X≥10 kopira svaki spel
   assert.equal(instant.zone, 'exile');
 });
 
-test('Tectonic Giant stavlja neizabranu kartu na dno, a izabranu čuva do sljedećeg vlastitog poteza', async () => {
+test('Tectonic Giant exiles both top cards and permits only the selected one until the next own turn', async () => {
   const { game, players: [me] } = rulesGame([
     (g, q) => {
       if (q.type === 'chooseOption' && q.aiHint?.kind === 'tectonic') return 'impulse';
@@ -820,8 +820,9 @@ test('Tectonic Giant stavlja neizabranu kartu na dno, a izabranu čuva do sljede
   await resolveAll(game);
   assert.equal(kept.zone, 'exile');
   assert.equal(kept.meta.playableUntilOwnTurn, 4);
-  assert.equal(bottomChoice.zone, 'library');
-  assert.equal(me.library[0], bottomChoice, 'druga karta ide na dno biblioteke');
+  assert.equal(bottomChoice.zone, 'exile');
+  assert.equal(bottomChoice.meta.playableBy, undefined, 'the other card stays exiled without play permission');
+  assert.equal(me.library.length, 0);
 });
 
 test('Theater of Horrors dozvola je vezana za izvor i ability može ciljati planeswalkera', async () => {
