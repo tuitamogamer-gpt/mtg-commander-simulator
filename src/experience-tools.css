@@ -1,12 +1,12 @@
 /* Arena preferences, original sleeves, and public-card search. */
 #game .experiencesettingsov { padding: 24px; align-items: center; }
 #game .quickmenu.experiencesettings {
-  width: min(760px, 100%); max-height: calc(100 * var(--dvhu) - 48px); display: flex; flex-direction: column;
+  width: min(880px, 100%); max-height: min(820px, calc(100 * var(--dvhu) - 48px)); display: flex; flex-direction: column;
   overflow: hidden; border: 1px solid var(--ds-line); border-radius: 20px;
   background: var(--ds-dialog); box-shadow: var(--ds-shadow-dialog);
 }
-#game .experiencesettings .quickmenuhead { padding: 22px 26px 20px; flex: none; background: linear-gradient(115deg, rgba(var(--ds-accent-rgb), .06), transparent 65%); }
-#game .experiencesettings .quickmenuhead h2 { margin: 6px 0 0; font-size: 28px; line-height: 1.15; }
+#game .experiencesettings .quickmenuhead { padding: 18px 26px; flex: none; background: linear-gradient(115deg, rgba(var(--ds-accent-rgb), .06), transparent 65%); }
+#game .experiencesettings .quickmenuhead h2 { margin: 4px 0 0; font-size: 26px; line-height: 1.15; }
 .settingstabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 8px 20px; border-bottom: 1px solid var(--ds-line-soft); flex: none; }
 .settingstab { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 46px; padding: 10px 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ds-muted); font-size: 13px; font-weight: 650; cursor: pointer; }
 .settingstab:hover { background: var(--ds-panel-raised); color: var(--ds-text); }
@@ -14,16 +14,16 @@
 .settingsicon { --settings-icon-size: 21px; width: var(--settings-icon-size); height: var(--settings-icon-size); flex: none; display: grid; place-items: center; color: inherit; }
 .settingsicon .gameicon { display: block; width: var(--settings-icon-size); height: var(--settings-icon-size); margin: 0; }
 .settingsbody { padding: 22px 26px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; scrollbar-gutter: stable; }
-.settingsintro { margin: 0 0 22px; }
+.settingsintro { margin: 0 0 18px; }
 .settingsintro h3 { font: 600 22px/1.2 var(--ds-font-display); color: var(--ds-text); margin: 0 0 7px; letter-spacing: -.025em; }
 .settingsintro p, .settingsnote { margin: 0; font-size: 13px; line-height: 1.65; color: var(--ds-muted); }
-.settingsgroup { margin-top: 24px; }
+.settingsgroup { margin-top: 20px; }
 .settingsgroup h4 { margin: 0 0 10px; color: var(--ds-accent-soft); font-size: 11px; line-height: 1.4; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .settingscontext { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 1px solid var(--ds-line-soft); border-radius: 10px; background: var(--ds-panel); }
 .settingscontext > .settingsicon { color: var(--ds-accent-bright); }
 .settingscontext b { color: var(--ds-text); font-size: 14px; }
 .settingscontext > span:last-child { margin-left: auto; font: 500 12px var(--ds-font-mono); color: var(--ds-muted); }
-#game .quickmenuitem.settingsaction { display: flex; flex-direction: row; align-items: center; width: 100%; gap: 14px; min-height: 70px; padding: 14px 12px; background: transparent; border: 0; border-bottom: 1px solid var(--ds-line-soft); border-radius: 0; text-align: left; color: var(--ds-copy); }
+#game .quickmenuitem.settingsaction { display: flex; flex-direction: row; align-items: center; width: 100%; gap: 14px; min-height: 66px; padding: 12px 4px; background: transparent; border: 0; border-bottom: 1px solid var(--ds-line-soft); border-radius: 0; text-align: left; color: var(--ds-copy); }
 #game .settingsaction:hover { background: rgba(var(--ds-panel-raised-rgb), .7); border-radius: 8px; color: var(--ds-text); }
 #game .settingsaction > .settingsicon:first-child { color: var(--ds-accent-soft); }
 #game .settingsaction > .settingsicon:last-child { --settings-icon-size: 15px; margin-left: auto; color: var(--ds-muted); }
@@ -31,7 +31,7 @@
 #game .settingsactioncopy > span { font-size: 14px; color: var(--ds-text); line-height: 1.35; }
 #game .settingsactioncopy > small { font-size: 12px; line-height: 1.5; color: var(--ds-muted); font-weight: 450; }
 .settingscardbackthumb { width: 31px; height: 44px; object-fit: cover; border-radius: 4px; flex: none; border: 1px solid var(--ds-line); }
-.settingsrow { display: flex; align-items: center; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--ds-line-soft); }
+.settingsrow { display: flex; align-items: center; gap: 24px; padding: 15px 0; border-bottom: 1px solid var(--ds-line-soft); }
 .settingscopy { flex: 1; min-width: 0; }
 .settingscopy > b { display: block; font-size: 14px; color: var(--ds-text); line-height: 1.4; font-weight: 650; }
 .settingscopy > small { display: block; font-size: 12px; line-height: 1.6; color: var(--ds-muted); margin-top: 5px; }
@@ -51,23 +51,39 @@
 .settingsfooter { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 26px; border-top: 1px solid var(--ds-line); background: var(--ds-panel); }
 .settingsstatus { max-width: 350px; margin: 0; font-size: 11px; line-height: 1.6; color: var(--ds-muted); }
 .settingsdone { flex: none; min-width: 146px; }
+@media (min-width: 900px) {
+  #game .quickmenu.experiencesettings { display: grid; grid-template-columns: 176px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  #game .experiencesettings .quickmenuhead, .experiencesettings .settingsfooter { grid-column: 1 / -1; }
+  .experiencesettings .settingstabs { grid-template-columns: 1fr; align-content: start; gap: 6px; padding: 22px 12px; border-bottom: 0; border-right: 1px solid var(--ds-line-soft); background: rgba(var(--ds-panel-raised-rgb), .22); }
+  .experiencesettings .settingstab { justify-content: flex-start; padding: 12px; gap: 10px; }
+  .experiencesettings .settingsbody { min-height: 0; }
+}
 #game .cardbackov { padding: 24px; }
-#game .quickmenu.cardbackpicker { display: flex; flex-direction: column; width: min(800px, 100%); max-height: calc(100 * var(--dvhu) - 48px); border-radius: 20px; overflow: hidden; }
-.cardbackpicker .quickmenuhead { flex: none; padding: 22px 26px; }
-#game .cardbackpicker .quickmenuhead h2 { margin: 6px 0 0; font-size: 30px; }
-.cardbackbody { padding: 20px 26px; overflow-y: auto; overscroll-behavior: contain; }
-.cardbackintro { font-size: 14px; line-height: 1.65; color: var(--ds-muted); margin: 0 0 22px; max-width: 480px; }
-.cardbackgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-.cardbackchoice { min-width: 0; display: flex; align-items: center; flex-direction: column; padding: 8px 8px 12px; border: 1px solid transparent; border-radius: 14px; background: transparent; color: var(--ds-text); cursor: pointer; transition: background var(--ds-t-base), border-color var(--ds-t-base); }
+#game .quickmenu.cardbackpicker { display: flex; flex-direction: column; width: min(840px, 100%); max-height: calc(100 * var(--dvhu) - 48px); border-radius: 20px; overflow: hidden; }
+.cardbackpicker .quickmenuhead { flex: none; padding: 18px 26px; }
+#game .cardbackpicker .quickmenuhead h2 { margin: 4px 0 0; font-size: 26px; }
+.cardbackbody { min-height: 0; padding: 26px; overflow-y: auto; overscroll-behavior: contain; }
+.cardbackshowcase { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 34px; align-items: center; }
+.cardbackhero { margin: 0; text-align: center; }
+.cardbackheroimage { display: block; width: 210px; max-width: 100%; height: auto; aspect-ratio: 5 / 7; margin: 0 auto; object-fit: cover; border-radius: 10px; box-shadow: 0 18px 36px rgba(0,0,0,.4); }
+.cardbackcaption { margin-top: 22px; }
+.cardbackeyebrow { display: block; color: var(--ds-accent-soft); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.cardbackcaption h3 { margin: 6px 0; font: 600 26px/1.2 var(--ds-font-display); color: var(--ds-text); letter-spacing: -.025em; }
+.cardbackcaption p { margin: 0; font-size: 12px; line-height: 1.6; color: var(--ds-muted); }
+.cardbackoptiontitle { margin: 0 0 6px; font: 600 20px/1.2 var(--ds-font-display); color: var(--ds-text); }
+.cardbackintro { font-size: 13px; line-height: 1.65; color: var(--ds-muted); margin: 0 0 18px; }
+.cardbackgrid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.cardbackchoice { min-width: 0; display: flex; align-items: center; gap: 14px; padding: 10px; border: 1px solid var(--ds-line-soft); border-radius: 12px; background: transparent; color: var(--ds-text); cursor: pointer; text-align: left; transition: background var(--ds-t-base), border-color var(--ds-t-base); }
 .cardbackchoice:hover { background: var(--ds-panel-raised); }
 .cardbackchoice[aria-pressed='true'] { background: rgba(var(--ds-accent-rgb), .06); border-color: var(--ds-accent); }
-.cardbackpreview { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 8px; box-shadow: 0 12px 25px rgba(0,0,0,.3); transition: transform var(--ds-t-base); }
+.cardbackpreview { display: block; width: 48px; height: auto; flex: none; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 4px; box-shadow: 0 6px 12px rgba(0,0,0,.3); transition: transform var(--ds-t-base); }
 .cardbackchoice:hover .cardbackpreview { transform: translateY(-3px); }
-.cardbackchoice b { margin-top: 16px; font: 600 20px var(--ds-font-display); letter-spacing: -.025em; }
-.cardbackchoice small { min-height: 34px; margin: 6px 0 10px; font-size: 11px; line-height: 1.6; color: var(--ds-muted); }
-.cardbackselected { min-width: 76px; padding: 7px 12px; border: 1px solid var(--ds-line); border-radius: 20px; font-size: 11px; line-height: 1.1; font-weight: 700; color: var(--ds-muted); }
-[aria-pressed='true'] > .cardbackselected { border-color: var(--ds-accent); color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb),.08); }
-.cardbackstatus { margin: 20px 0 0; color: var(--ds-muted); font-size: 12px; line-height: 1.6; }
+.cardbackchoicecopy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 5px; }
+.cardbackchoice b { font: 600 17px var(--ds-font-display); letter-spacing: -.025em; }
+.cardbackchoice small { font-size: 12px; line-height: 1.5; color: var(--ds-muted); }
+.cardbackselected { font-size: 11px; font-weight: 650; color: var(--ds-muted); }
+[aria-pressed='true'] > .cardbackselected { color: var(--ds-accent-bright); }
+.cardbackstatus { margin: 22px 0 0; color: var(--ds-muted); font-size: 12px; line-height: 1.6; text-align: center; }
 .cardbackfooter { display: flex; justify-content: space-between; gap: 12px; padding: 16px 26px; border-top: 1px solid var(--ds-line); background: var(--ds-panel); flex: none; }
 .cardbackfooter button { min-width: 120px; }
 .commandpaletteov { padding-top: max(24px, calc(9 * var(--dvhu))); }
@@ -108,17 +124,17 @@ body.reduced-motion :is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled
 @media (max-width: 700px) {
   #game .experiencesettingsov, #game .cardbackov { padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)); }
   #game .quickmenu.experiencesettings, #game .quickmenu.cardbackpicker { width: 100%; max-height: calc(100 * var(--dvhu) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); border-radius: 15px; }
-  #game .experiencesettings .quickmenuhead, .cardbackpicker .quickmenuhead { padding: 18px 16px; }
-  #game .experiencesettings .quickmenuhead h2, #game .cardbackpicker .quickmenuhead h2 { font-size: 25px; }
-  .settingstabs { padding: 8px; gap: 2px; }
-  .settingstab { flex-direction: column; gap: 4px; padding: 8px 3px; font-size: 11px; }
-  .settingstab .settingsicon { --settings-icon-size: 18px; }
-  .settingsbody { padding: 20px 16px; }
+  #game .experiencesettings .quickmenuhead, .cardbackpicker .quickmenuhead { padding: 14px 16px; }
+  #game .experiencesettings .quickmenuhead h2, #game .cardbackpicker .quickmenuhead h2 { font-size: 24px; }
+  .settingstabs { padding: 6px 8px; gap: 2px; }
+  .settingstab { gap: 4px; padding: 8px 3px; font-size: 12px; }
+  .settingstab .settingsicon { display: none; }
+  .settingsbody { padding: 18px 16px; }
   .settingsintro { margin-bottom: 18px; }
   .settingsintro h3 { font-size: 21px; }
   .settingsintro p { font-size: 12px; }
   .settingsgroup { margin-top: 20px; }
-  .settingsrow { gap: 12px; padding: 17px 0; }
+  .settingsrow { gap: 12px; padding: 14px 0; }
   .settingsselect { width: 112px; padding: 10px 7px; }
   .settingscopy > b { font-size: 13px; }
   .settingscopy > small { font-size: 12px; }
@@ -130,15 +146,22 @@ body.reduced-motion :is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled
   .settingsfooter { flex-direction: column-reverse; padding: 12px 16px; gap: 8px; }
   .settingsdone { width: 100%; }
   .settingsstatus { font-size: 11px; text-align: center; min-height: 18px; }
-  .cardbackbody { padding: 18px 12px; }
-  .cardbackintro { font-size: 13px; padding: 0 4px; margin-bottom: 20px; }
-  .cardbackgrid { gap: 4px; }
-  .cardbackchoice { padding: 5px 5px 12px; border-radius: 10px; }
+  .cardbackbody { padding: 20px 16px 16px; }
+  .cardbackshowcase { grid-template-columns: 1fr; gap: 24px; }
+  .cardbackhero { display: flex; align-items: center; gap: 20px; text-align: left; }
+  .cardbackheroimage { width: 42%; max-width: 150px; flex: none; margin: 0; border-radius: 7px; }
+  .cardbackcaption { margin: 0; }
+  .cardbackcaption h3 { font-size: 25px; }
+  .cardbackoptiontitle { font-size: 18px; }
+  .cardbackintro { font-size: 12px; margin-bottom: 14px; }
+  .cardbackgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .cardbackchoice { flex-direction: column; gap: 10px; padding: 10px 4px; border-radius: 10px; text-align: center; }
+  .cardbackchoicecopy { flex: none; }
+  .cardbackchoice small { display: none; }
   .cardbackpreview { border-radius: 5px; }
-  .cardbackchoice b { font-size: 17px; margin-top: 13px; }
-  .cardbackchoice small { font-size: 10px; min-height: 48px; margin: 7px 0; }
-  .cardbackselected { min-width: 62px; padding: 7px 8px; font-size: 10px; }
-  .cardbackstatus { padding: 0 4px; }
+  .cardbackchoice b { font-size: 15px; }
+  .cardbackselected { font-size: 11px; }
+  .cardbackstatus { margin-top: 16px; font-size: 11px; }
   .cardbackfooter { padding: 14px 16px; }
   .cardbackfooter button { flex: 1; min-width: 0; }
   .commandpaletteov { padding: max(10px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom)); }

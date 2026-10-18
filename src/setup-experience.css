@@ -395,3 +395,173 @@
   #setup .mainmenu .mainmenu-featured-deck .mainmenu-deck-art > img { transition: none; }
 }
 body.reduced-motion #setup .mainmenu .mainmenu-featured-deck .mainmenu-deck-art > img { transition: none; }
+
+/* Refined setup composition: artwork first, one introduction per step. */
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions { max-width: 480px; gap: 4px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions .mainmenu-primary { min-height: 76px; margin-bottom: 8px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions :is(.mainmenu-import-action, .mainmenu-secondary) { min-height: 60px; padding: 12px 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions :is(.mainmenu-import-action, .mainmenu-secondary):hover { color: var(--ds-accent-bright); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-cardfan { height: 370px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-card { max-width: 230px; }
+#setup[data-app-view="setup"][data-setup-stage] .menuhead { max-width: 1376px; margin: 0 auto !important; padding: 18px 32px 20px !important; }
+#setup[data-app-view="setup"] .setuphero { padding-top: 14px !important; }
+#setup[data-app-view="setup"] .setuphero .title { font-size: clamp(30px, calc(3 * var(--vwu)), 42px) !important; }
+#setup[data-setup-stage="deck"] .deckexplorerhead { align-items: flex-start; gap: 14px; margin: 0; }
+#setup .deckexplorerhead .deckdiscovery { flex: 1; margin: 0; padding: 0; border: 0; background: transparent; }
+#setup .deckdiscovery > summary { min-height: 44px; }
+#setup .deckdiscovery > summary span { margin-left: 12px; }
+#setup .deckexploreractions { flex: none; }
+#setup .deckexplorerhead:has(.deckdiscovery[open]) { position: relative; display: block; }
+#setup .deckexplorerhead:has(.deckdiscovery[open]) .deckexploreractions { position: absolute; right: 0; top: 0; }
+#setup .deckdiscovery[open] > summary { padding-right: 145px; }
+#setup .surprisedeck { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border-color: var(--ds-line-soft); }
+#setup .surprisedeck .gameicon { width: 17px; height: 17px; }
+#setup .decktoolbar { padding-top: 8px; }
+#setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+#setup[data-deck-view="gallery"] .deckvisual { order: 1; padding: 0; border: 0; }
+#setup[data-deck-view] .deckportraits { gap: 0; }
+#setup[data-deck-view="gallery"] .deckportraits { height: 176px; }
+#setup[data-deck-view] .deckart { width: 100% !important; height: 100% !important; aspect-ratio: auto; object-fit: cover !important; border-radius: 0 !important; flex: 1; }
+#setup[data-deck-view] .deckvisual.partners .deckart { max-width: 50%; }
+#setup[data-deck-view="gallery"] .deckcardheading { order: 2; min-height: 80px; padding: 14px 14px 0; gap: 7px; background: transparent; }
+#setup[data-deck-view="gallery"] .deckname { font-size: 19px !important; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+#setup[data-deck-view="gallery"] .deckinfo { order: 3; gap: 6px; padding: 10px 14px 16px !important; }
+#setup[data-deck-view="gallery"] .deckcmd { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
+#setup[data-deck-view="gallery"] .deckstyle { min-height: 3em; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+#setup[data-deck-view="gallery"] :is(.deckset, .deckopen) { display: none !important; }
+#setup[data-deck-view="gallery"] .deckexperience { padding: 0; border: 0; color: var(--ds-muted); }
+#setup[data-deck-view="gallery"] .deckfavorite { top: 8px; right: 8px; background: rgba(var(--ds-table-rgb), .88); border: 1px solid rgba(255,255,255,.18); border-radius: 50%; }
+#setup[data-deck-view="gallery"] .deckfavorite[aria-pressed="true"] { background: var(--ds-table); border-color: var(--ds-accent); }
+#setup[data-deck-view="compact"] .deckvisual { padding: 0; }
+#setup[data-deck-view="compact"] .deckportraits { height: 100%; }
+
+/* Commander and mode share a compact introduction; opponents precede presets. */
+#setup[data-setup-stage="pod"] .setupgrid { padding: 24px 32px !important; }
+#setup[data-setup-stage="pod"] .setupright.mobile-open { max-width: 1000px; padding: 24px !important; }
+#setup .podseatintro { display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: start; gap: 24px; padding-bottom: 22px; margin-bottom: 20px; border-bottom: 1px solid var(--ds-line-soft); }
+#setup .podseatintro .cmdbox { display: grid; grid-template-columns: minmax(0, 1fr) 144px; gap: 8px 12px; margin: 0; padding: 0 !important; border: 0 !important; background: transparent !important; }
+#setup .podseatintro .selecteddecksummary { grid-column: 1; padding: 0; margin: 0; border: 0; background: transparent; }
+#setup .podseatintro .selecteddecksummary em, #setup .podseatintro .cmdhint, #setup .podseatintro .cmdchiptype { display: none; }
+#setup .podseatintro .cmdchosen { grid-column: 1; display: flex; flex-wrap: wrap; gap: 10px; }
+#setup .podseatintro .cmdchip { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; }
+#setup .podseatintro .cmdchip img { width: 44px !important; height: 52px !important; object-fit: cover; border-radius: 6px; }
+#setup .podseatintro .cmdchipname { font-size: 13px; }
+#setup .podseatintro .cmdbadge { margin-top: 4px; }
+#setup .podseatintro .cmdbox > .pbtn { grid-column: 2; grid-row: 1 / 3; align-self: center; min-height: 44px; width: auto; margin: 0; padding-inline: 10px; }
+#setup .podseatintro .matchtype { margin: 0; padding: 0 !important; border: 0 !important; background: transparent !important; }
+#setup .podseatintro .matchtypecopy b, #setup .podseatintro .matchtypebtn small { display: none; }
+#setup .podseatintro .matchtypecopy span { font-size: 11px; }
+#setup .podseatintro .matchtypechoices { gap: 8px; margin-top: 10px; }
+#setup .podseatintro .matchtypebtn { min-height: 44px; padding: 11px 8px; border-radius: 8px; }
+#setup .podseatintro .matchtypebtn strong { font-size: 13px; }
+#setup .opponentcount { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0; margin: 12px 0 20px; }
+#setup .opponentcount .pbtn { min-height: 44px; }
+#setup .botloadoutslabel { display: none; }
+#setup .botconfig { padding: 16px 0; border: 0; border-bottom: 1px solid var(--ds-line-soft); border-radius: 0; background: transparent; }
+#setup .botstylerow { gap: 14px; }
+#setup .podpresets { margin: 20px 0 16px; padding: 0; border: 0; }
+#setup .podpresets > div:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+#setup .podpresets > div:first-child > b { font-size: 13px; }
+#setup .podpresetchips { margin-top: 12px; }
+#setup .podpresetchips button { min-height: 66px; padding: 12px; background: transparent; }
+#setup .podpresetchips button b { font-size: 13px; }
+#setup .podpresetchips button small { font-size: 11px; }
+#setup .customskillsbutton { background: transparent; border-color: var(--ds-line-soft); }
+
+/* Review reads as a pod and a short rules summary, without repeated panels. */
+#setup .ct-review-art { height: 190px; }
+#setup .ct-review-copy { padding: 16px; gap: 5px; }
+#setup .ct-review-seat .reviewstyle { border: 0; border-radius: 0; font-size: 11px; }
+#setup .ct-review-random .review-cardback { width: 102px; height: 143px; margin: auto; }
+#setup .ct-review-random { gap: 6px; }
+#setup .reviewrules { gap: 0; margin-block: 20px; padding: 14px 0; }
+#setup .reviewrules > div { padding: 4px 16px; border: 0; border-right: 1px solid var(--ds-line-soft); border-radius: 0; background: transparent; }
+#setup .reviewrules > div:first-child { padding-left: 0; }
+#setup .reviewrules > div:last-child { border-right: 0; }
+#setup .reviewrules dt { font-size: 11px; letter-spacing: .06em; }
+#setup .reviewrules dd { margin-top: 6px; }
+#setup .deckspotlightvisual { min-height: 380px; }
+#setup .deckspotlightintro { padding: 26px; }
+#setup .deckspotlightintro h2 { font-family: var(--ds-font-display); font-weight: 650; }
+
+@media (min-width: 1001px) {
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 72px; }
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 900px) {
+  #setup .podseatintro { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  #setup .podseatintro .matchtype { grid-row: 1; }
+  #setup .podseatintro .matchtypecopy { display: none; }
+  #setup .podseatintro .matchtypechoices { margin-top: 0; }
+  #setup .reviewrules > div { padding: 10px 14px; border-right: 0; border-bottom: 1px solid var(--ds-line-soft); }
+  #setup .reviewrules > div:nth-child(odd) { padding-left: 0; }
+}
+@media (max-width: 700px) {
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions { gap: 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions .mainmenu-primary { min-height: 74px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan { height: 230px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-card { max-width: 140px; }
+  #setup[data-app-view="setup"][data-setup-stage] .menuhead { padding: 12px 14px 16px !important; }
+  #setup[data-app-view="setup"] .setuphero { padding-top: 10px !important; }
+  #setup .deckdiscovery > summary { display: list-item; font-size: 12px; }
+  #setup .deckdiscovery > summary span { margin-left: 0; width: 100%; font-size: 10px; }
+  #setup .deckexploreractions { align-self: flex-start; }
+  #setup .surprisedeck { padding-inline: 10px; }
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  #setup[data-deck-view="gallery"] .deckentry:has(.deckvisual.partners) { grid-column: auto; }
+  #setup[data-deck-view="gallery"] .deckportraits,
+  #setup[data-deck-view="gallery"] .deckvisual.partners .deckportraits { height: 136px; gap: 0; }
+  #setup[data-deck-view="gallery"] .deckcardheading { min-height: 73px; padding: 12px 11px 0; gap: 6px; }
+  #setup[data-deck-view="gallery"] .deckname { font-size: 16px !important; }
+  #setup[data-deck-view="gallery"] .deckinfo { padding: 9px 11px 13px !important; }
+  #setup[data-deck-view="gallery"] .deckfavorite { top: 6px; right: 6px; }
+  #setup[data-setup-stage="pod"] .setupgrid { padding: 16px 12px !important; }
+  #setup[data-setup-stage="pod"] .setupright.mobile-open { padding: 16px !important; }
+  #setup .podseatintro { gap: 16px; padding-bottom: 16px; margin-bottom: 16px; }
+  #setup .podseatintro .cmdbox { grid-template-columns: minmax(0, 1fr) 112px; }
+  #setup .podseatintro .cmdchipname { font-size: 12px; }
+  #setup .podseatintro .selecteddecksummary b { font-size: 19px; }
+  #setup .podseatintro .cmdbox > .pbtn { padding-inline: 8px; font-size: 11px; }
+  #setup .podseatintro .cmdbox:has(.cmdchip:nth-child(2)) { grid-template-columns: minmax(0, 1fr); }
+  #setup .podseatintro .cmdbox:has(.cmdchip:nth-child(2)) .cmdchosen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #setup .podseatintro .cmdbox:has(.cmdchip:nth-child(2)) > .pbtn { grid-column: 1; grid-row: auto; justify-self: start; }
+  #setup .podseatintro .cmdbox:has(.cmdchip:nth-child(2)) .selecteddecksummary b { white-space: normal; }
+  #setup .botconfig { padding: 16px 0; }
+  #setup .botfields { gap: 8px; }
+  #setup .podpresets > div:first-child { align-items: flex-start; flex-direction: column; gap: 4px; }
+  #setup .podpresetchips button { padding: 10px; min-height: 72px; }
+  #setup .podpresetchips button b { font-size: 12px; }
+  #setup .podpresetchips button small { font-size: 11px; }
+  #setup .deckspotlighthero { grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 20px 16px; }
+  #setup .deckspotlightintro { display: contents; }
+  #setup .deckspotlightvisual { grid-column: 1; grid-row: 1; min-height: 0; padding: 0; border: 0; background: transparent; align-self: center; }
+  #setup .deckspotlightcommanders { gap: 5px; }
+  #setup .deckspotlightcommanderart { width: 120px; border-radius: 7px; }
+  #setup .deckspotlightcommanderart > span { padding: 6px; font-size: 10px; }
+  #setup .deckspotlightpicked, #setup .deckspotlightkicker { display: none; }
+  #setup .deckspotlightidentity { grid-column: 2; grid-row: 1; align-self: center; min-width: 0; }
+  #setup .deckspotlightmana { margin-top: 0; }
+  #setup .deckspotlightmana img { width: 20px; height: 20px; }
+  #setup .deckspotlightintro h2 { font-size: 28px; line-height: 1.08; margin-top: 10px; }
+  #setup .deckspotlightcommander { margin-top: 10px; font-size: 12px; }
+  #setup .deckspotlighttheme { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.6; }
+  #setup .deckspotlightbadges { grid-column: 1 / -1; margin: 0; gap: 6px; }
+  #setup .deckspotlightbadges span { padding: 5px 8px; font-size: 11px; }
+  #setup .deckspotlightbadges span:last-child { padding-inline: 0; border-color: transparent; background: transparent; }
+  #setup .deckspotlightstats { grid-column: 1 / -1; margin: 0; padding-top: 14px; gap: 10px; }
+  #setup .deckspotlightstats b { font-size: 24px; }
+  #setup .deckspotlightstats span { font-size: 11px; }
+}
+@media (max-width: 600px) {
+  #setup .ct-review-seat { grid-template-columns: 72px minmax(0, 1fr) 58px; min-height: 114px; }
+  #setup .ct-review-art { width: 72px; height: 100%; min-height: 114px; }
+  #setup .ct-review-copy { padding: 10px; gap: 4px; }
+  #setup .ct-review-copy > b { font-size: 18px; }
+  #setup .ct-review-random .review-cardback { width: 52px; height: 73px; }
+  #setup .reviewrules { margin-block: 14px; padding-block: 4px; }
+  #setup .reviewrules > div { padding-block: 10px; }
+  #setup .reviewrules dt { font-size: 10px; }
+  #setup .reviewrules dd { font-size: 12px; }
+}

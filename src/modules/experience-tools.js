@@ -21,6 +21,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const persist = (key, value) => {
     try { localStorage.setItem(key, String(value)); return true; } catch { return false; }
   };
+  // One listener for the module; no listeners retained by discarded dialogs.
+  const wideSettings = globalThis.matchMedia?.('(min-width: 900px)');
+  const settingsOrientation = () => wideSettings?.matches ? 'vertical' : 'horizontal';
+  wideSettings?.addEventListener('change', () => {
+    document.querySelectorAll('.settingstabs').forEach(tabs => tabs.setAttribute('aria-orientation', settingsOrientation()));
+  });
   const originalMenu = U.UI.prototype.renderQuickMenu;
   U.UI.prototype.renderQuickMenu = function (game) {
     if (this.quickMenuOpen === 'cardbacks') return this.renderCardBacks();
@@ -36,7 +42,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const actions = new Map([...originalList.querySelectorAll('.quickmenuitem')].map(button => [button.querySelector('span')?.textContent, button]));
     originalList.remove();
     const heading = panel.querySelector('.quickmenuhead h2');
-    heading.textContent = 'Your table, your way';
+    heading.textContent = 'Settings';
     const close = panel.querySelector('.quickmenuclose');
     const dismiss = () => {
       if (!isCurrent()) return;
@@ -53,6 +59,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ui.arenaSettingsTab = current;
     const navigation = node('div', 'settingstabs');
     navigation.setAttribute('role', 'tablist'); navigation.setAttribute('aria-label', 'Arena settings');
+    navigation.setAttribute('aria-orientation', settingsOrientation());
     const body = node('section', 'settingsbody');
     body.id = 'arena-settings-panel'; body.setAttribute('role', 'tabpanel');
     body.setAttribute('aria-labelledby', `arena-settings-${current}`);
@@ -74,10 +81,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     navigation.addEventListener('keydown', event => {
       const buttons = [...navigation.querySelectorAll('button')];
       const index = buttons.indexOf(document.activeElement);
-      if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      const arrows = settingsOrientation() === 'vertical' ? ['ArrowUp', 'ArrowDown'] : ['ArrowLeft', 'ArrowRight'];
+      if (index < 0 || ![...arrows, 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
       const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1
-        : (index + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+        : (index + (event.key === arrows[1] ? 1 : -1) + buttons.length) % buttons.length;
       buttons[next].click();
     });
     const intro = (title, detail) => {
@@ -99,7 +107,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       button.replaceChildren(icon(symbol), copy, icon('next'));
       button.classList.add('settingsaction'); parent.appendChild(button);
     };
-    const status = node('p', 'settingsstatus', ui._settingsFeedback || 'Appearance and controls are saved on this device.');
+    const status = node('p', 'settingsstatus', ui._settingsFeedback || 'Saved on this device');
     status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
     const change = (id, label, run) => {
       if (!isCurrent()) return;
@@ -203,22 +211,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ui = this, overlay = node('div', 'quickmenuov cardbackov'), panel = node('section', 'quickmenu cardbackpicker');
     const game = ui.game, isCurrent = () => overlay.isConnected && ui.quickMenuOpen === 'cardbacks' && ui.game === game;
     const head = node('header', 'quickmenuhead'), title = node('div', '');
-    title.append(node('span', '', 'Choose your signature'), node('h2', '', 'Card backs'));
+    title.append(node('span', '', 'Table style'), node('h2', '', 'Card backs'));
     const dismiss = () => { if (!isCurrent()) return; ui.quickMenuOpen = false; ui.render(); document.querySelector('.menubutton')?.focus({ preventScroll: true }); };
     const close = node('button', 'quickmenuclose', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close card backs'); close.onclick = dismiss;
     head.append(title, close);
     const body = node('div', 'cardbackbody');
-    body.appendChild(node('p', 'cardbackintro', 'Three original designs. One signature for your hidden cards and library reveals.'));
+    const showcase = node('div', 'cardbackshowcase');
+    const preview = node('figure', 'cardbackhero');
+    const heroArt = node('img', 'cardbackheroimage'); heroArt.width = 600; heroArt.height = 840; heroArt.decoding = 'async';
+    const caption = node('figcaption', 'cardbackcaption');
+    const heroName = node('h3', ''), heroDetail = node('p', '');
+    caption.append(node('span', 'cardbackeyebrow', 'Your card back'), heroName, heroDetail);
+    preview.append(heroArt, caption);
     const grid = node('div', 'cardbackgrid'); grid.setAttribute('role', 'group'); grid.setAttribute('aria-label', 'Card back designs');
+    const choices = node('div', 'cardbackoptions');
+    choices.append(node('h3', 'cardbackoptiontitle', 'Choose a design'), node('p', 'cardbackintro', 'For your hidden cards and library reveals.'), grid);
     const status = node('p', 'cardbackstatus', 'Applied immediately · saved on this device'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
-    const update = () => grid.querySelectorAll('button').forEach(button => {
-      const selected = button.dataset.cardBack === U.selectedCardBack().id;
-      button.setAttribute('aria-pressed', String(selected)); button.querySelector('.cardbackselected').textContent = selected ? 'Selected' : 'Select';
-    });
+    const update = () => {
+      const back = U.selectedCardBack();
+      // Arena reconciliation may reuse an already-decoded image from the
+      // previous settings sheet. Always update the image in this preview.
+      const image = preview.querySelector('.cardbackheroimage');
+      image.src = back.url; image.alt = `${back.label} card back preview`;
+      heroName.textContent = back.label; heroDetail.textContent = back.detail;
+      grid.querySelectorAll('button').forEach(button => {
+        const selected = button.dataset.cardBack === back.id;
+        button.setAttribute('aria-pressed', String(selected)); button.querySelector('.cardbackselected').textContent = selected ? 'Selected' : 'Select';
+      });
+    };
     for (const back of U.CARD_BACKS) {
       const button = node('button', 'cardbackchoice'); button.type = 'button'; button.dataset.cardBack = back.id; button.setAttribute('aria-label', `${back.label} card back`);
       const art = node('img', 'cardbackpreview'); art.src = back.url; art.alt = ''; art.width = 600; art.height = 840; art.decoding = 'async';
-      button.append(art, node('b', '', back.label), node('small', '', back.detail), node('span', 'cardbackselected'));
+      const copy = node('span', 'cardbackchoicecopy'); copy.append(node('b', '', back.label), node('small', '', back.detail));
+      button.append(art, copy, node('span', 'cardbackselected'));
       button.onclick = () => {
         if (!isCurrent()) return;
         const saved = U.selectCardBack(back.id); update();
@@ -226,9 +251,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       grid.appendChild(button);
     }
-    update(); body.append(grid, status);
+    update(); showcase.append(preview, choices); body.append(showcase, status);
     const foot = node('footer', 'cardbackfooter');
-    const back = node('button', 'pbtn cardbackback', 'Arena controls'); back.type = 'button';
+    const back = node('button', 'pbtn cardbackback', 'Back to settings'); back.type = 'button';
     back.onclick = () => { if (!isCurrent()) return; ui.arenaSettingsTab = 'appearance'; ui.quickMenuOpen = true; ui.render(); document.querySelector('.cardbacksopen')?.focus({ preventScroll: true }); };
     const done = node('button', 'pbtn primary cardbackdone', 'Done'); done.type = 'button'; done.onclick = dismiss;
     foot.append(back, done); panel.append(head, body, foot); overlay.appendChild(panel);
