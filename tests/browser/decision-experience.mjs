@@ -65,6 +65,35 @@ async function expectOneModal() {
     .filter(node => node.getClientRects().length && !node.closest('[inert], [aria-hidden="true"]')).length), 1);
 }
 
+async function mergedInspection() {
+  await page.evaluate(async () => {
+    const ui = _ui, g = _game, me = ui.me, controller = me.controller;
+    ui.clearInspectionViews(); ui.pendings = [];
+    const host = new MTG.CardInst(MTG.DEFS['Grizzly Bears'], me), incoming = new MTG.CardInst(MTG.DEFS['Glowstone Recluse'], me);
+    host.zone = 'battlefield'; host.sick = false; g.battlefield.push(host);
+    incoming.zone = 'hand'; me.hand.push(incoming); me.pool.G = 4; me.pool.C = 10; g.recalc();
+    me.controller = { decide: async (_game, q) => {
+      if (q.type === 'chooseTargets') return [host];
+      if (q.type === 'chooseOption' && q.aiHint?.kind === 'mutateOrder') return 'over';
+      if (q.type === 'orderTriggers') return q.triggers;
+      if (q.type === 'chooseManaSources') return { cards: q.suggested };
+      if (q.type === 'priority') return { kind: 'pass' };
+      if (q.type === 'effectReview' || q.type === 'cardReveal') return null;
+      throw Error(`Unexpected mutate fixture question: ${q.type}`);
+    } };
+    try {
+      const cast = await g.castSpell(me, incoming, { alt: incoming.def.altCosts.find(option => option.mutate) });
+      if (!cast) throw Error('Paid mutation failed');
+      for (let n = 0; n < 20 && (g.stack.length || g.pendingTriggers.length); n++) {
+        await g.flushTriggers(); if (g.stack.length) await g.resolveTop();
+      }
+      if (incoming.zone !== 'merged' || host.mutateState?.components.length !== 2 || !incoming.castMeta.manaSpent) throw Error('Real merged permanent was not created');
+    } finally { me.controller = controller; }
+    question({ type: 'chooseX', min: 0, max: 40, suggested: 3 });
+    ui.sheet = { card: host }; ui.render();
+  });
+}
+
 async function checkRows(selector, name, width) {
   await page.waitForSelector(`${selector} .bigcard`);
   await page.locator(`${selector} img`).evaluateAll(async nodes => {
@@ -79,11 +108,12 @@ async function checkRows(selector, name, width) {
       const a = cards[i], b = cards[j];
       if (Math.min(a.right, b.right) > Math.max(a.x, b.x) + 1 && Math.min(a.bottom, b.bottom) > Math.max(a.y, b.y) + 1) overlaps.push([a.name, b.name]);
     }
-    return { overlaps, count: cards.length, overflow: document.documentElement.scrollWidth > innerWidth + 1 };
+    return { overlaps, count: cards.length, rows: new Set(cards.map(card => Math.round(card.y))).size, overflow: document.documentElement.scrollWidth > innerWidth + 1 };
   });
   assert.equal(layout.count, name === 'zone' ? 5 : 7);
   assert.deepEqual(layout.overlaps, [], `${width}px ${name} cards must not overlap`);
   assert.equal(layout.overflow, false);
+  if (width >= 1024 && name === 'card-choice') assert.equal(layout.rows, 1, 'Seven desktop choices fit in one row');
   await shot(`${name}-${width}-top`);
   await page.locator(`${selector} .bigcard`).last().focus();
   assert.equal(await page.locator(selector).evaluate(grid => {
@@ -104,14 +134,30 @@ try {
     await page.evaluate(() => { _ui.zoneBrowse = { player: _ui.me, zone: 'graveyard' }; _ui.render(); });
     await checkRows('.zonebrowsergrid', 'zone', width);
     await page.evaluate(() => question({ type: 'chooseCards', min: 1, max: 2, from: _ui.me.hand, prompt: 'Choose up to two cards to discard' }));
+    assert.equal(await page.locator('.selectionfooter .pbtn.primary').isDisabled(), true);
+    await page.locator('.cardselectionmodal .bigcard').nth(1).focus(); await page.keyboard.press('Space');
+    assert.equal(await page.locator('.selectionfooter .pbtn.primary').isDisabled(), false);
+    assert.equal(await page.locator('.bigcard[aria-pressed="true"]').count(), 1);
     await checkRows('.cardselectionmodal .cardgrid', 'card-choice', width);
     await page.evaluate(() => question({ type: 'scry', cards: _ui.me.hand }));
     await checkRows('.scrydecision .cardgrid', 'scry', width);
 
     await page.evaluate(() => {
       question({ type: 'chooseX', min: 0, max: 40, suggested: 3 });
-      _ui.sheet = { card: _ui.me.hand[0] }; _ui.render();
+      _ui.sheet = { card: _game.players[1].commander }; _ui.render();
     });
+    const inspection = await page.locator('.cardinspection').evaluate(panel => {
+      const rect = node => { const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, bottom: r.bottom }; };
+      return { panel: rect(panel), identity: rect(panel.querySelector('.cardinspectionidentity')), art: rect(panel.querySelector('.sheetimg')), footer: rect(panel.querySelector('.cardinspectionactions')) };
+    });
+    if (width <= 620) {
+      assert.ok(inspection.identity.width >= inspection.panel.width - 40, 'Mobile card heading uses the sheet width');
+      assert.ok(inspection.identity.bottom <= inspection.art.y + 1, 'Mobile card identity precedes art and rules');
+    }
+    assert.ok(inspection.footer.bottom <= height + 1, 'Inspection actions remain visible');
+    await shot(`inspection-${width}`);
+    await page.locator('.cardinspectionzoom').click(); await expectPending(3); await shot(`inspection-expanded-${width}`);
+    await page.locator('.cardinspectionzoom').click(); await expectPending(3);
     await page.locator('.cardinspectionclose').focus(); await page.keyboard.press('ArrowRight');
     await expectPending(3); await expectOneModal();
     await page.keyboard.press('?'); await page.locator('.helpguide').waitFor({ state: 'visible' });
@@ -132,6 +178,46 @@ try {
     await page.locator('[data-decision-type="chooseX"] .pbtn.primary').click();
     await page.waitForFunction(() => window.answers === 1); assert.equal(await page.evaluate(() => window.answer), 4);
     check(`inspection/help/menu own keyboard input and preserve the exact X decision at ${width}px`);
+    await page.evaluate(() => {
+      _game.log = [
+        { t: 7, msg: 'You play Command Tower.' }, { t: 7, msg: 'You cast Arcane Signet.' },
+        { t: 7, msg: 'Arcane Signet resolves.' }, { t: 7, msg: 'AI Raven attacks you with Etali, Primal Storm.' },
+        { t: 7, msg: 'Etali, Primal Storm triggers: exile the top card of each player’s library.' },
+        { t: 8, msg: 'Your turn. Untap your permanents.' }, { t: 8, msg: 'You draw a card.' },
+        { t: 8, msg: 'You cast Swords to Plowshares targeting Etali, Primal Storm.' },
+        { t: 8, msg: 'Etali, Primal Storm is exiled. AI Raven gains 6 life.' },
+      ];
+      _ui.showLog = true; _ui.render();
+    });
+    const log = await page.locator('.activitylog').boundingBox();
+    assert.ok(log.x >= 0 && log.y >= 0 && log.x + log.width <= width && log.y + log.height <= height);
+    if (width >= 1024) assert.ok(log.height <= 760 && log.width <= 800, 'Desktop log has a restrained reading surface');
+    await shot(`log-${width}`); await page.locator('.logsearch').fill('Etali');
+    assert.equal(await page.locator('.activitylog .logline').count(), 4); await expectOneModal();
+    check(`log stays readable, bounded, and searchable at ${width}px`);
+
+    await mergedInspection();
+    assert.equal(await page.locator('.cardinspectiondetails .mutate-components').count(), 1);
+    const merged = await page.locator('.cardinspection').evaluate(panel => {
+      const details = panel.querySelector('.cardinspectiondetails').getBoundingClientRect(), footer = panel.querySelector('.cardinspectionactions').getBoundingClientRect();
+      return { detailsHeight: details.height, footerHeight: footer.height, footerBottom: footer.bottom, overflow: panel.scrollWidth > panel.clientWidth + 1 };
+    });
+    assert.ok(merged.detailsHeight >= 80 && merged.footerHeight >= 44 && merged.footerBottom <= height && !merged.overflow, 'Merged rules and actions remain usable');
+    await page.locator('.mutate-component summary').first().click();
+    await page.locator('.mutate-component summary').last().click();
+    await page.waitForFunction(() => _ui.sheet.mutateExpanded?.length === 2);
+    const scrollSelector = width <= 620 ? '.cardinspectiondetails' : '.cardinspection > .sheetinfo';
+    const scrollTop = await page.locator(scrollSelector).evaluate(node => { node.scrollTop = 80; return node.scrollTop; });
+    assert.ok(scrollTop > 0, 'Merged details have scrollable content');
+    await page.evaluate(() => _ui.render());
+    assert.equal(await page.locator(scrollSelector).evaluate(node => node.scrollTop), scrollTop, 'Reading position survives an incidental render');
+    await expectPending(3); await expectOneModal(); await shot(`mutate-inspection-${width}`);
+    await page.locator('.cardinspectionzoom').click(); await expectPending(3); await shot(`mutate-expanded-${width}`);
+    const expandedFooter = await page.locator('.cardinspectionactions').boundingBox();
+    assert.ok(expandedFooter.height >= 44 && expandedFooter.y + expandedFooter.height <= height + 1, 'Expanded merged card keeps its actions visible');
+    const expandedHeader = await page.locator('.cardinspectionhead').boundingBox(), expandedArt = await page.locator('.mutate-sheet-visual').boundingBox();
+    assert.ok(expandedHeader.y + expandedHeader.height <= expandedArt.y + 1, 'Expanded merged card keeps its toolbar above the artwork');
+    check(`paid merged permanent keeps its details, reading position, actions, and pending choice at ${width}px`);
   }
   assert.deepEqual(errors, []);
 } finally {

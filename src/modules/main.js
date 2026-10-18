@@ -901,10 +901,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <span class="deckspotlightpicked"><b>✓</b> Selected for your seat</span>
           </div>
           <div class="deckspotlightintro">
+            <div class="deckspotlightidentity">
             <div class="deckspotlightkicker"><span>DECK SPOTLIGHT</span><b>${deck.custom ? 'MY LIBRARY' : `${String(deckNumber).padStart(2, '0')} / ${String(activeDecks.length).padStart(2, '0')}`}</b></div>
             <div class="deckspotlightmana" aria-label="Color identity">${mana}</div>
             <h2 data-dialog-title>${esc(name)}</h2>
             <p class="deckspotlightcommander"><span>${commanders.length > 1 ? 'COMMANDERS' : 'COMMANDER'}</span>${esc(commanders.join(' + '))}</p>
+            </div>
             <p class="deckspotlighttheme">${esc(guide.theme)}</p>
             <div class="deckspotlightbadges"><span>${esc(guide.pace)}</span><span>${esc(guide.complexity)}</span><span>${esc(meta.set || '')}</span></div>
             <div class="deckspotlightstats" aria-label="Deck breakdown">
@@ -1073,13 +1075,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       : deckCatalog.filter(record => record.complexity === state.complexity);
     const releaseYears = [...new Set(deckCatalog.map(entry => entry.year).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
     const explorerHead = el('div', 'deckexplorerhead', `
-      <div><span class="eyebrow">The collection</span><h2>Find your next deck</h2><p>Pick a commander. Explore the plan. Make it yours.</p></div>
+      <h2 class="sr-only">Find your next deck</h2>
       <div class="deckexploreractions">
-        <button type="button" class="surprisedeck">↝ Surprise me</button>
+        <button type="button" class="surprisedeck">${U.icon('cards')} Surprise me</button>
       </div>`);
     left.appendChild(explorerHead);
-    const discovery = el('details', 'deckdiscovery', '<summary>Need inspiration? <span>Playstyles, recent decks &amp; saved tables</span></summary>');
-    left.appendChild(discovery);
+    const discovery = el('details', 'deckdiscovery', '<summary>Need inspiration? <span>Playstyles &amp; saved tables</span></summary>');
+    explorerHead.prepend(discovery);
     const savedPodShelf = el('section', 'savedpodshelf');
     savedPodShelf.setAttribute('aria-label', 'Saved tables');
     discovery.appendChild(savedPodShelf);
@@ -1165,7 +1167,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <div class="deckname">${esc(name)}</div>
         </div>
         <div class="deckvisual${commanders.length > 1 ? ' partners' : ''}">
-          <div class="deckportraits">${commanders.map(commander => `<img class="deckart" loading="lazy" decoding="async" width="250" height="350" alt="${escAttr(commander)}" src="${cardImg(commander)}" onerror="MTG.imgFail(this)">`).join('')}</div>
+          <div class="deckportraits">${commanders.map(commander => `<img class="deckart" loading="lazy" decoding="async" width="600" height="360" alt="${escAttr(commander)}" src="${artURL(commander)}" onerror="MTG.imgFail(this)">`).join('')}</div>
         </div>
         <div class="deckinfo">
           <div class="deckcmd"><b>${commanders.map(esc).join(' + ')}</b></div>
@@ -1497,7 +1499,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       livePlayerRow.querySelector('.liveplayerchoices').appendChild(button);
     }
     right.appendChild(livePlayerRow);
-    right.appendChild(el('div', 'seclabel', '<i>Choice</i> Commander'));
+    const commanderLabel = el('div', 'seclabel', '<i>Choice</i> Commander');
+    right.appendChild(commanderLabel);
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
@@ -1536,7 +1539,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         `${legals.length} legal commander${legals.length === 1 ? '' : 's'} in this deck` +
         (partnerable ? ` · ${partnerable} with a partner ability 🤝` : '') +
         (state.commanders.length === 2 ? ' · you are playing TWO commanders' : '')));
-      const btn = el('button', 'pbtn wide', legals.length > 1 ? '🔄 Change commander / partners' : '🔒 This deck has only one');
+      const btn = el('button', 'pbtn wide', legals.length > 1 ? 'Change commander' : 'Only commander');
+      btn.title = `${legals.length} legal commander${legals.length === 1 ? '' : 's'} in this deck${partnerable ? ' · partner options available' : ''}`;
       btn.disabled = legals.length <= 1;
       btn.onclick = async () => {
         const res = await pickCommanders(state.deck, state.commanders);
@@ -1549,7 +1553,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const opponentsLabel = el('div', 'seclabel', '<i>Pod</i> Opponents <em>Choose each AI deck</em>');
     right.appendChild(opponentsLabel);
-    const aiRow = el('div', 'btnrow center');
+    const aiRow = el('div', 'btnrow center opponentcount');
     const botStyles = el('div', 'botstyles');
     const getStyleGroups = () => {
       const customKeys = MTG.readAISkillLibrary().records.map(MTG.aiSkillKey);
@@ -1687,7 +1691,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiRow.appendChild(b);
     }
     right.appendChild(aiRow);
-    const botLoadoutsLabel = el('div', 'seclabel', '<i>AI</i> Bot loadouts');
+    const botLoadoutsLabel = el('div', 'seclabel botloadoutslabel', '<i>AI</i> Bot loadouts');
     right.appendChild(botLoadoutsLabel);
     right.appendChild(botStyles);
     const customSkillsButton = el('button', 'pbtn wide customskillsbutton', 'Upload / manage custom AI skills');
@@ -1891,6 +1895,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const podStage = el('div', 'setupstagepanel podstage');
     [...right.childNodes].forEach(node => podStage.appendChild(node));
+    const podSeatIntro = el('div', 'podseatintro');
+    podSeatIntro.append(cmdBox, matchType);
+    commanderLabel.remove();
+    podStage.prepend(podSeatIntro);
     const reviewStage = el('section', 'setupstagepanel reviewstage');
     reviewStage.setAttribute('aria-labelledby', 'setup-review-title');
     right.appendChild(podStage);
@@ -2163,7 +2171,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     renderSavedPods();
     const presets = el('section', 'podpresets');
-    presets.innerHTML = '<div><span class="eyebrow">Set the mood</span><b>A starting point for your pod</b><small>You can adjust every choice below.</small></div><div class="podpresetchips"><button type="button" data-pod-preset="learn"><b>Learn a deck</b><small>1 AI · easy · balanced</small></button><button type="button" data-pod-preset="classic"><b>Classic pod</b><small>3 AI · normal · varied styles</small></button><button type="button" data-pod-preset="challenge"><b>Table challenge</b><small>3 AI · hard · politics on</small></button></div>';
+    presets.innerHTML = '<div><b>Quick presets</b><small>Reset the table to a starting point.</small></div><div class="podpresetchips"><button type="button" data-pod-preset="learn"><b>Learn a deck</b><small>1 AI · easy · balanced</small></button><button type="button" data-pod-preset="classic"><b>Classic pod</b><small>3 AI · normal · varied styles</small></button><button type="button" data-pod-preset="challenge"><b>Table challenge</b><small>3 AI · hard · politics on</small></button></div>';
     presets.querySelectorAll('[data-pod-preset]').forEach(button => {
       button.onclick = () => {
         setMatchMode('solo');
@@ -2181,7 +2189,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         presets.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
       };
     });
-    podStage.insertBefore(presets, matchType.nextSibling);
+    podStage.insertBefore(presets, customSkillsButton);
     const clearPresetSelection = () => presets.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', 'false'));
     podStage.addEventListener('change', clearPresetSelection);
     podStage.addEventListener('click', event => {

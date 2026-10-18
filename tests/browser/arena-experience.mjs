@@ -30,7 +30,7 @@ const shot = async name => { await page.waitForTimeout(150); await page.screensh
 async function fixture() {
   await page.goto(base, { waitUntil: 'networkidle', timeout: 60000 });
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry:not([hidden])', { timeout: 60000 });
+  await page.waitForSelector('.deckentry:not([hidden]) .deckcard', { timeout: 60000 });
   await page.evaluate(() => {
     document.querySelector('#setup').style.display = 'none'; document.querySelector('#game').style.display = 'flex'; document.body.classList.add('game-active');
     const ui = window._ui = new MTG.UI(), g = window._game = new MTG.Game({ seed: 427, paced: false, onEvent: () => {} });
@@ -85,12 +85,18 @@ try {
   assert.equal(await page.locator('.settingsadvanced').evaluate(node => node.open), true);
   await page.locator('[data-setting="opponent-size"]').selectOption('1');
   await page.locator('.settingstab[aria-selected="true"]').focus();
-  await page.keyboard.press('ArrowRight');
+  assert.equal(await page.locator('.settingstabs').getAttribute('aria-orientation'), 'vertical');
+  await page.keyboard.press('ArrowDown');
   assert.equal(await page.locator('.settingstab[aria-selected="true"]').getAttribute('data-settings-tab'), 'help');
   assert.equal(await page.evaluate(() => document.activeElement.dataset.settingsTab), 'help');
   await page.keyboard.press('Home');
   assert.equal(await page.locator('.settingstab[aria-selected="true"]').getAttribute('data-settings-tab'), 'table');
   assert.equal(await page.evaluate(() => document.activeElement.dataset.settingsTab), 'table');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction(() => document.querySelector('.settingstabs')?.getAttribute('aria-orientation') === 'horizontal');
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.settingsTab), 'appearance');
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await expectPending();
   check('direct settings persist, preserve pending decision and card order, and keep keyboard focus');
 
@@ -101,6 +107,12 @@ try {
     await page.locator(`[data-card-back="${id}"]`).click();
     assert.equal(await page.locator('.cardbackchoice[aria-pressed="true"]').count(), 1);
     assert.equal(await page.evaluate(() => MTG.playerPreferences().cardBack), id);
+    await page.waitForFunction(id => {
+      const image = document.querySelector('.cardbackheroimage');
+      return image.complete && image.naturalWidth === 600 && image.src.endsWith(`/${id}.webp`);
+    }, id);
+    assert.equal(await page.locator('.cardbackcaption h3').textContent(), await page.locator(`[data-card-back="${id}"] b`).textContent());
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.cardBack), id, 'Changing the large preview preserves choice focus');
     const hidden = await page.evaluate(() => MTG.cardArtHTML({ name: 'PRIVATE SENTINEL', faceDown: true, def: { name: 'PRIVATE SENTINEL' } }));
     assert.match(hidden, new RegExp(`assets/cardbacks/${id}\\.webp`));
     assert.doesNotMatch(hidden, /PRIVATE SENTINEL/);
@@ -111,9 +123,9 @@ try {
   await page.keyboard.press('Shift+Tab');
   assert.equal(await page.evaluate(() => document.activeElement.classList.contains('cardbackdone')), true);
   await expectPending();
-  check('all generated backs load, selected art is private-safe, and picker contains keyboard focus');
+  check('all backs and live previews load, selection preserves focus, and concealed art stays private');
 
-  for (const [width, height] of [[1440, 1000], [390, 844], [360, 800], [320, 740], [820, 1180], [1920, 1080]]) {
+  for (const [width, height] of [[1440, 1000], [390, 844], [360, 800], [320, 740], [820, 1180], [1920, 1080], [1024, 600]]) {
     await page.setViewportSize({ width, height });
     await page.evaluate(() => { _ui.quickMenuOpen = 'cardbacks'; _ui.render(); });
     await page.locator('.cardbackpicker').waitFor({ state: 'visible' });
@@ -146,6 +158,14 @@ try {
   assert.equal(await page.evaluate(() => _ui.speed), 'slow');
   check('card back and control preferences survive a full reload');
   assert.deepEqual(errors, []);
+} catch (error) {
+  await page.screenshot({ path: `${out}/failure.png`, animations: 'disabled' }).catch(() => {});
+  writeFileSync(`${out}/failure.json`, JSON.stringify(await page.evaluate(() => ({
+    preview: [...document.querySelectorAll('.cardbackheroimage')].map(image => ({ src: image.src, complete: image.complete, width: image.naturalWidth })),
+    selected: document.querySelector('.cardbackchoice[aria-pressed="true"]')?.dataset.cardBack,
+    heading: document.querySelector('.cardbackcaption h3')?.textContent,
+  })).catch(() => ({})), null, 2));
+  throw error;
 } finally {
   writeFileSync(`${out}/report.json`, JSON.stringify({ base, checks, errors }, null, 2));
   await browser.close(); if (server) server.close();

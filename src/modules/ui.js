@@ -4961,8 +4961,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         m.appendChild(el('div', 'mtitle', `Put ${q.n} on the bottom of your library`));
         m.appendChild(this.cardGrid(g, q.player.hand, { min: q.n, max: q.n }));
         const summary = el('div', 'selectionreview', `<b>${pd.sel.length} / ${q.n} selected</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'Select the exact cards, then confirm.'}</span>`);
-        summary.setAttribute('role', 'status'); m.appendChild(summary);
-        const row = el('div', 'btnrow decision-footer');
+        summary.setAttribute('role', 'status');
+        const row = el('div', 'btnrow decision-footer selectionfooter');
+        row.appendChild(summary);
         const b = btn(`Confirm bottom cards (${pd.sel.length}/${q.n}) ✓`, () => { if (pd.sel.length === q.n) this.resolvePending(pd.sel.slice()); }, 'primary');
         b.disabled = pd.sel.length !== q.n;
         row.appendChild(b);
@@ -4971,12 +4972,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (q.type === 'chooseCards') {
         m.classList.add('cardselectionmodal');
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose cards') + ` (${q.min}-${q.max})`));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose cards')));
         if (q.ringChoice) m.appendChild(this.ringChoiceGuide(q));
         m.appendChild(this.cardGrid(g, q.from, { min: q.min, max: q.max }));
-        const summary = el('div', 'selectionreview', `<b>${pd.sel.length} selected · ${pd.sel.length >= q.min ? 'ready to confirm' : `${q.min - pd.sel.length} more required`}</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'Select cards above to make your choice.'}</span>`);
-        summary.setAttribute('role', 'status'); m.appendChild(summary);
-        const row = el('div', 'btnrow decision-footer');
+        const selectedCount = Number.isFinite(q.max) ? `${pd.sel.length} of ${q.max} selected` : `${pd.sel.length} selected`;
+        const summary = el('div', 'selectionreview', `<b>${selectedCount}</b><span>${pd.sel.length < q.min ? `Choose ${q.min - pd.sel.length} more.` : pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'You can choose none.'}</span>`);
+        summary.setAttribute('role', 'status');
+        const row = el('div', 'btnrow decision-footer selectionfooter');
+        row.appendChild(summary);
         const confirm = btn(`Confirm ✓ (${pd.sel.length})`, () => {
           if (pd.sel.length >= q.min && pd.sel.length <= q.max) this.resolvePending(pd.sel.slice());
         }, 'primary');
@@ -5285,10 +5288,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const otherZone = surveil ? 'GRAVEYARD' : 'BOTTOM';
         pd.scryState = pd.scryState || q.cards.map(() => 'top');
         pd.scryOrder = pd.scryOrder || q.cards.slice();
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || (surveil ? 'Surveil' : 'Scry')) + (surveil ? ': click to switch top/graveyard' : ': click to switch top/bottom')));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || `${surveil ? 'Surveil' : 'Scry'} · ${q.cards.length} card${q.cards.length === 1 ? '' : 's'}`)));
         m.appendChild(el('div', 'orderhint', surveil
-          ? 'Choose any number of cards for your graveyard. Arrows order the cards kept on TOP; the first is drawn first.'
-          : 'Arrows change the order. TOP: the first card is drawn first. BOTTOM: the first card is deepest.'));
+          ? 'Choose top or graveyard. Use arrows to order the cards kept on top; the first is drawn first.'
+          : 'Choose top or bottom, then use arrows to set the order. Top: first drawn first. Bottom: first deepest.'));
         const grid = el('div', 'cardgrid');
         pd.scryOrder.forEach((c, orderIndex) => {
           const i = q.cards.indexOf(c);
@@ -5430,7 +5433,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             this.render();
           };
           this.makeKeyboardButton(cc, `Select ${cc.dataset.cardName}`);
-          cc.appendChild(el('span', 'cardselectionmark', pd.sel.includes(c) ? '✓ Selected' : 'Select'));
+          const mark = el('span', 'cardselectionmark', '✓');
+          mark.setAttribute('aria-hidden', 'true'); cc.appendChild(mark);
         }
         grid.appendChild(cc);
       }
@@ -6101,11 +6105,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const markedDamage = this.markedDamageState(card);
       const crew = useCurrentCharacteristics && card.hasSub('Vehicle') ? g.vehicleCrewCost(card) : undefined;
       const crewState = crew === undefined ? '' : `<div class="animatedpermanentstate vehiclecrewstate">Current Crew ${crew}${shownDef.crew !== undefined && shownDef.crew !== crew ? ` · printed Crew ${shownDef.crew}` : ''}</div>`;
-      info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
+      const identity = el('div', 'cardinspectionidentity', `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div><div class="stype">${esc(typeLine)}</div>`);
+      const details = el('div', 'cardinspectiondetails');
+      details.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
         `${landCreature ? '<div class="animatedpermanentstate">LAND CREATURE · ACTIVE ON THE BATTLEFIELD</div>' : ''}` +
         suspendState +
-        `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
-        <div class="stype">${esc(typeLine)}</div>
+        `
         ${card.is('Creature') && card.cur && (!hiddenFaceDown || card.zone === 'battlefield') ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
         ${markedDamage ? `<div class="smarkeddamage"><b>${markedDamage.amount} damage marked</b><span>${esc(markedDamage.detail)}</span></div>` : ''}
         ${sheetKeywords ? `<div class="sheetkeywords">${sheetKeywords}</div>` : ''}
@@ -6113,7 +6118,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${this.deathReturnState(card) ? `<div class="animatedpermanentstate">${esc(this.deathReturnState(card))}</div>` : ''}
         <div class="soracle cardinspectionoracle"><span class="cardinspectionlabel">Rules text</span>${esc(shownDef.oracle || 'No rules text.').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
-      if((card.meta.stickersV87||[]).length)info.appendChild(el('div','soracle sticker-list-v87','<b>Stickers</b><br>'+card.meta.stickersV87.map(r=>esc(r.kind+': '+r.text)).join('<br>')));if(card.def.attractionLightsV87)info.appendChild(el('div','soracle attraction-lights-v87','Visit on: '+card.def.attractionLightsV87.join(', ')));
+      if((card.meta.stickersV87||[]).length)details.appendChild(el('div','soracle sticker-list-v87','<b>Stickers</b><br>'+card.meta.stickersV87.map(r=>esc(r.kind+': '+r.text)).join('<br>')));if(card.def.attractionLightsV87)details.appendChild(el('div','soracle attraction-lights-v87','Visit on: '+card.def.attractionLightsV87.join(', ')));
+      info.appendChild(identity); info.appendChild(details);
       m.appendChild(info);
       // actions
       const acts = el('div', 'sheetacts cardinspectionactions');
@@ -6434,7 +6440,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sort.value === 'name') matches.sort((a, b) => a.name.localeCompare(b.name) || a.index - b.index);
         if (sort.value === 'mana') matches.sort((a, b) => (a.mv ?? Infinity) - (b.mv ?? Infinity) || a.index - b.index);
         status.textContent = privateZone ? `${count} hidden card${count === 1 ? '' : 's'}. Identities are private.`
-          : `${matches.length} of ${records.length} card${records.length === 1 ? '' : 's'}${choosingTargets ? ' · choose a highlighted target' : ' · select a card to inspect'}`;
+          : `${matches.length} of ${records.length} card${records.length === 1 ? '' : 's'}${choosingTargets ? ' · choose a highlighted target' : ''}`;
         for (const {card: c, name, playable} of matches) {
           const cc = this.bigCardEl(c); cc.dataset.zoneCard = String(c.iid);
           // The tile's visible title and action label already name this card.

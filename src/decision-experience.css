@@ -62,6 +62,8 @@
   cursor: not-allowed;
 }
 #game :is(.cardselectionmodal, .scrydecision) { display: flex; flex-direction: column; width: min(850px, calc(100 * var(--vwu) - 32px)); }
+#game .modal.cardselectionmodal { width: min(1040px, calc(100 * var(--vwu) - 32px)); max-width: none; }
+#game .modal:is(.cardselectionmodal, .scrydecision) > .waitownership { margin: 0 0 8px; padding: 0; border: 0; }
 #game :is(.cardselectionmodal, .scrydecision) > :not(.cardgrid) { flex-shrink: 0; }
 #game :is(.cardselectionmodal, .scrydecision) > .cardgrid {
   display: grid;
@@ -70,7 +72,7 @@
   align-content: start;
   align-items: start;
   gap: 12px;
-  max-height: min(460px, calc(54 * var(--dvhu)));
+  max-height: min(560px, calc(61 * var(--dvhu)));
   overflow: auto;
   padding: 5px;
   scrollbar-gutter: stable;
@@ -95,18 +97,32 @@
 #game .scrydecision > .cardgrid { grid-template-columns: repeat(auto-fit, minmax(126px, 200px)); justify-content: center; }
 #game .cardselectionmodal .bigcard.selected {
   border-color: var(--ds-accent-bright);
-  box-shadow: 0 0 0 2px rgba(var(--ds-accent-rgb), .2);
+  background: rgba(var(--ds-accent-rgb), .05);
+  box-shadow: none;
 }
+#game .cardselectionmodal .bigcard:not(.selected) { border-color: transparent; background: transparent; }
 #game .cardselectionmark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 30px;
-  color: var(--ds-muted);
-  font-size: 12px;
-  font-weight: 700;
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ds-dialog);
+  border-radius: 50%;
+  background: var(--ds-accent-bright);
+  color: var(--ds-on-accent, var(--ds-table));
+  font-size: 15px;
+  font-weight: 800;
+  visibility: hidden;
 }
-#game .selected > .cardselectionmark { color: var(--ds-accent-bright); }
+#game .selected > .cardselectionmark { visibility: visible; }
+#game .selectionfooter { display: flex; flex-wrap: wrap; align-items: center; }
+#game .modal[data-decision-type] .selectionfooter > .selectionreview { flex: 1 1 150px; min-width: 0; padding: 0; margin: 0; border: 0; background: transparent; }
+#game .selectionfooter .selectionreview b { font-size: 13px; }
+#game .selectionfooter .selectionreview span { margin-top: 2px; max-height: 38px; font-size: 12px; }
+#game .selectionfooter > .pbtn { flex: 0 0 auto; margin: 0; }
 #game .cardselectionmodal .bigcard[role="button"]:focus-visible {
   outline: 3px solid var(--ds-focus);
   outline-offset: 3px;
@@ -121,6 +137,9 @@
 }
 #game .scry-destination[aria-pressed="true"] { color: var(--ds-accent-bright); border-color: var(--ds-accent-soft); }
 #game .scrydecision .triggerordercontrols { justify-content: space-between; gap: 8px; padding-top: 6px; }
+#game .modal.scrydecision .triggerordercontrols > button.pbtn { border-color: transparent; background: transparent; box-shadow: none; color: var(--ds-copy); }
+#game .modal.scrydecision .triggerordercontrols > button.pbtn:disabled { background: transparent; border-color: transparent; }
+#game .scrydecision .triggerordercontrols > button:not(:disabled):hover { background: var(--ds-panel-raised); }
 #game :is(.scrydecision, .triggerordermodal) .triggerordercontrols button { min-width: 44px; min-height: 44px; }
 #game .triggerorderrow { padding: 12px; gap: 12px; border-color: var(--ds-line); background: var(--ds-panel); }
 #game .triggerordertext { font-size: 13px; line-height: 1.45; }
@@ -213,6 +232,7 @@
   min-height: 0;
   max-height: min(390px, calc(52 * var(--dvhu)), 100%);
   object-fit: contain;
+  object-position: top;
   align-self: stretch;
   border-radius: 12px;
 }
@@ -226,11 +246,13 @@
   padding-right: 6px;
   scrollbar-gutter: stable;
 }
+#game .cardinspection > .mutate-sheet-visual { grid-column: 1; grid-row: 2; min-width: 0; min-height: 0; height: 100%; max-height: min(390px, calc(52 * var(--dvhu)), 100%); padding: 0; gap: 10px; overflow-y: auto; }
+#game .cardinspection .mutate-sheet-visual .mutate-stack { width: 100%; flex-shrink: 0; }
 #game .cardinspection .sname { margin: 0 0 10px; font: 600 25px/1.15 var(--ds-font-display); letter-spacing: -.03em; color: var(--ds-text); }
 #game .cardinspection .stype { color: var(--ds-copy); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
 #game .cardinspection .spt { margin: 12px 0; font: 600 20px/1.4 var(--ds-font-mono); color: var(--ds-text); }
 #game .cardinspectionlabel { display: block; margin-bottom: 8px; color: var(--ds-accent-soft); font: 700 10px/1.4 var(--ds-font-body); letter-spacing: .14em; text-transform: uppercase; }
-#game .cardinspectionoracle { padding-top: 16px; border-top: 1px solid var(--ds-line-soft); font-size: 14px; line-height: 1.65; color: var(--ds-copy); }
+#game .cardinspection .soracle.cardinspectionoracle { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; font-size: 14px; line-height: 1.7; color: var(--ds-copy); }
 #game .cardinspectionactions {
   grid-column: 1 / -1;
   grid-row: 3;
@@ -276,7 +298,7 @@
 #game .zonebrowserstatus { flex-shrink: 0; color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
 #game .zonebrowsergrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
   grid-auto-rows: max-content;
   align-content: start;
   align-items: start;
@@ -288,7 +310,9 @@
   margin: 0;
   scrollbar-gutter: stable;
 }
-#game .zonebrowsergrid .bigcard { width: auto; min-width: 0; padding: 4px; border: 1px solid var(--ds-line); border-radius: 9px; background: var(--ds-panel); aspect-ratio: auto; }
+#game .zonebrowsergrid .bigcard { width: auto; min-width: 0; padding: 4px; border: 1px solid transparent; border-radius: 9px; background: transparent; aspect-ratio: auto; }
+#game .zonebrowsergrid .bigcard:hover { border-color: var(--ds-line); background: var(--ds-panel); }
+#game .zonebrowsergrid .bigcard:is(.castable, .targetable, .selected) { border-color: var(--ds-accent-soft); }
 #game .zonebrowsergrid .bigcard img { display: block; width: 100%; aspect-ratio: 5 / 7; height: auto; object-fit: contain; border-radius: 6px; }
 #game .zonebrowsergrid .bigcard:focus-visible { outline: 3px solid var(--ds-focus); outline-offset: 2px; }
 #game .zonebrowserempty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; min-height: 180px; padding: 24px; text-align: center; color: var(--ds-muted); font-size: 13px; }
@@ -319,18 +343,23 @@ body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { border-color
 
 @media (max-width: 620px) {
   #game .modal[data-decision-type] { padding: 16px; }
-  #game :is(.cardselectionmodal, .scrydecision) > .cardgrid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 9px; max-height: calc(49 * var(--dvhu)); }
+  #game :is(.cardselectionmodal, .scrydecision) > .cardgrid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 9px; max-height: calc(61 * var(--dvhu)); }
   #game .overlay.cardinspectionoverlay, #game .zonebrowseroverlay { padding: 8px; }
-  #game .sheet.cardinspection { grid-template-columns: minmax(100px, 36%) minmax(0, 1fr); width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; gap: 14px; border-radius: 16px; }
-  #game .cardinspection > .sheetimg { max-height: min(calc(47 * var(--dvhu)), 100%); }
-  #game .cardinspection > .sheetinfo { max-height: calc(52 * var(--dvhu)); padding-right: 0; }
+  #game .sheet.cardinspection { grid-template-columns: minmax(100px, 36%) minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; gap: 14px; border-radius: 16px; }
+  #game .cardinspection > .sheetimg { grid-row: 3; max-height: min(calc(47 * var(--dvhu)), 100%); }
+  #game .cardinspection > .mutate-sheet-visual { grid-row: 3; max-height: min(calc(45 * var(--dvhu)), 100%); }
+  #game .cardinspection > .sheetinfo { display: contents; }
+  #game .cardinspectionidentity { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+  #game .cardinspectiondetails { grid-column: 2; grid-row: 3; min-width: 0; min-height: 0; max-height: calc(45 * var(--dvhu)); overflow-y: auto; }
   #game .cardinspection .sname { font-size: 20px; }
-  #game .cardinspection .stype { font-size: 12px; }
-  #game .cardinspection .soracle { font-size: 13px; line-height: 1.6; }
-  #game .cardinspectionactions { max-height: calc(29 * var(--dvhu)); gap: 8px; padding-top: 12px; }
+  #game .cardinspection .stype { font-size: 12px; margin-bottom: 0; }
+  #game .cardinspection .soracle.cardinspectionoracle { font-size: 13px; line-height: 1.6; }
+  #game .cardinspection:not(.sheetart-expanded) .mutate-component-body { display: flex; flex-direction: column; }
+  #game .cardinspection:not(.sheetart-expanded) .mutate-component-body > img { width: min(100%, 100px); }
+  #game .cardinspectionactions { grid-row: 4; max-height: calc(29 * var(--dvhu)); gap: 8px; padding-top: 12px; }
   #game .cardinspectionactions > .pbtn { flex-basis: 100%; min-height: 44px; font-size: 13px; }
   #game .cardinspectionactions > .cardinspectiondone { flex: 1 1 100%; }
-  #game .sheet.zonebrowser { width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; gap: 12px; }
+  #game .sheet.zonebrowser { width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; gap: 10px; }
   #game .zonebrowsertools { grid-template-columns: 1fr 1fr; }
   #game .zonebrowsersearch { grid-column: 1 / -1; }
   #game .zonebrowsertools :is(input, select) { font-size: 16px; }
@@ -341,7 +370,9 @@ body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { border-color
   #game .sheet.cardinspection.sheetart-expanded { display: flex; flex-direction: column; width: min(760px, calc(100 * var(--vwu) - 16px)); max-height: calc(100 * var(--dvhu) - 24px); padding: 14px; overflow-y: auto; }
   #game .sheetart-expanded > .cardinspectionhead { position: sticky; top: -14px; z-index: 3; margin: -14px -14px 0; padding: 14px 14px 12px; background: var(--ds-dialog); flex-shrink: 0; }
   #game .sheetart-expanded > .sheetimg { width: min(100%, 330px); max-height: none; height: auto; aspect-ratio: 5 / 7; align-self: center; flex-shrink: 0; }
+  #game .sheetart-expanded > .mutate-sheet-visual { width: min(100%, 330px); height: auto; max-height: none; overflow: visible; align-self: center; flex-shrink: 0; }
   #game .sheetart-expanded > .sheetinfo { width: 100%; max-height: none; overflow: visible; flex-shrink: 0; }
+  #game .sheetart-expanded :is(.cardinspectionidentity, .cardinspectiondetails) { width: 100%; max-height: none; overflow: visible; flex-shrink: 0; }
   #game .sheetart-expanded > .cardinspectionactions { position: sticky; bottom: -14px; margin: 0 -14px -14px; padding: 12px 14px 14px; background: var(--ds-dialog); z-index: 3; flex-shrink: 0; }
 }
 @media (forced-colors: active) {
@@ -352,16 +383,17 @@ body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { border-color
   #game :is(.cardinspection, .zonebrowser, .cardselectionmodal, .scrydecision) { animation: none !important; scroll-behavior: auto; }
 }
 
-#game .logpanel.activitylog { z-index: 2200; inset: 24px; width: min(900px, calc(100 * var(--vwu) - 48px)); max-width: none; box-sizing: border-box; margin: auto; padding: 22px; gap: 14px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-lg); background: var(--ds-dialog); box-shadow: var(--ds-shadow-dialog); }
+#game .logpanel.activitylog { z-index: 2200; inset: 24px; width: min(800px, calc(100 * var(--vwu) - 48px)); height: min(760px, calc(100 * var(--dvhu) - 48px)); max-width: none; box-sizing: border-box; margin: auto; padding: 22px; gap: 14px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-lg); background: var(--ds-dialog); box-shadow: var(--ds-shadow-dialog); }
 #game .activitylog .mtitle { margin: 0; font: 600 25px/1.2 var(--ds-font-display); }
 #game .logsearch { flex-shrink: 0; width: 100%; box-sizing: border-box; min-height: 44px; padding: 12px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-sm); background: var(--ds-panel); color: var(--ds-text); font: 500 14px var(--ds-font-body); }
-#game .activitylogentries { min-height: 0; padding: 0 12px 12px; background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); overflow-y: auto; }
-#game .logturn { position: sticky; top: 0; padding: 12px 0 8px; color: var(--ds-accent-soft); background: var(--ds-panel); font: 600 11px var(--ds-font-mono); letter-spacing: .07em; }
-#game .activitylog .logline { padding: 9px 0; border-bottom: 1px solid var(--ds-line-soft); color: var(--ds-copy); font-size: 13px; line-height: 1.6; }
+#game .activitylogentries { min-height: 0; padding: 0 6px 8px 0; background: transparent; border: 0; border-radius: 0; overflow-y: auto; }
+#game .logturn { position: sticky; top: 0; padding: 14px 0 9px; margin-top: 10px; border-top: 1px solid var(--ds-line-soft); color: var(--ds-accent-soft); background: var(--ds-dialog); font: 600 12px var(--ds-font-mono); letter-spacing: .06em; }
+#game .logturn:first-child { margin-top: 0; padding-top: 4px; border-top: 0; }
+#game .activitylog .logline { padding: 6px 0; border: 0; color: var(--ds-copy); font-size: 14px; line-height: 1.65; }
 #game .activitylog .logline:last-child { border-bottom: 0; }
 #game .logdiagnostics { color: var(--ds-muted); font-size: 12px; max-height: calc(25 * var(--dvhu)); overflow-y: auto; flex-shrink: 0; }
 #game .logdiagnostics summary { min-height: 32px; cursor: pointer; }
 @media (max-width: 620px) {
-  #game .logpanel.activitylog { inset: 8px; width: calc(100 * var(--vwu) - 16px); padding: 14px; gap: 12px; }
+  #game .logpanel.activitylog { inset: 8px; width: calc(100 * var(--vwu) - 16px); height: calc(100 * var(--dvhu) - 16px); padding: 14px; gap: 12px; }
   #game .logsearch { font-size: 16px; }
 }
