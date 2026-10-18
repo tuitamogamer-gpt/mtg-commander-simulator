@@ -2455,9 +2455,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Difficulty noise must not replace the payment with the intended target.
     const kitt = MTG.kittKantoAIAction(game, player, q);
     if (kitt) return [kitt];
+    if (q.type === 'chooseOption' && q.aiHint?.kind === 'reactionMode') {
+      const plan = MTG.botReactionModePlan(game, player, q.aiHint.card, q.options);
+      const option = q.options.find(option => Number(option.key) === plan.mode);
+      return [{kind: 'chooseOption', value: option.key, option}];
+    }
+    const optional = q.type === 'chooseOption' ? MTG.botOptionalEffectDecision(game, player, q) : null;
+    if (optional !== null) {
+      const value = optional ? 'yes' : 'no';
+      return [{kind: 'chooseOption', value, option: q.options.find(option => option.key === value)}];
+    }
     const actions = [];
     if (q.type === 'main' || q.type === 'priority') {
-      for (const entry of q.casts || []) actions.push({ kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from });
+      for (const entry of q.casts || []) {
+        const action = {kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from};
+        if (MTG.botReactionPlan(game, player, action)?.score <= 0 || MTG.botShouldHoldInteraction(game, player, action)) continue;
+        actions.push(action);
+      }
       for (const entry of q.acts || []) {
         // Ručne mana-aktivacije postoje da čovjek može birati između utility i
         // mana moda istog permanenta. Botu nisu potrebne: payMana već koristi
@@ -2477,6 +2491,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // A legal sacrifice is not automatically a useful play. Filtering here
         // also prevents beam search from rewarding unusable temporary stats.
         if (MTG.sacrificePumpPlan(game, player, entry)?.score <= 0) continue;
+        if (MTG.botReactionPlan(game, player, {kind: 'activate', entry})?.score <= 0) continue;
         actions.push({ kind: 'activate', entry });
       }
       if (q.type === 'main') {
@@ -2668,21 +2683,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Only public, already announced removal can make a body expendable.
   // Looking at an opponent's hand or the unknown library top is unnecessary.
+  function pendingCounterAnswers(game, player, object) {
+    return object.kind === 'spell' && game.stack.some(response => response.ctrl === player &&
+      response.kind === 'spell' && /^counter target spell\./i.test(response.card?.def.oracle || '') &&
+      (response.targets || []).flat().includes(object) && !MTG.isUncounterable?.(game, object));
+  }
+
   function pendingCreatureRemoval(game, card, diesOnly = false) {
-    return game.stack.some(so => {
-      if (so.kind !== 'spell') return false;
-      const def = so.card?.def;
-      // Unchosen modes and qualified sweepers are not proof this body dies.
-      if (def?.modes) return false;
-      const oracle = String(def?.oracle || '').toLowerCase();
-      const targeted = (so.targets || []).flat().includes(card);
-      const destroys = /(?:^|\n)destroy all (?:nonland permanents|creatures)\.(?:$|[ \n])/.test(oracle) ||
-        targeted && /destroy target/.test(oracle);
-      if (destroys && !damageProtectionSaves(card)) return true;
-      if (!diesOnly && targeted && /exile target/.test(oracle)) return true;
-      const damage = targeted && /deals? (\d+) damage to/.exec(oracle);
-      return !!damage && Number(damage[1]) >= card.toughness - (card.damage || 0) && !damageProtectionSaves(card);
-    });
+    return game.stack.some(object => !pendingCounterAnswers(game, card.ctrl, object) && stackThreatsTo(game, card, object).some(threat =>
+      (!diesOnly || ['destroy', 'damage', 'shrink'].includes(threat.kind)) && threatRemoves(card, threat)));
   }
 
   MTG.deathReturnTargetValue = function (game, player, card) {
@@ -2838,17 +2847,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function pumpCombatValue(game, player, source, pump, count, ability) {
     const projected = pumpedCreature(source, pump, count);
     let benefit = 0;
-    // A toughness/protection increase may rescue a creature outside combat.
-    for (const object of game.stack) {
-      if (object.ctrl === player || !(object.targets || []).flat().includes(source)) continue;
-      const text = String(object.card?.def.oracle || '').toLowerCase();
-      const damage = /deals? (\d+) damage/.exec(text);
-      if ((damage && Number(damage[1]) >= source.toughness - source.damage &&
-        Number(damage[1]) < projected.toughness - source.damage) ||
-        (/destroy target|deals? \d+ damage/.test(text) && !source.kw('indestructible') && projected.kw('indestructible'))) {
-        benefit = permanentGameValue(game, source, player) + 3;
-      }
-    }
+    // Use the same effect-aware stack assessment as protection spells.
+    benefit = reactionStackGain(game, player, new Map([[source, projected]]));
     if (pendingCreatureRemoval(game, source) && !benefit) return 0;
     if (game.untilEffects.some(effect => effect.kind === 'preventAllCombat')) return benefit;
     if (game.phase === 'combat' && game.combat?.blockersDeclared && ['blockers', 'firstStrike'].includes(game.step)) {
@@ -2947,6 +2947,387 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const plan = MTG.sacrificePumpPlan(game, player, {card: source, ability});
     return plan?.target && plan.score > 0 && (q.candidates || []).includes(plan.target) ? plan.target : null;
   }
+  // Tactical reactions are valued for a visible change in outcome. Merely
+  // having mana, a legal recipient or a sacrifice synergy is not a reason to
+  // spend a one-shot effect. This is AI policy; human legality stays intact.
+  const REACTION_KEYWORDS = new Set(['indestructible', 'hexproof', 'shroud', 'deathtouch',
+    'first strike', 'double strike', 'flying', 'haste', 'lifelink', 'menace', 'reach', 'trample', 'vigilance']);
+  function reactionEffects(source, ability) {
+    if (ability?.aiReactionEffects) return ability.aiReactionEffects;
+    if (!ability && source.def.aiReactionEffects) return source.def.aiReactionEffects;
+    const operations = ability ? [ability.oracleOperation].filter(Boolean) : source.def.oracleImplementation || [];
+    if (operations.length !== 1) return null;
+    const operation = operations[0];
+    if (operation.kind === 'spell-pump') return [{action: 'pump', target: 0, power: operation.power,
+      toughness: operation.toughness, keywords: operation.keywords}];
+    if (operation.kind === 'spell-fog') return [{action: 'ai-fog', playersOnly: operation.playersOnly}];
+    if (!['generic-ability', 'spell-generic'].includes(operation.kind) || operation.modalBody || operation.v4Body ||
+      operation.optionalBodyV14 || operation.overloadedBody || operation.cleaveBodyV10) return null;
+    const effects = operation.effects || [];
+    const temporary = effect => effect.action === 'grant-protection' && effect.choose === 'color' && effect.chooser === 'you' && !effect.filters && !effect.alternatives?.length || (effect.action === 'pump' || effect.action === 'battlefield-group' && effect.operation === 'pump') &&
+      Number.isFinite(effect.power ?? 0) && Number.isFinite(effect.toughness ?? 0) &&
+      (effect.power || 0) >= 0 && (effect.toughness || 0) >= 0 &&
+      (effect.keywords || []).every(keyword => REACTION_KEYWORDS.has(keyword)) &&
+      Object.keys(effect).every(key => ['action', 'operation', 'target', 'filters', 'power', 'toughness', 'keywords'].includes(key));
+    // Small riders do not justify throwing away the protection. They are
+    // still valued below, including life gain that prevents losing the game.
+    if (!effects.some(temporary) || !effects.every(effect => temporary(effect) ||
+      ['scry', 'gain-life', 'ring-tempts', 'populate'].includes(effect.action))) return null;
+    return effects;
+  }
+
+  function reactionRecipients(game, player, source, effect, specs, targets) {
+    if (effect.action === 'battlefield-group') {
+      const filters = effect.filters.map(filter => MTG.OracleV20.helpers.genericTargetSpec(filter).filter);
+      return game.bf().filter(card => filters.some(filter => filter(game, card, player, source)));
+    }
+    if (effect.target === 'self') return source.zone === 'battlefield' ? [source] : [];
+    if (targets) return [targets[effect.target]].flat().filter(Boolean);
+    const spec = specs?.[effect.target];
+    return spec ? game.legalTargets(spec, source, player) : [];
+  }
+
+  function stackThreatsTo(game, card, object, wipeImpact) {
+    const source = object.card || object.srcCard;
+    if (!source) return [];
+    const targeted = (object.targets || []).flat().includes(card);
+    const operations = object.kind === 'spell' ? source.def.oracleImplementation || [] :
+      [object.ctx?.ability?.oracleOperation].filter(Boolean);
+    const threats = [];
+    for (const operation of operations) for (const effect of operation.effects || []) {
+      const group = effect.action === 'battlefield-group';
+      if (!(group ? reactionRecipients(game, object.ctrl, source, effect, [], []).includes(card)
+        : (object.targets || [])[effect.target] === card || Array.isArray(object.targets?.[effect.target]) && object.targets[effect.target].includes(card))) continue;
+      const kind = group ? effect.operation : effect.action;
+      if (['destroy', 'exile', 'bounce'].includes(kind)) threats.push({kind, targeted: !group});
+      if (kind === 'damage' && Number.isFinite(effect.n)) threats.push({kind, amount: effect.n, targeted: !group});
+      if (kind === 'pump' && effect.toughness < 0) threats.push({kind: 'shrink', amount: -effect.toughness, targeted: !group});
+    }
+    // Native spells and old compiled primitives have no effect descriptors.
+    // For abilities use only their own label, never the permanent's ETB or
+    // unrelated abilities (e.g. Frontline Medic's sacrifice counters a spell).
+    const text = String(object.kind === 'spell' && !source.def.modes ? source.def.oracle :
+      object.ctx?.ability?.label || '').toLowerCase();
+    if (targeted) {
+      if (/destroy target/.test(text)) threats.push({kind: 'destroy', targeted: true});
+      if (/exile target/.test(text)) threats.push({kind: 'exile', targeted: true});
+      if (/return target.*(?:hand|library)/.test(text)) threats.push({kind: 'bounce', targeted: true});
+      if (/gain control of target/.test(text)) threats.push({kind: 'control', targeted: true});
+      const damage = /deals? (\d+) damage/.exec(text);
+      if (damage) threats.push({kind: 'damage', amount: Number(damage[1]), targeted: true});
+      const shrink = /gets? -\d+\/-(\d+)/.exec(text);
+      if (shrink) threats.push({kind: 'shrink', amount: Number(shrink[1]), targeted: true});
+    }
+    if (object.kind === 'spell' && !source.def.modes && (wipeImpact === undefined ? boardWipeImpact(game, object.ctrl, {card: source}) : wipeImpact)?.removes(card)) {
+      const damage = /deals? (\d+) damage to each creature/.exec(text);
+      if (damage) threats.push({kind: 'damage', amount: Number(damage[1]), targeted: false});
+      else if (/destroy all/.test(text)) threats.push({kind: 'destroy', targeted: false});
+      else if (/exile all/.test(text)) threats.push({kind: 'exile', targeted: false});
+      else {
+        const shrink = /all creatures get -\d+\/-(\d+)/.exec(text);
+        if (shrink) threats.push({kind: 'shrink', amount: Number(shrink[1]), targeted: false});
+      }
+    }
+    for (const threat of threats) if (threat.kind === 'destroy') threat.noRegen = /can(?:not|'t) be regenerated/.test(text);
+    return threats.filter(threat => threat.kind !== 'damage' || !game.isProtectedFrom(card, source));
+  }
+
+  function threatRemoves(card, threat) {
+    if (threat.kind === 'destroy') return !card.kw('indestructible') && !(card.counters.shield > 0) && (threat.noRegen || !(card.regenShield > 0));
+    if (threat.kind === 'damage') return card.is('Creature') && !damageProtectionSaves(card) && threat.amount >= card.toughness - (card.damage || 0);
+    if (threat.kind === 'shrink') return card.is('Creature') && diesAfterGlobalPump(card, card.toughness - threat.amount);
+    return true;
+  }
+
+  function reactionStackGain(game, player, projections) {
+    let gain = 0;
+    const objects = game.stack.filter(object => !pendingCounterAnswers(game, player, object))
+      .map(object => ({object, impact: object.kind === 'spell' && object.card && !object.card.def.modes
+      ? boardWipeImpact(game, object.ctrl, {card: object.card}) : null}));
+    for (const [card, projected] of projections) {
+      if (card.ctrl !== player) continue;
+      const saved = objects.some(({object, impact}) => stackThreatsTo(game, card, object, impact).some(threat => {
+        const hidden = threat.targeted && object.ctrl !== player &&
+          (projected.kw('hexproof') || projected.kw('shroud')) &&
+          !(card.cur.hexproof || card.cur.shroud || card.kw('hexproof') || card.kw('shroud'));
+        const protectedFrom = (threat.targeted || threat.kind === 'damage') &&
+          game.isProtectedFrom(projected, object.card || object.srcCard) && !game.isProtectedFrom(card, object.card || object.srcCard);
+        return threatRemoves(card, threat) && (hidden || protectedFrom || !threatRemoves(projected, threat));
+      }));
+      if (saved) gain += permanentGameValue(game, card, player) + 2;
+    }
+    return gain;
+  }
+
+  function reactionCombatGain(game, player, projections, removed = [], fog = null) {
+    if (game.phase !== 'combat' || !game.combat?.blockersDeclared ||
+      !['blockers', 'firstStrike'].includes(game.step) || game.untilEffects.some(effect => effect.kind === 'preventAllCombat')) return 0;
+    let gain = 0;
+    const all = game.combat.attackers.filter(card => card.zone === 'battlefield' && card.attacking != null);
+    for (const target of new Set(all.map(card => card.attacking))) {
+      const defender = MTG.defendingPlayerV92(target);
+      if (!defender) continue;
+      const attackers = all.filter(card => card.attacking === target);
+      const assignments = attackers.flatMap(attacker => (attacker.blockedBy || []).filter(card => card.zone === 'battlefield')
+        .map(blocker => ({attacker, blocker})));
+      if (!attackers.some(card => card.ctrl === player || projections.has(card)) && defender !== player &&
+        !assignments.some(pair => pair.blocker.ctrl === player)) continue;
+      const initial = {declared: true, firstStrikeDone: game.step === 'firstStrike'};
+      const before = forecastCombat(game, defender, attackers, assignments, initial);
+      const replace = card => projections.get(card) || card;
+      const after = fog ? {dead: fog.playersOnly ? before.dead : new Set(), life: defender.life,
+        poison: defender.poison || 0, lethal: false, lifeGain: new Map()} :
+        forecastCombat(game, defender, attackers.filter(card => !removed.includes(card)).map(replace),
+          assignments.filter(pair => !removed.includes(pair.attacker) && !removed.includes(pair.blocker))
+            .map(pair => ({attacker: replace(pair.attacker), blocker: replace(pair.blocker)})), initial);
+      const value = outcome => {
+        let score = (outcome.lethal && (!game.canLoseGame || game.canLoseGame(defender)) ? 150 : 0) * (defender === player ? -1 : 1);
+        score += (defender.life - outcome.life) * (defender === player ? (defender.life <= 10 ? -2 : -0.5) : 0.7);
+        score += (outcome.poison - (defender.poison || 0)) * (defender === player ? -5 : 2);
+        score += (outcome.lifeGain.get(player) || 0) * 0.5;
+        for (const card of outcome.dead) if (!removed.includes(game.byIid(card.iid) || card))
+          score += (permanentGameValue(game, game.byIid(card.iid) || card, player) + 2) * (card.ctrl === player ? -1 : 1);
+        return score;
+      };
+      gain += value(after) - value(before);
+    }
+    return gain;
+  }
+
+  function reactionEffectPlan(game, player, source, ability, effects, specs, fixedTargets = null) {
+    const cost = ability?.cost || {};
+    const pumps = effects.filter(effect => ['pump', 'battlefield-group', 'grant-protection'].includes(effect.action));
+    const colorProtection = pumps.find(effect => effect.action === 'grant-protection');
+    const targeted = pumps.filter(effect => typeof effect.target === 'number');
+    // Multi-target and variable effects retain their specialized evaluation.
+    if (new Set(targeted.map(effect => effect.target)).size > 1 || targeted.some(effect => (specs[effect.target]?.count || 1) > 1)) return null;
+    const candidates = targeted.length ? reactionRecipients(game, player, source, targeted[0], specs, fixedTargets) : [null];
+    let best = {score: -100, target: null};
+    for (const target of candidates) for (const color of colorProtection ? (colorProtection.aiColor ? [colorProtection.aiColor] : ['W', 'U', 'B', 'R', 'G']) : [null]) {
+      const projections = new Map();
+      for (const effect of pumps) for (const card of reactionRecipients(game, player, source, effect, specs,
+        typeof effect.target === 'number' ? {[effect.target]: target} : null)) {
+        if (card.ctrl !== player || card.zone !== 'battlefield' || cost.sacSelf && card === source) continue;
+        const projected = pumpedCreature(projections.get(card) || card,
+          {power: effect.power || 0, toughness: effect.toughness || 0, keywords: effect.keywords || []}, 1);
+        if (effect.action === 'grant-protection') projected.cur.protectionFrom = [...(projected.cur.protectionFrom || []),
+          (g, source) => !!source.colors?.includes(color)];
+        projections.set(card, projected);
+      }
+      // Do not stack another copy of protection on the same unresolved save.
+      const covered = new Set();
+      for (const object of game.stack) {
+        if (object.ctrl !== player) continue;
+        const pendingSource = object.card || object.srcCard;
+        if (!pendingSource) continue;
+        const pending = pendingSource.def.aiReactionModes && object.mode?.length === 1 ?
+          pendingSource.def.modes.list[object.mode[0]].aiReactionEffects :
+          reactionEffects(pendingSource, object.kind === 'spell' ? null : object.ctx?.ability);
+        for (const effect of pending || []) if (effect.keywords?.length && !effect.power && !effect.toughness) {
+          for (const card of reactionRecipients(game, player, pendingSource, effect, object.targetSpecs || [], object.targets || [])) {
+            const projected = projections.get(card);
+            if (projected && [...REACTION_KEYWORDS].filter(key => projected.kw(key) && !card.kw(key))
+              .every(key => effect.keywords.includes(key))) covered.add(card);
+          }
+        }
+      }
+      for (const card of covered) projections.delete(card);
+      const removed = cost.sacSelf ? [source] : [];
+      let gain = reactionStackGain(game, player, projections) + reactionCombatGain(game, player, projections, removed,
+        effects.find(effect => effect.action === 'ai-fog'));
+      if (!game.combat?.blockersDeclared) for (const [card, projected] of projections) {
+        const keywords = [...REACTION_KEYWORDS].filter(key => projected.kw(key) && !card.kw(key));
+        if (ability?.sorcery || keywords.some(key => ['haste', 'flying', 'menace', 'trample'].includes(key)))
+          gain += pumpCombatValue(game, player, card, {power: projected.power - card.power,
+            toughness: projected.toughness - card.toughness, keywords}, 1, ability || {});
+      }
+      for (const effect of effects) {
+        if (effect.action === 'scry' && player.library.length) gain += Math.min(1, Number(effect.n) || 0) * 0.5;
+        if (effect.action === 'ring-tempts') gain += 1;
+        if (effect.action === 'populate') gain += Math.max(0, ...game.creatures(player).filter(card => card.isToken)
+          .map(card => permanentGameValue(game, card, player)));
+        if (effect.action === 'gain-life' && effect.who === 'you') gain += Math.min(6, Number(effect.n) || 0) * (player.life <= 5 ? 1.5 : 0.15);
+      }
+      let price = ability ? U.mv(typeof cost.mana === 'string' ? cost.mana : '') * 0.4 + 0.4 : 2.5 + source.mv * 0.35;
+      if (cost.tap) price += routineTapExposure(game, player, source);
+      if (cost.sacSelf) price += (pendingCreatureRemoval(game, source) || sourceDiesInDeclaredCombat(game, source) ? 0.25 :
+        permanentGameValue(game, source, player) + 2) - pumpDeathPayoff(game, player, source);
+      if (cost.life) price += cost.life >= player.life ? 1000 : cost.life * (player.life <= 10 ? 1.5 : 0.3);
+      if (cost.discard || cost.sacCreature || cost.sac || cost.returnSelf || cost.exileSelf) return null;
+      const score = gain - price;
+      if (score > best.score) best = {score, target};
+    }
+    return best;
+  }
+
+  MTG.botShouldHoldInteraction = function (game, player, action) {
+    const card = action.card;
+    if (action.kind !== 'cast' || !card?.is('Instant') || card.def.modes ||
+      game.diplomacyRequiredRemovalTarget?.(player, card)) return false;
+    const sem = inferCardSemantics(card.def);
+    const specs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+    if (specs.length !== 1) return false;
+    const candidates = game.legalTargets(specs[0], card, player);
+    if (sem.roles.includes('counterspell') && /counter target spell/i.test(card.def.oracle || '')) {
+      const counterable = candidates.filter(object => object.kind === 'spell' && object.ctrl !== player && !MTG.isUncounterable?.(game, object));
+      // Keep the existing uncounterable-spell scoring and its diagnostics.
+      if (!counterable.length) return false;
+      return !counterable.some(object => {
+        const spell = object.card;
+        if (!spell) return true;
+        const roles = inferCardSemantics(spell.def).roles;
+        const threatens = game.bf().some(permanent => permanent.ctrl === player &&
+          stackThreatsTo(game, permanent, object).some(threat => threatRemoves(permanent, threat)));
+        const aimedAtUs = (object.targets || []).flat().includes(player) &&
+          /damage|loses? .*life|discards?/i.test(spell.def.oracle || '');
+        return threatens || aimedAtUs || spell.commander || spell.mv >= 4 ||
+          roles.some(role => ['engine', 'combo-piece', 'finisher', 'ramp', 'counterspell'].includes(role));
+      });
+    }
+    // Limit this rule to single-purpose instant removal/burn. Flash bodies,
+    // multi-target spells and spells with independent value keep their own AI.
+    if (!sem.roles.some(role => ['single-target-removal', 'direct-damage'].includes(role)) ||
+      sem.roles.some(role => ['card-draw', 'token-maker', 'ramp', 'protection'].includes(role))) return false;
+    const text = card.def.oracle || '';
+    const damage = (card.def.oracleImplementation || []).find(operation => operation.kind === 'spell-damage');
+    const amount = damage ? Number(damage.n) : Number(/deals? (\d+) damage/.exec(text)?.[1] || 0);
+    const removal = /(?:destroy|exile|return) target (?:creature|permanent|artifact|enchantment)/i.test(text);
+    if (!removal && !amount) return false;
+    return !candidates.some(target => {
+      if (target instanceof U.Player) return target !== player && amount >= target.life && (!game.canLoseGame || game.canLoseGame(target));
+      if (!(target instanceof U.CardInst) || target.ctrl === player) return false;
+      const object = {kind: 'spell', card, srcCard: card, ctrl: player, targets: [target]};
+      if (!stackThreatsTo(game, target, object).some(threat => threatRemoves(target, threat))) return false;
+      if (target.commander || permanentGameValue(game, target, player) >= 5.5) return true;
+      if (game.phase === 'combat' && ['attackers', 'blockers', 'firstStrike'].includes(game.step)) {
+        if (target.blocking && game.turnPlayer === player) return true;
+        if (target.attacking === player && (target.power >= player.life ||
+          reactionCombatGain(game, player, new Map(), [target]) > 3)) return true;
+      }
+      return false;
+    });
+  };
+
+  MTG.botReactionModePlan = function (game, player, source, allowed = null) {
+    let best = {score: -100, mode: 0};
+    for (const [index, mode] of source.def.modes.list.entries()) {
+      if (allowed && !allowed.some(option => Number(option.key) === index)) continue;
+      let plan;
+      if (mode.aiReactionEffects) plan = reactionEffectPlan(game, player, source, null, mode.aiReactionEffects, mode.targets || []);
+      else if (mode.aiDamage) {
+        const targets = game.legalTargets(mode.targets[0], source, player);
+        const value = target => target instanceof U.Player ? target !== player && target.life <= mode.aiDamage &&
+          (!game.canLoseGame || game.canLoseGame(target)) ? 150 : -100 :
+          target.ctrl !== player && target.is('Planeswalker') && !target.kw('indestructible') &&
+          target.counters.loyalty <= mode.aiDamage ? permanentGameValue(game, target, player) + 4 : -100;
+        const target = targets.slice().sort((a, b) => value(b) - value(a))[0];
+        plan = {score: target ? value(target) - 2.5 : -100, target};
+      }
+      if (plan && plan.score > best.score) best = {...plan, mode: index};
+    }
+    return best;
+  };
+
+  MTG.botReactionPlan = function (game, player, action) {
+    const source = action.card || action.entry?.card, ability = action.entry?.ability;
+    if (!source || action.kind === 'activate' && (!ability || ability.loyalty !== undefined)) return null;
+    const effects = reactionEffects(source, ability);
+    if (!effects && !source.def.aiPhaseOutProtection && !source.def.aiReactionModes) return null;
+    if (!ability) {
+      const opts = {...action.alt, from: action.from || source.zone};
+      const cost = game.spellCost(player, source, opts);
+      const payment = game.manaSolve(player, cost, {card: source, castOpts: opts, xVal: 0}, {xVal: 0});
+      const life = Number(cost.lifeCost || 0) + (payment?.plan || []).reduce((sum, step) => sum + Number(step.phyrexianLife || 0), 0);
+      if (life >= player.life && (!game.canLoseGame || game.canLoseGame(player))) return {score: -100};
+    }
+    if (!ability && source.def.aiPhaseOutProtection) {
+      if (game.stack.some(object => object.ctrl === player && object.card?.def.aiPhaseOutProtection)) return {score: -100};
+      let gain = game.bf().filter(card => card.ctrl === player && pendingCreatureRemoval(game, card))
+        .reduce((sum, card) => sum + permanentGameValue(game, card, player) + 2, 0);
+      gain += reactionCombatGain(game, player, new Map(), [], {playersOnly: false});
+      for (const object of game.stack) if ((object.targets || []).flat().includes(player)) {
+        const damage = /deals? (\d+) damage/.exec(object.card?.def.oracle || '');
+        if (damage) gain += Number(damage[1]) >= player.life ? 150 : Number(damage[1]) * (player.life <= 10 ? 1.5 : 0.3);
+      }
+      return {score: gain - 3.5};
+    }
+    if (!ability && source.def.aiReactionModes) return MTG.botReactionModePlan(game, player, source);
+    if (!effects) return null;
+    const targets = ability?.targets || (!ability && source.def.targets) || [];
+    const specs = typeof targets === 'function' ? targets(game, source, action.alt || {}, player) : targets;
+    return reactionEffectPlan(game, player, source, ability, effects, specs);
+  };
+
+  // The following target prompt must choose the body whose rescue justified
+  // spending the card, rather than a more expensive but unthreatened creature.
+  function reactionTargetValue(game, player, target, q) {
+    const hint = q.aiHint || q.spec?.aiHint;
+    if (!hint?.untilEOT || hint.goal !== 'buff' || !(target instanceof U.CardInst)) return null;
+    if (target.ctrl !== player || hint.avoidCostSource && target === q.src) return -1000;
+    const effect = hint.protectionColor ? {action: 'grant-protection', target: 0, choose: 'color', chooser: 'you'} :
+      {action: 'pump', target: 0, power: hint.power || 0, toughness: hint.toughness || 0, keywords: hint.keywords || []};
+    if (effect.power < 0 || effect.toughness < 0) return null;
+    const plan = reactionEffectPlan(game, player, q.src, {cost: {}}, [effect], [q.spec], [target]);
+    return plan?.score ?? null;
+  }
+
+  MTG.botReactionTargetValue = reactionTargetValue;
+
+  MTG.botOptionalEffectDecision = function (game, player, q) {
+    const hint = q.aiHint;
+    if (hint?.kind !== 'optTrigger' || !hint.effects || !q.options?.some(option => option.key === 'no')) return null;
+    const source = hint.src, targets = hint.targets || [];
+    const specs = hint.targetSpecs || [];
+    const costValue = (cost = {}, candidates = hint.costCandidates || []) => {
+      let price = U.mv(cost.mana || '') * 0.6;
+      if (cost.life) price += cost.life >= player.life ? 10000 : cost.life * (player.life <= 10 ? 2 : 0.4);
+      if (cost.energy) price += cost.energy * 0.6;
+      if (cost.sacSelf && source) price += (pendingCreatureRemoval(game, source) ? 0.25 : permanentGameValue(game, source, player) + 2) - pumpDeathPayoff(game, player, source);
+      if (cost.discard) price += Math.min(20, ...player.hand.map(card => cardDefinitionValue(card.def) + 1));
+      if (cost.zone && ['sacrifice', 'discard', 'exile'].includes(cost.action)) {
+        const values = candidates.map(card => cost.action === 'sacrifice' ?
+          (pendingCreatureRemoval(game, card) ? 0.25 : permanentGameValue(game, card, player) + 2) - pumpDeathPayoff(game, player, card) :
+          cost.action === 'discard' ? cardDefinitionValue(card.def) + 1 : cardDefinitionValue(card.def) * 0.5).sort((a, b) => a - b);
+        if (values.length < (cost.n || 1)) return 10000;
+        price += values.slice(0, cost.n || 1).reduce((a, b) => a + b, 0);
+      }
+      return price;
+    };
+    const effectValue = effects => {
+      let value = 0;
+      for (const effect of effects) {
+        if (['draw', 'scry', 'surveil', 'gain-life'].includes(effect.action) && effect.who === 'you' && Number.isFinite(effect.n)) {
+          if (effect.action === 'draw') value += immediateDrawWouldLose(game, player, effect.n) ? -10000 : effect.n * 3.5;
+          else if (effect.action === 'gain-life') value += effect.n * (player.life <= 10 ? 1.2 : 0.3);
+          else value += player.library.length ? effect.n * 0.8 : 0;
+        } else if (effect.action === 'optional-payment') {
+          const benefit = effectValue(effect.effects);
+          if (benefit === null) return null;
+          value += benefit - costValue(effect.payment);
+        } else if (effect.action === 'unless-cost') {
+          const benefit = effectValue(effect.effects);
+          if (benefit === null) return null;
+          value += benefit;
+        } else if (effect.action === 'pump' || effect.action === 'battlefield-group' && effect.operation === 'pump') {
+          const plan = reactionEffectPlan(game, player, source, {cost: {}}, [effect], specs, targets.length ? targets : null);
+          if (!plan) return null;
+          value += plan.score + 0.4;
+        } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
+          const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
+            specs[effect.target] ? game.legalTargets(specs[effect.target], source, player) : [];
+          const score = card => targetValue(game, player, card, {src: source,
+            aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
+          value += targets.length ? recipients.reduce((sum, card) => sum + score(card), 0) : Math.max(0, ...recipients.map(score));
+        } else return null; // Unmodeled free choices keep their specialized/default behavior.
+      }
+      return value;
+    };
+    const benefit = effectValue(hint.effects);
+    const price = costValue(hint.payment);
+    if (price >= 10000) return false;
+    return benefit === null ? null : benefit > price;
+  };
+
   const SACRIFICE_PUMP_CHOICES = new WeakMap();
   MTG.sacrificePumpChoice = function (game, player, q) {
     if (!q.aiHint?.ability) return null;
@@ -3428,6 +3809,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    const reaction = reactionTargetValue(game, player, target, q);
     if(q.aiHint?.goal==='frc-polymorph')return target instanceof U.CardInst&&target.ctrl===player
       ?20-permanentGameValue(game,target,player)+(target.isToken?6:0):-1000;
     if(q.aiHint?.goal==='donate-player-v9')return target instanceof U.Player?(target===player?-20:10):-1000;
@@ -3438,7 +3820,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const value=MTG.OracleV8NameGroups.targetValue(game,player,target,q,card=>baseTargetValue(game,player,card,{...q,aiHint}));
       return value>0?value+wardTargetAdjustment(game,player,target,{...q,aiHint}):value;
     }
-    const base = baseTargetValue(game, player, target, q);
+    const base = reaction ?? baseTargetValue(game, player, target, q);
     // Nema smisla plaćati ward za metu koju ionako ne želimo pogoditi.
     if (base <= 0) return base;
     const value = base + wardTargetAdjustment(game, player, target, q);
@@ -5765,6 +6147,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const quality=action.option?.quality,threats=[...game.bf().filter(card=>card.ctrl!==player),...game.stack.filter(row=>row.ctrl!==player).map(row=>row.card||row.src).filter(Boolean)];
         const matches=card=>quality?.kind==='color'?card.colors?.includes(quality.value):quality?.kind==='type'?card.is?.(quality.value):quality?.kind==='colorless'?card.colors?.length===0:false;
         breakdown.choice=threats.filter(matches).reduce((sum,card)=>sum+1+Math.max(0,card.power||0)+(card.zone==='stack'?15:0),0);
+        if (quality?.kind === 'color') breakdown.choice = (q.aiHint.cards || []).reduce((sum, card) => {
+          const effect = {action: 'grant-protection', target: 0, choose: 'color', chooser: 'you', aiColor: quality.value};
+          const plan = reactionEffectPlan(game, player, card, {cost: {}}, [effect], [{}], [card]);
+          return sum + (plan?.score || 0);
+        }, 0);
       } else if(hintKind==='oracleUnlessPayment'){
         const cost=action.option?.payment,mana=cost?.mana?U.parseCost(cost.mana):null;
         breakdown.choice=!cost?0:cost.kind==='mana'?12-mana.generic-mana.pips.length:cost.kind==='life'?(player.life>cost.n+5?8-cost.n:-20):cost.kind==='discard'?5-cost.n:cost.kind==='tap'?8-cost.n:3-cost.n;
@@ -6436,6 +6823,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     applyStyleSkillScore(view, action, profile, q, breakdown);
     let total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+    const reaction = ['cast', 'activate'].includes(action.kind) && MTG.botReactionPlan(game, player, action);
+    if (reaction && breakdown.safety > -1000) {
+      const tactical = reaction.score > 0 ? reaction.score + (game.stack.at(-1)?.ctrl === player ? 35 : 8) : -100;
+      breakdown.reaction = tactical - total;
+      total = tactical;
+    }
     if (unfavorableWipe && total > -12) {
       // Personality, mana value and generic draw/synergy bonuses must not
       // turn a known losing reset into the default main-phase play.

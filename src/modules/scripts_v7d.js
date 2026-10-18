@@ -92,19 +92,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Boros Charm'] = {
+    aiReactionModes: true,
     modes: {
-      pick: 1,
+      pick: 1, aiHint: {kind: 'reactionMode'},
       list: [
         {
-          label: '4 damage to a player or planeswalker',
+          label: '4 damage to a player or planeswalker', aiDamage: 4,
           targets: [T.any({
             prompt: 'Player or planeswalker',
             filter: (g, target) => target instanceof MTG.Player || target instanceof MTG.CardInst && target.is('Planeswalker'),
-            aiHint: { goal: 'damage', n: 4 },
+            aiHint: { goal: 'damage', amount: 4 },
           })],
         },
-        { label: 'Permanents gain indestructible' },
-        { label: 'Double strike', targets: [T.creature({ prompt: 'Double strike', aiHint: { goal: 'buff' } })] },
+        { label: 'Permanents gain indestructible', aiReactionEffects: [{action: 'battlefield-group', operation: 'pump',
+          filters: [{what: 'permanent', controller: 'you'}], keywords: ['indestructible']}] },
+        { label: 'Double strike', aiReactionEffects: [{action: 'pump', target: 0, keywords: ['double strike']}],
+          targets: [T.creature({ prompt: 'Double strike', aiHint: { goal: 'buff', untilEOT: true, keywords: ['double strike'] } })] },
       ],
     },
     resolve: async ctx => {
@@ -159,6 +162,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Heroic Intervention'] = {
+    aiReactionEffects: [{action: 'battlefield-group', operation: 'pump',
+      filters: [{what: 'permanent', controller: 'you'}], keywords: ['hexproof', 'indestructible']}],
     resolve: async ctx => {
       for (const c of ctx.g.bf().filter(c => c.ctrl === ctx.you)) {
         E.grantUntilEOT(ctx.g, c, ['indestructible']);

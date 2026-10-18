@@ -214,6 +214,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // untap instruction determines whether the shared target is helped.
     const effect = matching.find(candidate => candidate.action === 'counter' && candidate.counter === 'stun') || matching.find(candidate => !['change-characteristics-v8', 'characteristics-v8', 'reveal-hand'].includes(candidate.action)) || matching[0];
     if (!effect) return null;
+    if (effect.action === 'grant-protection' && effect.choose === 'color' && effect.chooser === 'you')
+      return {goal: 'buff', untilEOT: true, protectionColor: true};
     for (const handler of v20.handlers) {
       const hint = handler.targetHint?.(effect, target, index);
       if (hint) return hint;
@@ -1639,7 +1641,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(candidates.length<cost.n)return;
       }
       if(cost.life&&!ctx.g.canPayLife(player,cost.life)||cost.mana&&!ctx.g.canPayMana(player,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0})||cost.energy&&MTG.OracleV8Energy.count(player)<cost.energy)return;
-      const answer=await player.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay the reflexive ability cost?',options:[{key:'yes',label:'Pay'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src}});
+      const answer=await player.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay the reflexive ability cost?',options:[{key:'yes',label:'Pay'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src,
+        effects:effect.reflexiveBody.effects,payment:cost,costCandidates:candidates,
+        targetSpecs:(effect.reflexiveBody.targets||[]).map((target,index)=>genericResolutionTargetSpec(ctx,target,effect.reflexiveBody.effects,index))}});
       if(answer!=='yes')return;
       if(cost.energy&&!MTG.OracleV8Energy.spend(ctx.g,player,cost.energy,ctx.src))return;
       if(cost.mana&&!await ctx.g.payMana(player,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0}))return;
@@ -2048,7 +2052,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(cost.life&&!ctx.g.canPayLife(ctx.you,cost.life)|| cost.discard && !ctx.you.hand.length) return;
       if(cost.mana&&!ctx.g.canPayMana(ctx.you,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0}))return;
       const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay the optional cost?',
-        options:[{key:'yes',label:'Pay'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src}});
+        options:[{key:'yes',label:'Pay'},{key:'no',label:'Decline'}],aiHint:{kind:'optTrigger',src:ctx.src,
+          effects:effect.effects,payment:cost,targets:ctx.targets}});
       if(answer!=='yes') return;
       if(cost.mana&&!await ctx.g.payMana(ctx.you,MTG.parseCost(cost.mana),null,{reservedLife:cost.life||0}))return;
       if(cost.life&&!await ctx.g.payLifeV92(ctx.you,cost.life,{source:ctx.src,reason:'Optional cost'}))return;
@@ -2670,6 +2675,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ...(triggerTimes ? {times: operation.onceEachTurn && !onceOnUse ? (...args) => Math.min(1, triggerTimes(...args)) : triggerTimes} : {}),
       ...(operation.zone ? {zone:operation.zone} : {}),
       desc: operation.desc || 'Oracle effect',
+      aiHint: {effects: operation.effects},
       // A printed "you may" changes what happens on resolution; it does not
       // make choosing targets optional while the ability is put on the Stack.
       // Keep untargeted legacy optionals on the engine's existing path.
@@ -2703,7 +2709,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             type: 'chooseOption',
             prompt: `${ctx.src ? ctx.src.name : ''}: ${operation.desc || 'Oracle effect'} — use it?`,
             options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
-            aiHint: { kind: 'optTrigger', src: ctx.src, name: operation.desc || 'Oracle effect' },
+            aiHint: { kind: 'optTrigger', src: ctx.src, name: operation.desc || 'Oracle effect',
+              effects: operation.effects, targets: ctx.targets },
             data: ctx.data,
           });
           if (yes !== 'yes') return;

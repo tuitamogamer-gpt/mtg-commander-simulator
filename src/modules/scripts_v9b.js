@@ -1907,6 +1907,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Sac: legends indestructible', cost: { sacSelf: true },
+      aiReactionEffects: [{action: 'battlefield-group', operation: 'pump',
+        filters: [{what: 'permanent', controller: 'you', legendary: true}], keywords: ['indestructible']}],
       priorityRelevant: (g, self, p) => g.bf().some(c => c !== self && c.ctrl === p &&
         (c.cur.super || []).includes('Legendary') && !c.kw('indestructible')),
       run: async ctx => {

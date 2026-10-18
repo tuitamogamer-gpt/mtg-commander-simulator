@@ -654,15 +654,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         try {
           const prioritySessionKey = q.type === 'priority'
             ? `${g._prioritySessionId || 0}|${this.p.idx}` : null;
-          // After a useful pump resolves, reassess whether another sacrifice
-          // is still needed (e.g. two Kobolds for lethal). Never pile them onto
-          // our own unresolved stack object or bypass the budget for no gain.
-          const usefulPump = q.type === 'priority' && !g.stack.length &&
-            (q.acts || []).some(entry => MTG.sacrificePumpPlan(g, this.p, entry)?.score > 0);
-          if (prioritySessionKey && this._v2PrioritySessionUsed === prioritySessionKey && !usefulPump) return { kind: 'pass' };
+          // A new threat or the next useful pump can warrant another action
+          // within this priority session. The tactical plans reject redundant
+          // unresolved protection and repeated activations without a gain.
+          const usefulReaction = q.type === 'priority' && (
+            !g.stack.length && (q.acts || []).some(entry => MTG.sacrificePumpPlan(g, this.p, entry)?.score > 0) ||
+            (q.acts || []).some(entry => MTG.botReactionPlan(g, this.p, {kind: 'activate', entry})?.score > 0) ||
+            (q.casts || []).some(entry => MTG.botReactionPlan(g, this.p, {kind: 'cast', ...entry})?.score > 0));
+          if (prioritySessionKey && this._v2PrioritySessionUsed === prioritySessionKey && !usefulReaction) return { kind: 'pass' };
           const emptyPriorityKey = q.type === 'priority' && !g.stack.length
             ? `${g.turnNo}|${g.phase}|${g.step}|${this.p.idx}` : null;
-          if (emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey && !usefulPump) return { kind: 'pass' };
+          if (emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey && !usefulReaction) return { kind: 'pass' };
           this.lastV2Decision = await MTG.chooseBotAction({
             gameState: g,
             botPlayerId: this.p.idx,
@@ -770,6 +772,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     castScore(g, e) {
+      if (MTG.botShouldHoldInteraction(g, this.p, {kind: 'cast', ...e})) return -1;
+      const reaction = MTG.botReactionPlan(g, this.p, {kind: 'cast', ...e});
+      if (reaction) return reaction.score > 0 ? reaction.score : -1;
       const c = e.card, p = this.p;
       const P = this.persona;
       let v = this.cardValue(g, c);
@@ -852,6 +857,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const a = e.ability;
       if (!a) return 0;
+      const reaction = MTG.botReactionPlan(g, this.p, {kind: 'activate', entry: e});
+      if (reaction) return reaction.score;
       const pumpPlan = MTG.sacrificePumpPlan(g, this.p, e);
       if (pumpPlan) return pumpPlan.score;
       const copyValues = MTG.valkiCopyXValues(g, this.p, c, a);
@@ -883,6 +890,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // respond only with instants/abilities when valuable
       const stackTop = g.stack[g.stack.length - 1];
       for (const e of q.casts) {
+        if (MTG.botShouldHoldInteraction(g, p, {kind: 'cast', ...e})) continue;
+        const reaction = MTG.botReactionPlan(g, p, {kind: 'cast', ...e});
+        if (reaction) {
+          if (reaction.score > 0) return {kind: 'cast', ...e};
+          continue;
+        }
         const c = e.card;
         const o = (c.def.oracle || '').toLowerCase();
         if (/counter target spell/.test(o) && stackTop && stackTop.kind === 'spell' && stackTop.ctrl !== p) {
@@ -910,6 +923,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // uključujući Stella Lee (kopiraj svoj spell), što je gasilo cijeli deck.
       for (const e of (q.acts || [])) {
         const a = e.ability;
+        const reaction = MTG.botReactionPlan(g, p, {kind: 'activate', entry: e});
+        if (reaction) {
+          if (reaction.score > 0) return {kind: 'activate', entry: e};
+          continue;
+        }
         if (MTG.sacrificePumpPlan(g, p, e)?.score > 0) return {kind: 'activate', entry: e};
         if (!a || !a.targets) continue;
         const targetSpecs=typeof a.targets==='function'?a.targets(g,e.card,{player:p}):a.targets;
@@ -1062,6 +1080,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
+      const reactions = cands.map(card => ({card, score: MTG.botReactionTargetValue(g, this.p, card, q)}));
+      if (reactions.length && reactions.every(row => row.score !== null)) return reactions
+        .sort((a, b) => b.score - a.score || a.card.iid - b.card.iid)
+        .slice(0, q.max || q.min || 1).map(row => row.card);
       if(goal==='exchange-life-v18'){
         const players=cands.filter(p=>p instanceof MTG.Player),hint=q.spec?.aiHint||q.aiHint||{};
         if(hint.withYou)return players.filter(p=>p!==this.p).sort((a,b)=>b.life-a.life).slice(0,1);
@@ -1688,7 +1710,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (this.p.library.length && profile && profile.primarySynergies.includes('tokens') && keys.includes('cloak')) return 'cloak';
           return keys.includes('draw') ? 'draw' : keys[0];
         }
-        case 'optTrigger': return 'yes';
+        case 'reactionMode': {
+          const plan = MTG.botReactionModePlan(g, this.p, q.aiHint.card, q.options);
+          return q.options.find(option => Number(option.key) === plan.mode).key;
+        }
+        case 'optTrigger': return MTG.botOptionalEffectDecision(g, this.p, q) === false ? 'no' : 'yes';
         case 'inspiritCounter': {
           const target = q.aiHint && q.aiHint.target;
           const wantsCharge = target && (target.def.stationCreatureAt
