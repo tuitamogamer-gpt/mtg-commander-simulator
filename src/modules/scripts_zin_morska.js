@@ -369,6 +369,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Selfless Spirit'] = {
     abilities: [{
       label: 'Sacrifice: indestructible to all', cost: { sacSelf: true },
+      aiReactionEffects: [{action: 'battlefield-group', operation: 'pump',
+        filters: [{what: 'creature', controller: 'you'}], keywords: ['indestructible']}],
       priorityRelevant: (g, self, p) => g.creatures(p).some(c => c !== self && !c.kw('indestructible')),
       run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 0, 0, ['indestructible']); },
     }],

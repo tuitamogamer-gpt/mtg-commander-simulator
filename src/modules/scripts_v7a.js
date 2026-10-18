@@ -1261,6 +1261,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Sac: tokens indestructible', cost: { sacSelf: true },
+      aiReactionEffects: [{action: 'battlefield-group', operation: 'pump',
+        filters: [{what: 'creature', controller: 'you', token: true}], keywords: ['indestructible']}],
       priorityRelevant: (g, self, p) => g.creatures(p).some(c => c !== self && c.isToken && !c.kw('indestructible')),
       run: async ctx => {
         for (const c of ctx.g.creatures(ctx.you)) if (c.isToken) E.grantUntilEOT(ctx.g, c, ['indestructible']);
@@ -1585,6 +1587,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Sac: indestructible', cost: { sacCreature: true, sacOther: true },
+      aiSelfPump: {power: 0, toughness: 0, keywords: ['indestructible']},
       priorityRelevant: (g, self) => !self.kw('indestructible'),
       run: async ctx => { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
       aiScore: (g, c, p) => 0.3,
