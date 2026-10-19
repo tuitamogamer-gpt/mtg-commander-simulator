@@ -88,6 +88,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (hidden) result.def = { ...def, power: card.power, toughness: card.toughness };
     }
     if (!hidden) {
+      if (publicBody && !card.faceDown && meta.cursedPlayer instanceof U.Player) result.meta.cursedPlayer = { $ref: token(meta.cursedPlayer) };
       if (meta.playableBy instanceof U.Player) result.meta.playableBy = { $ref: token(meta.playableBy) };
       result.faceUpCosts = data(card.owner?.game?.faceUpCosts?.(card) || []);
       try { result.castCost = data(card.owner?.game?.spellCost(viewer, card, {})); } catch { /* No cast context. */ }
