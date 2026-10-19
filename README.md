@@ -620,6 +620,8 @@ Guest and account deck libraries are separate; signing in does not silently merg
 
 **Game Menu → Report a problem** captures the current Solo checkpoint, recorded choices, and loaded game version. Add a description and download the report; nothing is sent automatically. **Include Solo replay** attaches all saved cards and choices, including hidden cards. Uncheck it for public diagnostics only. Live reports contain public diagnostics only.
 
+Player Auras such as Curses show **Enchants: player name** on the battlefield card and in its details. This is the player affected by the Aura; the battlefield heading names its controller. If an effect appears to affect the wrong player, include the affected creatures' names in the problem report.
+
 Open a downloaded Solo report under **Setup → Support & Diagnostics → Open problem replay**, then choose **Start diagnostic replay**. It restores the checkpoint and replays recorded decisions without replacing your normal save or updating profile statistics. A different game version can stop replay at a changed decision. A report captures completed decisions; it cannot restore an in-progress JavaScript call or guarantee reproduction of a timing-dependent failure.
 
 The existing **Download debug snapshot** exports the public `mtg-commander-debug/v1` format. **Import debug snapshot** restores its setup and seed from turn one.

@@ -3464,7 +3464,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const groups = new Map();
       const out = [];
       for (const c of perms) {
-        const key = c.commander || c.attachments.length || c.attacking || c.blocking || c.meta.prepared
+        const key = c.commander || c.attachments.length || c.attacking || c.blocking || c.meta.prepared || c.meta.cursedPlayer
           ? 'solo' + c.iid
           : `${c.name}|${c.tapped}|${c.sick}|${c.is('Creature') ? c.power + '/' + c.toughness : ''}|${JSON.stringify(c.counters)}|${c.damage || 0}|${!!c.deathtouched}|${c.isToken}`;
         if (groups.has(key)) groups.get(key).n++;
@@ -3908,6 +3908,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const crewed = (c.hasSub('Vehicle') && c.meta.crewedTurn === g.turnNo)
         ? '<div class="crewtag" title="Crewed this turn">CREW</div>' : '';
       const att = c.attachments.length ? `<div class="att">🔗${c.attachments.length}</div>` : '';
+      const enchantedPlayer = c.zone === 'battlefield' && !c.faceDown ? c.meta.cursedPlayer : null;
+      const enchantPlayerTag = enchantedPlayer
+        ? `<div class="enchantplayertag" title="${escAttr('Enchants: ' + enchantedPlayer.name)}">Enchants: ${esc(enchantedPlayer.name)}</div>` : '';
       const merged = c.mutateState ? MTG.Mutate.present(c,this.me) : c.meta.mutateComponents || [];
       const mutateTag = merged.length ? `<div class="mutatetag" title="${escAttr(merged.map(r=>r.name).join(' + '))}">MUTATE · ${merged.length}</div>` : '';
       const tok = c.isToken ? `<div class="toktag">TOKEN</div>` : '';
@@ -3928,13 +3931,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.innerHTML = `
         ${cardArtHTML(c.faceDown && mayLookFaceDown ? shownFaceDownDef : c, '', c.faceDown && !mayLookFaceDown)}
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${faceUpTag}${stackN}${keywordBadges}${mutateTag}${preparedTag}
+        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${faceUpTag}${stackN}${keywordBadges}${mutateTag}${preparedTag}${enchantPlayerTag}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       let accessibleName = c.faceDown && !mayLookFaceDown
         ? 'Face-down permanent'
         : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
       if (markedDamage) accessibleName += `. ${markedDamage.detail}`;
+      if (enchantedPlayer) accessibleName += `. Enchants: ${enchantedPlayer.name}`;
       if (faceUpActions.length) accessibleName += '. Turn face up available';
       if (prepared) accessibleName += `. Prepared: ${prepared.name}.${preparedCastable ? ' Cast available.' : ''}`;
       if (this.deathReturnState(c)) accessibleName += `. ${this.deathReturnState(c)}`;
@@ -6108,6 +6112,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const identity = el('div', 'cardinspectionidentity', `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div><div class="stype">${esc(typeLine)}</div>`);
       const details = el('div', 'cardinspectiondetails');
       details.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
+        `${card.zone === 'battlefield' && !card.faceDown && card.meta.cursedPlayer ? `<div class="animatedpermanentstate enchantplayerstate">Enchants: ${esc(card.meta.cursedPlayer.name)}</div>` : ''}` +
         `${landCreature ? '<div class="animatedpermanentstate">LAND CREATURE · ACTIVE ON THE BATTLEFIELD</div>' : ''}` +
         suspendState +
         `
