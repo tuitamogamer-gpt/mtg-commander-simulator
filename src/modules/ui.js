@@ -822,6 +822,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return Number.isFinite(amount) ? Math.max(0, Math.floor(amount)) : 0;
     }
 
+    // Presentation-only life band: tints a low public life total.
+    lifeBandClass(p) {
+      const life = Number(p && p.life);
+      if (!Number.isFinite(life) || life > 10) return '';
+      return life <= 5 ? ' life-low life-critical' : ' life-low';
+    }
+
     poisonBadge(p) {
       const amount = this.poisonCount(p);
       if (!amount) return '';
@@ -2750,10 +2757,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const bar = el('header', 'topbar arenaheader');
       const left = el('div', 'phasewrap');
       left.appendChild(el('div', 'phase', `<b>Turn ${g.turnNo}</b><span>${esc(g.turnPlayer ? g.turnPlayer.name : '')}</span><em>${esc(this.phaseName(g))}</em>`));
-      const steps = [['untap', 'UT'], ['upkeep', 'UK'], ['draw', 'DR'], ['main1', 'M1'], ['combat', 'COMBAT'], ['main2', 'M2'], ['end', 'END']];
+      const steps = [['untap', 'UT', 'Untap'], ['upkeep', 'UK', 'Upkeep'], ['draw', 'DR', 'Draw'], ['main1', 'M1', 'Main 1'], ['combat', 'COMBAT', 'Combat'], ['main2', 'M2', 'Main 2'], ['end', 'END', 'End']];
       const cur = g.phase === 'cleanup' ? 'end' : g.phase;
+      const curIndex = steps.findIndex(([key]) => key === cur);
       const stepper = el('div', 'stepper');
-      for (const [key, label] of steps) stepper.appendChild(el('span', 'step' + (cur === key ? ' on' : ''), label));
+      stepper.setAttribute('aria-label', 'Turn structure');
+      steps.forEach(([key, short, full], index) => {
+        const step = el('span', 'step' + (cur === key ? ' on' : '') + (curIndex > index ? ' done' : ''),
+          `<span class="step-short" aria-hidden="true">${short}</span><span class="step-long">${full}</span>`);
+        step.dataset.step = key;
+        step.title = full;
+        if (cur === key) step.setAttribute('aria-current', 'step');
+        stepper.appendChild(step);
+      });
       left.appendChild(stepper);
       bar.appendChild(left);
 
@@ -3234,7 +3250,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${escAttr(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${U.icon('life')}<b>${p.life}</b></span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}</span>
+          <span class="playerlifetotals"><span class="opplife${this.lifeBandClass(p)}" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${U.icon('life')}<b>${p.life}</b></span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}</span>
           <span class="oppmeta">${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
@@ -3634,7 +3650,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
-      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}${this.experienceBadge(me)}${this.radBadge(me)}</div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife${this.lifeBandClass(me)}" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}${this.experienceBadge(me)}${this.radBadge(me)}</div>
         ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>

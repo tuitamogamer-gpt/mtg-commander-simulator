@@ -1,0 +1,126 @@
+/* Arena chrome polish (2026-10-20). Presentation only: this sheet never moves
+   a battlefield, opponent zone or the hand row. It refines the turn tracker,
+   active-turn emphasis, life bands, lane labels and the decision status. */
+
+/* Turn tracker: one segmented track. Finished steps stay readable, the
+   current step is the only filled pill. Short labels are the default. */
+#game .stepper .step-long { display: none; }
+body.game-active #game.command-table .arenaheader .stepper {
+  gap: 2px; padding: 3px; border: 1px solid var(--ds-line-soft); border-radius: 10px;
+  background: linear-gradient(180deg, rgba(var(--ds-panel-raised-rgb), .55), rgba(var(--ds-panel-rgb), .7));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .03);
+}
+body.game-active #game.command-table .arenaheader .stepper .step {
+  position: relative; min-width: 34px !important; height: 30px; padding: 0 10px !important;
+  color: var(--ds-muted); background: transparent !important; border: 1px solid transparent !important;
+  border-radius: 7px !important; box-shadow: none !important;
+  font: 700 9.5px/1 var(--ds-font-body); letter-spacing: .1em; text-transform: uppercase;
+  transition: color var(--ds-t-fast) var(--ds-ease), background var(--ds-t-fast) var(--ds-ease);
+}
+body.game-active #game.command-table .arenaheader .stepper .step.done { color: rgba(var(--ds-accent-soft-rgb), .78); }
+body.game-active #game.command-table .arenaheader .stepper .step.done::after {
+  content: ''; position: absolute; left: 50%; bottom: 3px; width: 3px; height: 3px; margin-left: -1.5px;
+  border-radius: 50%; background: rgba(var(--ds-accent-rgb), .55);
+}
+body.game-active #game.command-table .arenaheader .stepper .step.on {
+  min-width: 44px !important; color: var(--ds-accent-ink) !important;
+  background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent)) !important;
+  border-color: rgba(var(--ds-accent-bright-rgb), .9) !important;
+  box-shadow: 0 6px 18px rgba(var(--ds-accent-rgb), .3), inset 0 1px rgba(255, 255, 255, .45) !important;
+}
+body.game-active #game.command-table.combat-phase .arenaheader .stepper .step.on {
+  background: linear-gradient(180deg, #ff9a7e, #d9573f) !important; border-color: #ffb39f !important;
+  box-shadow: 0 6px 18px rgba(217, 87, 63, .32), inset 0 1px rgba(255, 255, 255, .45) !important;
+}
+/* Full step names when the header has room; status chips keep the short form. */
+@media (min-width: 1251px) {
+  #game.command-table .arenaheader:not(:has(.monarchstatus, .politicsstatus)) .stepper .step-short { display: none; }
+  #game.command-table .arenaheader:not(:has(.monarchstatus, .politicsstatus)) .stepper .step-long { display: inline; }
+  body.game-active #game.command-table .arenaheader:not(:has(.monarchstatus, .politicsstatus)) .stepper .step {
+    letter-spacing: .02em; text-transform: none; font-size: 11px; font-weight: 650;
+  }
+}
+
+/* Active turn: a warm hairline and soft light around the lane whose turn it is.
+   Shadows only, so no lane changes size. */
+body.game-active #game.command-table .opprow.active,
+body.game-active #game.command-table.human-turn .myboard {
+  box-shadow: 0 0 0 1px rgba(var(--ds-accent-rgb), .55), 0 0 32px rgba(var(--ds-accent-rgb), .14), inset 0 1px rgba(var(--ds-accent-bright-rgb), .12) !important;
+}
+body.game-active.high-contrast #game.command-table .opprow.active,
+body.game-active.high-contrast #game.command-table.human-turn .myboard {
+  box-shadow: 0 0 0 2px var(--ds-accent-bright) !important;
+}
+#game.command-table .ct-turn-badge,
+#game.command-table.ct-desktop-lands .opphead .ct-turn-badge {
+  display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 2px 7px 2px 6px;
+  vertical-align: 1px; color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .13);
+  border: 1px solid rgba(var(--ds-accent-rgb), .38); border-radius: 999px;
+  font: 700 10px/1.3 var(--ds-font-body); letter-spacing: .02em; white-space: nowrap;
+}
+#game.command-table .ct-turn-badge::before,
+#game.command-table.ct-desktop-lands .opphead .ct-turn-badge::before {
+  content: ''; display: block; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--ds-accent-bright); box-shadow: 0 0 0 0 rgba(var(--ds-accent-bright-rgb), .6);
+  animation: arena-turn-pulse 2.4s var(--ds-ease) infinite;
+}
+#game.command-table .ct-player-name > small { display: flex; align-items: center; flex-wrap: wrap; gap: 0 2px; }
+#game.command-table .ct-player-name > small .ct-turn-badge { margin-left: 6px; }
+@keyframes arena-turn-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--ds-accent-bright-rgb), .55); }
+  70%, 100% { box-shadow: 0 0 0 6px rgba(var(--ds-accent-bright-rgb), 0); }
+}
+
+/* Life bands: low life is tinted, critical life also warms its glow.
+   The number itself still carries the state for screen readers. */
+#game .opplife.life-low, #game .melife.life-low, #game .ct-seat-life.life-low { color: #ffb08f !important; }
+#game .opplife.life-low .gameicon { color: #ff9a7e; }
+#game .opplife.life-critical, #game .melife.life-critical, #game .ct-seat-life.life-critical {
+  color: var(--ds-danger) !important; text-shadow: 0 0 14px rgba(239, 139, 123, .45);
+}
+
+@media (min-width: 901px) {
+  /* "LANDS · MANA" fits its 34px column on two clean lines instead of
+     collapsing to "LAN…" on your own lane. */
+  body.game-active #game.command-table.ct-desktop-lands :is(.ct-resource-dock, .resourcezone) > .boardlanelabel {
+    flex: 0 0 34px !important; width: 34px !important; overflow: visible; text-overflow: clip;
+    font-size: 7.5px !important; letter-spacing: .12em !important; line-height: 1.35 !important;
+  }
+  /* Your life total keeps a small label beside the number at every desktop width
+     (it used to inherit the number's size at 1024px). */
+  #game.command-table .ct-player-head .melife { align-items: baseline !important; gap: 4px !important; }
+  #game.command-table .ct-player-head .melife small {
+    display: inline; padding: 0; color: var(--ds-muted);
+    font: 700 8px/1 var(--ds-font-body) !important; letter-spacing: .14em; text-transform: uppercase;
+  }
+
+  /* Decision status reads as a live chip: a pulsing dot when the game waits on you. */
+  #game.command-table .ct-decision-rail .waitownership strong {
+    display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px 5px 9px; white-space: nowrap;
+    border-radius: 999px; border: 1px solid var(--ds-line-soft); background: rgba(var(--ds-panel-raised-rgb), .7);
+    color: var(--ds-copy); font: 700 11px/1.2 var(--ds-font-body); letter-spacing: .02em;
+  }
+  #game.command-table .ct-decision-rail .waitownership strong::before {
+    content: ''; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--ds-muted);
+  }
+  #game.command-table .ct-decision-rail .waitownership[data-wait-kind='human'] strong {
+    color: var(--ds-accent-bright); border-color: rgba(var(--ds-accent-rgb), .42); background: rgba(var(--ds-accent-rgb), .1);
+  }
+  #game.command-table .ct-decision-rail .waitownership[data-wait-kind='human'] strong::before {
+    background: var(--ds-accent-bright); animation: arena-turn-pulse 2.4s var(--ds-ease) infinite;
+  }
+
+  /* A review overlay is a dialog-level surface: opaque, so the life total of the
+     lane underneath no longer shows through its heading. */
+  #game.command-table.ct-expanded-decision .ct-decision-rail {
+    background: var(--ds-dialog); border-color: rgba(var(--ds-accent-rgb), .28);
+    box-shadow: 0 24px 60px rgba(2, 6, 12, .7), 0 0 0 1px rgba(255, 255, 255, .03), inset 0 1px rgba(255, 255, 255, .04);
+  }
+  #game.command-table.ct-expanded-decision .ct-decision-heading h2 { font-family: var(--ds-font-display); letter-spacing: -.02em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #game .ct-turn-badge::before, #game .waitownership strong::before { animation: none !important; }
+}
+body.reduced-motion #game .ct-turn-badge::before,
+body.reduced-motion #game .waitownership strong::before { animation: none !important; }

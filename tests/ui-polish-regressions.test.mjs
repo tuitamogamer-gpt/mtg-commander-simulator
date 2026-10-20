@@ -113,9 +113,9 @@ test('central stack action becomes a usable single-column sheet on phones', () =
 });
 
 test('life, zone, and opponent-detail controls explain their click targets to keyboard and assistive users', () => {
-  assert.match(ui, /class="opplife" role="button" tabindex="0" aria-label=/);
+  assert.match(ui, /class="opplife\$\{this\.lifeBandClass\(p\)\}" role="button" tabindex="0" aria-label=/);
   assert.match(ui, /aria-label="Open \$\{esc\(p\.name\)\} player details"/);
-  assert.match(ui, /class="melife" role="button" tabindex="0" aria-label=/);
+  assert.match(ui, /class="melife\$\{this\.lifeBandClass\(me\)\}" role="button" tabindex="0" aria-label=/);
   assert.match(ui, /control\.setAttribute\('aria-label', `\$\{player\.name\}: \$\{label\}, \$\{count\} card/);
   assert.match(ui, /for \(const zone of \['graveyard', 'exile'\]\) zones\.appendChild\(this\.zoneCounter\(me, zone\)\)/);
   assert.match(ui, /e\.key !== 'Enter' && e\.key !== ' '/);
