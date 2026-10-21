@@ -17,7 +17,7 @@ try{for(const width of [1440,390])for(const deck of precons){
  const page=await browser.newPage({viewport:{width,height:width===390?844:1000},reducedMotion:'reduce'});page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push({deck:deck.name,width,error:e.message}));page.on('response',r=>{if(r.status()>=400)errors.push({deck:deck.name,width,url:r.url(),status:r.status()});});
  await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
  await page.goto(`http://127.0.0.1:${server.address().port}`);await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
- await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
+ await page.locator('.decksearch input').fill(deck.name);await page.locator(`.deckentry[data-deck="${deck.name}"] .deckcard:visible`).click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
  await page.evaluate(async deck=>{
   document.querySelector('#game').replaceWith(document.querySelector('#game').cloneNode(false));
   const ui=new MTG.UI(),g=new MTG.Game({seed:90817,paced:true,onEvent:()=>ui.queueRender()}),a=g.addPlayer('You',{name:deck.name},null,false),b=g.addPlayer('Local AI',{name:'Primal Genesis'},null,true);
@@ -66,7 +66,7 @@ try{for(const width of [1440,390])for(const deck of precons){
    if(s.sourceZone==='library')await page.locator('[data-testid="library-top-peek"]').click();else{await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill(s.name);await page.locator(`.commandresult[data-card-id="${s.source}"]`).click();}
    if(s.label==='Cast')await page.locator('.sheetacts .pbtn.primary:not(:disabled)').first().click();else await page.locator('.sheetacts button:not(:disabled)').filter({hasText:new RegExp(s.label,'i')}).first().click();continue;
   }
-  if(s.type==='chooseX'){const val=Number(await page.locator('.modal .xval').textContent());if(val!==1){await page.locator('.modal button').filter({hasText:val<1?/^\+$/ : /^−$/}).click();continue;}if(await click('.modal .pbtn.primary:not(:disabled):visible'))continue;}
+  if(s.type==='chooseX'){const val=Number(await page.locator('.modal .xval').inputValue());if(val!==1){await page.locator('.modal button').filter({hasText:val<1?/^\+$/ : /^−$/}).click();continue;}if(await click('.modal .pbtn.primary:not(:disabled):visible'))continue;}
   if(s.type==='attackers'){
    await openCombatOverview(page);
    if(!await page.locator('.attackalloclane.focused').count()){if(await click('.attackalloclane.player'))continue;}

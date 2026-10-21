@@ -27,7 +27,7 @@ try{
     await page.goto(base);assert.ok(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount)>=160,'the catalog keeps at least the 160 decks this suite imported');
     await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
     assert.ok(await page.evaluate(()=>Object.keys(MTG.DECKS).length)>=160,'the catalog keeps at least the 160 decks this suite imported');
-    await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();
+    await page.locator('.decksearch input').fill(deck.name);await page.locator(`.deckentry[data-deck="${deck.name}"] .deckcard:visible`).click();
     assert.ok((await page.locator('.deckspotlight').innerText()).includes(deck.commander));
     await page.waitForFunction(()=>[...document.querySelectorAll('.deckspotlight img')].every(img=>img.complete&&img.naturalWidth>0));
     await page.screenshot({path:`${out}/${deck.slug}-${width}-select.png`});
