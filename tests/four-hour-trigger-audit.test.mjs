@@ -213,7 +213,7 @@ test('Monarch: two simultaneous native attackers create two independently counte
   assert.ok(mana.every(c=>c.tapped));assert.ok(stifles.every(c=>c.zone==='graveyard'));assert.equal(f.game.monarch?.idx,f.me.idx);
 });
 
-test('Monarch: crown ability remembers the damaging creature controller through paid Ray of Command',async()=>{
+test('Monarch: crown ability follows the damaging creature’s current controller through paid Ray of Command',async()=>{
   const f=fixture();await f.cast('Thorn of the Black Rose',['Swamp','Swamp','Swamp','Swamp']);
   const attacker=f.put('Grizzly Bears','battlefield',f.rival),ray=f.put('Ray of Command','hand'),mana=Array.from({length:4},()=>f.put('Island'));
   f.game.turnPlayer=f.rival;f.attackers=()=>[{card:attacker,target:f.me}];let responded=false;
@@ -224,7 +224,7 @@ test('Monarch: crown ability remembers the damaging creature controller through 
   };
   await f.game.combatPhase(f.rival);await f.settle();
   assert.equal(responded,true);assert.ok(mana.every(c=>c.tapped));assert.equal(attacker.ctrl.idx,f.me.idx);
-  assert.equal(f.game.monarch?.idx,f.rival.idx,'the creature controller is captured when combat damage happens');
+  assert.equal(f.game.monarch?.idx,f.me.idx,'CR 608.2h: the stolen creature’s controller as the ability resolves keeps the crown');
 });
 
 test('Monarch: an end-step draw keeps its original player after a paid opposing flash monarch creature',async()=>{

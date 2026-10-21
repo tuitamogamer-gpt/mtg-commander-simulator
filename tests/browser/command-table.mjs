@@ -301,6 +301,9 @@ try {
     const target = _game.bf().find(card => card.ctrl === _ui.me && card.name === 'Sol Ring');
     _game.stack.push({ kind: 'spell', name: spell.name, ctrl: _game.players[1], card: spell, targets: [[target]], castOpts: {} });
     window.__ctPriorityAnswer = null;
+    // A real nested pause: a reaction window never coexists with a pending
+    // main decision, and its buttons ignore clicks while one is pending.
+    _ui.prioMode = 'off';
     void _ui.me.controller.decide(_game, { type: 'priority', player: _ui.me, casts: _game.castableList(_ui.me), acts: [] })
       .then(answer => { window.__ctPriorityAnswer = answer; });
   });

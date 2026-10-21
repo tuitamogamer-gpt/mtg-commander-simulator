@@ -83,7 +83,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       seat.setAttribute('aria-label', `Focus ${player.name}, ${player.life} life${counters.length ? ', ' + counters.join(', ') : ''}${player === game.turnPlayer ? ', active turn' : ''}`);
       if (player === game.turnPlayer) seat.setAttribute('aria-current', 'true');
       const copy = node('span', 'ct-seat-copy');
-      copy.append(node('b', '', player.name), node('span', 'ct-seat-life', `${player.life} life`));
+      copy.append(node('b', '', player.name), node('span', 'ct-seat-life' + (this.lifeBandClass?.(player) || ''), `${player.life} life`));
       if (counters.length) copy.append(node('small', '', counters.join(' · ')));
       seat.append(portrait(player), copy);
       ribbon.append(seat);
@@ -211,6 +211,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const heading = node('div', 'ct-player-head');
       const label = node('div', 'ct-player-name');
       label.append(node('small', '', 'Your battlefield'), node('b', '', commanders(this.me).map(card => card.name.split(',')[0]).join(' + ') || this.me.name));
+      if (this.me === game.turnPlayer) label.querySelector('small').append(node('span', 'ct-turn-badge', 'Your turn'));
       if (!mobileLayout.matches && commanders(this.me).length > 1) {
         const names = label.querySelector('b');
         names.classList.add('ct-partner-name');
