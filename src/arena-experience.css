@@ -51,12 +51,15 @@ body.game-active.high-contrast #game.command-table .opprow.active,
 body.game-active.high-contrast #game.command-table.human-turn .myboard {
   box-shadow: 0 0 0 2px var(--ds-accent-bright) !important;
 }
+/* The badge is exactly one 14px line tall, so the lane head keeps the height it
+   had before the badge existed and the battlefield below it loses no room. */
 #game.command-table .ct-turn-badge,
 #game.command-table.ct-desktop-lands .opphead .ct-turn-badge {
-  display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 2px 7px 2px 6px;
+  display: inline-flex; align-items: center; gap: 5px; box-sizing: border-box; height: 14px;
+  margin-left: 8px; padding: 0 7px 0 6px;
   vertical-align: 1px; color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .13);
   border: 1px solid rgba(var(--ds-accent-rgb), .38); border-radius: 999px;
-  font: 700 10px/1.3 var(--ds-font-body); letter-spacing: .02em; white-space: nowrap;
+  font: 700 9px/1 var(--ds-font-body); letter-spacing: .03em; white-space: nowrap;
 }
 #game.command-table .ct-turn-badge::before,
 #game.command-table.ct-desktop-lands .opphead .ct-turn-badge::before {
@@ -124,3 +127,93 @@ body.game-active.high-contrast #game.command-table.human-turn .myboard {
 }
 body.reduced-motion #game .ct-turn-badge::before,
 body.reduced-motion #game .waitownership strong::before { animation: none !important; }
+
+/* Blocker and damage steps add the incoming-attack dock under the lanes. On
+   laptop and zoomed desktop heights the lanes kept full heads and land docks
+   and clipped their cards. The media lists below are the arena zoom regimes
+   from design-system.css (1 → 1.15 → 1.3 → 1.4 → 1.55 → 1.9) translated to
+   real pixels; --vhu already compensates the zoom, so the card size itself is
+   fluid: a card, its label and the land dock must fit under a 40px head in
+   half the height left over by the top bar, the dock, the hand and the
+   decision bar. No lane moves. */
+@media (min-width: 901px) and (min-height: 801px) and (max-height: 860px),
+       (min-width: 1600px) and (min-height: 900px) and (max-height: 989px),
+       (min-width: 1800px) and (max-width: 2099px) and (min-height: 1000px) and (max-height: 1118px),
+       (min-width: 2100px) and (min-height: 1000px) and (max-height: 1099px),
+       (min-width: 2100px) and (min-height: 1100px) and (max-height: 1204px),
+       (min-width: 2500px) and (min-height: 1250px) and (max-height: 1333px),
+       (min-width: 3200px) and (min-height: 1550px) and (max-height: 1634px),
+       (min-width: 901px) and (max-width: 1599px) and (min-height: 861px) and (max-height: 1000px),
+       (min-width: 1600px) and (min-height: 861px) and (max-height: 899px),
+       (min-width: 1600px) and (max-width: 1799px) and (min-height: 990px) and (max-height: 1150px),
+       (min-width: 1800px) and (min-height: 990px) and (max-height: 999px),
+       (min-width: 1800px) and (max-width: 2099px) and (min-height: 1119px) and (max-height: 1300px),
+       (min-width: 2100px) and (max-width: 2499px) and (min-height: 1205px) and (max-height: 1400px),
+       (min-width: 2500px) and (min-height: 1205px) and (max-height: 1249px),
+       (min-width: 2500px) and (max-width: 3199px) and (min-height: 1334px) and (max-height: 1550px),
+       (min-width: 3200px) and (min-height: 1334px) and (max-height: 1549px),
+       (min-width: 3200px) and (min-height: 1635px) and (max-height: 1900px) {
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-player-head { min-height: 40px; height: 40px; padding: 2px 7px; }
+  #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-player-name { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+  #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-player-name > small { display: none; }
+  #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-player-name .manapool { margin: 0; }
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .opphead { min-height: 44px !important; padding-block: 3px !important; }
+  #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) :is(.ct-player-head, .opphead) .ct-portrait { height: 34px; width: 30px; }
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-resource-dock .mini.sm { width: 30px !important; height: 40px !important; }
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-resource-dock .permanentpile.sm { width: 30px !important; }
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-resource-dock { padding: 1px 7px !important; }
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .ct-resource-dock .landstrip { padding-block: 1px; }
+}
+/* Layout height 769–860px: the hand hides for the step, as the ≤800px rules already do. */
+@media (min-width: 901px) and (min-height: 801px) and (max-height: 860px),
+       (min-width: 1600px) and (min-height: 900px) and (max-height: 989px),
+       (min-width: 1800px) and (max-width: 2099px) and (min-height: 1000px) and (max-height: 1118px),
+       (min-width: 2100px) and (min-height: 1000px) and (max-height: 1099px),
+       (min-width: 2100px) and (min-height: 1100px) and (max-height: 1204px),
+       (min-width: 2500px) and (min-height: 1250px) and (max-height: 1333px),
+       (min-width: 3200px) and (min-height: 1550px) and (max-height: 1634px) {
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']).ct-grid-view,
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']).ct-grid-view:has(.oppswrap[data-opponent-count]) {
+    --ct-card: clamp(58px, calc(((100 * var(--vhu) - 236px) / 2 - 156px) / 1.372), 94px); --ct-opponent-card: var(--ct-card);
+    grid-template-rows: 44px 18px repeat(2, minmax(0, 1fr)) auto 0 minmax(58px, auto) !important;
+  }
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']) .handwrap { display: none !important; }
+}
+/* Layout height 861–1000px: the hand stays and the card follows the remaining height. */
+@media (min-width: 901px) and (max-width: 1599px) and (min-height: 861px) and (max-height: 1000px),
+       (min-width: 1600px) and (min-height: 861px) and (max-height: 899px),
+       (min-width: 1600px) and (max-width: 1799px) and (min-height: 990px) and (max-height: 1150px),
+       (min-width: 1800px) and (min-height: 990px) and (max-height: 999px),
+       (min-width: 1800px) and (max-width: 2099px) and (min-height: 1119px) and (max-height: 1300px),
+       (min-width: 2100px) and (max-width: 2499px) and (min-height: 1205px) and (max-height: 1400px),
+       (min-width: 2500px) and (min-height: 1205px) and (max-height: 1249px),
+       (min-width: 2500px) and (max-width: 3199px) and (min-height: 1334px) and (max-height: 1550px),
+       (min-width: 3200px) and (min-height: 1334px) and (max-height: 1549px),
+       (min-width: 3200px) and (min-height: 1635px) and (max-height: 1900px) {
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']),
+  body.game-active #game.command-table.ct-battlefield-combat:not([data-combat-step='attackers']):has(.oppswrap[data-opponent-count]) { --ct-card: clamp(58px, calc(((100 * var(--vhu) - 386px) / 2 - 156px) / 1.372), 94px); --ct-opponent-card: var(--ct-card); }
+}
+
+/* Phone touch targets: zone controls, the focus-board button and your life
+   total reach the 44px minimum; the player overview's seat tabs wrap on the
+   narrowest phones instead of running off the right edge. */
+@media (max-width: 900px) {
+  #game.command-table .ct-player-zones :is(.zonecounter, .ct-focus-board) { min-height: 44px; }
+  #game.command-table .ct-player-head .melife { min-width: 44px; justify-content: center; }
+  #game.command-table .oppLands { min-height: 44px; }
+}
+@media (max-width: 360px) {
+  #game .playeroverviewnav { flex-wrap: wrap; }
+  #game .playeroverviewnav .pbtn { flex: 1 0 calc(50% - 5px); }
+}
+
+/* The ticker row is 18–20px tall; its 11px line plus 4px paddings needed 23px,
+   so descenders were cut off on every desktop. */
+#game.command-table .ticker { padding-block: 1px !important; line-height: 16px; }
+
+/* A card choice that carries the Ring guide: on short phones the guide kept
+   its full height and squeezed the card grid to nothing, so the cards could
+   not be chosen. The guide now scrolls inside a bounded height and the cards
+   keep at least a row. */
+#game .cardselectionmodal .ringchoiceguide { flex: 0 1 auto; min-height: 96px; overflow: auto; overscroll-behavior: contain; }
+#game .cardselectionmodal:has(.ringchoiceguide) > .cardgrid { min-height: min(230px, calc(34 * var(--dvhu))); }

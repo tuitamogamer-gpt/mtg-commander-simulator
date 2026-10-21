@@ -19,7 +19,7 @@ try{for(const width of [1440,390])for(const deck of precons){
  page.on('pageerror',e=>errors.push({deck:deck.name,width,error:e.message}));page.on('console',m=>{if(m.type()==='error')errors.push({deck:deck.name,width,error:m.text()});});page.on('response',r=>{if(r.status()>=400)errors.push({deck:deck.name,width,url:r.url(),status:r.status()});});
  await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
  await page.goto(base);await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
- await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>_ui.pending?.q.type==='mulligan');
+ await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
  const opening=await page.evaluate(()=>{const p=_game.players.find(p=>!p.isAI);return{cards:p.library.length+p.hand.length+p.command.length,commanders:p.commanders.map(c=>c.name)};});assert.equal(opening.cards,100);assert.deepEqual(opening.commanders,[deck.commander,...(deck.partner?[deck.partner]:[])]);
  await page.evaluate(deck=>{
   document.querySelector('#game').replaceWith(document.querySelector('#game').cloneNode(false));
@@ -59,10 +59,11 @@ try{for(const width of [1440,390])for(const deck of precons){
    await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill(s.name);await page.locator(`.commandresult[data-card-id="${s.iid}"]`).click();
    if(s.index===null)await page.locator('.sheetacts .pbtn.primary:not(:disabled)').first().click();else await page.locator('.sheetacts .abilitybtn:not(:disabled)').nth(s.index).click();continue;
   }
-  if(s.type==='chooseX'){const value=Number(await page.locator('.modal .xval').textContent());if(value!==2){await page.locator('.modal button').filter({hasText:value<2?/^\+$/:/^−$/}).click();continue;}if(await click('.modal .pbtn.primary:not(:disabled):visible'))continue;}
+  if(s.type==='chooseX'){const value=Number(await page.locator('.modal .xval').inputValue());if(value!==2){await page.locator('.modal button').filter({hasText:value<2?/^\+$/:/^−$/}).click();continue;}if(await click('.modal .pbtn.primary:not(:disabled):visible'))continue;}
   if(s.type==='chooseTargets'||s.type==='choosePlayer'){
    if(!s.selected&&await click('#game .targetable:not(.selected):visible'))continue;
    if(!s.selected&&deck.name==='The Hosts of Mordor'){
+    const openZone=page.locator('.targetzoneopen[data-target-zone="graveyard"]').filter({visible:true});if(await openZone.count()){await openZone.first().click();continue;}
     const zone=page.getByText('Graveyard 1',{exact:true}).filter({visible:true});if(await zone.count()){await zone.click();continue;}
     const graveyard=page.locator('.sheet .pbtn:visible').filter({hasText:'🪦'});if(await graveyard.count()){await graveyard.first().click();continue;}
     const details=page.getByRole('button',{name:'Open Local AI player details',exact:true}).filter({visible:true});if(await details.count()){await details.click();continue;}

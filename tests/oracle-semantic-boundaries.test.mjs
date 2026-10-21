@@ -72,7 +72,10 @@ for(const role of ['human','ai']) {
  test(role+': Desert conditions enable real attack, entry, death and activated triggers',async()=>{
   const ctx=world(role),host=add(ctx,'Wall of Mist',ctx.b);add(ctx,'Ifnir Deadlands');humanTarget(ctx,host);
   const cerodon=add(ctx,'Gilded Cerodon');await attackTrigger(ctx,cerodon);await settle(ctx.game);assert.equal(host.cur.cantBlock,true);
-  const strangler=add(ctx,'Sand Strangler',ctx.a,'hand');await ctx.game.move(strangler,'battlefield');await settle(ctx.game);assert.equal(host.damage,3);
+  // The AI legally declines "you may" damage that cannot kill the 0/5 Wall, so it is offered a body the 3 damage removes.
+  const prey=ctx.a.isAI?add(ctx,'Runeclaw Bear',ctx.b):null;
+  const strangler=add(ctx,'Sand Strangler',ctx.a,'hand');await ctx.game.move(strangler,'battlefield');await settle(ctx.game);
+  if(prey)assert.equal(prey.zone,'graveyard','the Desert-conditioned entry trigger resolves for the AI');else assert.equal(host.damage,3);
   const wall=add(ctx,'Wall of Forgotten Pharaohs');humanTarget(ctx,ctx.b);const life=ctx.b.life;await activate(ctx,wall);assert.equal(ctx.b.life,life-1);
   const camel=add(ctx,'Wretched Camel');add(ctx,'Forest',ctx.b,'hand');await ctx.game.sacrifice(ctx.a,camel);await settle(ctx.game);assert.equal(ctx.b.hand.length,0);
  });

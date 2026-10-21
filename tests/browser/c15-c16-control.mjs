@@ -7,7 +7,7 @@ try{for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:width===390?844:1000},reducedMotion:'reduce'});page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
  await page.goto(process.env.GAME_URL||'http://127.0.0.1:8320');await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
- await page.locator('.decksearch input').fill('Entropic Uprising');await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>_ui.pending?.q.type==='mulligan');
+ await page.locator('.decksearch input').fill('Entropic Uprising');await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
  // Retain the actual recording controller created by main.js. Park the opening
  // mulligan while a controlled board exercises a separate, bounded sequence.
  await page.evaluate(()=>{
@@ -28,7 +28,7 @@ try{for(const width of [1440,390]){
    const confirm=page.locator('.promptbar .pbtn.primary:not(:disabled):visible');if(await confirm.count())await confirm.first().click();else await page.locator('#game .targetable:not(.selected):visible').first().click();
   }else if(s.type==='main')await page.getByRole('button',{name:/^(End turn|Continue)/}).filter({visible:true}).first().click();
   else{
-   const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order|No attacks)/}).filter({visible:true});if(await proceed.count())await proceed.last().click();else if(s.type==='chooseOption'){const opt=page.locator('.modal .pbtn:not(:disabled):visible');if(await opt.count())await opt.first().click();}
+   const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order|No attacks|Exile top card|Reveal cards)/}).filter({visible:true});if(await proceed.count())await proceed.last().click();else if(s.type==='chooseOption'){const opt=page.locator('.modal .pbtn:not(:disabled):visible');if(await opt.count())await opt.first().click();}
   }
   await page.waitForTimeout(35);
  }

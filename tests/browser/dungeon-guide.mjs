@@ -118,7 +118,7 @@ try {
     await page.locator('[data-dungeon-confirm="mine"]').click();
     await page.waitForFunction(()=>_ui.pending?.q.type==='scry');
     await page.locator('.modal .pbtn.primary').click();await page.waitForFunction(()=>__dungeonQA.done===1);
-    await page.locator('.meinfo .dungeonbadge').click();
+    await page.locator('.myboard .dungeonbadge').click();
     assert.match(await page.locator('.dungeonposition').innerText(),/Current room: Cave Entrance/);
     await page.keyboard.press('Escape');assert.equal(await page.locator('.dungeonoverlay').count(),0);
     await page.evaluate(()=>__venture());await page.waitForSelector('.dungeonmodal');
@@ -145,7 +145,7 @@ try {
     await page.evaluate(()=>__venture());await page.locator('[data-room="pool"]').click();
     assert.equal(await page.locator('button[data-room="storeroom"]').count(),0,'no jumping to another branch');
     await page.locator('[data-dungeon-confirm="pool"]').click();await page.waitForFunction(()=>__dungeonQA.done===3);
-    await page.locator('.meinfo .dungeonbadge').click();
+    await page.locator('.myboard .dungeonbadge').click();
     assert.equal(await page.locator('.dungeonroom.visited').count(),2);
     assert.match(await page.locator('.dungeonposition').innerText(),/Current room: Dark Pool/);
     await page.screenshot({path:`${out}/progress-${width}.png`});
@@ -184,7 +184,9 @@ try {
     await page.locator('[data-dungeon-confirm="well"]').click();
     assert.equal(await page.evaluate(()=>__liveDungeonAnswer),'well');
     assert.equal(await page.evaluate(()=>_game.players[1].hand[0].name),'Hidden card');
-    await page.locator('.opphead .dungeonbadge').click();
+    // Phones show opponents on the Table destination; the opponent header badge lives there.
+    const tableTab=page.locator('.mobileviewtab[data-view="table"]').filter({visible:true});if(await tableTab.count())await tableTab.click();
+    await page.locator('.opphead .dungeonbadge').filter({visible:true}).first().click();
     assert.match(await page.locator('.dungeonposition').innerText(),/Opponent · Current room: Oubliette/);
     assert.equal(await page.locator('.dungeonroom.visited').count(),1);
     await page.screenshot({path:`${out}/live-opponent-${width}.png`});await noOverflow();

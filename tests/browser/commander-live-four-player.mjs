@@ -177,6 +177,7 @@ const recoveryMonitor = (async () => {
 try {
   const host = await pageFor(0);
   await host.locator('[data-menu-action="live"]').first().click();
+  await host.locator('.decksearch input').fill('Abzan Armor');
   await host.locator('.deckentry[data-deck="Abzan Armor"] .deckcard').click();
   await host.locator('.deckspotlightcontinue').click();
   await host.locator('[data-live-players="4"]').click();

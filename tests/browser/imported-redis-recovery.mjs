@@ -142,7 +142,7 @@ try {
   assert.equal(await page.evaluate(() => JSON.parse(render_game_to_text()).deckImport.state), 'ready');
   const status = page.locator('.mainmenu-deckimport-result');
   assert.equal(await status.locator('b').innerText(), 'Yuriko (2)');
-  assert.match(await status.innerText(), /100 engine-certified/);
+  assert.match(await status.innerText(), /all cards supported/);
   await status.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
   await page.screenshot({ path: `${output}/03-fresh-yuriko-duplicate-ready.png` });
   await page.locator('.mainmenu-deckimport-start').click();

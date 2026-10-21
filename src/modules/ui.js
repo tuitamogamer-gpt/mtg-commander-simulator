@@ -6191,7 +6191,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             acts.appendChild(b);
           }
         }
-        if (card.zone === 'command' && !(q.casts || []).some(e => e.card === card)) {
+        if (card.zone === 'command' && card.owner === this.me && !(q.casts || []).some(e => e.card === card)) {
           const cost = g.spellCost(card.owner, card, {});
           const b = el('button', 'pbtn wide disabled', `Cast ${U.costStr(cost)}: not enough mana or not your main phase`);
           b.disabled = true;

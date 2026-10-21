@@ -2955,11 +2955,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function reactionEffects(source, ability) {
     if (ability?.aiReactionEffects) return ability.aiReactionEffects;
     if (!ability && source.def.aiReactionEffects) return source.def.aiReactionEffects;
-    const operations = ability ? [ability.oracleOperation].filter(Boolean) : source.def.oracleImplementation || [];
+    // Casting a permanent never resolves its activated abilities, so a creature
+    // whose only compiled operation is "{G}: +2/+2" is a body to deploy, not a
+    // combat trick waiting for a recipient.
+    const operations = ability ? [ability.oracleOperation].filter(Boolean)
+      : (source.def.oracleImplementation || []).filter(operation => operation.kind !== 'generic-ability');
     if (operations.length !== 1) return null;
     const operation = operations[0];
-    if (operation.kind === 'spell-pump') return [{action: 'pump', target: 0, power: operation.power,
-      toughness: operation.toughness, keywords: operation.keywords}];
+    if (operation.kind === 'spell-pump') {
+      // Only a fixed, non-negative pump is a protection reaction. A debuff
+      // ("-X/-0" on an attacker) or an X-sized pump keeps the ordinary
+      // evaluator, which values the removal and chooses X.
+      const power = Number(operation.power), toughness = Number(operation.toughness);
+      if (!(power >= 0) || !(toughness >= 0)) return null;
+      return [{action: 'pump', target: 0, power, toughness, keywords: operation.keywords}];
+    }
     if (operation.kind === 'spell-fog') return [{action: 'ai-fog', playersOnly: operation.playersOnly}];
     if (!['generic-ability', 'spell-generic'].includes(operation.kind) || operation.modalBody || operation.v4Body ||
       operation.optionalBodyV14 || operation.overloadedBody || operation.cleaveBodyV10) return null;

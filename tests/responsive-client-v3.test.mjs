@@ -45,7 +45,7 @@ test('setup mode never leaves the inactive Arena below the Main Page', () => {
 });
 
 test('Main Page V3 keeps discovery and mobile pod controls functional', () => {
-  assert.match(main, /placeholder="Search decks or commanders"/);
+  assert.match(main, /placeholder="A deck, commander, or playstyle…"/);
   assert.match(main, /data-filter="color"/);
   assert.match(main, /data-filter="strategy"/);
   assert.match(main, /mtgDeckFavorites/);

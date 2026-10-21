@@ -13,7 +13,7 @@ try{for(const width of [1440,390]){
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('response',r=>{if(r.status()>=400)requests.push({status:r.status(),url:r.url()});});
  await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
  await page.goto(`http://127.0.0.1:${server.address().port}`);await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
- await page.locator('.decksearch input').fill('Sworn to Darkness');await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>_ui.pending?.q.type==='mulligan');
+ await page.locator('.decksearch input').fill('Sworn to Darkness');await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
  await page.evaluate(()=>{
   const surface=document.querySelector('#game');surface.replaceWith(surface.cloneNode(false));
   const ui=new MTG.UI(),g=new MTG.Game({seed:90614,paced:true,onEvent:()=>ui.queueRender()}),a=g.addPlayer('You',{name:'Sworn to Darkness'},null,false),b=g.addPlayer('Local AI',{name:'Peer Through Time'},null,true);

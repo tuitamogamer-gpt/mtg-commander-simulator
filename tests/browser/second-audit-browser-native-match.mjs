@@ -164,7 +164,7 @@ try{
       await button(/^Confirm \(/);action='choose printed mode';
     }else if(s.question==='chooseX'){
       const desired=Math.max(s.min||0,Math.min(s.max||0,5));
-      for(let i=0;i<50;i++){const current=Number(await page.locator('.modal .xval').innerText());if(current===desired)break;await page.locator('.modal .xrow button').nth(current<desired?1:0).click();}
+      for(let i=0;i<50;i++){const current=Number(await page.locator('.modal .xval').inputValue());if(current===desired)break;await page.locator('.modal .xrow button').nth(current<desired?1:0).click();}
       await button(/^Confirm X=/);action=`X ${desired}`;
     }else if(s.question==='attackers'){
       const target=(s.attackTargets||[]).sort((a,b)=>a.life-b.life)[0];

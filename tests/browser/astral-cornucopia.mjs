@@ -77,8 +77,8 @@ try {
 
     await page.locator(`.hcard[data-iid="${fixture.cornucopia}"]`).click();
     await page.locator('.sheetacts').getByRole('button', { name: /^Cast/ }).first().click();
-    await page.locator('.xrow').getByRole('button', { name: '+', exact: true }).click();
-    await page.locator('.xrow').getByRole('button', { name: '+', exact: true }).click();
+    await page.locator('.xrow').getByRole('button', { name: 'Increase X', exact: true }).click();
+    await page.locator('.xrow').getByRole('button', { name: 'Increase X', exact: true }).click();
     const total = mobile ? 6 : 5;
     assert.match(await page.locator('.xcostsummary').innerText(), /All 3 X symbols use the same value/);
     assert.equal(await page.locator('.xcostsummary .mana-generic').innerText(), String(total));

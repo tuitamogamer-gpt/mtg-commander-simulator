@@ -219,7 +219,7 @@ async function progress(scenario) {
   if (s.pending === 'chooseX') {
     const desired = scenario.x ?? s.min;
     for (let n = 0; n < 15; n++) {
-      const current = Number(await page.locator('.modal .xval').innerText());
+      const current = Number(await page.locator('.modal .xval').inputValue());
       if (current === desired) break;
       await page.locator('.modal .xrow button').nth(current < desired ? 1 : 0).click();
     }
@@ -293,7 +293,7 @@ async function progress(scenario) {
     await page.locator('[data-testid="confirm-combat-battlefield"]').click();
   } else {
     if(scenario.crownHold&&s.pending==='priority'&&['attackers','blockers'].includes(s.step)&&!s.stack.length&&!s.holdNext){await page.locator('.tbtn.hudaction').filter({hasText:'HOLD'}).click();assert.equal((await state()).holdNext,true);}
-    const proceed = page.getByRole('button', { name: /^(Proceed|Pass|Resolve|Continue|End turn|Got it|Confirm order|No attacks)/ }).filter({ visible: true });
+    const proceed = page.getByRole('button', { name: /^(Proceed|Pass|Resolve|Continue|End turn|Got it|Confirm order|No attacks|Exile top card|Reveal cards)/ }).filter({ visible: true });
     if (await proceed.count()) await proceed.last().click();
   }
   await page.waitForTimeout(25);
