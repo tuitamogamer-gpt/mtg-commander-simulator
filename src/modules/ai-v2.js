@@ -3172,9 +3172,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const counterable = candidates.filter(object => object.kind === 'spell' && object.ctrl !== player && !MTG.isUncounterable?.(game, object));
       // Keep the existing uncounterable-spell scoring and its diagnostics.
       if (!counterable.length) return false;
+      // A rider scaled by the countered spell's mana value (Mana Drain) pays
+      // for itself on any real spell, so only trivial spells are waited out.
+      const scaledRider = /counter target spell\.[^]*mana value/i.test(card.def.oracle || '');
       return !counterable.some(object => {
         const spell = object.card;
         if (!spell) return true;
+        if (scaledRider && (Number(game.stackSpellManaValue?.(object) ?? spell.mv) || 0) >= 2) return true;
         const roles = inferCardSemantics(spell.def).roles;
         const threatens = game.bf().some(permanent => permanent.ctrl === player &&
           stackThreatsTo(game, permanent, object).some(threat => threatRemoves(permanent, threat)));
