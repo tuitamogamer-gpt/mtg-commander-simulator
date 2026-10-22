@@ -29,7 +29,8 @@ try{for(const width of [1440,390])for(const deck of precons){
   if(deck.name==='Ruthless Regiment')a.commanderCasts=1;
   if(deck.name==='Symbiotic Swarm')put('Akroma, Angel of Wrath',a,'graveyard');
   if(deck.name==='Sneak Attack')put('Grizzly Bears',b,'library');
-  if(deck.name==='Timeless Wisdom')await g.draw(a,1);
+  // Draw replacements read every permanent's characteristics, so compute them before the staged draw.
+  if(deck.name==='Timeless Wisdom'){g.recalc();await g.draw(a,1);}
   g.recalc();window._game=g;window._ui=ui;window.__proof={done:false,error:null,stage:'main',commander,spell,host,queries:[]};ui.render();
   void(async()=>{
    if(deck.name!=='Sneak Attack'){
