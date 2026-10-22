@@ -2462,8 +2462,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const optional = q.type === 'chooseOption' ? MTG.botOptionalEffectDecision(game, player, q) : null;
     if (optional !== null) {
+      // Answer only with an option the question actually offers; a narrowed
+      // question (one choice left) falls through to the ordinary ranking.
       const value = optional ? 'yes' : 'no';
-      return [{kind: 'chooseOption', value, option: q.options.find(option => option.key === value)}];
+      const option = q.options.find(option => option.key === value);
+      if (option) return [{kind: 'chooseOption', value, option}];
     }
     const actions = [];
     if (q.type === 'main' || q.type === 'priority') {
