@@ -620,7 +620,8 @@ function stageV4CombatWindow(context) {
     attacker.wasBlocked = true;
     attacker.blockedBy = [blocker];
     blocker.blocking = attacker.iid;
-    game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]) };
+    // A blocked attacker is a post-declaration state; the bot reads the same flag the engine sets.
+    game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]), blockersDeclared: true };
     game.turnPlayer = attackerController;
     game.phase = 'combat';
     game.step = 'blockers';
@@ -642,7 +643,7 @@ function stageV4CombatWindow(context) {
   attacker.wasBlocked = true;
   attacker.blockedBy = [blocker];
   blocker.blocking = attacker.iid;
-  game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]) };
+  game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]), blockersDeclared: true };
   game.turnPlayer = attacker.ctrl;
   game.phase = 'combat';
   game.step = 'blockers';
@@ -688,7 +689,7 @@ function stageCombatWindow(context) {
   attacker.wasBlocked = true;
   attacker.blockedBy = [blocker];
   blocker.blocking = attacker.iid;
-  game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]) };
+  game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]), blockersDeclared: true };
   game.recalc();
   return { attacker, blocker, operation };
 }
@@ -741,10 +742,12 @@ async function executeScenario(context, entry) {
     return;
   }
   if (isCombatInstant(entry, operation)) {
-    stageCombatWindow(context);
+    const window = stageCombatWindow(context);
     game.turnPlayer = player;
     game.phase = 'combat';
-    game.step = 'attackers';
+    // A staged block is a declared block: the bot only weighs a trick once the
+    // engine would have reached the blockers step.
+    game.step = window.blocker ? 'blockers' : 'attackers';
     await game.priorityRound(player);
     return;
   }

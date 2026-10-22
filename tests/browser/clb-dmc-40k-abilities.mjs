@@ -73,7 +73,7 @@ try{for(const width of [1440,390])for(const deck of precons){
    if(await click('.attackallocmodal .pbtn.primary:not(:disabled):visible'))continue;
    // Phones have no overview: declare through the compact dock controls.
    if(!await page.locator('.ct-defender-choice[aria-pressed="true"]').count()){if(await click('.ct-defender-choice:not(:disabled):visible'))continue;}
-   if(!s.selected&&await click('[data-testid="combat-all-attack"]:not(:disabled):visible'))continue;
+   if(!await page.evaluate(()=>_ui.pending?.sel?.length)&&await click('[data-testid="combat-all-attack"]:not(:disabled):visible'))continue;
    if(await click('[data-testid="confirm-combat-battlefield"]:not(:disabled):visible'))continue;
   }
   if(s.type==='chooseTargets'||s.type==='choosePlayer'){

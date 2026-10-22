@@ -73,7 +73,7 @@ try{
         await page.getByRole('button',{name:`${deck.commander}. Open commander actions.`,exact:true}).click();
         await page.locator('.sheetacts .pbtn.primary:not(:disabled)').first().click();
       }else{
-        const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/}).filter({visible:true});
+        const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order|Exile top card|Reveal cards)/}).filter({visible:true});
         if(await proceed.count())await proceed.last().click();
         else if(state.type==='chooseOption'){const choice=page.locator('.modal .pbtn:not(:disabled):visible');if(await choice.count())await choice.first().click();}
       }
