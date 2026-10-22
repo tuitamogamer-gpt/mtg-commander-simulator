@@ -297,7 +297,7 @@
     case 'Quarum Trench Gnomes':if(c){(c.meta.quarumV88||=[]).push({version:c.zoneVersion});}break;
     case 'Martyr of Bones':await g.moveGraveyardBatch(subjects(ctx),'exile');break;
     case 'Robo-Piñata':if(ctx.mode===0)await g.getTicketsV87(p,2,{source:s});else{const [card]=await pick(ctx,g.bf().filter(c=>c.owner===p&&!c.is('Land')),0,1);if(card)await g.placeStickerV87(ctx,card,{kind:'any',min:0,max:1});}break;
-    case 'Diamond Lion':{const color=await choice(ctx,'WUBRG'.split('').map(key=>({key,label:key})));await g.addMana(p,{[color]:3},{source:s,ability:ctx.ability});break;}
+    case 'Diamond Lion':{const color=await choice(ctx,'WUBRG'.split('').map(key=>({key,label:key})));await run(ctx,{action:'add-mana',produce:{[color]:3}});break;}
     case 'Shelkin Brownie':if(c){const row=lock(c);g.untilEffects.push({expires:'eot',apply:()=>{if(current(row)){for(const k of [...c.cur.kw])if(k.startsWith('bands with other'))c.cur.kw.delete(k);c.cur.bandsWithOtherV89=[];}}});g.recalc();}break;
     default:throw Error('Missing v88 resolution '+n);
    }

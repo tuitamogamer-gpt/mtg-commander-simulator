@@ -8,7 +8,7 @@
  const self=(g,s,d)=>d.card===s;
  const own=(g,s,d)=>d.player===s.ctrl;
  const lock=c=>({card:c,version:c.zoneVersion,zone:c.zone});
- const current=r=>r?.card.zone===r.zone&&r.card.zoneVersion===r.version;
+ const current=r=>!!r?.card&&r.card.zone===r.zone&&r.card.zoneVersion===r.version;
  const D=(what='creature',controller='any',extra={})=>({what,zone:what==='player'?'player':'battlefield',controller,min:1,max:1,...extra});
  const grave=(what='card',extra={})=>({...D(what,'you'),zone:'graveyard',...extra});
  const target=(what='creature',controller='any',extra={})=>H.genericTargetSpec(D(what,controller,extra),[],0);

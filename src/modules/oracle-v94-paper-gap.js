@@ -43,7 +43,7 @@
     switch(op.mode){
       case 'Mesa Pegasus':case 'Shield Bearer':break;
       case 'Minion of Leshrac':
-        stat((g,s)=>s.cur.protectionFrom.push('B'));
+        stat((g,s)=>s.cur.protectionFrom.push((game,source)=>!!source&&(source.colors||[]).includes('B')));
         tr('upkeep',own,async ctx=>{const pool=ctx.g.creatures(ctx.you).filter(c=>c!==ctx.src&&ctx.g.canSacrifice(c)),[c]=pool.length&&await yes(ctx,'Sacrifice another creature?')?await choose(ctx,pool,1,1):[];if(c){await ctx.g.sacrifice(ctx.you,c);return;}const n=await ctx.g.damagePlayer(H.oracleDamageSource(ctx),ctx.you,5);if(n>0&&same(ctx))ctx.g.tap(ctx.src);});
         ab({tap:true},ctx=>{const c=subject(ctx);return c&&ctx.g.destroy(c);},[filtered(target('permanent'),(g,c)=>c.is('Creature')||c.is('Land'))]);break;
       case 'Mistmoon Griffin':
