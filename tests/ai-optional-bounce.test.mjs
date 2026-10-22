@@ -79,3 +79,18 @@ test('the bot returns its creature to hand in response to removal aimed at it', 
   assert.equal(optional(t).result, 'yes');
   assert.equal(bear.zone, 'hand');
 });
+
+test('Estrid puts the Mask on another of the bot\'s permanents, never on itself or an opponent\'s', async () => {
+  const t = table();
+  const estrid = t.put('Estrid, the Masked', t.bot); estrid.counters.loyalty = 5;
+  const bear = t.put('Grizzly Bears', t.bot);
+  t.put('Serra Angel', t.opp); t.put('Sol Ring', t.opp);
+  t.game.recalc();
+  const row = t.game.activatableList(t.bot).find(entry => entry.card === estrid && /Mask/.test(entry.ability?.label || ''));
+  assert.ok(row);
+  assert.equal(t.game.legalTargets(row.ability.targets[0], estrid, t.bot).includes(estrid), false, 'another permanent excludes Estrid');
+  assert.equal(await t.game.activateAbility(t.bot, row), true);
+  for (let n = 0; n < 6 && t.game.stack.length; n++) await t.game.resolveTop();
+  const mask = t.game.bf().find(card => card.name === 'Mask');
+  assert.equal(t.game.byIid(mask.attachedTo), bear);
+});
