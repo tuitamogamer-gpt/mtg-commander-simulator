@@ -89,6 +89,7 @@ try {
       assert.match(await choices.nth(0).innerText(), /Top:.*Pouncing Shoreshark/s);
       assert.match(await choices.nth(1).innerText(), /Top:.*Solemn Simulacrum/s);
       for (const choice of await choices.all()) {
+        await choice.waitFor({state: 'visible'});
         const box = await choice.boundingBox();
         assert.ok(box && box.x >= 0 && box.x + box.width <= width + 1, 'choice stays inside viewport');
         assert.equal(await choice.locator('.mutate-layer.incoming').count(), 1);
