@@ -146,7 +146,7 @@ try {
   await resolveUntil(() => host.evaluate(id => _game.byIid(id).zone === 'exile', ids.target), 'Swords resolves');
   mark('guest selects a creature on the shared battlefield, pays W, and Swords exiles it');
   // The host reviews what Swords did to its creature ("what happened") before play continues.
-  await until(async () => { if (await question(guest) === 'main') return true; await click(host, /^(Continue|Proceed)/); return false; }, 'main for Ponder');
+  await until(async () => { if (await question(guest) === 'main') return true; await click(host, /^(Continue|Proceed)/); await click(guest, /^Proceed/); return false; }, 'main for Ponder');
   await cast(guest, ids.ponder);
   await until(() => guest.locator('.manapickmodal').isVisible(), 'blue payment');
   await guest.getByRole('button', { name: /^Tap selected sources/ }).click();
@@ -172,7 +172,7 @@ try {
   assert.equal(await guest.locator('.decisioncards').innerText().then(text => text.includes('Hidden card')), false);
   await guest.getByRole('button', { name: 'Keep', exact: true }).click();
   await resolveUntil(() => host.evaluate(id => _game.byIid(id)?.zone === 'hand', topCard), 'chosen Ponder top is drawn');
-  await until(async () => { if (await question(guest) === 'main') return true; await click(host, /^(Continue|Proceed)/); return false; }, 'main after completed Ponder');
+  await until(async () => { if (await question(guest) === 'main') return true; await click(host, /^(Continue|Proceed)/); await click(guest, /^Proceed/); return false; }, 'main after completed Ponder');
   mark('mobile card selection completes Ponder in the chosen order and draws the selected top card');
 
   const combat = await host.evaluate(() => {
