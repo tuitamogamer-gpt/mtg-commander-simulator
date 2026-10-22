@@ -2678,6 +2678,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (sem.roles.includes('combo-piece')) value += 7;
     if (sem.roles.includes('finisher')) value += 3.5;
     if (sem.roles.includes('card-draw')) value += 2.2;
+    // A nonland mana source is worth its acceleration (Sol Ring is a prime
+    // removal target), not just its printed cost.
+    if (!card.is('Land') && card.def.mana?.produce && card.zone === 'battlefield') {
+      let produced = 0;
+      try {
+        const produce = card.def.mana.produce;
+        const option = (typeof produce === 'function' ? produce(game, card, card.ctrl) || [] : produce)[0];
+        if (option) produced = Object.values(option).reduce((sum, amount) => sum + (Number(amount) || 0), 0);
+      } catch { produced = 0; }
+      value += Math.min(3, produced) * 2.6;
+    }
     if (card.commander) value += 3 * (profile && profile.commanderImportance || 1);
     if (card.cur && (card.cur.hexproof || card.cur.shroud || card.kw('indestructible'))) value *= 1.18;
     if (perspective && card.ctrl === perspective) value *= 1.03;
