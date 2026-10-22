@@ -2958,8 +2958,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Casting a permanent never resolves its activated abilities, so a creature
     // whose only compiled operation is "{G}: +2/+2" is a body to deploy, not a
     // combat trick waiting for a recipient.
+    // A cost mechanic such as rebound or flashback (`mechanic-*`) rides along
+    // with the spell's one effect and does not make it a different reaction.
     const operations = ability ? [ability.oracleOperation].filter(Boolean)
-      : (source.def.oracleImplementation || []).filter(operation => operation.kind !== 'generic-ability');
+      : (source.def.oracleImplementation || []).filter(operation =>
+        operation.kind !== 'generic-ability' && !String(operation.kind || '').startsWith('mechanic-'));
     if (operations.length !== 1) return null;
     const operation = operations[0];
     if (operation.kind === 'spell-pump') {
