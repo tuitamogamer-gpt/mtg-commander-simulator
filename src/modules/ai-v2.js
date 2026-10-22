@@ -3380,7 +3380,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (effect.action === 'pump' || effect.action === 'battlefield-group' && effect.operation === 'pump') {
           const plan = reactionEffectPlan(game, player, source, {cost: {}}, [effect], specs, targets.length ? targets : null);
           if (!plan) return null;
-          value += plan.score + 0.4;
+          // A boost to the bot's own creature or a shrink on an opposing one is
+          // never a loss, so a free one is taken even outside combat.
+          const recipients = targets.length ? [targets[effect.target ?? 0]].flat().filter(Boolean) : [];
+          const boost = !(Number(effect.power) < 0) && !(Number(effect.toughness) < 0); // X-sized counts as a boost
+          const harmless = recipients.length > 0 && recipients.every(card => card instanceof U.CardInst &&
+            (boost ? card.ctrl === player : card.ctrl !== player));
+          value += harmless ? Math.max(0.1, plan.score + 0.4) : plan.score + 0.4;
         } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
           const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
             specs[effect.target] ? game.legalTargets(specs[effect.target], source, player) : [];
@@ -3394,6 +3400,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             // The payment side prices a card the bot gives up; answering it with
             // an opposing card is a trade, not a loss. A token or a bounce is
             // only tempo.
+            // Damage that does not kill an opposing creature is small, never a
+            // cost (the target ranking prefers kills; this is only yes or no).
+            if (effect.action === 'damage' && card instanceof U.CardInst && card.ctrl !== player) return Math.max(0.1, worth);
             if (worth <= 0 || !(card instanceof U.CardInst) || card.ctrl === player || effect.action === 'damage') return worth;
             return worth + (card.isToken || effect.action === 'bounce' ? 0.6 : 2);
           };
