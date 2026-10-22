@@ -3339,6 +3339,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.botReactionTargetValue = reactionTargetValue;
 
+  // The object currently resolving, so a cost paid during resolution can tell
+  // which permanent the effect belongs to (Nim Devourer returns itself and
+  // then asks for a sacrifice; giving up the returned Devourer undoes it).
+  if (MTG.Game && !MTG.Game.prototype.aiResolvingTracked) {
+    const resolveTop = MTG.Game.prototype.resolveTop;
+    MTG.Game.prototype.aiResolvingTracked = true;
+    MTG.Game.prototype.resolveTop = async function (...args) {
+      const top = this.stack[this.stack.length - 1];
+      (this.aiResolving || (this.aiResolving = [])).push(top);
+      try { return await resolveTop.apply(this, args); } finally { this.aiResolving.pop(); }
+    };
+  }
+  function resolvingSources(game, q) {
+    return new Set([q.aiHint?.src, q.src, ...(game.aiResolving || []).flatMap(object => [object?.srcCard, object?.card])]
+      .filter(card => card instanceof U.CardInst));
+  }
+
   MTG.botOptionalEffectDecision = function (game, player, q) {
     const hint = q.aiHint;
     // An empty effect list means the trigger's effect is not modeled here
@@ -4317,6 +4334,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // also draw the bot out of its library.
       let discardScore = hint === 'sacCost' && card.zone === 'battlefield'
         ? -Math.max(value, permanentGameValue(game, card, player)) : -value;
+      // Sacrificing the permanent whose effect is paying (Ravenous Vampire's
+      // counter, Nim Devourer's return) wastes the effect while other fodder exists.
+      if (card.zone === 'battlefield' && /sac/i.test(hint + ' ' + (q.prompt || '')) &&
+        (q.from || []).some(other => other !== card) && resolvingSources(game, q).has(card)) discardScore -= 100000;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;
