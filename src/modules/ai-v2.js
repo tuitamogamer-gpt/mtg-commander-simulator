@@ -4311,7 +4311,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (pumpPlan) return pumpPlan.cards[0] === card ? 100 : -1000 - value;
       const release = persecutorExitValue(game,card,player);
       if (release && /sac|bounce/i.test(hint + ' ' + (q.prompt || ''))) return release;
-      let discardScore = -value;
+      // A permanent given up from the battlefield is worth what it does on the
+      // board (its power), not its printed cost: a 20000-power creature is not
+      // the cheap sacrifice, and an Altar of the Wretched X that large would
+      // also draw the bot out of its library.
+      let discardScore = hint === 'sacCost' && card.zone === 'battlefield'
+        ? -Math.max(value, permanentGameValue(game, card, player)) : -value;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;
