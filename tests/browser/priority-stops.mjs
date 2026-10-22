@@ -19,7 +19,7 @@ try{
   },mode);
   if(mode==='hold')await page.getByRole('button',{name:'HOLD',exact:true}).click();
   if(mode==='full'){
-   await page.getByRole('button',{name:'MENU',exact:true}).click();await page.getByRole('button',{name:/Priority stops/}).click();await page.locator('.stopprofile').filter({hasText:'Full control'}).click();
+   await page.getByRole('button',{name:'MENU',exact:true}).click();const controlsTab=page.getByRole('tab',{name:/Controls/}).filter({visible:true});if(await controlsTab.count())await controlsTab.first().click();await page.getByRole('button',{name:/Priority stops/}).click();await page.locator('.stopprofile').filter({hasText:'Full control'}).click();
   }
   await page.locator('.hand [data-cname]').first().click();await page.locator('.sheetacts button').filter({hasText:/^Cast/}).first().click();
   if(mode==='auto')await page.waitForFunction(()=>__hold.done||__hold.error);

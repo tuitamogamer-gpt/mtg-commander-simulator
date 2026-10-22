@@ -106,11 +106,11 @@ try {
       responseCasts: _ui.react.q.casts.map(entry => entry.card.name)}));
     assert.deepEqual(before, {spellZone: 'stack', manaSpent: 2, tappedForests: 2, responseCasts: ['Opt']});
     await page.keyboard.press('?');
-    await page.waitForSelector('.helptext:visible');
+    await page.waitForSelector('.helpguide:visible');
     // A real pointer click gives the noninteractive sheet keyboard focus.
-    await page.locator('.helptext').click({position: {x: 20, y: 20}});
+    await page.locator('.helpguide').click({position: {x: 20, y: 20}});
     const focus = await page.evaluate(() => ({tag: document.activeElement.tagName,
-      className: document.activeElement.className, inHelp: !!document.activeElement.querySelector('.helptext')}));
+      className: document.activeElement.className, inHelp: !!document.activeElement.closest('.helpguide')}));
     assert.equal(focus.inHelp, true);
     await page.keyboard.press(key);
     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 0)));

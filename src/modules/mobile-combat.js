@@ -12,7 +12,8 @@ const button = (label, action, cls = '') => {
   return item;
 };
 const inspect = (ui, card) => { ui.sheet = { card }; ui.render(); };
-const keywords = card => ['flying', 'reach', 'menace', 'trample', 'deathtouch', 'first strike', 'double strike', 'lifelink', 'vigilance', 'indestructible', 'infect', 'wither']
+// Granted abilities count too: a creature with haste from its Equipment shows it, as the desktop pool does.
+const keywords = card => ['haste', 'flying', 'reach', 'menace', 'trample', 'deathtouch', 'first strike', 'double strike', 'lifelink', 'vigilance', 'indestructible', 'infect', 'wither']
   .filter(key => card.kw(key)).join(' · ');
 const defenderText = (ui, target) => target?.combatDestinationRemoved === true
   ? `${target.name} · original defender ${target.defendingPlayer.name}`
