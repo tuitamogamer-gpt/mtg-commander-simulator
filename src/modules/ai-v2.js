@@ -3287,16 +3287,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (!ability && source.def.aiReactionModes) return MTG.botReactionModePlan(game, player, source);
     if (!effects) return null;
+    // Mana already floating in the pool empties at the end of the step
+    // (CR 500.4). A reaction that mana pays for right now cannot wait for a
+    // better window, so it keeps the ordinary evaluation instead of being held.
+    if (floatingManaPays(game, player, source, ability, action)) return null;
     const targets = ability?.targets || (!ability && source.def.targets) || [];
     const specs = typeof targets === 'function' ? targets(game, source, action.alt || {}, player) : targets;
     return reactionEffectPlan(game, player, source, ability, effects, specs);
   };
+
+  function floatingManaPays(game, player, source, ability, action) {
+    let manaCost;
+    try {
+      if (ability) manaCost = typeof ability.cost?.mana === 'function' ? ability.cost.mana(game, source, player) : ability.cost?.mana;
+      else manaCost = game.spellCost(player, source, {...action.alt, from: action.from || source.zone});
+    } catch { return false; }
+    const parsed = typeof manaCost === 'string' ? U.parseCost(manaCost) : manaCost;
+    if (!parsed || parsed.x) return false;
+    const pool = {};
+    for (const [color, amount] of Object.entries(player.pool || {})) pool[color] = Math.max(0, Number(amount) || 0);
+    let total = Object.values(pool).reduce((sum, amount) => sum + amount, 0);
+    if (!total) return false;
+    for (const pip of parsed.pips || []) {
+      const color = pip.filter(part => part !== 'PHY' && part !== 'TWO').find(option => pool[option] > 0);
+      if (!color) return false;
+      pool[color] -= 1; total -= 1;
+    }
+    return total >= (Number(parsed.generic) || 0);
+  }
 
   // The following target prompt must choose the body whose rescue justified
   // spending the card, rather than a more expensive but unthreatened creature.
   function reactionTargetValue(game, player, target, q) {
     const hint = q.aiHint || q.spec?.aiHint;
     if (!hint?.untilEOT || hint.goal !== 'buff' || !(target instanceof U.CardInst)) return null;
+    // With mana floating in the bot's own main phase the pump is spent now,
+    // not held as a reaction, so its recipient is valued as a pre-combat buff.
+    if (game.turnPlayer === player && ['main1', 'main2'].includes(game.phase) &&
+      Object.values(player.pool || {}).some(amount => Number(amount) > 0)) return null;
     if (target.ctrl !== player || hint.avoidCostSource && target === q.src) return -1000;
     const effect = hint.protectionColor ? {action: 'grant-protection', target: 0, choose: 'color', chooser: 'you'} :
       {action: 'pump', target: 0, power: hint.power || 0, toughness: hint.toughness || 0, keywords: hint.keywords || []};
