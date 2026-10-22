@@ -3288,9 +3288,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!ability && source.def.aiReactionModes) return MTG.botReactionModePlan(game, player, source);
     if (!effects) return null;
     // Mana already floating in the pool empties at the end of the step
-    // (CR 500.4). A reaction that mana pays for right now cannot wait for a
-    // better window, so it keeps the ordinary evaluation instead of being held.
-    if (floatingManaPays(game, player, source, ability, action)) return null;
+    // (CR 500.4). An activation that costs only mana the pool already holds
+    // cannot wait for a better window, so it keeps the ordinary evaluation
+    // instead of being held. A card in hand is still worth more than the
+    // floating mana, so casts keep their discipline.
+    if (ability && Object.entries(ability.cost || {}).every(([key, value]) => key === 'mana' || !value ||
+      key === 'additionalCostV20' && value.kind === 'v87-global') &&
+      floatingManaPays(game, player, source, ability, action)) return null;
     const targets = ability?.targets || (!ability && source.def.targets) || [];
     const specs = typeof targets === 'function' ? targets(game, source, action.alt || {}, player) : targets;
     return reactionEffectPlan(game, player, source, ability, effects, specs);
