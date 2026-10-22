@@ -449,12 +449,15 @@ function stageScenario(entry, role, options = {}) {
       // A beneficial trick gets a modest 2/4 to carry it and a blocker it can
       // beat (1/3) or must save the 2/4 from (5/3), so a real bot has a reason
       // to spend it in the staged combat window.
-      const keywords = (operation.keywords || []).map(keyword => String(keyword).toLowerCase());
-      const killsBlocker = staticPower > 0 || keywords.includes('deathtouch');
+      // Spell keywords such as rebound ride along with the grant and say nothing about combat.
+      const keywords = (operation.keywords || []).map(keyword => String(keyword).toLowerCase())
+        .filter(keyword => !SPELL_KEYWORDS.includes(keyword));
+      const killsBlocker = staticPower > 0 || keywords.includes('deathtouch') || keywords.includes('double strike');
+      const evasionOrHaste = ['flying', 'menace', 'trample', 'haste', 'unblockable', 'fear', 'intimidate', 'shadow', 'horsemanship'];
       // A pure evasion or haste grant keeps the huge default body: unblockable
       // or suddenly able to attack, it is the whole game, which is the only
       // reason a bot spends a card on it.
-      const keywordOnly = staticPower === 0 && Number(operation.toughness || 0) === 0 && keywords.length > 0 && !keywords.includes('deathtouch');
+      const keywordOnly = staticPower === 0 && Number(operation.toughness || 0) === 0 && keywords.length > 0 && keywords.every(keyword => evasionOrHaste.includes(keyword));
       staged.target = permanent(game, controller, beneficial
         ? fixtureDefinition('Deep friendly creature', ['Creature'], keywordOnly ? {} : { power: '2', toughness: '4' })
         : mixed ? fixtureDefinition('Deep hostile mixed-pump victim', ['Creature'], {
@@ -583,6 +586,8 @@ function stageScenario(entry, role, options = {}) {
   return { game, player, opponent, card, operation, v4Operation, staged, humanState };
 }
 
+const SPELL_KEYWORDS = ['rebound', 'flashback', 'buyback', 'cycling', 'kicker', 'overload', 'convoke', 'splice', 'entwine', 'escape', 'retrace', 'jump-start', 'casualty'];
+
 function isHasteOnlyPump(operation) {
   const keywords = (operation && operation.keywords || []).map(keyword => String(keyword).toLowerCase());
   return operation?.kind === 'spell-pump' && Number(operation.power || 0) === 0 &&
@@ -692,17 +697,20 @@ function stageCombatWindow(context) {
   }
   let attacker = staged.ownCreature || (staged.target && staged.target.ctrl === player ? staged.target : null) ||
     (staged.decoy && staged.decoy.ctrl === player ? staged.decoy : null);
-  const grantedKeywords = (operation && operation.keywords || []).map(keyword => String(keyword).toLowerCase());
+  const grantedKeywords = (operation && operation.keywords || []).map(keyword => String(keyword).toLowerCase())
+    .filter(keyword => !SPELL_KEYWORDS.includes(keyword));
   const evasionOnly = operation && operation.kind === 'spell-pump' && Number(operation.power || 0) === 0 &&
     Number(operation.toughness || 0) === 0 && grantedKeywords.length > 0 &&
     grantedKeywords.every(keyword => ['flying', 'menace', 'trample', 'haste', 'unblockable', 'fear', 'intimidate', 'shadow', 'horsemanship'].includes(keyword));
   if (evasionOnly) {
+    // The bot weighs evasion as an attack enabler before attackers are
+    // declared, so the window opens at the beginning of combat.
     if (!attacker) attacker = permanent(game, player, fixtureDefinition('Deep combat attacker'));
     attacker.sick = false;
-    attacker.attacking = opponent;
-    game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]) };
+    permanent(game, opponent, fixtureDefinition('Deep hostile chump blocker', ['Creature'], { cost: '{1}', power: '1', toughness: '1' }));
+    game.combat = { attackers: [], defenders: new Map(), declaredAttackTargets: [], blockersDeclared: false, hadAttackers: false };
     game.recalc();
-    return { attacker, blocker: null, operation, preBlock: true };
+    return { attacker, blocker: null, operation, step: 'begin' };
   }
   if (!attacker) attacker = permanent(game, player, fixtureDefinition('Deep combat attacker'));
   let blocker = staged.target && staged.target.ctrl === opponent ? staged.target
@@ -771,7 +779,7 @@ async function executeScenario(context, entry) {
     game.phase = 'combat';
     // A staged block is a declared block: the bot only weighs a trick once the
     // engine would have reached the blockers step.
-    game.step = window.preBlock ? 'attackers' : 'blockers';
+    game.step = window.step || 'blockers';
     await game.priorityRound(player);
     return;
   }

@@ -46,7 +46,7 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 ## Responsive behavior
 
 - Setup on every screen is a real `Deck → Pod → Review` flow. Only the active stage occupies the screen. The deck explorer has a full-width gallery and a compact layout; the selected deck has a persistent Continue control.
-- Arena phone navigation is one level: `Mine / Table / Stack / Politics`. A destination does not add a second tab row.
+- Arena phone navigation is one level: `Mine / Table / Stack / Politics`. A destination does not add a second tab row. The floating "The Stack" window is a desktop surface; on phones the Stack destination and its count badge are the stack review, so no window covers the decision tray or the battlefield targets.
 - An empty hand collapses to a compact status rail; it must not reserve card-height space.
 - All primary touch targets are at least 44px.
 - Internal battlefield and drawer scrolling is preferred over page-level horizontal overflow.

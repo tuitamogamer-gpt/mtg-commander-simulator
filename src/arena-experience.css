@@ -217,3 +217,11 @@ body.reduced-motion #game .waitownership strong::before { animation: none !impor
    keep at least a row. */
 #game .cardselectionmodal .ringchoiceguide { flex: 0 1 auto; min-height: 96px; overflow: auto; overscroll-behavior: contain; }
 #game .cardselectionmodal:has(.ringchoiceguide) > .cardgrid { min-height: min(230px, calc(34 * var(--dvhu))); }
+
+/* Phones have no free space for the floating stack window: centred it covers
+   the decision tray's actions, raised it covers the targets on the battlefield.
+   The Stack destination (with its count badge) is the phone's stack review, so
+   the informational window stays a desktop surface. Reveal decisions still float. */
+@media (max-width: 900px) {
+  body.game-active #game .stackpopwrap:not(.revealwrap) { display: none; }
+}

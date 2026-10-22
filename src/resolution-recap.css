@@ -30,6 +30,14 @@
 .resolutionrecapfoot { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 24px; border-top: 1px solid #ffffff18; background: #1c231e; }
 .resolutionrecapfoot > span { color: #bbc5b9; font-size: 12px; }
 .resolutionrecapfoot .pbtn { min-width: 120px; min-height: 44px; }
+/* The decision status ("The game is over.") is the recap's own top strip, not
+   bare text on the dialog's edge. */
+#game .resolutionrecap .waitownership {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 8px 24px;
+  border-bottom: 1px solid #ffffff18; color: #b2bba7; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+}
+#game .resolutionrecap .waitownership strong { color: inherit; font-weight: inherit; }
+#game .resolutionrecap .waitownership span { color: #8f9a8c; font-weight: 500; letter-spacing: .02em; text-transform: none; }
 
 /* Routine events keep the battlefield visible and put the result first. */
 #game .overlay.resolutionrecapoverlay.recapminor {
