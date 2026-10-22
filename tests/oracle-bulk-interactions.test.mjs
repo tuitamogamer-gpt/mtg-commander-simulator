@@ -2455,6 +2455,11 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     assert.equal(subject.zone, 'exile', `${label}: exile changes the target zone`);
   } else if (action === 'bounce' || action === 'move-to-hand' || action === 'return-source-to-hand') {
     const moved = action === 'return-source-to-hand' ? source : subject;
+    // The local AI keeps its own unthreatened permanent when an optional
+    // trigger only offers to bounce it; the decline is the proved choice.
+    const ownDecline=context.role==='ai'&&action==='bounce'&&moved?.ctrl===context.a&&moved.zone==='battlefield'&&
+      (context.aiDecisions||[]).some(row=>row.query.type==='chooseOption'&&row.query.aiHint?.kind==='optTrigger'&&row.query.aiHint.src===source&&row.result==='no');
+    if(ownDecline)return;
     if(moved.kind==='spell'){assert.equal(game.stack.includes(moved),false,label+': spell leaves Stack without being countered');if(!moved.isCopy)assert.equal(moved.card.zone,'hand',label+': underlying spell card returns');}
     else assert.ok(moved.zone==='hand'||context.moveEvidence.slice(before.moveEvidenceIndex).some(row=>row.card===moved&&row.to==='hand'&&(row.after.zone==='hand'||row.card.isToken&&row.after.zone==='ceased')), `${label}: return-to-hand changes the card zone`);
   } else if (action === 'sacrifice-source') {

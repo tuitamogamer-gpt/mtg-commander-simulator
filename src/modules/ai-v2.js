@@ -3341,7 +3341,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.botOptionalEffectDecision = function (game, player, q) {
     const hint = q.aiHint;
-    if (hint?.kind !== 'optTrigger' || !hint.effects || !q.options?.some(option => option.key === 'no')) return null;
+    // An empty effect list means the trigger's effect is not modeled here
+    // (Pestermite's tap-or-untap, a bounce routed through its own prompt), so
+    // it is not "worth nothing": the ordinary ranking decides.
+    if (hint?.kind !== 'optTrigger' || !hint.effects?.length || !q.options?.some(option => option.key === 'no')) return null;
     const source = hint.src, targets = hint.targets || [];
     const specs = hint.targetSpecs || [];
     const costValue = (cost = {}, candidates = hint.costCandidates || []) => {
@@ -3382,6 +3385,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
             specs[effect.target] ? game.legalTargets(specs[effect.target], source, player) : [];
           const score = card => {
+            // Returning its own creature in response to announced removal
+            // saves the card; without a threat it only costs tempo.
+            if (effect.action === 'bounce' && card instanceof U.CardInst && card.ctrl === player &&
+              !card.isToken && pendingCreatureRemoval(game, card)) return permanentGameValue(game, card, player) + 2;
             const worth = targetValue(game, player, card, {src: source,
               aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
             // The payment side prices a card the bot gives up; answering it with
@@ -4145,7 +4152,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A cost paid with one of your own permanents is spent on the cheapest
       // one; pointing it at the best permanent on the board is never right.
       if (/^sac(Own|rificeOwn)/i.test(hint)) return hostile ? -1000 : -value;
-      if (/removal|damage|destroy|exile|bounce|counter|tap|goad/i.test(hint)) return hostile ? value : -value * 1.8;
+      // A zero-value permanent (a land) still belongs on the opposing side of
+      // a hostile effect, so ties never fall to the bot's own permanent.
+      if (/removal|damage|destroy|exile|bounce|counter|tap|goad/i.test(hint)) return hostile ? value + 0.25 : -value * 1.8 - 0.25;
+      // Protecting a creature that announced removal is about to kill comes first.
+      if (hint === 'protect' && !hostile && pendingCreatureRemoval(game, target)) return value + 20;
       if(hint==='copy')return value;
       if (/buff|pump|protect|copy|recur|return|attach|equip|untap/i.test(hint)) return hostile ? -value : value;
       // An Aura or an evasion grant belongs to its controller even when the
