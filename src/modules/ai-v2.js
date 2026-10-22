@@ -3245,6 +3245,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.botReactionPlan = function (game, player, action) {
     const source = action.card || action.entry?.card, ability = action.entry?.ability;
     if (!source || action.kind === 'activate' && (!ability || ability.loyalty !== undefined)) return null;
+    // A sorcery-speed pump (Monstrous Growth) cannot wait for a combat window,
+    // so it keeps the ordinary main-phase evaluation instead of being held.
+    if (action.kind === 'cast' && !(source.is('Instant') || source.kw('flash') || (source.def.kws || []).includes('flash'))) return null;
     const effects = reactionEffects(source, ability);
     if (!effects && !source.def.aiPhaseOutProtection && !source.def.aiReactionModes) return null;
     if (!ability) {
