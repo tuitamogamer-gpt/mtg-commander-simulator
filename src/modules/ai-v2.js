@@ -3383,9 +3383,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // A boost to the bot's own creature or a shrink on an opposing one is
           // never a loss, so a free one is taken even outside combat.
           const recipients = targets.length ? [targets[effect.target ?? 0]].flat().filter(Boolean) : [];
-          const boost = !(Number(effect.power) < 0) && !(Number(effect.toughness) < 0); // X-sized counts as a boost
+          const specHint = specs[effect.target ?? 0]?.aiHint || {};
+          const power = Number(effect.power ?? specHint.power), toughness = Number(effect.toughness ?? specHint.toughness);
+          // X-sized amounts count as a boost. A mixed "+3/-3" helps only when it
+          // kills an opposing creature or leaves the bot's own one alive.
+          const mixed = power > 0 && toughness < 0;
+          const boost = !(power < 0) && !(toughness < 0);
+          const lethal = card => Number(card.toughness || 0) - Number(card.damage || 0) + toughness <= 0;
           const harmless = recipients.length > 0 && recipients.every(card => card instanceof U.CardInst &&
-            (boost ? card.ctrl === player : card.ctrl !== player));
+            (mixed ? card.ctrl === player ? !lethal(card) : lethal(card) : boost ? card.ctrl === player : card.ctrl !== player));
           value += harmless ? Math.max(0.1, plan.score + 0.4) : plan.score + 0.4;
         } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
           const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
