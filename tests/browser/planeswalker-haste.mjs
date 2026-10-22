@@ -143,7 +143,12 @@ async function drive(mode, label) {
         await click(page.locator('.sheetacts button').filter({hasText: /Equip/}).first());
       }
     } else if (s.type === 'chooseTargets') {
-      if (!s.selected) await click(page.locator(`.mini[data-iid="${mode === 'damage' ? s.ids.walker : s.ids.atarka}"]`).filter({visible: true}).first());
+      if (!s.selected) {
+        const target = page.locator(`.mini[data-iid="${mode === 'damage' ? s.ids.walker : s.ids.atarka}"]`).filter({visible: true});
+        // On phones an opponent's permanent is reached through that opponent's seat.
+        if (mode === 'damage' && !await target.count()) await click(page.locator('.ct-seat[data-focus-player]:not([data-focus-player="0"])').filter({visible: true}).first());
+        await click(target.first());
+      }
       if (mode === 'damage') await shot(`${label}-targeted`);
       await click(page.getByRole('button', {name: /Lock.*1 target/}));
     } else if (s.type === 'attackers') {
