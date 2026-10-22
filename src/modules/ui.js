@@ -6190,6 +6190,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             b.disabled = true;
             acts.appendChild(b);
           }
+          // A mana ability that would add nothing right now (Everflowing Chalice
+          // without charge counters) is shown too, so the card does not look mute.
+          if (card.def.mana && !card.tapped && typeof card.def.mana.produce === 'function' &&
+            !(q.acts || []).some(entry => entry.card === card && entry.manaAbility)) {
+            let options = null;
+            try { options = card.def.mana.produce(g, card, this.me) || []; } catch { options = null; }
+            if (options && !options.length) {
+              const b = el('button', 'pbtn wide disabled abilitybtn', '⚡ Mana ability: adds no mana right now');
+              b.disabled = true;
+              acts.appendChild(b);
+            }
+          }
         }
         if (card.zone === 'command' && card.owner === this.me && !(q.casts || []).some(e => e.card === card)) {
           const cost = g.spellCost(card.owner, card, {});

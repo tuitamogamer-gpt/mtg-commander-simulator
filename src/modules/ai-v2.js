@@ -5928,6 +5928,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         effects.every(effect => ['draw', 'discard', 'scry', 'surveil'].includes(effect.action) &&
           effect.who === 'you');
       if (ability?.cost?.tap && routineDraw) breakdown.safety -= routineTapExposure(game, player, card);
+      // Life is a cost here too (Doom Whisperer: "Pay 2 life: Surveil 2"). The
+      // generic base score ignored it, so the bot paid itself down to its last
+      // life for card quality. Price it like a spell's life cost, and treat a
+      // repeatable look at the library as worth one payment per turn, not a loop.
+      const lifeCost = Number(ability?.cost?.life || 0);
+      if (lifeCost > 0) {
+        const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
+        breakdown.safety -= lifeCost * lifePressure;
+        if (lifeCost >= player.life) breakdown.safety -= 1000000;
+        const routineQuality = effects.length > 0 && effects.every(effect =>
+          ['surveil', 'scry', 'draw', 'mill'].includes(effect.action) && (effect.who || 'you') === 'you');
+        if (routineQuality) {
+          const label = actionLabel(action);
+          const repeats = (game.aiDecisionLog || []).filter(decision =>
+            decision.turn === game.turnNo && decision.playerId === player.idx && decision.chosen === label).length;
+          breakdown.safety -= repeats * 3;
+          if (player.life - lifeCost < 12) breakdown.safety -= 50;
+          // One look per turn from a comfortable total is good play.
+          else if (!repeats && player.life - lifeCost >= 20) breakdown.resources += 2.2;
+        }
+      }
       const ownDraws = effects.reduce((sum, effect) => effect.action === 'draw' && effect.who === 'you' &&
         Number.isSafeInteger(effect.n) && effect.n > 0 ? sum + effect.n : sum, 0);
       if (routineDraw && immediateDrawWouldLose(game, player, ownDraws)) breakdown.safety -= 1000000;
