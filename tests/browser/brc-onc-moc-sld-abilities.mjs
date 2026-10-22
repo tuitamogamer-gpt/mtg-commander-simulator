@@ -49,7 +49,8 @@ try{for(const width of [1440,390])for(const deck of precons){
    if(deck.name==="Mishra's Burnished Banner")await g.emit('beginCombat',{player:a});
    if(["Urza's Iron Alliance",'Corrupting Influence','Tinker Time'].includes(deck.name))await g.emit('endStep',{player:a});
    if(deck.name==='Rebellion Rising'){const token=g.creatures(a).find(c=>c.isToken);token.attacking=b;await g.emit('attackedPlayer',{player:a,target:b,attackers:[{card:token,target:b}]});}
-   if(deck.name==='Cavalry Charge')await g.emit('attackersDeclared',{player:a,attackers:[{card:spell,target:b}]});
+   // The engine's attackersDeclared carries the attacking cards themselves.
+   if(deck.name==='Cavalry Charge'){spell.attacking=b;await g.emit('attackersDeclared',{player:a,attackers:[spell]});}
    await g.flushTriggers();await g.priorityRound(a);
    if(deck.name==='Growing Threat')await action(g.bf().find(c=>c.hasSub('Incubator')),'Transform');
    if(deck.name==='From Cute to Brute'){await action(land,'Play land');await action(spell,'Reveal');}
