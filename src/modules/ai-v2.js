@@ -3390,7 +3390,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const mixed = power > 0 && toughness < 0;
           const boost = !(power < 0) && !(toughness < 0);
           const lethal = card => Number(card.toughness || 0) - Number(card.damage || 0) + toughness <= 0;
-          const harmless = recipients.length > 0 && recipients.every(card => card instanceof U.CardInst &&
+          // A group boost limited to the bot's own creatures ("Ally creatures you
+          // control get +1/+0") is just as harmless.
+          const ownGroupBoost = effect.action === 'battlefield-group' && boost && (effect.filters || []).length > 0 &&
+            effect.filters.every(filter => filter.controller === 'you');
+          const harmless = ownGroupBoost || recipients.length > 0 && recipients.every(card => card instanceof U.CardInst &&
             (mixed ? card.ctrl === player ? !lethal(card) : lethal(card) : boost ? card.ctrl === player : card.ctrl !== player));
           value += harmless ? Math.max(0.1, plan.score + 0.4) : plan.score + 0.4;
         } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
