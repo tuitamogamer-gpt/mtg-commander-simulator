@@ -2472,7 +2472,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (q.type === 'main' || q.type === 'priority') {
       for (const entry of q.casts || []) {
         const action = {kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from};
-        if (MTG.botReactionPlan(game, player, action)?.score <= 0 || MTG.botShouldHoldInteraction(game, player, action)) continue;
+        if (MTG.botReactionPlan(game, player, action)?.score <= 0) continue;
+        // A held removal spell stays visible to the ranking (and its diagnostics)
+        // with a waiting penalty, rather than vanishing from the options.
+        if (MTG.botShouldHoldInteraction(game, player, action)) action.heldForBetterTarget = true;
         actions.push(action);
       }
       for (const entry of q.acts || []) {
@@ -3232,8 +3235,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (target.commander || permanentGameValue(game, target, player) >= 5.5) return true;
       if (game.phase === 'combat' && ['attackers', 'blockers', 'firstStrike'].includes(game.step)) {
         if (target.blocking && game.turnPlayer === player) return true;
-        if (target.attacking === player && (target.power >= player.life ||
-          reactionCombatGain(game, player, new Map(), [target]) > 3)) return true;
+        // Killing a creature that is attacking the bot also removes the card,
+        // so any attacker the spell kills is a meaningful target.
+        if (target.attacking === player) return true;
       }
       return false;
     });
@@ -6979,6 +6983,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.reaction = tactical - total;
       total = tactical;
     }
+    if (action.heldForBetterTarget) { breakdown.heldForBetterTarget = -60; total -= 60; }
     if (unfavorableWipe && total > -12) {
       // Personality, mana value and generic draw/synergy bonuses must not
       // turn a known losing reset into the default main-phase play.
