@@ -3339,9 +3339,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.botReactionTargetValue = reactionTargetValue;
 
+  // The object currently resolving, so a cost paid during resolution can tell
+  // which permanent the effect belongs to (Nim Devourer returns itself and
+  // then asks for a sacrifice; giving up the returned Devourer undoes it).
+  if (MTG.Game && !MTG.Game.prototype.aiResolvingTracked) {
+    const resolveTop = MTG.Game.prototype.resolveTop;
+    MTG.Game.prototype.aiResolvingTracked = true;
+    MTG.Game.prototype.resolveTop = async function (...args) {
+      const top = this.stack[this.stack.length - 1];
+      (this.aiResolving || (this.aiResolving = [])).push(top);
+      try { return await resolveTop.apply(this, args); } finally { this.aiResolving.pop(); }
+    };
+  }
+  function resolvingSources(game, q) {
+    return new Set([q.aiHint?.src, q.src, ...(game.aiResolving || []).flatMap(object => [object?.srcCard, object?.card])]
+      .filter(card => card instanceof U.CardInst));
+  }
+
   MTG.botOptionalEffectDecision = function (game, player, q) {
     const hint = q.aiHint;
-    if (hint?.kind !== 'optTrigger' || !hint.effects || !q.options?.some(option => option.key === 'no')) return null;
+    // An empty effect list means the trigger's effect is not modeled here
+    // (Pestermite's tap-or-untap, a bounce routed through its own prompt), so
+    // it is not "worth nothing": the ordinary ranking decides.
+    if (hint?.kind !== 'optTrigger' || !hint.effects?.length || !q.options?.some(option => option.key === 'no')) return null;
     const source = hint.src, targets = hint.targets || [];
     const specs = hint.targetSpecs || [];
     const costValue = (cost = {}, candidates = hint.costCandidates || []) => {
@@ -3377,16 +3397,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (effect.action === 'pump' || effect.action === 'battlefield-group' && effect.operation === 'pump') {
           const plan = reactionEffectPlan(game, player, source, {cost: {}}, [effect], specs, targets.length ? targets : null);
           if (!plan) return null;
-          value += plan.score + 0.4;
+          // A boost to the bot's own creature or a shrink on an opposing one is
+          // never a loss, so a free one is taken even outside combat.
+          const recipients = targets.length ? [targets[effect.target ?? 0]].flat().filter(Boolean) : [];
+          const specHint = specs[effect.target ?? 0]?.aiHint || {};
+          const power = Number(effect.power ?? specHint.power), toughness = Number(effect.toughness ?? specHint.toughness);
+          // X-sized amounts count as a boost. A mixed "+3/-3" helps only when it
+          // kills an opposing creature or leaves the bot's own one alive.
+          const mixed = power > 0 && toughness < 0;
+          const boost = !(power < 0) && !(toughness < 0);
+          const lethal = card => Number(card.toughness || 0) - Number(card.damage || 0) + toughness <= 0;
+          // A group boost limited to the bot's own creatures ("Ally creatures you
+          // control get +1/+0") is just as harmless.
+          const ownGroupBoost = effect.action === 'battlefield-group' && boost && (effect.filters || []).length > 0 &&
+            effect.filters.every(filter => filter.controller === 'you');
+          const harmless = ownGroupBoost || recipients.length > 0 && recipients.every(card => card instanceof U.CardInst &&
+            (mixed ? card.ctrl === player ? !lethal(card) : lethal(card) : boost ? card.ctrl === player : card.ctrl !== player));
+          value += harmless ? Math.max(0.1, plan.score + 0.4) : plan.score + 0.4;
         } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
           const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
             specs[effect.target] ? game.legalTargets(specs[effect.target], source, player) : [];
           const score = card => {
+            // Returning its own creature in response to announced removal
+            // saves the card; without a threat it only costs tempo.
+            if (effect.action === 'bounce' && card instanceof U.CardInst && card.ctrl === player &&
+              !card.isToken && pendingCreatureRemoval(game, card)) return permanentGameValue(game, card, player) + 2;
             const worth = targetValue(game, player, card, {src: source,
               aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
             // The payment side prices a card the bot gives up; answering it with
             // an opposing card is a trade, not a loss. A token or a bounce is
             // only tempo.
+            // Damage that does not kill an opposing creature is small, never a
+            // cost (the target ranking prefers kills; this is only yes or no).
+            if (effect.action === 'damage' && card instanceof U.CardInst && card.ctrl !== player) return Math.max(0.1, worth);
             if (worth <= 0 || !(card instanceof U.CardInst) || card.ctrl === player || effect.action === 'damage') return worth;
             return worth + (card.isToken || effect.action === 'bounce' ? 0.6 : 2);
           };
@@ -4145,7 +4188,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A cost paid with one of your own permanents is spent on the cheapest
       // one; pointing it at the best permanent on the board is never right.
       if (/^sac(Own|rificeOwn)/i.test(hint)) return hostile ? -1000 : -value;
-      if (/removal|damage|destroy|exile|bounce|counter|tap|goad/i.test(hint)) return hostile ? value : -value * 1.8;
+      // A zero-value permanent (a land) still belongs on the opposing side of
+      // a hostile effect, so ties never fall to the bot's own permanent.
+      if (/removal|damage|destroy|exile|bounce|counter|tap|goad/i.test(hint)) return hostile ? value + 0.25 : -value * 1.8 - 0.25;
+      // Protecting a creature that announced removal is about to kill comes first.
+      if (hint === 'protect' && !hostile && pendingCreatureRemoval(game, target)) return value + 20;
       if(hint==='copy')return value;
       if (/buff|pump|protect|copy|recur|return|attach|equip|untap/i.test(hint)) return hostile ? -value : value;
       // An Aura or an evasion grant belongs to its controller even when the
@@ -4281,7 +4328,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (pumpPlan) return pumpPlan.cards[0] === card ? 100 : -1000 - value;
       const release = persecutorExitValue(game,card,player);
       if (release && /sac|bounce/i.test(hint + ' ' + (q.prompt || ''))) return release;
-      let discardScore = -value;
+      // A permanent given up from the battlefield is worth what it does on the
+      // board (its power), not its printed cost: a 20000-power creature is not
+      // the cheap sacrifice, and an Altar of the Wretched X that large would
+      // also draw the bot out of its library.
+      let discardScore = hint === 'sacCost' && card.zone === 'battlefield'
+        ? -Math.max(value, permanentGameValue(game, card, player)) : -value;
+      // Sacrificing the permanent whose effect is paying (Ravenous Vampire's
+      // counter, Nim Devourer's return) wastes the effect while other fodder exists.
+      if (card.zone === 'battlefield' && /sac/i.test(hint + ' ' + (q.prompt || '')) &&
+        (q.from || []).some(other => other !== card) && resolvingSources(game, q).has(card)) discardScore -= 100000;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;

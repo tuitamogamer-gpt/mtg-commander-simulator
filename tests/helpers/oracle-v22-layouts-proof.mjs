@@ -15,7 +15,7 @@ function install(M,f,h){
  }
  for(const handler of M.OracleV20.handlers)if(handler.layoutsV22&&!wrapped.has(handler)){
   wrapped.add(handler);const prior=handler.effect;
-  handler.effect=async function(ctx,e,...rest){const w=worlds.get(ctx.g);if(!w||!owned(e))return prior.call(this,ctx,e,...rest);
+  handler.effect=async function(ctx,e,...rest){const w=worlds.get(ctx.g);if(!w||!w.h||!owned(e))return prior.call(this,ctx,e,...rest);
    const row={effect:e,ctx:{...ctx},executions:[],delayed:ctx.g.delayed.slice(),decisionStart:w.decisions.length};w.rows.push(row);
    if(['reveal-until-v22','inspect-exile-v22','exile-permission-v22','exile-cast-batch-v22','exile-selected-permission-v22'].includes(e.action)){
     row.owners=e.who==='each-player'?ctx.g.players:e.who==='each-opponent'?ctx.g.players.filter(p=>p!==ctx.you):e.action==='exile-permission-v22'?M.OracleV20.helpers.genericEffectSubjects(ctx,e.who):[ctx.you];row.owner=row.owners[0];

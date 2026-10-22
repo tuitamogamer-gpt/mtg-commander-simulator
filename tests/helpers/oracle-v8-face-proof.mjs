@@ -38,7 +38,25 @@ export function installFaceProof(MTG, game) {
   // reached on the battlefield. Its ordinary cast therefore needs no face
   // announcement and must stay visible to the cast list.
   if (scope.layout === 'transform') {
-    if (scope.face === 'front') return;
+    if (scope.face === 'front') {
+      // A front with More Than Meets the Eye can also be cast converted, which
+      // the local AI prefers for its lower cost. Proving the front needs the
+      // front on the battlefield, so the face announcement names it.
+      const cast = game.castSpell;
+      game.castSpell = async function (player, card, options = {}) {
+        if (!sourceMatches(card, scope) || options.alt) return cast.call(this, player, card, options);
+        const previous = player.controller.decide;
+        player.controller.decide = function (g, q) {
+          if (q.aiHint?.kind === 'oracleSpellFace' && q.aiHint.card === card) {
+            const front = q.options.find(option => option.face === 'front');
+            if (front) return Promise.resolve(front.key);
+          }
+          return previous.call(this, g, q);
+        };
+        try { return await cast.call(this, player, card, options); } finally { player.controller.decide = previous; }
+      };
+      return;
+    }
     const frontDefinition=MTG.DEFS[scope.canonicalName]?.oracleFaces?.faces[0]?.def;
     if(frontDefinition?.abilities?.some(ability=>ability.oracleCraftV20)){
       const resolve=game.resolveTop;
