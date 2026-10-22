@@ -23,9 +23,10 @@ try{for(const width of [1440,390]){
   if(s.type==='main'&&s.stage==='cast'){
    await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill('Cruel Entertainment');await page.locator('.commandresult').filter({hasText:'Cruel Entertainment'}).first().click();await page.locator('.sheetacts .pbtn.primary').first().click();
   }else if(s.type==='main'&&s.stage==='controlled'&&s.me===s.subject&&!played){
-   assert.ok((await page.locator('.handwrap').innerText()).includes('Forest'));handSeen=true;await page.screenshot({path:`${out}/${width}-controlled-hand.png`});await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill('Forest');await page.locator(`.commandresult[data-card-id="${s.land}"]`).click();await page.locator('.sheetacts .pbtn.primary').first().click();played=true;
+   // Hand cards are pictures; their names live in data-cname, not in the row's text.
+   assert.ok(await page.locator('.handwrap [data-cname="Forest"]').count()>0);handSeen=true;await page.screenshot({path:`${out}/${width}-controlled-hand.png`});await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill('Forest');await page.locator(`.commandresult[data-card-id="${s.land}"]`).click();await page.locator('.sheetacts .pbtn.primary').first().click();played=true;
   }else if(s.type==='chooseTargets'){
-   const confirm=page.locator('.promptbar .pbtn.primary:not(:disabled):visible');if(await confirm.count())await confirm.first().click();else await page.locator('#game .targetable:not(.selected):visible').first().click();
+   const confirm=page.locator('.promptbar .pbtn.primary:not(:disabled):visible');if(await confirm.count())await confirm.first().click();else if(await page.locator('.targetplayerpick:visible').count())await page.locator('.targetplayerpick:visible').first().click();else await page.locator('#game .targetable:not(.selected):visible').first().click();
   }else if(s.type==='main')await page.getByRole('button',{name:/^(End turn|Continue)/}).filter({visible:true}).first().click();
   else{
    const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order|No attacks|Exile top card|Reveal cards)/}).filter({visible:true});if(await proceed.count())await proceed.last().click();else if(s.type==='chooseOption'){const opt=page.locator('.modal .pbtn:not(:disabled):visible');if(await opt.count())await opt.first().click();}

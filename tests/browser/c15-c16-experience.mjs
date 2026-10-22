@@ -27,7 +27,7 @@ try{for(const width of [1440,390]){
    await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill(name);const iid=await page.evaluate(stage=>__exp[stage==='enchantment'?'arena':stage==='spirit'?'daxos':'gambit'].iid,s.stage);await page.locator(`.commandresult[data-card-id="${iid}"]`).click();
    if(s.stage==='spirit')await page.locator('.sheetacts .abilitybtn:not(:disabled)').filter({hasText:'Create a Spirit'}).click();else await page.locator('.sheetacts .pbtn.primary').first().click();
   }else if(s.proliferate){
-   if(!s.selected)await page.locator('.melife.targetable').click();else{assert.match(await page.locator('.proliferatechoice').innerText(),/\+1 experience/);choiceSeen=true;await page.screenshot({path:`${out}/${width}-choice.png`});await page.getByRole('button',{name:/^Confirm proliferate \(1\)/}).click();}
+   if(!s.selected){const pick=page.locator('.targetplayerpick[data-target-player="0"]:visible');if(await pick.count())await pick.first().click();else await page.locator('.melife.targetable').click();}else{assert.match(await page.locator('.proliferatechoice').innerText(),/\+1 experience/);choiceSeen=true;await page.screenshot({path:`${out}/${width}-choice.png`});await page.getByRole('button',{name:/^Confirm proliferate \(1\)/}).click();}
   }else{
    const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/}).filter({visible:true});if(await proceed.count())await proceed.last().click();else if(s.type==='chooseOption'){const option=page.locator('.modal .pbtn:not(:disabled):visible');if(await option.count())await option.first().click();}
   }

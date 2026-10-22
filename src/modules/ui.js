@@ -4515,8 +4515,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           body.appendChild(picked);
           bar.appendChild(body);
           const zones = this.targetChoiceZones();
-          if (zones.length) {
+          // A player is also offered as a labelled control: the desktop review
+          // panel sits over the lane heads' life totals, and a phone shows only
+          // one board, so the glowing total is not always reachable.
+          const playerTargets = (q.candidates || []).filter(candidate => candidate instanceof MTG.Player && !pd.sel.includes(candidate));
+          if (zones.length || playerTargets.length) {
             const links = el('div', 'targetzonelinks');
+            for (const target of playerTargets) {
+              const pick = btn(`${target === this.me ? 'Target you' : `Target ${esc(target.name)}`} <span>${target.life} life</span>`, () => {
+                if (this.pending === pd) this.pickCandidate(target);
+              }, 'targetzoneopen targetplayerpick');
+              pick.dataset.targetPlayer = String(target.idx);
+              links.appendChild(pick);
+            }
             for (const { player, zone, cards } of zones) {
               const label = player === this.me ? `your ${zone}` : `${player.name}'s ${zone}`;
               const open = btn(`Open ${esc(label)} <span>${cards.length} legal</span>`, () => {
