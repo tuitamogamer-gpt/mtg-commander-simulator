@@ -11,10 +11,10 @@ async function shot(name){await page.screenshot({path:out+'/'+name+'.png',animat
 async function drive(label){let captured=false;for(let n=0;n<140;n++){
  const s=await state();assert.equal(s.error,null);if(s.done)return;
  if(s.pending==='chooseTargets'){
-  const closePreview=page.locator('.stackpophead button');if(await closePreview.count())await closePreview.last().click();
+  const closePreview=page.locator('.stackpophead button').filter({visible:true});if(await closePreview.count())await closePreview.last().click();
   const desired=s.candidates.find(c=>c.iid===s.preferred)||s.candidates.find(c=>c.name==='Forest')||s.candidates[0];assert.ok(desired);
   if(!s.sel.includes(desired.iid)){
-   if(desired.zone==='graveyard'){await page.locator('.meinfo [data-z="graveyard"]').click();await page.locator('.sheet .bigcard').filter({hasText:desired.name}).first().click();}
+   if(desired.zone==='graveyard'){const openZone=page.locator('.targetzoneopen[data-target-zone="graveyard"]').filter({visible:true});if(await openZone.count())await openZone.first().click();else await page.locator('.meinfo [data-z="graveyard"]').click();await page.locator('.sheet .bigcard').filter({hasText:desired.name}).first().click();}
    else await page.locator(`.mini[data-iid="${desired.iid}"]`).first().click();
   }
   await page.getByRole('button',{name:/Lock.*1 target/}).click();

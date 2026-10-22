@@ -1327,6 +1327,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pageEntries = new Set(browseResult.entries);
       deckCatalog.forEach(record => { record.element.hidden = !pageEntries.has(record); });
       browseResult.entries.forEach(record => deckList.appendChild(record.element));
+      // Hidden entries follow the visible page, so the list's first item is always a visible deck.
+      deckCatalog.forEach(record => { if (record.element.hidden) deckList.appendChild(record.element); });
       if (focusedDeckControl) {
         const stillVisible = !focusedDeckControl.closest('.deckentry')?.hidden;
         (stillVisible ? focusedDeckControl : deckTools.querySelector('input')).focus({ preventScroll: true });

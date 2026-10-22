@@ -183,7 +183,7 @@ async function progress() {
   } else if (s.question === 'combatReview' || s.question === 'attackers') {
     await page.locator('[data-testid="confirm-combat-battlefield"]').tap();
   } else {
-    const proceed = page.getByRole('button', { name: /^(Proceed|Pass|Resolve|Continue|End turn|Got it|Confirm order|No attacks)/ }).filter({ visible: true });
+    const proceed = page.getByRole('button', { name: /^(Proceed|Pass|Resolve|Continue|End turn|Got it|Confirm order|No attacks|Exile top card|Reveal cards)/ }).filter({ visible: true });
     if (await proceed.count()) await proceed.last().click();
   }
   await page.waitForTimeout(25);

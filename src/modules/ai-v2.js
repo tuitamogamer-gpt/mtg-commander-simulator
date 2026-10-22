@@ -2462,8 +2462,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const optional = q.type === 'chooseOption' ? MTG.botOptionalEffectDecision(game, player, q) : null;
     if (optional !== null) {
+      // Answer only with an option the question actually offers; a narrowed
+      // question (one choice left) falls through to the ordinary ranking.
       const value = optional ? 'yes' : 'no';
-      return [{kind: 'chooseOption', value, option: q.options.find(option => option.key === value)}];
+      const option = q.options.find(option => option.key === value);
+      if (option) return [{kind: 'chooseOption', value, option}];
     }
     const actions = [];
     if (q.type === 'main' || q.type === 'priority') {
@@ -2675,6 +2678,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (sem.roles.includes('combo-piece')) value += 7;
     if (sem.roles.includes('finisher')) value += 3.5;
     if (sem.roles.includes('card-draw')) value += 2.2;
+    // A nonland mana source is worth its acceleration (Sol Ring is a prime
+    // removal target), not just its printed cost.
+    if (!card.is('Land') && card.def.mana?.produce && card.zone === 'battlefield') {
+      let produced = 0;
+      try {
+        const produce = card.def.mana.produce;
+        const option = (typeof produce === 'function' ? produce(game, card, card.ctrl) || [] : produce)[0];
+        if (option) produced = Object.values(option).reduce((sum, amount) => sum + (Number(amount) || 0), 0);
+      } catch { produced = 0; }
+      value += Math.min(3, produced) * 2.6;
+    }
     if (card.commander) value += 3 * (profile && profile.commanderImportance || 1);
     if (card.cur && (card.cur.hexproof || card.cur.shroud || card.kw('indestructible'))) value *= 1.18;
     if (perspective && card.ctrl === perspective) value *= 1.03;
@@ -2955,11 +2969,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function reactionEffects(source, ability) {
     if (ability?.aiReactionEffects) return ability.aiReactionEffects;
     if (!ability && source.def.aiReactionEffects) return source.def.aiReactionEffects;
-    const operations = ability ? [ability.oracleOperation].filter(Boolean) : source.def.oracleImplementation || [];
+    // Casting a permanent never resolves its activated abilities, so a creature
+    // whose only compiled operation is "{G}: +2/+2" is a body to deploy, not a
+    // combat trick waiting for a recipient.
+    // A cost mechanic such as rebound or flashback (`mechanic-*`) rides along
+    // with the spell's one effect and does not make it a different reaction.
+    const operations = ability ? [ability.oracleOperation].filter(Boolean)
+      : (source.def.oracleImplementation || []).filter(operation =>
+        operation.kind !== 'generic-ability' && !String(operation.kind || '').startsWith('mechanic-'));
     if (operations.length !== 1) return null;
     const operation = operations[0];
-    if (operation.kind === 'spell-pump') return [{action: 'pump', target: 0, power: operation.power,
-      toughness: operation.toughness, keywords: operation.keywords}];
+    if (operation.kind === 'spell-pump') {
+      // Only a fixed, non-negative pump is a protection reaction. A debuff
+      // ("-X/-0" on an attacker) or an X-sized pump keeps the ordinary
+      // evaluator, which values the removal and chooses X.
+      const power = Number(operation.power), toughness = Number(operation.toughness);
+      if (!(power >= 0) || !(toughness >= 0)) return null;
+      return [{action: 'pump', target: 0, power, toughness, keywords: operation.keywords}];
+    }
     if (operation.kind === 'spell-fog') return [{action: 'ai-fog', playersOnly: operation.playersOnly}];
     if (!['generic-ability', 'spell-generic'].includes(operation.kind) || operation.modalBody || operation.v4Body ||
       operation.optionalBodyV14 || operation.overloadedBody || operation.cleaveBodyV10) return null;
@@ -3235,6 +3262,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.botReactionPlan = function (game, player, action) {
     const source = action.card || action.entry?.card, ability = action.entry?.ability;
     if (!source || action.kind === 'activate' && (!ability || ability.loyalty !== undefined)) return null;
+    // A sorcery-speed pump (Monstrous Growth) cannot wait for a combat window,
+    // so it keeps the ordinary main-phase evaluation instead of being held.
+    if (action.kind === 'cast' && !(source.is('Instant') || source.kw('flash') || (source.def.kws || []).includes('flash'))) return null;
     const effects = reactionEffects(source, ability);
     if (!effects && !source.def.aiPhaseOutProtection && !source.def.aiReactionModes) return null;
     if (!ability) {
@@ -3257,16 +3287,48 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (!ability && source.def.aiReactionModes) return MTG.botReactionModePlan(game, player, source);
     if (!effects) return null;
+    // Mana already floating in the pool empties at the end of the step
+    // (CR 500.4). An activation that costs only mana the pool already holds
+    // cannot wait for a better window, so it keeps the ordinary evaluation
+    // instead of being held. A card in hand is still worth more than the
+    // floating mana, so casts keep their discipline.
+    if (ability && Object.entries(ability.cost || {}).every(([key, value]) => key === 'mana' || !value ||
+      key === 'additionalCostV20' && value.kind === 'v87-global') &&
+      floatingManaPays(game, player, source, ability, action)) return null;
     const targets = ability?.targets || (!ability && source.def.targets) || [];
     const specs = typeof targets === 'function' ? targets(game, source, action.alt || {}, player) : targets;
     return reactionEffectPlan(game, player, source, ability, effects, specs);
   };
+
+  function floatingManaPays(game, player, source, ability, action) {
+    let manaCost;
+    try {
+      if (ability) manaCost = typeof ability.cost?.mana === 'function' ? ability.cost.mana(game, source, player) : ability.cost?.mana;
+      else manaCost = game.spellCost(player, source, {...action.alt, from: action.from || source.zone});
+    } catch { return false; }
+    const parsed = typeof manaCost === 'string' ? U.parseCost(manaCost) : manaCost;
+    if (!parsed || parsed.x) return false;
+    const pool = {};
+    for (const [color, amount] of Object.entries(player.pool || {})) pool[color] = Math.max(0, Number(amount) || 0);
+    let total = Object.values(pool).reduce((sum, amount) => sum + amount, 0);
+    if (!total) return false;
+    for (const pip of parsed.pips || []) {
+      const color = pip.filter(part => part !== 'PHY' && part !== 'TWO').find(option => pool[option] > 0);
+      if (!color) return false;
+      pool[color] -= 1; total -= 1;
+    }
+    return total >= (Number(parsed.generic) || 0);
+  }
 
   // The following target prompt must choose the body whose rescue justified
   // spending the card, rather than a more expensive but unthreatened creature.
   function reactionTargetValue(game, player, target, q) {
     const hint = q.aiHint || q.spec?.aiHint;
     if (!hint?.untilEOT || hint.goal !== 'buff' || !(target instanceof U.CardInst)) return null;
+    // With mana floating in the bot's own main phase the pump is spent now,
+    // not held as a reaction, so its recipient is valued as a pre-combat buff.
+    if (game.turnPlayer === player && ['main1', 'main2'].includes(game.phase) &&
+      Object.values(player.pool || {}).some(amount => Number(amount) > 0)) return null;
     if (target.ctrl !== player || hint.avoidCostSource && target === q.src) return -1000;
     const effect = hint.protectionColor ? {action: 'grant-protection', target: 0, choose: 'color', chooser: 'you'} :
       {action: 'pump', target: 0, power: hint.power || 0, toughness: hint.toughness || 0, keywords: hint.keywords || []};
@@ -3319,8 +3381,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
           const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
             specs[effect.target] ? game.legalTargets(specs[effect.target], source, player) : [];
-          const score = card => targetValue(game, player, card, {src: source,
-            aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
+          const score = card => {
+            const worth = targetValue(game, player, card, {src: source,
+              aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
+            // The payment side prices a card the bot gives up; answering it with
+            // an opposing card is a trade, not a loss. A token or a bounce is
+            // only tempo.
+            if (worth <= 0 || !(card instanceof U.CardInst) || card.ctrl === player || effect.action === 'damage') return worth;
+            return worth + (card.isToken || effect.action === 'bounce' ? 0.6 : 2);
+          };
           value += targets.length ? recipients.reduce((sum, card) => sum + score(card), 0) : Math.max(0, ...recipients.map(score));
         } else return null; // Unmodeled free choices keep their specialized/default behavior.
       }
@@ -5912,6 +5981,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         effects.every(effect => ['draw', 'discard', 'scry', 'surveil'].includes(effect.action) &&
           effect.who === 'you');
       if (ability?.cost?.tap && routineDraw) breakdown.safety -= routineTapExposure(game, player, card);
+      // Life is a cost here too (Doom Whisperer: "Pay 2 life: Surveil 2"). The
+      // generic base score ignored it, so the bot paid itself down to its last
+      // life for card quality. Price it like a spell's life cost, and treat a
+      // repeatable look at the library as worth one payment per turn, not a loop.
+      const lifeCost = Number(ability?.cost?.life || 0);
+      if (lifeCost > 0) {
+        const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
+        breakdown.safety -= lifeCost * lifePressure;
+        if (lifeCost >= player.life) breakdown.safety -= 1000000;
+        const routineQuality = effects.length > 0 && effects.every(effect =>
+          ['surveil', 'scry', 'draw', 'mill'].includes(effect.action) && (effect.who || 'you') === 'you');
+        if (routineQuality) {
+          const label = actionLabel(action);
+          const repeats = (game.aiDecisionLog || []).filter(decision =>
+            decision.turn === game.turnNo && decision.playerId === player.idx && decision.chosen === label).length;
+          breakdown.safety -= repeats * 3;
+          if (player.life - lifeCost < 12) breakdown.safety -= 50;
+          // One look per turn from a comfortable total is good play.
+          else if (!repeats && player.life - lifeCost >= 20) breakdown.resources += 2.2;
+        }
+      }
       const ownDraws = effects.reduce((sum, effect) => effect.action === 'draw' && effect.who === 'you' &&
         Number.isSafeInteger(effect.n) && effect.n > 0 ? sum + effect.n : sum, 0);
       if (routineDraw && immediateDrawWouldLose(game, player, ownDraws)) breakdown.safety -= 1000000;

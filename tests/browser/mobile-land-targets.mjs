@@ -102,7 +102,7 @@ try {
       assert.equal(observed.error, null);
       if (observed.question === 'chooseTargets') break;
       if (observed.question === 'chooseX') {
-        while (Number(await page.locator('.modal .xval').innerText()) < 2) await page.locator('.modal .xrow button').nth(1).click();
+        while (Number(await page.locator('.modal .xval').inputValue()) < 2) await page.locator('.modal .xrow button').nth(1).click();
         await page.getByRole('button', { name: /^Confirm X=/ }).click();
       } else if (observed.question === 'chooseMulti') {
         await page.locator('.modal button').filter({ hasText: /Untap X target permanents/ }).click();

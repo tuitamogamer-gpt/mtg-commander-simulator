@@ -9,7 +9,7 @@ try{for(const width of [1440,390]){
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('response',r=>{if(r.status()>=400)requests.push({status:r.status(),url:r.url()});});
  await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
  await page.goto(process.env.GAME_URL||'http://127.0.0.1:8319');await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
- await page.locator('.decksearch input').fill('Call the Spirits');await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>_ui.pending?.q.type==='mulligan');
+ await page.locator('.decksearch input').fill('Call the Spirits');await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
  await page.evaluate(()=>{
   const surface=document.querySelector('#game');surface.replaceWith(surface.cloneNode(false));
   const ui=new MTG.UI(),g=new MTG.Game({seed:90815,paced:true,onEvent:()=>ui.queueRender()}),a=g.addPlayer('You',{name:'Call the Spirits'},null,false),b=g.addPlayer('Local AI',{name:'Swell the Host'},null,true);
@@ -27,7 +27,7 @@ try{for(const width of [1440,390]){
    await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill(name);const iid=await page.evaluate(stage=>__exp[stage==='enchantment'?'arena':stage==='spirit'?'daxos':'gambit'].iid,s.stage);await page.locator(`.commandresult[data-card-id="${iid}"]`).click();
    if(s.stage==='spirit')await page.locator('.sheetacts .abilitybtn:not(:disabled)').filter({hasText:'Create a Spirit'}).click();else await page.locator('.sheetacts .pbtn.primary').first().click();
   }else if(s.proliferate){
-   if(!s.selected)await page.locator('.melife.targetable').click();else{assert.match(await page.locator('.proliferatechoice').innerText(),/\+1 experience/);choiceSeen=true;await page.screenshot({path:`${out}/${width}-choice.png`});await page.getByRole('button',{name:/^Confirm proliferate \(1\)/}).click();}
+   if(!s.selected){const pick=page.locator('.targetplayerpick[data-target-player="0"]:visible');if(await pick.count())await pick.first().click();else await page.locator('.melife.targetable').click();}else{assert.match(await page.locator('.proliferatechoice').innerText(),/\+1 experience/);choiceSeen=true;await page.screenshot({path:`${out}/${width}-choice.png`});await page.getByRole('button',{name:/^Confirm proliferate \(1\)/}).click();}
   }else{
    const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/}).filter({visible:true});if(await proceed.count())await proceed.last().click();else if(s.type==='chooseOption'){const option=page.locator('.modal .pbtn:not(:disabled):visible');if(await option.count())await option.first().click();}
   }

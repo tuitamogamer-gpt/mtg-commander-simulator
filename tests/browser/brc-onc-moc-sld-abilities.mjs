@@ -17,7 +17,7 @@ try{for(const width of [1440,390])for(const deck of precons){
  const page=await browser.newPage({viewport:{width,height:width===390?844:1000},reducedMotion:'reduce'});page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push({deck:deck.name,width,error:e.message}));page.on('response',r=>{if(r.status()>=400)errors.push({deck:deck.name,width,url:r.url(),status:r.status()});});
  await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
  await page.goto(`http://127.0.0.1:${server.address().port}`);await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
- await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>_ui.pending?.q.type==='mulligan');
+ await page.locator('.decksearch input').fill(deck.name);await page.locator(`.deckentry[data-deck="${deck.name}"] .deckcard:visible`).click();await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();await page.locator('.setupnext').click();await page.locator('.reviewstart').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
  await page.evaluate(async deck=>{
   document.querySelector('#game').replaceWith(document.querySelector('#game').cloneNode(false));
   const ui=new MTG.UI(),g=new MTG.Game({seed:90817,paced:true,onEvent:()=>ui.queueRender()}),a=g.addPlayer('You',{name:deck.name},null,false),b=g.addPlayer('Local AI',{name:'Primal Genesis'},null,true);
@@ -49,7 +49,8 @@ try{for(const width of [1440,390])for(const deck of precons){
    if(deck.name==="Mishra's Burnished Banner")await g.emit('beginCombat',{player:a});
    if(["Urza's Iron Alliance",'Corrupting Influence','Tinker Time'].includes(deck.name))await g.emit('endStep',{player:a});
    if(deck.name==='Rebellion Rising'){const token=g.creatures(a).find(c=>c.isToken);token.attacking=b;await g.emit('attackedPlayer',{player:a,target:b,attackers:[{card:token,target:b}]});}
-   if(deck.name==='Cavalry Charge')await g.emit('attackersDeclared',{player:a,attackers:[{card:spell,target:b}]});
+   // The engine's attackersDeclared carries the attacking cards themselves.
+   if(deck.name==='Cavalry Charge'){spell.attacking=b;await g.emit('attackersDeclared',{player:a,attackers:[spell]});}
    await g.flushTriggers();await g.priorityRound(a);
    if(deck.name==='Growing Threat')await action(g.bf().find(c=>c.hasSub('Incubator')),'Transform');
    if(deck.name==='From Cute to Brute'){await action(land,'Play land');await action(spell,'Reveal');}
@@ -66,12 +67,16 @@ try{for(const width of [1440,390])for(const deck of precons){
    if(s.sourceZone==='library')await page.locator('[data-testid="library-top-peek"]').click();else{await page.locator('.commandbutton').click();await page.locator('.commandsearch').fill(s.name);await page.locator(`.commandresult[data-card-id="${s.source}"]`).click();}
    if(s.label==='Cast')await page.locator('.sheetacts .pbtn.primary:not(:disabled)').first().click();else await page.locator('.sheetacts button:not(:disabled)').filter({hasText:new RegExp(s.label,'i')}).first().click();continue;
   }
-  if(s.type==='chooseX'){const val=Number(await page.locator('.modal .xval').textContent());if(val!==1){await page.locator('.modal button').filter({hasText:val<1?/^\+$/ : /^−$/}).click();continue;}if(await click('.modal .pbtn.primary:not(:disabled):visible'))continue;}
+  if(s.type==='chooseX'){const val=Number(await page.locator('.modal .xval').inputValue());if(val!==1){await page.locator('.modal button').filter({hasText:val<1?/^\+$/ : /^−$/}).click();continue;}if(await click('.modal .pbtn.primary:not(:disabled):visible'))continue;}
   if(s.type==='attackers'){
    await openCombatOverview(page);
    if(!await page.locator('.attackalloclane.focused').count()){if(await click('.attackalloclane.player'))continue;}
    if(await click('.attackpoolcard:not(.assigned):not(.cantfocus)'))continue;
    if(await click('.attackallocmodal .pbtn.primary:not(:disabled):visible'))continue;
+   // Phones have no overview: declare through the compact dock controls.
+   if(!await page.locator('.ct-defender-choice[aria-pressed="true"]').count()){if(await click('.ct-defender-choice:not(:disabled):visible'))continue;}
+   if(!await page.evaluate(()=>_ui.pending?.sel?.length)&&await click('[data-testid="combat-all-attack"]:not(:disabled):visible'))continue;
+   if(await click('[data-testid="confirm-combat-battlefield"]:not(:disabled):visible'))continue;
   }
   if(s.type==='chooseTargets'||s.type==='choosePlayer'){
     if(!s.selected&&deck.name==='Upgrades Unleashed'&&s.label.startsWith('Reconfigure')&&await click('#game .targetable[data-cname="Chishiro, the Shattered Blade"]:visible'))continue;

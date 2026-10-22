@@ -61,7 +61,7 @@ try {
   await page.waitForFunction(() => _ui.pending?.q.type === 'chooseX' || __disorder.error);
   assert.equal(await page.evaluate(() => __disorder.error), null);
   while (await page.evaluate(() => _ui.pending.xVal) !== 4) {
-    await page.getByRole('button', { name: '+', exact: true }).click();
+    await page.getByRole('button', { name: 'Increase X', exact: true }).click();
   }
   await page.locator('.modal .pbtn.primary').click();
   await page.waitForFunction(() => _ui.pending?.q.type === 'chooseTargets' || __disorder.error);

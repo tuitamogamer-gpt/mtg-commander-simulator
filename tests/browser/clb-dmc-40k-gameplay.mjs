@@ -110,7 +110,7 @@ try {
       if (await clickIf('.promptbar .pbtn.primary:not(:disabled):visible')) continue;
       if (await clickIf('#game .targetable:not(.selected):visible')) continue;
       const hiddenTarget=await page.evaluate(()=>{const c=_ui.pending?.q.candidates?.find(c=>['graveyard','exile'].includes(c.zone));return c&&{zone:c.zone,own:c.owner===_ui.me,owner:MTG.uiText(c.owner.name)};});
-      if(hiddenTarget){if(hiddenTarget.own)await page.locator(`.meinfo .zbtn[data-z="${hiddenTarget.zone}"]`).click();else{await page.getByRole('button',{name:`Open ${hiddenTarget.owner} player details`,exact:true}).click();await page.locator('.sheet .btnrow button').filter({hasText:hiddenTarget.zone==='graveyard'?'🪦':'🌀'}).first().click();}await page.locator('.sheet .targetable').first().click();continue;}
+      if(hiddenTarget){if(hiddenTarget.own){const openZone=page.locator(`.targetzoneopen[data-target-zone="${hiddenTarget.zone}"]`).filter({visible:true});if(await openZone.count())await openZone.first().click();else await page.locator(`.meinfo .zbtn[data-z="${hiddenTarget.zone}"]`).click();}else{await page.getByRole('button',{name:`Open ${hiddenTarget.owner} player details`,exact:true}).click();await page.locator('.sheet .btnrow button').filter({hasText:hiddenTarget.zone==='graveyard'?'🪦':'🌀'}).first().click();}await page.locator('.sheet .targetable').first().click();continue;}
 
     }
     if (['chooseCards', 'bottomCards'].includes(s.type)) {
@@ -134,6 +134,11 @@ try {
   writeFileSync(`${out}/complete-state.json`, await page.evaluate(() => render_game_to_text()));
   console.log(JSON.stringify({ iterations, lands, spells, attacks, decisions: [...seen], state: await page.evaluate(() => ({ turn: _game.turnNo, winner: _game.winner?.name })) }));
   const finishedPod = await page.evaluate(() => _game.players.map(player => player.deckName).sort());
+  // The final resolution recap is reviewed first; the result screen with its rematch follows.
+  for (let i = 0; i < 20 && !await page.getByRole('button', { name: /Rematch same pod/i }).count(); i++) {
+    const proceed = page.getByRole('button', { name: /^(Proceed|Continue)/ }).filter({ visible: true });
+    if (await proceed.count()) await proceed.last().click(); else await page.waitForTimeout(250);
+  }
   await page.getByRole('button', { name: /Rematch same pod/i }).click();
   await page.waitForFunction(() => _ui.pending?.q.type === 'mulligan');
   assert.deepEqual(await page.evaluate(() => _game.players.map(player => player.deckName).sort()), finishedPod);

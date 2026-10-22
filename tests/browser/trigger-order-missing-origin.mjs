@@ -128,7 +128,8 @@ try {
     assert.equal(await rows.count(), 2);
     assert.match(await rows.nth(0).innerText(), /Tome of Legends/);
     assert.match(await rows.nth(1).innerText(), /The Ring: draw, then discard/);
-    await rows.nth(0).getByRole('button', {name: '↓', exact: true}).click();
+    // The arrows carry accessible names that describe the stack move.
+    await rows.nth(0).getByRole('button', {name: /toward the top; resolves earlier$/}).click();
     assert.match(await rows.nth(0).innerText(), /The Ring: draw, then discard/);
     assert.match(await rows.nth(1).innerText(), /Tome of Legends/);
     const reordered = await state(); receipt.checks.at(-1).reordered = reordered;

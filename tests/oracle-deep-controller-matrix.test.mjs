@@ -446,14 +446,29 @@ function stageScenario(entry, role, options = {}) {
       const beneficial = staticPower >= 0 && operation.toughness >= 0;
       const mixed = staticPower > 0 && operation.toughness < 0;
       const controller = beneficial ? player : opponent;
+      // A beneficial trick gets a modest 2/4 to carry it and a blocker it can
+      // beat (1/3) or must save the 2/4 from (5/3), so a real bot has a reason
+      // to spend it in the staged combat window.
+      // Spell keywords such as rebound ride along with the grant and say nothing about combat.
+      const keywords = (operation.keywords || []).map(keyword => String(keyword).toLowerCase())
+        .filter(keyword => !SPELL_KEYWORDS.includes(keyword));
+      const killsBlocker = staticPower > 0 || keywords.includes('deathtouch') || keywords.includes('double strike');
+      const evasionOrHaste = ['flying', 'menace', 'trample', 'haste', 'unblockable', 'fear', 'intimidate', 'shadow', 'horsemanship'];
+      // A pure evasion or haste grant keeps the huge default body: unblockable
+      // or suddenly able to attack, it is the whole game, which is the only
+      // reason a bot spends a card on it.
+      const keywordOnly = staticPower === 0 && Number(operation.toughness || 0) === 0 && keywords.length > 0 && keywords.every(keyword => evasionOrHaste.includes(keyword));
       staged.target = permanent(game, controller, beneficial
-        ? fixtureDefinition('Deep friendly creature')
+        ? fixtureDefinition('Deep friendly creature', ['Creature'], keywordOnly ? {} : { power: '2', toughness: '4' })
         : mixed ? fixtureDefinition('Deep hostile mixed-pump victim', ['Creature'], {
           power: '20000', toughness: String(Math.abs(operation.toughness)),
         }) : fixtureDefinition('Deep hostile creature'));
       staged.decoy = permanent(game, beneficial ? opponent : player, beneficial
-        ? fixtureDefinition('Deep hostile pump decoy')
+        ? fixtureDefinition('Deep hostile pump decoy', ['Creature'], killsBlocker
+          ? { cost: '{4}', power: '1', toughness: '3' } : { cost: '{4}', power: '5', toughness: '3' })
         : fixtureDefinition('Deep friendly removal decoy'));
+      // Haste only matters to a creature that could not attack yet.
+      if (beneficial && keywordOnly && keywords.every(keyword => keyword === 'haste')) staged.target.sick = true;
     } else if (operation.kind === 'spell-team-pump') {
       const hostileAttackerDebuff = operation.attackingOnly && (operation.controller || 'any') === 'any' &&
         (Number(operation.power || 0) < 0 || Number(operation.toughness || 0) < 0);
@@ -571,6 +586,8 @@ function stageScenario(entry, role, options = {}) {
   return { game, player, opponent, card, operation, v4Operation, staged, humanState };
 }
 
+const SPELL_KEYWORDS = ['rebound', 'flashback', 'buyback', 'cycling', 'kicker', 'overload', 'convoke', 'splice', 'entwine', 'escape', 'retrace', 'jump-start', 'casualty'];
+
 function isHasteOnlyPump(operation) {
   const keywords = (operation && operation.keywords || []).map(keyword => String(keyword).toLowerCase());
   return operation?.kind === 'spell-pump' && Number(operation.power || 0) === 0 &&
@@ -620,7 +637,8 @@ function stageV4CombatWindow(context) {
     attacker.wasBlocked = true;
     attacker.blockedBy = [blocker];
     blocker.blocking = attacker.iid;
-    game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]) };
+    // A blocked attacker is a post-declaration state; the bot reads the same flag the engine sets.
+    game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]), blockersDeclared: true };
     game.turnPlayer = attackerController;
     game.phase = 'combat';
     game.step = 'blockers';
@@ -642,7 +660,7 @@ function stageV4CombatWindow(context) {
   attacker.wasBlocked = true;
   attacker.blockedBy = [blocker];
   blocker.blocking = attacker.iid;
-  game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]) };
+  game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]), blockersDeclared: true };
   game.turnPlayer = attacker.ctrl;
   game.phase = 'combat';
   game.step = 'blockers';
@@ -655,7 +673,7 @@ function stageCombatWindow(context) {
     const attacker = permanent(game, opponent, fixtureDefinition('Deep hostile fog attacker'));
     attacker.sick = false;
     attacker.attacking = player;
-    game.combat = { attackers: [attacker], defenders: new Map([[player.idx, [attacker]]]) };
+    game.combat = { attackers: [attacker], defenders: new Map([[player.idx, [attacker]]]), blockersDeclared: true };
     game.recalc();
     return { attacker, blocker: null, operation };
   }
@@ -663,7 +681,7 @@ function stageCombatWindow(context) {
     const attacker = staged.ownCreature || permanent(game, player, fixtureDefinition('Deep global-pump attacker'));
     attacker.sick = false;
     attacker.attacking = opponent;
-    game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]) };
+    game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]), blockersDeclared: true };
     game.recalc();
     return { attacker, blocker: null, operation };
   }
@@ -673,12 +691,27 @@ function stageCombatWindow(context) {
     const attacker = staged.target || permanent(game, opponent, fixtureDefinition('Deep hostile team-pump attacker'));
     attacker.sick = false;
     attacker.attacking = player;
-    game.combat = { attackers: [attacker], defenders: new Map([[player.idx, [attacker]]]) };
+    game.combat = { attackers: [attacker], defenders: new Map([[player.idx, [attacker]]]), blockersDeclared: true };
     game.recalc();
     return { attacker, blocker: null, operation };
   }
   let attacker = staged.ownCreature || (staged.target && staged.target.ctrl === player ? staged.target : null) ||
     (staged.decoy && staged.decoy.ctrl === player ? staged.decoy : null);
+  const grantedKeywords = (operation && operation.keywords || []).map(keyword => String(keyword).toLowerCase())
+    .filter(keyword => !SPELL_KEYWORDS.includes(keyword));
+  const evasionOnly = operation && operation.kind === 'spell-pump' && Number(operation.power || 0) === 0 &&
+    Number(operation.toughness || 0) === 0 && grantedKeywords.length > 0 &&
+    grantedKeywords.every(keyword => ['flying', 'menace', 'trample', 'haste', 'unblockable', 'fear', 'intimidate', 'shadow', 'horsemanship'].includes(keyword));
+  if (evasionOnly) {
+    // The bot weighs evasion as an attack enabler before attackers are
+    // declared, so the window opens at the beginning of combat.
+    if (!attacker) attacker = permanent(game, player, fixtureDefinition('Deep combat attacker'));
+    attacker.sick = false;
+    permanent(game, opponent, fixtureDefinition('Deep hostile chump blocker', ['Creature'], { cost: '{1}', power: '1', toughness: '1' }));
+    game.combat = { attackers: [], defenders: new Map(), declaredAttackTargets: [], blockersDeclared: false, hadAttackers: false };
+    game.recalc();
+    return { attacker, blocker: null, operation, step: 'begin' };
+  }
   if (!attacker) attacker = permanent(game, player, fixtureDefinition('Deep combat attacker'));
   let blocker = staged.target && staged.target.ctrl === opponent ? staged.target
     : staged.decoy && staged.decoy.ctrl === opponent ? staged.decoy : null;
@@ -688,7 +721,7 @@ function stageCombatWindow(context) {
   attacker.wasBlocked = true;
   attacker.blockedBy = [blocker];
   blocker.blocking = attacker.iid;
-  game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]) };
+  game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]), blockersDeclared: true };
   game.recalc();
   return { attacker, blocker, operation };
 }
@@ -741,10 +774,12 @@ async function executeScenario(context, entry) {
     return;
   }
   if (isCombatInstant(entry, operation)) {
-    stageCombatWindow(context);
+    const window = stageCombatWindow(context);
     game.turnPlayer = player;
     game.phase = 'combat';
-    game.step = 'attackers';
+    // A staged block is a declared block: the bot only weighs a trick once the
+    // engine would have reached the blockers step.
+    game.step = window.step || 'blockers';
     await game.priorityRound(player);
     return;
   }
@@ -1295,6 +1330,8 @@ test('stvarni basic landovi plaćaju visoki generic plus colored trošak bez zav
     clearMana(context.player);
     const names = mountainFirst ? ['Mountain', ...Array(8).fill('Plains')] : [...Array(8).fill('Plains'), 'Mountain'];
     const lands = names.map(name => permanent(context.game, context.player, MTG.DEFS[name]));
+    // Ten damage at exactly ten life: the bot spends a nine-land burn spell only on a lethal target.
+    context.opponent.life = 10;
     context.game.recalc();
     await executeScenario(context, searingWind);
     assert.ok(context.card.castMeta, `Searing Wind/${role}/${mountainFirst ? 'mountain-first' : 'mountain-last'}: controller casts`);

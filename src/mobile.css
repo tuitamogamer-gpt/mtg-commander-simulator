@@ -110,6 +110,10 @@
   }
   #game.command-table .ct-decision-rail.has-targets:has(.targetzonelinks) { max-height: 228px; }
   #game.command-table .ct-decision-rail.has-targets .ct-decision-heading { display: none; }
+  /* The tray is the human's own decision: the status line only repeats what the
+     step header says, and its row is the difference between a two-line glimpse
+     of the instruction and a readable one. */
+  #game.command-table .ct-decision-rail.has-targets .waitownership { display: none; }
   body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt {
     flex: 0 1 auto;
     min-height: 0;

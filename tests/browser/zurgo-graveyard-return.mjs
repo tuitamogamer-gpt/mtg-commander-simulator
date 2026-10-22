@@ -66,9 +66,14 @@ async function stage(name, scenario) {
       assert.ok(candidate, s.prompt);
       if (!s.selected) {
         if (candidate.zone === 'graveyard') {
-          await page.getByRole('button', { name: /^Graveyard: \d+ cards$/ }).click();
+          // The targeting prompt offers its own zone control; the zone button is the fallback.
+          const openZone = page.locator('.targetzoneopen[data-target-zone="graveyard"]').filter({ visible: true });
+          if (await openZone.count()) await openZone.first().click();
+          else await page.locator('.meinfo .zbtn[data-z="graveyard"]').click();
           await shot(`${scenario.label}-titan-graveyard-target`);
-          await page.locator('.sheet .bigcard').filter({ has: page.locator('img[alt="Zurgo Stormrender"]') }).click();
+          const pick = page.getByRole('button', { name: /^Choose Zurgo Stormrender from graveyard/ });
+          if (await pick.count()) await pick.first().click();
+          else await page.locator('.sheet .bigcard').filter({ has: page.locator('img[alt="Zurgo Stormrender"]') }).click();
         } else await page.locator(`.mini[data-iid="${candidate.iid}"]`).filter({ visible: true }).first().click();
       }
       await page.getByRole('button', { name: /Lock.*1 target/ }).click();
@@ -180,9 +185,13 @@ try {
     if (scenario.source !== 'Mari, the Killing Quill') {
       assert.equal(death.zurgo, 'graveyard');
       if (!scenario.aiOwner) {
-        await page.getByRole('button', { name: /^Graveyard: \d+ cards$/ }).click();
+        // Desktop lists the zone in the player panel, phones in the lane head; both carry the same name.
+        // The phone Mine destination follows the active turn, so return to the human's board first.
+        const mineTab = page.locator('.mobileviewtab[data-view="mine"]').filter({ visible: true });
+        if (await mineTab.count()) await mineTab.click();
+        await page.getByRole('button', { name: /^You: Graveyard, \d+ cards?\. Open to inspect\.$/ }).filter({ visible: true }).first().click();
         await shot(`${scenario.label}-graveyard`);
-        await page.getByRole('button', { name: 'Close', exact: true }).click();
+        await page.getByRole('button', { name: /^Close .*graveyard/i }).click();
       }
     }
     if (scenario.source === 'Soul-Guide Lantern') await stage('lantern', scenario);

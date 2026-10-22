@@ -182,7 +182,10 @@ test('Vercel room enforces the host-selected count and the setup keeps solo play
   assert.match(main, /livePlayers: 2/);
   assert.match(multiplayer, /players=\$\{playerCount\}/);
   assert.match(multiplayer, /\/api\/ws\?room=/);
-  assert.match(lobby, /All \$\{playerCount\} players ready/);
+  // The start control stays disabled until every seat is ready; the ready summary explains why.
+  assert.match(lobby, /'online-start', [^\n]*'Start live game'\)/);
+  assert.match(lobby, /start\.disabled = this\.busy \|\| \(paused \? disconnected\.length > 0 : !ready\);/);
+  assert.match(lobby, /online-ready-summary/);
   assert.doesNotMatch(lobby, /configureBot|LOCAL AI V2/);
 });
 

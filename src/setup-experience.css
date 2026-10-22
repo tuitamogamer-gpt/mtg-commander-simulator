@@ -591,3 +591,8 @@ body.reduced-motion #setup .mainmenu .mainmenu-featured-deck .mainmenu-deck-art 
   #setup .reviewrules dt { font-size: 10px; }
   #setup .reviewrules dd { font-size: 12px; }
 }
+
+/* Phone touch targets: the gallery view toggle and the filter toggle reach 44px. */
+@media (max-width: 900px) {
+  #setup[data-setup-stage] .deckviewchoices button, #setup[data-setup-stage] .deckfiltertoggle { min-height: 44px; }
+}

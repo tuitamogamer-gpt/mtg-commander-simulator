@@ -77,6 +77,7 @@ try {
   check('guest imports a supported 100-card list through My Library; host has no copy');
 
   await host.locator('[data-menu-action="live"]').first().click();
+  await host.locator('.decksearch input').fill('Abzan Armor');
   await host.locator('.deckentry[data-deck="Abzan Armor"] .deckcard').click();
   await host.locator('.deckspotlightcontinue').click();
   await host.locator('[data-live-players="2"]').click();

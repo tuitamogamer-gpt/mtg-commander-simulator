@@ -67,6 +67,7 @@ async function clickVisible(page, pattern, scope = '#game') {
 try {
   const host = await pageFor('host');
   await host.locator('[data-menu-action="live"]').first().click();
+  await host.locator('.decksearch input').fill('Necron Dynasties');
   await host.locator('.deckentry[data-deck="Necron Dynasties"] .deckcard').click();
   await host.locator('.deckspotlightcontinue').click();
   await host.locator('[data-live-players="2"]').click();

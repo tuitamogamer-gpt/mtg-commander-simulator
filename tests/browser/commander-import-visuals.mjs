@@ -65,6 +65,7 @@ try {
 
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
+  await page.locator('.decksearch input').fill('Prismari Artistry');
   await page.locator('.deckentry[data-deck="Prismari Artistry"] .deckcard').click();
   await page.waitForFunction(() => document.querySelector('.deckspotlightvideo')?.currentTime > 0);
   results.push({ scenario: 'predefined-spotlight', video: true });

@@ -51,12 +51,16 @@ try {
   await page.locator('.reviewstart').waitFor({ state: 'visible' });
   await page.evaluate(() => {
     // Seed 717 naturally draws both reported cards from the unmodified list.
-    // Control only new-game entropy while the real review/start action runs.
+    // Control only new-game entropy while the real review/start action runs;
+    // the launch paints one frame before it creates the game, so the stub
+    // stays until the game exists.
     const random = Math.random;
+    window.__restoreRandom = () => { Math.random = random; };
     Math.random = () => 717 / 1e9;
-    try { document.querySelector('.reviewstart').click(); }
-    finally { Math.random = random; }
+    document.querySelector('.reviewstart').click();
   });
+  await page.waitForFunction(() => !!window._game);
+  await page.evaluate(() => window.__restoreRandom());
   await page.waitForFunction(() => window._ui?.pending?.q.type === 'mulligan');
   await page.waitForFunction(() => {
     const images = [...document.querySelectorAll('.modal .bigcard img')];

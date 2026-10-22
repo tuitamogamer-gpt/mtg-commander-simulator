@@ -30,7 +30,8 @@ const view = () => page.evaluate(()=>({
   timeline:MTG.activeAccountMatch.decisions,
 }));
 const continueSave = async () => {
-  await page.reload(); await page.locator('.mainmenu-account-return').click();
+  // The landing offers a device return and the account return; the saved game is the account's.
+  await page.reload(); await page.locator('.mainmenu-account-return:not(.mainmenu-device-return)').click();
   await page.locator('.account-continue').click();
   await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:90000});
 };
@@ -99,7 +100,7 @@ try {
   await page.locator('.menubutton').click();
   await page.locator('[data-settings-tab="table"]').click();
   await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();
-  await page.locator('.mainmenu-account-return').waitFor();
+  await page.locator('.mainmenu-account-return:not(.mainmenu-device-return)').waitFor();
   await page.locator('[data-menu-action="import"]').first().click();
   await page.waitForFunction(()=>MTG.getImportedDeckLibrary?.().entries.some(entry=>entry.name==='Saved mana audit'&&entry.ready),null,{timeout:90000});
   await page.locator('.mainmenu-decklibrary-card').filter({hasText:'Saved mana audit'}).locator('.mainmenu-decklibrary-play').click();

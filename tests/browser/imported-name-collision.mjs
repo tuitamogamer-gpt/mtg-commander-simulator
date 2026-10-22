@@ -72,7 +72,7 @@ async function checkedImport(page, preferredName, expectedName, screenshot) {
   assert.equal(await page.evaluate(() => JSON.parse(render_game_to_text()).deckImport.state), 'ready');
   const status = page.locator('.mainmenu-deckimport-result');
   assert.match(await status.innerText(), /100 cards/);
-  assert.match(await status.innerText(), /100 engine-certified/);
+  assert.match(await status.innerText(), /all cards supported/);
   assert.equal(await status.locator('b').innerText(), expectedName, 'Ready preview names the new record');
   await noOverflow(page);
   if (screenshot) {

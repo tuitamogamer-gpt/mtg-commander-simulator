@@ -43,7 +43,7 @@ try{
     if(!second)assert.equal(s.prompt,'Permanent to remove counters from');
     const desired=s.prompt==='From which permanent?'?s.zimone:(second?s.other:s.zimone);assert.ok(s.candidates.includes(desired));
     if(s.prompt==='To which permanent?')assert.ok(!s.candidates.includes(s.zimone),'destination excludes the chosen source');
-    if(!s.selected.includes(desired))await page.locator(`.mini[data-iid="${desired}"]`).first().click();await shot(label+'-target-'+n);await page.getByRole('button',{name:/Lock.*1 target/}).click();
+    if(!s.selected.includes(desired))await page.locator(`.mini[data-iid="${desired}"]`).first().click();await shot(label+'-target-'+n);await page.getByRole('button',{name:/Lock.*1 target|Confirm & next/}).filter({visible:true}).first().click();
    }else{
     const spell=s.stack.find(row=>row.name==='Nexus Mentality');if(spell&&!sawStack){sawStack=true;assert.deepEqual(spell.mode,second?[0,1]:[1]);if(second)assert.notEqual(spell.targets[0],spell.targets[1]);assert.equal(s.spent,4);await shot(label+'-stack');}
     const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/}).filter({visible:true});if(await proceed.count())await proceed.last().click();

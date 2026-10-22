@@ -143,53 +143,72 @@ async function drive(mode, label) {
         await click(page.locator('.sheetacts button').filter({hasText: /Equip/}).first());
       }
     } else if (s.type === 'chooseTargets') {
-      if (!s.selected) await click(page.locator(`.mini[data-iid="${mode === 'damage' ? s.ids.walker : s.ids.atarka}"]`).filter({visible: true}).first());
+      if (!s.selected) {
+        const target = page.locator(`.mini[data-iid="${mode === 'damage' ? s.ids.walker : s.ids.atarka}"]`).filter({visible: true});
+        // On phones an opponent's permanent is reached through that opponent's seat.
+        if (mode === 'damage' && !await target.count()) await click(page.locator('.ct-seat[data-focus-player]:not([data-focus-player="0"])').filter({visible: true}).first());
+        await click(target.first());
+      }
       if (mode === 'damage') await shot(`${label}-targeted`);
       await click(page.getByRole('button', {name: /Lock.*1 target/}));
     } else if (s.type === 'attackers') {
       await openCombatOverview(page);
       assert.equal(assigned, false, 'attack confirmation did not settle');
+      // Desktop assigns in the attack overview; phones use the compact combat
+      // workspace, where defenders are lane choices and attackers are roster cards.
+      const phone = page.viewportSize().width === 390;
+      const attackerCard = iid => phone ? page.locator(`.ct-mobile-combat-card[data-iid="${iid}"]`) : page.locator(`[data-attacker="${iid}"]`);
+      const playerLane = () => phone ? page.locator('.ct-defender-choice[data-combat-defender^="player-"]').first() : page.locator('.attackalloclane.player');
+      const walkerLane = () => phone ? page.locator(`.ct-defender-choice[data-combat-defender="card-${s.ids.walker}"]`) : page.locator(`[data-target="planeswalker-${s.ids.walker}"]`);
+      const confirm = () => phone ? page.locator('[data-testid="confirm-combat-battlefield"]') : page.getByRole('button', {name: /^Confirm attack/});
       if (mode === 'haste') {
         assert.equal(s.atarka.spent, 7); assert.equal(s.atarka.haste, true);
-        assert.match(await page.locator(`[data-attacker="${s.ids.atarka}"]`).innerText(), /haste/i);
+        assert.match(await attackerCard(s.ids.atarka).innerText(), /haste/i);
         await shot(`${label}-equipped-ready`);
-        await click(page.locator('.attackalloclane.player'));
-        await click(page.locator(`[data-attacker="${s.ids.atarka}"]`));
+        await click(playerLane());
+        await click(attackerCard(s.ids.atarka));
       } else if (mode === 'defender-first' || mode === 'split') {
-        await click(page.locator(`[data-target="planeswalker-${s.ids.walker}"]`));
-        await click(page.locator(`[data-attacker="${s.ids.attacker}"]`));
+        await click(walkerLane());
+        await click(attackerCard(s.ids.attacker));
         if (mode === 'split') {
-          await click(page.locator('.attackalloclane.player'));
-          await click(page.locator(`[data-attacker="${s.ids.second}"]`));
+          await click(playerLane());
+          await click(attackerCard(s.ids.second));
         }
       } else {
-        if (mode === 'board-first') {
+        if (mode === 'board-first' && !phone) {
           await click(page.locator('[data-testid="show-combat-battlefield"]'));
           const card = page.locator(`.mini[data-iid="${s.ids.attacker}"]`).filter({visible: true}).first();
           await click(card);
           assert.match(await card.innerText(), /Choose defender/);
           assert.equal(await page.locator('[data-testid="confirm-combat-battlefield"]').isDisabled(), true);
           await click(page.locator('[data-testid="back-to-combat-overlay"]'));
-        } else await click(page.locator(`[data-attacker="${s.ids.attacker}"]`));
-        assert.equal(await page.getByRole('button', {name: /^Confirm attack/}).isDisabled(), true);
-        await click(page.locator(`[data-target="planeswalker-${s.ids.walker}"]`));
+        } else {
+          await click(attackerCard(s.ids.attacker));
+          if (phone) assert.match(await attackerCard(s.ids.attacker).innerText(), /choose a target/i);
+        }
+        assert.equal(await confirm().isDisabled(), true);
+        await click(walkerLane());
         if (mode === 'attacker-split') {
-          await click(page.locator(`[data-attacker="${s.ids.second}"]`));
-          assert.equal(await page.getByRole('button', {name: /^Confirm attack/}).isDisabled(), true);
-          await click(page.locator('.attackalloclane.player'));
+          await click(attackerCard(s.ids.second));
+          assert.equal(await confirm().isDisabled(), true);
+          await click(playerLane());
         }
       }
       const ready = await state();
       if (mode !== 'haste') assert.equal(ready.assignments.find(e => e.card === s.ids.attacker)?.target,
         'Ajani, Caller of the Pride', 'clicking the walker must actually assign the selected attacker');
       await shot(`${label}-assigned`);
-      await click(page.getByRole('button', {name: /^Confirm attack/})); assigned = true;
+      await click(confirm()); assigned = true;
     } else {
       if (s.type === 'combatReview' && !review) {
         await openCombatOverview(page);
-        assert.match(await page.locator('.ct-combat-review .ct-combat-heading').innerText(), /Your attack is declared/);
-        assert.ok(await page.locator('.ct-combat-review-arrow').count(), 'Review displays declared attack routes');
-        if (mode !== 'haste') assert.ok(await page.locator('.combatreviewtarget').filter({hasText: 'Ajani, Caller of the Pride'}).count());
+        if (page.viewportSize().width === 390) {
+          assert.match(await page.locator('.ct-mobile-combat-head h2').innerText(), /Review attack/);
+        } else {
+          assert.match(await page.locator('.ct-combat-review .ct-combat-heading').innerText(), /Your attack is declared/);
+          assert.ok(await page.locator('.ct-combat-review-arrow').count(), 'Review displays declared attack routes');
+          if (mode !== 'haste') assert.ok(await page.locator('.combatreviewtarget').filter({hasText: 'Ajani, Caller of the Pride'}).count());
+        }
         await shot(`${label}-review`); review = true;
       }
       const proceed = page.getByRole('button', {name: /^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/}).filter({visible: true});

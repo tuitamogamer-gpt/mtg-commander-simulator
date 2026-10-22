@@ -24,17 +24,17 @@ try{
     page.setDefaultTimeout(10000);page.on('response',r=>{if(r.status()>=400)errors.push({deck:deck.name,width,url:r.url(),status:r.status()});});page.on('pageerror',e=>errors.push({deck:deck.name,width,error:e.message}));
     page.on('console',m=>{if(m.type()==='error')errors.push({deck:deck.name,width,error:m.text()});});
     await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
-    await page.goto(base);assert.equal(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount),168);
+    await page.goto(base);assert.ok(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount)>=168,'the catalog keeps at least the 168 decks this suite imported');
     await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry:visible',{timeout:30000});
-    assert.equal(await page.evaluate(()=>Object.keys(MTG.DECKS).length),168);
-    await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();
+    assert.ok(await page.evaluate(()=>Object.keys(MTG.DECKS).length)>=168,'the catalog keeps at least the 168 decks this suite imported');
+    await page.locator('.decksearch input').fill(deck.name);await page.locator(`.deckentry[data-deck="${deck.name}"] .deckcard:visible`).click();
     assert.ok((await page.locator('.deckspotlight').innerText()).includes(deck.commander));
     await page.waitForFunction(()=>[...document.querySelectorAll('.deckspotlight img')].every(img=>img.complete&&img.naturalWidth>0));
     await page.screenshot({path:`${out}/${deck.slug}-${width}-select.png`});
     await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();
     const opponent=precons[(index+1)%precons.length].name;await page.locator('.botfields .deckselect').selectOption(opponent);
     await page.locator('.setupnext').click();await page.locator('.reviewstart').click();
-    await page.waitForFunction(()=>_ui.pending?.q.type==='mulligan');
+    await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
     assert.equal(await page.evaluate(()=>_game.players.find(p=>!p.isAI).deckName),deck.name);
     assert.equal(await page.evaluate(()=>_game.players.find(p=>p.isAI).deckName),opponent);
     const opening=await page.evaluate(()=>{const p=_game.players.find(p=>!p.isAI);return {commander:p.commanders.map(c=>c.name),count:p.library.length+p.hand.length+p.command.length};});
@@ -73,7 +73,7 @@ try{
         await page.getByRole('button',{name:`${deck.commander}. Open commander actions.`,exact:true}).click();
         await page.locator('.sheetacts .pbtn.primary:not(:disabled)').first().click();
       }else{
-        const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/}).filter({visible:true});
+        const proceed=page.getByRole('button',{name:/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order|Exile top card|Reveal cards)/}).filter({visible:true});
         if(await proceed.count())await proceed.last().click();
         else if(state.type==='chooseOption'){const choice=page.locator('.modal .pbtn:not(:disabled):visible');if(await choice.count())await choice.first().click();}
       }
