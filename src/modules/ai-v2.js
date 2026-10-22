@@ -3349,8 +3349,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (['destroy', 'exile', 'bounce', 'damage'].includes(effect.action)) {
           const recipients = targets.length ? [targets[effect.target]].flat().filter(Boolean) :
             specs[effect.target] ? game.legalTargets(specs[effect.target], source, player) : [];
-          const score = card => targetValue(game, player, card, {src: source,
-            aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
+          const score = card => {
+            const worth = targetValue(game, player, card, {src: source,
+              aiHint: {goal: effect.action === 'damage' ? 'damage' : 'removal', amount: effect.n, removalKind: effect.action}});
+            // The payment side prices a card the bot gives up; answering it with
+            // an opposing card is a trade, not a loss. A token or a bounce is
+            // only tempo.
+            if (worth <= 0 || !(card instanceof U.CardInst) || card.ctrl === player || effect.action === 'damage') return worth;
+            return worth + (card.isToken || effect.action === 'bounce' ? 0.6 : 2);
+          };
           value += targets.length ? recipients.reduce((sum, card) => sum + score(card), 0) : Math.max(0, ...recipients.map(score));
         } else return null; // Unmodeled free choices keep their specialized/default behavior.
       }
