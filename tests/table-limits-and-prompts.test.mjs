@@ -72,7 +72,7 @@ test('the prompt bar names reveals and counts legal options in the singular', ()
 
 test('Continue never strands the loading veil and a desynced replay keeps the table alive', () => {
   const entry = fs.readFileSync(new URL('../src/public-entry.js', import.meta.url), 'utf8');
-  assert.match(entry, /setGameLoader\(async save => \{[\s\S]*?try \{[\s\S]*?resumeAccountSave\(save\);[\s\S]*?\} finally \{\s*hideLoading\(\);/, 'the resume loader always removes the veil');
+  assert.match(entry, /setGameLoader\(async \(?save(?:, options)?\)? => \{[\s\S]*?try \{[\s\S]*?resumeAccountSave\(save(?:, options)?\);[\s\S]*?\} finally \{\s*hideLoading\(\);/, 'the resume loader always removes the veil');
   assert.match(entry, /function hideLoading\(\) \{[\s\S]*?page\.inert = false;/, 'the page is made interactive again');
   const main = fs.readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   assert.match(main, /const abandonReplay = error => \{[\s\S]*?savedTimeline\.length = replayCursor;/, 'a mismatching recorded decision stops the replay instead of the game');
