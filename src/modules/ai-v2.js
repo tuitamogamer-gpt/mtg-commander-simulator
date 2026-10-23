@@ -2668,6 +2668,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   MTG.persecutorExitValue = persecutorExitValue;
 
+  // A nonland mana source is worth its acceleration (Sol Ring is a prime
+  // removal target), not just its printed cost.
+  function manaAccelerationValue(game, card) {
+    if (card.is('Land') || !card.def.mana?.produce || card.zone !== 'battlefield') return 0;
+    let produced = 0;
+    try {
+      const produce = card.def.mana.produce;
+      const option = (typeof produce === 'function' ? produce(game, card, card.ctrl) || [] : produce)[0];
+      if (option) produced = Object.values(option).reduce((sum, amount) => sum + (Number(amount) || 0), 0);
+    } catch { produced = 0; }
+    return Math.min(3, produced) * 2.6;
+  }
+
   function permanentGameValue(game, card, perspective) {
     if (!(card instanceof U.CardInst)) return 0;
     const release = persecutorExitValue(game, card, perspective);
@@ -2681,17 +2694,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (sem.roles.includes('combo-piece')) value += 7;
     if (sem.roles.includes('finisher')) value += 3.5;
     if (sem.roles.includes('card-draw')) value += 2.2;
-    // A nonland mana source is worth its acceleration (Sol Ring is a prime
-    // removal target), not just its printed cost.
-    if (!card.is('Land') && card.def.mana?.produce && card.zone === 'battlefield') {
-      let produced = 0;
-      try {
-        const produce = card.def.mana.produce;
-        const option = (typeof produce === 'function' ? produce(game, card, card.ctrl) || [] : produce)[0];
-        if (option) produced = Object.values(option).reduce((sum, amount) => sum + (Number(amount) || 0), 0);
-      } catch { produced = 0; }
-      value += Math.min(3, produced) * 2.6;
-    }
+    value += manaAccelerationValue(game, card);
+    // An opposing Aura holding a permanent it took from the bot (Control
+    // Magic) is worth that permanent twice over: removing it takes the host
+    // from its controller and gives it back.
+    const host = perspective && card.ctrl !== perspective && card.attachedTo && card.hasSub('Aura') ? game.byIid(card.attachedTo) : null;
+    if (host && host !== card && host.owner === perspective && host.ctrl === card.ctrl && !host.hasSub('Aura'))
+      value += 2 * permanentGameValue(game, host, perspective);
     if (card.commander) value += 3 * (profile && profile.commanderImportance || 1);
     if (card.cur && (card.cur.hexproof || card.cur.shroud || card.kw('indestructible'))) value *= 1.18;
     if (perspective && card.ctrl === perspective) value *= 1.03;
@@ -6662,8 +6671,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // sa table, pa mod nad praznim tipom ne može pobijediti korisnog.
         breakdown.choice = modeSweepValue(game, player, action.option || {}) || 0;
       } else if (hintKind === 'fameFortune') {
+        // Fame lends the creature for one turn, so its long-term mana
+        // acceleration is not what the caster gains.
         const bestCreature = game.creatures(player).map(card =>
-          permanentGameValue(game, card, player) + Math.max(0, card.power) * (card.tapped ? 0.25 : 0.8))
+          permanentGameValue(game, card, player) - manaAccelerationValue(game, card) + Math.max(0, card.power) * (card.tapped ? 0.25 : 0.8))
           .sort((a, b) => b - a)[0] || 0;
         // Birač minimizira korist casteru: Fame je privremena krađa njegovog
         // najboljeg stvorenja, Fortune je karta + Treasure za castera.
