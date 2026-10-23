@@ -4207,6 +4207,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // protection, an untap, an attachment) belongs on the bot's own side;
       // the value-based default would hand the benefit to an opponent.
       if (!hint && unhintedBenefitTarget(q)) return hostile ? -(value + 1) : value + 1;
+      // The mirror case: unhinted removal, damage, shrinking or combat denial
+      // goes to an opponent, never to the bot's own more valuable creature.
+      if (!hint && unhintedHarmTarget(q)) return hostile ? value + 0.25 : -value * 1.8 - 0.25;
       return hostile ? value * 0.7 : value * 0.5;
     }
     if (target && target.kind) {
@@ -4237,6 +4240,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return !!aura && !/removal|debuff|tap|steal|curse/i.test(goal) && !/can't (?:attack|block)|doesn't untap|enchanted [^.]* gets -/i.test(aura.def?.oracle || '');
     }
     return TARGET_BENEFIT_TEXT.test(text) && !TARGET_HARM_TEXT.test(text);
+  }
+
+  const TARGET_HARMFUL_TEXT = /(destroy target|exile target|deals? \d+ damage to (?:target|any)|deals? x damage to (?:target|any)|target creature gets -|put an? -1\/-1 counters? on target|tap target creature|target creature can't (?:block|attack))/i;
+  function unhintedHarmTarget(q) {
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || '';
+    const text = label.length > 12 ? label : q.src?.def?.oracle || q.so?.card?.def?.oracle || '';
+    return !!text && TARGET_HARMFUL_TEXT.test(text) && !TARGET_BENEFIT_TEXT.test(text) &&
+      !/target [^.]{0,40}you control|your creatures?/i.test(text);
   }
 
   function choiceCardValue(game, player, card, q) {
