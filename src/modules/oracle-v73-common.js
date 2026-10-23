@@ -2,7 +2,7 @@
 ((M)=>{
  const G=M.Game.prototype,H=M.OracleV20.helpers;
  const live=c=>c?.zone==='battlefield'&&!c.phasedOut,enabled=c=>live(c)&&!c.cur?.abilitiesDisabled;
- const sources=(g,key)=>g.bf().filter(c=>enabled(c)&&c.def[key]);
+ const sources=(g,key)=>g.bfWithDef(key).filter(c=>enabled(c));
  const effect=(mode,extra={})=>({action:'common-effects-v73',mode,...extra});
  async function pick(g,p,from,min,max,prompt){if(!from.length)return [];const cards=await p.controller.decide(g,{type:'chooseCards',from,min:Math.min(min,from.length),max:Math.min(max,from.length),prompt,aiHint:{kind:'bestCard'}});if(!Array.isArray(cards)||cards.length<Math.min(min,from.length)||cards.length>max||new Set(cards).size!==cards.length||cards.some(c=>!from.includes(c)))throw Error('Invalid v73 selection');return cards;}
  async function yes(g,p,prompt){return await p.controller.decide(g,{type:'chooseOption',options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],prompt,aiHint:{kind:'optTrigger'}})==='yes';}

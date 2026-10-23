@@ -1,7 +1,7 @@
 'use strict';
 ((M)=>{
  const G=M.Game.prototype,H=M.OracleV20.helpers,live=c=>c?.zone==='battlefield'&&!c.phasedOut,active=c=>live(c)&&!c.cur?.abilitiesDisabled;
- const sources=(g,key)=>g.bf().filter(c=>active(c)&&c.def[key]),host=(g,s)=>g.byIid(s.attachedTo),same=(c,v)=>live(c)&&c.zoneVersion===v;
+ const sources=(g,key)=>g.bfWithDef(key).filter(c=>active(c)),host=(g,s)=>g.byIid(s.attachedTo),same=(c,v)=>live(c)&&c.zoneVersion===v;
  const choose=async(g,p,from,min,max,prompt)=>{min=Math.min(min,from.length);max=Math.min(max,from.length);if(!max)return [];const answer=await p.controller.decide(g,{type:'chooseCards',from,min,max,prompt,aiHint:{kind:'bestCard'}});if(!Array.isArray(answer)||answer.length<min||answer.length>max||new Set(answer).size!==answer.length||answer.some(c=>!from.includes(c)))throw Error('Invalid v78 card choice');return answer;};
  const option=async(g,p,options,prompt)=>{const answer=await p.controller.decide(g,{type:'chooseOption',options,prompt,aiHint:{kind:'optTrigger'}});if(!options.some(o=>o.key===answer))throw Error('Invalid v78 option');return answer;};
  const yes=(g,p,prompt)=>option(g,p,[{key:'yes',label:'Yes'},{key:'no',label:'No'}],prompt).then(k=>k==='yes');
