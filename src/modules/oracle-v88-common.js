@@ -25,16 +25,7 @@
  const draft=(c,p=c.owner)=>c.meta.draftV87||p.oracleDraftV87?.[c.name]||{};
  const draftMax=c=>Math.max(0,...(draft(c).numbers||[]),Number(draft(c).number)||0);
  const knownNames=c=>draft(c).names||[];
- // Printed-key scans run inside hot getters (every graveyard card's
- // definition, every card's colors), so on a wide board each read scanned the
- // whole battlefield. The definition part of a scan is reused until a zone
- // move, a recalculation, a definition change or the battlefield array says
- // the board may differ; the live checks still run on every read.
- let boardStamp=0;const boardChanged=()=>{boardStamp++;};const keyScans=new WeakMap();
- const keyedBattlefield=(g,key)=>{const cards=g._entryReplacementPhase&&g._battlefieldEntryReplacementSnapshot?g._battlefieldEntryReplacementSnapshot:g.battlefield;let scan=keyScans.get(g);if(!scan||scan.stamp!==boardStamp||scan.cards!==cards||scan.length!==cards.length){scan={stamp:boardStamp,cards,length:cards.length,rows:new Map()};keyScans.set(g,scan);}let rows=scan.rows.get(key);if(!rows){rows=cards.filter(s=>s.zone==='battlefield'&&s.def[key]);scan.rows.set(key,rows);}return rows.filter(s=>s.zone==='battlefield'&&!s.phasedOut);};
- const boardMove=G.move;G.move=function(...args){boardChanged();const moved=boardMove.apply(this,args);if(moved&&typeof moved.then==='function')moved.then(boardChanged,boardChanged);else boardChanged();return moved;};
- const boardRecalc=G.recalc;G.recalc=function(...args){boardChanged();return boardRecalc.apply(this,args);};
- const liveSources=(g,key)=>keyedBattlefield(g,key).filter(s=>!s.cur?.abilitiesDisabled);
+ const liveSources=(g,key)=>g.bfWithDef(key).filter(s=>!s.cur?.abilitiesDisabled);
  const opponents=(g,p)=>g.apnapFrom(g.turnPlayer||p).filter(q=>q!==p&&!q.lost);
  const exileSelf=async ctx=>{if(!ctx.so?.isCopy&&ctx.src.zone==='stack')await ctx.g.move(ctx.src,'exile');};
  async function evidence(ctx,n){const from=ctx.you.graveyard.slice();if(from.reduce((v,c)=>v+c.mv,0)<n||!await yes(ctx,'Collect evidence '+n+'?'))return false;const cards=await pick(ctx,from,n>0?1:0,from.length,ctx.you,'Exile cards with total mana value at least '+n);if(cards.reduce((v,c)=>v+c.mv,0)<n)return false;await ctx.g.moveGraveyardBatch(cards,'exile');await ctx.g.emit('oracleCollectedEvidenceV20',{player:ctx.you,card:ctx.src,cards});return true;}
@@ -64,7 +55,7 @@
   if(n==='Martyrdom')return [T('creature','you')];
   return [];
  }
- M.OracleV88={outside,draft,spellNames,keyedBattlefield,boardChanged};
+ M.OracleV88={outside,draft,spellNames};
  M.OracleV20.handlers.unshift({
   compile(op,script,entry,h){
    if(op.kind!=='printed-card-v88')return false;
@@ -343,7 +334,7 @@
  M.OracleV88.unpaintCastDefinition=definition=>painterDefinitions.get(definition)||definition;
  const graveDefs=new WeakMap(),graveOriginals=new WeakMap(),graveBaseDefs=new WeakMap(),graveCards=new WeakSet();
  function maskGraveDefinition(base){let d=graveDefs.get(base);if(!d){d={...base};for(const key of ['abilities','triggers','statics','mana','altCosts','costMods','kws','oracleSpellKeywordsV20','replace','oracleImplementation'])d[key]=[];for(const key of ['flashback','retrace','escape','jumpstart','disturb','changeling','harmonize','mayhem','gyAbility','scavenge','unearth','cycling','oracleGraveWarpV88','oracleBurstAliasV88','oracleAlternativeCost','oracleHauntV88'])delete d[key];for(const [key,value]of Object.entries(d))if(typeof value==='function'||key.startsWith('oracle')&&!['oracleId','oracleBatch','oracleFaces','oracleFace','oracleImportEligible'].includes(key))delete d[key];if(base.devoid){delete d.devoid;delete d.colorsOverride;}graveDefs.set(base,d);graveOriginals.set(d,base);}return d;}
- function installGraveLoss(c){if(graveCards.has(c))return;graveCards.add(c);let base=c.def;graveBaseDefs.set(c,base);Object.defineProperty(c,'def',{configurable:true,enumerable:true,get(){const g=c.owner.game;return c.zone==='graveyard'&&g&&liveSources(g,'oracleGraveAbilityLossV88').length?maskGraveDefinition(base):base;},set(d){if(this!==c){Object.defineProperty(this,'def',{value:d,writable:true,configurable:true,enumerable:true});return;}base=d;graveBaseDefs.set(c,d);boardChanged();}});}
+ function installGraveLoss(c){if(graveCards.has(c))return;graveCards.add(c);let base=c.def;graveBaseDefs.set(c,base);Object.defineProperty(c,'def',{configurable:true,enumerable:true,get(){const g=c.owner.game;return c.zone==='graveyard'&&g&&liveSources(g,'oracleGraveAbilityLossV88').length?maskGraveDefinition(base):base;},set(d){if(this!==c){Object.defineProperty(this,'def',{value:d,writable:true,configurable:true,enumerable:true});return;}base=d;graveBaseDefs.set(c,d);M.boardChanged();}});}
  const cloneDefinition=M.cloneCardDefinitionForSimulation;
  M.cloneCardDefinitionForSimulation=function(original,clone){
   cloneDefinition?.(original,clone);

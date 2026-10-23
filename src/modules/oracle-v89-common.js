@@ -3,7 +3,7 @@
  const H=M.OracleV20.helpers,G=M.Game.prototype;
  const live=(c,v=c?.zoneVersion)=>c?.zone==='battlefield'&&c.zoneVersion===v&&!c.phasedOut;
  const active=c=>live(c)&&!c.cur?.abilitiesDisabled;
- const sources=(g,key)=>M.OracleV88.keyedBattlefield(g,key).filter(active);
+ const sources=(g,key)=>g.bfWithDef(key).filter(active);
  const same=ctx=>H.sameBattlefieldSource(ctx);
  const lock=c=>({card:c,version:c.zoneVersion,zone:c.zone});
  const current=r=>r.card.zone===r.zone&&r.card.zoneVersion===r.version;
@@ -269,7 +269,7 @@
  M.applyOracleMechanic=function(script,op,...args){const out=stationMechanic.call(this,script,op,...args);if(out&&['station-v9','mechanic-station-v9'].includes(op.kind)){const a=script.abilities.at(-1);a.run=async ctx=>{if(!same(ctx))return;const c=ctx.tappedCre,n=live(c,ctx.stationZoneVersion)?Math.max(0,c.cur.stationByToughnessV89?c.toughness:c.power):ctx.stationPower;await put(ctx.g,ctx.src,'charge',n,ctx.you);};}return out;};
  const runTurn=G.runTurn;G.runTurn=async function(...args){this.controlAtTurnStartV89=new Map(this.battlefield.filter(c=>c.zone==='battlefield').map(c=>[c,{controller:c.ctrl,version:c.zoneVersion,epoch:c.meta.oracleControlEpoch||0}]));return runTurn.apply(this,args);};
  const rootpathCards=new WeakSet(),rootpathDefinitions=new WeakMap();
- function installRootpath(c){if(rootpathCards.has(c))return;rootpathCards.add(c);const original=Object.getOwnPropertyDescriptor(c,'def');let stored=original.value;Object.defineProperty(c,'def',{enumerable:true,configurable:true,get(){const base=original.get?original.get.call(c):stored;if(c.zone!=='library'||!base.types.includes('Land')||!sources(c.owner.game,'rootpathV89').some(s=>s.ctrl===c.owner))return base;let modified=rootpathDefinitions.get(base);if(!modified){modified={...base,super:[...new Set([...(base.super||[]),'Basic'])]};rootpathDefinitions.set(base,modified);}return modified;},set(v){if(this!==c){Object.defineProperty(this,'def',{value:v,writable:true,configurable:true,enumerable:true});return;}if(original.set)original.set.call(c,v);else stored=v;M.OracleV88.boardChanged();}});}
+ function installRootpath(c){if(rootpathCards.has(c))return;rootpathCards.add(c);const original=Object.getOwnPropertyDescriptor(c,'def');let stored=original.value;Object.defineProperty(c,'def',{enumerable:true,configurable:true,get(){const base=original.get?original.get.call(c):stored;if(c.zone!=='library'||!base.types.includes('Land')||!sources(c.owner.game,'rootpathV89').some(s=>s.ctrl===c.owner))return base;let modified=rootpathDefinitions.get(base);if(!modified){modified={...base,super:[...new Set([...(base.super||[]),'Basic'])]};rootpathDefinitions.set(base,modified);}return modified;},set(v){if(this!==c){Object.defineProperty(this,'def',{value:v,writable:true,configurable:true,enumerable:true});return;}if(original.set)original.set.call(c,v);else stored=v;M.boardChanged();}});}
  const cloneDefinition=M.cloneCardDefinitionForSimulation;
  M.cloneCardDefinitionForSimulation=function(original,clone){cloneDefinition?.(original,clone);if(rootpathCards.has(original))installRootpath(clone);};
  const buildDeck=G.buildDeck;G.buildDeck=function(p,...args){const out=buildDeck.call(this,p,...args);for(const c of [...p.library,...p.command])installRootpath(c);return out;};
