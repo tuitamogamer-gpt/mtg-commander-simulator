@@ -80,6 +80,26 @@ test('the bot returns its creature to hand in response to removal aimed at it', 
   assert.equal(bear.zone, 'hand');
 });
 
+test('the bot stops an optional token-copy loop whose every copy brings a fresh "once each turn"', async () => {
+  const t = table();
+  const arcade = t.put('Secret Arcade // Dusty Parlor', t.bot); arcade.meta.bdfUnlocked = ['left'];
+  const dancer = t.put('Ondu Spiritdancer', t.bot, 'hand');
+  for (let i = 0; i < 10; i++) t.put('Plains', t.bot);
+  t.game.recalc();
+  assert.equal(await t.game.castSpell(t.bot, dancer, { from: 'hand' }), true);
+  for (let n = 0; n < 400 && (t.game.stack.length || t.game.pendingTriggers.length); n++) {
+    await t.game.flushTriggers();
+    if (t.game.stack.length) await t.game.resolveTop();
+  }
+  const copies = t.game.bf().filter(card => card.isToken && card.name === 'Ondu Spiritdancer').length;
+  assert.ok(copies >= 1, 'the first copies are still made');
+  assert.ok(copies <= 24, `the loop stops at a finite count (${copies} copies)`);
+  assert.equal(t.game.stack.length, 0);
+  const asked = t.answers.filter(row => row.q.type === 'chooseOption' && /Copy Ondu Spiritdancer/.test(row.q.prompt || ''));
+  assert.equal(asked.filter(row => row.result === 'yes').length, copies);
+  assert.equal(asked.at(-1).result, 'no', 'the bot finally declines the copy');
+});
+
 test('Estrid puts the Mask on another of the bot\'s permanents, never on itself or an opponent\'s', async () => {
   const t = table();
   const estrid = t.put('Estrid, the Masked', t.bot); estrid.counters.loyalty = 5;

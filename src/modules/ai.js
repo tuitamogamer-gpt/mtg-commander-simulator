@@ -520,7 +520,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function optionalTriggerBudget(controller, game, player, query, accepted = false) {
     const hint = query.aiHint;
     const source = hint?.src || hint?.source;
-    if (query.type !== 'chooseOption' || !['optTrigger', 'enduringScalelord'].includes(hint?.kind) || !source ||
+    if (query.type !== 'chooseOption' || !['optTrigger', 'enduringScalelord', 'mode', 'optional'].includes(hint?.kind) || !source ||
       !query.options?.some(option => option.key === 'yes') || !query.options.some(option => option.key === 'no')) return false;
     if (controller._optionalTriggerBudget?.turn !== game.turnNo) controller._optionalTriggerBudget = { turn: game.turnNo, entries: new Map() };
     const eventCard = query.data?.card;
@@ -539,10 +539,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const progress = JSON.stringify([player.hand.map(card => card.name).sort(), player.library.length,
       game.players.filter(other => other !== player).map(other => [other.life, other.poison, other.lost])]);
     const entries = controller._optionalTriggerBudget.entries;
-    let entry = entries.get(key);
-    if (!entry || entry.progress !== progress) { entry = { progress, accepted: 0 }; entries.set(key, entry); }
-    if (accepted) entry.accepted++;
-    return entry.accepted >= limit;
+    // A token copy is a new source with a fresh "once each turn" (Ondu
+    // Spiritdancer copying itself under Secret Arcade), so same-named sources
+    // also share one budget; otherwise the loop never trips a per-source limit.
+    const keys = scalelord ? [key] : [key, `name|${source.name}|${hint.name || query.prompt}|${knownEvent ? eventCard.name : 'unknown event card'}`];
+    let spent = false;
+    for (const budgetKey of keys) {
+      let entry = entries.get(budgetKey);
+      if (!entry || entry.progress !== progress) { entry = { progress, accepted: 0 }; entries.set(budgetKey, entry); }
+      if (accepted) entry.accepted++;
+      if (entry.accepted >= limit) spent = true;
+    }
+    return spent;
   }
   MTG.optionalAITriggerBudget = optionalTriggerBudget;
 
