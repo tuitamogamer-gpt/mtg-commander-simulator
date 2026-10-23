@@ -2472,7 +2472,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (q.type === 'main' || q.type === 'priority') {
       for (const entry of q.casts || []) {
         const action = {kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from};
-        if (MTG.botReactionPlan(game, player, action)?.score <= 0 || MTG.botShouldHoldInteraction(game, player, action)) continue;
+        if (MTG.botReactionPlan(game, player, action)?.score <= 0) continue;
+        // A held removal spell stays visible to the ranking (and its diagnostics)
+        // with a waiting penalty, rather than vanishing from the options.
+        if (MTG.botShouldHoldInteraction(game, player, action)) action.heldForBetterTarget = true;
         actions.push(action);
       }
       for (const entry of q.acts || []) {
@@ -3232,8 +3235,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (target.commander || permanentGameValue(game, target, player) >= 5.5) return true;
       if (game.phase === 'combat' && ['attackers', 'blockers', 'firstStrike'].includes(game.step)) {
         if (target.blocking && game.turnPlayer === player) return true;
-        if (target.attacking === player && (target.power >= player.life ||
-          reactionCombatGain(game, player, new Map(), [target]) > 3)) return true;
+        // Killing a creature that is attacking the bot also removes the card,
+        // so any attacker the spell kills is a meaningful target.
+        if (target.attacking === player) return true;
       }
       return false;
     });
@@ -4199,6 +4203,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // chosen permanent has no combat value of its own (a land), so the tie
       // between two such permanents never falls to an opponent's.
       if (/evasion|aura/i.test(hint)) return hostile ? -(value + 1) : value + 1;
+      // An unhinted target whose rules text only helps it (counters, a pump,
+      // protection, an untap, an attachment) belongs on the bot's own side;
+      // the value-based default would hand the benefit to an opponent.
+      if (!hint && unhintedBenefitTarget(q)) return hostile ? -(value + 1) : value + 1;
+      // The mirror case: unhinted removal, damage, shrinking or combat denial
+      // goes to an opponent, never to the bot's own more valuable creature.
+      if (!hint && unhintedHarmTarget(q)) return hostile ? value + 0.25 : -value * 1.8 - 0.25;
       return hostile ? value * 0.7 : value * 0.5;
     }
     if (target && target.kind) {
@@ -4211,6 +4222,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return (spell ? cardDefinitionValue(spell.def) : 2) * (hostile ? 1 : -0.5);
     }
     return 0;
+  }
+
+  const TARGET_BENEFIT_TEXT = /(put (?:a|an|one|two|three|x|that many) [^.]*?(?:\+1\/\+1|\+0\/\+1|\+1\/\+0|shield|indestructible) counters? on (?:another )?target|put x counters on (?:another )?target|target [^.]{0,60}?(?:gets \+\d+\/\+\d+|gets \+x\/\+x|gains? (?:hexproof|indestructible|flying|trample|haste|lifelink|vigilance|first strike|double strike|protection|shroud|menace|deathtouch|horsemanship|banding))|regenerate target|double target creature's power)/i;
+  const TARGET_HARM_TEXT = /(destroy|exile|deals? [^.]*damage|-\d+\/-\d+|\+\d+\/-\d+|-x|gets -|sacrifice|tap or untap|tap target|return target [^.]* to (?:its|their) owner'?s hand|can't (?:block|attack)|loses (?:all )?(?:abilities|creature types)|petrification|fuse counter|-1\/-1 counter|toughness \d+ or greater)/i;
+  // The ability or spell text behind an unhinted target choice.
+  function unhintedBenefitTarget(q) {
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || '';
+    const text = label.length > 12 ? label : q.src?.def?.oracle || q.so?.card?.def?.oracle || '';
+    if (!text) return false;
+    // Moving an Equipment (Magnetic Theft) helps its new creature; moving an
+    // Aura (Aura Finesse) helps or hurts the way that Aura does.
+    if (/attach target equipment[^.]* to target/i.test(text)) return true;
+    if (/attach target aura[^.]* to target/i.test(text)) {
+      const aura = [q.previousTargets?.[0]].flat()[0];
+      const goal = aura?.def?.auraTarget?.[0]?.aiHint?.goal || '';
+      return !!aura && !/removal|debuff|tap|steal|curse/i.test(goal) && !/can't (?:attack|block)|doesn't untap|enchanted [^.]* gets -/i.test(aura.def?.oracle || '');
+    }
+    return TARGET_BENEFIT_TEXT.test(text) && !TARGET_HARM_TEXT.test(text);
+  }
+
+  const TARGET_HARMFUL_TEXT = /(destroy target|exile target|deals? \d+ damage to (?:target|any)|deals? x damage to (?:target|any)|target creature gets -|put an? -1\/-1 counters? on target|tap target creature|target creature can't (?:block|attack))/i;
+  function unhintedHarmTarget(q) {
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || '';
+    const text = label.length > 12 ? label : q.src?.def?.oracle || q.so?.card?.def?.oracle || '';
+    return !!text && TARGET_HARMFUL_TEXT.test(text) && !TARGET_BENEFIT_TEXT.test(text) &&
+      !/target [^.]{0,40}you control|your creatures?/i.test(text);
   }
 
   function choiceCardValue(game, player, card, q) {
@@ -6979,6 +7016,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.reaction = tactical - total;
       total = tactical;
     }
+    if (action.heldForBetterTarget) { breakdown.heldForBetterTarget = -60; total -= 60; }
     if (unfavorableWipe && total > -12) {
       // Personality, mana value and generic draw/synergy bonuses must not
       // turn a known losing reset into the default main-phase play.

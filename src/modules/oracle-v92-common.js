@@ -78,11 +78,11 @@
     case 'Invasion of Kaladesh':etb(ctx=>ctx.g.makeTokens(token('Thopter',1,1,['Thopter'],[],['flying'],{types:['Artifact','Creature']}),ctx.you));return true;
     case 'Invasion of Lorwyn':etb(ctx=>first(ctx)&&ctx.g.destroy(first(ctx)),[T('creature','opponent',{v20:{kind:'v92-lorwyn'}})]);return true;
     case 'Invasion of Dominaria':etb(async ctx=>{await ctx.g.gainLife(ctx.you,4);await draw(ctx);});return true;
-    case 'Invasion of Mercadia':etb(async ctx=>{const [c]=await pick(ctx,ctx.you.hand);if(c){const cards=await ctx.g.discard(ctx.you,[c]);if(cards.length)await draw(ctx,2);}});return true;
+    case 'Invasion of Mercadia':etb(async ctx=>{const [c]=await pick(ctx,ctx.you.hand);if(c){await ctx.g.discard(ctx.you,[c]);if(c.zone!=='hand')await draw(ctx,2);}});return true;
     case 'Invasion of Belenon':etb(ctx=>ctx.g.makeTokens(knight,ctx.you));return true;
     case 'Invasion of Ulgrotha':etb(async ctx=>{if(first(ctx))await damage(ctx,first(ctx),3);await ctx.g.gainLife(ctx.you,3);},[T('any','any',{excludeSelf:true})]);return true;
     case 'Invasion of Amonkhet':etb(async ctx=>{for(const p of ctx.g.apnapFrom(ctx.you).filter(p=>!p.lost))await ctx.g.mill(p,3,ctx.src);for(const p of ctx.you.opponents(ctx.g))await ctx.g.discard(p,await pick(ctx,p.hand,1,1,p,'Discard a card'));await draw(ctx);});return true;
-    case 'Invasion of Ergamon':etb(async ctx=>{await ctx.g.makeTokens(M.TOKENS.treasure,ctx.you);const [c]=await pick(ctx,ctx.you.hand);if(c){const cards=await ctx.g.discard(ctx.you,[c]);if(cards.length)await draw(ctx);}});return true;
+    case 'Invasion of Ergamon':etb(async ctx=>{await ctx.g.makeTokens(M.TOKENS.treasure,ctx.you);const [c]=await pick(ctx,ctx.you.hand);if(c){await ctx.g.discard(ctx.you,[c]);if(c.zone!=='hand')await draw(ctx);}});return true;
     case 'Invasion of Kylem':etb(ctx=>{for(const c of flat(ctx))pump(ctx,c,2,0,['vigilance','haste']);},[T('creature','any',{min:0,max:2})]);return true;
    }
   }

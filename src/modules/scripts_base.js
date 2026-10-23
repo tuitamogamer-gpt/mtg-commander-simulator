@@ -479,7 +479,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl,
     }, o),
     permanent: (f, o) => Object.assign({
-      what: 'permanent', filter: (g, c, ctrl) => c.zone === 'battlefield' && (!f || f(g, c, ctrl)),
+      // The source is passed through so "another permanent" filters can exclude it.
+      what: 'permanent', filter: (g, c, ctrl, src) => c.zone === 'battlefield' && (!f || f(g, c, ctrl, src)),
     }, o),
     any: (o) => Object.assign({ what: 'any' }, o),
     player: (o) => Object.assign({ what: 'player' }, o),

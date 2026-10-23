@@ -3145,11 +3145,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const d = this.castDefinition(card, castOpts);
     if (castOpts && castOpts.faceDownCast) return null;
     if (castOpts && castOpts.splitHalf && d.splitHalves && d.splitHalves[castOpts.splitHalf]) {
-      return d.splitHalves[castOpts.splitHalf].targets || null;
+      // A half may declare its targets as a function of the cast (Finish).
+      const targets = d.splitHalves[castOpts.splitHalf].targets;
+      return typeof targets === 'function' ? targets(this, card, castOpts, caster) : (targets || null);
     }
     if (castOpts && castOpts.splitFuse && d.splitHalves) {
       const right = d.splitHalves[castOpts.splitFuse];
-      return [...(d.targets || []), ...(right && right.targets || [])];
+      const resolved = targets => typeof targets === 'function' ? targets(this, card, castOpts, caster) || [] : targets || [];
+      return [...resolved(d.targets), ...resolved(right && right.targets)];
     }
     if (castOpts && castOpts.adventure) {
       const targets = d.adventure.targets;

@@ -200,6 +200,8 @@ for (const name of walkers) for (const [index, ability] of M.DEFS[name].abilitie
     await g.makeTokens({name: 'Soldier', types: ['Creature'], subtypes: ['Soldier'], power: '1', toughness: '1', kws: []}, bot);
     if(name==="Calix, Destiny's Hand")put(bot,'Glorious Anthem');
     if(name==='Jared Carthalion')put(bot,'Fusion Elemental','graveyard');
+    // "Destroy another target planeswalker" needs a planeswalker other than Garruk himself.
+    if(name==='Garruk, Apex Predator')put(human,'Jace Beleren').counters.loyalty=3;
     const walker = put(bot, name, 'hand');
     for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) bot.pool[color] = 30;
     assert.equal(await g.castSpell(bot, walker, {from: 'hand',xVal:4}), true);
