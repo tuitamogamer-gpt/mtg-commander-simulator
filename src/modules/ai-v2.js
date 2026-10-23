@@ -4024,6 +4024,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return delta <= 0 ? -100 : delta * 2.2;
       }
       const threat = playerThreatForGame(game, player, target);
+      // An unhinted "target player draws / gains life / searches" is the bot's
+      // own benefit, not a gift to its opponent (Kenrith, Blue Sun's Zenith).
+      if (!hint && unhintedPlayerBenefit(q)) return target === player ? 24 : -(threat * 0.45) - 1;
       if (hint === 'damage') {
         if (target === player) return -100;
         const rawAmount = q.aiHint && q.aiHint.amount;
@@ -4228,7 +4231,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const TARGET_HARM_TEXT = /(destroy|exile|deals? [^.]*damage|-\d+\/-\d+|\+\d+\/-\d+|-x|gets -|sacrifice|tap or untap|tap target|return target [^.]* to (?:its|their) owner'?s hand|can't (?:block|attack)|loses (?:all )?(?:abilities|creature types)|petrification|fuse counter|-1\/-1 counter|toughness \d+ or greater)/i;
   // The ability or spell text behind an unhinted target choice.
   function unhintedBenefitTarget(q) {
-    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || '';
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || q.effectText || '';
     const text = label.length > 12 ? label : q.src?.def?.oracle || q.so?.card?.def?.oracle || '';
     if (!text) return false;
     // Moving an Equipment (Magnetic Theft) helps its new creature; moving an
@@ -4244,10 +4247,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   const TARGET_HARMFUL_TEXT = /(destroy target|exile target|deals? \d+ damage to (?:target|any)|deals? x damage to (?:target|any)|target creature gets -|put an? -1\/-1 counters? on target|tap target creature|target creature can't (?:block|attack))/i;
   function unhintedHarmTarget(q) {
-    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || '';
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || q.effectText || '';
     const text = label.length > 12 ? label : q.src?.def?.oracle || q.so?.card?.def?.oracle || '';
     return !!text && TARGET_HARMFUL_TEXT.test(text) && !TARGET_BENEFIT_TEXT.test(text) &&
       !/target [^.]{0,40}you control|your creatures?/i.test(text);
+  }
+
+  const PLAYER_BENEFIT_TEXT = /target player (?:draws?|gains? \d+ life|gains? life|may (?:search|put|draw)|searches|creates?|untaps?|puts? (?:a|an|up to|any number of) [^.]*(?:onto the battlefield|into (?:his|her|their) hand))/i;
+  const PLAYER_HARM_TEXT = /target player (?:loses? (?!\d+ life)|discards?|sacrifices?|mills?|exiles?|reveals?|skips?|can't)|damage to target player|target player['’]s (?:library|graveyard|hand)|other than target player|\bgift\b/i;
+  function unhintedPlayerBenefit(q) {
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || q.effectText || '';
+    const text = label.length > 12 ? label : q.src?.def?.oracle || q.so?.card?.def?.oracle || '';
+    return !!text && PLAYER_BENEFIT_TEXT.test(text) && !PLAYER_HARM_TEXT.test(text);
   }
 
   function choiceCardValue(game, player, card, q) {
