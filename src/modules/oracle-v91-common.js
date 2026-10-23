@@ -2,7 +2,7 @@
 ((M)=>{
  const G=M.Game.prototype,H=M.OracleV20.helpers;
  const live=c=>c?.zone==='battlefield'&&!c.phasedOut,active=c=>live(c)&&!c.cur?.abilitiesDisabled,same=ctx=>H.sameBattlefieldSource(ctx);
- const sources=(g,key,p)=>g.bf().filter(c=>active(c)&&c.def[key]&&(!p||c.ctrl===p));
+ const sources=(g,key,p)=>g.bfWithDef(key).filter(c=>active(c)&&(!p||c.ctrl===p));
  const ref=c=>({card:c,zone:c.zone,version:c.zoneVersion}),current=r=>r?.card.zone===r.zone&&r.card.zoneVersion===r.version;
  const target=(what='creature',controller='any',extra={})=>({what,zone:what==='player'?'player':'battlefield',controller,min:1,max:1,...extra});
  const spec=(what='creature',controller='any',extra={})=>H.genericTargetSpec(target(what,controller,extra),[],0),flat=ctx=>(ctx.targets||[]).flat(Infinity).filter(Boolean),subject=(ctx,i=0)=>H.genericEffectSubjects(ctx,i)[0];

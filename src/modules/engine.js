@@ -4713,4 +4713,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   }
   MTG.Game = Game;
+
+  // Battlefield scans for a printed definition key run inside hot per-card
+  // loops (costs, mana, types, and the graveyard and color getters). Which
+  // permanents carry a key changes only with the board, so that part of a
+  // scan is reused until a zone move, a recalculation, a definition change or
+  // a different battlefield array or length. Zone and phasing stay live.
+  let boardStamp = 0;
+  const boardScans = new WeakMap();
+  MTG.boardChanged = () => { boardStamp++; };
+  Game.prototype.bfWithDef = function (...keys) {
+    const cards = this._entryReplacementPhase && this._battlefieldEntryReplacementSnapshot
+      ? this._battlefieldEntryReplacementSnapshot : this.battlefield;
+    let scan = boardScans.get(this);
+    if (!scan || scan.stamp !== boardStamp || scan.cards !== cards || scan.length !== cards.length) {
+      scan = { stamp: boardStamp, cards, length: cards.length, rows: new Map() };
+      boardScans.set(this, scan);
+    }
+    const id = keys.join('|');
+    let rows = scan.rows.get(id);
+    if (!rows) {
+      rows = cards.filter(c => c.zone === 'battlefield' && keys.some(key => c.def[key]));
+      scan.rows.set(id, rows);
+    }
+    return rows.filter(c => c.zone === 'battlefield' && !c.phasedOut);
+  };
+  const boardMove = Game.prototype.move;
+  Game.prototype.move = function (...args) {
+    MTG.boardChanged();
+    const moved = boardMove.apply(this, args);
+    moved.then(MTG.boardChanged, MTG.boardChanged);
+    return moved;
+  };
+  const boardRecalc = Game.prototype.recalc;
+  Game.prototype.recalc = function (...args) { MTG.boardChanged(); return boardRecalc.apply(this, args); };
 })();

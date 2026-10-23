@@ -2,7 +2,7 @@
 ((M)=>{
  const G=M.Game.prototype,H=M.OracleV20.helpers;
  const live=c=>c?.zone==='battlefield'&&!c.phasedOut,active=c=>live(c)&&!c.cur?.abilitiesDisabled,same=(c,v)=>live(c)&&c.zoneVersion===v;
- const sources=(g,key)=>g.bf().filter(c=>active(c)&&c.def[key]),ref=c=>({card:c,version:c.zoneVersion,zone:c.zone}),current=r=>r.card.zone===r.zone&&r.card.zoneVersion===r.version;
+ const sources=(g,key)=>g.bfWithDef(key).filter(c=>active(c)),ref=c=>({card:c,version:c.zoneVersion,zone:c.zone}),current=r=>r.card.zone===r.zone&&r.card.zoneVersion===r.version;
  const target=(what='creature',zone='battlefield',controller='any',extra={})=>H.genericTargetSpec({what,zone,controller,min:1,...extra},[],0);
  const flat=ctx=>(ctx.targets||[]).flat(Infinity).filter(Boolean),level=c=>c.meta.oracleClassLevelV20?.version===c.zoneVersion?c.meta.oracleClassLevelV20.value:1;
  async function option(g,p,prompt,options=[{key:'yes',label:'Yes'},{key:'no',label:'No'}]){const key=await p.controller.decide(g,{type:'chooseOption',prompt,options,aiHint:{kind:'optTrigger'}});if(!options.some(o=>o.key===key))throw Error('Invalid v83 option');return key;}

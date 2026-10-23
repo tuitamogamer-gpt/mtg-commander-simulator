@@ -39,7 +39,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  }
  const spellMatches=(g,s,c,a)=>spellNames(g,c,a).some(name=>selected(s).includes(name));
  const scope=(s,p,who)=>who==='all'||who==='you'&&p===s.ctrl||who==='opponents'&&p!==s.ctrl||who==='enchanted-player'&&p===s.meta.cursedPlayer;
- const rules=(g,mode)=>g.bf().filter(live).flatMap(s=>(s.def.oracleNamedRulesV22||[]).filter(rule=>rule.mode===mode).map(rule=>({s,rule})));
+ const rules=(g,mode)=>g.bfWithDef('oracleNamedRulesV22').filter(live).flatMap(s=>(s.def.oracleNamedRulesV22||[]).filter(rule=>rule.mode===mode).map(rule=>({s,rule})));
  const qualifies=(flags,quality)=>quality==='any'||quality==='nonland'&&!(flags&1)||quality==='land'&&!!(flags&1)||quality==='nonbasic-land'&&!!(flags&1)&&!(flags&4)||quality==='not-basic-land'&&!((flags&1)&&(flags&4))||quality==='noncreature-nonland'&&!(flags&3);
  function choices(quality){if(!M.OracleV22CardNames)throw Error('Missing certified Oracle name index');return M.OracleV22CardNames.entries.filter(([,flags])=>qualifies(flags,quality)).map(([name])=>name);}
  async function chooseName(g,s,p,quality='any',restricted,known=[]){
