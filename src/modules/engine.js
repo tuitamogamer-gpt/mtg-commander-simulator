@@ -3960,6 +3960,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : selectedTargets || null;
       }
       if (targetSpecs && targetSpecs.length) {
+        // The trigger's own text lets a target chooser read what it does.
+        if (!ctx.effectText) ctx.effectText = tr.desc || tr.name || '';
         const ok = await this.pickTargets(ctx, targetSpecs, tr.src, ctrl);
         if (!ok) return; // no legal targets → fizzle
         targetSpecs=ctx.boundTargetSpecs||targetSpecs;
@@ -4208,7 +4210,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const candidateIdentities = new Map(cands.map(target => [target, this.captureTargetIdentity(target)]));
         const decision = await decisionPlayer.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
-          src, so: ctx.so || null, ability: ctx.ability || null, prompt: spec.prompt || 'Izaberi metu',
+          src, so: ctx.so || null, ability: ctx.ability || null, effectText: ctx.effectText || null, prompt: spec.prompt || 'Izaberi metu',
           targetStep: specIndex + 1, targetSteps: ctx.boundTargetSpecs.length,
           previousTargets: ctx.targets.map(target => Array.isArray(target) ? target.slice() : target),
           // Arena-style drag may suggest one exact target, but legality remains
