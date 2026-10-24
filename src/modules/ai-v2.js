@@ -3589,6 +3589,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function cheapestManaValue(cards) {
     return cards.length ? Math.min(...cards.map(card => U.mv(card.def.cost || ''))) : 0;
   }
+  // What keeping mana open for the answers in hand is worth. Any held answer
+  // earns it, not only decks built around interaction; a counterspell more,
+  // since it does nothing unless the mana is already open.
+  function answerReserveWeight(profile, held) {
+    if (!held.length) return 0;
+    const counter = held.some(card => inferCardSemantics(card.def).roles.includes('counterspell')) ? 0.6 : 0;
+    return 1 + answerHoldWeight(profile) + counter;
+  }
+  // The price of a main-phase play that taps below the cheapest held answer:
+  // that answer is gone for a whole round of opposing turns. Key plays (the
+  // commander, the deck's engines, real threats, early ramp) are still worth
+  // it; filler waits or fits around the reserve. A hand about to overflow
+  // has to be deployed anyway.
+  function answerReservePenalty(player, phase, weight, keyPlay) {
+    const penalty = keyPlay ? 1 + 0.5 * weight : (phase === 'main1' ? 5 : 4) + 2.5 * weight;
+    return (player.hand || []).length >= 8 ? penalty / 2 : penalty;
+  }
+  function abilityManaSpend(game, player, entry) {
+    try {
+      const raw = entry?.ability?.cost?.mana;
+      const mana = typeof raw === 'function' ? raw(game, entry.card, player) : raw;
+      const parsed = typeof mana === 'string' ? U.parseCost(mana) : mana;
+      return parsed ? (Number(parsed.generic) || 0) + (parsed.pips || []).length : 0;
+    } catch { return 0; }
+  }
   // How much a deck cares about keeping answers up: interaction density plus a
   // nudge for decks whose theme is casting spells at all.
   function answerHoldWeight(profile) {
@@ -5900,9 +5925,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const holdWeight = answerHoldWeight(profile);
       const ownMainEmptyStack = game.turnPlayer === player && !game.stack.length && (phase === 'main1' || phase === 'main2');
-      const worthAnswering = holdWeight > 0 && tableWorthAnswering(game, player);
-      if (ownMainEmptyStack && worthAnswering && instantSpeed && isSpellCard && breakdown.threat < 20 &&
-        (sem.roles.includes('single-target-removal') || sem.roles.includes('direct-damage'))) {
+      const tableWorth = tableWorthAnswering(game, player);
+      const worthAnswering = holdWeight > 0 && tableWorth;
+      const instantRemoval = instantSpeed && isSpellCard &&
+        (sem.roles.includes('single-target-removal') || sem.roles.includes('direct-damage'));
+      const lastWindowBeforeUntap = game.turnPlayer !== player && game.nextPlayer(game.turnPlayer) === player;
+      if (instantRemoval && tableWorth && breakdown.threat < 20 &&
+        (ownMainEmptyStack || game.turnPlayer !== player && !game.stack.length && phase !== 'combat')) {
         // What would this answer actually remove right now? Damage counts only
         // what it kills; "any target" burn is judged by its best creature kill.
         const best = bestRemovalCandidate(game, player, card, action.alt);
@@ -5919,7 +5948,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }
           }
         }
-        if (bestNow < 6.5) breakdown.timing -= 3 + 2 * holdWeight;
+        if (ownMainEmptyStack) {
+          // In its own main phase instant removal waits for an opposing turn
+          // (an attack, a spell to answer, an end step) unless the target is a
+          // real threat right now.
+          if (bestNow < 6.5) breakdown.timing -= 3 + 2 * holdWeight;
+          else if (bestNow < 12) breakdown.timing -= 1.5 + holdWeight;
+        } else if (phase === 'end') {
+          // The end step before its own untap is the last window for this
+          // mana; so is the end step before the target's controller untaps.
+          // A worthwhile target is removed there rather than never.
+          const nextUp = game.nextPlayer(game.turnPlayer);
+          if (bestNow >= 5.5 && (lastWindowBeforeUntap || best?.target?.ctrl === nextUp)) breakdown.timing += 2.5 + holdWeight;
+        } else if (bestNow < 12) breakdown.timing -= 2;
       }
       const valueInstant = instantSpeed && isSpellCard && !sem.roles.includes('ramp') &&
         !sem.roles.includes('counterspell') && !sem.roles.includes('single-target-removal') &&
@@ -5935,20 +5976,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const availableNow = availableManaEstimate(game, player);
       // Would this cast leave less mana than the cheapest answer in hand costs?
       const eatsReserve = reserveNeed > 0 && availableNow >= reserveNeed && availableNow - spend < reserveNeed;
-      const lastWindowBeforeUntap = game.turnPlayer !== player && game.nextPlayer(game.turnPlayer) === player;
+      const reserveWeight = answerReserveWeight(profile, heldAnswers);
       if (ownMainEmptyStack && valueInstant && !payoffs && eatsReserve) breakdown.timing -= 3 + holdWeight;
       if (valueInstant && game.turnPlayer !== player && !game.stack.length) {
         if (phase !== 'end') breakdown.timing -= 4 + holdWeight;
         else if (eatsReserve && !lastWindowBeforeUntap) breakdown.timing -= 8 + holdWeight;
       }
-      if (worthAnswering && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
-        // The commander, the deck's engines and a real removal play are worth
-        // tapping out for; filler is not. The reserve has to cost about what a
-        // held answer is worth, or the bot taps out for a two-drop every turn
-        // and is never asked for priority on the three turns in between.
+      if (eatsReserve && tableWorth && ownMainEmptyStack) {
+        // The commander, the deck's engines, a real threat and early ramp are
+        // worth tapping out for; filler is not. The reserve has to cost about
+        // what a held answer is worth, or the bot taps out for a two-drop
+        // every turn and is never asked for priority on the turns in between.
         const keyPlay = card.commander || profile.importantEngines.includes(card.name) || breakdown.threat >= 8 ||
-          sem.roles.includes('ramp') || sem.roles.includes('mana-rock');
-        if (eatsReserve && !keyPlay) breakdown.resources -= (phase === 'main1' ? 4 : 3) + 2.5 * holdWeight;
+          (sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && game.lands(player).length <= 5;
+        breakdown.resources -= answerReservePenalty(player, phase, reserveWeight, keyPlay);
+      }
+      // A flash body keeps its mana open like an answer and is cast where an
+      // opponent sees it last: the end step before the bot's own untap.
+      const flashBody = card.is('Creature') && instantSpeed && !instantRemoval && !sem.roles.includes('ramp');
+      if (flashBody && game.turnPlayer !== player && !game.stack.length && phase !== 'combat') {
+        if (phase === 'end' && lastWindowBeforeUntap) breakdown.timing += 3;
+        else breakdown.timing -= 3;
       }
       // Ending the turn is credited for keeping an answer and its mana up (see
       // the pass/done branch). A sorcery-speed cast that still leaves that mana
@@ -5959,7 +6007,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const interactionKept = (player.hand || []).some(held => held !== card && isInstantSpeedCard(held) &&
           inferCardSemantics(held.def).roles.some(role => ['counterspell', 'single-target-removal', 'protection', 'combat-trick'].includes(role)));
         if (interactionKept && openAfterCast > 0) breakdown.timing += phase === 'main1' ? 2.4 : 1.2;
-        if (heldAnswers.length && holdWeight > 0 && openAfterCast >= reserveNeed && tableWorthAnswering(game, player)) breakdown.timing += 1.5 + holdWeight;
+        if (reserveWeight && openAfterCast >= reserveNeed && tableWorth) breakdown.timing += 1.5 + reserveWeight;
       }
       // A deck with almost no creatures still needs a body in front of it.
       if (sem.roles.includes('creature') && !card.is('Instant')) {
@@ -6249,9 +6297,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // it is a real play, not a missed one.
       if (game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
         const held = heldInstantAnswers(player, null);
-        const holdWeight = answerHoldWeight(profile);
-        if (held.length && holdWeight > 0 && availableManaEstimate(game, player) >= cheapestManaValue(held) &&
-          tableWorthAnswering(game, player)) breakdown.timing += 1.5 + holdWeight;
+        const reserveWeight = answerReserveWeight(profile, held);
+        if (reserveWeight && availableManaEstimate(game, player) >= cheapestManaValue(held) &&
+          tableWorthAnswering(game, player)) breakdown.timing += 1.5 + reserveWeight;
       }
       if (q && q.type === 'priority' && game.stack.length) {
         const top = game.stack[game.stack.length - 1];
@@ -7021,6 +7069,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.choice = action.value.reduce((sum, trigger, index) => sum + triggerValue(trigger) * (index + 1), 0);
     } else if (action.kind === 'chooseManaSources') {
       breakdown.resources = -(action.value || []).reduce((sum, source) => sum + (source.card && inferCardSemantics(source.card.def).roles.includes('engine') ? 2 : 0.2), 0);
+    }
+    // A main-phase activation that taps below the cheapest held answer gives
+    // that answer up just like a cast does.
+    if (action.kind === 'activate' && game.turnPlayer === player && !game.stack.length &&
+      (phase === 'main1' || phase === 'main2')) {
+      const held = heldInstantAnswers(player, null), need = cheapestManaValue(held);
+      const spend = need > 0 ? abilityManaSpend(game, player, action.entry) : 0;
+      const available = spend > 0 ? availableManaEstimate(game, player) : 0;
+      if (spend > 0 && available >= need && available - spend < need && tableWorthAnswering(game, player))
+        breakdown.resources -= answerReservePenalty(player, phase, answerReserveWeight(profile, held), false);
     }
     // Siguran smrtonosni napad zatvara main fazu: ništa osim landa (koji ne
     // košta tempo) ne smije pretegnuti nad odlaskom u borbu.
