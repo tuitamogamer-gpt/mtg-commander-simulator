@@ -231,6 +231,10 @@ for (const name of ['Lightning Bolt', 'Swords to Plowshares']) {
     f.add('Grizzly Bears', f.opponent);
     assert.equal((await f.decide()).kind, 'pass');
     f.add('Esper Sentinel', f.opponent);
+    // An opposing main phase with nothing on the stack is the earliest moment;
+    // the answer comes at the end step before the bot's own untap.
+    assert.equal((await f.decide()).kind, 'pass');
+    f.game.phase = 'end'; f.game.step = 'end';
     assert.equal((await f.decide()).kind, 'cast');
   });
 }

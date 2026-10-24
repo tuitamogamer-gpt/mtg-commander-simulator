@@ -5962,15 +5962,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // In its own main phase instant removal waits for an opposing turn
           // (an attack, a spell to answer, an end step) unless the target is a
           // real threat right now.
-          if (bestNow < 6.5) breakdown.timing -= 3 + 2 * holdWeight;
-          else if (bestNow < 12) breakdown.timing -= 1.5 + holdWeight;
+          if (bestNow < 12) breakdown.timing -= 5 + 2 * holdWeight;
         } else if (phase === 'end') {
           // The end step before its own untap is the last window for this
           // mana; so is the end step before the target's controller untaps.
           // A worthwhile target is removed there rather than never.
           const nextUp = game.nextPlayer(game.turnPlayer);
           if (bestNow >= 5.5 && (lastWindowBeforeUntap || best?.target?.ctrl === nextUp)) breakdown.timing += 2.5 + holdWeight;
-        } else if (bestNow < 12) breakdown.timing -= 2;
+        } else if (bestNow < 12) {
+          // An opposing upkeep or main phase with nothing to answer is the
+          // earliest, least informed moment. Its attack and the end step
+          // before the target's controller (or the bot) untaps always follow,
+          // so the answer waits for them.
+          breakdown.timing -= 30;
+        }
       }
       const valueInstant = instantSpeed && isSpellCard && !sem.roles.includes('ramp') &&
         !sem.roles.includes('counterspell') && !sem.roles.includes('single-target-removal') &&
