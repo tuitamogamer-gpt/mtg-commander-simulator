@@ -3606,6 +3606,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const penalty = keyPlay ? 1 + 0.5 * weight : (phase === 'main1' ? 5 : 4) + 2.5 * weight;
     return (player.hand || []).length >= 8 ? penalty / 2 : penalty;
   }
+  // When spending mana gives a held answer up: any time on the bot's own
+  // turn (an instant in its combat taps the same lands as a main-phase play)
+  // and on an opponent's turn before the end step that precedes the bot's
+  // untap. A response on the stack, and that last end step, are what the
+  // mana was kept for.
+  function answerReserveWindow(game, player) {
+    if (game.stack.length) return false;
+    if (game.turnPlayer === player) return true;
+    return !(game.phase === 'end' && game.nextPlayer(game.turnPlayer) === player);
+  }
   function abilityManaSpend(game, player, entry) {
     try {
       const raw = entry?.ability?.cost?.mana;
@@ -5982,7 +5992,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (phase !== 'end') breakdown.timing -= 4 + holdWeight;
         else if (eatsReserve && !lastWindowBeforeUntap) breakdown.timing -= 8 + holdWeight;
       }
-      if (eatsReserve && tableWorth && ownMainEmptyStack) {
+      const castsAnswer = instantSpeed && !card.is('Creature') && sem.roles.some(role => HELD_ANSWER_ROLES.includes(role));
+      if (eatsReserve && tableWorth && !castsAnswer && answerReserveWindow(game, player)) {
         // The commander, the deck's engines, a real threat and early ramp are
         // worth tapping out for; filler is not. The reserve has to cost about
         // what a held answer is worth, or the bot taps out for a two-drop
@@ -7070,10 +7081,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseManaSources') {
       breakdown.resources = -(action.value || []).reduce((sum, source) => sum + (source.card && inferCardSemantics(source.card.def).roles.includes('engine') ? 2 : 0.2), 0);
     }
-    // A main-phase activation that taps below the cheapest held answer gives
-    // that answer up just like a cast does.
-    if (action.kind === 'activate' && game.turnPlayer === player && !game.stack.length &&
-      (phase === 'main1' || phase === 'main2')) {
+    // An activation that taps below the cheapest held answer gives that
+    // answer up just like a cast does.
+    if (action.kind === 'activate' && answerReserveWindow(game, player)) {
       const held = heldInstantAnswers(player, null), need = cheapestManaValue(held);
       const spend = need > 0 ? abilityManaSpend(game, player, action.entry) : 0;
       const available = spend > 0 ? availableManaEstimate(game, player) : 0;
