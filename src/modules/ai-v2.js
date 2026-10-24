@@ -5945,7 +5945,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // What would this answer actually remove right now? Damage counts only
         // what it kills; "any target" burn is judged by its best creature kill.
         const best = bestRemovalCandidate(game, player, card, action.alt);
-        let bestNow = best ? best.score : 0;
+        let bestNow = best ? best.score : 0, bestTarget = best ? best.target : null;
         const damageOperation = (card.def.oracleImplementation || []).find(operation =>
           operation.kind === 'spell-damage' && operation.n !== 'X' && Number.isFinite(Number(operation.n)));
         if (damageOperation) {
@@ -5954,22 +5954,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             for (const target of game.legalTargets(spec, card, player)) {
               if (!(target instanceof U.CardInst) || target.ctrl === player || !target.is('Creature')) continue;
               if (damageProtectionSaves(target) || Number(target.toughness || 0) - Number(target.damage || 0) > amount) continue;
-              bestNow = Math.max(bestNow, permanentGameValue(game, target, player));
+              const value = permanentGameValue(game, target, player);
+              if (value > bestNow) { bestNow = value; bestTarget = target; }
             }
           }
         }
+        // An engine, a combo piece or a commander works on every turn it
+        // stays, so it goes at the first good moment. A plain body matters
+        // when it attacks, blocks or is about to untap, so it waits for that.
+        const urgent = bestNow >= 12 || !!bestTarget?.commander || !!bestTarget &&
+          inferCardSemantics(bestTarget.def).roles.some(role => ['engine', 'combo-piece'].includes(role));
         if (ownMainEmptyStack) {
-          // In its own main phase instant removal waits for an opposing turn
-          // (an attack, a spell to answer, an end step) unless the target is a
-          // real threat right now.
-          if (bestNow < 12) breakdown.timing -= 5 + 2 * holdWeight;
+          if (bestNow < 6.5) breakdown.timing -= 3 + 2 * holdWeight;
+          else if (!urgent) breakdown.timing -= 5 + 2 * holdWeight;
         } else if (phase === 'end') {
           // The end step before its own untap is the last window for this
           // mana; so is the end step before the target's controller untaps.
           // A worthwhile target is removed there rather than never.
           const nextUp = game.nextPlayer(game.turnPlayer);
-          if (bestNow >= 5.5 && (lastWindowBeforeUntap || best?.target?.ctrl === nextUp)) breakdown.timing += 2.5 + holdWeight;
-        } else if (bestNow < 12) {
+          if (bestNow >= 5.5 && (lastWindowBeforeUntap || bestTarget?.ctrl === nextUp)) breakdown.timing += 2.5 + holdWeight;
+        } else if (!urgent) {
           // An opposing upkeep or main phase with nothing to answer is the
           // earliest, least informed moment. Its attack and the end step
           // before the target's controller (or the bot) untaps always follow,
