@@ -4515,6 +4515,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return (/win|damage|draw|token|counter/.test(name) ? 3 : 0) + (/sacrifice|discard|lose/.test(name) ? -1 : 0);
   }
 
+  // The mana the bot still has this turn for keeping an answer up: its
+  // untapped sources plus a land drop it has not made yet. Casting before the
+  // land drop must not dodge the reserve that land would then have to keep.
+  function reserveManaEstimate(game, player) {
+    let mana = availableManaEstimate(game, player);
+    if (game.turnPlayer === player && (game.phase === 'main1' || game.phase === 'main2')) {
+      try { if ((game.playableLands(player) || []).some(card => !card.def.entersTapped)) mana += 1; } catch { /* no land drop */ }
+    }
+    return mana;
+  }
   function availableManaEstimate(game, player, forSpell = null) {
     try {
       const producers = new Map();
@@ -5992,7 +6002,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // last end step before our own untap so the answer keeps its mana.
       const heldAnswers = heldInstantAnswers(player, card);
       const reserveNeed = cheapestManaValue(heldAnswers);
-      const availableNow = availableManaEstimate(game, player);
+      const availableNow = reserveManaEstimate(game, player);
       // Would this cast leave less mana than the cheapest answer in hand costs?
       const eatsReserve = reserveNeed > 0 && availableNow >= reserveNeed && availableNow - spend < reserveNeed;
       const reserveWeight = answerReserveWeight(profile, heldAnswers);
@@ -6318,7 +6328,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
         const held = heldInstantAnswers(player, null);
         const reserveWeight = answerReserveWeight(profile, held);
-        if (reserveWeight && availableManaEstimate(game, player) >= cheapestManaValue(held) &&
+        if (reserveWeight && reserveManaEstimate(game, player) >= cheapestManaValue(held) &&
           tableWorthAnswering(game, player)) breakdown.timing += 1.5 + reserveWeight;
       }
       if (q && q.type === 'priority' && game.stack.length) {
@@ -7095,7 +7105,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (action.kind === 'activate' && answerReserveWindow(game, player)) {
       const held = heldInstantAnswers(player, null), need = cheapestManaValue(held);
       const spend = need > 0 ? abilityManaSpend(game, player, action.entry) : 0;
-      const available = spend > 0 ? availableManaEstimate(game, player) : 0;
+      const available = spend > 0 ? reserveManaEstimate(game, player) : 0;
       if (spend > 0 && available >= need && available - spend < need && tableWorthAnswering(game, player))
         breakdown.resources -= answerReservePenalty(player, phase, answerReserveWeight(profile, held), false);
     }

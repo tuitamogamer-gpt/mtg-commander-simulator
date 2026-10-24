@@ -104,3 +104,12 @@ test('instant removal waits through the bot\'s own main phase and is used at the
   assert.equal(castName(action), 'Murder');
   assert.equal(dragon.zone, 'battlefield', 'the decision alone does not resolve anything');
 });
+
+test('casting before the land drop does not dodge the reserve that land would have to keep', async () => {
+  const f = table();
+  for (let i = 0; i < 3; i++) f.add('Plains');
+  f.add('Plains', f.bot, 'hand');
+  f.add('Return to Dust', f.bot, 'hand');
+  f.add('Savannah Lions', f.bot, 'hand');
+  assert.equal(castName(await f.decide('main')), null);
+});
