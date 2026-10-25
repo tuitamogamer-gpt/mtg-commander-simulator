@@ -3272,6 +3272,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return best;
   };
 
+  function hasPhyrexianPip(cost) {
+    return (cost?.pips || []).some(pip => Array.isArray(pip) ? pip.includes('PHY') : /P/.test(String(pip)));
+  }
+
   MTG.botReactionPlan = function (game, player, action) {
     const source = action.card || action.entry?.card, ability = action.entry?.ability;
     if (!source || action.kind === 'activate' && (!ability || ability.loyalty !== undefined)) return null;
@@ -3283,7 +3287,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!ability) {
       const opts = {...action.alt, from: action.from || source.zone};
       const cost = game.spellCost(player, source, opts);
-      const payment = game.manaSolve(player, cost, {card: source, castOpts: opts, xVal: 0}, {xVal: 0});
+      const payment = hasPhyrexianPip(cost) ? game.manaSolve(player, cost, {card: source, castOpts: opts, xVal: 0}, {xVal: 0}) : null;
       const life = Number(cost.lifeCost || 0) + (payment?.plan || []).reduce((sum, step) => sum + Number(step.phyrexianLife || 0), 0);
       if (life >= player.life && (!game.canLoseGame || game.canLoseGame(player))) return {score: -100};
     }
@@ -5728,7 +5732,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Phyrexian symbols are resolved by the mana solver, not represented as
       // cost.lifeCost. Inspect the actual selected payment plan so the bot does
       // not cast a legal spell by paying its final life and immediately lose.
-      const payment = game.manaSolve(player, cost, { card, castOpts: action.alt || {}, xVal: 0 }, { xVal: 0 });
+      // Only a Phyrexian symbol can be paid with life, and the full solver
+      // costs seconds on a wide board with many sources, once per scored cast.
+      const payment = hasPhyrexianPip(cost) ? game.manaSolve(player, cost, { card, castOpts: action.alt || {}, xVal: 0 }, { xVal: 0 }) : null;
       const phyrexianLife = payment && payment.plan
         ? payment.plan.reduce((sum, step) => sum + Math.max(0, Number(step.phyrexianLife) || 0), 0)
         : 0;
