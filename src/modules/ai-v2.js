@@ -871,7 +871,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     addIf(roles, /from (?:your|a) graveyard (?:onto|to) the battlefield|put target creature card .* battlefield/.test(oracle), 'reanimation');
     addIf(roles, /search your library/.test(oracle) && !/basic land/.test(oracle), 'tutor');
     addIf(roles, /you win the game|target player loses the game|each opponent loses|double strike/.test(oracle) || (is('Creature') && mv >= 7), 'finisher');
-    addIf(roles, /copy target|untap .* permanent|whenever you cast or copy|charge counter/.test(oracle), 'combo-piece');
+    // Station's charge counters are how a Spacecraft is built, not a combo.
+    const stationCard = /\bstation \(/.test(oracle) || !!def.stationCreatureAt;
+    addIf(roles, /copy target|untap .* permanent|whenever you cast or copy/.test(oracle) ||
+      !stationCard && /charge counter/.test(oracle), 'combo-piece');
     addIf(roles, /your commander|commander you control|commander spell/.test(oracle), 'commander-support');
     addIf(roles, /can'?t cast|can'?t attack|can'?t activate|doesn'?t untap|spells cost .* more/.test(oracle), 'stax');
     addIf(roles, /gain .* life|lifelink/.test(oracle), 'lifegain');
@@ -908,6 +911,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return result;
   }
   MTG.inferCardSemantics = inferCardSemantics;
+
+  // What a permanent does on the board right now. A Spacecraft's tier
+  // abilities do nothing below their charge threshold, so an unstationed ship
+  // is not an engine yet; and anything that is a creature right now (a
+  // stationed ship, a crewed vehicle, an animated land) can attack and block.
+  const STATION_TIER = /^(\d+)\+ \|/;
+  const STATION_ROLE_CACHE = new Map();
+  function boardSemantics(card, def = card && card.def) {
+    const sem = inferCardSemantics(def);
+    if (!def || !card || card.zone !== 'battlefield') return sem;
+    let roles = sem.roles;
+    if (def.stationCreatureAt) {
+      const charge = Number(card.counters && card.counters.charge || 0);
+      const lines = String(def.oracle || '').split('\n');
+      const unlocked = lines.filter(line => { const tier = STATION_TIER.exec(line); return !tier || Number(tier[1]) <= charge; });
+      const key = def.name + '|' + unlocked.length;
+      if (!STATION_ROLE_CACHE.has(key)) STATION_ROLE_CACHE.set(key, inferCardSemantics(Object.assign({}, def,
+        { oracle: unlocked.join('\n'), oracleImplementation: [] })).roles);
+      roles = STATION_ROLE_CACHE.get(key);
+    }
+    if (!roles.includes('creature') && typeof card.is === 'function' && card.is('Creature')) roles = roles.concat('creature');
+    return roles === sem.roles ? sem : { roles, synergyTags: sem.synergyTags };
+  }
 
   function deckEntries(deck) {
     return (deck && deck.cards || []).flatMap(entry => Array.from({ length: entry.n || 1 }, () => U.DEFS && U.DEFS[entry.name])).filter(Boolean);
@@ -1071,7 +1097,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const known = !!forceKnown || ownerKnows || !card.faceDown || card.zone === 'graveyard' || card.zone === 'command' ||
       revealedTo === 'all' || Array.isArray(revealedTo) && revealedTo.includes(viewer.idx);
     const def = known ? card.def : null;
-    const sem = def ? inferCardSemantics(def) : { roles: [], synergyTags: [] };
+    const sem = def ? boardSemantics(card, def) : { roles: [], synergyTags: [] };
     const kw = card.cur && card.cur.kw ? [...card.cur.kw] : (def && def.kws || []);
     return Object.freeze({
       id: card.iid,
@@ -2686,8 +2712,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const release = persecutorExitValue(game, card, perspective);
     if (release) return card.ctrl === perspective ? -release : release;
     const profile = MTG.getDeckAIProfile(card.ctrl && (card.ctrl.deckName || card.ctrl.deck && card.ctrl.deck.name));
-    const sem = inferCardSemantics(card.def);
-    let value = Math.max(0, card.power || 0) * 0.8 + Math.max(0, card.toughness || 0) * 0.28 + card.mv * 0.2;
+    const sem = boardSemantics(card);
+    // An unstationed Spacecraft's printed body is a promise, worth what its
+    // charge counters have already paid toward it.
+    const bodyShare = card.def.stationCreatureAt && !card.is('Creature')
+      ? Math.min(1, Number(card.counters && card.counters.charge || 0) / card.def.stationCreatureAt) : 1;
+    let value = (Math.max(0, card.power || 0) * 0.8 + Math.max(0, card.toughness || 0) * 0.28) * bodyShare + card.mv * 0.2;
     if (sem.roles.includes('engine')) value += 6;
     if (sem.roles.includes('sacrifice-outlet')) value += 6;
     if (sem.roles.includes('death-payoff')) value += 5;
