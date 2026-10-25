@@ -4521,7 +4521,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function reserveManaEstimate(game, player) {
     let mana = availableManaEstimate(game, player);
     if (game.turnPlayer === player && (game.phase === 'main1' || game.phase === 'main2')) {
-      try { if ((game.playableLands(player) || []).some(card => !card.def.entersTapped)) mana += 1; } catch { /* no land drop */ }
+      // The full playable-land list walks graveyards and exile permissions on
+      // every score; the hand is where a land drop almost always comes from.
+      try {
+        if ((player.landsPlayed || 0) < game.landPlayLimit(player) &&
+          (player.hand || []).some(card => card.is('Land') && !card.def.entersTapped)) mana += 1;
+      } catch { /* no land drop */ }
     }
     return mana;
   }
