@@ -3272,6 +3272,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return best;
   };
 
+  function hasPhyrexianPip(cost) {
+    return (cost?.pips || []).some(pip => Array.isArray(pip) ? pip.includes('PHY') : /P/.test(String(pip)));
+  }
+
   MTG.botReactionPlan = function (game, player, action) {
     const source = action.card || action.entry?.card, ability = action.entry?.ability;
     if (!source || action.kind === 'activate' && (!ability || ability.loyalty !== undefined)) return null;
@@ -3283,7 +3287,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!ability) {
       const opts = {...action.alt, from: action.from || source.zone};
       const cost = game.spellCost(player, source, opts);
-      const payment = game.manaSolve(player, cost, {card: source, castOpts: opts, xVal: 0}, {xVal: 0});
+      const payment = hasPhyrexianPip(cost) ? game.manaSolve(player, cost, {card: source, castOpts: opts, xVal: 0}, {xVal: 0}) : null;
       const life = Number(cost.lifeCost || 0) + (payment?.plan || []).reduce((sum, step) => sum + Number(step.phyrexianLife || 0), 0);
       if (life >= player.life && (!game.canLoseGame || game.canLoseGame(player))) return {score: -100};
     }
@@ -3605,6 +3609,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function answerReservePenalty(player, phase, weight, keyPlay) {
     const penalty = keyPlay ? 1 + 0.5 * weight : (phase === 'main1' ? 5 : 4) + 2.5 * weight;
     return (player.hand || []).length >= 8 ? penalty / 2 : penalty;
+  }
+  // When spending mana gives a held answer up: any time on the bot's own
+  // turn (an instant in its combat taps the same lands as a main-phase play)
+  // and on an opponent's turn before the end step that precedes the bot's
+  // untap. A response on the stack, and that last end step, are what the
+  // mana was kept for.
+  function answerReserveWindow(game, player) {
+    if (game.stack.length) return false;
+    if (game.turnPlayer === player) return true;
+    return !(game.phase === 'end' && game.nextPlayer(game.turnPlayer) === player);
   }
   function abilityManaSpend(game, player, entry) {
     try {
@@ -4505,6 +4519,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return (/win|damage|draw|token|counter/.test(name) ? 3 : 0) + (/sacrifice|discard|lose/.test(name) ? -1 : 0);
   }
 
+  // The mana the bot still has this turn for keeping an answer up: its
+  // untapped sources plus a land drop it has not made yet. Casting before the
+  // land drop must not dodge the reserve that land would then have to keep.
+  function reserveManaEstimate(game, player) {
+    let mana = availableManaEstimate(game, player);
+    if (game.turnPlayer === player && (game.phase === 'main1' || game.phase === 'main2')) {
+      // The full playable-land list walks graveyards and exile permissions on
+      // every score; the hand is where a land drop almost always comes from.
+      try {
+        if ((player.landsPlayed || 0) < game.landPlayLimit(player) &&
+          (player.hand || []).some(card => card.is('Land') && !card.def.entersTapped)) mana += 1;
+      } catch { /* no land drop */ }
+    }
+    return mana;
+  }
   function availableManaEstimate(game, player, forSpell = null) {
     try {
       const producers = new Map();
@@ -5703,7 +5732,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Phyrexian symbols are resolved by the mana solver, not represented as
       // cost.lifeCost. Inspect the actual selected payment plan so the bot does
       // not cast a legal spell by paying its final life and immediately lose.
-      const payment = game.manaSolve(player, cost, { card, castOpts: action.alt || {}, xVal: 0 }, { xVal: 0 });
+      // Only a Phyrexian symbol can be paid with life, and the full solver
+      // costs seconds on a wide board with many sources, once per scored cast.
+      const payment = hasPhyrexianPip(cost) ? game.manaSolve(player, cost, { card, castOpts: action.alt || {}, xVal: 0 }, { xVal: 0 }) : null;
       const phyrexianLife = payment && payment.plan
         ? payment.plan.reduce((sum, step) => sum + Math.max(0, Number(step.phyrexianLife) || 0), 0)
         : 0;
@@ -5935,7 +5966,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // What would this answer actually remove right now? Damage counts only
         // what it kills; "any target" burn is judged by its best creature kill.
         const best = bestRemovalCandidate(game, player, card, action.alt);
-        let bestNow = best ? best.score : 0;
+        let bestNow = best ? best.score : 0, bestTarget = best ? best.target : null;
         const damageOperation = (card.def.oracleImplementation || []).find(operation =>
           operation.kind === 'spell-damage' && operation.n !== 'X' && Number.isFinite(Number(operation.n)));
         if (damageOperation) {
@@ -5944,23 +5975,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             for (const target of game.legalTargets(spec, card, player)) {
               if (!(target instanceof U.CardInst) || target.ctrl === player || !target.is('Creature')) continue;
               if (damageProtectionSaves(target) || Number(target.toughness || 0) - Number(target.damage || 0) > amount) continue;
-              bestNow = Math.max(bestNow, permanentGameValue(game, target, player));
+              const value = permanentGameValue(game, target, player);
+              if (value > bestNow) { bestNow = value; bestTarget = target; }
             }
           }
         }
+        // An engine, a combo piece or a commander works on every turn it
+        // stays, so it goes at the first good moment. A plain body matters
+        // when it attacks, blocks or is about to untap, so it waits for that.
+        const urgent = bestNow >= 12 || !!bestTarget?.commander || !!bestTarget &&
+          inferCardSemantics(bestTarget.def).roles.some(role => ['engine', 'combo-piece'].includes(role));
         if (ownMainEmptyStack) {
-          // In its own main phase instant removal waits for an opposing turn
-          // (an attack, a spell to answer, an end step) unless the target is a
-          // real threat right now.
           if (bestNow < 6.5) breakdown.timing -= 3 + 2 * holdWeight;
-          else if (bestNow < 12) breakdown.timing -= 1.5 + holdWeight;
+          else if (!urgent) breakdown.timing -= 5 + 2 * holdWeight;
         } else if (phase === 'end') {
           // The end step before its own untap is the last window for this
           // mana; so is the end step before the target's controller untaps.
           // A worthwhile target is removed there rather than never.
           const nextUp = game.nextPlayer(game.turnPlayer);
-          if (bestNow >= 5.5 && (lastWindowBeforeUntap || best?.target?.ctrl === nextUp)) breakdown.timing += 2.5 + holdWeight;
-        } else if (bestNow < 12) breakdown.timing -= 2;
+          if (bestNow >= 5.5 && (lastWindowBeforeUntap || bestTarget?.ctrl === nextUp)) breakdown.timing += 2.5 + holdWeight;
+        } else if (!urgent) {
+          // An opposing upkeep or main phase with nothing to answer is the
+          // earliest, least informed moment. Its attack and the end step
+          // before the target's controller (or the bot) untaps always follow,
+          // so the answer waits for them.
+          breakdown.timing -= 30;
+        }
       }
       const valueInstant = instantSpeed && isSpellCard && !sem.roles.includes('ramp') &&
         !sem.roles.includes('counterspell') && !sem.roles.includes('single-target-removal') &&
@@ -5973,7 +6013,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // last end step before our own untap so the answer keeps its mana.
       const heldAnswers = heldInstantAnswers(player, card);
       const reserveNeed = cheapestManaValue(heldAnswers);
-      const availableNow = availableManaEstimate(game, player);
+      const availableNow = reserveManaEstimate(game, player);
       // Would this cast leave less mana than the cheapest answer in hand costs?
       const eatsReserve = reserveNeed > 0 && availableNow >= reserveNeed && availableNow - spend < reserveNeed;
       const reserveWeight = answerReserveWeight(profile, heldAnswers);
@@ -5982,7 +6022,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (phase !== 'end') breakdown.timing -= 4 + holdWeight;
         else if (eatsReserve && !lastWindowBeforeUntap) breakdown.timing -= 8 + holdWeight;
       }
-      if (eatsReserve && tableWorth && ownMainEmptyStack) {
+      const castsAnswer = instantSpeed && !card.is('Creature') && sem.roles.some(role => HELD_ANSWER_ROLES.includes(role));
+      if (eatsReserve && tableWorth && !castsAnswer && answerReserveWindow(game, player)) {
         // The commander, the deck's engines, a real threat and early ramp are
         // worth tapping out for; filler is not. The reserve has to cost about
         // what a held answer is worth, or the bot taps out for a two-drop
@@ -6298,7 +6339,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
         const held = heldInstantAnswers(player, null);
         const reserveWeight = answerReserveWeight(profile, held);
-        if (reserveWeight && availableManaEstimate(game, player) >= cheapestManaValue(held) &&
+        if (reserveWeight && reserveManaEstimate(game, player) >= cheapestManaValue(held) &&
           tableWorthAnswering(game, player)) breakdown.timing += 1.5 + reserveWeight;
       }
       if (q && q.type === 'priority' && game.stack.length) {
@@ -7070,13 +7111,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseManaSources') {
       breakdown.resources = -(action.value || []).reduce((sum, source) => sum + (source.card && inferCardSemantics(source.card.def).roles.includes('engine') ? 2 : 0.2), 0);
     }
-    // A main-phase activation that taps below the cheapest held answer gives
-    // that answer up just like a cast does.
-    if (action.kind === 'activate' && game.turnPlayer === player && !game.stack.length &&
-      (phase === 'main1' || phase === 'main2')) {
+    // An activation that taps below the cheapest held answer gives that
+    // answer up just like a cast does.
+    if (action.kind === 'activate' && answerReserveWindow(game, player)) {
       const held = heldInstantAnswers(player, null), need = cheapestManaValue(held);
       const spend = need > 0 ? abilityManaSpend(game, player, action.entry) : 0;
-      const available = spend > 0 ? availableManaEstimate(game, player) : 0;
+      const available = spend > 0 ? reserveManaEstimate(game, player) : 0;
       if (spend > 0 && available >= need && available - spend < need && tableWorthAnswering(game, player))
         breakdown.resources -= answerReservePenalty(player, phase, answerReserveWeight(profile, held), false);
     }
