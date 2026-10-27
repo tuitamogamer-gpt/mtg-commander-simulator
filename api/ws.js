@@ -3,6 +3,8 @@ import { createServer } from 'node:http';
 import { createHash, randomUUID } from 'node:crypto';
 import { WebSocketServer, WebSocket } from 'ws';
 import Redis from 'ioredis';
+import { PostgresRoomStore } from '../server/postgres-room-store.js';
+import { databaseUrl, directDatabaseUrl } from '../server/postgres.js';
 import { setup, validateAction, applyAction, viewFor } from '../logic.js';
 
 const ROOM_TTL_SECONDS = 24 * 60 * 60;
@@ -170,6 +172,7 @@ export function createMemoryRoomStore() {
 }
 
 export function createRoomStoreFromEnv(env = process.env) {
+  if (databaseUrl(env)) return new PostgresRoomStore(databaseUrl(env), { directUrl: directDatabaseUrl(env) });
   const url = env.REDIS_URL || env.KV_URL || env.UPSTASH_REDIS_URL;
   return url ? new RedisRoomStore(url) : new MissingRoomStore();
 }
@@ -254,14 +257,16 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     }
   };
 
-  const unsubscribe = store.subscribe(async room => {
+  let unsubscribe;
+  const onRoomChanged = async room => {
     try {
+      if (![...clients].some(client => client.room === room && client.playerId)) return;
       const state = await store.get(room);
       if (state) broadcastLocal(room, state);
     } catch (error) {
       console.error('Commander Live room broadcast failed:', error);
     }
-  });
+  };
 
   const commit = async (room, work, onStored) => {
     let next;
@@ -270,10 +275,10 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
       next = await work(current);
       if (next) {
         await store.set(room, next, lease);
-        onStored?.();
       }
     });
     if (next) {
+      onStored?.();
       broadcastLocal(room, next);
       // The mutation is already durable. A notification failure must not turn
       // a committed action into a rejection that could be applied again.
@@ -304,6 +309,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
       chain: Promise.resolve(), windowStartedAt: Date.now(), messages: 0, lastRevision: -1,
     };
     clients.add(client);
+    if (!unsubscribe) unsubscribe = store.subscribe(onRoomChanged);
 
     const handleJoin = async message => {
       const playerId = cleanPlayerId(message.playerId);
@@ -422,6 +428,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
 
     ws.on('close', () => {
       clients.delete(client);
+      if (!clients.size) { unsubscribe?.(); unsubscribe = undefined; }
       if (!client.playerId) return;
       void commit(room, state => {
         if (!state) return null;
@@ -434,7 +441,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
   });
 
   server.on('close', () => {
-    unsubscribe();
+    unsubscribe?.();
     void store.close();
   });
   server.commanderLive = { store, wss, clients };

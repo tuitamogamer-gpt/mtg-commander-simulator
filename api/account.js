@@ -2,6 +2,11 @@ import { createHash, randomBytes, randomUUID, scrypt as scryptCallback, timingSa
 import { promisify } from 'node:util';
 import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
+import { MAX_IMPORTED_DECKS, emptyProfile, completedMatchSaveError, normalizedProfile,
+  importedDeckError, importedDeckNameKey, publicStoredDeck, storedImportedDeck,
+  assertImportedDeckLibraryInvariants } from '../server/account-records.js';
+import { PostgresAccountStore } from '../server/postgres-account-store.js';
+import { databaseUrl } from '../server/postgres.js';
 
 const scrypt = promisify(scryptCallback);
 const SESSION_COOKIE = 'commander_session';
@@ -9,7 +14,6 @@ const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 const MAX_BODY_BYTES = 1_900_000;
 const MAX_SAVE_BYTES = 1_750_000;
 const MAX_DECK_BYTES = 64_000;
-const MAX_IMPORTED_DECKS = 40;
 const ACCOUNT_PREFIX = 'commander-account:v1';
 
 const userKey = id => `${ACCOUNT_PREFIX}:user:${id}`;
@@ -39,28 +43,6 @@ const publicUser = user => user ? {
   createdAt: user.createdAt,
 } : null;
 
-function emptyProfile() {
-  return { gamesPlayed: 0, wins: 0, losses: 0, lifetimeScore: 0 };
-}
-
-function completedMatchSaveError() {
-  return Object.assign(new Error('This match has already finished. Start a new Solo game to save again.'), {
-    status: 409, code: 'MATCH_ALREADY_COMPLETED',
-  });
-}
-
-function normalizedProfile(raw = {}) {
-  const number = key => Math.max(0, Number(raw[key]) || 0);
-  const gamesPlayed = number('gamesPlayed');
-  const wins = number('wins');
-  return {
-    gamesPlayed,
-    wins,
-    losses: number('losses'),
-    lifetimeScore: number('lifetimeScore'),
-    winRate: gamesPlayed ? Math.round((wins / gamesPlayed) * 100) : 0,
-  };
-}
 
 export class MemoryAccountStore {
   constructor() {
@@ -364,6 +346,7 @@ class MissingAccountStore {
 }
 
 export function createAccountStoreFromEnv(env = process.env) {
+  if (databaseUrl(env)) return new PostgresAccountStore(databaseUrl(env));
   const url = env.KV_REST_API_URL || env.UPSTASH_REDIS_REST_URL;
   const token = env.KV_REST_API_TOKEN || env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) return new MissingAccountStore();
@@ -479,9 +462,6 @@ function cleanSave(value) {
   return save;
 }
 
-function importedDeckError(message, status = 400) {
-  return Object.assign(new Error(message), { status });
-}
 
 function requiredDeckText(value, label, max) {
   if (typeof value !== 'string') throw importedDeckError(`${label} must be text.`);
@@ -491,66 +471,6 @@ function requiredDeckText(value, label, max) {
   return text;
 }
 
-function importedDeckNameKey(value) {
-  return String(value || '').toLowerCase();
-}
-
-function publicStoredDeck(value) {
-  const deck = clone(value);
-  if (deck && typeof deck === 'object') {
-    delete deck._libraryNameKey;
-    // Older Redis writes re-encoded the whole record with cjson. Recover only
-    // empty containers at schema-defined map/list positions; leave nonempty
-    // invalid values for the ordinary validators to inspect.
-    const auxiliary = deck.auxiliaryV87;
-    if (auxiliary && typeof auxiliary === 'object' && !Array.isArray(auxiliary)) {
-      const repairEmptyList = (record, key) => {
-        const value = record[key];
-        if (value && typeof value === 'object' && !Array.isArray(value)
-          && Object.keys(value).length === 0) record[key] = [];
-      };
-      for (const key of ['attractions', 'stickers', 'outsideGame']) repairEmptyList(auxiliary, key);
-      for (const key of ['colors', 'draft']) {
-        if (Array.isArray(auxiliary[key]) && auxiliary[key].length === 0) auxiliary[key] = {};
-      }
-      if (auxiliary.colors && typeof auxiliary.colors === 'object' && !Array.isArray(auxiliary.colors)) {
-        for (const name of Object.keys(auxiliary.colors)) repairEmptyList(auxiliary.colors, name);
-      }
-      if (auxiliary.draft && typeof auxiliary.draft === 'object' && !Array.isArray(auxiliary.draft)) {
-        for (const [name, note] of Object.entries(auxiliary.draft)) {
-          if (['palianoColors', 'automatonCounts', 'trackerPlayers'].includes(name)) {
-            repairEmptyList(auxiliary.draft, name);
-          } else if (Array.isArray(note) && note.length === 0) {
-            auxiliary.draft[name] = {};
-          } else if (note && typeof note === 'object' && !Array.isArray(note)) {
-            for (const key of ['names', 'types', 'keywords', 'removed', 'exiled', 'exiledCards', 'colors', 'numbers'])
-              repairEmptyList(note, key);
-          }
-        }
-      }
-    }
-  }
-  return deck;
-}
-
-function storedImportedDeck(deck, existing = null, now = new Date().toISOString()) {
-  const existingCreatedAt = existing && Number.isFinite(new Date(existing.createdAt).getTime()) ? existing.createdAt : null;
-  return {
-    ...clone(deck),
-    revision: existing ? Math.max(0, Number(existing.revision) || 0) + 1 : 1,
-    createdAt: existingCreatedAt || now,
-    updatedAt: now,
-  };
-}
-
-function assertImportedDeckLibraryInvariants(savedDecks, deck, existing = null) {
-  const rows = [...savedDecks];
-  if (!existing && rows.length >= MAX_IMPORTED_DECKS)
-    throw importedDeckError(`Your imported deck library can contain up to ${MAX_IMPORTED_DECKS} decks.`, 409);
-  const nameKey = importedDeckNameKey(deck.name);
-  if (rows.some(saved => saved.id !== deck.id && importedDeckNameKey(saved.name) === nameKey))
-    throw importedDeckError('An imported deck with that name is already in your library.', 409);
-}
 
 function copyAuxiliaryDeckV87(value) {
   if (value === undefined) return undefined;
@@ -653,7 +573,7 @@ function clientIp(request) {
 export function createAccountHandler({ store = createAccountStoreFromEnv(), limiter = undefined } = {}) {
   const rateLimiter = limiter === undefined && store.redis
     ? new Ratelimit({ redis: store.redis, limiter: Ratelimit.slidingWindow(8, '10 m'), prefix: `${ACCOUNT_PREFIX}:ratelimit` })
-    : limiter;
+    : (limiter === undefined ? store.limiter : limiter);
 
   return async function accountHandler(request, response) {
     let ownerBoundRequest = false;

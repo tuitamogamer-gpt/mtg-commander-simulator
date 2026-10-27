@@ -1,0 +1,40 @@
+(() => {
+  const M = window.MTG;
+  const old = document.querySelector('#game');
+  old.replaceWith(old.cloneNode(false));
+  document.querySelector('#setup').style.display = 'none';
+  document.body.classList.add('game-active');
+  const game = new M.Game({seed: 10323, paced: false});
+  const decks = ['Eternal Might', 'Quick Draw', 'Elven Council', 'Enduring Enchantments'];
+  const quiet = {decide: async () => []};
+  const players = ['You', 'AI Dragon', 'AI Wolf', 'AI Raven'].map((name, index) => game.addPlayer(name, {name:decks[index]}, quiet, index > 0));
+  const you = players[0], ui = new M.UI();
+  ui.game = game; ui.me = you; ui.commandTableView = 'table';
+  you.controller = ui.controllerFor(you);
+  game.turnPlayer = you; game.turnNo = 12; game.phase = 'main1'; game.step = 'main';
+  window._game = game; window._ui = ui;
+  const put = (name, player, zone = 'battlefield') => {
+    if (!M.DEFS[name]) throw Error('Missing fixture card: ' + name);
+    const card = new M.CardInst(M.DEFS[name], player);
+    card.ctrl = player; card.zone = zone; card.sick = false;
+    if (zone === 'battlefield') game.battlefield.push(card); else player[zone].push(card);
+    return card;
+  };
+  players.forEach((player, i) => {
+    const commander = put(M.DECKS[decks[i]].commander, player, 'command');
+    player.commanders = [commander]; player.life = [26, 32, 28, 35][i];
+    for (const name of ['Swamp', 'Swamp', 'Island', 'Plains', 'Command Tower', 'Sol Ring']) put(name, player);
+    for (let n = 0; n < 25; n++) put('Swamp', player, 'library');
+    for (const name of ['Island', 'Forest', 'Counterspell', 'Sol Ring']) put(name, player, 'hand');
+    if (i) for (const name of ['Riders of Gavony', 'Humble Defector', 'Stormcatch Mentor', 'Llanowar Elves']) put(name, player);
+  });
+  for (const name of ['Cryptbreaker', 'Diregraf Captain', 'Undead Augur', 'Death Baron', 'Gray Merchant of Asphodel', 'Lazotep Reaver', 'Vizier of the Scorpion', 'Corpse Augur']) put(name, you);
+  for (const name of ['Phyrexian Arena', 'Endless Ranks of the Dead', "Liliana's Mastery", 'Maskwood Nexus', 'Arcane Signet']) put(name, you);
+  for (const name of ['Swamp', 'Swamp', 'Swamp', 'Swamp', 'Island', 'Island', 'Island', 'Plains', 'Plains', 'Dimir Aqueduct', 'Azorius Chancery', 'Orzhov Basilica']) put(name, you);
+  game.lands(you).filter((_, i) => i % 3 === 0).forEach(card => { card.tapped = true; });
+  for (const name of ['Counterspell', 'Swords to Plowshares', 'Swamp']) put(name, you, 'hand');
+  game.recalc();
+  void you.controller.decide(game, {type:'main', player:you, phase:game.phase, casts:game.castableList(you), acts:[], lands:[]});
+  ui.render();
+  document.documentElement.dataset.qaBoard = JSON.stringify({cards:game.battlefield.length, own:game.bf().filter(card=>card.ctrl===you).length});
+})();
