@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-info.mjs",
+    "db:migrate": "node scripts/migrate-postgres.mjs",
+    "test:postgres": "node --test tests/postgres-storage.test.mjs",
     "audit": "node scripts/audit.mjs",
     "certify": "node scripts/certify-cards.mjs",
     "certify:strict": "node scripts/certify-cards.mjs --strict",
@@ -37,8 +39,10 @@
     "@capacitor/ios": "8.5.2",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.3",
+    "@vercel/functions": "^3.10.4",
     "express": "^5.2.1",
     "ioredis": "^6.0.0",
+    "pg": "^8.23.1",
     "ws": "^8.21.3"
   },
   "devDependencies": {
