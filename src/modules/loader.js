@@ -26,6 +26,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'Wretched Ranks': {icon: '🧟', colors: ['B'], style: 'Zombies, sacrifice and recursion', set: 'Foundations Commander (2026)', blurb: 'Ghoulcaller Gisa turns one creature into a Zombie army, with lords, death triggers and graveyard recursion.'},
       'Reign of Dragons': {icon: '🐉', colors: ['R'], style: 'Dragon ramp and direct damage', set: 'Foundations Commander (2026)', blurb: 'Lathliss rewards every nontoken Dragon with another flying threat as Dragon Tempest burns the table.'},
       'Tramplesaurus Rex': {icon: '🦖', colors: ['G'], style: 'Large creatures, ramp and trample', set: 'Foundations Commander (2026)', blurb: 'Build power to reduce Ghalta’s cost, keep drawing creatures and overrun blockers with trample.'},
+      'Odds and Ends': {icon: '🔮', colors: ['W', 'U', 'B'], style: 'Topdeck selection and free odd-mana spells',
+        set: 'Secret Lair Commander (2026)', blurb: 'Arrange the top of your library for Yennett, then attack to cast odd-mana spells for free or draw a card.'},
       'Multiverse Reforged': {icon: '🌀', colors: ['W', 'U', 'B', 'R'], style: 'Tokens, polymorph and legendary finishers',
         set: 'Reality Fracture Commander (2026)', blurb: 'Protect Jace with tokens, then reshape them into enormous creatures and planeswalkers.'},
   "Evasive Maneuvers": {

@@ -27,7 +27,7 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 | For players | For developers and maintainers |
 | --- | --- |
 | [Modes and card coverage](#what-you-can-play) | [Local setup: Windows, macOS, Linux](#run-locally) |
-| [All precons and commander videos](#175-precon-decks-and-commander-video-animations) | [Application architecture](#how-the-application-works) |
+| [All precons and commander videos](#176-precon-decks-and-commander-video-animations) | [Application architecture](#how-the-application-works) |
 | [First game, combat, mobile controls, and audio](#your-first-game) | [Vercel and multiplayer](#vercel-and-multiplayer) |
 | [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) | [iPhone and iPad app](#iphone-and-ipad-app) |
 | [AI styles and custom skills](#ai-archetypes-and-custom-skills) · [Politics](#diplomacy--politics) | [Tests and release checks](#verification-and-release) |
@@ -48,7 +48,7 @@ Current inventory, compared with the pinned **9 October 2026** Oracle and paper-
 
 | Measure | Available |
 | --- | ---: |
-| Built-in precon decks | **175**, each with 100 cards |
+| Built-in precon decks | **176**, each with 100 cards |
 | Runtime card definitions | **32,136** |
 | Definitions eligible for deck import | **32,135** |
 | Generic Oracle batches | **266**, containing 28,137 definitions |
@@ -72,6 +72,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 - **Seven Commander staples:** Smothering Tithe, Esper Sentinel, Orcish Bowmasters, Necropotence, Underworld Breach, Mana Drain, and Urza, Lord High Artificer, as a manual Oracle batch with explicit rules and human/local-AI tests. All source fields are verified against the SHA-256-pinned Scryfall snapshot, and images use the recorded print IDs. Underworld Breach supports split halves, Room doors, Adventures and nonland modal faces; Necropotence permits paying the last life point. [Provenance](reports/oracle-import/commander-staples-cards.json)
 - **1,000 more Oracle cards added:** batches 0219–0228, with complete executable rules, exact source provenance and human/local-AI verification. The previous requested 1,000-card expansion is complete. [Validation report](reports/oracle-import/validation-0228.md)
 - **Foundations Commander:** Calling All Angels, Keen Engineering, Wretched Ranks, Reign of Dragons, and Tramplesaurus Rex, with guides, local artwork, AI profiles, and 17 new native definitions. [Import report](reports/decks/precon-fdc-2026-09-26/README.md)
+- **Odds and Ends:** the complete Secret Lair list, verified against Wizards, Moxfield and MTGJSON; all 91 card identities reuse existing certified implementations. [Candidate review and import report](reports/decks/precon-candidates-2026-10-27/README.md)
 - **Reality Fracture:** Multiverse Reforged, led by Jace, Multiverse Architect, with 26 native definitions, empower Jace and impending support. [Import report](reports/decks/precon-frc-2026-09-24/README.md)
 - **1,000 more Oracle cards:** batches 0209–0218, with executable rules, recorded source provenance, and human/local-AI verification. [Validation report](reports/oracle-import/validation-0209-0218.md)
 - **Mobile table improvements:** a full-hand grid, compact setup, battlefield combat controls, and clearer target selection. [Mobile report](reports/mobile-refresh-2026-09-25.md) · [Target-selection report](reports/mobile-target-visibility-2026-09-26.md)
@@ -80,11 +81,11 @@ Earlier deck and Oracle imports remain available in the [import history](#catalo
 
 Accounts are optional. Guests can play immediately and retain imported lists in their current browser. Signing in adds a private Solo checkpoint, synced imported decks and favorites, lifetime statistics, and recent match results. Custom AI skills and saved pod presets remain local to the browser.
 
-## 175 precon decks and commander video animations
+## 176 precon decks and commander video animations
 
 Browse the library in a responsive grid with complete commander card images, both default partners, and 24 decks per page. Search by deck, either commander, set, or theme; filter by color, strategy, release year, or favorites, and sort by name, recent play, or newest release. Filters cover the entire library, including older and colorless precons. A compact view is available, and the selected deck and your browsing position stay with you while you explore its guide or build the pod.
 
-The built-in library contains **175 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. Tap a commander or key card for a large image and readable rules text; on phones, swipe through the key-card gallery or use its arrows. Section shortcuts take you straight to the cards, game plan, or mana curve, and closing a card returns to your place in the guide. You can keep browsing before committing to a pod.
+The built-in library contains **176 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. Tap a commander or key card for a large image and readable rules text; on phones, swipe through the key-card gallery or use its arrows. Section shortcuts take you straight to the cards, game plan, or mana curve, and closing a card returns to your place in the guide. You can keep browsing before committing to a pod.
 
 **There are 28 dedicated commander videos across the original 27 decks.** Turtle Power has two default partner commanders, **Leonardo, the Balance** and **Michelangelo, the Heart**, and each has its own clip. The other 148 precons added on 6–26 September use original commander art; these batches add no commander videos.
 
@@ -94,7 +95,7 @@ The built-in library contains **175 precon decks, each with 100 cards**. Choose 
 - **Imported decks:** use ordinary commander card art and a battlefield highlight. They do not inherit a precon's cinematic, even when they use the same commander. Video coverage refers to the predefined decks' default commanders, not every alternate commander in the catalog.
 
 <details>
-<summary>Explore all 175 precon decks and their default commanders</summary>
+<summary>Explore all 176 precon decks and their default commanders</summary>
 
 | Built-in deck | Default commander(s) |
 | --- | --- |
@@ -109,6 +110,7 @@ The built-in library contains **175 precon decks, each with 100 cards**. Choose 
 | Enchantress Rubinia | Rubinia Soulsinger |
 | Deathdancer Xira | Xira Arien |
 | Goblin Storm | Zada, Hedron Grinder |
+| Odds and Ends | Yennett, Cryptic Sovereign |
 | Hatsune Miku | Trostani, Selesnya's Voice |
 | Counterpunch | Ghave, Guru of Spores |
 | Mirror Mastery | Riku of Two Reflections |

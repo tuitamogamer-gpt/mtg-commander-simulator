@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "deck": "Odds and Ends",
+      "opponents": [
+        "Wretched Ranks",
+        "Tramplesaurus Rex",
+        "Calling All Angels"
+      ],
+      "seed": 102700,
+      "turns": 51,
+      "winner": "AI Raven",
+      "durationMs": 56157,
+      "passed": true
+    },
+    {
+      "deck": "Odds and Ends",
+      "opponents": [
+        "Keen Engineering",
+        "Reign of Dragons",
+        "Multiverse Reforged"
+      ],
+      "seed": 102701,
+      "turns": 39,
+      "winner": "You",
+      "durationMs": 34194,
+      "passed": true
+    },
+    {
+      "deck": "Odds and Ends",
+      "opponents": [
+        "Hatsune Miku",
+        "Mind Seize",
+        "Enhanced Evolution"
+      ],
+      "seed": 102702,
+      "turns": 32,
+      "winner": "AI Dragon",
+      "durationMs": 17296,
+      "passed": true
+    }
+  ]
+}

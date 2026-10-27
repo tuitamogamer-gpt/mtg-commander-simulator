@@ -1,0 +1,198 @@
+{
+  "source": "Pinned Scryfall printing metadata",
+  "added": [
+    {
+      "name": "Soothsaying",
+      "variant": "normal",
+      "relative": "./assets/cards/soothsaying-f10cf3022e.webp",
+      "url": "https://cards.scryfall.io/normal/front/d/e/def384ff-1b6f-4c4f-8151-3c72c29b63ce.jpg?1783945960",
+      "scryfallId": "def384ff-1b6f-4c4f-8151-3c72c29b63ce",
+      "sha256": "acc545916f87728fec7ce55ee215a241458884afaf37cc2b1fee865da9b77f1a"
+    },
+    {
+      "name": "Psychic Battle",
+      "variant": "normal",
+      "relative": "./assets/cards/psychic-battle-b2340cfed1.webp",
+      "url": "https://cards.scryfall.io/normal/front/8/7/8758ca24-e613-43bf-be58-4cf557f82d0c.jpg?1783945706",
+      "scryfallId": "8758ca24-e613-43bf-be58-4cf557f82d0c",
+      "sha256": "8da1f8f369d8a7af478d70ad486fa91b32e4b4c8cd58dc75d66f945a3b5560e2"
+    },
+    {
+      "name": "Time Stop",
+      "variant": "normal",
+      "relative": "./assets/cards/time-stop-a68172caa1.webp",
+      "url": "https://cards.scryfall.io/normal/front/d/9/d938603b-0f1e-44c4-b86e-38e15f4a0d27.jpg?1783909077",
+      "scryfallId": "d938603b-0f1e-44c4-b86e-38e15f4a0d27",
+      "sha256": "d98a8fa0051a1a0d862290df61b2ce04f6b0d4bdcb077d544bb4d2fbcadfa2f5"
+    },
+    {
+      "name": "Oubliette",
+      "variant": "normal",
+      "relative": "./assets/cards/oubliette-dcfa7f4d83.webp",
+      "url": "https://cards.scryfall.io/normal/front/d/4/d4800a7d-c229-4ced-97ff-0e58645d58d6.jpg?1783930177",
+      "scryfallId": "d4800a7d-c229-4ced-97ff-0e58645d58d6",
+      "sha256": "2effc990d24f7309b0f7ce7f20a2246d340eda7a226f44fdb088c7dc1110b415"
+    },
+    {
+      "name": "Master of Predicaments",
+      "variant": "normal",
+      "relative": "./assets/cards/master-of-predicaments-3e0fbec251.webp",
+      "url": "https://cards.scryfall.io/normal/front/f/0/f0b1720b-ab7a-4b52-a6d0-11c4fc573d17.jpg?1783939190",
+      "scryfallId": "f0b1720b-ab7a-4b52-a6d0-11c4fc573d17",
+      "sha256": "9d1128afd5ec97886f6b67e266851d485bb70a688e18564471f650a80444d74f"
+    },
+    {
+      "name": "Planeswalker's Mischief",
+      "variant": "normal",
+      "relative": "./assets/cards/planeswalker-s-mischief-ce86a79a81.webp",
+      "url": "https://cards.scryfall.io/normal/front/7/9/79aa232c-3f16-4c68-99dc-09a7aeef477b.jpg?1783945625",
+      "scryfallId": "79aa232c-3f16-4c68-99dc-09a7aeef477b",
+      "sha256": "84321089f27c12d2cf0275bc100a8ea43f5858d54ab111ca67f5165b030ba619"
+    },
+    {
+      "name": "Silent Clearing",
+      "variant": "normal",
+      "relative": "./assets/cards/silent-clearing-6c13e2089c.webp",
+      "url": "https://cards.scryfall.io/normal/front/a/c/ac07e230-0297-4e1d-bdfe-119010e0ad8e.jpg?1783933066",
+      "scryfallId": "ac07e230-0297-4e1d-bdfe-119010e0ad8e",
+      "sha256": "0ed237dc9aacc75b781075804192ac75d7575218ebcb8dc86814ca49d567f0cb"
+    },
+    {
+      "name": "Fatespinner",
+      "variant": "normal",
+      "relative": "./assets/cards/fatespinner-28efef3cea.webp",
+      "url": "https://cards.scryfall.io/normal/front/5/7/5780f4e0-dcfb-4d1f-8ae1-762b98970abb.jpg?1783944554",
+      "scryfallId": "5780f4e0-dcfb-4d1f-8ae1-762b98970abb",
+      "sha256": "c7336064cfe1e7f42b2603697ef91fff206405445f9d65d15255ee22b6328740"
+    },
+    {
+      "name": "Extinction Event",
+      "variant": "normal",
+      "relative": "./assets/cards/extinction-event-7350830703.webp",
+      "url": "https://cards.scryfall.io/normal/front/8/7/8725a869-462b-4381-880a-b4bcc63a655b.jpg?1783931062",
+      "scryfallId": "8725a869-462b-4381-880a-b4bcc63a655b",
+      "sha256": "a2dc6de44b02e69ee971e7236b02b5f2e9f6a1fa15a0ef02ad205570ade40061"
+    },
+    {
+      "name": "Inniaz, the Gale Force",
+      "variant": "normal",
+      "relative": "./assets/cards/inniaz-the-gale-force-b0fc5a7d27.webp",
+      "url": "https://cards.scryfall.io/normal/front/b/2/b238485f-ef67-4295-892b-a10235368f74.jpg?1783930506",
+      "scryfallId": "b238485f-ef67-4295-892b-a10235368f74",
+      "sha256": "d2d3e15a5cd7c8e97160ecd473a40e656ee02623c659f29cfed7a7c4e8d95924"
+    },
+    {
+      "name": "Shared Fate",
+      "variant": "normal",
+      "relative": "./assets/cards/shared-fate-10d8ebec78.webp",
+      "url": "https://cards.scryfall.io/normal/front/a/d/ad0d5b02-ef38-4dab-8ac6-78814ef27b55.jpg?1783944552",
+      "scryfallId": "ad0d5b02-ef38-4dab-8ac6-78814ef27b55",
+      "sha256": "8acb47c1ab0f664165373d97cca2b422342e7dbc84711861d1093f1381cf86f7"
+    },
+    {
+      "name": "Profane Transfusion",
+      "variant": "normal",
+      "relative": "./assets/cards/profane-transfusion-0910785d17.webp",
+      "url": "https://cards.scryfall.io/normal/front/c/0/c04d8edb-7350-4ab5-b721-390784c66329.jpg?1783928829",
+      "scryfallId": "c04d8edb-7350-4ab5-b721-390784c66329",
+      "sha256": "941671d37253b8042a7c736125f204fbb638f9c2b38739e50475ee213d0b7a66"
+    },
+    {
+      "name": "Ethersworn Sphinx",
+      "variant": "normal",
+      "relative": "./assets/cards/ethersworn-sphinx-fc0cad9f7a.webp",
+      "url": "https://cards.scryfall.io/normal/front/3/1/315ae21a-4d95-488e-812b-0d018219af6c.jpg?1783926817",
+      "scryfallId": "315ae21a-4d95-488e-812b-0d018219af6c",
+      "sha256": "63237b9feb46a1a9198eea172f1ec0acdf36bd967a33f8bcc4ff5a0331ae6030"
+    },
+    {
+      "name": "Toxrill, the Corrosive",
+      "variant": "normal",
+      "relative": "./assets/cards/toxrill-the-corrosive-290311a2fe.webp",
+      "url": "https://cards.scryfall.io/normal/front/8/4/84e64f38-b1f3-47cd-8cfb-a4861369aca3.jpg?1783924850",
+      "scryfallId": "84e64f38-b1f3-47cd-8cfb-a4861369aca3",
+      "sha256": "5fe884c4502cedb8ef87ebe3775f9629885e8a8b8b4481d1f6ed3ae94b7acfbe"
+    },
+    {
+      "name": "Space Beleren",
+      "variant": "normal",
+      "relative": "./assets/cards/space-beleren-6affeaf7bc.webp",
+      "url": "https://cards.scryfall.io/normal/front/1/4/14ddb2e7-6bc6-43ce-aeec-175a0ce17ed5.jpg?1783920538",
+      "scryfallId": "14ddb2e7-6bc6-43ce-aeec-175a0ce17ed5",
+      "sha256": "98482af71ee246c0ef9dc10c6376b82005e58604ba6832dceb2ee47c733588c5"
+    },
+    {
+      "name": "Exchange of Words",
+      "variant": "normal",
+      "relative": "./assets/cards/exchange-of-words-f169a568b8.webp",
+      "url": "https://cards.scryfall.io/normal/front/8/c/8c28cebf-f849-4353-9dd1-c62f05c15d0f.jpg?1783920598",
+      "scryfallId": "8c28cebf-f849-4353-9dd1-c62f05c15d0f",
+      "sha256": "1b3b3a512f1db7ee1e3afa0215a77dd2e1ee4a833487344c73ffd19dc90f41a2"
+    },
+    {
+      "name": "Vesuvan Drifter",
+      "variant": "normal",
+      "relative": "./assets/cards/vesuvan-drifter-cd3b3069af.webp",
+      "url": "https://cards.scryfall.io/normal/front/f/2/f2785902-2757-406b-bc75-6f05e0edc98d.jpg?1783916526",
+      "scryfallId": "f2785902-2757-406b-bc75-6f05e0edc98d",
+      "sha256": "a5f42685bf9d731c55d1a6f0482d2fa403b69ca0c7d7100aaaafb3bd28d7f427"
+    },
+    {
+      "name": "Reconnaissance",
+      "variant": "normal",
+      "relative": "./assets/cards/reconnaissance-ba7fab765c.webp",
+      "url": "https://cards.scryfall.io/normal/front/a/1/a16012d8-703c-4385-8769-13e3caba3fc6.jpg?1783946529",
+      "scryfallId": "a16012d8-703c-4385-8769-13e3caba3fc6",
+      "sha256": "66ec52bd89d5cb9e326a80df4048cdf58badd3bd917cfa3969d35a0d0c379157"
+    },
+    {
+      "name": "Sensei's Divining Top",
+      "variant": "normal",
+      "relative": "./assets/cards/sensei-s-divining-top-112183f4cb.webp",
+      "url": "https://cards.scryfall.io/normal/front/e/5/e5142b7a-e580-4737-a4aa-2590f6610ceb.jpg?1783921788",
+      "scryfallId": "e5142b7a-e580-4737-a4aa-2590f6610ceb",
+      "sha256": "028e07911781c4129ff790d5657425cf4f8322f69daeec0a2e9e460d01c77511"
+    },
+    {
+      "name": "Void Winnower",
+      "variant": "normal",
+      "relative": "./assets/cards/void-winnower-90cfefa6f4.webp",
+      "url": "https://cards.scryfall.io/normal/front/8/c/8cbedb0a-34ca-4d42-bb43-cbea0f3c6d02.jpg?1783938221",
+      "scryfallId": "8cbedb0a-34ca-4d42-bb43-cbea0f3c6d02",
+      "sha256": "3b478e5584e64108ee4a69cb75ed87d61a81ca8bde32ddd134ad9ae92e45a5b1"
+    },
+    {
+      "name": "Esper Sentinel",
+      "variant": "normal",
+      "relative": "./assets/cards/esper-sentinel-fd293b2339.webp",
+      "url": "https://cards.scryfall.io/normal/front/f/3/f3537373-ef54-4578-9d05-6216420ee349.jpg?1783926893",
+      "scryfallId": "f3537373-ef54-4578-9d05-6216420ee349",
+      "sha256": "14bc46529855f4b3ea75e05583605c88e891c471bb05d4584d5635ac4da49c11"
+    },
+    {
+      "name": "Breach the Multiverse",
+      "variant": "normal",
+      "relative": "./assets/cards/breach-the-multiverse-cef34c3e1d.webp",
+      "url": "https://cards.scryfall.io/normal/front/d/a/daf51a76-7a57-4462-ae18-a19e817e49e5.jpg?1783917016",
+      "scryfallId": "daf51a76-7a57-4462-ae18-a19e817e49e5",
+      "sha256": "06be213ad801dad4caaff890f06514f8dab8de3f280a7679d2d47a9295a1bedc"
+    },
+    {
+      "name": "Virtue of Persistence",
+      "variant": "normal",
+      "relative": "./assets/cards/virtue-of-persistence-c147ce8d5b.webp",
+      "url": "https://cards.scryfall.io/normal/front/f/1/f1e5cafb-b0e6-4ee5-8c58-6f8e5ef2b9da.jpg?1783915099",
+      "scryfallId": "f1e5cafb-b0e6-4ee5-8c58-6f8e5ef2b9da",
+      "sha256": "2fa78003072c0e2dce1862ede1fdef262aded61b83463b8439ad22771b386f5a"
+    },
+    {
+      "name": "Yennett, Cryptic Sovereign",
+      "variant": "art_crop",
+      "relative": "./assets/cards/art/yennett-cryptic-sovereign-008ec3a700.webp",
+      "url": "https://cards.scryfall.io/art_crop/front/2/8/28ee11c9-fa23-4863-8a18-25a008f18da5.jpg?1783915606",
+      "scryfallId": "28ee11c9-fa23-4863-8a18-25a008f18da5",
+      "sha256": "663f806e06f2b1f33acb2dc2e2aaec71a85ceb8b2b131bb48dd785e4a9ea84f5"
+    }
+  ],
+  "addedCount": 24
+}

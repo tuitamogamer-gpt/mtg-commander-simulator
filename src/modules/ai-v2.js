@@ -795,6 +795,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'Counter Intelligence': { archetype: 'Charge-counter artifacts', length: 'long', tags: ['artifacts', 'counters'], commanderImportance: 1.35 },
     'Deep Clue Sea': { archetype: 'Clue value and card draw', length: 'long', tags: ['artifacts', 'tokens'], commanderImportance: 1.35 },
     'Blame Game': { archetype: 'Goad, defensive politics and combat damage', length: 'long', tags: ['politics', 'combat', 'control'], commanderImportance: 1.5 },
+    'Odds and Ends': {archetype: 'Topdeck selection and free odd-mana spells', length: 'long', tags: ['control', 'ramp'], commanderImportance: 1.7},
     'Multiverse Reforged': {archetype: 'Tokens, polymorph and legendary finishers', length: 'long', tags: ['tokens', 'ramp', 'control'], commanderImportance: 1.7},
     'Calling All Angels': {archetype: 'Angels, counters and lifegain', length: 'medium', tags: ['tribal', 'counters', 'lifegain'], commanderImportance: 1.65},
     'Keen Engineering': {archetype: 'Artifacts, Thopters and card advantage', length: 'long', tags: ['artifacts', 'tokens', 'control'], commanderImportance: 1.55},
@@ -2154,6 +2155,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const routineValueEffects = effects => effects.every(effect =>
     ['draw', 'discard', 'scry', 'surveil', 'lose-life', 'gain-life', 'add-mana'].includes(effect.action) &&
     (effect.who || 'you') === 'you');
+  const libraryReorderEffect = ability => {
+    const effects = ability?.oracleOperation?.effects || [];
+    const effect = effects.length === 1 && effects[0];
+    return effect?.action === 'library-select-v8' && (effect.who || 'you') === 'you' &&
+      !effect.selections?.length && effect.rest?.destination === 'top' &&
+      (Number.isSafeInteger(effect.n) || effect.n === 'X' &&
+        typeof ability.cost?.mana === 'string' && ability.cost.mana.includes('{X}')) ? effect : null;
+  };
 
   function manaTapPayment(game, player, cost, context, defense, fixed = []) {
     const plan = game.manaSolve(player, cost, context, { excludeCards: fixed })?.plan || [];
@@ -6318,6 +6327,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
       const effects = ability?.oracleOperation?.effects || [];
+      const reorder = libraryReorderEffect(ability);
+      if (reorder) {
+        // X=0 is legal, but looking at no cards cannot improve this position.
+        // Repeatedly arranging the library also needs diminishing value,
+        // rather than an unconditional activation bonus (Soothsaying).
+        let count = Number(reorder.n) || 0;
+        if (reorder.n === 'X' && ability.cost?.mana) {
+          const mana = typeof ability.cost.mana === 'function' ? ability.cost.mana(game, card) : ability.cost.mana;
+          const cost = game.abilityManaCost(player, card, mana, {ability});
+          count = game.maxAffordableX(player, cost, card, {
+            forSpell: {card, isAbility: true, ability, cdkCostHasX: !!cost.x},
+            excludeCards: ability.cost.tap || ability.cost.sacSelf ? [card] : [],
+          });
+        }
+        if (count <= 0 || !player.library.length) breakdown.safety -= 1000000;
+        else if ((game.aiDecisionLog || []).some(decision => decision.turn === game.turnNo &&
+          decision.playerId === player.idx && decision.chosen === actionLabel(action))) breakdown.timing -= 35;
+      }
       const routineDraw = effects.some(effect => effect.action === 'draw' && effect.who === 'you') &&
         effects.every(effect => ['draw', 'discard', 'scry', 'surveil', 'lose-life'].includes(effect.action) &&
           effect.who === 'you');
@@ -7140,7 +7167,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }, breakdown.choice);
       }
     } else if (action.kind === 'chooseX') {
-      if(q?.aiHint?.kind==='entryNumber'){
+      if (libraryReorderEffect(q?.aiHint?.ability)) {
+        const x = Number(action.value) || 0, useful = Math.min(3, player.library.length);
+        breakdown.choice = x > 0 ? Math.min(x, useful) * 1.5 - Math.max(0, x - useful) * 0.7 : -1000;
+      } else if(q?.aiHint?.kind==='entryNumber'){
         const number=Number(action.value)||0;
         breakdown.choice=number===2?5:number===3?4:number===1||number===4?3:1;
       } else if(q?.aiHint?.kind==='entryLifePT'){

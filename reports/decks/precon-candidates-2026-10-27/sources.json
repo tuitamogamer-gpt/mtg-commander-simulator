@@ -1,0 +1,6229 @@
+{
+  "retrievedOn": "2026-10-27",
+  "decks": [
+    {
+      "slug": "borg",
+      "name": "We Are The Borg (Star Trek Commander Decklist)",
+      "moxfield": "https://moxfield.com/decks/ALne8k6SV06cVQolK5RMTw",
+      "description": "Printings will be corrected as they become available. Source: https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "createdAt": "2026-10-08T22:26:14.597Z",
+      "updatedAt": "2026-10-27T17:27:56.533Z",
+      "snapshotSha256": "3194b95b30a0c076d0a4bbaa5a7d5f872276f446a93669de928fb37aaa823aa6",
+      "cards": [
+        {
+          "name": "The Borg Queen",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plains",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swamp",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tempered Steel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Sanctum",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skullclamp",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thoughtcast",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Astral Cornucopia",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Everflowing Chalice",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Underground River",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunken Hollow",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skycloud Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Toxic Deluge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Morphic Pool",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Anguished Unmaking",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Choked Estuary",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Port Town",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Return to Dust",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Disallow",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spire of Industry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Academy Ruins",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thirst for Knowledge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dispatch",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Drowned Catacomb",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Dominance",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Hierarchy",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fetid Pools",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Unwinding Clock",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Darksteel Plate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Door of Destinies",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "The Immortal Sun",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Forsaken Monument",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shineshadow Snarl",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stonespeaker Crystal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bitter Triumph",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Contaminated Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Eclipsed Steppe",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Umbral Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hive Mind Coprocessor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Locutus of Borg",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Locutus, the One Who Speaks",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Join the Collective",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Conquest Mission",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Subadjunct",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "One, Borg Evolved",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ambulatory Reactor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Collective Override",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Co-Option Adjutant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Extraction Integrant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Maturation Chamber",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Optimization Annex",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reclamation Specialist",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seven of Nine, Tertiary Adjunct",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Type-03 Borg Vessel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Võx, Child of the Collective",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shore Leave Planet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Borg Incursion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hugh, First of Many",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Emergency Regeneration",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Class-4 Tactical Cube",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Jurati, Cordial Queen",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Queen's Diamond",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reconnaissance Partition",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Battle of Wolf 359",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gift of Perfection",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Deliver from Chaos",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Borg Scout Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "The Best of Both Worlds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Transwarp Hub",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stratagem Emulator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Korok, Liberated Rage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Supplementation Node",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Assimilate the Wounded",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Assimilation Assessor",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "borg-collector",
+      "name": "We Are The Borg (Star Trek Collector's Edition Commander Decklist)",
+      "moxfield": "https://moxfield.com/decks/ItfTSnvJ9UCFeACUNsSibQ",
+      "description": "Printings will be corrected as they become available. Source: https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "createdAt": "2026-10-08T22:27:12.827Z",
+      "updatedAt": "2026-10-27T17:28:08.15Z",
+      "snapshotSha256": "1beed6cc1821619db6c7a02efdfd073f01ecd753aa6237884741916018788b7b",
+      "cards": [
+        {
+          "name": "The Borg Queen",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plains",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swamp",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tempered Steel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Sanctum",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skullclamp",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thoughtcast",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Astral Cornucopia",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Everflowing Chalice",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Underground River",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunken Hollow",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skycloud Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Toxic Deluge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Morphic Pool",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Anguished Unmaking",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Choked Estuary",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Port Town",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Return to Dust",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Disallow",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spire of Industry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Academy Ruins",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thirst for Knowledge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dispatch",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Drowned Catacomb",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Dominance",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Hierarchy",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fetid Pools",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Unwinding Clock",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Darksteel Plate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Door of Destinies",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "The Immortal Sun",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Forsaken Monument",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shineshadow Snarl",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stonespeaker Crystal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bitter Triumph",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Contaminated Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Eclipsed Steppe",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Umbral Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hive Mind Coprocessor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Locutus of Borg",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Locutus, the One Who Speaks",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Join the Collective",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Conquest Mission",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Subadjunct",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "One, Borg Evolved",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ambulatory Reactor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Collective Override",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Co-Option Adjutant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Extraction Integrant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Maturation Chamber",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Optimization Annex",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reclamation Specialist",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seven of Nine, Tertiary Adjunct",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Type-03 Borg Vessel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Võx, Child of the Collective",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shore Leave Planet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Borg Incursion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hugh, First of Many",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Emergency Regeneration",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Class-4 Tactical Cube",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Jurati, Cordial Queen",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Queen's Diamond",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reconnaissance Partition",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Battle of Wolf 359",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gift of Perfection",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Deliver from Chaos",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Borg Scout Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "The Best of Both Worlds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Transwarp Hub",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stratagem Emulator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Korok, Liberated Rage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Supplementation Node",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Assimilate the Wounded",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Assimilation Assessor",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "federation",
+      "name": "Federation Fleet (Star Trek Commander Decklist)",
+      "moxfield": "https://moxfield.com/decks/RT6Ka5EM9kqDUnH0I52oYw",
+      "description": "Missing cards will be added and printings fixed as they become available. Source: https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "createdAt": "2026-10-08T22:25:47.69Z",
+      "updatedAt": "2026-10-27T17:22:04.607Z",
+      "snapshotSha256": "f8134b41ddfcec6b7ad36051df0098194ff31e0a5809e9d64e5ba2e667dd0491",
+      "cards": [
+        {
+          "name": "Jean-Luc Picard, Luminary",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 5,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mountain",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plains",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thrill of Possibility",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Alhammarret's Archive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Frantic Search",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Negate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Supreme Verdict",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thought Vessel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Howling Mine",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fractured Identity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hedron Archive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mystic Monastery",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chronomantic Escape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Beacon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fevered Visions",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Port Town",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Desolate Lighthouse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Abrade",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Battlefield Forge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cryptic Command",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Creativity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Conviction",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Pongify",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chain Reaction",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Clifftop Retreat",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sulfur Falls",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Training Center",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Frostboil Snarl",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Furycalm Snarl",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Promise of Loyalty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Faithful Mending",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grand Crescendo",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stonespeaker Crystal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Loran of the Third Path",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Perilous Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glittering Massif",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Radiant Summit",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scorched Geyser",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Coastal Peak",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Malfunctioning Holodeck",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spot, Felis catus",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Guinan, Ancient Advisor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Geordi La Forge, Innovator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seven of Nine, Tertiary Adjunct",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "federation-collector",
+      "name": "Federation Fleet (Star Trek Collector's Edition Commander Decklist)",
+      "moxfield": "https://moxfield.com/decks/uMuxITyLQU-DPoeX14Av3A",
+      "description": "Missing cards will be added and printings fixed as they become available. Source: https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "createdAt": "2026-10-08T22:26:53.177Z",
+      "updatedAt": "2026-10-27T17:22:06.257Z",
+      "snapshotSha256": "4df7575c7d59eb2481e738f00b278b97b98d5116877037ced41ac404dafb24bd",
+      "cards": [
+        {
+          "name": "Jean-Luc Picard, Luminary",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 5,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mountain",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plains",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thrill of Possibility",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Alhammarret's Archive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Frantic Search",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Negate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Supreme Verdict",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thought Vessel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Howling Mine",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fractured Identity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hedron Archive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mystic Monastery",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chronomantic Escape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Beacon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fevered Visions",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Port Town",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Desolate Lighthouse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Abrade",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Battlefield Forge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cryptic Command",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Creativity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Conviction",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Pongify",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chain Reaction",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Clifftop Retreat",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sulfur Falls",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Training Center",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Frostboil Snarl",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Furycalm Snarl",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Promise of Loyalty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Faithful Mending",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grand Crescendo",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stonespeaker Crystal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Loran of the Third Path",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Perilous Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glittering Massif",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Radiant Summit",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scorched Geyser",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Coastal Peak",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Malfunctioning Holodeck",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spot, Felis catus",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Guinan, Ancient Advisor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Geordi La Forge, Innovator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seven of Nine, Tertiary Adjunct",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "multiverse",
+      "name": "Multiverse Reforged (Reality Fracture Commander Decklist)",
+      "moxfield": "https://moxfield.com/decks/JAJNhQHxg0qfdq4ULGcj5g",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/reality-fracture-multiverse-reforged-commander-decklist",
+      "createdAt": "2026-08-25T19:19:19.893Z",
+      "updatedAt": "2026-09-28T21:02:40.427Z",
+      "snapshotSha256": "ddb01fc8dd6d7e554dc9b791db90832b47b7f5ee02cb81add6889632650af7a1",
+      "cards": [
+        {
+          "name": "Jace, Multiverse Architect",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 3,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mountain",
+          "n": 2,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swamp",
+          "n": 2,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plains",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Brainstorm",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chromatic Lantern",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fact or Fiction",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lingering Souls",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path to Exile",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fellwar Stone",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dimir Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Underground River",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sulfurous Springs",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shivan Reef",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Martial Coup",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Kher Keep",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Archfiend of Despair",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Akroma, Angel of Fury",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rakdos Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Izzet Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Azorius Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fetid Heath",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunken Ruins",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mystic Gate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Battlefield Forge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Caves of Koilos",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Drowned Catacomb",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mass Polymorph",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Dominance",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reflecting Pool",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Despark",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dreadhorde Invasion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Creativity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Flawless Maneuver",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Indulgence",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Synthetic Destiny",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shark Typhoon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Whirlwind of Thought",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Elspeth, Sun's Champion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Secure the Wastes",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Clifftop Retreat",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sulfur Falls",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Proteus Staff",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cursed Mirror",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Serra's Emissary",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Archon of Cruelty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Occult Epiphany",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grand Crescendo",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Currency Converter",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skrelv's Hive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "White Sun's Twilight",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Staff of the Storyteller",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunfall",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Stroke of Midnight",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Restless Spire",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Restless Anchorage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Brainsurge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Contaminated Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Perilous Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Overlord of the Mistmoors",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Windcrag Siege",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Radiant Summit",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Darksteel Angel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fatehold Charm",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "The Ur-Sphinx",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Niv-Mizzet, Ghost Counsel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tamiyo, Upriser Crowned",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Avacyn, Angel of Horror",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Memnarch, the Warden",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dack Fayden, Helping Hand",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Venser, Fervent Forger",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ob Nixilis, the Ascended",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Jhoira, Weatherlight Corsair",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ginger, Queen of Sweets",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Omnath, Locus of the Void",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Turbulent Shore",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Turbulent Crater",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Turbulent Wetlands",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Teferi's Reproach",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plan for All Outcomes",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nissa, Leyline Tamer",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "tramplesaurus",
+      "name": "Tramplesaurus Rex (Foundations Commander Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/m_jqtk3F6EOQiq1gytJFJg",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+      "createdAt": "2026-09-19T03:43:44.03Z",
+      "updatedAt": "2026-09-28T20:59:04.7Z",
+      "snapshotSha256": "b234bf790e48c886cd04f634a00e38b21dcada3a41664c42954a26b43e00d1d0",
+      "cards": [
+        {
+          "name": "Ghalta, Primal Hunger",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Forest",
+          "n": 32,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arasta of the Endless Web",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Kenrith's Transformation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tranquil Thicket",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Beast Within",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Birds of Paradise",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dungrove Elder",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Harmonize",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Llanowar Elves",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rhonas's Monument",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shamanic Revelation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thrashing Brontodon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Elder Gargaroth",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Garruk's Uprising",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scavenging Ooze",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ripjaw Raptor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Whiptongue Hydra",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Colossal Majesty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Elemental Bond",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Garruk's Packleader",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Overwhelming Stampede",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fyndhorn Elves",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Elvish Mystic",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mosswort Bridge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Managorger Hydra",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gigantosaurus",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ilysian Caryatid",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Beast Whisperer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scavenger Grounds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Monstrous Onslaught",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rishkar, Peema Renegade",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rishkar's Expertise",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Challenger Troll",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Paradise Druid",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Llanowar Tribe",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rhonas the Indomitable",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Whisperer of the Wilds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arachnogenesis",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ezuri's Predation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bonders' Enclave",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ram Through",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Steel Leaf Champion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Surrak, the Hunt Caller",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Yeva, Nature's Herald",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Goreclaw, Terror of Qal Sisma",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Carnage Tyrant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Verdant Sun's Avatar",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "War Room",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Witch's Clinic",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Unnatural Growth",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tamiyo's Safekeeping",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bite Down",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tangleweave Armor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Surrak and Goreclaw",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Pugnacious Hammerskull",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hulking Raptor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Curious Altisaur",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Collective Resistance",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Clifftop Lookout",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scrapshooter",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thickest in the Thicket",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Loot, Exuberant Explorer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terrian, World Tyrant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Regal Imperiosaur",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "engineering",
+      "name": "Keen Engineering (Foundations Commander Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/80zkHrncgEKyre0fMIJbng",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+      "createdAt": "2026-09-19T03:41:16.58Z",
+      "updatedAt": "2026-09-28T20:59:00.693Z",
+      "snapshotSha256": "6587fb74dac20270715306c8c751d6a13a94dbd127a1dc351b159df1ca0dbbd0",
+      "cards": [
+        {
+          "name": "Sai, Master Thopterist",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 34,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shimmer Dragon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lonely Sandbar",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aether Spellbomb",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "All Is Dust",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Counterspell",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Darksteel Citadel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Foundry Inspector",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Master Transmuter",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Myr Retriever",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Negate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Palladium Myr",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Propaganda",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thought Vessel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thoughtcast",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mazemind Tome",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nevinyrral's Disk",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Meteor Golem",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Steel Overseer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Buried Ruin",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ichor Wellspring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Myr Battlesphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Steel Hellkite",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hedron Archive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Remote Isle",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Etherium Sculptor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Master of Etherium",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aetherize",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mind's Eye",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thopter Spy Network",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Duplicant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Whirler Rogue",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cultivator's Caravan",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chief of the Foundry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Padeem, Consul of Innovation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skysovereign, Consul Flagship",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thirst for Knowledge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Silver Myr",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Darksteel Juggernaut",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spire Golem",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Psychosis Crawler",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Pull from Tomorrow",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shimmer Myr",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Soul-Guide Lantern",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vedalken Archmage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Foundry of the Consuls",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Broodstar",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Forsaken Monument",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "War Room",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fall from Favor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nettlecyst",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thought Monitor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ornithopter of Paradise",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Kappa Cannoneer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Research Thief",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Launch Mishap",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Graaz, Unstoppable Juggernaut",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tamiyo's Logbook",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Misleading Signpost",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scrawling Crawler",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thopter Fabricator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Adaptive Omnitool",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Memory Guardian",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "ranks",
+      "name": "Wretched Ranks (Foundations Commander Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/EFXjDyGIrkitAxoiL2NS0g",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+      "createdAt": "2026-09-19T03:42:17.723Z",
+      "updatedAt": "2026-09-28T20:58:56.697Z",
+      "snapshotSha256": "dc64e8c43173f22433013b8a69853e91a45942f4055b409fd1cd645bc3556c81",
+      "cards": [
+        {
+          "name": "Ghoulcaller Gisa",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Swamp",
+          "n": 33,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ayara, First of Locthwain",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Castle Locthwain",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Witch's Cottage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Barren Moor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bojuka Bog",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Carrion Feeder",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Go for the Throat",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gravecrawler",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grave Titan",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gray Merchant of Asphodel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lord of the Accursed",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Night's Whisper",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Phyrexian Arena",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tendrils of Corruption",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Wight of Precinct Six",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ambition's Cost",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Liliana's Mastery",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cryptbreaker",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bad Moon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fleshbag Marauder",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sign in Blood",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Syphon Flesh",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Marchesa's Decree",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Geier Reach Sanitarium",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Memorial to Folly",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mutilate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Army of the Damned",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Diregraf Colossus",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cemetery Recruitment",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Moan of the Unhallowed",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Midnight Reaper",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Graveborn Muse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lord of the Undead",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Undead Warchief",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vengeful Dead",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "God-Eternal Bontu",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Eternal Taskmaster",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Undead Augur",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bontu's Monument",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cemetery Reaper",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Death Baron",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Noxious Ghoul",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Charcoal Diamond",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mire Triton",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Liliana's Reaver",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Oversold Cemetery",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Soulless One",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Kalitas, Traitor of Ghet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Josu Vess, Lich Knight",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Open the Graves",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Endless Ranks of the Dead",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Necrotic Hex",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Champion of the Perished",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Undead Butler",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Headless Rider",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Razorlash Transmogrant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Infernal Idol",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Consuming Corruption",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Consumed by Greed",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Patchwork Banner",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Withering Torment",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Zul Ashur, Lich Lord",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "angels",
+      "name": "Calling All Angels (Foundations Commander Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/STCkf8pBDE-Xxi1hgsZKiQ",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/foundations-commander-decklists ",
+      "createdAt": "2026-09-19T03:39:40.303Z",
+      "updatedAt": "2026-09-28T20:58:48.883Z",
+      "snapshotSha256": "3104b26a6431e05b5bf931db244fa18288ee2c9a82b4ab93ebdfb2509bf9419c",
+      "cards": [
+        {
+          "name": "Giada, Font of Hope",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Plains",
+          "n": 32,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Heraldic Banner",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tome of Legends",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Secluded Steppe",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angelic Destiny",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grasp of Fate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Temple of the False God",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Radiant Fountain",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Speaker of the Heavens",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angel of Vitality",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bishop of Wings",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sephara, Sky's Blade",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Endless Atlas",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reya Dawnbringer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Marble Diamond",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Day of Judgment",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angel of Finality",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Emeria Shepherd",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Always Watching",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Metallic Mimic",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunblast Angel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Segovian Angel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cleansing Nova",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Austere Command",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Valorous Stance",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Serra Avenger",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bonders' Enclave",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Defy Death",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Herald of War",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seraph Sanctuary",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seraph of the Sword",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angelic Field Marshal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Archangel of Tithes",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Linvala, the Preserver",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lyra Dawnbringer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Invoke the Divine",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vanquisher's Banner",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Court of Grace",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "War Room",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Starnheim Aspirant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Youthful Valkyrie",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Righteous Valkyrie",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Secret Rendezvous",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angel of the Ruins",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thraben Watcher",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Search the Premises",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fateful Absence",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Inspiring Overseer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angelic Sleuth",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cut a Deal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Destroy Evil",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Norn's Choirmaster",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Firemane Commando",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Metropolis Reformer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Wojek Investigator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Merchant of Truth",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Patchwork Banner",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exorcise",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Herald of Eternal Dawn",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exemplar of Light",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vanguard Seraph",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dazzling Angel",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "dragons",
+      "name": "Reign of Dragons (Foundations Commander Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/tsKfnd0haUax0CLKMHWVHQ",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+      "createdAt": "2026-09-19T03:43:06.517Z",
+      "updatedAt": "2026-09-28T20:58:44.9Z",
+      "snapshotSha256": "b04a2a276c0f4a38ace1280e283979217a5826bc1f7277f3f396ede7504d25bd",
+      "cards": [
+        {
+          "name": "Lathliss, Dragon Queen",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Mountain",
+          "n": 32,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thrill of Possibility",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragonmaster Outcast",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Forgotten Cave",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Anger",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Basilisk Collar",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chaos Warp",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Herald's Horn",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lightning Bolt",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Taurean Mauler",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Temple of the False God",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Drakuseth, Maw of Flames",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rapacious Dragon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Blasphemous Act",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fire Diamond",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Magmaquake",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Tyrant's Familiar",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Warstorm Surge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skyline Despot",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mana Geyser",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Crucible of Fire",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hellkite Charger",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chandra's Ignition",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Abrade",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragonlord's Servant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragonspeaker Shaman",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Outpost Siege",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spinerock Knoll",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hazoret's Monument",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scourge of the Throne",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Utvara Hellkite",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terror of Mount Velus",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bonders' Enclave",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thunderbreak Regent",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chain Reaction",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Scourge of Valkas",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragon Tempest",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Haven of the Spirit Dragon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragon's Hoard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Spit Flame",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Leyline Tyrant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "War Room",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cursed Mirror",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Minion of the Mighty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Orb of Dragonkind",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Unexpected Windfall",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Atsushi, the Blazing Sky",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Carnelian Orb of Dragonkind",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Breath Weapon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nogi, Draco-Zealot",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shivan Devastator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "The Elder Dragon War",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bitter Reunion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Goddric, Cloaked Reveler",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hit the Mother Lode",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragonhawk, Fate's Tempest",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Firespitter Whelp",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Count on Luck",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sarkhan, Dragon Ascendant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Goldlust Triad",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Breaching Dragonstorm",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dragonstorm Globe",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Parapet Thrasher",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thundermane Dragon",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "hatsune",
+      "name": "Hatsune Miku (Secret Lair Commander 2026 Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/n3QS3JZ_zkmwLhmLDTc8Sw",
+      "description": "Source: https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-hatsune-miku-decklist",
+      "createdAt": "2026-08-11T13:55:43.683Z",
+      "updatedAt": "2026-09-28T20:58:40.903Z",
+      "snapshotSha256": "b4086408da55f0ce7798074e08721db003913c4fd81ef622a66386a614cceb21",
+      "cards": [
+        {
+          "name": "Trostani, Selesnya's Voice",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Plains",
+          "n": 7,
+          "sec": "Deck"
+        },
+        {
+          "name": "Forest",
+          "n": 7,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arasta of the Endless Web",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Temple of Plenty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mirari's Wake",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aetherflux Reservoir",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ajani's Pridemate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Avacyn's Pilgrim",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Blossoming Sands",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Congregate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Explore",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Farseek",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Graypelt Refuge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Krosan Verge",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Llanowar Elves",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nature's Lore",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path to Exile",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rhys the Redeemed",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rootborn Defenses",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shamanic Revelation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skullclamp",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Radiant Fountain",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Speaker of the Heavens",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sungrass Prairie",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Growing Ranks",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Hour of Reckoning",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Idol of Oblivion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Selesnya Sanctuary",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Storm Herd",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sundering Growth",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grove of the Guardian",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Selesnya Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angelic Chorus",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bramble Sovereign",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Canopy Vista",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Camaraderie",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Crested Sunmare",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Voice of Resurgence",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunpetal Grove",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gavony Township",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sapseep Forest",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Suture Priest",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Invincible Hymn",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Springleaf Drum",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Phyrexian Processor",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Boon Reflection",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Seraph Sanctuary",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Resplendent Angel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Song of Freyalise",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lathiel, the Bounteous Dawn",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Soul of Eternity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Excavation Technique",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Blossoming Bogbeast",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Healing Technique",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Pest Infestation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prosperous Innkeeper",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nykthos Paragon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cleric Class",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Overgrown Farmland",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Voice of the Blessed",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Brokers Hideout",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ghalta and Mavren",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Gruff Triplets",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Restless Prairie",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Elenda's Hierophant",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Conclave Evangelist",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ancient Cornucopia",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Angel of Indemnity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fanatic of Rhonas",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Silverquill Lecturer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Lazotep Quarry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dazzling Theater // Prop Room",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Cultivate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Soul Warden",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Song of the Worldsoul",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Bountiful Promenade",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Finale of Devastation",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vorinclex, Voice of Hunger",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Archangel of Thune",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shalai, Voice of Plenty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Halo Fountain",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Grand Crescendo",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Break Down",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    },
+    {
+      "slug": "odd",
+      "name": "Odd and Ends (Secret Lair Commander 2026 Precon Decklist)",
+      "moxfield": "https://moxfield.com/decks/21PMEusrfEmeqhQVYP59dA",
+      "description": "Printings will be fixed as they become available. Source: https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-odds-and-ends-decklist",
+      "createdAt": "2026-09-28T20:26:28.97Z",
+      "updatedAt": "2026-09-28T20:50:04.513Z",
+      "snapshotSha256": "ce56dc05da7d671f5cb19f8eacffecb55e086abda8fae38e58992fba8b2f7e63",
+      "cards": [
+        {
+          "name": "Yennett, Cryptic Sovereign",
+          "n": 1,
+          "sec": "Commander"
+        },
+        {
+          "name": "Island",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Plains",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swamp",
+          "n": 4,
+          "sec": "Deck"
+        },
+        {
+          "name": "Nadir Kraken",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Temple of Deceit",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Temple of Enlightenment",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Approach of the Second Sun",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Arcane Sanctum",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Brainstorm",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Soothsaying",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Temple of Silence",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Underground River",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aminatou, the Fateshifter",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fractured Identity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aeon Engine",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Leadership Vacuum",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sunken Hollow",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Adarkar Wastes",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Psychic Battle",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Time Stop",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Coalition Relic",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Oubliette",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Rapid Hybridization",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Command Beacon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Enigma Sphinx",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Imprisoned in the Moon",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Doom Whisperer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Thief of Sanity",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mirage Mirror",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Mystic Gate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Jeskai Infiltrator",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Caves of Koilos",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Master of Predicaments",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Venser's Journal",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Drowned Catacomb",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Planeswalker's Mischief",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Silent Clearing",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ponder",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Fatespinner",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Extinction Event",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Inniaz, the Gale Force",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Chaos Wand",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shared Fate",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skyclave Apparition",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Skyclave Relic",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Profane Transfusion",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vega, the Watcher",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Breena, the Demagogue",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Dazzling Sphinx",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Promise of Loyalty",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Yavimaya, Cradle of Growth",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Ethersworn Sphinx",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Toxrill, the Corrosive",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swift Reconfiguration",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aerial Extortionist",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Smuggler's Share",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Aboleth Spawn",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Space Beleren",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Exchange of Words",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Loran of the Third Path",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Vesuvan Drifter",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Marvo, Deep Operative",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Claim Jumper",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Contaminated Landscape",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Weathered Wayfarer",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Reconnaissance",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Sensei's Divining Top",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Void Winnower",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Shadrix Silverquill",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Esper Sentinel",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Breach the Multiverse",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Virtue of Persistence // Locthwain Scorn",
+          "n": 1,
+          "sec": "Deck"
+        },
+        {
+          "name": "Misleading Signpost",
+          "n": 1,
+          "sec": "Deck"
+        }
+      ]
+    }
+  ],
+  "baselineCommit": "9b4083d52649e6ea9ab3b2953283b50eb0ffc0a4",
+  "listing": "https://moxfield.com/decks/public?q=eyJmb3JtYXQiOiJjb21tYW5kZXJQcmVjb25zIn0%3D",
+  "scope": "The 12 latest displayed entries: ten different deck lists, including two Collector edition duplicates.",
+  "official": [
+    {
+      "slug": "borg",
+      "url": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "name": "We Are the Borg",
+      "htmlSha256": "e793b705312620dd913078cc78798da6330d689194b34ffbeb2e6476149eb68e",
+      "cards": [
+        {
+          "name": "The Borg Queen",
+          "n": 1
+        },
+        {
+          "name": "Locutus of Borg",
+          "n": 1
+        },
+        {
+          "name": "Borg Incursion",
+          "n": 1
+        },
+        {
+          "name": "Emergency Regeneration",
+          "n": 1
+        },
+        {
+          "name": "Join the Collective",
+          "n": 1
+        },
+        {
+          "name": "Korok, Liberated Rage",
+          "n": 1
+        },
+        {
+          "name": "Maturation Chamber",
+          "n": 1
+        },
+        {
+          "name": "Stratagem Emulator",
+          "n": 1
+        },
+        {
+          "name": "Supplementation Node",
+          "n": 1
+        },
+        {
+          "name": "Type-03 Borg Vessel",
+          "n": 1
+        },
+        {
+          "name": "Ambulatory Reactor",
+          "n": 1
+        },
+        {
+          "name": "Borg Scout Sphere",
+          "n": 1
+        },
+        {
+          "name": "Co-Option Adjutant",
+          "n": 1
+        },
+        {
+          "name": "Gift of Perfection",
+          "n": 1
+        },
+        {
+          "name": "Optimization Annex",
+          "n": 1
+        },
+        {
+          "name": "Seven of Nine, Tertiary Adjunct",
+          "n": 1
+        },
+        {
+          "name": "Transwarp Hub",
+          "n": 1
+        },
+        {
+          "name": "Võx, Child of the Collective",
+          "n": 1
+        },
+        {
+          "name": "Assimilate the Wounded",
+          "n": 1
+        },
+        {
+          "name": "Assimilation Assessor",
+          "n": 1
+        },
+        {
+          "name": "Battle of Wolf 359",
+          "n": 1
+        },
+        {
+          "name": "Extraction Integrant",
+          "n": 1
+        },
+        {
+          "name": "Reclamation Specialist",
+          "n": 1
+        },
+        {
+          "name": "The Best of Both Worlds",
+          "n": 1
+        },
+        {
+          "name": "Collective Override",
+          "n": 1
+        },
+        {
+          "name": "Deliver from Chaos",
+          "n": 1
+        },
+        {
+          "name": "Hugh, First of Many",
+          "n": 1
+        },
+        {
+          "name": "Jurati, Cordial Queen",
+          "n": 1
+        },
+        {
+          "name": "One, Borg Evolved",
+          "n": 1
+        },
+        {
+          "name": "Class-4 Tactical Cube",
+          "n": 1
+        },
+        {
+          "name": "Queen's Diamond",
+          "n": 1
+        },
+        {
+          "name": "Reconnaissance Partition",
+          "n": 1
+        },
+        {
+          "name": "Shore Leave Planet",
+          "n": 1
+        },
+        {
+          "name": "Tempered Steel",
+          "n": 1
+        },
+        {
+          "name": "Disallow",
+          "n": 1
+        },
+        {
+          "name": "Toxic Deluge",
+          "n": 1
+        },
+        {
+          "name": "Anguished Unmaking",
+          "n": 1
+        },
+        {
+          "name": "Astral Cornucopia",
+          "n": 1
+        },
+        {
+          "name": "Darksteel Plate",
+          "n": 1
+        },
+        {
+          "name": "Door of Destinies",
+          "n": 1
+        },
+        {
+          "name": "Forsaken Monument",
+          "n": 1
+        },
+        {
+          "name": "The Immortal Sun",
+          "n": 1
+        },
+        {
+          "name": "Skullclamp",
+          "n": 1
+        },
+        {
+          "name": "Unwinding Clock",
+          "n": 1
+        },
+        {
+          "name": "Academy Ruins",
+          "n": 1
+        },
+        {
+          "name": "Choked Estuary",
+          "n": 1
+        },
+        {
+          "name": "Drowned Catacomb",
+          "n": 1
+        },
+        {
+          "name": "Eclipsed Steppe",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Fetid Pools",
+          "n": 1
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1
+        },
+        {
+          "name": "Morphic Pool",
+          "n": 1
+        },
+        {
+          "name": "Port Town",
+          "n": 1
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1
+        },
+        {
+          "name": "Shineshadow Snarl",
+          "n": 1
+        },
+        {
+          "name": "Skycloud Expanse",
+          "n": 1
+        },
+        {
+          "name": "Spire of Industry",
+          "n": 1
+        },
+        {
+          "name": "Sunken Hollow",
+          "n": 1
+        },
+        {
+          "name": "Umbral Expanse",
+          "n": 1
+        },
+        {
+          "name": "Underground River",
+          "n": 1
+        },
+        {
+          "name": "Command Subadjunct",
+          "n": 1
+        },
+        {
+          "name": "Conquest Mission",
+          "n": 1
+        },
+        {
+          "name": "Hive Mind Coprocessor",
+          "n": 1
+        },
+        {
+          "name": "Locutus, the One Who Speaks",
+          "n": 1
+        },
+        {
+          "name": "Dispatch",
+          "n": 1
+        },
+        {
+          "name": "Return to Dust",
+          "n": 1
+        },
+        {
+          "name": "Thirst for Knowledge",
+          "n": 1
+        },
+        {
+          "name": "Thoughtcast",
+          "n": 1
+        },
+        {
+          "name": "Bitter Triumph",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1
+        },
+        {
+          "name": "Everflowing Chalice",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Stonespeaker Crystal",
+          "n": 1
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Dominance",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Hierarchy",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "n": 1
+        },
+        {
+          "name": "Arcane Sanctum",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Contaminated Landscape",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 4
+        },
+        {
+          "name": "Island",
+          "n": 4
+        },
+        {
+          "name": "Swamp",
+          "n": 4
+        }
+      ]
+    },
+    {
+      "slug": "federation",
+      "url": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "name": "Federation Fleet",
+      "htmlSha256": "e793b705312620dd913078cc78798da6330d689194b34ffbeb2e6476149eb68e",
+      "cards": [
+        {
+          "name": "Jean-Luc Picard, Luminary",
+          "n": 1
+        },
+        {
+          "name": "Captain Janeway, Endgame",
+          "n": 1
+        },
+        {
+          "name": "Ambassador K'Ehleyr",
+          "n": 1
+        },
+        {
+          "name": "Beverly Crusher, Ship's Doctor",
+          "n": 1
+        },
+        {
+          "name": "Dr. Pulaski, Cynical Clinician",
+          "n": 1
+        },
+        {
+          "name": "Ensign Harry Kim, Operations",
+          "n": 1
+        },
+        {
+          "name": "Ezri Dax, Newly Joined",
+          "n": 1
+        },
+        {
+          "name": "Guinan, Ancient Advisor",
+          "n": 1
+        },
+        {
+          "name": "Julian Bashir, Frontier Doctor",
+          "n": 1
+        },
+        {
+          "name": "Spot, Felis catus",
+          "n": 1
+        },
+        {
+          "name": "U.S.S. Enterprise-E, Sovereign",
+          "n": 1
+        },
+        {
+          "name": "Chief Miles O'Brien",
+          "n": 1
+        },
+        {
+          "name": "Data, Exploring Humanity",
+          "n": 1
+        },
+        {
+          "name": "Geordi La Forge, Innovator",
+          "n": 1
+        },
+        {
+          "name": "Kes, Evolving Telepath",
+          "n": 1
+        },
+        {
+          "name": "On the Shoulders of Giants",
+          "n": 1
+        },
+        {
+          "name": "Seven of Nine, Tertiary Adjunct",
+          "n": 1
+        },
+        {
+          "name": "Temporal Tribulation",
+          "n": 1
+        },
+        {
+          "name": "Tuvok, Chief Tactical Officer",
+          "n": 1
+        },
+        {
+          "name": "Ro Laren, Double Agent",
+          "n": 1
+        },
+        {
+          "name": "Rom and Leeta, Unlikely Pair",
+          "n": 1
+        },
+        {
+          "name": "B'Elanna Torres, Scrapper",
+          "n": 1
+        },
+        {
+          "name": "Cmdr. Troi, Outgoing Empath",
+          "n": 1
+        },
+        {
+          "name": "Commander William Riker",
+          "n": 1
+        },
+        {
+          "name": "Reg Barclay, Fidgety Fantasist",
+          "n": 1
+        },
+        {
+          "name": "Tom Paris, Risk-Taker",
+          "n": 1
+        },
+        {
+          "name": "Unification",
+          "n": 1
+        },
+        {
+          "name": "Vic Fontaine, One Night Only",
+          "n": 1
+        },
+        {
+          "name": "Worf, Son of Mogh",
+          "n": 1
+        },
+        {
+          "name": "U.S.S. Defiant, Tough Little Ship",
+          "n": 1
+        },
+        {
+          "name": "U.S.S. Enterprise-C, Time-Tossed",
+          "n": 1
+        },
+        {
+          "name": "U.S.S. Prometheus, Prototype",
+          "n": 1
+        },
+        {
+          "name": "U.S.S. Stargazer, Here and There",
+          "n": 1
+        },
+        {
+          "name": "Grand Crescendo",
+          "n": 1
+        },
+        {
+          "name": "Loran of the Third Path",
+          "n": 1
+        },
+        {
+          "name": "Promise of Loyalty",
+          "n": 1
+        },
+        {
+          "name": "Cryptic Command",
+          "n": 1
+        },
+        {
+          "name": "Chain Reaction",
+          "n": 1
+        },
+        {
+          "name": "Fevered Visions",
+          "n": 1
+        },
+        {
+          "name": "Fractured Identity",
+          "n": 1
+        },
+        {
+          "name": "Supreme Verdict",
+          "n": 1
+        },
+        {
+          "name": "Alhammarret's Archive",
+          "n": 1
+        },
+        {
+          "name": "Howling Mine",
+          "n": 1
+        },
+        {
+          "name": "Battlefield Forge",
+          "n": 1
+        },
+        {
+          "name": "Clifftop Retreat",
+          "n": 1
+        },
+        {
+          "name": "Coastal Peak",
+          "n": 1
+        },
+        {
+          "name": "Command Beacon",
+          "n": 1
+        },
+        {
+          "name": "Desolate Lighthouse",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1
+        },
+        {
+          "name": "Frostboil Snarl",
+          "n": 1
+        },
+        {
+          "name": "Furycalm Snarl",
+          "n": 1
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1
+        },
+        {
+          "name": "Glittering Massif",
+          "n": 1
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1
+        },
+        {
+          "name": "Port Town",
+          "n": 1
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1
+        },
+        {
+          "name": "Radiant Summit",
+          "n": 1
+        },
+        {
+          "name": "Scorched Geyser",
+          "n": 1
+        },
+        {
+          "name": "Sulfur Falls",
+          "n": 1
+        },
+        {
+          "name": "Training Center",
+          "n": 1
+        },
+        {
+          "name": "Malfunctioning Holodeck",
+          "n": 1
+        },
+        {
+          "name": "Chronomantic Escape",
+          "n": 1
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1
+        },
+        {
+          "name": "Frantic Search",
+          "n": 1
+        },
+        {
+          "name": "Negate",
+          "n": 1
+        },
+        {
+          "name": "Pongify",
+          "n": 1
+        },
+        {
+          "name": "Abrade",
+          "n": 1
+        },
+        {
+          "name": "Thrill of Possibility",
+          "n": 1
+        },
+        {
+          "name": "Faithful Mending",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1
+        },
+        {
+          "name": "Hedron Archive",
+          "n": 1
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Stonespeaker Crystal",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Conviction",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Creativity",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1
+        },
+        {
+          "name": "Thought Vessel",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Mystic Monastery",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Perilous Landscape",
+          "n": 1
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Island",
+          "n": 5
+        },
+        {
+          "name": "Plains",
+          "n": 4
+        },
+        {
+          "name": "Mountain",
+          "n": 4
+        }
+      ]
+    },
+    {
+      "slug": "odd",
+      "url": "https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-odds-and-ends-decklist",
+      "name": "Secret Lair Commander Deck: Odds and Ends",
+      "htmlSha256": "88f2c4b4889666dd53367ed5090c4a01bd6a629fc8455d319ed1a1f963479f96",
+      "cards": [
+        {
+          "name": "Yennett, Cryptic Sovereign",
+          "n": 1
+        },
+        {
+          "name": "Void Winnower",
+          "n": 1
+        },
+        {
+          "name": "Esper Sentinel",
+          "n": 1
+        },
+        {
+          "name": "Reconnaissance",
+          "n": 1
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1
+        },
+        {
+          "name": "Weathered Wayfarer",
+          "n": 1
+        },
+        {
+          "name": "Misleading Signpost",
+          "n": 1
+        },
+        {
+          "name": "Breach the Multiverse",
+          "n": 1
+        },
+        {
+          "name": "Virtue of Persistence",
+          "n": 1
+        },
+        {
+          "name": "Shadrix Silverquill",
+          "n": 1
+        },
+        {
+          "name": "Sensei's Divining Top",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Aboleth Spawn",
+          "n": 1
+        },
+        {
+          "name": "Adarkar Wastes",
+          "n": 1
+        },
+        {
+          "name": "Aeon Engine",
+          "n": 1
+        },
+        {
+          "name": "Aerial Extortionist",
+          "n": 1
+        },
+        {
+          "name": "Aminatou, the Fateshifter",
+          "n": 1
+        },
+        {
+          "name": "Approach of the Second Sun",
+          "n": 1
+        },
+        {
+          "name": "Arcane Sanctum",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Brainstorm",
+          "n": 1
+        },
+        {
+          "name": "Breena, the Demagogue",
+          "n": 1
+        },
+        {
+          "name": "Caves of Koilos",
+          "n": 1
+        },
+        {
+          "name": "Chaos Wand",
+          "n": 1
+        },
+        {
+          "name": "Claim Jumper",
+          "n": 1
+        },
+        {
+          "name": "Coalition Relic",
+          "n": 1
+        },
+        {
+          "name": "Command Beacon",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1
+        },
+        {
+          "name": "Contaminated Landscape",
+          "n": 1
+        },
+        {
+          "name": "Dazzling Sphinx",
+          "n": 1
+        },
+        {
+          "name": "Doom Whisperer",
+          "n": 1
+        },
+        {
+          "name": "Drowned Catacomb",
+          "n": 1
+        },
+        {
+          "name": "Enigma Sphinx",
+          "n": 1
+        },
+        {
+          "name": "Ethersworn Sphinx",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Exchange of Words",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Extinction Event",
+          "n": 1
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1
+        },
+        {
+          "name": "Fatespinner",
+          "n": 1
+        },
+        {
+          "name": "Fractured Identity",
+          "n": 1
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1
+        },
+        {
+          "name": "Imprisoned in the Moon",
+          "n": 1
+        },
+        {
+          "name": "Inniaz, the Gale Force",
+          "n": 1
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1
+        },
+        {
+          "name": "Jeskai Infiltrator",
+          "n": 1
+        },
+        {
+          "name": "Leadership Vacuum",
+          "n": 1
+        },
+        {
+          "name": "Loran of the Third Path",
+          "n": 1
+        },
+        {
+          "name": "Marvo, Deep Operative",
+          "n": 1
+        },
+        {
+          "name": "Master of Predicaments",
+          "n": 1
+        },
+        {
+          "name": "Mirage Mirror",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Mystic Gate",
+          "n": 1
+        },
+        {
+          "name": "Nadir Kraken",
+          "n": 1
+        },
+        {
+          "name": "Oubliette",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Planeswalker's Mischief",
+          "n": 1
+        },
+        {
+          "name": "Ponder",
+          "n": 1
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1
+        },
+        {
+          "name": "Profane Transfusion",
+          "n": 1
+        },
+        {
+          "name": "Promise of Loyalty",
+          "n": 1
+        },
+        {
+          "name": "Psychic Battle",
+          "n": 1
+        },
+        {
+          "name": "Rapid Hybridization",
+          "n": 1
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1
+        },
+        {
+          "name": "Shared Fate",
+          "n": 1
+        },
+        {
+          "name": "Silent Clearing",
+          "n": 1
+        },
+        {
+          "name": "Skyclave Apparition",
+          "n": 1
+        },
+        {
+          "name": "Skyclave Relic",
+          "n": 1
+        },
+        {
+          "name": "Smuggler's Share",
+          "n": 1
+        },
+        {
+          "name": "Soothsaying",
+          "n": 1
+        },
+        {
+          "name": "Space Beleren",
+          "n": 1
+        },
+        {
+          "name": "Sunken Hollow",
+          "n": 1
+        },
+        {
+          "name": "Swift Reconfiguration",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Progress",
+          "n": 1
+        },
+        {
+          "name": "Temple of Deceit",
+          "n": 1
+        },
+        {
+          "name": "Temple of Enlightenment",
+          "n": 1
+        },
+        {
+          "name": "Temple of Silence",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Thief of Sanity",
+          "n": 1
+        },
+        {
+          "name": "Time Stop",
+          "n": 1
+        },
+        {
+          "name": "Toxrill, the Corrosive",
+          "n": 1
+        },
+        {
+          "name": "Underground River",
+          "n": 1
+        },
+        {
+          "name": "Vega, the Watcher",
+          "n": 1
+        },
+        {
+          "name": "Venser's Journal",
+          "n": 1
+        },
+        {
+          "name": "Vesuvan Drifter",
+          "n": 1
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "n": 1
+        },
+        {
+          "name": "Yavimaya, Cradle of Growth",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 4
+        },
+        {
+          "name": "Island",
+          "n": 4
+        },
+        {
+          "name": "Swamp",
+          "n": 4
+        }
+      ]
+    }
+  ],
+  "mtgjson": {
+    "slug": "odd",
+    "url": "https://mtgjson.com/api/v5/decks/OddsAndEnds_SLD.json",
+    "snapshot": {
+      "date": "2026-10-27",
+      "version": "5.3.0+20261027"
+    },
+    "sha256": "487dff0ad0acd5e047f7599c8007c3a30da04193d737d863a896153b9118a9f1",
+    "cards": [
+      {
+        "name": "Yennett, Cryptic Sovereign",
+        "n": 1
+      },
+      {
+        "name": "Void Winnower",
+        "n": 1
+      },
+      {
+        "name": "Esper Sentinel",
+        "n": 1
+      },
+      {
+        "name": "Reconnaissance",
+        "n": 1
+      },
+      {
+        "name": "Swords to Plowshares",
+        "n": 1
+      },
+      {
+        "name": "Weathered Wayfarer",
+        "n": 1
+      },
+      {
+        "name": "Misleading Signpost",
+        "n": 1
+      },
+      {
+        "name": "Breach the Multiverse",
+        "n": 1
+      },
+      {
+        "name": "Virtue of Persistence // Locthwain Scorn",
+        "n": 1
+      },
+      {
+        "name": "Shadrix Silverquill",
+        "n": 1
+      },
+      {
+        "name": "Sensei's Divining Top",
+        "n": 1
+      },
+      {
+        "name": "Sol Ring",
+        "n": 1
+      },
+      {
+        "name": "Aboleth Spawn",
+        "n": 1
+      },
+      {
+        "name": "Adarkar Wastes",
+        "n": 1
+      },
+      {
+        "name": "Aeon Engine",
+        "n": 1
+      },
+      {
+        "name": "Aerial Extortionist",
+        "n": 1
+      },
+      {
+        "name": "Aminatou, the Fateshifter",
+        "n": 1
+      },
+      {
+        "name": "Approach of the Second Sun",
+        "n": 1
+      },
+      {
+        "name": "Arcane Sanctum",
+        "n": 1
+      },
+      {
+        "name": "Arcane Signet",
+        "n": 1
+      },
+      {
+        "name": "Brainstorm",
+        "n": 1
+      },
+      {
+        "name": "Breena, the Demagogue",
+        "n": 1
+      },
+      {
+        "name": "Caves of Koilos",
+        "n": 1
+      },
+      {
+        "name": "Chaos Wand",
+        "n": 1
+      },
+      {
+        "name": "Claim Jumper",
+        "n": 1
+      },
+      {
+        "name": "Coalition Relic",
+        "n": 1
+      },
+      {
+        "name": "Command Beacon",
+        "n": 1
+      },
+      {
+        "name": "Command Tower",
+        "n": 1
+      },
+      {
+        "name": "Commander's Sphere",
+        "n": 1
+      },
+      {
+        "name": "Contaminated Landscape",
+        "n": 1
+      },
+      {
+        "name": "Dazzling Sphinx",
+        "n": 1
+      },
+      {
+        "name": "Doom Whisperer",
+        "n": 1
+      },
+      {
+        "name": "Drowned Catacomb",
+        "n": 1
+      },
+      {
+        "name": "Enigma Sphinx",
+        "n": 1
+      },
+      {
+        "name": "Ethersworn Sphinx",
+        "n": 1
+      },
+      {
+        "name": "Evolving Wilds",
+        "n": 1
+      },
+      {
+        "name": "Exchange of Words",
+        "n": 1
+      },
+      {
+        "name": "Exotic Orchard",
+        "n": 1
+      },
+      {
+        "name": "Extinction Event",
+        "n": 1
+      },
+      {
+        "name": "Fabled Passage",
+        "n": 1
+      },
+      {
+        "name": "Fatespinner",
+        "n": 1
+      },
+      {
+        "name": "Fractured Identity",
+        "n": 1
+      },
+      {
+        "name": "Glacial Fortress",
+        "n": 1
+      },
+      {
+        "name": "Imprisoned in the Moon",
+        "n": 1
+      },
+      {
+        "name": "Inniaz, the Gale Force",
+        "n": 1
+      },
+      {
+        "name": "Isolated Chapel",
+        "n": 1
+      },
+      {
+        "name": "Jeskai Infiltrator",
+        "n": 1
+      },
+      {
+        "name": "Leadership Vacuum",
+        "n": 1
+      },
+      {
+        "name": "Loran of the Third Path",
+        "n": 1
+      },
+      {
+        "name": "Marvo, Deep Operative",
+        "n": 1
+      },
+      {
+        "name": "Master of Predicaments",
+        "n": 1
+      },
+      {
+        "name": "Mirage Mirror",
+        "n": 1
+      },
+      {
+        "name": "Myriad Landscape",
+        "n": 1
+      },
+      {
+        "name": "Mystic Gate",
+        "n": 1
+      },
+      {
+        "name": "Nadir Kraken",
+        "n": 1
+      },
+      {
+        "name": "Oubliette",
+        "n": 1
+      },
+      {
+        "name": "Path of Ancestry",
+        "n": 1
+      },
+      {
+        "name": "Planeswalker's Mischief",
+        "n": 1
+      },
+      {
+        "name": "Ponder",
+        "n": 1
+      },
+      {
+        "name": "Prairie Stream",
+        "n": 1
+      },
+      {
+        "name": "Profane Transfusion",
+        "n": 1
+      },
+      {
+        "name": "Promise of Loyalty",
+        "n": 1
+      },
+      {
+        "name": "Psychic Battle",
+        "n": 1
+      },
+      {
+        "name": "Rapid Hybridization",
+        "n": 1
+      },
+      {
+        "name": "Reliquary Tower",
+        "n": 1
+      },
+      {
+        "name": "Shared Fate",
+        "n": 1
+      },
+      {
+        "name": "Silent Clearing",
+        "n": 1
+      },
+      {
+        "name": "Skyclave Apparition",
+        "n": 1
+      },
+      {
+        "name": "Skyclave Relic",
+        "n": 1
+      },
+      {
+        "name": "Smuggler's Share",
+        "n": 1
+      },
+      {
+        "name": "Soothsaying",
+        "n": 1
+      },
+      {
+        "name": "Space Beleren",
+        "n": 1
+      },
+      {
+        "name": "Sunken Hollow",
+        "n": 1
+      },
+      {
+        "name": "Swift Reconfiguration",
+        "n": 1
+      },
+      {
+        "name": "Talisman of Progress",
+        "n": 1
+      },
+      {
+        "name": "Temple of Deceit",
+        "n": 1
+      },
+      {
+        "name": "Temple of Enlightenment",
+        "n": 1
+      },
+      {
+        "name": "Temple of Silence",
+        "n": 1
+      },
+      {
+        "name": "Terramorphic Expanse",
+        "n": 1
+      },
+      {
+        "name": "Thief of Sanity",
+        "n": 1
+      },
+      {
+        "name": "Time Stop",
+        "n": 1
+      },
+      {
+        "name": "Toxrill, the Corrosive",
+        "n": 1
+      },
+      {
+        "name": "Underground River",
+        "n": 1
+      },
+      {
+        "name": "Vega, the Watcher",
+        "n": 1
+      },
+      {
+        "name": "Venser's Journal",
+        "n": 1
+      },
+      {
+        "name": "Vesuvan Drifter",
+        "n": 1
+      },
+      {
+        "name": "Wayfarer's Bauble",
+        "n": 1
+      },
+      {
+        "name": "Yavimaya, Cradle of Growth",
+        "n": 1
+      },
+      {
+        "name": "Plains",
+        "n": 4
+      },
+      {
+        "name": "Island",
+        "n": 4
+      },
+      {
+        "name": "Swamp",
+        "n": 4
+      }
+    ]
+  }
+}

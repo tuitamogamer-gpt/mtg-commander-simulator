@@ -1,0 +1,89 @@
+{
+  "verifiedAt": "2026-10-27T18:56:06.005887+00:00",
+  "tests": {
+    "passed": 148,
+    "failed": 0,
+    "files": [
+      "baseline.test.mjs",
+      "ai-v2.test.mjs",
+      "commander-visuals.test.mjs",
+      "fdc-precons.test.mjs",
+      "oracle-v8-inspected-cast-next.test.mjs",
+      "four-hour-ai-target-clone.test.mjs",
+      "odds-and-ends.test.mjs",
+      "ai-library-reorder.test.mjs",
+      "blame-game.test.mjs"
+    ]
+  },
+  "syntax": "pass",
+  "certification": {
+    "runtimeDefinitions": 32136,
+    "cardDeckChecks": 14657,
+    "failures": 0
+  },
+  "sourcePreservation": "All 175 earlier lists, 3934 native raw definitions and existing image mappings unchanged",
+  "repeatedImport": "Already present; exact src/data.js SHA-256 unchanged",
+  "browser": {
+    "viewports": [
+      1440,
+      390
+    ],
+    "passed": 2,
+    "errors": 0,
+    "visuallyInspected": true
+  },
+  "headless": {
+    "results": [
+      {
+        "deck": "Odds and Ends",
+        "opponents": [
+          "Wretched Ranks",
+          "Tramplesaurus Rex",
+          "Calling All Angels"
+        ],
+        "seed": 102700,
+        "turns": 51,
+        "winner": "AI Raven",
+        "durationMs": 56157,
+        "passed": true
+      },
+      {
+        "deck": "Odds and Ends",
+        "opponents": [
+          "Keen Engineering",
+          "Reign of Dragons",
+          "Multiverse Reforged"
+        ],
+        "seed": 102701,
+        "turns": 39,
+        "winner": "You",
+        "durationMs": 34194,
+        "passed": true
+      },
+      {
+        "deck": "Odds and Ends",
+        "opponents": [
+          "Hatsune Miku",
+          "Mind Seize",
+          "Enhanced Evolution"
+        ],
+        "seed": 102702,
+        "turns": 32,
+        "winner": "AI Dragon",
+        "durationMs": 17296,
+        "passed": true
+      }
+    ]
+  },
+  "initialFindings": [
+    "Stale catalog and commander-art counts updated for 176 decks and 182 default commander identities.",
+    "Cross-realm structural equality in the repeat import normalized to JSON values.",
+    "Soothsaying X=0 AI activation loop reproduced in seed 102701; fixed and verified with focused tests and all three original pod seeds."
+  ],
+  "scope": "Targeted tests; not the entire repository test suite",
+  "finalFocusedRecheck": {
+    "file": "ai-library-reorder.test.mjs",
+    "passed": 3,
+    "failed": 0
+  }
+}

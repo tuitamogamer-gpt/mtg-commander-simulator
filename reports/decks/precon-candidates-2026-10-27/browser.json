@@ -1,0 +1,2083 @@
+{
+  "results": [
+    {
+      "deck": "Odds and Ends",
+      "width": 1440,
+      "opponent": "Elven Empire",
+      "opening": {
+        "commander": [
+          "Yennett, Cryptic Sovereign"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "graveyard": 0,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "text": {
+        "mode": "game",
+        "audio": {
+          "state": "playing",
+          "error": "",
+          "muted": false,
+          "track": "council-at-dusk",
+          "context": "running",
+          "activeEffects": 0,
+          "activeMusic": 1,
+          "activeNarration": 0,
+          "loaded": [
+            "sfx/combat",
+            "sfx/venture",
+            "sfx/counters",
+            "sfx/counterspell",
+            "sfx/instant",
+            "sfx/sorcery",
+            "sfx/spell-copy",
+            "sfx/summon",
+            "sfx/heavy-impact",
+            "sfx/explosion",
+            "sfx/victory",
+            "sfx/defeat",
+            "sfx/keyword-flying",
+            "sfx/keyword-vigilance",
+            "sfx/keyword-haste",
+            "sfx/keyword-menace",
+            "sfx/keyword-reach",
+            "sfx/keyword-first-strike",
+            "sfx/keyword-double-strike",
+            "sfx/keyword-trample",
+            "sfx/keyword-lifelink",
+            "sfx/keyword-deathtouch",
+            "sfx/keyword-infect",
+            "sfx/keyword-wither",
+            "sfx/keyword-proliferate",
+            "music/council-at-dusk"
+          ]
+        },
+        "account": {
+          "signedIn": false,
+          "saveStatus": null,
+          "saveLabel": null,
+          "replay": null,
+          "decisionCount": 0
+        },
+        "signatureReaction": null,
+        "arenaDragEnabled": false,
+        "manaMode": "auto",
+        "playerTools": {
+          "handSort": "draw",
+          "handSize": "standard",
+          "speed": "normal",
+          "arenaBackground": "table",
+          "arenaDim": 30,
+          "arenaBackgroundPickerOpen": false,
+          "highContrast": false,
+          "searchOpen": false,
+          "searchQuery": "",
+          "searchResults": []
+        },
+        "lastResort": {
+          "active": false,
+          "paused": false,
+          "toolboxOpen": false,
+          "hiddenInformation": "opponent hands, libraries, and face-down identities stay hidden"
+        },
+        "coordinateSystem": "Commander seats are ordered by players[]; the human seat is marked isAI=false.",
+        "turn": 5,
+        "activePlayer": "You",
+        "phase": "main1",
+        "step": "main",
+        "winner": null,
+        "monarch": null,
+        "additionalPhases": [],
+        "extraCombats": 0,
+        "diplomacy": {
+          "enabled": false
+        },
+        "pending": null,
+        "priority": null,
+        "stack": [],
+        "combat": null,
+        "aiDecisions": [],
+        "pendingDecision": null,
+        "players": [
+          {
+            "name": "You",
+            "life": 40,
+            "poison": 0,
+            "counters": {},
+            "lost": false,
+            "isAI": false,
+            "handCount": 0,
+            "libraryCount": 30,
+            "graveyardCount": 0,
+            "exileCount": 0,
+            "manaPool": {},
+            "commanders": [
+              {
+                "id": 103,
+                "name": "Yennett, Cryptic Sovereign",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Sphinx"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "power": 3,
+                "toughness": 5,
+                "damage": 0,
+                "deathtouched": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              }
+            ],
+            "battlefield": [
+              {
+                "id": 61,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 62,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 63,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 64,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 65,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 66,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 67,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 68,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 69,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 70,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 71,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 72,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 73,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 74,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 75,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 76,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 77,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 78,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 79,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 80,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 81,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 82,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 83,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 84,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 85,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 86,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 87,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 88,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 89,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 90,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 91,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 92,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 93,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 94,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 95,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 96,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 97,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 98,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 99,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 100,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 101,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 102,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 103,
+                "name": "Yennett, Cryptic Sovereign",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Sphinx"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "power": 3,
+                "toughness": 5,
+                "damage": 0,
+                "deathtouched": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              }
+            ],
+            "hand": [],
+            "exile": [],
+            "activeEffects": []
+          },
+          {
+            "name": "Local AI",
+            "life": 40,
+            "poison": 0,
+            "counters": {},
+            "lost": false,
+            "isAI": true,
+            "aiStyle": "balanced",
+            "aiStyleLabel": "Balanced",
+            "handCount": 0,
+            "libraryCount": 30,
+            "graveyardCount": 0,
+            "exileCount": 0,
+            "manaPool": {},
+            "commanders": [],
+            "battlefield": [],
+            "activeEffects": []
+          }
+        ],
+        "recentLog": [
+          {
+            "t": 5,
+            "msg": "You cast Yennett, Cryptic Sovereign from the command zone.",
+            "cls": "cast"
+          },
+          {
+            "t": 5,
+            "msg": "Resolving: Yennett, Cryptic Sovereign.",
+            "cls": "resolve"
+          },
+          {
+            "t": 5,
+            "msg": "\ud83d\udc51 You put Yennett, Cryptic Sovereign onto the battlefield.",
+            "cls": "arrival"
+          }
+        ]
+      },
+      "overflow": false
+    },
+    {
+      "deck": "Odds and Ends",
+      "width": 390,
+      "opponent": "Elven Empire",
+      "opening": {
+        "commander": [
+          "Yennett, Cryptic Sovereign"
+        ],
+        "count": 100
+      },
+      "stackSeen": true,
+      "done": true,
+      "error": null,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "graveyard": 0,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "text": {
+        "mode": "game",
+        "audio": {
+          "state": "playing",
+          "error": "",
+          "muted": false,
+          "track": "council-at-dusk",
+          "context": "running",
+          "activeEffects": 0,
+          "activeMusic": 1,
+          "activeNarration": 0,
+          "loaded": [
+            "sfx/combat",
+            "sfx/venture",
+            "sfx/counters",
+            "sfx/counterspell",
+            "sfx/instant",
+            "sfx/sorcery",
+            "sfx/spell-copy",
+            "sfx/summon",
+            "sfx/heavy-impact",
+            "sfx/explosion",
+            "sfx/victory",
+            "sfx/defeat",
+            "sfx/keyword-flying",
+            "sfx/keyword-vigilance",
+            "sfx/keyword-haste",
+            "sfx/keyword-menace",
+            "sfx/keyword-reach",
+            "sfx/keyword-first-strike",
+            "sfx/keyword-double-strike",
+            "sfx/keyword-trample",
+            "sfx/keyword-lifelink",
+            "sfx/keyword-deathtouch",
+            "sfx/keyword-infect",
+            "sfx/keyword-wither",
+            "sfx/keyword-proliferate",
+            "music/council-at-dusk"
+          ]
+        },
+        "account": {
+          "signedIn": false,
+          "saveStatus": null,
+          "saveLabel": null,
+          "replay": null,
+          "decisionCount": 0
+        },
+        "signatureReaction": null,
+        "arenaDragEnabled": false,
+        "manaMode": "auto",
+        "playerTools": {
+          "handSort": "draw",
+          "handSize": "standard",
+          "speed": "normal",
+          "arenaBackground": "table",
+          "arenaDim": 30,
+          "arenaBackgroundPickerOpen": false,
+          "highContrast": false,
+          "searchOpen": false,
+          "searchQuery": "",
+          "searchResults": []
+        },
+        "lastResort": {
+          "active": false,
+          "paused": false,
+          "toolboxOpen": false,
+          "hiddenInformation": "opponent hands, libraries, and face-down identities stay hidden"
+        },
+        "coordinateSystem": "Commander seats are ordered by players[]; the human seat is marked isAI=false.",
+        "turn": 5,
+        "activePlayer": "You",
+        "phase": "main1",
+        "step": "main",
+        "winner": null,
+        "monarch": null,
+        "additionalPhases": [],
+        "extraCombats": 0,
+        "diplomacy": {
+          "enabled": false
+        },
+        "pending": null,
+        "priority": null,
+        "stack": [],
+        "combat": null,
+        "aiDecisions": [],
+        "pendingDecision": null,
+        "players": [
+          {
+            "name": "You",
+            "life": 40,
+            "poison": 0,
+            "counters": {},
+            "lost": false,
+            "isAI": false,
+            "handCount": 0,
+            "libraryCount": 30,
+            "graveyardCount": 0,
+            "exileCount": 0,
+            "manaPool": {},
+            "commanders": [
+              {
+                "id": 103,
+                "name": "Yennett, Cryptic Sovereign",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Sphinx"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "power": 3,
+                "toughness": 5,
+                "damage": 0,
+                "deathtouched": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              }
+            ],
+            "battlefield": [
+              {
+                "id": 61,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 62,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 63,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 64,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 65,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 66,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 67,
+                "name": "Plains",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Plains"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 68,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 69,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 70,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 71,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 72,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 73,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 74,
+                "name": "Island",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Island"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 75,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": true,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 76,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 77,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 78,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 79,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 80,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 81,
+                "name": "Swamp",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Swamp"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 82,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 83,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 84,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 85,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 86,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 87,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 88,
+                "name": "Mountain",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Mountain"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 89,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 90,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 91,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 92,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 93,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 94,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 95,
+                "name": "Forest",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [
+                  "Forest"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 96,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 97,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 98,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 99,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 100,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 101,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 102,
+                "name": "Wastes",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Land"
+                ],
+                "subtypes": [],
+                "landCreature": false,
+                "faceDown": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              },
+              {
+                "id": 103,
+                "name": "Yennett, Cryptic Sovereign",
+                "zone": "battlefield",
+                "tapped": false,
+                "types": [
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Sphinx"
+                ],
+                "landCreature": false,
+                "faceDown": false,
+                "power": 3,
+                "toughness": 5,
+                "damage": 0,
+                "deathtouched": false,
+                "attacking": null,
+                "blocking": null,
+                "attachedTo": null,
+                "enchantedPlayer": null,
+                "attachments": [],
+                "counters": {}
+              }
+            ],
+            "hand": [],
+            "exile": [],
+            "activeEffects": []
+          },
+          {
+            "name": "Local AI",
+            "life": 40,
+            "poison": 0,
+            "counters": {},
+            "lost": false,
+            "isAI": true,
+            "aiStyle": "balanced",
+            "aiStyleLabel": "Balanced",
+            "handCount": 0,
+            "libraryCount": 30,
+            "graveyardCount": 0,
+            "exileCount": 0,
+            "manaPool": {},
+            "commanders": [],
+            "battlefield": [],
+            "activeEffects": []
+          }
+        ],
+        "recentLog": [
+          {
+            "t": 5,
+            "msg": "You cast Yennett, Cryptic Sovereign from the command zone.",
+            "cls": "cast"
+          },
+          {
+            "t": 5,
+            "msg": "Resolving: Yennett, Cryptic Sovereign.",
+            "cls": "resolve"
+          },
+          {
+            "t": 5,
+            "msg": "\ud83d\udc51 You put Yennett, Cryptic Sovereign onto the battlefield.",
+            "cls": "arrival"
+          }
+        ]
+      },
+      "overflow": false
+    }
+  ],
+  "errors": []
+}
