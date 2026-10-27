@@ -734,6 +734,56 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   body.game-active #game.command-table.ct-grid-view { --ct-card: 64px; --ct-opponent-card: var(--ct-card); }
 }
 
+/* A narrow resource column leaves the full board height for creatures and
+   support. Each land remains individually inspectable/targetable; long mana
+   collections scroll in their own column instead of covering the next row. */
+@media (min-width: 901px) {
+  body.game-active #game.command-table.ct-desktop-lands :is(.myboard, .opprow) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 124px;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0;
+  }
+  #game.command-table.ct-desktop-lands :is(.ct-player-head, .opphead) { grid-column: 1 / -1; grid-row: 1; }
+  body.game-active #game.command-table.ct-desktop-lands :is(.mybattlefieldmain, .oppstrip) {
+    grid-column: 1; grid-row: 2; min-width: 0; min-height: 0;
+    scroll-padding: 6px;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock {
+    grid-column: 2; grid-row: 2; min-height: 0; overflow: hidden;
+    display: flex; flex-direction: column; align-items: stretch;
+    border-top: 0; border-left: 1px solid var(--ds-line-soft);
+    padding: 5px !important;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .resourcezone {
+    display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+    width: 100%; min-height: 0; overflow: hidden;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .boardlanelabel {
+    flex: 0 0 auto; width: auto; font-size: 8px; padding: 1px 0 4px;
+  }
+  body.game-active #game.command-table.ct-desktop-lands :is(.landstrip, .oppresourcecards) {
+    display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: flex-start;
+    width: 100%; min-height: 0; max-height: none; flex: 1 1 0;
+    gap: 5px; padding: 3px; overflow: auto; scrollbar-gutter: stable;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .mini.tapped {
+    transform: none !important;
+  }
+  #game.command-table.ct-grid-view :is(.myboard, .opprow) { container-type: size; }
+  #game.command-table.ct-grid-view :is(.mybattlefieldmain, .oppstrip) {
+    --ct-card: clamp(44px, calc((100cqh - 100px) / 2.96), 80px);
+    --ct-opponent-card: var(--ct-card);
+  }
+  body.game-active #game.command-table.ct-desktop-lands .boardlanecards {
+    justify-content: flex-start !important;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .boardlanelabel {
+    flex: 0 0 auto !important; width: 100% !important; height: auto !important;
+    min-height: 0; margin: 0; white-space: nowrap;
+  }
+}
+
 /* One combat workspace: defender routes and a creature roster, with actions
    outside the scroll panes. The same visual language continues in the rail. */
 #game.command-table > .ct-combat-overlay { z-index: 139; padding: 18px; background: #05090dde; backdrop-filter: blur(5px); }

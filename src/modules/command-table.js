@@ -94,7 +94,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   P.commandLandCards = function (game, player) {
     // Lands are public permanents. Keep every copy individually inspectable
     // and targetable; animated lands already belong to the creature lane.
-    return game.lands(player).filter(card => !card.is('Creature')).map(card => {
+    const colorOrder = ['W', 'U', 'B', 'R', 'G'];
+    const colorKey = card => {
+      const colors = card.def.producesColors || [];
+      return colors.length === 1 ? colorOrder.indexOf(colors[0]) : colors.length > 1 ? 5 : 6;
+    };
+    return game.lands(player).filter(card => !card.is('Creature')).sort((a, b) =>
+      colorKey(a) - colorKey(b) || a.name.localeCompare(b.name) || Number(a.tapped) - Number(b.tapped) || a.iid - b.iid).map(card => {
       const item = this.permanentPile(game, card, { sm: true });
       item.classList.add('ct-land-card');
       if (card.tapped) {
