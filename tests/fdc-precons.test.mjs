@@ -23,7 +23,7 @@ const assertPromisedCard = (f, spell, before) => {
 test('FDC preserves five complete official lists, reuses 304 identities and adds 17 native definitions', () => {
   const intake = buildIntake(M), initial = JSON.parse(fs.readFileSync(sourceDir + '/intake.json'));
   assert.equal(initial.reusedCards, 304); assert.equal(initial.newCards, 17); assert.equal(intake.names.length, 321);
-  assert.equal(intake.newNames.length, 0); assert.equal(Object.keys(M.DECKS).length, 175);
+  assert.equal(intake.newNames.length, 0); assert.equal(Object.keys(M.DECKS).length, 176);
   for (const n of initial.newNames) {
     assert.ok(M.SCRIPTS[n], n); assert.ok(!M.SCRIPTS[n].autoScripted, n); assert.ok(!M.DEFS[n].simplified, n);
     assert.equal(M.CARD_CATALOG[n].deckImportEligible, true, n);

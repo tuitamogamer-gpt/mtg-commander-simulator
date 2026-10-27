@@ -3,6 +3,11 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+    oddsAndEnds: [
+      {label: 'Early game', title: 'Set up the top card', text: 'Keep three lands and early mana. Use Ponder, Brainstorm or Sensei’s Divining Top to find colors and prepare a useful odd-mana spell for Yennett.'},
+      {label: 'Midgame', title: 'Attack with Yennett', text: 'Protect Yennett and attack through the air. Her trigger can cast an odd-mana spell for free; if you decline or reveal an even-mana card, you draw instead.'},
+      {label: 'Endgame', title: 'Turn unusual effects into an advantage', text: 'Use free large spells and evasive threats to close the game. Shared Fate and Psychic Battle affect the whole table, so check who benefits before committing them.'},
+    ],
     fdcAngels: [
       {label: 'Early game', title: 'Let Giada lead', text: 'Keep lands and early mana. Cast Giada before your other Angels so she can help pay for them and increase their entry counters.'},
       {label: 'Midgame', title: 'Grow your flight', text: 'Add Angels one at a time, use lifegain to turn on Righteous Valkyrie, and save removal for the threats your flyers cannot race.'},
@@ -997,6 +1002,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       mulligan: 'Keep Forests, an early mana creature and a useful three- or four-mana play. Do not rely on Ghalta alone to make a hand of expensive spells work.',
       tip: 'Ghalta’s discount uses the total power of creatures you control at casting time. Ram Through deals no damage if either of its two creature targets becomes illegal.',
       keys: ['Beast Whisperer', 'Overwhelming Stampede', 'Unnatural Growth'],
+    },
+    'Odds and Ends': {
+      route: 'oddsAndEnds', pace: 'TOPDECKS AND UNUSUAL INTERACTIONS', complexity: 'Advanced',
+      theme: 'Yennett turns odd-mana cards on top of your library into free spells, backed by flying threats and unusual table-wide effects.',
+      plan: 'Fix Esper mana, arrange your library and protect Yennett before attacking. Combine free casts with card selection, then use your expensive threats or Approach of the Second Sun to finish.',
+      mulligan: 'Keep three lands, access to several colors and early mana or library selection. Avoid hands full of expensive spells without a way to develop mana.',
+      tip: 'Yennett checks mana value, not the amount you would pay. Her attack trigger draws a card if you do not cast the revealed card, including an even-mana card or land.',
+      keys: ['Sensei\'s Divining Top', 'Void Winnower', 'Approach of the Second Sun'],
     },
     'Multiverse Reforged': {
       route: 'multiverseReforged', pace: 'TOKENS INTO LEGENDARY THREATS', complexity: 'Advanced',

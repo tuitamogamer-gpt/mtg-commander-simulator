@@ -1,0 +1,1530 @@
+{
+  "note": "Parser eligibility alone does not register or certify a card. None of these missing cards was imported.",
+  "uniqueMissingCards": 70,
+  "oracleUnavailable": 25,
+  "parserEligible": 22,
+  "parserDeferred": 23,
+  "cards": [
+    {
+      "name": "The Borg Queen",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Locutus of Borg",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "filtered-permanents",
+          "filters": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "alsoType": "Artifact"
+            }
+          ],
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "grantedOperation": {
+            "kind": "generic-trigger",
+            "event": "combatDamageToPlayer",
+            "eventFilter": {
+              "kind": "source-damage-player",
+              "opponent": false
+            },
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "Borg",
+                  "super": [],
+                  "types": [
+                    "Artifact",
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Borg"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect"
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Borg Incursion",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "spell-needs-explicit-semantics"
+    },
+    {
+      "name": "Emergency Regeneration",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "spell-template",
+      "implementation": [
+        {
+          "kind": "spell-generic",
+          "effects": [
+            {
+              "action": "battlefield-group",
+              "operation": "pump",
+              "filters": [
+                {
+                  "what": "artifact",
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "min": 1
+                }
+              ],
+              "power": 0,
+              "toughness": 0,
+              "keywords": [
+                "hexproof",
+                "indestructible"
+              ]
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "spell-generic-effect"
+        }
+      ],
+      "oracleContracts": [
+        "spell-generic-effect"
+      ]
+    },
+    {
+      "name": "Join the Collective",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "spell-needs-explicit-semantics"
+    },
+    {
+      "name": "Korok, Liberated Rage",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Maturation Chamber",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "artifact-template",
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "cast",
+          "eventFilter": {
+            "kind": "your-filtered-cast",
+            "what": "artifact"
+          },
+          "effects": [
+            {
+              "action": "counter",
+              "target": "self",
+              "counter": "charge",
+              "n": 1
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        },
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "mana": "{4}",
+            "tap": true
+          },
+          "effects": [
+            {
+              "action": "token-inline",
+              "who": "you",
+              "n": {
+                "kind": "source-counters",
+                "counter": "charge",
+                "multiply": 1
+              },
+              "token": {
+                "name": "Borg",
+                "super": [],
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Borg"
+                ],
+                "power": "1",
+                "toughness": "1",
+                "colors": [],
+                "keywords": []
+              }
+            }
+          ],
+          "targets": [],
+          "sorceryOnly": true,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect",
+        "generic-activated-effect"
+      ]
+    },
+    {
+      "name": "Stratagem Emulator",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "dies",
+          "effects": [
+            {
+              "action": "token-inline",
+              "who": "you",
+              "n": {
+                "kind": "source-stat",
+                "stat": "power"
+              },
+              "token": {
+                "name": "Borg",
+                "super": [],
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Borg"
+                ],
+                "power": "1",
+                "toughness": "1",
+                "colors": [],
+                "keywords": []
+              }
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect",
+          "eventFilter": "self"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ]
+    },
+    {
+      "name": "Supplementation Node",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "filtered-permanents",
+          "filters": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "alsoType": "Artifact"
+            }
+          ],
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "grantedOperation": {
+            "kind": "generic-trigger",
+            "event": "combatDamageToPlayer",
+            "eventFilter": {
+              "kind": "source-damage-player",
+              "opponent": false
+            },
+            "effects": [
+              {
+                "action": "counter",
+                "target": "self",
+                "counter": "+1/+1",
+                "n": 1
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect"
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Type-03 Borg Vessel",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "artifact-template",
+      "implementation": [
+        {
+          "kind": "cost-modifier",
+          "amount": -1,
+          "contract": "generic-cost-modification",
+          "target": {
+            "what": "artifact",
+            "zone": "battlefield",
+            "controller": "any",
+            "min": 1
+          },
+          "controller": "you"
+        },
+        {
+          "kind": "mechanic-station-v9",
+          "threshold": 7,
+          "contract": "mechanic-station-v9"
+        },
+        {
+          "kind": "generic-static",
+          "scope": "self",
+          "keywords": [
+            "flying"
+          ],
+          "condition": {
+            "kind": "count-comparison",
+            "count": {
+              "kind": "source-counters",
+              "counter": "charge"
+            },
+            "min": 7
+          },
+          "contract": "continuous-layer"
+        },
+        {
+          "kind": "generic-trigger",
+          "event": "cast",
+          "eventFilter": {
+            "kind": "your-filtered-cast",
+            "what": "card"
+          },
+          "effects": [
+            {
+              "action": "token-inline",
+              "who": "you",
+              "n": 1,
+              "token": {
+                "name": "Borg",
+                "super": [],
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Borg"
+                ],
+                "power": "1",
+                "toughness": "1",
+                "colors": [],
+                "keywords": []
+              }
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-cost-modification",
+        "mechanic-station-v9",
+        "continuous-layer",
+        "generic-trigger-effect"
+      ]
+    },
+    {
+      "name": "Ambulatory Reactor",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "filtered-permanents",
+          "filters": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "alsoType": "Artifact"
+            }
+          ],
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "grantedOperation": {
+            "kind": "mana-source",
+            "activationCost": {
+              "tap": true
+            },
+            "produce": [
+              {
+                "C": 1
+              }
+            ],
+            "restriction": {
+              "spell": {
+                "what": "spell",
+                "zone": "stack",
+                "controller": "any",
+                "min": 1,
+                "spellFilter": {
+                  "what": "artifact",
+                  "zone": "graveyard",
+                  "controller": "any",
+                  "min": 1
+                }
+              },
+              "abilities": true,
+              "abilitySource": {
+                "what": "artifact",
+                "zone": "battlefield",
+                "controller": "any",
+                "min": 1
+              }
+            },
+            "contract": "mana-source"
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Borg Scout Sphere",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "noncreature-needs-explicit-semantics"
+    },
+    {
+      "name": "Co-Option Adjutant",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "filtered-permanents",
+          "filters": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "alsoType": "Artifact"
+            }
+          ],
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "grantedOperation": {
+            "kind": "generic-trigger",
+            "event": "combatDamageToPlayer",
+            "eventFilter": {
+              "kind": "source-damage-player",
+              "opponent": false
+            },
+            "effects": [
+              {
+                "action": "draw",
+                "who": "you",
+                "n": 1
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect"
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Gift of Perfection",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "spell-needs-explicit-semantics"
+    },
+    {
+      "name": "Optimization Annex",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Seven of Nine, Tertiary Adjunct",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Transwarp Hub",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "noncreature-needs-explicit-semantics"
+    },
+    {
+      "name": "Võx, Child of the Collective",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Assimilate the Wounded",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "spell-needs-explicit-semantics"
+    },
+    {
+      "name": "Assimilation Assessor",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Battle of Wolf 359",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "spell-template",
+      "implementation": [
+        {
+          "kind": "spell-generic",
+          "effects": [
+            {
+              "action": "battlefield-group",
+              "operation": "pump",
+              "filters": [
+                {
+                  "what": "creature",
+                  "zone": "battlefield",
+                  "controller": "any",
+                  "min": 1,
+                  "nonartifact": true
+                }
+              ],
+              "power": {
+                "kind": "signed",
+                "value": {
+                  "kind": "count",
+                  "zone": "battlefield",
+                  "what": "permanent",
+                  "filters": [
+                    {
+                      "what": "creature",
+                      "zone": "battlefield",
+                      "controller": "you",
+                      "min": 1,
+                      "alsoType": "Artifact"
+                    }
+                  ],
+                  "controller": "you"
+                },
+                "sign": -1
+              },
+              "toughness": {
+                "kind": "signed",
+                "value": {
+                  "kind": "count",
+                  "zone": "battlefield",
+                  "what": "permanent",
+                  "filters": [
+                    {
+                      "what": "creature",
+                      "zone": "battlefield",
+                      "controller": "you",
+                      "min": 1,
+                      "alsoType": "Artifact"
+                    }
+                  ],
+                  "controller": "you"
+                },
+                "sign": -1
+              },
+              "keywords": []
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "spell-generic-effect"
+        }
+      ],
+      "oracleContracts": [
+        "spell-generic-effect"
+      ]
+    },
+    {
+      "name": "Extraction Integrant",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Reclamation Specialist",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "mana": "{1}",
+            "sacFilter": {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "alsoType": "Artifact"
+            },
+            "sacN": 1
+          },
+          "effects": [
+            {
+              "action": "draw",
+              "who": "you",
+              "n": 1
+            }
+          ],
+          "targets": [],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "generic-activated-effect"
+      ]
+    },
+    {
+      "name": "The Best of Both Worlds",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "saga-chapter-needs-complete-semantics"
+    },
+    {
+      "name": "Collective Override",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "spell-needs-explicit-semantics"
+    },
+    {
+      "name": "Deliver from Chaos",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "spell-template",
+      "implementation": [
+        {
+          "kind": "spell-generic",
+          "effects": [
+            {
+              "action": "exile",
+              "target": 0
+            },
+            {
+              "action": "token-inline",
+              "who": "you",
+              "n": {
+                "kind": "target-stat",
+                "target": 0,
+                "stat": "mv"
+              },
+              "token": {
+                "name": "Borg",
+                "super": [],
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Borg"
+                ],
+                "power": "1",
+                "toughness": "1",
+                "colors": [],
+                "keywords": []
+              }
+            }
+          ],
+          "targets": [
+            {
+              "what": "permanent",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "alternatives": [
+                {
+                  "what": "artifact",
+                  "zone": "battlefield",
+                  "controller": "any",
+                  "min": 1
+                },
+                {
+                  "what": "creature",
+                  "zone": "battlefield",
+                  "controller": "any",
+                  "min": 1
+                }
+              ]
+            }
+          ],
+          "optional": false,
+          "contract": "spell-generic-effect"
+        }
+      ],
+      "oracleContracts": [
+        "spell-generic-effect"
+      ]
+    },
+    {
+      "name": "Hugh, First of Many",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Jurati, Cordial Queen",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "combatDamageGroupToPlayer",
+          "eventFilter": {
+            "kind": "combat-damage-batch",
+            "filters": [
+              {
+                "what": "creature",
+                "zone": "battlefield",
+                "controller": "you",
+                "min": 1,
+                "alsoType": "Artifact"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "copy-token",
+              "target": 0,
+              "n": 1,
+              "nonlegendary": false
+            }
+          ],
+          "targets": [
+            {
+              "what": "artifact",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "token": true
+            }
+          ],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ]
+    },
+    {
+      "name": "One, Borg Evolved",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "your-creatures",
+          "subtype": "Artifact",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "flying",
+            "double strike",
+            "vigilance",
+            "menace",
+            "lifelink",
+            "flying"
+          ],
+          "wardV9": {
+            "mana": "{2}"
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Class-4 Tactical Cube",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "artifact-template",
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "etb",
+          "eventFilter": "self",
+          "effects": [
+            {
+              "action": "token-inline",
+              "who": "you",
+              "n": 2,
+              "token": {
+                "name": "Borg",
+                "super": [],
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Borg"
+                ],
+                "power": "1",
+                "toughness": "1",
+                "colors": [],
+                "keywords": []
+              }
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        },
+        {
+          "kind": "mechanic-station-v9",
+          "threshold": 7,
+          "contract": "mechanic-station-v9"
+        },
+        {
+          "kind": "generic-static",
+          "scope": "self",
+          "keywords": [
+            "flying"
+          ],
+          "condition": {
+            "kind": "count-comparison",
+            "count": {
+              "kind": "source-counters",
+              "counter": "charge"
+            },
+            "min": 7
+          },
+          "contract": "continuous-layer"
+        },
+        {
+          "kind": "generic-static",
+          "scope": "your-creatures",
+          "power": 1,
+          "toughness": 1,
+          "keywords": [],
+          "contract": "generic-continuous-effect",
+          "subtype": "Artifact"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect",
+        "mechanic-station-v9",
+        "continuous-layer",
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Queen's Diamond",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "noncreature-needs-explicit-semantics"
+    },
+    {
+      "name": "Reconnaissance Partition",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "enters-with-counters",
+          "counter": "charge",
+          "n": 2,
+          "contract": "permanent-enters-with-counters"
+        },
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "tap": true,
+            "oracleCounterPayment": {
+              "n": 1,
+              "kinds": null,
+              "self": true,
+              "among": false
+            }
+          },
+          "onceEachTurn": false,
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "effects": [],
+          "targets": [],
+          "optional": false,
+          "modalBody": {
+            "choose": {
+              "min": 1,
+              "max": 1
+            },
+            "modes": [
+              {
+                "label": "Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+                "body": {
+                  "effects": [
+                    {
+                      "action": "search-library",
+                      "what": "basic land",
+                      "maxMv": null,
+                      "destination": "battlefield",
+                      "tapped": true,
+                      "reveal": false,
+                      "n": 1
+                    }
+                  ],
+                  "targets": [],
+                  "optional": false
+                }
+              },
+              {
+                "label": "Draw a card.",
+                "body": {
+                  "effects": [
+                    {
+                      "action": "draw",
+                      "who": "you",
+                      "n": 1
+                    }
+                  ],
+                  "targets": [],
+                  "optional": false
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-with-counters",
+        "generic-activated-effect"
+      ]
+    },
+    {
+      "name": "Shore Leave Planet",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "land-mana-template",
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "U": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "mana": "{4}{U}"
+          },
+          "effects": [
+            {
+              "action": "become-copy-v8",
+              "target": "copy-source",
+              "otherTarget": 0,
+              "modifications": {
+                "nonlegendary": true,
+                "addTypes": [
+                  "Artifact"
+                ],
+                "addSubtypes": [
+                  "Robot"
+                ]
+              },
+              "duration": "eot"
+            }
+          ],
+          "targets": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "generic-activated-effect"
+      ]
+    },
+    {
+      "name": "Command Subadjunct",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "scope": "your-creatures",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "vigilance"
+          ],
+          "contract": "generic-continuous-effect",
+          "subtype": "Artifact"
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Conquest Mission",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "noncreature-needs-explicit-semantics"
+    },
+    {
+      "name": "Hive Mind Coprocessor",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "filtered-permanents",
+          "filters": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "alsoType": "Artifact"
+            }
+          ],
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "grantedOperation": {
+            "kind": "generic-trigger",
+            "event": "combatDamageToPlayer",
+            "eventFilter": {
+              "kind": "source-damage-player",
+              "opponent": false
+            },
+            "targets": [],
+            "optional": false,
+            "effects": [
+              {
+                "action": "resolution-cost",
+                "payment": {
+                  "kind": "life",
+                  "n": 1
+                },
+                "optional": true,
+                "effects": [
+                  {
+                    "action": "draw",
+                    "who": "you",
+                    "n": 1
+                  }
+                ]
+              }
+            ],
+            "contract": "generic-trigger-effect"
+          }
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect"
+      ]
+    },
+    {
+      "name": "Locutus, the One Who Speaks",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "scope": "your-creatures",
+          "power": 1,
+          "toughness": 1,
+          "keywords": [],
+          "contract": "generic-continuous-effect",
+          "subtype": "Artifact"
+        },
+        {
+          "kind": "generic-ability",
+          "from": "hand",
+          "cost": {
+            "mana": "{W}{B}"
+          },
+          "effects": [
+            {
+              "action": "damage",
+              "target": 0,
+              "n": 2
+            },
+            {
+              "action": "gain-life",
+              "who": "you",
+              "n": 2
+            }
+          ],
+          "targets": [
+            {
+              "what": "creature",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "max": 1,
+              "attackingOrBlocking": false
+            }
+          ],
+          "optional": false,
+          "contract": "generic-activated-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect",
+        "generic-activated-effect"
+      ]
+    },
+    {
+      "name": "Jean-Luc Picard, Luminary",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Captain Janeway, Endgame",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Ambassador K'Ehleyr",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Beverly Crusher, Ship's Doctor",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Dr. Pulaski, Cynical Clinician",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Ensign Harry Kim, Operations",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Ezri Dax, Newly Joined",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Guinan, Ancient Advisor",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": false,
+      "reason": "oracle-needs-explicit-semantics"
+    },
+    {
+      "name": "Julian Bashir, Frontier Doctor",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Spot, Felis catus",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "etb",
+          "eventFilter": {
+            "kind": "filtered-object",
+            "target": {
+              "what": "permanent",
+              "zone": "battlefield",
+              "controller": "you",
+              "min": 1,
+              "nontoken": true,
+              "legendary": true
+            },
+            "another": false,
+            "includeSelf": true
+          },
+          "effects": [
+            {
+              "action": "token-key",
+              "who": "you",
+              "n": 1,
+              "tokenKey": "food"
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        },
+        {
+          "kind": "generic-ability",
+          "cost": {
+            "mana": "{4}",
+            "sacWhat": "Food"
+          },
+          "effects": [
+            {
+              "action": "destroy",
+              "target": 0
+            }
+          ],
+          "targets": [
+            {
+              "what": "artifact",
+              "zone": "battlefield",
+              "controller": "any",
+              "min": 1,
+              "max": 1
+            }
+          ],
+          "sorceryOnly": false,
+          "contract": "generic-activated-effect",
+          "onceEachTurn": false
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect",
+        "generic-activated-effect"
+      ]
+    },
+    {
+      "name": "U.S.S. Enterprise-E, Sovereign",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Chief Miles O'Brien",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Data, Exploring Humanity",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Geordi La Forge, Innovator",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "creature-template",
+      "implementation": [
+        {
+          "kind": "generic-static",
+          "contract": "generic-continuous-effect",
+          "scope": "self",
+          "unblockable": true,
+          "condition": {
+            "kind": "count-comparison",
+            "count": {
+              "kind": "count",
+              "zone": "battlefield",
+              "what": "permanent",
+              "filters": [
+                {
+                  "what": "artifact",
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "min": 1,
+                  "subtype": "Spacecraft"
+                }
+              ],
+              "other": false
+            },
+            "min": 1
+          }
+        },
+        {
+          "kind": "generic-trigger",
+          "event": "combatDamageToPlayer",
+          "eventFilter": {
+            "kind": "source-damage-player",
+            "opponent": false
+          },
+          "effects": [
+            {
+              "action": "draw",
+              "who": "you",
+              "n": 1
+            }
+          ],
+          "targets": [],
+          "optional": false,
+          "contract": "generic-trigger-effect"
+        }
+      ],
+      "oracleContracts": [
+        "generic-continuous-effect",
+        "generic-trigger-effect"
+      ]
+    },
+    {
+      "name": "Kes, Evolving Telepath",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "On the Shoulders of Giants",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Temporal Tribulation",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Tuvok, Chief Tactical Officer",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Ro Laren, Double Agent",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Rom and Leeta, Unlikely Pair",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "B'Elanna Torres, Scrapper",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Cmdr. Troi, Outgoing Empath",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Commander William Riker",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Reg Barclay, Fidgety Fantasist",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Tom Paris, Risk-Taker",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Unification",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Vic Fontaine, One Night Only",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Worf, Son of Mogh",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "U.S.S. Defiant, Tough Little Ship",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "U.S.S. Enterprise-C, Time-Tossed",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "U.S.S. Prometheus, Prototype",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "U.S.S. Stargazer, Here and There",
+      "oracleAvailable": false,
+      "runtimeSupported": false,
+      "status": "Await verified card text"
+    },
+    {
+      "name": "Malfunctioning Holodeck",
+      "oracleAvailable": true,
+      "runtimeSupported": false,
+      "parserEligible": true,
+      "semanticClass": "artifact-template",
+      "implementation": [
+        {
+          "kind": "generic-trigger",
+          "event": "etb",
+          "effects": [
+            {
+              "action": "exile-until-source-leaves",
+              "target": 0
+            }
+          ],
+          "targets": [
+            {
+              "what": "nonland permanent",
+              "zone": "battlefield",
+              "controller": "opponent",
+              "min": 1
+            }
+          ],
+          "optional": false,
+          "contract": "generic-trigger-effect",
+          "eventFilter": "self"
+        }
+      ],
+      "oracleContracts": [
+        "generic-trigger-effect"
+      ]
+    }
+  ]
+}
