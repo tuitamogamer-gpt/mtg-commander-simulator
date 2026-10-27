@@ -525,6 +525,6 @@ test('AI V2 nema mrežne/model/auth zavisnosti; account paketi ostaju izvan AI m
   assert.doesNotMatch(source, /@upstash|redis|ratelimit/i);
   const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
   const dependencies = Object.keys(pkg.dependencies || {}).sort();
-  assert.deepEqual(dependencies, ['@capacitor/core', '@capacitor/ios', '@upstash/ratelimit', '@upstash/redis', 'express', 'ioredis', 'ws']);
+  assert.deepEqual(dependencies, ['@capacitor/core', '@capacitor/ios', '@upstash/ratelimit', '@upstash/redis', '@vercel/functions', 'express', 'ioredis', 'pg', 'ws']);
   assert.deepEqual(dependencies.filter(name => /openai|anthropic|gemini|ollama|onnx|transformers/i.test(name)), []);
 });

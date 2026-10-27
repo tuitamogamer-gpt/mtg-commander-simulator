@@ -443,6 +443,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !tapped.has(candidate) && !excluded.has(candidate) && group.filter(candidate)),
     }))).sort((left, right) => left.candidates.length - right.candidates.length);
     if (groups.some(group => !group.candidates.length)) return null;
+    if (lifeOptions.botTapRank) for (const group of groups) if (group.tap) {
+      group.candidates.sort((a, b) => (lifeOptions.botTapRank.get(a) ?? Infinity) -
+        (lifeOptions.botTapRank.get(b) ?? Infinity));
+    }
 
     const assignments = new Map();
     const tapAssignments = new Map();
@@ -519,6 +523,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cost.sac(game, candidate, step.src.card, player), 'permanent')) return null;
       if (cost.sacType && !await choose(step, 1,
         candidate => candidate !== step.src.card && candidate.hasSub(cost.sacType), cost.sacType)) return null;
+    }
+    if (player.isAI && MTG.botManaTapOrder && steps.some(step => step.src?.extraCost?.tapPermanents)) {
+      const fixed = steps.filter(step => step.src?.extraCost?.tap).map(step => step.src.card).concat(excludedTaps);
+      const pool = game.bf().filter(card => card.ctrl === player && !card.tapped && !fixed.includes(card));
+      const ordered = MTG.botManaTapOrder(game, player, pool, fixed);
+      lifeOptions = { ...lifeOptions, botTapRank: new Map(ordered.map((card, index) => [card, index])) };
     }
     const result=manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices, excludedTaps, reservedCounters, reservedMill, lifeOptions);
     if(result){
@@ -1298,7 +1308,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       possible += [...tapped.values()].reduce((sum, amount) => sum + amount, 0);
       if (possible < required) return null;
     }
-    sources.sort((a, b) => sourcePriority(a) - sourcePriority(b) || flex(a) - flex(b));
+    // Preserve the useful blockers among otherwise interchangeable mana
+    // creatures. Boolean affordability checks must stay cheap and unbiased.
+    const botTapOrder = !opts._manaFeasibilityOnly && p.isAI && MTG.botManaTapOrder
+      ? MTG.botManaTapOrder(this, p, [...new Set(sources.filter(source => source.extraCost.tap &&
+        source.card?.is('Creature')).map(source => source.card))], opts.excludeCards || []) : [];
+    const botTapRank = new Map(botTapOrder.map((card, index) => [card, index]));
+    sources.sort((a, b) => sourcePriority(a) - sourcePriority(b) ||
+      (botTapRank.get(a.card) || 0) - (botTapRank.get(b.card) || 0) || flex(a) - flex(b));
     const poolBranches = pipBranches(initialState, pips)
       .flatMap(state => spendGeneric(state, initialGeneric));
     // Preserve the generic-first family for restricted colored sources: an

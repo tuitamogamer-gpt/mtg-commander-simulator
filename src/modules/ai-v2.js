@@ -2066,28 +2066,123 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return danger + Math.max(0, player.life - position.life) * (player.life <= 12 ? 3 : 1.2);
   }
 
-  function routineTapExposure(game, player, source) {
-    if (!source.is('Creature') || source.tapped || source.blocking) return 0;
+  // A tap payment removes a GROUP of blockers until our next untap. Forecast
+  // only public, legal attacks in that interval, carrying casualties and life
+  // between opponents. In particular, an early opponent's end step is not the
+  // last opponent's end step. Cache only within this immutable decision window.
+  function tapDefense(game, player) {
     const blockers = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock);
-    const remaining = blockers.filter(card => card !== source);
-    if (game.turnPlayer === player) return Math.max(0,
-      stationDefense(game, player, remaining) - stationDefense(game, player, blockers));
-    // Before an opponent's combat, predict only this actual attack window.
-    // A sick creature does not attack now, and a completed block declaration
-    // cannot be changed by keeping an unused creature untapped.
-    const inCombat = game.phase === 'combat';
-    if (inCombat ? !game.combat || game.combat.blockersDeclared
-      : !['upkeep', 'draw', 'main1'].includes(game.phase) || game.turnPlayer.turnState.reachedDeclareAttackers) return 0;
-    const attackers = inCombat && game.combat.attackers.length ? game.combat.attackers
-      .filter(card => card.zone === 'battlefield' && card.attacking === player)
-      : game.creatures(game.turnPlayer).filter(card => !card.tapped &&
-        (!card.sick || card.kw('haste') || MTG.OracleV89?.saddleEligible(game, card)) &&
-        game.canAttackAtAll(card) && game.canAttackTarget(card, player));
-    const before = survivalBlocks(game, player, attackers, blockers).outcome;
-    const after = survivalBlocks(game, player, attackers, remaining).outcome;
-    return Math.max(0, combatDanger(after) - combatDanger(before) +
-      Math.max(0, before.life - after.life) * (player.life <= 12 ? 3 : 1.2));
+    const windows = [];
+    const active = game.players.indexOf(game.turnPlayer);
+    for (let offset = game.turnPlayer === player ? 1 : 0; offset < game.players.length; offset++) {
+      const opponent = game.players[(Math.max(0, active) + offset) % game.players.length];
+      if (opponent === player) break;
+      if (opponent.lost) continue;
+      const current = offset === 0;
+      if (current && (game.phase === 'combat'
+        ? !game.combat || ['damage', 'endCombat'].includes(game.step)
+        : !['untap', 'upkeep', 'draw', 'main1'].includes(game.phase) || opponent.turnState.reachedDeclareAttackers)) continue;
+      const declared = current && game.phase === 'combat' && game.combat.blockersDeclared;
+      const attackers = current && game.phase === 'combat' && game.combat.attackers.length
+        ? game.combat.attackers.filter(card => card.zone === 'battlefield' && card.attacking === player)
+        : game.creatures(opponent).filter(card => current
+          ? !card.tapped && game.canAttackAtAll(card) && game.canAttackTarget(card, player)
+          : canAttackNextTurn(game, card, player));
+      if (attackers.length) windows.push({ attackers, current, declared });
+    }
+    const cache = new Map();
+    const score = (taps = [], lifeLoss = 0) => {
+      const removed = new Set(taps);
+      const key = taps.map(card => card.iid).sort((a, b) => a - b).join(',') + ':' + lifeLoss;
+      if (cache.has(key)) return cache.get(key);
+      let remaining = blockers.filter(card => !removed.has(card));
+      let position = { life: player.life - lifeLoss, poison: player.poison || 0,
+        commanderDamage: { ...player.commanderDamage } };
+      let danger = combatDanger({ ...position, lethal: position.life <= 0 });
+      for (const window of windows) {
+        const initial = { ...position, freshTurn: !window.current };
+        // Tapping a declared blocker does not undo its block. Forecast that
+        // combat unchanged, but do not reuse a tapped/dead body next turn.
+        const outcome = window.declared ? forecastCombat(game, player, window.attackers,
+          window.attackers.flatMap(attacker => (attacker.blockedBy || [])
+            .filter(blocker => blocker.zone === 'battlefield').map(blocker => ({ attacker, blocker }))),
+          { ...initial, declared: true, firstStrikeDone: game.step === 'firstStrike' })
+          : survivalBlocks(game, player, window.attackers, remaining, initial).outcome;
+        position = outcome;
+        danger = Math.max(danger, combatDanger(outcome));
+        remaining = remaining.filter(card => !outcome.dead.has(card) && !outcome.removed.has(card));
+        if (outcome.lethal) break;
+      }
+      const value = danger + Math.max(0, player.life - position.life) * (player.life <= 12 ? 3 : 1.2);
+      cache.set(key, value);
+      return value;
+    };
+    const baseline = score();
+    return { exposure: (taps, lifeLoss = 0) => {
+      if (lifeLoss >= player.life) return 1000000;
+      // Paying one life is not itself an incoming attack. Charge its ordinary
+      // resource value once; retain any extra combat/poison/commander danger it
+      // causes (including a newly lethal attack after the draw).
+      const inherentLifePressure = Math.max(0, 12 - player.life + lifeLoss) * 3 - Math.max(0, 12 - player.life) * 3;
+      return Math.max(0, score(taps, lifeLoss) - baseline - inherentLifePressure -
+        lifeLoss * (player.life <= 12 ? 3 : 1.2)) + lifeLoss * (player.life <= 5 ? 1.35 : 0.55);
+    } };
   }
+
+  function routineTapExposure(game, player, source) {
+    return !source.is('Creature') || source.tapped ? 0 : tapDefense(game, player).exposure([source]);
+  }
+
+  function tapPayment(game, player, pool, count, defense, fixed = []) {
+    const picks = [];
+    // Bound wide token boards without restricting the engine's legal pool.
+    const candidates = pool.filter(card => !fixed.includes(card)).slice().sort((a, b) =>
+      permanentGameValue(game, a, player) - permanentGameValue(game, b, player) || a.iid - b.iid)
+      .slice(0, Math.max(24, count));
+    while (picks.length < count && candidates.length) {
+      let best = null, bestScore = Infinity;
+      for (const card of candidates) {
+        const score = defense.exposure(fixed.concat(picks, card)) + permanentGameValue(game, card, player) * 0.06;
+        if (score < bestScore) { best = card; bestScore = score; }
+      }
+      picks.push(best); candidates.splice(candidates.indexOf(best), 1);
+    }
+    return picks;
+  }
+
+  const tapChoiceKinds = new Set(['tapCost', 'addlTap', 'hazelMana']);
+  const routineValueEffects = effects => effects.every(effect =>
+    ['draw', 'discard', 'scry', 'surveil', 'lose-life', 'gain-life', 'add-mana'].includes(effect.action) &&
+    (effect.who || 'you') === 'you');
+
+  function manaTapPayment(game, player, cost, context, defense, fixed = []) {
+    const plan = game.manaSolve(player, cost, context, { excludeCards: fixed })?.plan || [];
+    const taps = plan.filter(step => step.src?.extraCost?.tap).map(step => step.src.card);
+    for (const step of plan) {
+      const info = step.src?.extraCost?.tapPermanents;
+      if (!info || !Number.isInteger(info.n)) continue;
+      const pool = game.bf().filter(card => card.ctrl === player && !card.tapped &&
+        (!info.filter || info.filter(game, card, step.src.card, player)));
+      taps.push(...tapPayment(game, player, pool, info.n, defense, fixed.concat(taps)));
+    }
+    return [...new Set(taps)];
+  }
+
+  // Used only for actual AI mana plans, never affordability probes. The mana
+  // solver retains its color/restriction/backtracking rules and prefers lands
+  // first; this orders equally legal creature sources by defensive usefulness.
+  MTG.botManaTapOrder = function (game, player, cards, fixed = []) {
+    if (!cards.length) return [];
+    const defense = tapDefense(game, player);
+    const unique = [...new Set(cards)].filter(card => !fixed.includes(card));
+    const first = tapPayment(game, player, unique, Math.min(8, unique.length), defense, fixed);
+    // Large token/mana boards must not turn one payment into an unbounded
+    // quadratic combat search. Rank the tail once against the chosen prefix.
+    const tail = unique.filter(card => !first.includes(card)).map(card => ({ card,
+      score: defense.exposure(fixed.concat(first, card)) + permanentGameValue(game, card, player) * 0.06 }));
+    tail.sort((a, b) => a.score - b.score || a.card.iid - b.card.iid);
+    return first.concat(tail.map(row => row.card));
+  };
 
   function sourceDiesInDeclaredCombat(game, source) {
     if (!game.combat?.blockersDeclared || game.step !== 'blockers') return false;
@@ -2567,6 +2662,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (q.type === 'chooseCards') {
       if (q.max === 0) return [{kind: 'chooseCards', picks: []}];
+      if (tapChoiceKinds.has(q.aiHint?.kind) && Number.isInteger(q.min)) {
+        const defense = tapDefense(game, player);
+        const picks = tapPayment(game, player, q.from || [], q.min, defense);
+        if (!q.aiHint?.canPayRemaining || q.aiHint.canPayRemaining(picks)) actions.push({ kind: 'chooseCards', picks });
+      }
       if (q.aiHint?.kind === 'stationTap' && q.aiHint.src?.def.stationCreatureAt) {
         const plan = MTG.stationPlan(game, q.aiHint.src, player, q.from);
         // Use the payment that made the activation worthwhile. Difficulty
@@ -4428,7 +4528,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'mariHit') return value;
     if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
-    if (hint === 'tapCost') return -value - Math.max(0,card.power) * 0.1;
+    if (hint === 'tapCost') return -value * 0.06;
     // Enlist adds the tapped creature's power to the attacker, so the strongest
     // spare body is worth tapping and a commander or a 0-power blocker is not.
     if (hint === 'enlist') return Math.max(0, card.power) * 4 - value * 0.2 - (card.commander ? 14 : 0);
@@ -5739,6 +5839,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         operation && operation.kind !== 'cycling' && !String(operation.kind || '').startsWith('mechanic-'));
       const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
       const spend = (cost.generic || 0) + (cost.pips || []).length;
+      const valueEffects = resolvingOperations.flatMap(operation => operation.effects || []);
+      const routineSpell = valueEffects.length ? routineValueEffects(valueEffects) : sem.roles.length > 0 &&
+        sem.roles.every(role => ['card-draw', 'card-selection', 'ramp', 'mana-rock'].includes(role));
+      if (!card.is('Creature') && routineSpell &&
+          game.creatures(player).some(creature => !creature.tapped)) {
+        const defense = privateData.tapDefense || (privateData.tapDefense = tapDefense(game, player));
+        const taps = manaTapPayment(game, player, cost, { card, castOpts: action.alt || {} }, defense);
+        breakdown.safety -= defense.exposure(taps);
+      }
       breakdown.base = cardDefinitionValue(card.def) + Math.min(5, spend * 0.35);
       breakdown.synergy = sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 2;
       if (card.commander) breakdown.synergy += 2.2 * profile.commanderImportance;
@@ -6210,9 +6319,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
       const effects = ability?.oracleOperation?.effects || [];
       const routineDraw = effects.some(effect => effect.action === 'draw' && effect.who === 'you') &&
-        effects.every(effect => ['draw', 'discard', 'scry', 'surveil'].includes(effect.action) &&
+        effects.every(effect => ['draw', 'discard', 'scry', 'surveil', 'lose-life'].includes(effect.action) &&
           effect.who === 'you');
-      if (ability?.cost?.tap && routineDraw) breakdown.safety -= routineTapExposure(game, player, card);
+      // Price the complete payment, including "tap three untapped Zombies"
+      // (which is not a tap-symbol cost). Tactical removal/untapping and crew
+      // have their own outcome planners; do not charge them for an attacker
+      // they remove or a blocker they create.
+      const tapCost = ability?.cost;
+      const routineValue = routineValueEffects(effects);
+      if (routineValue && !isStationAbility(entry) && (tapCost?.tap || tapCost?.tapPermanents || tapCost?.mana) &&
+          tapCost.tapPermanents?.totalPower === undefined) {
+        const defense = privateData.tapDefense || (privateData.tapDefense = tapDefense(game, player));
+        const taps = tapCost.tap ? [card] : [];
+        const info = tapCost.tapPermanents;
+        if (info && Number.isInteger(info.n)) {
+          const pool = game.bf().filter(candidate => candidate.ctrl === player && !candidate.tapped &&
+            !taps.includes(candidate) && (!info.filter || info.filter(game, candidate, card, player)));
+          taps.push(...tapPayment(game, player, pool, info.n, defense, taps));
+        }
+        if (tapCost.mana) {
+          const mana = typeof tapCost.mana === 'function' ? tapCost.mana(game, card) : tapCost.mana;
+          const cost = game.abilityManaCost(player, card, mana);
+          taps.push(...manaTapPayment(game, player, cost, { card, isAbility: true, ability }, defense, taps));
+        }
+        const lifeLoss = effects.reduce((sum, effect) => effect.action === 'lose-life' && effect.who === 'you'
+          ? sum + (Number(effect.n) || 0) : sum, Number(tapCost.life) || 0);
+        breakdown.safety -= defense.exposure(taps, lifeLoss);
+      }
       // Life is a cost here too (Doom Whisperer: "Pay 2 life: Surveil 2"). The
       // generic base score ignored it, so the bot paid itself down to its last
       // life for card quality. Price it like a spell's life cost, and treat a
@@ -6404,6 +6537,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else {
         breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
+      }
+      if (tapChoiceKinds.has(q?.aiHint?.kind)) {
+        const defense = privateData.tapDefense || (privateData.tapDefense = tapDefense(game, player));
+        breakdown.safety -= defense.exposure(action.picks);
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
