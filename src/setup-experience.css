@@ -596,3 +596,108 @@ body.reduced-motion #setup .mainmenu .mainmenu-featured-deck .mainmenu-deck-art 
 @media (max-width: 900px) {
   #setup[data-setup-stage] .deckviewchoices button, #setup[data-setup-stage] .deckfiltertoggle { min-height: 44px; }
 }
+/* Pod: the player's seat, opponent roster and table settings have distinct roles. */
+#setup[data-setup-stage="pod"] .setupright.mobile-open {
+  max-width: 1180px; padding: 0 !important; border: 0 !important; background: transparent !important;
+}
+#setup .podstage .podseatintro {
+  grid-template-columns: minmax(0, 1fr) 260px; align-items: center; gap: 24px;
+  margin: 0 0 28px; padding: 20px 24px; border: 1px solid var(--ds-line-soft); border-radius: 14px;
+  background: linear-gradient(110deg, rgba(var(--ds-accent-rgb), .08), transparent 65%), var(--ds-panel);
+}
+#setup .podstage .podseatintro .selecteddecksummary small { color: var(--ds-accent-bright); font-size: 11px; letter-spacing: .06em; }
+#setup .podstage .podseatintro .selecteddecksummary b { font-size: 24px; }
+#setup .podstage .podseatintro .cmdchip { background: transparent !important; }
+#setup .podstage .podseatintro .cmdchip img { width: 54px !important; height: 54px !important; }
+#setup .podconfiguration { display: grid; grid-template-columns: minmax(0, 1fr) 258px; align-items: start; gap: 32px; }
+#setup .podconfiguration:has(.podtableoptions[hidden]) { grid-template-columns: minmax(0, 1fr); }
+#setup .podopponents, #setup .podtableoptions { min-width: 0; }
+#setup .podtableoptions { position: sticky; top: 20px; padding: 0 0 0 24px; border-left: 1px solid var(--ds-line-soft); }
+#setup .podkicker { display: block; color: var(--ds-accent-bright); font: 650 11px/1.4 var(--ds-font-body); letter-spacing: .1em; text-transform: uppercase; }
+#setup .podsectionhead h3 { margin: 6px 0; color: var(--ds-text); font: 650 25px/1.15 var(--ds-font-display); letter-spacing: -.025em; }
+#setup .podsectionhead p { margin: 0; color: var(--ds-muted); font: 400 13px/1.6 var(--ds-font-body); }
+#setup .podstage .opponentcount { gap: 8px; margin: 16px 0 20px; }
+#setup .podstage .opponentcount .pbtn { display: flex; flex-direction: column; justify-content: center; gap: 3px; min-height: 66px; padding: 10px; border-radius: 9px; }
+#setup .podstage .opponentcount b { font: 650 15px/1.3 var(--ds-font-display); }
+#setup .podstage .opponentcount small { color: inherit; font: 500 12px/1.4 var(--ds-font-body); opacity: .85; }
+#setup .podstage .botstyles { display: grid !important; gap: 12px !important; }
+#setup .podstage .botconfig {
+  display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 18px; row-gap: 10px;
+  margin: 0; padding: 16px !important; border: 1px solid var(--ds-line-soft) !important;
+  border-radius: 14px !important; background: var(--ds-panel) !important;
+}
+#setup .podstage .botconfig:focus-within { border-color: var(--ds-accent-soft) !important; }
+#setup .botdeckpreview { grid-column: 1; grid-row: 1 / 4; min-width: 0; align-self: start; }
+#setup .botdeckpreview > img { display: block; width: 112px; height: 112px; object-fit: cover; border-radius: 9px; }
+#setup .botdeckpreview.is-random > img { object-fit: contain; padding: 7px; background: var(--ds-panel-raised); }
+#setup .botdeckcopy { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+#setup .botdeckcopy b { color: var(--ds-copy); font: 600 12px/1.5 var(--ds-font-body); overflow-wrap: anywhere; }
+#setup .botdeckcopy small { color: var(--ds-muted); font-size: 11px; }
+#setup .podstage .botstylerow { grid-column: 2; display: flex !important; align-items: center; gap: 10px !important; padding-bottom: 4px; }
+#setup .podstage .botstylerow .pbadge { flex: none; width: 36px; height: 36px; border-radius: 50%; font-size: 17px; }
+#setup .podstage .botstylerow .pbadge img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+#setup .podstage .botidentity { flex: 1; min-width: 0 !important; }
+#setup .podstage .botname { color: var(--ds-text); font: 650 18px/1.25 var(--ds-font-display); }
+#setup .podstage .botidentity > small { margin-top: 3px; font-size: 11px !important; }
+#setup .botseatnumber { align-self: flex-start; color: var(--ds-muted); font: 400 23px/1.3 var(--ds-font-mono); }
+#setup .podstage .botfields { grid-column: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+#setup .podstage .botfield { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; align-content: start; }
+#setup .podstage .botfield > span { display: block; margin-bottom: 5px; font-size: 11px !important; }
+#setup .podstage .botfield .styleselect { min-height: 44px; padding: 10px 9px; background: var(--ds-panel-raised); font-size: 13px; }
+#setup .botstyleinfo { grid-column: 2; min-width: 0; border-top: 1px solid var(--ds-line-soft); }
+#setup .botstyleinfo summary { min-height: 44px; padding-block: 12px; cursor: pointer; color: var(--ds-copy); font-size: 12px; line-height: 1.5; }
+#setup .podstage .botstyleinfo .styledesc { display: block !important; margin: 0 !important; padding: 0 0 4px; border: 0; }
+#setup .podstage .styledesc span { font-size: 11px; line-height: 1.5; }
+#setup .podstage .styledesc p { margin: 7px 0 0; font-size: 12px; line-height: 1.6; }
+#setup .podtableoptions .difficultyrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin: 16px 0 0; }
+#setup .podtableoptions .difficultyrow .pbtn { min-height: 44px; padding: 8px 6px; font-size: 12px; }
+#setup .podtableoptions .difficultynote { margin: 12px 0 0; padding: 0; border: 0; background: transparent; }
+#setup .podtableoptions .difficultynote b { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+#setup .podtableoptions .difficultynote em { margin: 0; font-size: 11px; }
+#setup .podtableoptions .difficultynote p { font-size: 13px; line-height: 1.7; }
+#setup .podtableoptions .podpresets { margin-top: 22px; padding-top: 8px; border-top: 1px solid var(--ds-line-soft); }
+#setup .podpresets summary { min-height: 52px; padding-block: 12px; color: var(--ds-copy); cursor: pointer; font-size: 13px; }
+#setup .podpresets summary small { display: block; margin: 6px 0 0; color: var(--ds-muted); font-size: 12px; line-height: 1.5; }
+#setup .podtableoptions .podpresetchips { grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 4px; }
+#setup .podtableoptions .podpresetchips button { min-height: 64px; background: var(--ds-panel); }
+#setup .podstage .advancedrules { margin-top: 24px; background: transparent !important; }
+#setup .podstage .advancedrules summary, #setup .podstage .supportdiagnostics summary { padding: 16px; }
+#setup .podstage .supportdiagnostics { margin-top: 12px; background: transparent; }
+#setup .podstage .customskillsbutton { width: auto; justify-self: start; margin-top: 8px; }
+#setup .livepodinfo { margin: 22px 0; padding: 28px; border: 1px dashed var(--ds-line); border-radius: 14px; background: var(--ds-panel); }
+#setup .livepodinfo h3 { margin: 10px 0; font: 650 27px/1.2 var(--ds-font-display); }
+#setup .livepodinfo p { max-width: 65ch; margin: 0; color: var(--ds-copy); font-size: 14px; line-height: 1.7; }
+#setup .podstage .podactions { grid-template-columns: minmax(0, 1fr) 110px 190px; align-items: center; margin-top: 24px; padding: 14px 0 max(14px, env(safe-area-inset-bottom)); background: var(--ds-table); }
+#setup .podsummary { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+#setup .podsummary b { color: var(--ds-text); font: 650 18px/1.3 var(--ds-font-display); }
+#setup .podsummary span { color: var(--ds-muted); font: 500 12px/1.5 var(--ds-font-body); }
+#setup .podstage [hidden] { display: none !important; }
+@media (max-width: 900px) {
+  #setup .podstage .podseatintro { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 18px; }
+  #setup .podconfiguration { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  #setup .podtableoptions { position: static; padding: 22px 0 0; border-left: 0; border-top: 1px solid var(--ds-line-soft); }
+  #setup .podtableoptions .podpresetchips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  #setup .podstage .podseatintro { margin-bottom: 24px; padding: 16px; }
+  #setup .podstage .podseatintro .selecteddecksummary b { font-size: 21px; }
+  #setup .podstage .podseatintro .cmdbox { grid-template-columns: minmax(0, 1fr); }
+  #setup .podstage .podseatintro .cmdbox > .pbtn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 4px; }
+  #setup .podsectionhead h3 { font-size: 24px; }
+  #setup .podstage .botconfig { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 14px !important; }
+  #setup .botdeckpreview { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 12px; }
+  #setup .botdeckpreview > img { width: 64px; height: 70px; border-radius: 6px; }
+  #setup .botdeckcopy { margin: 0; gap: 4px; }
+  #setup .botdeckcopy b { font-size: 13px; }
+  #setup .podstage .botstylerow { grid-column: 1 / -1; grid-row: 1; padding-bottom: 0; }
+  #setup .podstage .botfields, #setup .botstyleinfo { grid-column: 1 / -1; }
+  #setup .podstage .botfields { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  #setup .podstage .botfield .styleselect { font-size: 16px; }
+  #setup .podstage .botstyleinfo summary { padding-block: 11px; }
+  #setup .podtableoptions .podpresetchips { grid-template-columns: minmax(0, 1fr); }
+  #setup .podstage .podactions { grid-template-columns: 100px minmax(0, 1fr); gap: 10px; }
+  #setup .podsummary { grid-column: 1 / -1; flex-direction: row; align-items: baseline; justify-content: space-between; gap: 10px; }
+  #setup .podsummary b { font-size: 15px; }
+  #setup .podsummary span { font-size: 11px; text-align: right; }
+  #setup .livepodinfo { padding: 20px; }
+}

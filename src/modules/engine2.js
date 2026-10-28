@@ -7440,10 +7440,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     slow: ['🐢', 3.25, 'Slow — for careful tracking'],
     fast: ['⏩', 0.75, 'Fast — for skipping ahead'],
   };
-  MTG.DEFAULT_PRIO_MODE = 'full';
+  MTG.DEFAULT_PRIO_MODE = 'end';
   MTG.PRIO_MODES = [
-    { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Default: stops at every priority window, including after combat damage and before combat ends.' },
-    { key: 'end', icon: '🌙', short: 'END', label: 'Combat responses + before my turn', desc: 'Stops during combat when you have a legal response and during the end step immediately before your turn. Opposing nonland cards are always shown.' },
+    { key: 'end', icon: '🌙', short: 'END', label: 'Combat responses + before my turn', desc: 'Default: stops when you have a legal response during combat or the end step immediately before your turn. Opposing nonland cards are always shown.' },
+    { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Stops at every priority window, even when you have no legal response.' },
     { key: 'combat', icon: '⚔️', short: 'COMBAT', label: 'Combat + end step', desc: 'Stops after attackers, blockers, first-strike damage, and during the end step before your turn.' },
     { key: 'off', icon: '▶', short: 'ACTIONS', label: 'Required actions only', desc: 'No empty priority stops. Every opposing nonland card is still shown and waits for Proceed.' },
   ];

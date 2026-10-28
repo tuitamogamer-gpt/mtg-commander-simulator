@@ -6893,7 +6893,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 <b>⚔️ Attacking:</b> during combat, click one of your creatures, then choose the player, planeswalker or Battle it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
 <b>🎯 Targets:</b> legal targets <span style="color:#e8c05a">glow gold</span>. Click a card or an opponent panel to select it.<br><br>
 <b>Opponents:</b> click a name or the info button for a public overview. Use the expand button to focus a battlefield. Hand and library counts stay visible; graveyard, exile and command zones open for inspection.<br><br>
-<b>⚡ Instants and priority:</b> <b>Full control</b> is the default and waits at every priority window, including after combat damage and before Main 2. Cast instants or activate abilities, then pass when ready. Change the profile under <b>MENU → Priority stops</b>.<br>
+<b>⚡ Instants and priority:</b> <b>Combat responses + before my turn</b> is the default. It waits when you have a legal response during combat or the end step immediately before your turn; empty windows pass automatically. Opposing nonland cards still wait for <b>Proceed</b>. Change the profile under <b>MENU → Priority stops</b>.<br>
 <b>🃏 Manifest and cloak:</b> a face-down permanent is a real hidden 2/2 card, not a token. You may inspect your own card and turn a creature face up when legal. Cloak also grants ward {2}.<br>
 <b>🖐️ HOLD (R key):</b> arm HOLD whenever you want the game to stop at your next priority window.<br>
 <b>🐢 Speed:</b> ▶️/🐢/⏩ changes bot pacing. A red spotlight clearly shows actions that target you, attack you, or block your attack.<br>
