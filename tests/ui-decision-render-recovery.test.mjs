@@ -209,8 +209,10 @@ test('queued render failures display recovery and block arena shortcuts without 
   const pending = f.ui.pending;
   f.ui.renderArena = () => {throw Error('Injected animation-frame render failure');};
   f.ui.queueRender();
-  assert.equal(f.frames.length, 1);
-  assert.doesNotThrow(() => f.frames.shift()());
+  // The immediate decision render can consume an earlier notification. The
+  // queued callback is harmless, but this small RAF double still holds it.
+  assert.ok(f.frames.length >= 1);
+  while (f.frames.length) assert.doesNotThrow(() => f.frames.shift()());
   assert.equal(f.ui.renderQueued, false);
   assert.equal(f.ui.pending, pending);
   assert.equal(answered, false);

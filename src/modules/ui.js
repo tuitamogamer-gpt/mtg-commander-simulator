@@ -743,7 +743,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     queueRender() {
       if (this.renderQueued) return;
       this.renderQueued = true;
-      requestAnimationFrame(() => { this.renderQueued = false; this.render(); });
+      const ticket = this._queuedRender = { game: this.game };
+      requestAnimationFrame(() => {
+        // A synchronous interaction already painted the newest state. Its
+        // older frame must not rebuild the controls again on pointer-up.
+        if (this._queuedRender !== ticket) return;
+        this.renderQueued = false;
+        this._queuedRender = null;
+        if (this.game !== ticket.game) return;
+        if (typeof window !== 'undefined' && window._ui && window._ui !== this) return;
+        this.render();
+      });
     }
 
     // When an interactive subtree changes, keep its decoded art. Stable
@@ -1076,6 +1086,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     render() {
+      this.renderQueued = false;
+      this._queuedRender = null;
       try {
         if (this.game) this.bindDecisionWaits(this.game);
         this.renderArena();
@@ -1331,12 +1343,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Keep the phase stable on retained nodes; changing the inherited delay
       // on every render would jump their running animations.
       if (!this._arenaRenderContext) root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
-      const context = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort, this.sheet?.card, this.playerSheet, this.zoneBrowse, this.showJudge, this.lastResortPlayerSeat];
+      const context = [g, this.me, this.pending, this.pending?.q, this.react, this.react?.q, this.arenaDragEnabled, this.handSort, this.sheet?.card, this.playerSheet, this.zoneBrowse, this.showJudge, this.lastResortPlayerSeat, this.manualPick, ...(this.pendings || [])];
       const previous = this._arenaRenderContext;
       const surfaces = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort, this.showJudge, this.lastResortPlayerSeat];
       U.commitArenaRender(liveRoot, root, {
         sameGame: !!previous && previous[0] === g && previous[1] === this.me,
-        retain: !!previous && context.every((value, index) => previous[index] === value),
+        retain: !!previous && previous.length === context.length && context.every((value, index) => previous[index] === value),
         retainSurfaces: !!this._arenaSurfaceContext && surfaces.every((value, index) => this._arenaSurfaceContext[index] === value),
         live: !!this.liveSession,
         captureImages: node => this.captureRenderedImages(node),

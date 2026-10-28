@@ -61,6 +61,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
+- **28 October interaction polish:** reliable clicks through table refreshes, uninterrupted X input, fewer duplicate redraws, and shorter Normal-speed pauses. [Verification](reports/releases/2026-10-28-interaction-polish.md)
 - **16 October table and combat fixes:** card art without repeated name labels, stable Proceed panels, explicit Overencumbered payment feedback, and saved player-Aura attachments. [Release checks](reports/releases/2026-10-16-table-and-overencumbered.md)
 - **15 October gameplay polish:** stable problem-report editing, confirmed match results with retryable recovery, and less local-save serialization. [Release checks](reports/releases/2026-10-15-gameplay-polish.md)
 
