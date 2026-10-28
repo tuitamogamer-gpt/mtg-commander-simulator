@@ -184,7 +184,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // podesive AI table (pamti se između partija)
       this.oppHeight = parseInt(localStorage.getItem('mtgOppH') || '42', 10);
       this.oppScale = parseFloat(localStorage.getItem('mtgOppS') || '1');
-      this.prioMode = localStorage.getItem('mtgStopProfile') || 'end';
+      const savedStopProfile = localStorage.getItem('mtgStopProfile');
+      this.prioMode = [...MTG.PRIO_MODES.map(mode => mode.key), 'auto', 'smart', 'fast'].includes(savedStopProfile)
+        ? savedStopProfile : MTG.DEFAULT_PRIO_MODE;
       this.manaMode = localStorage.getItem('mtgManaMode') === 'manual' ? 'manual' : 'auto';
       this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
       this.react = null;         // otvoren prozor za reakciju
@@ -583,7 +585,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q.type === 'priority') {
         // ručni HOLD: staje tačno jednom, u bilo kom modu
         if (this.holdNext) { this.holdNext = false; this._forceStop = true; return undefined; }
-        const mode = this.prioMode || 'auto';
+        const mode = this.prioMode || MTG.DEFAULT_PRIO_MODE;
         if (q.autoPass ? q.autoPass[mode] : MTG.autoPassPolicy(mode, g, q, this.me)) return { kind: 'pass' };
       }
       return undefined;
@@ -603,7 +605,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     openReactWindow(g, q, resolve) {
       if (q.type !== 'priority') return false;
       if (this._forceStop) { this._forceStop = false; return false; }   // ručni HOLD → pravi prompt
-      if (!['end', 'combat', 'auto', 'smart'].includes(this.prioMode || 'end')) return false;
+      if (!['end', 'combat', 'auto', 'smart'].includes(this.prioMode || MTG.DEFAULT_PRIO_MODE)) return false;
       // sigurnosno: ako je nekim čudom već otvoren prozor, zatvori ga (pusti dalje)
       if (this.react) this.skipReactWindow();
       this.focusDecisionView();
@@ -2899,7 +2901,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.applySpeed();
         this.render();
       });
-      const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || 'end')) || MTG.PRIO_MODES[0];
+      const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || MTG.DEFAULT_PRIO_MODE)) || MTG.PRIO_MODES[0];
       action('Priority stops', mode.label, () => { this.quickMenuOpen = false; this.showStops = true; this.render(); });
       section('Display & accessibility');
       action('Music & sound', MTG.audio?.preferences.muted ? 'Muted' : 'Fantasy lo-fi · volume & effects', () => {
@@ -6891,7 +6893,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 <b>⚔️ Attacking:</b> during combat, click one of your creatures, then choose the player, planeswalker or Battle it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
 <b>🎯 Targets:</b> legal targets <span style="color:#e8c05a">glow gold</span>. Click a card or an opponent panel to select it.<br><br>
 <b>Opponents:</b> click a name or the info button for a public overview. Use the expand button to focus a battlefield. Hand and library counts stay visible; graveyard, exile and command zones open for inspection.<br><br>
-<b>⚡ Instants and priority:</b> each opposing nonland card appears on the central action stage and waits for your <b>Proceed</b>. Legal combat responses open a reaction window automatically. The <b>STOP</b> button controls additional priority windows.<br>
+<b>⚡ Instants and priority:</b> <b>Full control</b> is the default and waits at every priority window, including after combat damage and before Main 2. Cast instants or activate abilities, then pass when ready. Change the profile under <b>MENU → Priority stops</b>.<br>
 <b>🃏 Manifest and cloak:</b> a face-down permanent is a real hidden 2/2 card, not a token. You may inspect your own card and turn a creature face up when legal. Cloak also grants ward {2}.<br>
 <b>🖐️ HOLD (R key):</b> arm HOLD whenever you want the game to stop at your next priority window.<br>
 <b>🐢 Speed:</b> ▶️/🐢/⏩ changes bot pacing. A red spotlight clearly shows actions that target you, attack you, or block your attack.<br>

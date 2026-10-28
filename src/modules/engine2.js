@@ -7433,18 +7433,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (myTurn && g.step === 'attackers') return true;
     return false;                                            // PITAJ
   };
-  // Cosmetic pacing only. Required reviews and priority decisions still wait
-  // for the player at every speed; Normal avoids stretching every pause.
+  // Cosmetic pacing only. A 20% lower playback rate means 1 / 0.8 times
+  // the previous delays. Required reviews and priority decisions stay untimed.
   MTG.SPEEDS = {
-    normal: ['▶️', 1, 'Normal — steady pace, every action visible'],
-    slow: ['🐢', 2.6, 'Slow — for careful tracking'],
-    fast: ['⏩', 0.6, 'Fast — for skipping ahead'],
+    normal: ['▶️', 1.25, 'Normal — steady pace, every action visible'],
+    slow: ['🐢', 3.25, 'Slow — for careful tracking'],
+    fast: ['⏩', 0.75, 'Fast — for skipping ahead'],
   };
+  MTG.DEFAULT_PRIO_MODE = 'full';
   MTG.PRIO_MODES = [
+    { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Default: stops at every priority window, including after combat damage and before combat ends.' },
     { key: 'end', icon: '🌙', short: 'END', label: 'Combat responses + before my turn', desc: 'Stops during combat when you have a legal response and during the end step immediately before your turn. Opposing nonland cards are always shown.' },
     { key: 'combat', icon: '⚔️', short: 'COMBAT', label: 'Combat + end step', desc: 'Stops after attackers, blockers, first-strike damage, and during the end step before your turn.' },
     { key: 'off', icon: '▶', short: 'ACTIONS', label: 'Required actions only', desc: 'No empty priority stops. Every opposing nonland card is still shown and waits for Proceed.' },
-    { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Stops at every priority window, like a tournament table.' },
   ];
 
   G.askPriorityAction = async function (p) {

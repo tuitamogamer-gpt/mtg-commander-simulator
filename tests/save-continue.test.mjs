@@ -114,6 +114,7 @@ test('account save schema keeps deterministic setup, private decisions, and prof
   };
   const save = MTG.buildAccountSave(game, setup, [{ shape: { type: 'mulligan' }, response: { kind: 'boolean', value: false } }], 'match-save-schema-0001');
   assert.equal(save.schema, 'commander-save/v1');
+  assert.equal(save.setup.prioMode, 'full');
   assert.equal(save.summary.turn, 7);
   assert.equal(save.summary.decisionCount, 1);
   assert.equal(MTG.validateAccountSave(save), save);
