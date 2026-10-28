@@ -203,7 +203,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const card of [q.aiHint.card, ...(q.aiHint.top || []), ...(q.revealedCards || [])]) if (card instanceof U.CardInst) inspect.add(card);
     }
     const enc = encoder(game, player, inspect);
-    descriptor.ui = enc.encode(Object.fromEntries(questionKeys.filter(key => q[key] !== undefined).map(key => [key, q[key]])));
+    const question = Object.fromEntries(questionKeys.filter(key => q[key] !== undefined).map(key => [key, q[key]]));
+    if (q.type === 'orderTriggers') {
+      // A death trigger's engine data contains the simultaneous-departure
+      // snapshots. Repeating that graph for every trigger made even a
+      // nine-creature wipe exceed Live's decision/message limits. Ordering
+      // needs only public labels, source references and provenance; the
+      // unchanged array positions still hydrate to the host's original
+      // triggers, where all rules data and resolution functions remain.
+      question.triggers = (q.triggers || []).map(({name, src, triggerOrigin}) => ({name, src, triggerOrigin}));
+    }
+    if (q.data) {
+      // Optional death triggers also carry that rules-event graph into their
+      // Yes/No question. The Arena uses data only to show these card references
+      // (decisionCards); resolving the answer still uses the host's full data.
+      question.data = Object.fromEntries(['card', 'source', 'src', 'target']
+        .filter(key => q.data[key] !== undefined).map(key => [key, q.data[key]]));
+    }
+    descriptor.ui = enc.encode(question);
     if (q.controller instanceof U.Player) descriptor.ui.controller = enc.encode(q.controller);
     if (q.aiHint) descriptor.ui.aiHint = enc.encode(Object.fromEntries(['kind', 'card', 'source', 'src', 'target', 'top', 'cards'].filter(key => q.aiHint[key] !== undefined).map(key => [key, q.aiHint[key]])));
     descriptor.objects = [...enc.objects.values()];
