@@ -7433,10 +7433,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (myTurn && g.step === 'attackers') return true;
     return false;                                            // PITAJ
   };
-  // ikona, množilac pauze, opis. Normalna je sada osjetno sporija nego ranije —
-  // cilj je da se VIDI šta bot radi, korak po korak.
+  // Cosmetic pacing only. Required reviews and priority decisions still wait
+  // for the player at every speed; Normal avoids stretching every pause.
   MTG.SPEEDS = {
-    normal: ['▶️', 1.6, 'Normal — every bot action remains visible'],
+    normal: ['▶️', 1, 'Normal — steady pace, every action visible'],
     slow: ['🐢', 2.6, 'Slow — for careful tracking'],
     fast: ['⏩', 0.6, 'Fast — for skipping ahead'],
   };

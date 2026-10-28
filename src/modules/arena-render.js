@@ -21,11 +21,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const lane = [...node.classList].find(name => /^(creature|support|resource)lane$/.test(name)) || '';
     return `${node.tagName}/${node.id}/${node.classList[0] || ''}/${lane}/${identity}`;
   };
-  const same = (old, fresh) => old.isEqualNode(fresh) &&
-    [...old.querySelectorAll('input, select, option')].every((control, index) => {
-      const next = fresh.querySelectorAll('input, select, option')[index];
+  const same = (old, fresh) => {
+    if (!old.isEqualNode(fresh)) return false;
+    const controls = fresh.querySelectorAll('input, select, option, textarea');
+    return [...old.querySelectorAll('input, select, option, textarea')].every((control, index) => {
+      const next = controls[index];
       return control.value === next.value && control.checked === next.checked && control.selected === next.selected;
     });
+  };
   const sameDialog = (old, fresh) => {
     const normalize = node => {
       const copy = node.cloneNode(true);
@@ -33,7 +36,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const element of [copy, ...copy.querySelectorAll('*')]) {
         element.classList.remove('settled');
         if (element.id.startsWith('dialog-title-')) element.removeAttribute('id');
-        if (element.matches('.modal, .sheet, .quickmenu')) for (const attribute of ['role', 'aria-modal', 'aria-labelledby', 'aria-label', 'tabindex']) element.removeAttribute(attribute);
+        if (element.matches('.modal, .sheet, .quickmenu, .reveal')) for (const attribute of ['role', 'aria-modal', 'aria-labelledby', 'aria-label', 'tabindex']) element.removeAttribute(attribute);
       }
       return copy;
     };
@@ -81,9 +84,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // edit that exact draft, so keep the connected editor even when an
           // underlying decision changes; replacing it interrupts text input.
           else if (options.sameGame && old._problemReportDraft && old._problemReportDraft === next._problemReportDraft) result = old;
-          // A pending recap is stable in Solo too: keep its open details,
-          // reading position and one-time entrance through incidental renders.
-          else if (options.retain && (options.live || old.matches('.resolutionrecapoverlay')) && old.matches('.overlay, .quickmenuov') && sameDialog(old, next)) result = old;
+          // Keep the whole decision surface, including callbacks that close
+          // over its inputs. An incidental Solo render must not swallow a
+          // pointer gesture or reset typing. A new question/context or changed
+          // content still replaces the subtree and installs fresh callbacks.
+          else if (options.retain && (
+            old.matches('.promptbar, .actionstagewrap, .revealwrap') ||
+            old.matches('.overlay, .quickmenuov') &&
+              (options.live || old.matches('.resolutionrecapoverlay') || old.querySelector('[data-decision-type]'))
+          ) && sameDialog(old, next)) result = old;
           else if (options.retain && options.live && old.closest('.lastresortoverlay') && old.matches('button') && same(old, next)) result = old;
           else if (options.retain && options.live && old.matches('.lastresortoverlay, .lastresortsheet, .lastresortgrid, .lastresorttokens, .lastresortfoot')) {
             // Recovery callbacks refer to stable player objects and the live
