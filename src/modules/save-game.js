@@ -182,7 +182,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.accountSaveSettingsAt = function (save, index) {
     assert(Number.isInteger(index) && index >= 0 && index <= save.decisions.length,
       'the settings decision offset is invalid.');
-    const settings = {manaMode: save.setup.manaMode || 'auto', prioMode: save.setup.prioMode || 'end'};
+    const settings = {manaMode: save.setup.manaMode || 'auto', prioMode: save.setup.prioMode || MTG.DEFAULT_PRIO_MODE};
     for (const entry of save.decisions.slice(0, index)) {
       if (entry?.kind === 'side' && entry.action?.type === 'settings') Object.assign(settings, savedSettings(entry.action));
     }
@@ -307,7 +307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         diplomacyEnabled: !!setup.diplomacyEnabled,
         difficulty: setup.difficulty || 'normal',
         manaMode: setup.manaMode === 'manual' ? 'manual' : 'auto',
-        prioMode: setup.prioMode || 'end',
+        prioMode: setup.prioMode || MTG.DEFAULT_PRIO_MODE,
         seed: String(setup.seed),
         // Imported decks live only in the library that owns them. A checkpoint
         // that uses one carries the list itself, so Continue can rebuild the

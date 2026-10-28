@@ -287,7 +287,7 @@ The built-in library contains **176 precon decks, each with 100 cards**. Choose 
 2. Select a built-in deck or a ready list in **My Library**. Its deck overview explains the game plan and card composition.
 3. Continue to **Pod**, choose opponents and settings, and review the table before starting.
 4. Keep or mulligan your opening hand. Use the available action buttons to play lands, cast spells, activate abilities, and pass priority.
-5. **HOLD** arms a stop at the next priority window; **Proceed** advances a presented action or review. Important spells and combat decisions wait for your input. Click controls remain available alongside optional drag controls.
+5. **Full control** is the default priority profile: every priority window waits for your input, including after combat damage and before Main 2. Change it under **MENU → Priority stops**; previously selected profiles remain saved. **HOLD** arms a stop at the next priority window; **Proceed** advances a presented action or review. Click controls remain available alongside optional drag controls.
 
 ### Decisions and result reviews
 
