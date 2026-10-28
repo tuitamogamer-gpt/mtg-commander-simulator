@@ -140,6 +140,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.eventCursor = record.id;
         const event = this.game.decode(record.event);
         U.audio?.handle(event, this.game, { replay: false });
+        this.ui.showActionEffect?.(event);
         const methods = { effectNotice: 'showEffectNotice', gameEffect: 'showGameEffect', battlefieldArrival: 'showBattlefieldArrival', monarchChanged: 'showMonarchChange' };
         if (event.type === 'turn' && event.p) this.ui.showBanner(event.p === this.ui.me ? '⭐ YOUR TURN' : `Turn ${snapshot.turn}: ${event.p.name}`, event.p === this.ui.me);
         else if (event.type === 'effectNotice') this.ui.showEffectNotice(event.text, event.kind, event);
@@ -155,6 +156,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (allowed.has(event.type)) {
         const g = this.authority;
         const fields = ['type', 'p', 'card', 'src', 'source', 'target', 'targets', 'amount', 'n', 'kind', 'text', 'name', 'color', 'combat', 'player', 'winner', 'from', 'to', 'previous', 'current', 'phase', 'step', 'targetKind', 'targetCard', 'targetPlayer', 'toPlayer', 'fromZone', 'toZone', 'combatStep', 'combatIndex', 'previousLife', 'life', 'count', 'counter', 'delta', 'spellTypes', 'dungeon', 'room'];
+        fields.push('attacks');
         const entry = Object.fromEntries(fields.filter(key => event[key] !== undefined).map(key => [key, event[key]]));
         const audioFacts = U.sanitizeAudioFacts(event.audioFacts);
         if (audioFacts) entry.audioFacts = audioFacts;

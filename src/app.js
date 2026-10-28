@@ -706,6 +706,7 @@ import './modules/arena-tools.js';
 import './modules/experience-tools.js';
 import './modules/help-experience.js';
 import './modules/command-table.js';
+import './modules/action-effects.js';
 import './modules/landing.js';
 import './modules/multiplayer-presentation.js';
 import './modules/multiplayer-arena.js';
