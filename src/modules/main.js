@@ -1465,6 +1465,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
 
     // ---------- 2 · POD BUILDER ----------
+    const podSummary = el('div', 'podsummary');
+    podSummary.setAttribute('role', 'status');
+    podSummary.setAttribute('aria-live', 'polite');
+    const updatePodSummary = () => {
+      const count = state.mode === 'online' ? state.livePlayers : state.ai + 1;
+      const detail = state.mode === 'online' ? 'Assign seats in the lobby' : `${state.difficulty[0].toUpperCase() + state.difficulty.slice(1)} difficulty · You + ${state.ai} AI`;
+      podSummary.innerHTML = `<b>${count}-player table</b><span>${esc(detail)}</span>`;
+    };
     const podHead = el('div', 'controlintro', `
       <button type="button" class="podclose" aria-label="Close Pod Builder">×</button>
       <span>Pod builder</span>
@@ -1496,7 +1504,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         state.livePlayers = count;
         livePlayerRow.querySelectorAll('[data-live-players]').forEach(item => setChoiceSelected(item, item === button));
         updateStartLabel();
-        opponentsLabel.innerHTML = `<i>Live pod</i> ${count} total seats <em>Add humans or bots in the lobby</em>`;
+        opponentsLabel.innerHTML = `<span class="podkicker">Your live table</span><h3>${count} seats, one pod</h3><p>Invite friends and assign humans or bots in the lobby.</p>`;
       };
       livePlayerRow.querySelector('.liveplayerchoices').appendChild(button);
     }
@@ -1506,6 +1514,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
+      updatePodSummary();
       if (!state.deck) return;
       const c = state.commanders;
       startBtn.textContent = state.mode === 'online' ? `Create ${state.livePlayers}-player room` : state.importedDeckId ? 'Review pod →' : 'Start game';
@@ -1519,7 +1528,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const deckSummary = el('div', 'selecteddecksummary');
       deckSummary.setAttribute('role', 'status');
       deckSummary.setAttribute('aria-live', 'polite');
-      deckSummary.innerHTML = `<span><small>Selected deck</small><b>${esc(state.deck)}</b></span><em>Ready</em>`;
+      deckSummary.innerHTML = `<span><small>Your seat · 01</small><b>${esc(state.deck)}</b></span><em>Ready</em>`;
       cmdBox.appendChild(deckSummary);
       const chosen = el('div', 'cmdchosen');
       for (const nm of state.commanders) {
@@ -1553,8 +1562,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (selectedBar) selectedBar.innerHTML = `<img src="${cardImg(state.commanders[0])}" alt="" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(state.deck)}</b></span>`;
     }
 
-    const opponentsLabel = el('div', 'seclabel', '<i>Pod</i> Opponents <em>Choose each AI deck</em>');
+    const opponentsLabel = el('div', 'podsectionhead', '<span class="podkicker">Across the table</span><h3>Choose your opponents</h3><p>A deck and a play style for every seat.</p>');
     right.appendChild(opponentsLabel);
+    const podConfiguration = el('div', 'podconfiguration');
+    const podOpponents = el('section', 'podopponents');
+    podOpponents.setAttribute('aria-label', 'Opponent seats');
+    const podTableOptions = el('aside', 'podtableoptions');
+    podTableOptions.setAttribute('aria-label', 'Table difficulty and presets');
+    const livePodInfo = el('div', 'livepodinfo', '<span class="podkicker">Next: the lobby</span><h3>Leave a seat for your friends.</h3><p>Create the room to get an invite link. Each player chooses their deck, and you can fill open seats with AI.</p>');
     const aiRow = el('div', 'btnrow center opponentcount');
     const botStyles = el('div', 'botstyles');
     const getStyleGroups = () => {
@@ -1581,6 +1596,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const renderBotStyles = (focusSeat = null) => {
       botStyles.innerHTML = '';
+      updatePodSummary();
       const botNames = ['AI Dragon', 'AI Wolf', 'AI Raven'];
       const deckNames = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).sort((a, b) => a.localeCompare(b));
       // Decks the player imported are offered to bots too, but only while the
@@ -1591,6 +1607,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .map(entry => entry.name).sort((a, b) => a.localeCompare(b));
       for (let i = 0; i < state.ai; i++) {
         const config = el('div', 'botconfig');
+        config.dataset.seat = String(i + 2);
+        const deck = MTG.DECKS[state.aiDecks[i]];
+        const commanders = deck && !state.aiRandomCommanders ? U.defaultCommanders(deck, MTG.DEFS) : [];
+        const lead = commanders[0];
+        const preview = el('div', 'botdeckpreview' + (lead ? '' : ' is-random'));
+        const previewLabel = commanders.join(' + ') || (deck ? 'Commander chosen at start' : 'A surprise at the table');
+        preview.innerHTML = `<img src="${escAttr(lead ? artURL(lead) : U.cardBackURL?.() || './assets/cardbacks/obsidian.webp')}" alt="${escAttr(lead || 'Face-down deck')}" loading="lazy" onerror="MTG.imgFail(this)"><span class="botdeckcopy"><b>${esc(previewLabel)}</b><small>${deck ? 'Commander' : 'Random deck'}</small></span>`;
         const row = el('div', 'botstylerow');
         const badge = el('span', 'pbadge');
         badge.setAttribute('aria-hidden', 'true');
@@ -1614,7 +1637,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           badge.title = style?.description || STYLE_DESC[k] || '';
         };
-        const identity = el('div', 'botidentity', `<span class="botname">${esc(botNames[i])}</span><small>Seat 0${i + 1}</small>`);
+        const identity = el('div', 'botidentity', `<span class="botname">${esc(botNames[i])}</span><small>AI opponent</small>`);
+        const seatNumber = el('span', 'botseatnumber', `0${i + 2}`);
+        seatNumber.setAttribute('aria-label', `Seat ${i + 2}`);
         const fields = el('div', 'botfields');
         const deckField = el('label', 'botfield', '<span>Deck</span>');
         const deckSelect = el('select', 'styleselect deckselect');
@@ -1664,12 +1689,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         styleField.appendChild(sel);
         const desc = el('div', 'styledesc');
+        const styleInfo = el('details', 'botstyleinfo');
+        const styleSummary = el('summary', '', 'How this opponent plays');
+        styleInfo.append(styleSummary, desc);
         desc.setAttribute('role', 'status');
         desc.setAttribute('aria-live', 'polite');
         const updateStylePresentation = k => {
           const style = MTG.AI_STYLES[k];
           config.dataset.aiStyle = k;
           config.classList.toggle('signaturestyle', !!(style && style.signature));
+          styleSummary.textContent = k === 'random' ? 'Style revealed when the game starts' : `How ${style?.label || 'this opponent'} plays`;
           desc.innerHTML = `<span>${style && style.signature ? `${esc(style.name)} · ${esc(style.archetype)} signature` : style?.custom ? `Custom skill · based on ${esc(MTG.AI_STYLES[style.baseStyle].label)}` : style ? 'Core archetype' : 'Random assignment'}</span><p>${esc(style?.description || STYLE_DESC[k] || '')}</p>`;
           setBadge(k);
         };
@@ -1679,14 +1708,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           updateStylePresentation(sel.value);
         };
         fields.appendChild(deckField); fields.appendChild(styleField);
-        row.appendChild(badge); row.appendChild(identity); row.appendChild(fields);
-        config.appendChild(row); config.appendChild(desc);
+        row.append(badge, identity, seatNumber);
+        config.append(preview, row, fields, styleInfo);
         botStyles.appendChild(config);
       }
       if (Number.isInteger(focusSeat)) requestAnimationFrame(() => botStyles.querySelectorAll('.deckselect')[focusSeat]?.focus({ preventScroll: true }));
     };
     for (const n of [1, 2, 3]) {
-      const b = el('button', 'pbtn choice' + (n === state.ai ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI players');
+      const b = el('button', 'pbtn choice' + (n === state.ai ? ' selected' : ''), `<b>${n === 1 ? 'Duel' : n === 2 ? 'Trio' : 'Full pod'}</b><small>You + ${n} AI</small>`);
+      b.type = 'button';
       b.dataset.aiCount = String(n);
       setChoiceSelected(b, n === state.ai);
       b.onclick = () => { state.ai = n; aiRow.querySelectorAll('.pbtn').forEach(item => setChoiceSelected(item, item === b)); renderBotStyles(); };
@@ -1707,7 +1737,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderBotStyles();
 
     const advanced = el('details', 'advancedrules');
-    advanced.appendChild(el('summary', '', '<span>Advanced rules</span><small>Commander options, Arena controls, politics and difficulty</small>'));
+    advanced.appendChild(el('summary', '', '<span>More table options</span><small>Commanders, politics, controls and custom AI skills</small>'));
     // The reveal animation belongs to the click that opens the panel, not to
     // later re-renders of the pod builder while it stays open.
     advanced.addEventListener('toggle', () => {
@@ -1721,7 +1751,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const randRow = el('label', 'cmdcheck');
     randRow.innerHTML = '<input type="checkbox"> <span>AI bots choose random commanders (including partners)</span>';
-    randRow.querySelector('input').onchange = e => { state.aiRandomCommanders = e.target.checked; };
+    randRow.querySelector('input').onchange = e => { state.aiRandomCommanders = e.target.checked; renderBotStyles(); };
     advancedBody.appendChild(randRow);
 
     const houseRow = el('label', 'cmdcheck');
@@ -1753,7 +1783,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     advancedBody.appendChild(arenaDragRow);
 
-    const difficultyLabel = el('div', 'seclabel', '<i>AI</i> Difficulty');
+    const difficultyLabel = el('div', 'podsectionhead', '<span class="podkicker">Table settings</span><h3>Set the challenge</h3><p>How far the bots think ahead.</p>');
     advancedBody.appendChild(difficultyLabel);
     // What actually changes between the levels (see AI_SEARCH_CONFIG in
     // ai-v2.js): how many candidate plays the bots weigh, how far ahead they
@@ -1782,6 +1812,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       diffNote.classList.toggle('previewing', !!previewing);
       diffNote.innerHTML = `<b>${esc(note.title)}<em>${esc(note.tag)}${previewing ? ' · hover preview' : ' · selected'}</em></b>` +
         `<p>${esc(note.text)}</p>`;
+      if (!previewing) updatePodSummary();
     };
     for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
@@ -1851,7 +1882,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const podBack = el('button', 'pbtn podback', '← Decks');
     podBack.type = 'button';
     podBack.onclick = () => setSetupStage('deck');
-    podActions.append(podBack, podNext);
+    podActions.append(podSummary, podBack, podNext);
     right.appendChild(podActions);
 
     const setMatchMode = mode => {
@@ -1872,13 +1903,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       difficultyLabel.hidden = state.mode === 'online';
       diffRow.hidden = state.mode === 'online';
       diffNote.hidden = state.mode === 'online';
+      podTableOptions.hidden = state.mode === 'online';
+      livePodInfo.hidden = state.mode !== 'online';
+      aiRow.querySelectorAll('[data-ai-count]').forEach(button => setChoiceSelected(button, Number(button.dataset.aiCount) === state.ai));
       opponentsLabel.innerHTML = state.mode === 'online'
-        ? `<i>Live pod</i> ${state.livePlayers} total seats <em>Add humans or bots in the lobby</em>`
-        : '<i>Pod</i> Opponents <em>Choose each AI deck</em>';
+        ? `<span class="podkicker">Your live table</span><h3>${state.livePlayers} seats, one pod</h3><p>Invite friends and assign humans or bots in the lobby.</p>`
+        : '<span class="podkicker">Across the table</span><h3>Choose your opponents</h3><p>A deck and a play style for every seat.</p>';
       diplomacyRow.hidden = state.mode === 'online';
       advancedSummaryCopy.textContent = state.mode === 'online'
         ? 'Commander damage and Arena controls for this live table'
-        : 'Commander options, Arena controls, politics and difficulty';
+        : 'Commanders, politics, controls and custom AI skills';
       if (state.mode === 'online') {
         state.diplomacyEnabled = false;
         diplomacyRow.querySelector('input').checked = false;
@@ -1901,6 +1935,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     podSeatIntro.append(cmdBox, matchType);
     commanderLabel.remove();
     podStage.prepend(podSeatIntro);
+    podOpponents.append(opponentsLabel, livePlayerRow, aiRow, botLoadoutsLabel, botStyles, livePodInfo);
+    podTableOptions.append(difficultyLabel, diffRow, diffNote);
+    podConfiguration.append(podOpponents, podTableOptions);
+    podSeatIntro.after(podConfiguration);
+    advancedBody.appendChild(customSkillsButton);
     const reviewStage = el('section', 'setupstagepanel reviewstage');
     reviewStage.setAttribute('aria-labelledby', 'setup-review-title');
     right.appendChild(podStage);
@@ -2066,6 +2105,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
       diffRow.querySelectorAll('[data-difficulty]').forEach(button =>
         setChoiceSelected(button, button.dataset.difficulty === state.difficulty));
+      renderDifficultyNote(state.difficulty, false);
       renderCmdBox();
       renderBotStyles();
       updateStartLabel();
@@ -2172,8 +2212,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     };
     renderSavedPods();
-    const presets = el('section', 'podpresets');
-    presets.innerHTML = '<div><b>Quick presets</b><small>Reset the table to a starting point.</small></div><div class="podpresetchips"><button type="button" data-pod-preset="learn"><b>Learn a deck</b><small>1 AI · easy · balanced</small></button><button type="button" data-pod-preset="classic"><b>Classic pod</b><small>3 AI · normal · varied styles</small></button><button type="button" data-pod-preset="challenge"><b>Table challenge</b><small>3 AI · hard · politics on</small></button></div>';
+    const presets = el('details', 'podpresets');
+    presets.innerHTML = '<summary><b>Quick presets</b><small>Replace your opponent and table choices</small></summary><div class="podpresetchips"><button type="button" data-pod-preset="learn"><b>Learn a deck</b><small>1 AI · easy · balanced</small></button><button type="button" data-pod-preset="classic"><b>Classic pod</b><small>3 AI · normal · varied styles</small></button><button type="button" data-pod-preset="challenge"><b>Table challenge</b><small>3 AI · hard · politics on</small></button></div>';
     presets.querySelectorAll('[data-pod-preset]').forEach(button => {
       button.onclick = () => {
         setMatchMode('solo');
@@ -2191,7 +2231,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         presets.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
       };
     });
-    podStage.insertBefore(presets, customSkillsButton);
+    podTableOptions.appendChild(presets);
     const clearPresetSelection = () => presets.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', 'false'));
     podStage.addEventListener('change', clearPresetSelection);
     podStage.addEventListener('click', event => {

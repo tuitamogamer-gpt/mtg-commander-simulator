@@ -80,7 +80,7 @@ test('saved settings respect the checkpoint offset and do not rewrite the origin
   assert.deepEqual(wire(MTG.accountSaveSettingsAt(save,3)),{manaMode:'manual',prioMode:'off'});
   assert.deepEqual(wire(MTG.accountSaveSettingsAt(save,4)),{manaMode:'auto',prioMode:'full'});
   assert.deepEqual(save.setup,{manaMode:'auto',prioMode:'end'});
-  assert.deepEqual(wire(MTG.accountSaveSettingsAt({setup:{},decisions:[]},0)),{manaMode:'auto',prioMode:'full'});
+  assert.deepEqual(wire(MTG.accountSaveSettingsAt({setup:{},decisions:[]},0)),{manaMode:'auto',prioMode:'end'});
   for(const index of [-1,0.5,5])assert.throws(()=>MTG.accountSaveSettingsAt(save,index),/settings decision offset/);
   const {game,player}=fixture(async()=>({kind:'done'}),'auto');
   for(const entry of [{type:'settings'},{type:'settings',manaMode:'other'},{type:'settings',prioMode:'other'}])

@@ -27,8 +27,8 @@ async function load() {
   await page.locator('.deckentry').first().waitFor({timeout: 120000});
 }
 
-async function fixture({withSacrifice = false} = {}) {
-  await page.evaluate(async withSacrifice => {
+async function fixture({withSacrifice = false, beforeTurn = false} = {}) {
+  await page.evaluate(async ({withSacrifice, beforeTurn}) => {
     const old = document.querySelector('#game');
     old.replaceWith(old.cloneNode(false));
     document.querySelector('#setup').style.display = 'none';
@@ -61,18 +61,23 @@ async function fixture({withSacrifice = false} = {}) {
       token = game.creatures(you).find(card => card.isToken);
       token.attacking = opponent; token.tapped = true;
     }
+    if (beforeTurn) {
+      game.turnPlayer = opponent; game.phase = 'end'; game.step = 'end';
+      put('Island'); put('Opt', you, 'hand');
+    }
     game.combat = {attackingPlayer: you, attackers: token ? [token] : []};
     game.recalc();
     window._ui = ui; window._game = game;
     window.__defaults = {you, opponent, token, questions, done: false, error: null};
     ui.render();
-    void game.endCombatStep(you).then(() => {
-      game.phase = 'main2'; game.step = 'main'; __defaults.done = true; ui.render();
+    const round = beforeTurn ? game.priorityRound(opponent) : game.endCombatStep(you);
+    void round.then(() => {
+      if (!beforeTurn) {game.phase = 'main2'; game.step = 'main';}
+      __defaults.done = true; ui.render();
     }, error => {__defaults.error = error.stack;});
-  }, withSacrifice);
-  await page.waitForFunction(() => _ui.pending?.q.type === 'priority' || __defaults.done || __defaults.error);
+  }, {withSacrifice, beforeTurn});
+  await page.waitForFunction(() => _ui.react || _ui.pending?.q.type === 'priority' || __defaults.done || __defaults.error);
   assert.equal(await page.evaluate(() => __defaults.error), null);
-  assert.equal(await page.evaluate(() => _ui.pending?.q.type), 'priority');
 }
 
 async function stopSettings() {
@@ -95,31 +100,32 @@ try {
     await fixture();
     assert.deepEqual(await page.evaluate(() => ({profile: _ui.prioMode, speed: _ui.speed,
       factor: _game.speedFactor, preference: localStorage.getItem('mtgStopProfile'),
-      choices: _ui.pending.q.casts.length + _ui.pending.q.acts.length})),
-    {profile: 'full', speed: 'normal', factor: 1.25, preference: null, choices: 0});
+      done: __defaults.done, pending: !!_ui.pending, reaction: !!_ui.react, phase: _game.phase})),
+    {profile: 'end', speed: 'normal', factor: 1.25, preference: null,
+      done: true, pending: false, reaction: false, phase: 'main2'});
     await stopSettings();
-    assert.equal(await page.locator('[data-stop-mode="full"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('[data-stop-mode="end"]').getAttribute('aria-pressed'), 'true');
     await page.screenshot({path: `${output}/default-settings-${width}.png`});
     await page.getByRole('button', {name: 'Back to game', exact: true}).click();
-    await page.evaluate(() => {window.__originalPriority = _ui.pending; _ui.render(); _ui.queueRender();});
-    await page.waitForTimeout(350);
-    assert.equal(await page.evaluate(() => _ui.pending === __originalPriority &&
-      !__defaults.done && _game.phase === 'combat' && _game.step === 'endCombat'), true);
-    await page.locator('.promptbar .pbtn.primary').filter({hasText: /^Proceed/}).click();
-    await page.waitForFunction(() => __defaults.done);
-    assert.equal(await page.evaluate(() => _game.phase), 'main2');
-    check(`${width}px fresh Full control selected; empty combat priority waits for explicit Proceed; Normal pacing applied`);
+    check(`${width}px fresh response profile selected; empty combat priority passes automatically; Normal pacing unchanged`);
 
     await fixture({withSacrifice: true});
+    assert.equal(await page.evaluate(() => _ui.react.q.acts.some(entry => entry.card.name === 'Viscera Seer')), true);
+    await page.evaluate(() => {window.__originalPriority = _ui.react; _ui.render(); _ui.queueRender();});
+    await page.waitForTimeout(350);
+    assert.equal(await page.evaluate(() => _ui.react === __originalPriority &&
+      !__defaults.done && _game.phase === 'combat' && _game.step === 'endCombat'), true);
+    await page.locator('.promptbar .pbtn').filter({hasText: /RESPOND/}).click();
     await page.locator('.priorityabilities .abilitybtn').filter({hasText: /Viscera Seer/}).click();
     await page.waitForFunction(() => _ui.pending?.q.type === 'chooseCards');
     const tokenId = await page.evaluate(() => __defaults.token.iid);
     await page.locator(`.cardselectionmodal .bigcard[data-iid="${tokenId}"]`).click();
     await page.locator('.cardselectionmodal .pbtn.primary').click();
-    let scries = 0, priorityStops = 0;
+    let scries = 0, responseStops = 0;
     for (let n = 0; n < 12; n++) {
-      await page.waitForFunction(() => !!_ui.pending || __defaults.done || __defaults.error);
-      const state = await page.evaluate(() => ({done: __defaults.done, error: __defaults.error, type: _ui.pending?.q.type}));
+      await page.waitForFunction(() => !!_ui.pending || !!_ui.react || __defaults.done || __defaults.error);
+      const state = await page.evaluate(() => ({done: __defaults.done, error: __defaults.error,
+        type: _ui.pending?.q.type || _ui.react?.q.type}));
       assert.equal(state.error, null);
       if (state.done) break;
       if (state.type === 'scry') {
@@ -127,24 +133,33 @@ try {
         await page.screenshot({path: `${output}/zurgo-seer-scry-${width}.png`});
         await page.locator('.scrydecision .pbtn.primary').click();
       } else {
-        assert.equal(state.type, 'priority'); priorityStops++;
-        await page.locator('.promptbar .pbtn.primary').filter({hasText: /^Proceed/}).click();
+        assert.equal(state.type, 'priority'); responseStops++;
+        await page.locator('.promptbar .pbtn').filter({hasText: /^Proceed/}).click();
       }
     }
     assert.deepEqual(await page.evaluate(() => ({done: __defaults.done, error: __defaults.error,
       phase: _game.phase, hand: __defaults.you.hand.length, opponentLife: __defaults.opponent.life,
       tokenZone: __defaults.token.zone, stack: _game.stack.length})),
     {done: true, error: null, phase: 'main2', hand: 1, opponentLife: 40, tokenZone: 'ceased', stack: 0});
-    assert.equal(scries, 1); assert.ok(priorityStops >= 3);
+    assert.equal(scries, 1); assert.ok(responseStops >= 1);
     check(`${width}px end-of-combat Seer activation sacrifices an attacking token; Zurgo draws one and Seer scries one`);
 
+    await fixture({beforeTurn: true});
+    assert.equal(await page.evaluate(() => MTG.isLastEndStepBeforeMyTurn(_game, _ui.me)), true);
+    assert.deepEqual(await page.evaluate(() => _ui.react.q.casts.map(entry => entry.card.name)), ['Opt']);
+    await page.waitForTimeout(350);
+    assert.equal(await page.evaluate(() => !__defaults.done && !!_ui.react), true);
+    await page.getByRole('button', {name: /Continue to my turn/}).click();
+    await page.waitForFunction(() => __defaults.done);
+    check(`${width}px legal instant remains available at the last end step before your turn`);
+
     await stopSettings();
-    await page.locator('[data-stop-mode="off"]').click();
-    assert.equal(await page.evaluate(() => localStorage.getItem('mtgStopProfile')), 'off');
+    await page.locator('[data-stop-mode="full"]').click();
+    assert.equal(await page.evaluate(() => localStorage.getItem('mtgStopProfile')), 'full');
     await page.reload();
     await page.locator('[data-menu-action="solo"]').first().click();
     await page.locator('.deckentry').first().waitFor({timeout: 120000});
-    assert.equal(await page.evaluate(() => new MTG.UI().prioMode), 'off');
+    assert.equal(await page.evaluate(() => new MTG.UI().prioMode), 'full');
     check(`${width}px explicit priority choice survives reload`);
     await context.close();
   }

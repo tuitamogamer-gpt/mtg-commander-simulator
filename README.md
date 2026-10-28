@@ -285,9 +285,9 @@ The built-in library contains **176 precon decks, each with 100 cards**. Choose 
 
 1. Open the game and choose **Play solo**, or open **Guide** for a walkthrough.
 2. Select a built-in deck or a ready list in **My Library**. Its deck overview explains the game plan and card composition.
-3. Continue to **Pod**, choose opponents and settings, and review the table before starting.
+3. Continue to **Pod**. Choose Duel, Trio or Full pod, then set each opponent's deck and play style. Seat previews show the selected commander, or a card back for random choices. Difficulty is beside the roster on desktop and below it on phones; presets and extra table options expand when needed. Review the table before starting.
 4. Keep or mulligan your opening hand. Use the available action buttons to play lands, cast spells, activate abilities, and pass priority.
-5. **Full control** is the default priority profile: every priority window waits for your input, including after combat damage and before Main 2. Change it under **MENU → Priority stops**; previously selected profiles remain saved. **HOLD** arms a stop at the next priority window; **Proceed** advances a presented action or review. Click controls remain available alongside optional drag controls.
+5. **Combat responses + before my turn** is the default priority profile: it waits when you have a legal response during combat or the end step immediately before your turn. Empty windows pass automatically; opposing nonland cards still wait for **Proceed**. Change the profile under **MENU → Priority stops**; previously selected profiles remain saved. **HOLD** arms a stop at the next priority window. Click controls remain available alongside optional drag controls.
 
 ### Decisions and result reviews
 
