@@ -676,28 +676,7 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   #game.command-table.ct-desktop-lands .ct-focus-board { grid-area: info; width: 24px; min-height: 28px; margin: 0; padding: 3px; }
   #game.command-table.ct-desktop-lands .ct-focus-board .gameicon { width: 14px; height: 14px; }
 
-  body.game-active #game.command-table.ct-hand-command.empty-hand { --ct-hand: 86px; }
-  #game.command-table.ct-hand-command .handtools { order: -3; flex: 0 0 188px; width: 188px; gap: 2px; padding: 0; }
-  #game.command-table.ct-hand-command .handtoolstitle { font-size: 10px; line-height: 16px; }
-  #game.command-table.ct-hand-command .handtoolstitle .gameicon { width: 14px; height: 14px; }
-  #game.command-table.ct-hand-command .handsortlabel { margin: 0; }
-  #game.command-table.ct-hand-command .handsortlabel > span { display: none; }
-  #game.command-table.ct-hand-command .handtools select { min-height: 28px; height: 28px; padding: 1px 6px; font-size: 11px; }
-  body.game-active #game.command-table.ct-partner-command.empty-hand { --ct-hand: 110px; }
-  #game.command-table.ct-hand-command.empty-hand .handsortlabel { display: none; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone {
-    order: 0; flex: 1 1 auto; min-height: 0; min-width: 0; width: 100%; max-width: none; align-self: stretch;
-    display: flex; flex-direction: column !important; flex-wrap: nowrap !important; gap: 3px; overflow: auto;
-    margin: 0; padding: 0; border: 0; scrollbar-width: thin;
-  }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czcard { box-sizing: border-box; flex: 0 0 auto; width: 100%; min-width: 0; max-width: 100%; min-height: 32px; padding: 1px 4px; gap: 5px; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czcard > img { width: 20px; height: 27px; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czinfo { min-width: 0; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czlabel { display: none; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czname { font-size: 11px !important; line-height: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czcost { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 10px; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czcard .msym { width: 12px; height: 12px; min-width: 12px; font-size: 9px; }
-  #game.command-table.ct-desktop-lands .ct-hand-command-zone .czgo { padding: 3px 4px; font-size: 10px; }
+
 }
 
 /* Laptop widths (901-1250px) move opponent counters under the name so seat

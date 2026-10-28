@@ -11,7 +11,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'oppsouter', 'oppswrap', 'opprow', 'oppstrip', 'boardlane', 'boardlanecards',
     'oppresources', 'oppresourcecards', 'myboard', 'cardrow', 'landrow',
     'resourcezone', 'landstrip', 'manaartifactstrip', 'playerrail', 'czrow',
-    'handwrap', 'hand', 'ct-player-head', 'ct-seat-ribbon',
+    'handwrap', 'hand', 'ct-commander-dock', 'ct-command-slots',
+    'ct-hand-content', 'ct-hand-cards', 'ct-player-head', 'ct-seat-ribbon',
     'ct-decision-rail', 'ct-decision-content',
     'ct-mobile-combat', 'ct-mobile-combat-targets', 'ct-mobile-combat-roster',
   ]);

@@ -61,6 +61,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
+- **28 October commander dock:** a separate left panel with original commander art, a 3D tilt and gold aura in the command zone, stable location indicators after casting, and partner/mobile support. [Verification](reports/releases/2026-10-28-commander-dock.md)
 - **28 October interaction polish:** reliable clicks through table refreshes, uninterrupted X input, fewer duplicate redraws, and shorter Normal-speed pauses. [Verification](reports/releases/2026-10-28-interaction-polish.md)
 - **16 October table and combat fixes:** card art without repeated name labels, stable Proceed panels, explicit Overencumbered payment feedback, and saved player-Aura attachments. [Release checks](reports/releases/2026-10-16-table-and-overencumbered.md)
 - **15 October gameplay polish:** stable problem-report editing, confirmed match results with retryable recovery, and less local-save serialization. [Release checks](reports/releases/2026-10-15-gameplay-polish.md)
@@ -306,6 +307,8 @@ Target choices show the source card, the full current instruction, and progress 
 ### Table views and combat
 
 Solo players and all Live players use the **Command Table** interface. **Table** shows the opponents together; **Focus** gives a selected opponent more room. The decision panel keeps the current action visible, and target/combat choices reveal the relevant players. Live hosts and guests share the same gameplay controls, including HOLD, mana selection, card actions, Stack responses, combat and Last Resort. Each player sees their own hand and chooses their own priority and display preferences. The landing-page Table/Focus preview shows screenshots of the interface; it does not start a game.
+
+**Commander dock:** your commander has a separate panel to the left of your hand, with a raised card and gold aura while in the command zone. Click or tap it to open its actions. After it leaves, the panel shows its location and keeps its space; partner commanders each have their own card. The Ring remains beside the hand tools. System and in-game **Reduced motion** turn off the tilt and animated aura.
 
 **Desktop combat on the battlefield:** select your creatures, then click a defender's portrait, planeswalker, or name in the bottom dock. You can also choose the defender first, use **All attack**, or drag creatures directly to a defender. To block, select your creature and then an incoming attacker; attacker-first selection and dragging also work. Gold attack lines and blue block lines show desktop assignments. **Attack**, **Block**, or **No attacks / No blocks** confirms the declaration; selecting cards alone never advances combat. **Clear** resets the draft, and **Details** opens the full combat overview without losing assignments. The ordinary action dock is compact; stack reviews and target selection open a panel when needed.
 
