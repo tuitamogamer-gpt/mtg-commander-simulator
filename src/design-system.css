@@ -36,6 +36,8 @@
     --ds-font-sans: var(--ds-font-body);
     --muted: var(--ds-muted);
     --ds-good: #7fcaa4;
+    --ds-spell: #9bceef;
+    --ds-spell-rgb: 155, 206, 239;
     --ds-danger: #ef8b7b;
     --ds-focus: #ffb58c;
     --ds-font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;

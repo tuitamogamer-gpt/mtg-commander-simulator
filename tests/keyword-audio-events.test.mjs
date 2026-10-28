@@ -155,7 +155,51 @@ test('native legal attack and block declarations snapshot active keywords', asyn
   await combat(f,attacker,blockers);
   assert.deepEqual(f.facts().find(row=>row.kind==='attackersDeclared').keywords,['flying','vigilance','menace','haste']);
   assert.deepEqual(f.facts().find(row=>row.kind==='blockersDeclared').keywords,['reach']);
+  const declaration=f.events.find(event=>event.type==='combat'&&event.kind==='attackersDeclared');
+  assert.equal(declaration.player,f.player);
+  assert.equal(declaration.count,1);
+  assert.equal(declaration.attacks.length,1);
+  assert.equal(declaration.attacks[0].card,attacker);
+  assert.equal(declaration.attacks[0].target,f.opponent,'defender survives later combat state cleanup');
   assert.equal(attacker.tapped,false);
+});
+
+test('Live action effects retain committed attackers and the cast Adventure name without replaying snapshots', async () => {
+  const f=fixture(), received=[[],[]]; f.player.onlineSeat=0; f.opponent.onlineSeat=1;
+  class UI {
+    render(){} resolvePending(){} resolvePendingEntry(){} skipReactWindow(){} queueRender(){}
+    showGameEffect(){} showBattlefieldArrival(){}
+    showActionEffect(event){
+      if(event.type==='combat'&&event.kind==='attackersDeclared'||event.type==='cardPlayed')received[this.game.viewer.onlineSeat].push(event);
+    }
+  }
+  const live={...M,UI,audio:{attach(){},unlock(){},handle(){}}};
+  const env={MTG:live,window:{},location:{href:'http://localhost/'},document:{querySelector:()=>({style:{}}),body:{classList:{add(){}}}}};
+  vm.runInNewContext(readFileSync(new URL('../src/modules/multiplayer-arena.js',import.meta.url),'utf8'),env);
+  const session=(seat,authority)=>live.createOnlineArena({authority,ui:new UI(),client:{current:()=>({you:seat}),subscribe:()=>()=>{}}});
+  const local=session(0,f.game),remote=session(1,null),snapshot=()=>plain(M.onlineGameViewFor(f.game,f.opponent));
+  local.updateLocal(); remote.updateSnapshot(snapshot());
+  f.game.onEvent=event=>local.publishEvent(event);
+  const attacker=f.card({name:'Committed attacker',power:2,toughness:4});
+  await combat(f,attacker);
+  f.game.phase='main1'; f.game.step='main';
+  const giant=new M.CardInst(M.DEFS['Bonecrusher Giant'],f.player); giant.zone='hand'; f.player.hand.push(giant);
+  f.player.pool.R=2;
+  assert.equal(await f.game.castSpell(f.player,giant,{from:'hand',alt:{adventure:true,...giant.def.adventure}}),true);
+  remote.updateSnapshot(snapshot());
+  for(const [seat,events] of received.entries()) {
+    assert.equal(events.length,2,`seat ${seat} receives each committed action once`);
+    const [attack,spell]=events;
+    assert.equal(attack.count,1); assert.equal(attack.player.idx,f.player.idx);
+    assert.equal(attack.attacks[0].card.iid,attacker.iid);
+    assert.equal(attack.attacks[0].target.idx,f.opponent.idx);
+    assert.equal(spell.card.iid,giant.iid);
+    assert.equal(spell.name,'Stomp','use the actual spell face, not the printed creature name');
+    assert.deepEqual(Array.from(spell.spellTypes),['Instant']);
+  }
+  local.updateLocal(); remote.updateSnapshot(snapshot());
+  remote.eventCursor=null; remote.updateSnapshot(snapshot());
+  assert.deepEqual(received.map(events=>events.length),[2,2],'refresh and reconnect skip already presented actions');
 });
 
 test('haste is silent for a creature already eligible to attack without it', async () => {
