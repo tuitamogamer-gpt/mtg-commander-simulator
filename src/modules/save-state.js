@@ -38,6 +38,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return out;
   }
 
+  // Native damage observers use a Set of physical source ids. JSON turns
+  // that Set into {}, so it needs an explicit wire representation. Older
+  // snapshots can recover only the sources corroborated by this turn's
+  // shared damage history for this exact battlefield incarnation.
+  function damageSourceIds(record, history, card) {
+    if (Array.isArray(record.ids) || record.ids instanceof Set)
+      return [...record.ids].filter(id => Number.isSafeInteger(id) && id >= 0);
+    if (history?.turn !== record.turn) return [];
+    const target = `${card.iid}:${card.zoneVersion || 0}`;
+    const ids = [];
+    for (const [source, targets] of history.bySource || []) {
+      if (targets.has(target)) ids.push(Number(source.split(':')[0]));
+    }
+    return ids;
+  }
+  const validDamageSourceRecord = record => record && Number.isSafeInteger(record.turn) && record.turn >= 0;
+
   const playerAuraSpec = def => {
     const targets = def.auraTarget || (def.isPlayerAura && def.targets);
     return def.subtypes?.includes('Aura') && Array.isArray(targets)
@@ -224,6 +241,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(card.oraclePrototypeV10)entry.oraclePrototypeV10=true;
     if (card.oracleTransformCount) entry.oracleTransformCount = Number(card.oracleTransformCount) || 0;
     const meta = plainMeta(card.meta);
+    const damageFrom = card.meta?._damageFrom;
+    delete meta._damageFrom;
+    if (validDamageSourceRecord(damageFrom)) meta._damageFrom = {
+      turn: damageFrom.turn, ids: damageSourceIds(damageFrom, game.oracleDamageHistory, card),
+    };
     // Player-enchanting Auras need the same seat identity after JSON restore.
     // Their live Player reference is circular and plainMeta cannot retain it.
     delete meta.cursedPlayer;
@@ -867,6 +889,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(entry.oraclePrototypeV10){assert(card.def.oraclePrototypeV10&&['battlefield','stack'].includes(card.zone),'invalid prototype state');card.def=MTG.oraclePrototypeDefinitionV10(card.def);card.oraclePrototypeV10=true;}
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
+      const damageFrom = entry.meta?._damageFrom;
+      delete card.meta._damageFrom;
+      if (validDamageSourceRecord(damageFrom)) card.meta._damageFrom = {
+        turn: damageFrom.turn, ids: new Set(damageSourceIds(damageFrom, game.oracleDamageHistory, card)),
+      };
       delete card.meta.cursedPlayer;
       if (entry.enchantedPlayer !== undefined) card.meta.cursedPlayer = game.players[entry.enchantedPlayer];
       if (entry.exilePlayPlayer !== undefined) card.meta.playableBy = game.players[entry.exilePlayPlayer];
