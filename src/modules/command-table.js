@@ -50,6 +50,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return element;
   };
 
+  P.renderCommanderDock = function (commandZone) {
+    const cards = [...new Map([...commanders(this.me), ...this.me.command].map(card => [card.iid, card])).values()];
+    if (!cards.length) return null;
+    const dock = node('aside', 'ct-commander-dock');
+    dock.setAttribute('aria-label', 'Your commanders');
+    dock.classList.toggle('has-partners', cards.length > 1);
+    const heading = node('div', 'ct-command-heading');
+    heading.append(icon('crown'), node('span', '', cards.length > 1 ? 'Commanders' : 'Commander'));
+    const slots = node('div', 'ct-command-slots');
+    for (const card of cards) {
+      // Keep the actual command-zone control: its actions, costs and keyboard
+      // handler still belong to the current engine decision.
+      let control = commandZone?.querySelector(`.czcard[data-iid="${card.iid}"]`);
+      if (control) {
+        control.dataset.commandState = 'command';
+      } else {
+        control = node('div', 'czcard');
+        control.dataset.iid = String(card.iid);
+        control.dataset.commandState = 'away';
+        const art = node('img');
+        art.alt = ''; art.loading = 'lazy'; art.src = U.cardImageURL(card.name);
+        art.onerror = event => U.imgFail(event.currentTarget);
+        const info = node('div', 'czinfo');
+        const location = ({ battlefield: 'On battlefield', stack: 'On the stack', hand: 'In hand',
+          graveyard: 'In graveyard', exile: 'In exile', library: 'In library' })[card.zone] || 'Outside command zone';
+        info.append(node('div', 'czname', card.name.split(',')[0]), node('div', 'ct-command-location', location));
+        control.append(art, info);
+        control.onclick = () => { this.sheet = { card }; this.render(); };
+        this.makeKeyboardButton(control, `${card.name}. ${location}. Open commander details.`);
+      }
+      control.classList.add('ct-commander-card');
+      control.title = card.name;
+      slots.append(control);
+    }
+    dock.append(heading, slots);
+    return dock;
+  };
+
   P.focusOpponent = function (player) {
     this.commandFocusPlayer = player.idx;
     this.commandTableView = 'focus';
@@ -266,16 +304,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const hand = root.querySelector('.handwrap');
     const commandZone = myBoard?.querySelector('.czrow');
-    const dockCommander = !mobileLayout.matches && !!hand && !!commandZone;
-    root.classList.toggle('ct-hand-command', dockCommander);
-    root.classList.toggle('ct-partner-command', dockCommander && this.me.command.length > 1);
-    if (dockCommander) {
-      // Move the original controls, preserving commander actions and Ring UI.
-      let tools = hand.querySelector('.handtools');
-      if (!tools) { tools = this.renderHandTools(); hand.prepend(tools); }
-      commandZone.classList.add('ct-hand-command-zone');
-      tools.querySelector('.handtoolstitle')?.after(commandZone);
-      commandZone.setAttribute('aria-label', 'Your command zone');
+    const commanderDock = hand && this.renderCommanderDock(commandZone);
+    root.classList.toggle('ct-hand-command', !!commanderDock);
+    if (commanderDock) {
+      const tools = hand.querySelector('.handtools') || this.renderHandTools();
+      const content = node('div', 'ct-hand-content');
+      const cards = node('div', 'ct-hand-cards');
+      tools.remove();
+      cards.append(...hand.children);
+      // The Ring is an emblem, not a commander. Preserve its original control
+      // beside the hand tools instead of giving it a command-zone card effect.
+      if (commandZone?.childElementCount) {
+        const extras = node('div', 'ct-command-extras');
+        extras.append(...commandZone.children);
+        tools.append(extras);
+      }
+      commandZone?.remove();
+      content.append(tools, cards);
+      hand.append(commanderDock, content);
     }
 
     if (!mobileLayout.matches) for (const region of root.querySelectorAll('.mybattlefieldmain, .oppstrip')) {
