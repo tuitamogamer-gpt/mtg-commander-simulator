@@ -1,0 +1,1833 @@
+{
+  "deck": "We Are the Borg",
+  "commander": "The Borg Queen",
+  "owner": "borg",
+  "missingInDeck": 37,
+  "ownedCount": 37,
+  "cards": [
+    {
+      "requestedName": "The Borg Queen",
+      "oracleId": "b03d6bc2-d9f1-4d03-b1b3-77993bec6547",
+      "scryfallId": "8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab",
+      "canonicalName": "The Borg Queen",
+      "layout": "normal",
+      "keywords": [
+        "Assimilate"
+      ],
+      "colorIdentity": [
+        "B",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "1",
+      "scryfallUri": "https://scryfall.com/card/trc/1/the-borg-queen?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.jpg?1792507909",
+        "normal": "https://cards.scryfall.io/normal/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.jpg?1792507909",
+        "large": "https://cards.scryfall.io/large/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.jpg?1792507909",
+        "png": "https://cards.scryfall.io/png/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.png?1792507909",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.jpg?1792507909",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.jpg?1792507909",
+        "thumb": "https://cards.scryfall.io/thumb/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.webp?1792507909",
+        "grid": "https://cards.scryfall.io/grid/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.webp?1792507909",
+        "display": "https://cards.scryfall.io/display/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.webp?1792507909",
+        "art": "https://cards.scryfall.io/art/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.webp?1792507909",
+        "crop": "https://cards.scryfall.io/crop/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.webp?1792507909",
+        "jpeg": "https://cards.scryfall.io/normal/front/8/e/8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab.jpg?1792507909"
+      },
+      "raw": {
+        "name": "The Borg Queen",
+        "cost": "{4}{W}{U}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg",
+          "Noble"
+        ],
+        "oracle": "Artifact creatures you control get +2/+2.\nWhenever The Borg Queen enters or attacks, target opponent exiles cards from the top of their library until they exile a creature card. Assimilate that card. They put the rest on the bottom in a random order. (To assimilate a card, put it onto the battlefield under your control with a +1/+1 counter. It's a Borg artifact creature and loses all other creature types.)",
+        "_ci": [
+          "B",
+          "U",
+          "W"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Locutus of Borg",
+      "oracleId": "d0cff43a-2a22-4e05-9f71-983cb297989f",
+      "scryfallId": "1b2e5971-d31c-4f6d-9bee-4b13a402e798",
+      "canonicalName": "Locutus of Borg",
+      "layout": "normal",
+      "keywords": [
+        "Lifelink"
+      ],
+      "colorIdentity": [
+        "B",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "97",
+      "scryfallUri": "https://scryfall.com/card/trc/97/locutus-of-borg?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/1b2e5971-d31c-4f6d-9bee-4b13a402e798",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.jpg?1792507972",
+        "normal": "https://cards.scryfall.io/normal/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.jpg?1792507972",
+        "large": "https://cards.scryfall.io/large/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.jpg?1792507972",
+        "png": "https://cards.scryfall.io/png/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.png?1792507972",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.jpg?1792507972",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.jpg?1792507972",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.webp?1792507972",
+        "grid": "https://cards.scryfall.io/grid/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.webp?1792507972",
+        "display": "https://cards.scryfall.io/display/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.webp?1792507972",
+        "art": "https://cards.scryfall.io/art/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.webp?1792507972",
+        "crop": "https://cards.scryfall.io/crop/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.webp?1792507972",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/b/1b2e5971-d31c-4f6d-9bee-4b13a402e798.jpg?1792507972"
+      },
+      "raw": {
+        "name": "Locutus of Borg",
+        "cost": "{1}{W}{U}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Lifelink\nArtifact creatures you control have \"Whenever this creature deals combat damage to a player, create a 1/1 colorless Borg artifact creature token.\"",
+        "_ci": [
+          "B",
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Borg Incursion",
+      "oracleId": "f00dfc16-c253-4483-94fb-3c2beabd5820",
+      "scryfallId": "2b7eed2d-8baa-4be2-a392-e218baaedd50",
+      "canonicalName": "Borg Incursion",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "12",
+      "scryfallUri": "https://scryfall.com/card/trc/12/borg-incursion?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/2b7eed2d-8baa-4be2-a392-e218baaedd50",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.jpg?1793020848",
+        "normal": "https://cards.scryfall.io/normal/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.jpg?1793020848",
+        "large": "https://cards.scryfall.io/large/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.jpg?1793020848",
+        "png": "https://cards.scryfall.io/png/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.png?1793020848",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.jpg?1793020848",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.jpg?1793020848",
+        "thumb": "https://cards.scryfall.io/thumb/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.webp?1793020848",
+        "grid": "https://cards.scryfall.io/grid/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.webp?1793020848",
+        "display": "https://cards.scryfall.io/display/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.webp?1793020848",
+        "art": "https://cards.scryfall.io/art/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.webp?1793020848",
+        "crop": "https://cards.scryfall.io/crop/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.webp?1793020848",
+        "jpeg": "https://cards.scryfall.io/normal/front/2/b/2b7eed2d-8baa-4be2-a392-e218baaedd50.jpg?1793020848"
+      },
+      "raw": {
+        "name": "Borg Incursion",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Create two 1/1 colorless Borg artifact creature tokens, then artifact creatures you control gain protection from the color of your choice until end of turn. (They can't be blocked, targeted, dealt damage, enchanted, or equipped by anything of that color.)",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Emergency Regeneration",
+      "oracleId": "58e9f5db-c369-42c6-a26d-fc31e25d5f83",
+      "scryfallId": "d46d512e-b4c1-42df-9945-c5ba4e2d339f",
+      "canonicalName": "Emergency Regeneration",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "14",
+      "scryfallUri": "https://scryfall.com/card/trc/14/emergency-regeneration?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/d46d512e-b4c1-42df-9945-c5ba4e2d339f",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.jpg?1793020844",
+        "normal": "https://cards.scryfall.io/normal/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.jpg?1793020844",
+        "large": "https://cards.scryfall.io/large/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.jpg?1793020844",
+        "png": "https://cards.scryfall.io/png/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.png?1793020844",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.jpg?1793020844",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.jpg?1793020844",
+        "thumb": "https://cards.scryfall.io/thumb/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.webp?1793020844",
+        "grid": "https://cards.scryfall.io/grid/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.webp?1793020844",
+        "display": "https://cards.scryfall.io/display/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.webp?1793020844",
+        "art": "https://cards.scryfall.io/art/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.webp?1793020844",
+        "crop": "https://cards.scryfall.io/crop/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.webp?1793020844",
+        "jpeg": "https://cards.scryfall.io/normal/front/d/4/d46d512e-b4c1-42df-9945-c5ba4e2d339f.jpg?1793020844"
+      },
+      "raw": {
+        "name": "Emergency Regeneration",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Artifacts you control gain hexproof and indestructible until end of turn.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Join the Collective",
+      "oracleId": "b1a6d794-0e48-4bbe-b3a3-d9957ed1bfbf",
+      "scryfallId": "382e4d2f-7cc9-4229-9147-2d3e4af9063f",
+      "canonicalName": "Join the Collective",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "20",
+      "scryfallUri": "https://scryfall.com/card/trc/20/join-the-collective?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/382e4d2f-7cc9-4229-9147-2d3e4af9063f",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.jpg?1792507962",
+        "normal": "https://cards.scryfall.io/normal/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.jpg?1792507962",
+        "large": "https://cards.scryfall.io/large/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.jpg?1792507962",
+        "png": "https://cards.scryfall.io/png/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.png?1792507962",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.jpg?1792507962",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.jpg?1792507962",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.webp?1792507962",
+        "grid": "https://cards.scryfall.io/grid/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.webp?1792507962",
+        "display": "https://cards.scryfall.io/display/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.webp?1792507962",
+        "art": "https://cards.scryfall.io/art/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.webp?1792507962",
+        "crop": "https://cards.scryfall.io/crop/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.webp?1792507962",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/8/382e4d2f-7cc9-4229-9147-2d3e4af9063f.jpg?1792507962"
+      },
+      "raw": {
+        "name": "Join the Collective",
+        "cost": "{5}{W}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy all creatures. Create X 1/1 colorless Borg artifact creature tokens, where X is the number of nonartifact creatures destroyed this way.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Korok, Liberated Rage",
+      "oracleId": "2f0bad22-a3f5-4b2b-96bf-ff1473e2262d",
+      "scryfallId": "eb2c613d-2159-4c41-b6f7-0e102fc1a5c5",
+      "canonicalName": "Korok, Liberated Rage",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "22",
+      "scryfallUri": "https://scryfall.com/card/trc/22/korok-liberated-rage?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.jpg?1793020858",
+        "normal": "https://cards.scryfall.io/normal/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.jpg?1793020858",
+        "large": "https://cards.scryfall.io/large/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.jpg?1793020858",
+        "png": "https://cards.scryfall.io/png/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.png?1793020858",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.jpg?1793020858",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.jpg?1793020858",
+        "thumb": "https://cards.scryfall.io/thumb/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.webp?1793020858",
+        "grid": "https://cards.scryfall.io/grid/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.webp?1793020858",
+        "display": "https://cards.scryfall.io/display/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.webp?1793020858",
+        "art": "https://cards.scryfall.io/art/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.webp?1793020858",
+        "crop": "https://cards.scryfall.io/crop/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.webp?1793020858",
+        "jpeg": "https://cards.scryfall.io/normal/front/e/b/eb2c613d-2159-4c41-b6f7-0e102fc1a5c5.jpg?1793020858"
+      },
+      "raw": {
+        "name": "Korok, Liberated Rage",
+        "cost": "{3}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Borg"
+        ],
+        "oracle": "Battlefront — Whenever Korok attacks, creatures you control get +X/+X until end of turn, where X is the number of opponents you attacked this turn.",
+        "_ci": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Maturation Chamber",
+      "oracleId": "585511e1-4cca-4e70-963d-56f98ae49c29",
+      "scryfallId": "541f6458-1d63-49c7-91a5-b4b3dcf80da3",
+      "canonicalName": "Maturation Chamber",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "24",
+      "scryfallUri": "https://scryfall.com/card/trc/24/maturation-chamber?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/541f6458-1d63-49c7-91a5-b4b3dcf80da3",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.jpg?1793020870",
+        "normal": "https://cards.scryfall.io/normal/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.jpg?1793020870",
+        "large": "https://cards.scryfall.io/large/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.jpg?1793020870",
+        "png": "https://cards.scryfall.io/png/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.png?1793020870",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.jpg?1793020870",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.jpg?1793020870",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.webp?1793020870",
+        "grid": "https://cards.scryfall.io/grid/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.webp?1793020870",
+        "display": "https://cards.scryfall.io/display/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.webp?1793020870",
+        "art": "https://cards.scryfall.io/art/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.webp?1793020870",
+        "crop": "https://cards.scryfall.io/crop/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.webp?1793020870",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/4/541f6458-1d63-49c7-91a5-b4b3dcf80da3.jpg?1793020870"
+      },
+      "raw": {
+        "name": "Maturation Chamber",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "Whenever you cast an artifact spell, put a charge counter on this artifact.\n{4}, {T}: Create a 1/1 colorless Borg artifact creature token for each charge counter on this artifact. Activate only as a sorcery.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Stratagem Emulator",
+      "oracleId": "726cd303-f034-4dbe-8139-550feb59f8f3",
+      "scryfallId": "981128b4-acc5-408c-b21b-7133b6c60cc6",
+      "canonicalName": "Stratagem Emulator",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "30",
+      "scryfallUri": "https://scryfall.com/card/trc/30/stratagem-emulator?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/981128b4-acc5-408c-b21b-7133b6c60cc6",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.jpg?1793020872",
+        "normal": "https://cards.scryfall.io/normal/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.jpg?1793020872",
+        "large": "https://cards.scryfall.io/large/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.jpg?1793020872",
+        "png": "https://cards.scryfall.io/png/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.png?1793020872",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.jpg?1793020872",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.jpg?1793020872",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.webp?1793020872",
+        "grid": "https://cards.scryfall.io/grid/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.webp?1793020872",
+        "display": "https://cards.scryfall.io/display/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.webp?1793020872",
+        "art": "https://cards.scryfall.io/art/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.webp?1793020872",
+        "crop": "https://cards.scryfall.io/crop/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.webp?1793020872",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/8/981128b4-acc5-408c-b21b-7133b6c60cc6.jpg?1793020872"
+      },
+      "raw": {
+        "name": "Stratagem Emulator",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "When this creature dies, create X 1/1 colorless Borg artifact creature tokens, where X is its power.",
+        "_ci": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "1"
+      }
+    },
+    {
+      "requestedName": "Supplementation Node",
+      "oracleId": "24296042-2963-405b-88d7-28808280ac00",
+      "scryfallId": "6bef9fb1-444a-42f4-940a-d49899c56c27",
+      "canonicalName": "Supplementation Node",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "31",
+      "scryfallUri": "https://scryfall.com/card/trc/31/supplementation-node?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/6bef9fb1-444a-42f4-940a-d49899c56c27",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.jpg?1793020896",
+        "normal": "https://cards.scryfall.io/normal/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.jpg?1793020896",
+        "large": "https://cards.scryfall.io/large/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.jpg?1793020896",
+        "png": "https://cards.scryfall.io/png/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.png?1793020896",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.jpg?1793020896",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.jpg?1793020896",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.webp?1793020896",
+        "grid": "https://cards.scryfall.io/grid/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.webp?1793020896",
+        "display": "https://cards.scryfall.io/display/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.webp?1793020896",
+        "art": "https://cards.scryfall.io/art/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.webp?1793020896",
+        "crop": "https://cards.scryfall.io/crop/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.webp?1793020896",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/b/6bef9fb1-444a-42f4-940a-d49899c56c27.jpg?1793020896"
+      },
+      "raw": {
+        "name": "Supplementation Node",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control have \"Whenever this creature deals combat damage to a player, put a +1/+1 counter on it.\"",
+        "_ci": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Type-03 Borg Vessel",
+      "oracleId": "ff2ab17e-185b-4782-a4e2-e8ace40ef1bb",
+      "scryfallId": "c91ec9e3-abd5-4c23-b342-0c6a12cc970a",
+      "canonicalName": "Type-03 Borg Vessel",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "33",
+      "scryfallUri": "https://scryfall.com/card/trc/33/type-03-borg-vessel?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/c91ec9e3-abd5-4c23-b342-0c6a12cc970a",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.jpg?1793020884",
+        "normal": "https://cards.scryfall.io/normal/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.jpg?1793020884",
+        "large": "https://cards.scryfall.io/large/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.jpg?1793020884",
+        "png": "https://cards.scryfall.io/png/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.png?1793020884",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.jpg?1793020884",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.jpg?1793020884",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.webp?1793020884",
+        "grid": "https://cards.scryfall.io/grid/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.webp?1793020884",
+        "display": "https://cards.scryfall.io/display/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.webp?1793020884",
+        "art": "https://cards.scryfall.io/art/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.webp?1793020884",
+        "crop": "https://cards.scryfall.io/crop/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.webp?1793020884",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/9/c91ec9e3-abd5-4c23-b342-0c6a12cc970a.jpg?1793020884"
+      },
+      "raw": {
+        "name": "Type-03 Borg Vessel",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Artifact spells you cast cost {1} less to cast.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 7+.)\n7+ | Flying\nWhenever you cast a spell, create a 1/1 colorless Borg artifact creature token.",
+        "_ci": [
+          "W"
+        ],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Ambulatory Reactor",
+      "oracleId": "fea853c7-7dc8-45c7-829b-d857c65b6ee8",
+      "scryfallId": "9a81140d-9279-4ca5-be68-ec990cf541a6",
+      "canonicalName": "Ambulatory Reactor",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "35",
+      "scryfallUri": "https://scryfall.com/card/trc/35/ambulatory-reactor?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/9a81140d-9279-4ca5-be68-ec990cf541a6",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.jpg?1793020895",
+        "normal": "https://cards.scryfall.io/normal/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.jpg?1793020895",
+        "large": "https://cards.scryfall.io/large/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.jpg?1793020895",
+        "png": "https://cards.scryfall.io/png/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.png?1793020895",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.jpg?1793020895",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.jpg?1793020895",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.webp?1793020895",
+        "grid": "https://cards.scryfall.io/grid/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.webp?1793020895",
+        "display": "https://cards.scryfall.io/display/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.webp?1793020895",
+        "art": "https://cards.scryfall.io/art/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.webp?1793020895",
+        "crop": "https://cards.scryfall.io/crop/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.webp?1793020895",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/a/9a81140d-9279-4ca5-be68-ec990cf541a6.jpg?1793020895"
+      },
+      "raw": {
+        "name": "Ambulatory Reactor",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control have \"{T}: Add {C}. Spend this mana only to cast an artifact spell or activate an ability of an artifact source.\"",
+        "_ci": [
+          "U"
+        ],
+        "power": "2",
+        "toughness": "5",
+        "_produced": [
+          "C"
+        ]
+      }
+    },
+    {
+      "requestedName": "Borg Scout Sphere",
+      "oracleId": "4cfb6f06-137c-4b41-97ef-6710e899473b",
+      "scryfallId": "0813b13e-06a3-403b-ac00-6d6edd74935d",
+      "canonicalName": "Borg Scout Sphere",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "36",
+      "scryfallUri": "https://scryfall.com/card/trc/36/borg-scout-sphere?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/0813b13e-06a3-403b-ac00-6d6edd74935d",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.jpg?1793020906",
+        "normal": "https://cards.scryfall.io/normal/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.jpg?1793020906",
+        "large": "https://cards.scryfall.io/large/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.jpg?1793020906",
+        "png": "https://cards.scryfall.io/png/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.png?1793020906",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.jpg?1793020906",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.jpg?1793020906",
+        "thumb": "https://cards.scryfall.io/thumb/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.webp?1793020906",
+        "grid": "https://cards.scryfall.io/grid/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.webp?1793020906",
+        "display": "https://cards.scryfall.io/display/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.webp?1793020906",
+        "art": "https://cards.scryfall.io/art/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.webp?1793020906",
+        "crop": "https://cards.scryfall.io/crop/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.webp?1793020906",
+        "jpeg": "https://cards.scryfall.io/normal/front/0/8/0813b13e-06a3-403b-ac00-6d6edd74935d.jpg?1793020906"
+      },
+      "raw": {
+        "name": "Borg Scout Sphere",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "When this Spacecraft enters, draw a card.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 6+.)\n6+ | Artifact creatures you control have flying.",
+        "_ci": [
+          "U"
+        ],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Co-Option Adjutant",
+      "oracleId": "caafecc0-adfa-478c-8a9d-234d4069300b",
+      "scryfallId": "cdb88301-f421-4411-be3a-bdfc83906c17",
+      "canonicalName": "Co-Option Adjutant",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "39",
+      "scryfallUri": "https://scryfall.com/card/trc/39/co-option-adjutant?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/cdb88301-f421-4411-be3a-bdfc83906c17",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.jpg?1793020914",
+        "normal": "https://cards.scryfall.io/normal/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.jpg?1793020914",
+        "large": "https://cards.scryfall.io/large/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.jpg?1793020914",
+        "png": "https://cards.scryfall.io/png/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.png?1793020914",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.jpg?1793020914",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.jpg?1793020914",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.webp?1793020914",
+        "grid": "https://cards.scryfall.io/grid/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.webp?1793020914",
+        "display": "https://cards.scryfall.io/display/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.webp?1793020914",
+        "art": "https://cards.scryfall.io/art/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.webp?1793020914",
+        "crop": "https://cards.scryfall.io/crop/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.webp?1793020914",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/d/cdb88301-f421-4411-be3a-bdfc83906c17.jpg?1793020914"
+      },
+      "raw": {
+        "name": "Co-Option Adjutant",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control have \"Whenever this creature deals combat damage to a player, draw a card.\"",
+        "_ci": [
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Gift of Perfection",
+      "oracleId": "b44026ae-eaf1-4daf-99c6-2663db674ff7",
+      "scryfallId": "7589eda0-0a0b-4372-9cee-ea379d6a6f61",
+      "canonicalName": "Gift of Perfection",
+      "layout": "normal",
+      "keywords": [
+        "Assimilate"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "44",
+      "scryfallUri": "https://scryfall.com/card/trc/44/gift-of-perfection?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/7589eda0-0a0b-4372-9cee-ea379d6a6f61",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.jpg?1793020918",
+        "normal": "https://cards.scryfall.io/normal/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.jpg?1793020918",
+        "large": "https://cards.scryfall.io/large/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.jpg?1793020918",
+        "png": "https://cards.scryfall.io/png/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.png?1793020918",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.jpg?1793020918",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.jpg?1793020918",
+        "thumb": "https://cards.scryfall.io/thumb/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.webp?1793020918",
+        "grid": "https://cards.scryfall.io/grid/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.webp?1793020918",
+        "display": "https://cards.scryfall.io/display/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.webp?1793020918",
+        "art": "https://cards.scryfall.io/art/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.webp?1793020918",
+        "crop": "https://cards.scryfall.io/crop/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.webp?1793020918",
+        "jpeg": "https://cards.scryfall.io/normal/front/7/5/7589eda0-0a0b-4372-9cee-ea379d6a6f61.jpg?1793020918"
+      },
+      "raw": {
+        "name": "Gift of Perfection",
+        "cost": "{4}{U}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Each opponent reveals cards from the top of their library until they reveal a creature card. Assimilate one of the creature cards revealed this way. Then each opponent puts the other cards they revealed this way on the bottom of their library in a random order. (To assimilate a card, put it onto the battlefield under your control with a +1/+1 counter. It's a Borg artifact creature and loses all other creature types.)",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Optimization Annex",
+      "oracleId": "9f38914f-7870-44bf-887e-ee893e98989c",
+      "scryfallId": "68024cc0-7728-470f-86d3-3440724717f3",
+      "canonicalName": "Optimization Annex",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "48",
+      "scryfallUri": "https://scryfall.com/card/trc/48/optimization-annex?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/68024cc0-7728-470f-86d3-3440724717f3",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.jpg?1793020929",
+        "normal": "https://cards.scryfall.io/normal/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.jpg?1793020929",
+        "large": "https://cards.scryfall.io/large/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.jpg?1793020929",
+        "png": "https://cards.scryfall.io/png/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.png?1793020929",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.jpg?1793020929",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.jpg?1793020929",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.webp?1793020929",
+        "grid": "https://cards.scryfall.io/grid/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.webp?1793020929",
+        "display": "https://cards.scryfall.io/display/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.webp?1793020929",
+        "art": "https://cards.scryfall.io/art/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.webp?1793020929",
+        "crop": "https://cards.scryfall.io/crop/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.webp?1793020929",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/8/68024cc0-7728-470f-86d3-3440724717f3.jpg?1793020929"
+      },
+      "raw": {
+        "name": "Optimization Annex",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "If one or more charge counters would be put on an artifact you control, that many plus one charge counters are put on it instead.",
+        "_ci": [
+          "U"
+        ],
+        "power": "1",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Seven of Nine, Tertiary Adjunct",
+      "oracleId": "22c3b484-0f96-4051-807c-fc0fcb7cd1a8",
+      "scryfallId": "aa3e71b7-c8f1-4fc2-ab75-36f120763f4a",
+      "canonicalName": "Seven of Nine, Tertiary Adjunct",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "50",
+      "scryfallUri": "https://scryfall.com/card/trc/50/seven-of-nine-tertiary-adjunct?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.jpg?1793020929",
+        "normal": "https://cards.scryfall.io/normal/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.jpg?1793020929",
+        "large": "https://cards.scryfall.io/large/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.jpg?1793020929",
+        "png": "https://cards.scryfall.io/png/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.png?1793020929",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.jpg?1793020929",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.jpg?1793020929",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.webp?1793020929",
+        "grid": "https://cards.scryfall.io/grid/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.webp?1793020929",
+        "display": "https://cards.scryfall.io/display/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.webp?1793020929",
+        "art": "https://cards.scryfall.io/art/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.webp?1793020929",
+        "crop": "https://cards.scryfall.io/crop/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.webp?1793020929",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/a/aa3e71b7-c8f1-4fc2-ab75-36f120763f4a.jpg?1793020929"
+      },
+      "raw": {
+        "name": "Seven of Nine, Tertiary Adjunct",
+        "cost": "{2}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "That Is Irrelevant — {T}: Draw a card, then discard a card. When you discard a nonland card this way, put two charge counters on up to one target artifact.",
+        "_ci": [
+          "U"
+        ],
+        "power": "1",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Transwarp Hub",
+      "oracleId": "4325d4d2-5892-4c20-a994-7396b715e94f",
+      "scryfallId": "60bcc801-7c0a-449f-a06d-d8b96c1cb42f",
+      "canonicalName": "Transwarp Hub",
+      "layout": "normal",
+      "keywords": [
+        "Station",
+        "Mill"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "52",
+      "scryfallUri": "https://scryfall.com/card/trc/52/transwarp-hub?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/60bcc801-7c0a-449f-a06d-d8b96c1cb42f",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.jpg?1793020943",
+        "normal": "https://cards.scryfall.io/normal/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.jpg?1793020943",
+        "large": "https://cards.scryfall.io/large/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.jpg?1793020943",
+        "png": "https://cards.scryfall.io/png/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.png?1793020943",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.jpg?1793020943",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.jpg?1793020943",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.webp?1793020943",
+        "grid": "https://cards.scryfall.io/grid/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.webp?1793020943",
+        "display": "https://cards.scryfall.io/display/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.webp?1793020943",
+        "art": "https://cards.scryfall.io/art/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.webp?1793020943",
+        "crop": "https://cards.scryfall.io/crop/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.webp?1793020943",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/0/60bcc801-7c0a-449f-a06d-d8b96c1cb42f.jpg?1793020943"
+      },
+      "raw": {
+        "name": "Transwarp Hub",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "When this Spacecraft enters, mill five cards. You may put up to two artifact cards from among them into your hand.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery.)\n3+ | {T}: Target creature can't be blocked this turn.",
+        "_ci": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Võx, Child of the Collective",
+      "oracleId": "7e58ea13-4041-4ef4-bc09-1e4bf79a842a",
+      "scryfallId": "46f7a693-8b99-49e9-866e-01ddb5b54f3e",
+      "canonicalName": "Võx, Child of the Collective",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "54",
+      "scryfallUri": "https://scryfall.com/card/trc/54/v%C3%B5x-child-of-the-collective?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/46f7a693-8b99-49e9-866e-01ddb5b54f3e",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.jpg?1793020941",
+        "normal": "https://cards.scryfall.io/normal/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.jpg?1793020941",
+        "large": "https://cards.scryfall.io/large/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.jpg?1793020941",
+        "png": "https://cards.scryfall.io/png/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.png?1793020941",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.jpg?1793020941",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.jpg?1793020941",
+        "thumb": "https://cards.scryfall.io/thumb/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.webp?1793020941",
+        "grid": "https://cards.scryfall.io/grid/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.webp?1793020941",
+        "display": "https://cards.scryfall.io/display/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.webp?1793020941",
+        "art": "https://cards.scryfall.io/art/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.webp?1793020941",
+        "crop": "https://cards.scryfall.io/crop/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.webp?1793020941",
+        "jpeg": "https://cards.scryfall.io/normal/front/4/6/46f7a693-8b99-49e9-866e-01ddb5b54f3e.jpg?1793020941"
+      },
+      "raw": {
+        "name": "Võx, Child of the Collective",
+        "cost": "{4}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "When Võx enters and at the beginning of your first main phase, the next artifact creature spell and the next Spacecraft spell you cast this turn have undaunted. (They cost {1} less to cast for each opponent.)",
+        "_ci": [
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Assimilate the Wounded",
+      "oracleId": "2147101f-d24a-45bb-a141-b69ef7841f53",
+      "scryfallId": "16cb0526-7623-4d02-97d4-b87021d5efc4",
+      "canonicalName": "Assimilate the Wounded",
+      "layout": "normal",
+      "keywords": [
+        "Assimilate"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "55",
+      "scryfallUri": "https://scryfall.com/card/trc/55/assimilate-the-wounded?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/16cb0526-7623-4d02-97d4-b87021d5efc4",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.jpg?1793020952",
+        "normal": "https://cards.scryfall.io/normal/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.jpg?1793020952",
+        "large": "https://cards.scryfall.io/large/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.jpg?1793020952",
+        "png": "https://cards.scryfall.io/png/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.png?1793020952",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.jpg?1793020952",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.jpg?1793020952",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.webp?1793020952",
+        "grid": "https://cards.scryfall.io/grid/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.webp?1793020952",
+        "display": "https://cards.scryfall.io/display/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.webp?1793020952",
+        "art": "https://cards.scryfall.io/art/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.webp?1793020952",
+        "crop": "https://cards.scryfall.io/crop/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.webp?1793020952",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/6/16cb0526-7623-4d02-97d4-b87021d5efc4.jpg?1793020952"
+      },
+      "raw": {
+        "name": "Assimilate the Wounded",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "For each opponent, assimilate up to one target creature card from that player's graveyard that was put there from the battlefield this turn. (Put it onto the battlefield under your control with a +1/+1 counter. It's a Borg artifact creature and loses all other creature types.)",
+        "_ci": [
+          "B"
+        ]
+      }
+    },
+    {
+      "requestedName": "Assimilation Assessor",
+      "oracleId": "48848570-00c4-4a89-a84c-e3df47a8b0d2",
+      "scryfallId": "0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1",
+      "canonicalName": "Assimilation Assessor",
+      "layout": "normal",
+      "keywords": [
+        "Assimilate"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "56",
+      "scryfallUri": "https://scryfall.com/card/trc/56/assimilation-assessor?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.jpg?1793020958",
+        "normal": "https://cards.scryfall.io/normal/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.jpg?1793020958",
+        "large": "https://cards.scryfall.io/large/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.jpg?1793020958",
+        "png": "https://cards.scryfall.io/png/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.png?1793020958",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.jpg?1793020958",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.jpg?1793020958",
+        "thumb": "https://cards.scryfall.io/thumb/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.webp?1793020958",
+        "grid": "https://cards.scryfall.io/grid/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.webp?1793020958",
+        "display": "https://cards.scryfall.io/display/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.webp?1793020958",
+        "art": "https://cards.scryfall.io/art/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.webp?1793020958",
+        "crop": "https://cards.scryfall.io/crop/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.webp?1793020958",
+        "jpeg": "https://cards.scryfall.io/normal/front/0/d/0d1f1428-a912-4c42-a0bc-4e4cb5bdd1b1.jpg?1793020958"
+      },
+      "raw": {
+        "name": "Assimilation Assessor",
+        "cost": "{4}{B}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "When this creature enters, exile target opponent's graveyard.\nWhenever this creature attacks, assimilate a creature card exiled with it. (Put it onto the battlefield under your control with a +1/+1 counter. It's a Borg artifact creature and loses all other creature types.)",
+        "_ci": [
+          "B"
+        ],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Battle of Wolf 359",
+      "oracleId": "bb203cf5-1545-43c7-8278-3720616c22f4",
+      "scryfallId": "ffbf8948-e427-466d-8216-18025fb2bb6a",
+      "canonicalName": "Battle of Wolf 359",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "57",
+      "scryfallUri": "https://scryfall.com/card/trc/57/battle-of-wolf-359?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/ffbf8948-e427-466d-8216-18025fb2bb6a",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.jpg?1793020964",
+        "normal": "https://cards.scryfall.io/normal/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.jpg?1793020964",
+        "large": "https://cards.scryfall.io/large/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.jpg?1793020964",
+        "png": "https://cards.scryfall.io/png/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.png?1793020964",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.jpg?1793020964",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.jpg?1793020964",
+        "thumb": "https://cards.scryfall.io/thumb/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.webp?1793020964",
+        "grid": "https://cards.scryfall.io/grid/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.webp?1793020964",
+        "display": "https://cards.scryfall.io/display/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.webp?1793020964",
+        "art": "https://cards.scryfall.io/art/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.webp?1793020964",
+        "crop": "https://cards.scryfall.io/crop/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.webp?1793020964",
+        "jpeg": "https://cards.scryfall.io/normal/front/f/f/ffbf8948-e427-466d-8216-18025fb2bb6a.jpg?1793020964"
+      },
+      "raw": {
+        "name": "Battle of Wolf 359",
+        "cost": "{3}{B}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "All nonartifact creatures get -X/-X until end of turn, where X is the number of artifact creatures you control.",
+        "_ci": [
+          "B"
+        ]
+      }
+    },
+    {
+      "requestedName": "Extraction Integrant",
+      "oracleId": "24964ce8-1eec-49b3-9db1-b895bc686ec5",
+      "scryfallId": "cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d",
+      "canonicalName": "Extraction Integrant",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "59",
+      "scryfallUri": "https://scryfall.com/card/trc/59/extraction-integrant?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.jpg?1793020972",
+        "normal": "https://cards.scryfall.io/normal/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.jpg?1793020972",
+        "large": "https://cards.scryfall.io/large/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.jpg?1793020972",
+        "png": "https://cards.scryfall.io/png/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.png?1793020972",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.jpg?1793020972",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.jpg?1793020972",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.webp?1793020972",
+        "grid": "https://cards.scryfall.io/grid/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.webp?1793020972",
+        "display": "https://cards.scryfall.io/display/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.webp?1793020972",
+        "art": "https://cards.scryfall.io/art/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.webp?1793020972",
+        "crop": "https://cards.scryfall.io/crop/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.webp?1793020972",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/c/cc2d2abf-6f6b-48ee-842c-dfeda8b44b6d.jpg?1793020972"
+      },
+      "raw": {
+        "name": "Extraction Integrant",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control have menace and \"Whenever a creature blocks this creature, that creature gets -1/-1 until end of turn.\"",
+        "_ci": [
+          "B"
+        ],
+        "power": "1",
+        "toughness": "1"
+      }
+    },
+    {
+      "requestedName": "Reclamation Specialist",
+      "oracleId": "7c348d24-af26-4171-bfa7-44ce9bd36f06",
+      "scryfallId": "7a7a48bb-5a47-4210-bb98-ef9208942303",
+      "canonicalName": "Reclamation Specialist",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "62",
+      "scryfallUri": "https://scryfall.com/card/trc/62/reclamation-specialist?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/7a7a48bb-5a47-4210-bb98-ef9208942303",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.jpg?1793020975",
+        "normal": "https://cards.scryfall.io/normal/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.jpg?1793020975",
+        "large": "https://cards.scryfall.io/large/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.jpg?1793020975",
+        "png": "https://cards.scryfall.io/png/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.png?1793020975",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.jpg?1793020975",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.jpg?1793020975",
+        "thumb": "https://cards.scryfall.io/thumb/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.webp?1793020975",
+        "grid": "https://cards.scryfall.io/grid/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.webp?1793020975",
+        "display": "https://cards.scryfall.io/display/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.webp?1793020975",
+        "art": "https://cards.scryfall.io/art/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.webp?1793020975",
+        "crop": "https://cards.scryfall.io/crop/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.webp?1793020975",
+        "jpeg": "https://cards.scryfall.io/normal/front/7/a/7a7a48bb-5a47-4210-bb98-ef9208942303.jpg?1793020975"
+      },
+      "raw": {
+        "name": "Reclamation Specialist",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "{1}, Sacrifice an artifact creature: Draw a card.",
+        "_ci": [
+          "B"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "The Best of Both Worlds",
+      "oracleId": "a53d9c36-a033-450b-a095-7645876c9ef3",
+      "scryfallId": "3fb0d788-8e6a-4109-bd0a-d245866a6dcb",
+      "canonicalName": "The Best of Both Worlds",
+      "layout": "saga",
+      "keywords": [
+        "Assimilate"
+      ],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "83",
+      "scryfallUri": "https://scryfall.com/card/trc/83/the-best-of-both-worlds?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/3fb0d788-8e6a-4109-bd0a-d245866a6dcb",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.jpg?1793020988",
+        "normal": "https://cards.scryfall.io/normal/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.jpg?1793020988",
+        "large": "https://cards.scryfall.io/large/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.jpg?1793020988",
+        "png": "https://cards.scryfall.io/png/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.png?1793020988",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.jpg?1793020988",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.jpg?1793020988",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.webp?1793020988",
+        "grid": "https://cards.scryfall.io/grid/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.webp?1793020988",
+        "display": "https://cards.scryfall.io/display/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.webp?1793020988",
+        "art": "https://cards.scryfall.io/art/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.webp?1793020988",
+        "crop": "https://cards.scryfall.io/crop/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.webp?1793020988",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/f/3fb0d788-8e6a-4109-bd0a-d245866a6dcb.jpg?1793020988"
+      },
+      "raw": {
+        "name": "The Best of Both Worlds",
+        "cost": "{4}{W}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Saga"
+        ],
+        "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Assimilate target nonartifact creature an opponent controls. (Gain control of it and put a +1/+1 counter on it. It's a Borg artifact creature and loses all other creature types.)\nII — Artifact creatures you control get +2/+2 until end of turn.\nIII — Exile the Borg assimilated with this Saga, then return it to the battlefield under its owner's control.",
+        "_ci": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Collective Override",
+      "oracleId": "75af4154-d873-45d0-9ff2-c977169012a3",
+      "scryfallId": "a16b9be3-5c17-4f63-9355-8fec2ce803e1",
+      "canonicalName": "Collective Override",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "90",
+      "scryfallUri": "https://scryfall.com/card/trc/90/collective-override?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/a16b9be3-5c17-4f63-9355-8fec2ce803e1",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.jpg?1793020985",
+        "normal": "https://cards.scryfall.io/normal/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.jpg?1793020985",
+        "large": "https://cards.scryfall.io/large/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.jpg?1793020985",
+        "png": "https://cards.scryfall.io/png/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.png?1793020985",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.jpg?1793020985",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.jpg?1793020985",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.webp?1793020985",
+        "grid": "https://cards.scryfall.io/grid/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.webp?1793020985",
+        "display": "https://cards.scryfall.io/display/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.webp?1793020985",
+        "art": "https://cards.scryfall.io/art/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.webp?1793020985",
+        "crop": "https://cards.scryfall.io/crop/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.webp?1793020985",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/1/a16b9be3-5c17-4f63-9355-8fec2ce803e1.jpg?1793020985"
+      },
+      "raw": {
+        "name": "Collective Override",
+        "cost": "{2}{W}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Choose one. If you control a commander as you cast this spell, you may choose both instead.\n• Create a 1/1 colorless Borg artifact creature token for each attacking creature.\n• Draw a card for each attacking creature.",
+        "_ci": [
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Deliver from Chaos",
+      "oracleId": "edea104c-b563-4fae-9e74-82164a8e090b",
+      "scryfallId": "be626968-2f2d-4126-b686-f1567f1ca0dc",
+      "canonicalName": "Deliver from Chaos",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "93",
+      "scryfallUri": "https://scryfall.com/card/trc/93/deliver-from-chaos?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/be626968-2f2d-4126-b686-f1567f1ca0dc",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.jpg?1793020997",
+        "normal": "https://cards.scryfall.io/normal/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.jpg?1793020997",
+        "large": "https://cards.scryfall.io/large/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.jpg?1793020997",
+        "png": "https://cards.scryfall.io/png/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.png?1793020997",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.jpg?1793020997",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.jpg?1793020997",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.webp?1793020997",
+        "grid": "https://cards.scryfall.io/grid/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.webp?1793020997",
+        "display": "https://cards.scryfall.io/display/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.webp?1793020997",
+        "art": "https://cards.scryfall.io/art/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.webp?1793020997",
+        "crop": "https://cards.scryfall.io/crop/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.webp?1793020997",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/e/be626968-2f2d-4126-b686-f1567f1ca0dc.jpg?1793020997"
+      },
+      "raw": {
+        "name": "Deliver from Chaos",
+        "cost": "{3}{W}{B}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target artifact or creature. Create X 1/1 colorless Borg artifact creature tokens, where X is that permanent's mana value.",
+        "_ci": [
+          "B",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Hugh, First of Many",
+      "oracleId": "9964f2fe-b7f4-40f5-8e71-948756d27f0a",
+      "scryfallId": "7430065e-eebe-42fa-a2c9-639e4bc1b48d",
+      "canonicalName": "Hugh, First of Many",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "94",
+      "scryfallUri": "https://scryfall.com/card/trc/94/hugh-first-of-many?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/7430065e-eebe-42fa-a2c9-639e4bc1b48d",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.jpg?1793021005",
+        "normal": "https://cards.scryfall.io/normal/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.jpg?1793021005",
+        "large": "https://cards.scryfall.io/large/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.jpg?1793021005",
+        "png": "https://cards.scryfall.io/png/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.png?1793021005",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.jpg?1793021005",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.jpg?1793021005",
+        "thumb": "https://cards.scryfall.io/thumb/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.webp?1793021005",
+        "grid": "https://cards.scryfall.io/grid/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.webp?1793021005",
+        "display": "https://cards.scryfall.io/display/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.webp?1793021005",
+        "art": "https://cards.scryfall.io/art/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.webp?1793021005",
+        "crop": "https://cards.scryfall.io/crop/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.webp?1793021005",
+        "jpeg": "https://cards.scryfall.io/normal/front/7/4/7430065e-eebe-42fa-a2c9-639e4bc1b48d.jpg?1793021005"
+      },
+      "raw": {
+        "name": "Hugh, First of Many",
+        "cost": "{1}{W}{U}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact spells you cast have replicate {2}{U}. (Whenever you cast an artifact spell, copy it for each time you paid its replicate cost. Each copy becomes a token.)",
+        "_ci": [
+          "B",
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Jurati, Cordial Queen",
+      "oracleId": "4dc4c8a3-17d6-4c2d-bcbf-9cebf261eda6",
+      "scryfallId": "8983cc30-d377-4c02-bc53-74e84b41513c",
+      "canonicalName": "Jurati, Cordial Queen",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "95",
+      "scryfallUri": "https://scryfall.com/card/trc/95/jurati-cordial-queen?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/8983cc30-d377-4c02-bc53-74e84b41513c",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.jpg?1793021010",
+        "normal": "https://cards.scryfall.io/normal/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.jpg?1793021010",
+        "large": "https://cards.scryfall.io/large/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.jpg?1793021010",
+        "png": "https://cards.scryfall.io/png/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.png?1793021010",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.jpg?1793021010",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.jpg?1793021010",
+        "thumb": "https://cards.scryfall.io/thumb/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.webp?1793021010",
+        "grid": "https://cards.scryfall.io/grid/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.webp?1793021010",
+        "display": "https://cards.scryfall.io/display/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.webp?1793021010",
+        "art": "https://cards.scryfall.io/art/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.webp?1793021010",
+        "crop": "https://cards.scryfall.io/crop/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.webp?1793021010",
+        "jpeg": "https://cards.scryfall.io/normal/front/8/9/8983cc30-d377-4c02-bc53-74e84b41513c.jpg?1793021010"
+      },
+      "raw": {
+        "name": "Jurati, Cordial Queen",
+        "cost": "{1}{W}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg",
+          "Scientist"
+        ],
+        "oracle": "Whenever one or more artifact creatures you control deal combat damage to a player, create a token that's a copy of target artifact token you control.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "One, Borg Evolved",
+      "oracleId": "eecdf18b-7a85-4b29-9a8a-26ee40da9e7a",
+      "scryfallId": "85b7aef6-33fd-45ff-bbe7-1e943e43bb19",
+      "canonicalName": "One, Borg Evolved",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "100",
+      "scryfallUri": "https://scryfall.com/card/trc/100/one-borg-evolved?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/85b7aef6-33fd-45ff-bbe7-1e943e43bb19",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.jpg?1793021021",
+        "normal": "https://cards.scryfall.io/normal/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.jpg?1793021021",
+        "large": "https://cards.scryfall.io/large/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.jpg?1793021021",
+        "png": "https://cards.scryfall.io/png/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.png?1793021021",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.jpg?1793021021",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.jpg?1793021021",
+        "thumb": "https://cards.scryfall.io/thumb/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.webp?1793021021",
+        "grid": "https://cards.scryfall.io/grid/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.webp?1793021021",
+        "display": "https://cards.scryfall.io/display/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.webp?1793021021",
+        "art": "https://cards.scryfall.io/art/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.webp?1793021021",
+        "crop": "https://cards.scryfall.io/crop/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.webp?1793021021",
+        "jpeg": "https://cards.scryfall.io/normal/front/8/5/85b7aef6-33fd-45ff-bbe7-1e943e43bb19.jpg?1793021021"
+      },
+      "raw": {
+        "name": "One, Borg Evolved",
+        "cost": "{4}{W}{U}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg",
+          "Artificer"
+        ],
+        "oracle": "Artifact creatures you control have flying, double strike, vigilance, menace, lifelink, and ward {2}.",
+        "_ci": [
+          "B",
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Class-4 Tactical Cube",
+      "oracleId": "9c14e21b-a733-4882-8e09-6dbfc85ac3aa",
+      "scryfallId": "363d63ce-a9a8-46bf-b5e4-837aa10efca8",
+      "canonicalName": "Class-4 Tactical Cube",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "110",
+      "scryfallUri": "https://scryfall.com/card/trc/110/class-4-tactical-cube?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/363d63ce-a9a8-46bf-b5e4-837aa10efca8",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.jpg?1793021021",
+        "normal": "https://cards.scryfall.io/normal/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.jpg?1793021021",
+        "large": "https://cards.scryfall.io/large/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.jpg?1793021021",
+        "png": "https://cards.scryfall.io/png/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.png?1793021021",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.jpg?1793021021",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.jpg?1793021021",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.webp?1793021021",
+        "grid": "https://cards.scryfall.io/grid/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.webp?1793021021",
+        "display": "https://cards.scryfall.io/display/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.webp?1793021021",
+        "art": "https://cards.scryfall.io/art/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.webp?1793021021",
+        "crop": "https://cards.scryfall.io/crop/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.webp?1793021021",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/6/363d63ce-a9a8-46bf-b5e4-837aa10efca8.jpg?1793021021"
+      },
+      "raw": {
+        "name": "Class-4 Tactical Cube",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "When this Spacecraft enters, create two 1/1 colorless Borg artifact creature tokens.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 7+.)\n7+ | Flying\nArtifact creatures you control get +1/+1.",
+        "_ci": [],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Queen's Diamond",
+      "oracleId": "44837c9b-971a-44b6-8e55-301cebc3a361",
+      "scryfallId": "5f936935-4f47-4d33-871b-0159cb6fb4da",
+      "canonicalName": "Queen's Diamond",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "118",
+      "scryfallUri": "https://scryfall.com/card/trc/118/queens-diamond?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/5f936935-4f47-4d33-871b-0159cb6fb4da",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.jpg?1793021033",
+        "normal": "https://cards.scryfall.io/normal/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.jpg?1793021033",
+        "large": "https://cards.scryfall.io/large/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.jpg?1793021033",
+        "png": "https://cards.scryfall.io/png/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.png?1793021033",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.jpg?1793021033",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.jpg?1793021033",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.webp?1793021033",
+        "grid": "https://cards.scryfall.io/grid/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.webp?1793021033",
+        "display": "https://cards.scryfall.io/display/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.webp?1793021033",
+        "art": "https://cards.scryfall.io/art/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.webp?1793021033",
+        "crop": "https://cards.scryfall.io/crop/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.webp?1793021033",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/f/5f936935-4f47-4d33-871b-0159cb6fb4da.jpg?1793021033"
+      },
+      "raw": {
+        "name": "Queen's Diamond",
+        "cost": "{4}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "{T}: Choose a color. Add one mana of that color for each charge counter on Queen's Diamond. Spend this mana only to cast your commander.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 8+.)\n8+ | Flying, vigilance, haste",
+        "_ci": [],
+        "power": "5",
+        "toughness": "5",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Reconnaissance Partition",
+      "oracleId": "c52e4704-6edb-477f-b80c-ea8146d4385f",
+      "scryfallId": "0d62b5d1-b22c-4919-8b3e-19aa3b42e521",
+      "canonicalName": "Reconnaissance Partition",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "119",
+      "scryfallUri": "https://scryfall.com/card/trc/119/reconnaissance-partition?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/0d62b5d1-b22c-4919-8b3e-19aa3b42e521",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.jpg?1793021038",
+        "normal": "https://cards.scryfall.io/normal/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.jpg?1793021038",
+        "large": "https://cards.scryfall.io/large/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.jpg?1793021038",
+        "png": "https://cards.scryfall.io/png/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.png?1793021038",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.jpg?1793021038",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.jpg?1793021038",
+        "thumb": "https://cards.scryfall.io/thumb/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.webp?1793021038",
+        "grid": "https://cards.scryfall.io/grid/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.webp?1793021038",
+        "display": "https://cards.scryfall.io/display/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.webp?1793021038",
+        "art": "https://cards.scryfall.io/art/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.webp?1793021038",
+        "crop": "https://cards.scryfall.io/crop/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.webp?1793021038",
+        "jpeg": "https://cards.scryfall.io/normal/front/0/d/0d62b5d1-b22c-4919-8b3e-19aa3b42e521.jpg?1793021038"
+      },
+      "raw": {
+        "name": "Reconnaissance Partition",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "This creature enters with two charge counters on it.\n{T}, Remove a counter from this creature: Choose one —\n• Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.\n• Draw a card.",
+        "_ci": [],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Shore Leave Planet",
+      "oracleId": "b5f50ad0-a9b3-4bfc-aaf4-55199e489265",
+      "scryfallId": "54cbe3ca-9a18-4297-aff4-9d13670fefb0",
+      "canonicalName": "Shore Leave Planet",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "130",
+      "scryfallUri": "https://scryfall.com/card/trc/130/shore-leave-planet?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/54cbe3ca-9a18-4297-aff4-9d13670fefb0",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.jpg?1793021044",
+        "normal": "https://cards.scryfall.io/normal/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.jpg?1793021044",
+        "large": "https://cards.scryfall.io/large/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.jpg?1793021044",
+        "png": "https://cards.scryfall.io/png/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.png?1793021044",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.jpg?1793021044",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.jpg?1793021044",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.webp?1793021044",
+        "grid": "https://cards.scryfall.io/grid/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.webp?1793021044",
+        "display": "https://cards.scryfall.io/display/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.webp?1793021044",
+        "art": "https://cards.scryfall.io/art/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.webp?1793021044",
+        "crop": "https://cards.scryfall.io/crop/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.webp?1793021044",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/4/54cbe3ca-9a18-4297-aff4-9d13670fefb0.jpg?1793021044"
+      },
+      "raw": {
+        "name": "Shore Leave Planet",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Planet"
+        ],
+        "oracle": "This land enters tapped.\n{T}: Add {U}.\n{4}{U}: This land becomes a copy of target creature you control until end of turn, except it isn't legendary and it's a Robot artifact in addition to its other types.",
+        "_ci": [
+          "U"
+        ],
+        "_produced": [
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Command Subadjunct",
+      "oracleId": "85b67121-340f-4cff-a26d-2160aa923ec3",
+      "scryfallId": "853bf74d-0b61-43df-9018-0b40b624a9d1",
+      "canonicalName": "Command Subadjunct",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "9",
+      "scryfallUri": "https://scryfall.com/card/trk/9/command-subadjunct?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/853bf74d-0b61-43df-9018-0b40b624a9d1",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.jpg?1792753641",
+        "normal": "https://cards.scryfall.io/normal/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.jpg?1792753641",
+        "large": "https://cards.scryfall.io/large/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.jpg?1792753641",
+        "png": "https://cards.scryfall.io/png/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.png?1792753641",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.jpg?1792753641",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.jpg?1792753641",
+        "thumb": "https://cards.scryfall.io/thumb/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.webp?1792753641",
+        "grid": "https://cards.scryfall.io/grid/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.webp?1792753641",
+        "display": "https://cards.scryfall.io/display/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.webp?1792753641",
+        "art": "https://cards.scryfall.io/art/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.webp?1792753641",
+        "crop": "https://cards.scryfall.io/crop/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.webp?1792753641",
+        "jpeg": "https://cards.scryfall.io/normal/front/8/5/853bf74d-0b61-43df-9018-0b40b624a9d1.jpg?1792753641"
+      },
+      "raw": {
+        "name": "Command Subadjunct",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control have vigilance.",
+        "_ci": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "1"
+      }
+    },
+    {
+      "requestedName": "Conquest Mission",
+      "oracleId": "35906166-71d1-4089-bbe4-4055edb81fb0",
+      "scryfallId": "f91755d7-6fb9-4caf-b4b4-f21ed5572d52",
+      "canonicalName": "Conquest Mission",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "10",
+      "scryfallUri": "https://scryfall.com/card/trk/10/conquest-mission?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/f91755d7-6fb9-4caf-b4b4-f21ed5572d52",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.jpg?1792750872",
+        "normal": "https://cards.scryfall.io/normal/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.jpg?1792750872",
+        "large": "https://cards.scryfall.io/large/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.jpg?1792750872",
+        "png": "https://cards.scryfall.io/png/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.png?1792750872",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.jpg?1792750872",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.jpg?1792750872",
+        "thumb": "https://cards.scryfall.io/thumb/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.webp?1792750872",
+        "grid": "https://cards.scryfall.io/grid/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.webp?1792750872",
+        "display": "https://cards.scryfall.io/display/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.webp?1792750872",
+        "art": "https://cards.scryfall.io/art/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.webp?1792750872",
+        "crop": "https://cards.scryfall.io/crop/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.webp?1792750872",
+        "jpeg": "https://cards.scryfall.io/normal/front/f/9/f91755d7-6fb9-4caf-b4b4-f21ed5572d52.jpg?1792750872"
+      },
+      "raw": {
+        "name": "Conquest Mission",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Whenever a nontoken artifact you control enters, put a quest counter on this enchantment. Create a 1/1 colorless Borg artifact creature token. If this enchantment has six or more quest counters on it, create two of those tokens instead.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Hive Mind Coprocessor",
+      "oracleId": "8e6ae6ed-065c-47bd-a3c6-69b2608e7ddc",
+      "scryfallId": "a4734c59-ff41-47ac-bbb4-c8c3bf052fe6",
+      "canonicalName": "Hive Mind Coprocessor",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "115",
+      "scryfallUri": "https://scryfall.com/card/trk/115/hive-mind-coprocessor?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.jpg?1785981497",
+        "normal": "https://cards.scryfall.io/normal/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.jpg?1785981497",
+        "large": "https://cards.scryfall.io/large/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.jpg?1785981497",
+        "png": "https://cards.scryfall.io/png/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.png?1785981497",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.jpg?1785981497",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.jpg?1785981497",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.webp?1785981497",
+        "grid": "https://cards.scryfall.io/grid/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.webp?1785981497",
+        "display": "https://cards.scryfall.io/display/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.webp?1785981497",
+        "art": "https://cards.scryfall.io/art/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.webp?1785981497",
+        "crop": "https://cards.scryfall.io/crop/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.webp?1785981497",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/4/a4734c59-ff41-47ac-bbb4-c8c3bf052fe6.jpg?1785981497"
+      },
+      "raw": {
+        "name": "Hive Mind Coprocessor",
+        "cost": "{4}{B}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control have \"Whenever this creature deals combat damage to a player, you may pay 1 life. If you do, draw a card.\"",
+        "_ci": [
+          "B"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Locutus, the One Who Speaks",
+      "oracleId": "46ba09a7-42e4-42cd-911c-71d0ade01180",
+      "scryfallId": "296f1127-14a0-42c4-9e4a-c0d929720748",
+      "canonicalName": "Locutus, the One Who Speaks",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "245",
+      "scryfallUri": "https://scryfall.com/card/trk/245/locutus-the-one-who-speaks?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/296f1127-14a0-42c4-9e4a-c0d929720748",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.jpg?1792508366",
+        "normal": "https://cards.scryfall.io/normal/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.jpg?1792508366",
+        "large": "https://cards.scryfall.io/large/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.jpg?1792508366",
+        "png": "https://cards.scryfall.io/png/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.png?1792508366",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.jpg?1792508366",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.jpg?1792508366",
+        "thumb": "https://cards.scryfall.io/thumb/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.webp?1792508366",
+        "grid": "https://cards.scryfall.io/grid/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.webp?1792508366",
+        "display": "https://cards.scryfall.io/display/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.webp?1792508366",
+        "art": "https://cards.scryfall.io/art/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.webp?1792508366",
+        "crop": "https://cards.scryfall.io/crop/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.webp?1792508366",
+        "jpeg": "https://cards.scryfall.io/normal/front/2/9/296f1127-14a0-42c4-9e4a-c0d929720748.jpg?1792508366"
+      },
+      "raw": {
+        "name": "Locutus, the One Who Speaks",
+        "cost": "{W}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Borg"
+        ],
+        "oracle": "Artifact creatures you control get +1/+1.\n{W}{B}, Discard this card: It deals 2 damage to target creature. You gain 2 life.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "power": "1",
+        "toughness": "1"
+      }
+    }
+  ]
+}

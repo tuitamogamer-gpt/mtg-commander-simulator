@@ -4913,7 +4913,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         setName: metadata.setName || null,
         collectorNumber: metadata.collectorNumber || null,
         rarity: metadata.rarity || null,
-        releasedAt: metadata.releasedAt || null,
+        releasedAt: metadata.releasedAt || raw._releasedAt || null,
         engineStatus: found ? 'certified' : 'certified-legacy',
         deckImportEligible: !!found || activeDeckCards.has(name) || !!reviewed,
         legacyImportReview: reviewed?.review || null,

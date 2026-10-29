@@ -878,6 +878,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         sourceMeta: card.meta,
         oracleFaces: card.oracleFaces, oracleFace: card.oracleFace,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
+        stationByToughnessV89: !!card.cur?.stationByToughnessV89,
         toxic: MTG.oracleToxicValueV10?.(card)??Math.max(0,Number(card.def.toxic)||0),
         tapped: !!card.tapped, blocking: card.blocking,
         // Departure triggers need the combat relation before zone movement
@@ -979,6 +980,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp, def:snap.def, copyEpoch:snap.copyEpoch, copying:snap.copying,
           mutateComponents:snap.mutateComponents,oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,attachedTo:snap.attachedTo,attachedHostVersion:snap.attachedHostVersion,
           power: snap.power, toughness: snap.toughness, abilitiesDisabled: !!snap.abilitiesDisabled,
+          stationByToughnessV89: !!snap.stationByToughnessV89,
           enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,damagedTurnV9:snap.damagedTurnV9,renowned:snap.renowned,attachedSources:snap.attachedSources,attachments:snap.attachments,
           name:snap.name,types:snap.types.slice(),subtypes:snap.subtypes.slice(),super:snap.super.slice(),colors:snap.colors.slice(),kw:snap.kw.slice(),
           counters:{...snap.counters},isToken:snap.isToken,commander:snap.commander,mv:snap.mv,ctrl:snap.ctrl,owner:snap.owner,
@@ -1506,7 +1508,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
       await MTG.VN?.riotEntry?.(this,card);
+      // Entry counters can depend on the characteristics established by an
+      // as-enters copy choice (for example, a creature copying a Spacecraft).
       const additionalEntryCounters = {...opts.additionalCounters};
+      for (const [kind, n] of Object.entries(opts.additionalCountersFor?.(this, card) || {})) additionalEntryCounters[kind] = (additionalEntryCounters[kind] || 0) + n;
       if(card.is('Creature'))for(const [kind,n]of Object.entries(opts.oracleCreatureEntryCountersV25||{}))additionalEntryCounters[kind]=(additionalEntryCounters[kind]||0)+n;
       if(card.is('Creature'))for(const handler of MTG.OracleV20?.handlers||[])for(const [kind,n]of Object.entries(handler.entryCounters?.(this,card)||{}))additionalEntryCounters[kind]=(additionalEntryCounters[kind]||0)+n;
       const pomEntryBonus=MTG.POM?.entryCounters(this,card)||0;if(pomEntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+pomEntryBonus;

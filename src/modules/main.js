@@ -908,6 +908,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <p class="deckspotlightcommander"><span>${commanders.length > 1 ? 'COMMANDERS' : 'COMMANDER'}</span>${esc(commanders.join(' + '))}</p>
             </div>
             <p class="deckspotlighttheme">${esc(guide.theme)}</p>
+            ${deck.preview && deck.releaseDate ? `<p class="deckspotlightrelease">Preview deck · Releases ${esc(deck.releaseDate)}</p>` : ''}
             <div class="deckspotlightbadges"><span>${esc(guide.pace)}</span><span>${esc(guide.complexity)}</span><span>${esc(meta.set || '')}</span></div>
             <div class="deckspotlightstats" aria-label="Deck breakdown">
               <span><b>${counts.lands}</b> lands</span><span><b>${counts.creatures}</b> creatures</span><span><b>${counts.spells}</b> instants + sorceries</span><span><b>${counts.engines}</b> artifacts + enchantments</span>

@@ -2,6 +2,8 @@
 
 This inventory is generated from the application runtime and the pinned Scryfall Oracle feed with its pinned paper-printing availability source. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
 
+**29 October update:** the Star Trek preview import adds four complete Commander decks and 137 native card definitions. The live catalog now has **180 decks, 32,273 definitions, and 32,272 cards available for deck imports**. Exact lists, Oracle metadata, and preservation checks are in the [Star Trek import record](../reports/decks/precon-trc-2026-10-29/README.md). The CSV inventory below predates this import; its historical source comparison is retained because the original compressed snapshots are not present in this workspace.
+
 ## Download the complete lists
 
 - [Imported/runtime cards](catalog/imported-cards.csv): every runtime definition, its source batch, engine marker, and whether arbitrary deck import permits it.
@@ -10,9 +12,9 @@ This inventory is generated from the application runtime and the pinned Scryfall
 
 CSV files are UTF-8, sorted by card name without locale-specific collation, and use quoted fields. Counts are unique runtime names or unique Oracle IDs as indicated; they are not counts of printings, deck copies, or test cases.
 
-## Current inventory
+## Inventory before the Star Trek preview import
 
-Generic Oracle import state: **2026-10-09T17:26:14.708Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
+Generic Oracle import state: **2026-10-09T17:26:14.708Z**. These archived counts include native precon imports through Odds and Ends on 27 October; they exclude the 137 Star Trek definitions added on 29 October.
 
 | Measure | Count |
 | --- | ---: |

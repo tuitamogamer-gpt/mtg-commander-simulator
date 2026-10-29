@@ -76,6 +76,14 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   for (const token of frcImages.tokenVariants) expected.add(token.alias);
   const fdcImages = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-fdc-2026-09-26/images.json', import.meta.url)));
   for (const token of fdcImages.tokenVariants) expected.add(token.alias);
+  const oddsSource = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-candidates-2026-10-27/sources.json', import.meta.url))).decks.find(deck => deck.slug === 'odd');
+  const oddsOracle = JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-candidates-2026-10-27/oracle.json', import.meta.url))).cards;
+  for (const entry of oddsSource.cards) {
+    const record = oddsOracle.find(card => card.name === entry.name || card.card_faces?.some(face => face.name === entry.name));
+    assert.ok(record, entry.name + ': pinned Odds and Ends image source');
+    expected.add(record.name);
+    for (const face of record.card_faces || []) expected.add(face.name);
+  }
   for (const [name, alias] of Object.entries(frcImages.canonicalAliases)) {
     expected.add(name);
     assert.equal(MTG.cardImageURL(name), MTG.cardImageURL(alias), name + ': pinned canonical token alias');
@@ -93,13 +101,14 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   assert.equal(typeof MTG.cardImageAPIURL, 'function');
   for(const name of expected){
     const image=MTG.cardImageURL(name);
-    if(MTG.CARD_IMAGE_MISSING.includes(name))assert.match(image,/^https:\/\/api\.scryfall\.com\//);
+    if(MTG.CARD_IMAGE_UNPUBLISHED_TOKENS?.includes(name))assert.equal(image,MTG.CARD_IMAGE_PLACEHOLDER,name+': unpublished token art remains an explicit sentinel');
+    else if(MTG.CARD_IMAGE_MISSING.includes(name))assert.match(image,/^https:\/\/api\.scryfall\.com\//);
     else{assert.notEqual(image,MTG.CARD_IMAGE_PLACEHOLDER,name+': canonical card or token name retains its local art');assert.match(image,/^\.\/assets\/cards\/.+\.webp$/);}
   }
   assert.deepEqual([...commanders].filter(name => !MTG.CARD_ART_PATHS[name]), []);
   // Canonical token names may share an existing type alias (for example
   // Dinosaur Cat and Dinosaur Cat Token). Compare the actual manifest keys.
-  const expectedKeys = new Set([...expected].map(name =>
+  const expectedKeys = new Set([...expected].filter(name => !MTG.CARD_IMAGE_UNPUBLISHED_TOKENS?.includes(name)).map(name =>
     MTG.CARD_IMAGE_PATHS[name] ? name : name.replace(/ Token$/, '')));
   assert.deepEqual(Object.keys(MTG.CARD_IMAGE_PATHS).sort(), [...expectedKeys].sort());
   assert.deepEqual(

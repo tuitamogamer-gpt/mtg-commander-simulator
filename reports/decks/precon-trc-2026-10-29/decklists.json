@@ -1,0 +1,1537 @@
+{
+  "retrievedOn": "2026-10-29",
+  "decks": [
+    {
+      "name": "We Are the Borg",
+      "commander": "The Borg Queen",
+      "set": "TRC",
+      "cards": [
+        {
+          "n": 1,
+          "name": "The Borg Queen"
+        },
+        {
+          "n": 1,
+          "name": "Locutus of Borg"
+        },
+        {
+          "n": 1,
+          "name": "Borg Incursion"
+        },
+        {
+          "n": 1,
+          "name": "Emergency Regeneration"
+        },
+        {
+          "n": 1,
+          "name": "Join the Collective"
+        },
+        {
+          "n": 1,
+          "name": "Korok, Liberated Rage"
+        },
+        {
+          "n": 1,
+          "name": "Maturation Chamber"
+        },
+        {
+          "n": 1,
+          "name": "Stratagem Emulator"
+        },
+        {
+          "n": 1,
+          "name": "Supplementation Node"
+        },
+        {
+          "n": 1,
+          "name": "Type-03 Borg Vessel"
+        },
+        {
+          "n": 1,
+          "name": "Ambulatory Reactor"
+        },
+        {
+          "n": 1,
+          "name": "Borg Scout Sphere"
+        },
+        {
+          "n": 1,
+          "name": "Co-Option Adjutant"
+        },
+        {
+          "n": 1,
+          "name": "Gift of Perfection"
+        },
+        {
+          "n": 1,
+          "name": "Optimization Annex"
+        },
+        {
+          "n": 1,
+          "name": "Seven of Nine, Tertiary Adjunct"
+        },
+        {
+          "n": 1,
+          "name": "Transwarp Hub"
+        },
+        {
+          "n": 1,
+          "name": "Võx, Child of the Collective"
+        },
+        {
+          "n": 1,
+          "name": "Assimilate the Wounded"
+        },
+        {
+          "n": 1,
+          "name": "Assimilation Assessor"
+        },
+        {
+          "n": 1,
+          "name": "Battle of Wolf 359"
+        },
+        {
+          "n": 1,
+          "name": "Extraction Integrant"
+        },
+        {
+          "n": 1,
+          "name": "Reclamation Specialist"
+        },
+        {
+          "n": 1,
+          "name": "The Best of Both Worlds"
+        },
+        {
+          "n": 1,
+          "name": "Collective Override"
+        },
+        {
+          "n": 1,
+          "name": "Deliver from Chaos"
+        },
+        {
+          "n": 1,
+          "name": "Hugh, First of Many"
+        },
+        {
+          "n": 1,
+          "name": "Jurati, Cordial Queen"
+        },
+        {
+          "n": 1,
+          "name": "One, Borg Evolved"
+        },
+        {
+          "n": 1,
+          "name": "Class-4 Tactical Cube"
+        },
+        {
+          "n": 1,
+          "name": "Queen's Diamond"
+        },
+        {
+          "n": 1,
+          "name": "Reconnaissance Partition"
+        },
+        {
+          "n": 1,
+          "name": "Shore Leave Planet"
+        },
+        {
+          "n": 1,
+          "name": "Tempered Steel"
+        },
+        {
+          "n": 1,
+          "name": "Disallow"
+        },
+        {
+          "n": 1,
+          "name": "Toxic Deluge"
+        },
+        {
+          "n": 1,
+          "name": "Anguished Unmaking"
+        },
+        {
+          "n": 1,
+          "name": "Astral Cornucopia"
+        },
+        {
+          "n": 1,
+          "name": "Darksteel Plate"
+        },
+        {
+          "n": 1,
+          "name": "Door of Destinies"
+        },
+        {
+          "n": 1,
+          "name": "Forsaken Monument"
+        },
+        {
+          "n": 1,
+          "name": "The Immortal Sun"
+        },
+        {
+          "n": 1,
+          "name": "Skullclamp"
+        },
+        {
+          "n": 1,
+          "name": "Unwinding Clock"
+        },
+        {
+          "n": 1,
+          "name": "Academy Ruins"
+        },
+        {
+          "n": 1,
+          "name": "Choked Estuary"
+        },
+        {
+          "n": 1,
+          "name": "Drowned Catacomb"
+        },
+        {
+          "n": 1,
+          "name": "Eclipsed Steppe"
+        },
+        {
+          "n": 1,
+          "name": "Exotic Orchard"
+        },
+        {
+          "n": 1,
+          "name": "Fetid Pools"
+        },
+        {
+          "n": 1,
+          "name": "Glacial Fortress"
+        },
+        {
+          "n": 1,
+          "name": "Irrigated Farmland"
+        },
+        {
+          "n": 1,
+          "name": "Isolated Chapel"
+        },
+        {
+          "n": 1,
+          "name": "Morphic Pool"
+        },
+        {
+          "n": 1,
+          "name": "Port Town"
+        },
+        {
+          "n": 1,
+          "name": "Prairie Stream"
+        },
+        {
+          "n": 1,
+          "name": "Shineshadow Snarl"
+        },
+        {
+          "n": 1,
+          "name": "Skycloud Expanse"
+        },
+        {
+          "n": 1,
+          "name": "Spire of Industry"
+        },
+        {
+          "n": 1,
+          "name": "Sunken Hollow"
+        },
+        {
+          "n": 1,
+          "name": "Umbral Expanse"
+        },
+        {
+          "n": 1,
+          "name": "Underground River"
+        },
+        {
+          "n": 1,
+          "name": "Command Subadjunct"
+        },
+        {
+          "n": 1,
+          "name": "Conquest Mission"
+        },
+        {
+          "n": 1,
+          "name": "Hive Mind Coprocessor"
+        },
+        {
+          "n": 1,
+          "name": "Locutus, the One Who Speaks"
+        },
+        {
+          "n": 1,
+          "name": "Dispatch"
+        },
+        {
+          "n": 1,
+          "name": "Return to Dust"
+        },
+        {
+          "n": 1,
+          "name": "Thirst for Knowledge"
+        },
+        {
+          "n": 1,
+          "name": "Thoughtcast"
+        },
+        {
+          "n": 1,
+          "name": "Bitter Triumph"
+        },
+        {
+          "n": 1,
+          "name": "Arcane Signet"
+        },
+        {
+          "n": 1,
+          "name": "Commander's Sphere"
+        },
+        {
+          "n": 1,
+          "name": "Everflowing Chalice"
+        },
+        {
+          "n": 1,
+          "name": "Sol Ring"
+        },
+        {
+          "n": 1,
+          "name": "Stonespeaker Crystal"
+        },
+        {
+          "n": 1,
+          "name": "Swiftfoot Boots"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Dominance"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Hierarchy"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Progress"
+        },
+        {
+          "n": 1,
+          "name": "Wayfarer's Bauble"
+        },
+        {
+          "n": 1,
+          "name": "Arcane Sanctum"
+        },
+        {
+          "n": 1,
+          "name": "Command Tower"
+        },
+        {
+          "n": 1,
+          "name": "Contaminated Landscape"
+        },
+        {
+          "n": 1,
+          "name": "Evolving Wilds"
+        },
+        {
+          "n": 1,
+          "name": "Path of Ancestry"
+        },
+        {
+          "n": 1,
+          "name": "Rogue's Passage"
+        },
+        {
+          "n": 1,
+          "name": "Terramorphic Expanse"
+        },
+        {
+          "n": 4,
+          "name": "Plains"
+        },
+        {
+          "n": 4,
+          "name": "Island"
+        },
+        {
+          "n": 4,
+          "name": "Swamp"
+        }
+      ],
+      "source": {
+        "provider": "Wizards of the Coast",
+        "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+        "releaseDate": "2026-11-13",
+        "officialHtmlSha256": "a8d21800150b4d5fa043f24c778321b1f589d84c581e4d09a73716fc1e8a841a",
+        "export": "we-are-the-borg.txt",
+        "sha256": "adfa02bbafdcec7a897c2921e52d6aa375ddebbb0b1ec4355ff0a960dcd290bb",
+        "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+        "oracleProvider": "Scryfall",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/WeAreTheBorg_TRC.json",
+        "mtgjsonStatus": 404
+      }
+    },
+    {
+      "name": "Federation Fleet",
+      "commander": "Jean-Luc Picard, Luminary",
+      "set": "TRC",
+      "cards": [
+        {
+          "n": 1,
+          "name": "Jean-Luc Picard, Luminary"
+        },
+        {
+          "n": 1,
+          "name": "Captain Janeway, Endgame"
+        },
+        {
+          "n": 1,
+          "name": "Ambassador K'Ehleyr"
+        },
+        {
+          "n": 1,
+          "name": "Beverly Crusher, Ship's Doctor"
+        },
+        {
+          "n": 1,
+          "name": "Dr. Pulaski, Cynical Clinician"
+        },
+        {
+          "n": 1,
+          "name": "Ensign Harry Kim, Operations"
+        },
+        {
+          "n": 1,
+          "name": "Ezri Dax, Newly Joined"
+        },
+        {
+          "n": 1,
+          "name": "Guinan, Ancient Advisor"
+        },
+        {
+          "n": 1,
+          "name": "Julian Bashir, Frontier Doctor"
+        },
+        {
+          "n": 1,
+          "name": "Spot, Felis catus"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Enterprise-E, Sovereign"
+        },
+        {
+          "n": 1,
+          "name": "Chief Miles O'Brien"
+        },
+        {
+          "n": 1,
+          "name": "Data, Exploring Humanity"
+        },
+        {
+          "n": 1,
+          "name": "Geordi La Forge, Innovator"
+        },
+        {
+          "n": 1,
+          "name": "Kes, Evolving Telepath"
+        },
+        {
+          "n": 1,
+          "name": "On the Shoulders of Giants"
+        },
+        {
+          "n": 1,
+          "name": "Seven of Nine, Tertiary Adjunct"
+        },
+        {
+          "n": 1,
+          "name": "Temporal Tribulation"
+        },
+        {
+          "n": 1,
+          "name": "Tuvok, Chief Tactical Officer"
+        },
+        {
+          "n": 1,
+          "name": "Ro Laren, Double Agent"
+        },
+        {
+          "n": 1,
+          "name": "Rom and Leeta, Unlikely Pair"
+        },
+        {
+          "n": 1,
+          "name": "B'Elanna Torres, Scrapper"
+        },
+        {
+          "n": 1,
+          "name": "Cmdr. Troi, Outgoing Empath"
+        },
+        {
+          "n": 1,
+          "name": "Commander William Riker"
+        },
+        {
+          "n": 1,
+          "name": "Reg Barclay, Fidgety Fantasist"
+        },
+        {
+          "n": 1,
+          "name": "Tom Paris, Risk-Taker"
+        },
+        {
+          "n": 1,
+          "name": "Unification"
+        },
+        {
+          "n": 1,
+          "name": "Vic Fontaine, One Night Only"
+        },
+        {
+          "n": 1,
+          "name": "Worf, Son of Mogh"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Defiant, Tough Little Ship"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Enterprise-C, Time-Tossed"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Prometheus, Prototype"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Stargazer, Here and There"
+        },
+        {
+          "n": 1,
+          "name": "Grand Crescendo"
+        },
+        {
+          "n": 1,
+          "name": "Loran of the Third Path"
+        },
+        {
+          "n": 1,
+          "name": "Promise of Loyalty"
+        },
+        {
+          "n": 1,
+          "name": "Cryptic Command"
+        },
+        {
+          "n": 1,
+          "name": "Chain Reaction"
+        },
+        {
+          "n": 1,
+          "name": "Fevered Visions"
+        },
+        {
+          "n": 1,
+          "name": "Fractured Identity"
+        },
+        {
+          "n": 1,
+          "name": "Supreme Verdict"
+        },
+        {
+          "n": 1,
+          "name": "Alhammarret's Archive"
+        },
+        {
+          "n": 1,
+          "name": "Howling Mine"
+        },
+        {
+          "n": 1,
+          "name": "Battlefield Forge"
+        },
+        {
+          "n": 1,
+          "name": "Clifftop Retreat"
+        },
+        {
+          "n": 1,
+          "name": "Coastal Peak"
+        },
+        {
+          "n": 1,
+          "name": "Command Beacon"
+        },
+        {
+          "n": 1,
+          "name": "Desolate Lighthouse"
+        },
+        {
+          "n": 1,
+          "name": "Exotic Orchard"
+        },
+        {
+          "n": 1,
+          "name": "Fabled Passage"
+        },
+        {
+          "n": 1,
+          "name": "Frostboil Snarl"
+        },
+        {
+          "n": 1,
+          "name": "Furycalm Snarl"
+        },
+        {
+          "n": 1,
+          "name": "Glacial Fortress"
+        },
+        {
+          "n": 1,
+          "name": "Glittering Massif"
+        },
+        {
+          "n": 1,
+          "name": "Irrigated Farmland"
+        },
+        {
+          "n": 1,
+          "name": "Port Town"
+        },
+        {
+          "n": 1,
+          "name": "Prairie Stream"
+        },
+        {
+          "n": 1,
+          "name": "Radiant Summit"
+        },
+        {
+          "n": 1,
+          "name": "Scorched Geyser"
+        },
+        {
+          "n": 1,
+          "name": "Sulfur Falls"
+        },
+        {
+          "n": 1,
+          "name": "Training Center"
+        },
+        {
+          "n": 1,
+          "name": "Malfunctioning Holodeck"
+        },
+        {
+          "n": 1,
+          "name": "Chronomantic Escape"
+        },
+        {
+          "n": 1,
+          "name": "Swords to Plowshares"
+        },
+        {
+          "n": 1,
+          "name": "Frantic Search"
+        },
+        {
+          "n": 1,
+          "name": "Negate"
+        },
+        {
+          "n": 1,
+          "name": "Pongify"
+        },
+        {
+          "n": 1,
+          "name": "Abrade"
+        },
+        {
+          "n": 1,
+          "name": "Thrill of Possibility"
+        },
+        {
+          "n": 1,
+          "name": "Faithful Mending"
+        },
+        {
+          "n": 1,
+          "name": "Arcane Signet"
+        },
+        {
+          "n": 1,
+          "name": "Commander's Sphere"
+        },
+        {
+          "n": 1,
+          "name": "Hedron Archive"
+        },
+        {
+          "n": 1,
+          "name": "Mind Stone"
+        },
+        {
+          "n": 1,
+          "name": "Sol Ring"
+        },
+        {
+          "n": 1,
+          "name": "Stonespeaker Crystal"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Conviction"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Creativity"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Progress"
+        },
+        {
+          "n": 1,
+          "name": "Thought Vessel"
+        },
+        {
+          "n": 1,
+          "name": "Command Tower"
+        },
+        {
+          "n": 1,
+          "name": "Evolving Wilds"
+        },
+        {
+          "n": 1,
+          "name": "Mystic Monastery"
+        },
+        {
+          "n": 1,
+          "name": "Path of Ancestry"
+        },
+        {
+          "n": 1,
+          "name": "Perilous Landscape"
+        },
+        {
+          "n": 1,
+          "name": "Reliquary Tower"
+        },
+        {
+          "n": 1,
+          "name": "Terramorphic Expanse"
+        },
+        {
+          "n": 5,
+          "name": "Island"
+        },
+        {
+          "n": 4,
+          "name": "Plains"
+        },
+        {
+          "n": 4,
+          "name": "Mountain"
+        }
+      ],
+      "source": {
+        "provider": "Wizards of the Coast",
+        "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+        "releaseDate": "2026-11-13",
+        "officialHtmlSha256": "a8d21800150b4d5fa043f24c778321b1f589d84c581e4d09a73716fc1e8a841a",
+        "export": "federation-fleet.txt",
+        "sha256": "d2ae8bd31263676d5d0c1ad93dc748384c2ab53f785a880d4573d1d2a4fc6847",
+        "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+        "oracleProvider": "Scryfall",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/FederationFleet_TRC.json",
+        "mtgjsonStatus": 404
+      }
+    },
+    {
+      "name": "Landing Party",
+      "commander": "Commander Spock",
+      "set": "TRC",
+      "cards": [
+        {
+          "n": 1,
+          "name": "Commander Spock"
+        },
+        {
+          "n": 1,
+          "name": "Captain Kirk, Boldly Going"
+        },
+        {
+          "n": 1,
+          "name": "Balance of Terror"
+        },
+        {
+          "n": 1,
+          "name": "Merciful Mandate"
+        },
+        {
+          "n": 1,
+          "name": "M'Ress, Crew Coordinator"
+        },
+        {
+          "n": 1,
+          "name": "Shuttlecraft Galileo"
+        },
+        {
+          "n": 1,
+          "name": "Tribble Cluster"
+        },
+        {
+          "n": 1,
+          "name": "Colossal Clone Master"
+        },
+        {
+          "n": 1,
+          "name": "Fleet Captain Christopher Pike"
+        },
+        {
+          "n": 1,
+          "name": "Giant Space Amoeba"
+        },
+        {
+          "n": 1,
+          "name": "Lieutenant Nyota Uhura"
+        },
+        {
+          "n": 1,
+          "name": "Sam Kirk, Xenoanthropologist"
+        },
+        {
+          "n": 1,
+          "name": "Temporal Tribulation"
+        },
+        {
+          "n": 1,
+          "name": "Amanda Grayson, Logic's Link"
+        },
+        {
+          "n": 1,
+          "name": "Christine Chapel, Combat Medic"
+        },
+        {
+          "n": 1,
+          "name": "Janice Rand, Essential Aide"
+        },
+        {
+          "n": 1,
+          "name": "Lieutenant Hikaru Sulu"
+        },
+        {
+          "n": 1,
+          "name": "Chief Kyle, Transporter Tech"
+        },
+        {
+          "n": 1,
+          "name": "Chief Montgomery Scott"
+        },
+        {
+          "n": 1,
+          "name": "Lt. Arex, Ever-Adapting"
+        },
+        {
+          "n": 1,
+          "name": "McCoy, Not a Bricklayer"
+        },
+        {
+          "n": 1,
+          "name": "Pavel Chekov, First Posting"
+        },
+        {
+          "n": 1,
+          "name": "T'Pring, Never Parted"
+        },
+        {
+          "n": 1,
+          "name": "Command Chair"
+        },
+        {
+          "n": 1,
+          "name": "The Guardian of Forever"
+        },
+        {
+          "n": 1,
+          "name": "Jefferies Tube"
+        },
+        {
+          "n": 1,
+          "name": "Planet Killer"
+        },
+        {
+          "n": 1,
+          "name": "S.S. Botany Bay"
+        },
+        {
+          "n": 1,
+          "name": "Starfleet Communicator"
+        },
+        {
+          "n": 1,
+          "name": "Starship Enterprise"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Defiant, Mirror Migrant"
+        },
+        {
+          "n": 1,
+          "name": "U.S.S. Farragut, Bold Explorer"
+        },
+        {
+          "n": 1,
+          "name": "Shore Leave Planet"
+        },
+        {
+          "n": 1,
+          "name": "Austere Command"
+        },
+        {
+          "n": 1,
+          "name": "Sun Titan"
+        },
+        {
+          "n": 1,
+          "name": "Wrath of God"
+        },
+        {
+          "n": 1,
+          "name": "Echo of Eons"
+        },
+        {
+          "n": 1,
+          "name": "Ancient Greenwarden"
+        },
+        {
+          "n": 1,
+          "name": "Augur of Autumn"
+        },
+        {
+          "n": 1,
+          "name": "Exploration"
+        },
+        {
+          "n": 1,
+          "name": "Guardian Project"
+        },
+        {
+          "n": 1,
+          "name": "Heroic Intervention"
+        },
+        {
+          "n": 1,
+          "name": "Lotus Cobra"
+        },
+        {
+          "n": 1,
+          "name": "Scute Swarm"
+        },
+        {
+          "n": 1,
+          "name": "Tireless Tracker"
+        },
+        {
+          "n": 1,
+          "name": "Canopy Vista"
+        },
+        {
+          "n": 1,
+          "name": "Exotic Orchard"
+        },
+        {
+          "n": 1,
+          "name": "Fabled Passage"
+        },
+        {
+          "n": 1,
+          "name": "Fortified Village"
+        },
+        {
+          "n": 1,
+          "name": "Glacial Fortress"
+        },
+        {
+          "n": 1,
+          "name": "Hinterland Harbor"
+        },
+        {
+          "n": 1,
+          "name": "Irrigated Farmland"
+        },
+        {
+          "n": 1,
+          "name": "Mosswort Bridge"
+        },
+        {
+          "n": 1,
+          "name": "Mutavault"
+        },
+        {
+          "n": 1,
+          "name": "Port Town"
+        },
+        {
+          "n": 1,
+          "name": "Prairie Stream"
+        },
+        {
+          "n": 1,
+          "name": "Rain-Slicked Copse"
+        },
+        {
+          "n": 1,
+          "name": "Scattered Groves"
+        },
+        {
+          "n": 1,
+          "name": "Sea of Clouds"
+        },
+        {
+          "n": 1,
+          "name": "Sodden Verdure"
+        },
+        {
+          "n": 1,
+          "name": "Sunpetal Grove"
+        },
+        {
+          "n": 1,
+          "name": "Temple of Enlightenment"
+        },
+        {
+          "n": 1,
+          "name": "Temple of Mystery"
+        },
+        {
+          "n": 1,
+          "name": "Temple of Plenty"
+        },
+        {
+          "n": 1,
+          "name": "Vineglimmer Snarl"
+        },
+        {
+          "n": 1,
+          "name": "Cold-Blooded Crew"
+        },
+        {
+          "n": 1,
+          "name": "Syndicate Liquidators"
+        },
+        {
+          "n": 1,
+          "name": "Earth, Sector 001"
+        },
+        {
+          "n": 1,
+          "name": "Risa"
+        },
+        {
+          "n": 1,
+          "name": "Vulcan"
+        },
+        {
+          "n": 1,
+          "name": "Path to Exile"
+        },
+        {
+          "n": 1,
+          "name": "Brainstorm"
+        },
+        {
+          "n": 1,
+          "name": "Ponder"
+        },
+        {
+          "n": 1,
+          "name": "Reality Shift"
+        },
+        {
+          "n": 1,
+          "name": "Beast Within"
+        },
+        {
+          "n": 1,
+          "name": "Cultivate"
+        },
+        {
+          "n": 1,
+          "name": "Farseek"
+        },
+        {
+          "n": 1,
+          "name": "Harmonize"
+        },
+        {
+          "n": 1,
+          "name": "Nature's Lore"
+        },
+        {
+          "n": 1,
+          "name": "Rampant Growth"
+        },
+        {
+          "n": 1,
+          "name": "Satyr Wayfinder"
+        },
+        {
+          "n": 1,
+          "name": "Growth Spiral"
+        },
+        {
+          "n": 1,
+          "name": "Arcane Signet"
+        },
+        {
+          "n": 1,
+          "name": "Sol Ring"
+        },
+        {
+          "n": 1,
+          "name": "Command Tower"
+        },
+        {
+          "n": 1,
+          "name": "Evolving Wilds"
+        },
+        {
+          "n": 1,
+          "name": "Path of Ancestry"
+        },
+        {
+          "n": 1,
+          "name": "Reliquary Tower"
+        },
+        {
+          "n": 1,
+          "name": "Seaside Citadel"
+        },
+        {
+          "n": 1,
+          "name": "Temple of the False God"
+        },
+        {
+          "n": 1,
+          "name": "Terramorphic Expanse"
+        },
+        {
+          "n": 1,
+          "name": "Tranquil Landscape"
+        },
+        {
+          "n": 4,
+          "name": "Forest"
+        },
+        {
+          "n": 2,
+          "name": "Plains"
+        },
+        {
+          "n": 2,
+          "name": "Island"
+        }
+      ],
+      "source": {
+        "provider": "Wizards of the Coast",
+        "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+        "releaseDate": "2026-11-13",
+        "officialHtmlSha256": "a8d21800150b4d5fa043f24c778321b1f589d84c581e4d09a73716fc1e8a841a",
+        "export": "landing-party.txt",
+        "sha256": "756308ab358d1c7e911cfdb2c4f177aba0121ea3bbf1c2a788a3100145b9ded0",
+        "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+        "oracleProvider": "Scryfall",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/LandingParty_TRC.json",
+        "mtgjsonStatus": 404
+      }
+    },
+    {
+      "name": "Klingon Fury",
+      "commander": "Worf, Defiant Commander",
+      "set": "TRC",
+      "cards": [
+        {
+          "n": 1,
+          "name": "Worf, Defiant Commander"
+        },
+        {
+          "n": 1,
+          "name": "Kor, Cause of Vengeance"
+        },
+        {
+          "n": 1,
+          "name": "Ambassador K'Ehleyr"
+        },
+        {
+          "n": 1,
+          "name": "Imperial Hullbreachers"
+        },
+        {
+          "n": 1,
+          "name": "Indelicate Healer"
+        },
+        {
+          "n": 1,
+          "name": "Korok, Liberated Rage"
+        },
+        {
+          "n": 1,
+          "name": "Martok, Hero of the Empire"
+        },
+        {
+          "n": 1,
+          "name": "Merciful Mandate"
+        },
+        {
+          "n": 1,
+          "name": "Right of Vengeance"
+        },
+        {
+          "n": 1,
+          "name": "Blood-Sport Champion"
+        },
+        {
+          "n": 1,
+          "name": "Kurn, Son of Mogh"
+        },
+        {
+          "n": 1,
+          "name": "The Promise of Kahless"
+        },
+        {
+          "n": 1,
+          "name": "Voq, Torchbearer"
+        },
+        {
+          "n": 1,
+          "name": "The Beacon of Kahless"
+        },
+        {
+          "n": 1,
+          "name": "Ferocious Colonist"
+        },
+        {
+          "n": 1,
+          "name": "Gagh Slinger"
+        },
+        {
+          "n": 1,
+          "name": "Galvanizing Tenor"
+        },
+        {
+          "n": 1,
+          "name": "Glory to the Empire!"
+        },
+        {
+          "n": 1,
+          "name": "Gnarling Targ"
+        },
+        {
+          "n": 1,
+          "name": "Grilka, Widowed Warrior"
+        },
+        {
+          "n": 1,
+          "name": "Kang, Suspicious Captain"
+        },
+        {
+          "n": 1,
+          "name": "Koloth, Tribble Hunter"
+        },
+        {
+          "n": 1,
+          "name": "Own the Day"
+        },
+        {
+          "n": 1,
+          "name": "Qo'noS Quartermaster"
+        },
+        {
+          "n": 1,
+          "name": "Alexander, Ship's Fool"
+        },
+        {
+          "n": 1,
+          "name": "Chancellor Gorkon"
+        },
+        {
+          "n": 1,
+          "name": "Curzon Dax, Bound by Blood"
+        },
+        {
+          "n": 1,
+          "name": "Rite of Ascension"
+        },
+        {
+          "n": 1,
+          "name": "Sins of the Father"
+        },
+        {
+          "n": 1,
+          "name": "I.K.S. Negh'Var, Imperial Flagship"
+        },
+        {
+          "n": 1,
+          "name": "K't'inga-Class Battle Cruiser"
+        },
+        {
+          "n": 1,
+          "name": "K'Vort-Class Raider"
+        },
+        {
+          "n": 1,
+          "name": "The Sword of Kahless"
+        },
+        {
+          "n": 1,
+          "name": "Concerted Effort"
+        },
+        {
+          "n": 1,
+          "name": "Duelist's Heritage"
+        },
+        {
+          "n": 1,
+          "name": "Vanquish the Horde"
+        },
+        {
+          "n": 1,
+          "name": "Painful Truths"
+        },
+        {
+          "n": 1,
+          "name": "Combat Celebrant"
+        },
+        {
+          "n": 1,
+          "name": "Disrupt Decorum"
+        },
+        {
+          "n": 1,
+          "name": "Professional Face-Breaker"
+        },
+        {
+          "n": 1,
+          "name": "Shared Animosity"
+        },
+        {
+          "n": 1,
+          "name": "World at War"
+        },
+        {
+          "n": 1,
+          "name": "Pest Control"
+        },
+        {
+          "n": 1,
+          "name": "Ruinous Ultimatum"
+        },
+        {
+          "n": 1,
+          "name": "Vindicate"
+        },
+        {
+          "n": 1,
+          "name": "Warleader's Call"
+        },
+        {
+          "n": 1,
+          "name": "Sword of Light and Shadow"
+        },
+        {
+          "n": 1,
+          "name": "Battlefield Forge"
+        },
+        {
+          "n": 1,
+          "name": "Canyon Slough"
+        },
+        {
+          "n": 1,
+          "name": "Clifftop Retreat"
+        },
+        {
+          "n": 1,
+          "name": "Dragonskull Summit"
+        },
+        {
+          "n": 1,
+          "name": "Eclipsed Steppe"
+        },
+        {
+          "n": 1,
+          "name": "Exotic Orchard"
+        },
+        {
+          "n": 1,
+          "name": "Foreboding Ruins"
+        },
+        {
+          "n": 1,
+          "name": "Furycalm Snarl"
+        },
+        {
+          "n": 1,
+          "name": "Glittering Massif"
+        },
+        {
+          "n": 1,
+          "name": "Isolated Chapel"
+        },
+        {
+          "n": 1,
+          "name": "Radiant Summit"
+        },
+        {
+          "n": 1,
+          "name": "Shineshadow Snarl"
+        },
+        {
+          "n": 1,
+          "name": "Smoldering Marsh"
+        },
+        {
+          "n": 1,
+          "name": "Temple of Malice"
+        },
+        {
+          "n": 1,
+          "name": "Umbral Expanse"
+        },
+        {
+          "n": 1,
+          "name": "Vault of Champions"
+        },
+        {
+          "n": 1,
+          "name": "Cha'DIch Investigator"
+        },
+        {
+          "n": 1,
+          "name": "Path to Exile"
+        },
+        {
+          "n": 1,
+          "name": "Return to Dust"
+        },
+        {
+          "n": 1,
+          "name": "Valorous Stance"
+        },
+        {
+          "n": 1,
+          "name": "Night's Whisper"
+        },
+        {
+          "n": 1,
+          "name": "Rite of Oblivion"
+        },
+        {
+          "n": 1,
+          "name": "Terminate"
+        },
+        {
+          "n": 1,
+          "name": "Arcane Signet"
+        },
+        {
+          "n": 1,
+          "name": "Herald's Horn"
+        },
+        {
+          "n": 1,
+          "name": "Lightning Greaves"
+        },
+        {
+          "n": 1,
+          "name": "Mind Stone"
+        },
+        {
+          "n": 1,
+          "name": "Sol Ring"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Conviction"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Hierarchy"
+        },
+        {
+          "n": 1,
+          "name": "Talisman of Indulgence"
+        },
+        {
+          "n": 1,
+          "name": "Command Tower"
+        },
+        {
+          "n": 1,
+          "name": "Evolving Wilds"
+        },
+        {
+          "n": 1,
+          "name": "Nomad Outpost"
+        },
+        {
+          "n": 1,
+          "name": "Path of Ancestry"
+        },
+        {
+          "n": 1,
+          "name": "Rogue's Passage"
+        },
+        {
+          "n": 1,
+          "name": "Shattered Landscape"
+        },
+        {
+          "n": 1,
+          "name": "Terramorphic Expanse"
+        },
+        {
+          "n": 5,
+          "name": "Mountain"
+        },
+        {
+          "n": 5,
+          "name": "Plains"
+        },
+        {
+          "n": 5,
+          "name": "Swamp"
+        }
+      ],
+      "source": {
+        "provider": "Wizards of the Coast",
+        "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+        "releaseDate": "2026-11-13",
+        "officialHtmlSha256": "a8d21800150b4d5fa043f24c778321b1f589d84c581e4d09a73716fc1e8a841a",
+        "export": "klingon-fury.txt",
+        "sha256": "9793c0f49e0ef54dc3a0d0f2c5d296ad82b4bbaeec6edefca53bacd215e07de3",
+        "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+        "oracleProvider": "Scryfall",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/KlingonFury_TRC.json",
+        "mtgjsonStatus": 404
+      }
+    }
+  ]
+}

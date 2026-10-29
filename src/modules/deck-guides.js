@@ -3,6 +3,26 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+    trcBorg: [
+      {label: 'Early game', title: 'Assemble the collective', text: 'Keep lands, a mana rock and inexpensive artifacts. Build Borg tokens and save useful creatures for stationing your Spacecraft.'},
+      {label: 'Midgame', title: 'Expand through assimilation', text: 'Cast the Borg Queen to assimilate an opposing creature and strengthen your artifact army. Charge your ships and use combat-damage engines to replenish cards and tokens.'},
+      {label: 'Endgame', title: 'Send the fleet', text: 'Use flying, menace and the Queen’s power bonus to make a decisive attack. Keep Emergency Regeneration available to protect your artifacts from removal.'},
+    ],
+    trcFederation: [
+      {label: 'Early game', title: 'Recruit your bridge crew', text: 'Fix white, blue and red mana, then develop Officers and mana rocks. Keep a card-draw effect ready for the turn Picard arrives.'},
+      {label: 'Midgame', title: 'Seek out the second card', text: 'With Picard in play, historic permanents with mana value three or greater draw cards as they enter. Your second draw each turn grows the crew and charges your Spacecraft.'},
+      {label: 'Endgame', title: 'Launch a coordinated attack', text: 'Use station and seek-out counters to bring your ships online. Draw on opponents’ turns when possible, then use Tom Paris or your flying fleet to finish.'},
+    ],
+    trcLanding: [
+      {label: 'Early game', title: 'Chart different worlds', text: 'Keep lands with several different names, green mana and an early ramp spell. Extra land entries grow your crew and prepare Spock’s free spells.'},
+      {label: 'Midgame', title: 'Explore with Spock', text: 'Spock reveals your top card when he enters or attacks. Add revealed lands, cast affordable spells for free and reuse entry abilities with your transport effects.'},
+      {label: 'Endgame', title: 'Bring the Enterprise online', text: 'Landfall adds four charge counters at a time to Starship Enterprise. Combine large Spacecraft, a growing crew and Kirk’s bonus to turn your discoveries into combat damage.'},
+    ],
+    trcKlingon: [
+      {label: 'Early game', title: 'Gather the warband', text: 'Keep lands, early mana and inexpensive Klingons or Warriors. Cast Worf to add a hasty attacker and prepare to attack more than one opponent.'},
+      {label: 'Midgame', title: 'Open several battlefronts', text: 'Split safe attacks between opponents to increase battlefront rewards. Worf gives you exiled cards to play, while melee and tribal bonuses strengthen the whole attack.'},
+      {label: 'Endgame', title: 'Press the advantage', text: 'Use extra combat, goad and fresh hasty tokens to keep pressure on the table. Spend your exiled cards before their permission expires and rebuild through The Promise of Kahless.'},
+    ],
     oddsAndEnds: [
       {label: 'Early game', title: 'Set up the top card', text: 'Keep three lands and early mana. Use Ponder, Brainstorm or Sensei’s Divining Top to find colors and prepare a useful odd-mana spell for Yennett.'},
       {label: 'Midgame', title: 'Attack with Yennett', text: 'Protect Yennett and attack through the air. Her trigger can cast an odd-mana spell for free; if you decline or reveal an even-mana card, you draw instead.'},
@@ -963,6 +983,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+    'We Are the Borg': {
+      route: 'trcBorg', pace: 'ASSIMILATION AND ARTIFACT ARMIES', complexity: 'Advanced',
+      theme: 'The Borg Queen assimilates opposing creatures while Borg tokens, artifact bonuses and charged Spacecraft expand the collective.',
+      plan: 'Develop mana and artifact creatures, then cast the Queen to add a threat from an opposing library. Turn combat hits into cards and tokens, station your fleet and attack with a strengthened army.',
+      mulligan: 'Keep three lands, access to Esper colors and a mana rock or inexpensive artifact. The Queen costs seven mana, so a hand full of large threats needs acceleration.',
+      tip: 'An assimilated creature becomes a Borg artifact creature, loses its other creature types and gets a +1/+1 counter. Station taps another creature and can be activated only at sorcery speed.',
+      keys: ['Locutus of Borg', 'Maturation Chamber', 'Emergency Regeneration'],
+    },
+    'Federation Fleet': {
+      route: 'trcFederation', pace: 'SECOND DRAWS AND CHARGED SPACECRAFT', complexity: 'Advanced',
+      theme: 'Picard rewards historic arrivals with cards, then your second draw each turn strengthens Officers and charges the fleet.',
+      plan: 'Fix Jeskai mana, develop your bridge crew and cast Picard before your larger historic permanents. Arrange a second draw on several turns, add counters and launch evasive Spacecraft.',
+      mulligan: 'Keep three lands with blue mana, a mana rock and a useful early crew member or draw spell. Avoid an opening of expensive Spacecraft without mana development.',
+      tip: 'Seek out triggers on your second card drawn each turn, including opponents’ turns. Picard’s entry trigger needs another historic permanent with mana value at least three; his creature counter must target another creature.',
+      keys: ['Commander William Riker', "Chief Miles O'Brien", 'Tom Paris, Risk-Taker'],
+    },
+    'Landing Party': {
+      route: 'trcLanding', pace: 'DIFFERENT WORLDS AND FREE SPELLS', complexity: 'Advanced',
+      theme: 'Spock turns exploration into free spells as differently named lands fuel landfall, a growing crew and enormous Spacecraft.',
+      plan: 'Develop several different land names, cast Spock and keep him attacking safely. Reuse entry effects, turn extra lands into tokens and counters, and finish with Kirk and the Enterprise.',
+      mulligan: 'Keep three lands with green mana and several different names, plus ramp or an early creature. A second copy of the same basic land helps your mana but does not increase strange new worlds.',
+      tip: 'Spock counts differently named lands, not total lands. He can put a revealed land onto the battlefield tapped; if you leave the revealed card on top, you draw it instead.',
+      keys: ['Starship Enterprise', 'Janice Rand, Essential Aide', "M'Ress, Crew Coordinator"],
+    },
+    'Klingon Fury': {
+      route: 'trcKlingon', pace: 'MULTIPLAYER ATTACKS AND HASTY WARRIORS', complexity: 'Intermediate',
+      theme: 'Worf and the Klingon warband reward attacking several opponents with cards, counters, mana and more hasty attackers.',
+      plan: 'Build a Mardu warband, attack several opponents when safe and use Worf’s exiled cards to keep developing. Layer tribal bonuses, melee and extra combat to overwhelm defenses.',
+      mulligan: 'Keep three lands with red mana, an early mana play and creatures you can cast before or alongside Worf. Battlefront needs attackers, so avoid a hand of only support spells.',
+      tip: 'Battlefront counts different opponents attacked this turn; melee counts opponents attacked this combat. Worf’s exiled cards remain playable until the end of your next turn, with normal costs and land-play limits.',
+      keys: ['Glory to the Empire!', 'Kor, Cause of Vengeance', 'Own the Day'],
+    },
     'Calling All Angels': {
       route: 'fdcAngels', pace: 'GROWING FLYING ARMY', complexity: 'Approachable',
       theme: 'Giada turns each new Angel into a larger flying threat, supported by life gain and protective interaction.',

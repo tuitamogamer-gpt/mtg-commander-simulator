@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-29",
+  "nativeAndImportTests": {
+    "passed": 145,
+    "failed": 0,
+    "log": "output/precon-trc-2026-10-29/final-native-tests.log"
+  },
+  "focusedRegressions": {
+    "status": "PASS",
+    "testFiles": [
+      "baseline",
+      "full-card-audit",
+      "local-card-images",
+      "imported-card-images",
+      "commander-visuals",
+      "ai-v2",
+      "ai-station",
+      "ai-station-threat",
+      "creature-type-choice-ui",
+      "fdc-precons",
+      "frc-precon"
+    ],
+    "uniqueTests": 256,
+    "initialRun": {
+      "passed": 254,
+      "failed": 2,
+      "log": "focused-regressions.log"
+    },
+    "targetedRerun": {
+      "passed": 8,
+      "failed": 0,
+      "files": [
+        "local-card-images.test.mjs",
+        "commander-visuals.test.mjs"
+      ],
+      "log": "focused-regressions-rerun.log"
+    },
+    "fixes": [
+      "Commander cinematic inventory now counts 186 default commanders and includes Star Trek in the still-image precon list.",
+      "Local image inventory now includes the existing Odds and Ends Adventure canonical name and face aliases from its pinned sources."
+    ],
+    "notRun": "tests/deck-guides.test.mjs does not exist; deck guide keys/colors were verified directly and existing precon suites cover their guides.",
+    "runtimeChangesRequired": false
+  },
+  "mergedMainAiTests": {
+    "passed": 14,
+    "failed": 0,
+    "log": "output/star-trek-merged-ai-tests.log"
+  },
+  "strictCertification": {
+    "rawPassed": 32273,
+    "rawTotal": 32273,
+    "deckChecksPassed": 15021,
+    "deckChecksFailed": 0,
+    "report": "reports/card-certification.json"
+  },
+  "browser": {
+    "passed": 8,
+    "failed": 0,
+    "errors": 0,
+    "widths": [
+      1440,
+      390
+    ],
+    "report": "browser.json"
+  },
+  "scope": "Selected suites only; complete npm test suite not claimed.",
+  "headless": {
+    "passed": 4,
+    "failed": 0,
+    "baseCommit": "8dd16a49282b0741a329ac3c620725ae2e3a552b",
+    "turns": [
+      25,
+      74,
+      51,
+      44
+    ],
+    "decisionFallbacks": 0,
+    "stateInvariants": "PASS",
+    "recalculationStable": true,
+    "report": "headless.json"
+  }
+}

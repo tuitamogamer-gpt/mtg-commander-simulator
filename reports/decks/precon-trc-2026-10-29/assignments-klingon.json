@@ -1,0 +1,1578 @@
+{
+  "deck": "Klingon Fury",
+  "commander": "Worf, Defiant Commander",
+  "owner": "klingon",
+  "missingInDeck": 34,
+  "ownedCount": 31,
+  "cards": [
+    {
+      "requestedName": "Worf, Defiant Commander",
+      "oracleId": "a7fcdbab-491f-40d9-be40-409af0d6c3f5",
+      "scryfallId": "da030114-a4ee-46d7-a6fd-6c0d8e779bcf",
+      "canonicalName": "Worf, Defiant Commander",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "4",
+      "scryfallUri": "https://scryfall.com/card/trc/4/worf-defiant-commander?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/da030114-a4ee-46d7-a6fd-6c0d8e779bcf",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.jpg?1792507927",
+        "normal": "https://cards.scryfall.io/normal/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.jpg?1792507927",
+        "large": "https://cards.scryfall.io/large/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.jpg?1792507927",
+        "png": "https://cards.scryfall.io/png/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.png?1792507927",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.jpg?1792507927",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.jpg?1792507927",
+        "thumb": "https://cards.scryfall.io/thumb/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.webp?1792507927",
+        "grid": "https://cards.scryfall.io/grid/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.webp?1792507927",
+        "display": "https://cards.scryfall.io/display/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.webp?1792507927",
+        "art": "https://cards.scryfall.io/art/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.webp?1792507927",
+        "crop": "https://cards.scryfall.io/crop/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.webp?1792507927",
+        "jpeg": "https://cards.scryfall.io/normal/front/d/a/da030114-a4ee-46d7-a6fd-6c0d8e779bcf.jpg?1792507927"
+      },
+      "raw": {
+        "name": "Worf, Defiant Commander",
+        "cost": "{2}{R}{W}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior",
+          "Officer"
+        ],
+        "oracle": "When Worf enters, create a 2/1 red Klingon Warrior creature token with haste.\nBattlefront — Whenever you attack, exile the top X cards of your library, where X is the number of opponents you attacked this turn. Until the end of your next turn, you may play those cards.",
+        "_ci": [
+          "B",
+          "R",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Kor, Cause of Vengeance",
+      "oracleId": "fc8d8c51-428c-4b2f-965d-c43ec94997c3",
+      "scryfallId": "9e4364a4-6dac-4eea-be75-9f8ce1b3e334",
+      "canonicalName": "Kor, Cause of Vengeance",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "96",
+      "scryfallUri": "https://scryfall.com/card/trc/96/kor-cause-of-vengeance?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/9e4364a4-6dac-4eea-be75-9f8ce1b3e334",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.jpg?1793197412",
+        "normal": "https://cards.scryfall.io/normal/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.jpg?1793197412",
+        "large": "https://cards.scryfall.io/large/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.jpg?1793197412",
+        "png": "https://cards.scryfall.io/png/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.png?1793197412",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.jpg?1793197412",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.jpg?1793197412",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.webp?1793197412",
+        "grid": "https://cards.scryfall.io/grid/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.webp?1793197412",
+        "display": "https://cards.scryfall.io/display/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.webp?1793197412",
+        "art": "https://cards.scryfall.io/art/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.webp?1793197412",
+        "crop": "https://cards.scryfall.io/crop/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.webp?1793197412",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/e/9e4364a4-6dac-4eea-be75-9f8ce1b3e334.jpg?1793197412"
+      },
+      "raw": {
+        "name": "Kor, Cause of Vengeance",
+        "cost": "{1}{R}{W}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior",
+          "Officer"
+        ],
+        "oracle": "Whenever you attack, you may sacrifice another creature. If you do, draw a card, then Klingons and Warriors you control get +2/+2 until end of turn.",
+        "_ci": [
+          "B",
+          "R",
+          "W"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Imperial Hullbreachers",
+      "oracleId": "14c52244-4d09-49b9-b7c2-17ef1ffa2561",
+      "scryfallId": "90b3d401-5585-4a55-9388-fe5153e290e1",
+      "canonicalName": "Imperial Hullbreachers",
+      "layout": "normal",
+      "keywords": [
+        "Flying",
+        "Battle Cry",
+        "Squad"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "18",
+      "scryfallUri": "https://scryfall.com/card/trc/18/imperial-hullbreachers?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/90b3d401-5585-4a55-9388-fe5153e290e1",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.jpg?1793196862",
+        "normal": "https://cards.scryfall.io/normal/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.jpg?1793196862",
+        "large": "https://cards.scryfall.io/large/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.jpg?1793196862",
+        "png": "https://cards.scryfall.io/png/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.png?1793196862",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.jpg?1793196862",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.jpg?1793196862",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.webp?1793196862",
+        "grid": "https://cards.scryfall.io/grid/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.webp?1793196862",
+        "display": "https://cards.scryfall.io/display/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.webp?1793196862",
+        "art": "https://cards.scryfall.io/art/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.webp?1793196862",
+        "crop": "https://cards.scryfall.io/crop/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.webp?1793196862",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/0/90b3d401-5585-4a55-9388-fe5153e290e1.jpg?1793196862"
+      },
+      "raw": {
+        "name": "Imperial Hullbreachers",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "Squad {2} (As an additional cost to cast this spell, you may pay {2} any number of times. When this creature enters, create that many tokens that are copies of it.)\nFlying\nBattle cry (Whenever this creature attacks, each other attacking creature gets +1/+0 until end of turn.)",
+        "_ci": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Indelicate Healer",
+      "oracleId": "9d18253d-a38e-48a4-80bf-aa8fe5283584",
+      "scryfallId": "39da1e17-d5d1-4252-bdd7-42e6541e6ab6",
+      "canonicalName": "Indelicate Healer",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "19",
+      "scryfallUri": "https://scryfall.com/card/trc/19/indelicate-healer?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/39da1e17-d5d1-4252-bdd7-42e6541e6ab6",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.jpg?1793196875",
+        "normal": "https://cards.scryfall.io/normal/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.jpg?1793196875",
+        "large": "https://cards.scryfall.io/large/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.jpg?1793196875",
+        "png": "https://cards.scryfall.io/png/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.png?1793196875",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.jpg?1793196875",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.jpg?1793196875",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.webp?1793196875",
+        "grid": "https://cards.scryfall.io/grid/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.webp?1793196875",
+        "display": "https://cards.scryfall.io/display/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.webp?1793196875",
+        "art": "https://cards.scryfall.io/art/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.webp?1793196875",
+        "crop": "https://cards.scryfall.io/crop/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.webp?1793196875",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/9/39da1e17-d5d1-4252-bdd7-42e6541e6ab6.jpg?1793196875"
+      },
+      "raw": {
+        "name": "Indelicate Healer",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior",
+          "Doctor"
+        ],
+        "oracle": "Whenever this creature or another Klingon or Warrior you control enters, creatures you control gain lifelink until end of turn.",
+        "_ci": [
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Martok, Hero of the Empire",
+      "oracleId": "d17c3079-372d-4e4f-8214-12a9893088ff",
+      "scryfallId": "a82df31f-aa4a-4356-ad20-d9642a76e7c0",
+      "canonicalName": "Martok, Hero of the Empire",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "23",
+      "scryfallUri": "https://scryfall.com/card/trc/23/martok-hero-of-the-empire?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/a82df31f-aa4a-4356-ad20-d9642a76e7c0",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.jpg?1793196879",
+        "normal": "https://cards.scryfall.io/normal/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.jpg?1793196879",
+        "large": "https://cards.scryfall.io/large/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.jpg?1793196879",
+        "png": "https://cards.scryfall.io/png/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.png?1793196879",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.jpg?1793196879",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.jpg?1793196879",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.webp?1793196879",
+        "grid": "https://cards.scryfall.io/grid/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.webp?1793196879",
+        "display": "https://cards.scryfall.io/display/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.webp?1793196879",
+        "art": "https://cards.scryfall.io/art/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.webp?1793196879",
+        "crop": "https://cards.scryfall.io/crop/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.webp?1793196879",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/8/a82df31f-aa4a-4356-ad20-d9642a76e7c0.jpg?1793196879"
+      },
+      "raw": {
+        "name": "Martok, Hero of the Empire",
+        "cost": "{2}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "Battlefront — Whenever you attack, put a +1/+1 counter on each of up to X target creatures you control, where X is the number of opponents you attacked this turn.",
+        "_ci": [
+          "W"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Right of Vengeance",
+      "oracleId": "7e019f06-7e87-419e-b51d-e2cb86a6c7f1",
+      "scryfallId": "695c6c58-0301-4c79-a1a2-75b130ad7527",
+      "canonicalName": "Right of Vengeance",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "27",
+      "scryfallUri": "https://scryfall.com/card/trc/27/right-of-vengeance?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/695c6c58-0301-4c79-a1a2-75b130ad7527",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.jpg?1793197505",
+        "normal": "https://cards.scryfall.io/normal/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.jpg?1793197505",
+        "large": "https://cards.scryfall.io/large/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.jpg?1793197505",
+        "png": "https://cards.scryfall.io/png/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.png?1793197505",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.jpg?1793197505",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.jpg?1793197505",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.webp?1793197505",
+        "grid": "https://cards.scryfall.io/grid/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.webp?1793197505",
+        "display": "https://cards.scryfall.io/display/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.webp?1793197505",
+        "art": "https://cards.scryfall.io/art/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.webp?1793197505",
+        "crop": "https://cards.scryfall.io/crop/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.webp?1793197505",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/9/695c6c58-0301-4c79-a1a2-75b130ad7527.jpg?1793197505"
+      },
+      "raw": {
+        "name": "Right of Vengeance",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Until end of turn, whenever a creature deals combat damage to you, destroy that creature and create a 2/1 red Klingon Warrior creature token with haste.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Blood-Sport Champion",
+      "oracleId": "9d08cc9b-2b26-49de-80aa-962a358bfc1a",
+      "scryfallId": "660cee6d-a942-4595-b6cc-7c2053108944",
+      "canonicalName": "Blood-Sport Champion",
+      "layout": "normal",
+      "keywords": [
+        "Kicker",
+        "Deathtouch"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "58",
+      "scryfallUri": "https://scryfall.com/card/trc/58/blood-sport-champion?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/660cee6d-a942-4595-b6cc-7c2053108944",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.jpg?1793196895",
+        "normal": "https://cards.scryfall.io/normal/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.jpg?1793196895",
+        "large": "https://cards.scryfall.io/large/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.jpg?1793196895",
+        "png": "https://cards.scryfall.io/png/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.png?1793196895",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.jpg?1793196895",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.jpg?1793196895",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.webp?1793196895",
+        "grid": "https://cards.scryfall.io/grid/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.webp?1793196895",
+        "display": "https://cards.scryfall.io/display/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.webp?1793196895",
+        "art": "https://cards.scryfall.io/art/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.webp?1793196895",
+        "crop": "https://cards.scryfall.io/crop/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.webp?1793196895",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/6/660cee6d-a942-4595-b6cc-7c2053108944.jpg?1793196895"
+      },
+      "raw": {
+        "name": "Blood-Sport Champion",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "Kicker {2} (You may pay an additional {2} as you cast this spell.)\nDeathtouch\nWhen this creature enters, if it was kicked, other creatures you control gain deathtouch until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Kurn, Son of Mogh",
+      "oracleId": "2a078705-4afe-4887-94cc-f12f4690fb01",
+      "scryfallId": "03fcc84d-45cc-4894-ab35-6d5a799b21ef",
+      "canonicalName": "Kurn, Son of Mogh",
+      "layout": "normal",
+      "keywords": [
+        "Deathtouch"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "60",
+      "scryfallUri": "https://scryfall.com/card/trc/60/kurn-son-of-mogh?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/03fcc84d-45cc-4894-ab35-6d5a799b21ef",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.jpg?1793196909",
+        "normal": "https://cards.scryfall.io/normal/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.jpg?1793196909",
+        "large": "https://cards.scryfall.io/large/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.jpg?1793196909",
+        "png": "https://cards.scryfall.io/png/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.png?1793196909",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.jpg?1793196909",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.jpg?1793196909",
+        "thumb": "https://cards.scryfall.io/thumb/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.webp?1793196909",
+        "grid": "https://cards.scryfall.io/grid/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.webp?1793196909",
+        "display": "https://cards.scryfall.io/display/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.webp?1793196909",
+        "art": "https://cards.scryfall.io/art/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.webp?1793196909",
+        "crop": "https://cards.scryfall.io/crop/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.webp?1793196909",
+        "jpeg": "https://cards.scryfall.io/normal/front/0/3/03fcc84d-45cc-4894-ab35-6d5a799b21ef.jpg?1793196909"
+      },
+      "raw": {
+        "name": "Kurn, Son of Mogh",
+        "cost": "{2}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior",
+          "Officer"
+        ],
+        "oracle": "Deathtouch\nBattlefront — Whenever Kurn attacks, you draw X cards and lose X life, where X is the number of opponents you attacked this turn.",
+        "_ci": [
+          "B"
+        ],
+        "power": "2",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "The Promise of Kahless",
+      "oracleId": "a5866d5e-ee03-4bca-9964-0d391eae9011",
+      "scryfallId": "a88d16b6-c241-48a4-b35a-c219b4bfd750",
+      "canonicalName": "The Promise of Kahless",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "61",
+      "scryfallUri": "https://scryfall.com/card/trc/61/the-promise-of-kahless?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/a88d16b6-c241-48a4-b35a-c219b4bfd750",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.jpg?1793196907",
+        "normal": "https://cards.scryfall.io/normal/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.jpg?1793196907",
+        "large": "https://cards.scryfall.io/large/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.jpg?1793196907",
+        "png": "https://cards.scryfall.io/png/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.png?1793196907",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.jpg?1793196907",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.jpg?1793196907",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.webp?1793196907",
+        "grid": "https://cards.scryfall.io/grid/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.webp?1793196907",
+        "display": "https://cards.scryfall.io/display/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.webp?1793196907",
+        "art": "https://cards.scryfall.io/art/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.webp?1793196907",
+        "crop": "https://cards.scryfall.io/crop/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.webp?1793196907",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/8/a88d16b6-c241-48a4-b35a-c219b4bfd750.jpg?1793196907"
+      },
+      "raw": {
+        "name": "The Promise of Kahless",
+        "cost": "{4}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "You may sacrifice a Klingon or Warrior. If you do, return all other Klingon and Warrior creature cards from your graveyard to the battlefield.",
+        "_ci": [
+          "B"
+        ]
+      }
+    },
+    {
+      "requestedName": "Voq, Torchbearer",
+      "oracleId": "1b8be000-e2fd-4157-ace2-7b8603c03fba",
+      "scryfallId": "0b4d2344-d615-4982-b656-44419565121a",
+      "canonicalName": "Voq, Torchbearer",
+      "layout": "normal",
+      "keywords": [
+        "Menace"
+      ],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "63",
+      "scryfallUri": "https://scryfall.com/card/trc/63/voq-torchbearer?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/0b4d2344-d615-4982-b656-44419565121a",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/0/b/0b4d2344-d615-4982-b656-44419565121a.jpg?1793196920",
+        "normal": "https://cards.scryfall.io/normal/front/0/b/0b4d2344-d615-4982-b656-44419565121a.jpg?1793196920",
+        "large": "https://cards.scryfall.io/large/front/0/b/0b4d2344-d615-4982-b656-44419565121a.jpg?1793196920",
+        "png": "https://cards.scryfall.io/png/front/0/b/0b4d2344-d615-4982-b656-44419565121a.png?1793196920",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/0/b/0b4d2344-d615-4982-b656-44419565121a.jpg?1793196920",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/b/0b4d2344-d615-4982-b656-44419565121a.jpg?1793196920",
+        "thumb": "https://cards.scryfall.io/thumb/front/0/b/0b4d2344-d615-4982-b656-44419565121a.webp?1793196920",
+        "grid": "https://cards.scryfall.io/grid/front/0/b/0b4d2344-d615-4982-b656-44419565121a.webp?1793196920",
+        "display": "https://cards.scryfall.io/display/front/0/b/0b4d2344-d615-4982-b656-44419565121a.webp?1793196920",
+        "art": "https://cards.scryfall.io/art/front/0/b/0b4d2344-d615-4982-b656-44419565121a.webp?1793196920",
+        "crop": "https://cards.scryfall.io/crop/front/0/b/0b4d2344-d615-4982-b656-44419565121a.webp?1793196920",
+        "jpeg": "https://cards.scryfall.io/normal/front/0/b/0b4d2344-d615-4982-b656-44419565121a.jpg?1793196920"
+      },
+      "raw": {
+        "name": "Voq, Torchbearer",
+        "cost": "{3}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Spy"
+        ],
+        "oracle": "Menace\nChoH'a' — You may have Voq enter as a copy of a creature card in a graveyard, except he's a Klingon Spy in addition to his other types and has menace.",
+        "_ci": [
+          "B"
+        ],
+        "power": "4",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "The Beacon of Kahless",
+      "oracleId": "66fc3c1e-acea-46eb-8af8-b0740f006add",
+      "scryfallId": "9d356fdd-3bbc-418a-8b6d-5410bf7a1138",
+      "canonicalName": "The Beacon of Kahless",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "64",
+      "scryfallUri": "https://scryfall.com/card/trc/64/the-beacon-of-kahless?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/9d356fdd-3bbc-418a-8b6d-5410bf7a1138",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.jpg?1793196998",
+        "normal": "https://cards.scryfall.io/normal/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.jpg?1793196998",
+        "large": "https://cards.scryfall.io/large/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.jpg?1793196998",
+        "png": "https://cards.scryfall.io/png/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.png?1793196998",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.jpg?1793196998",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.jpg?1793196998",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.webp?1793196998",
+        "grid": "https://cards.scryfall.io/grid/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.webp?1793196998",
+        "display": "https://cards.scryfall.io/display/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.webp?1793196998",
+        "art": "https://cards.scryfall.io/art/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.webp?1793196998",
+        "crop": "https://cards.scryfall.io/crop/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.webp?1793196998",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/d/9d356fdd-3bbc-418a-8b6d-5410bf7a1138.jpg?1793196998"
+      },
+      "raw": {
+        "name": "The Beacon of Kahless",
+        "cost": "{2}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add one mana of any color.\nBattlefront — {T}: Choose a color. Add an amount of mana of that color equal to the number of opponents you attacked this turn.",
+        "_ci": [
+          "R"
+        ],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Ferocious Colonist",
+      "oracleId": "fd549938-8919-45ac-bf52-92492d9d1d49",
+      "scryfallId": "3cb42c08-b167-40ac-a9be-00630ba31b83",
+      "canonicalName": "Ferocious Colonist",
+      "layout": "normal",
+      "keywords": [
+        "Melee",
+        "Double strike"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "65",
+      "scryfallUri": "https://scryfall.com/card/trc/65/ferocious-colonist?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/3cb42c08-b167-40ac-a9be-00630ba31b83",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.jpg?1793196999",
+        "normal": "https://cards.scryfall.io/normal/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.jpg?1793196999",
+        "large": "https://cards.scryfall.io/large/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.jpg?1793196999",
+        "png": "https://cards.scryfall.io/png/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.png?1793196999",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.jpg?1793196999",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.jpg?1793196999",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.webp?1793196999",
+        "grid": "https://cards.scryfall.io/grid/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.webp?1793196999",
+        "display": "https://cards.scryfall.io/display/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.webp?1793196999",
+        "art": "https://cards.scryfall.io/art/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.webp?1793196999",
+        "crop": "https://cards.scryfall.io/crop/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.webp?1793196999",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/c/3cb42c08-b167-40ac-a9be-00630ba31b83.jpg?1793196999"
+      },
+      "raw": {
+        "name": "Ferocious Colonist",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Citizen"
+        ],
+        "oracle": "Double strike\nMelee (Whenever this creature attacks, it gets +1/+1 until end of turn for each opponent you attacked this combat.)",
+        "_ci": [
+          "R"
+        ],
+        "power": "0",
+        "toughness": "1"
+      }
+    },
+    {
+      "requestedName": "Gagh Slinger",
+      "oracleId": "b5697e53-eb2f-482b-8b4a-1dad165ac16f",
+      "scryfallId": "fadaa56c-5d59-4c4c-bece-9c407cedd05b",
+      "canonicalName": "Gagh Slinger",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "66",
+      "scryfallUri": "https://scryfall.com/card/trc/66/gagh-slinger?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/fadaa56c-5d59-4c4c-bece-9c407cedd05b",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.jpg?1793197011",
+        "normal": "https://cards.scryfall.io/normal/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.jpg?1793197011",
+        "large": "https://cards.scryfall.io/large/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.jpg?1793197011",
+        "png": "https://cards.scryfall.io/png/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.png?1793197011",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.jpg?1793197011",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.jpg?1793197011",
+        "thumb": "https://cards.scryfall.io/thumb/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.webp?1793197011",
+        "grid": "https://cards.scryfall.io/grid/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.webp?1793197011",
+        "display": "https://cards.scryfall.io/display/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.webp?1793197011",
+        "art": "https://cards.scryfall.io/art/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.webp?1793197011",
+        "crop": "https://cards.scryfall.io/crop/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.webp?1793197011",
+        "jpeg": "https://cards.scryfall.io/normal/front/f/a/fadaa56c-5d59-4c4c-bece-9c407cedd05b.jpg?1793197011"
+      },
+      "raw": {
+        "name": "Gagh Slinger",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "Klingon spells and Warrior spells you cast cost {1} less to cast.\nWhenever another Klingon or Warrior you control enters, this creature deals 1 damage to each opponent.",
+        "_ci": [
+          "R"
+        ],
+        "power": "3",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Galvanizing Tenor",
+      "oracleId": "d974fee0-7d20-465c-a7e3-bc361e241cd4",
+      "scryfallId": "6727d111-d99b-4027-ad5d-81568e366b6e",
+      "canonicalName": "Galvanizing Tenor",
+      "layout": "normal",
+      "keywords": [
+        "Goad",
+        "Menace"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "67",
+      "scryfallUri": "https://scryfall.com/card/trc/67/galvanizing-tenor?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/6727d111-d99b-4027-ad5d-81568e366b6e",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.jpg?1793197009",
+        "normal": "https://cards.scryfall.io/normal/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.jpg?1793197009",
+        "large": "https://cards.scryfall.io/large/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.jpg?1793197009",
+        "png": "https://cards.scryfall.io/png/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.png?1793197009",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.jpg?1793197009",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.jpg?1793197009",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.webp?1793197009",
+        "grid": "https://cards.scryfall.io/grid/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.webp?1793197009",
+        "display": "https://cards.scryfall.io/display/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.webp?1793197009",
+        "art": "https://cards.scryfall.io/art/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.webp?1793197009",
+        "crop": "https://cards.scryfall.io/crop/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.webp?1793197009",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/7/6727d111-d99b-4027-ad5d-81568e366b6e.jpg?1793197009"
+      },
+      "raw": {
+        "name": "Galvanizing Tenor",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Performer"
+        ],
+        "oracle": "Menace\nBattlefront — Whenever this creature attacks, goad up to X target creatures, where X is the number of opponents you attacked this turn. (Until your next turn, those creatures attack each combat if able and attack a player other than you if able.)",
+        "_ci": [
+          "R"
+        ],
+        "power": "4",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Glory to the Empire!",
+      "oracleId": "22c53662-51b9-4a8c-8ec7-e8b456a268b7",
+      "scryfallId": "3c8cdde8-c05c-41ce-b858-28ba5028738d",
+      "canonicalName": "Glory to the Empire!",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "68",
+      "scryfallUri": "https://scryfall.com/card/trc/68/glory-to-the-empire!?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/3c8cdde8-c05c-41ce-b858-28ba5028738d",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.jpg?1793197020",
+        "normal": "https://cards.scryfall.io/normal/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.jpg?1793197020",
+        "large": "https://cards.scryfall.io/large/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.jpg?1793197020",
+        "png": "https://cards.scryfall.io/png/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.png?1793197020",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.jpg?1793197020",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.jpg?1793197020",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.webp?1793197020",
+        "grid": "https://cards.scryfall.io/grid/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.webp?1793197020",
+        "display": "https://cards.scryfall.io/display/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.webp?1793197020",
+        "art": "https://cards.scryfall.io/art/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.webp?1793197020",
+        "crop": "https://cards.scryfall.io/crop/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.webp?1793197020",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/c/3c8cdde8-c05c-41ce-b858-28ba5028738d.jpg?1793197020"
+      },
+      "raw": {
+        "name": "Glory to the Empire!",
+        "cost": "{5}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "When this enchantment enters, create a number of 2/1 red Klingon Warrior creature tokens with haste equal to the number of opponents you have.\nCreatures you control have melee. (Whenever a creature with melee attacks, it gets +1/+1 until end of turn for each opponent you attacked this combat.)",
+        "_ci": [
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Gnarling Targ",
+      "oracleId": "1fc59e37-0dc0-4e24-af71-6bab4a2b56ca",
+      "scryfallId": "88d3aa36-0eb2-4b53-8384-9d8f309c4911",
+      "canonicalName": "Gnarling Targ",
+      "layout": "normal",
+      "keywords": [
+        "Trample"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "69",
+      "scryfallUri": "https://scryfall.com/card/trc/69/gnarling-targ?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/88d3aa36-0eb2-4b53-8384-9d8f309c4911",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.jpg?1793197024",
+        "normal": "https://cards.scryfall.io/normal/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.jpg?1793197024",
+        "large": "https://cards.scryfall.io/large/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.jpg?1793197024",
+        "png": "https://cards.scryfall.io/png/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.png?1793197024",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.jpg?1793197024",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.jpg?1793197024",
+        "thumb": "https://cards.scryfall.io/thumb/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.webp?1793197024",
+        "grid": "https://cards.scryfall.io/grid/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.webp?1793197024",
+        "display": "https://cards.scryfall.io/display/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.webp?1793197024",
+        "art": "https://cards.scryfall.io/art/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.webp?1793197024",
+        "crop": "https://cards.scryfall.io/crop/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.webp?1793197024",
+        "jpeg": "https://cards.scryfall.io/normal/front/8/8/88d3aa36-0eb2-4b53-8384-9d8f309c4911.jpg?1793197024"
+      },
+      "raw": {
+        "name": "Gnarling Targ",
+        "cost": "{4}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Boar"
+        ],
+        "oracle": "Trample\nWhenever you attack, Klingons and Warriors you control get +2/+0 and gain trample until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "power": "4",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Grilka, Widowed Warrior",
+      "oracleId": "d8366080-dd0c-40cf-84e9-f628dfe8f45c",
+      "scryfallId": "63d3add3-be3f-4ced-85c5-a7d4891b11f5",
+      "canonicalName": "Grilka, Widowed Warrior",
+      "layout": "normal",
+      "keywords": [
+        "Treasure"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "70",
+      "scryfallUri": "https://scryfall.com/card/trc/70/grilka-widowed-warrior?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/63d3add3-be3f-4ced-85c5-a7d4891b11f5",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.jpg?1793197377",
+        "normal": "https://cards.scryfall.io/normal/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.jpg?1793197377",
+        "large": "https://cards.scryfall.io/large/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.jpg?1793197377",
+        "png": "https://cards.scryfall.io/png/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.png?1793197377",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.jpg?1793197377",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.jpg?1793197377",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.webp?1793197377",
+        "grid": "https://cards.scryfall.io/grid/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.webp?1793197377",
+        "display": "https://cards.scryfall.io/display/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.webp?1793197377",
+        "art": "https://cards.scryfall.io/art/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.webp?1793197377",
+        "crop": "https://cards.scryfall.io/crop/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.webp?1793197377",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/3/63d3add3-be3f-4ced-85c5-a7d4891b11f5.jpg?1793197377"
+      },
+      "raw": {
+        "name": "Grilka, Widowed Warrior",
+        "cost": "{5}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "When Grilka enters, gain control of target creature an opponent controls until end of turn. Untap it. Until end of turn, it gains trample, haste, and \"Whenever this creature deals combat damage to a player, create that many tapped Treasure tokens.\"",
+        "_ci": [
+          "R"
+        ],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Kang, Suspicious Captain",
+      "oracleId": "1ce8bc83-3cda-4ac5-ad9a-2a2a327c5193",
+      "scryfallId": "b1a411f8-f6c2-4a46-861b-a616a9edfb92",
+      "canonicalName": "Kang, Suspicious Captain",
+      "layout": "normal",
+      "keywords": [
+        "Goad"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "71",
+      "scryfallUri": "https://scryfall.com/card/trc/71/kang-suspicious-captain?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/b1a411f8-f6c2-4a46-861b-a616a9edfb92",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.jpg?1793197380",
+        "normal": "https://cards.scryfall.io/normal/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.jpg?1793197380",
+        "large": "https://cards.scryfall.io/large/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.jpg?1793197380",
+        "png": "https://cards.scryfall.io/png/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.png?1793197380",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.jpg?1793197380",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.jpg?1793197380",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.webp?1793197380",
+        "grid": "https://cards.scryfall.io/grid/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.webp?1793197380",
+        "display": "https://cards.scryfall.io/display/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.webp?1793197380",
+        "art": "https://cards.scryfall.io/art/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.webp?1793197380",
+        "crop": "https://cards.scryfall.io/crop/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.webp?1793197380",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/1/b1a411f8-f6c2-4a46-861b-a616a9edfb92.jpg?1793197380"
+      },
+      "raw": {
+        "name": "Kang, Suspicious Captain",
+        "cost": "{3}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior",
+          "Officer"
+        ],
+        "oracle": "When Kang enters, choose target creature an opponent controls. Kang and that creature are goaded for as long as you control Kang. (They attack each combat if able and attack a player other than you if able.)\nWhenever one or more goaded creatures attack, put a +1/+1 counter on target creature you control.",
+        "_ci": [
+          "R"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Koloth, Tribble Hunter",
+      "oracleId": "01b7ced9-5dcb-45ce-bcda-ffdc1afefb2a",
+      "scryfallId": "33bfbd68-fc0f-41ce-b033-975fe9ba960a",
+      "canonicalName": "Koloth, Tribble Hunter",
+      "layout": "normal",
+      "keywords": [
+        "Goad"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "72",
+      "scryfallUri": "https://scryfall.com/card/trc/72/koloth-tribble-hunter?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/33bfbd68-fc0f-41ce-b033-975fe9ba960a",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.jpg?1792507974",
+        "normal": "https://cards.scryfall.io/normal/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.jpg?1792507974",
+        "large": "https://cards.scryfall.io/large/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.jpg?1792507974",
+        "png": "https://cards.scryfall.io/png/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.png?1792507974",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.jpg?1792507974",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.jpg?1792507974",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.webp?1792507974",
+        "grid": "https://cards.scryfall.io/grid/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.webp?1792507974",
+        "display": "https://cards.scryfall.io/display/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.webp?1792507974",
+        "art": "https://cards.scryfall.io/art/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.webp?1792507974",
+        "crop": "https://cards.scryfall.io/crop/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.webp?1792507974",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/3/33bfbd68-fc0f-41ce-b033-975fe9ba960a.jpg?1792507974"
+      },
+      "raw": {
+        "name": "Koloth, Tribble Hunter",
+        "cost": "{3}{R}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior",
+          "Officer"
+        ],
+        "oracle": "At the beginning of your end step, each player creates two 1/1 white Tribble creature tokens with \"This token can't block.\"\nAll Tribbles get +1/+0 and are goaded. (They attack each combat if able and attack a player other than you if able.)",
+        "_ci": [
+          "R"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Own the Day",
+      "oracleId": "4a9bfeb2-b4b3-4c69-9739-a878c2704f46",
+      "scryfallId": "558edfb8-eaf1-4d8e-927c-85a43d2a01d7",
+      "canonicalName": "Own the Day",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "73",
+      "scryfallUri": "https://scryfall.com/card/trc/73/own-the-day?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/558edfb8-eaf1-4d8e-927c-85a43d2a01d7",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.jpg?1793197389",
+        "normal": "https://cards.scryfall.io/normal/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.jpg?1793197389",
+        "large": "https://cards.scryfall.io/large/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.jpg?1793197389",
+        "png": "https://cards.scryfall.io/png/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.png?1793197389",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.jpg?1793197389",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.jpg?1793197389",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.webp?1793197389",
+        "grid": "https://cards.scryfall.io/grid/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.webp?1793197389",
+        "display": "https://cards.scryfall.io/display/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.webp?1793197389",
+        "art": "https://cards.scryfall.io/art/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.webp?1793197389",
+        "crop": "https://cards.scryfall.io/crop/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.webp?1793197389",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/5/558edfb8-eaf1-4d8e-927c-85a43d2a01d7.jpg?1793197389"
+      },
+      "raw": {
+        "name": "Own the Day",
+        "cost": "{4}{R}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Battlefront — This spell costs {1} less to cast for each opponent you attacked this turn.\nUntap all creatures that attacked this turn. After this main phase, there is an additional combat phase followed by an additional main phase.",
+        "_ci": [
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "Qo'noS Quartermaster",
+      "oracleId": "b7115ed6-526c-491d-828f-f60b18437361",
+      "scryfallId": "ba1b5338-f73c-4f59-88bc-4f1ea6331171",
+      "canonicalName": "Qo'noS Quartermaster",
+      "layout": "normal",
+      "keywords": [
+        "Menace"
+      ],
+      "colorIdentity": [
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "74",
+      "scryfallUri": "https://scryfall.com/card/trc/74/qonos-quartermaster?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/ba1b5338-f73c-4f59-88bc-4f1ea6331171",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.jpg?1793197391",
+        "normal": "https://cards.scryfall.io/normal/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.jpg?1793197391",
+        "large": "https://cards.scryfall.io/large/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.jpg?1793197391",
+        "png": "https://cards.scryfall.io/png/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.png?1793197391",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.jpg?1793197391",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.jpg?1793197391",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.webp?1793197391",
+        "grid": "https://cards.scryfall.io/grid/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.webp?1793197391",
+        "display": "https://cards.scryfall.io/display/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.webp?1793197391",
+        "art": "https://cards.scryfall.io/art/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.webp?1793197391",
+        "crop": "https://cards.scryfall.io/crop/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.webp?1793197391",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/a/ba1b5338-f73c-4f59-88bc-4f1ea6331171.jpg?1793197391"
+      },
+      "raw": {
+        "name": "Qo'noS Quartermaster",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "Menace\nWhenever this creature attacks, add one mana of any color. Until end of turn, you don't lose this mana as steps and phases end.",
+        "_ci": [
+          "R"
+        ],
+        "power": "2",
+        "toughness": "2",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Alexander, Ship's Fool",
+      "oracleId": "d629311f-a7fc-4af5-91ce-5bf506a3cdb3",
+      "scryfallId": "7c7d8bbd-7ee3-4e02-9978-403a84c29fe5",
+      "canonicalName": "Alexander, Ship's Fool",
+      "layout": "normal",
+      "keywords": [
+        "Vigilance",
+        "Haste"
+      ],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "81",
+      "scryfallUri": "https://scryfall.com/card/trc/81/alexander-ships-fool?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.jpg?1793197401",
+        "normal": "https://cards.scryfall.io/normal/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.jpg?1793197401",
+        "large": "https://cards.scryfall.io/large/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.jpg?1793197401",
+        "png": "https://cards.scryfall.io/png/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.png?1793197401",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.jpg?1793197401",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.jpg?1793197401",
+        "thumb": "https://cards.scryfall.io/thumb/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.webp?1793197401",
+        "grid": "https://cards.scryfall.io/grid/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.webp?1793197401",
+        "display": "https://cards.scryfall.io/display/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.webp?1793197401",
+        "art": "https://cards.scryfall.io/art/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.webp?1793197401",
+        "crop": "https://cards.scryfall.io/crop/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.webp?1793197401",
+        "jpeg": "https://cards.scryfall.io/normal/front/7/c/7c7d8bbd-7ee3-4e02-9978-403a84c29fe5.jpg?1793197401"
+      },
+      "raw": {
+        "name": "Alexander, Ship's Fool",
+        "cost": "{3}{R}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Human"
+        ],
+        "oracle": "Vigilance, haste\n{T}: Each player reveals the top card of their library, then draws a card. Alexander deals X damage to a random opponent, where X is the greatest mana value among cards revealed this way.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Chancellor Gorkon",
+      "oracleId": "24d194d3-f83a-496b-921a-77c09c68b0e1",
+      "scryfallId": "7a021b9d-9500-48a0-8d38-92f175340eb6",
+      "canonicalName": "Chancellor Gorkon",
+      "layout": "normal",
+      "keywords": [
+        "Vigilance"
+      ],
+      "colorIdentity": [
+        "B",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "86",
+      "scryfallUri": "https://scryfall.com/card/trc/86/chancellor-gorkon?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/7a021b9d-9500-48a0-8d38-92f175340eb6",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.jpg?1793197402",
+        "normal": "https://cards.scryfall.io/normal/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.jpg?1793197402",
+        "large": "https://cards.scryfall.io/large/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.jpg?1793197402",
+        "png": "https://cards.scryfall.io/png/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.png?1793197402",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.jpg?1793197402",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.jpg?1793197402",
+        "thumb": "https://cards.scryfall.io/thumb/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.webp?1793197402",
+        "grid": "https://cards.scryfall.io/grid/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.webp?1793197402",
+        "display": "https://cards.scryfall.io/display/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.webp?1793197402",
+        "art": "https://cards.scryfall.io/art/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.webp?1793197402",
+        "crop": "https://cards.scryfall.io/crop/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.webp?1793197402",
+        "jpeg": "https://cards.scryfall.io/normal/front/7/a/7a021b9d-9500-48a0-8d38-92f175340eb6.jpg?1793197402"
+      },
+      "raw": {
+        "name": "Chancellor Gorkon",
+        "cost": "{3}{W}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Noble"
+        ],
+        "oracle": "Vigilance\nWhen Chancellor Gorkon dies, exile up to two target creatures.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "power": "5",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Curzon Dax, Bound by Blood",
+      "oracleId": "035bee4c-6f79-4123-9b6c-feba190052e8",
+      "scryfallId": "cb369f4f-e20a-479d-8e35-8466b05375f7",
+      "canonicalName": "Curzon Dax, Bound by Blood",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "92",
+      "scryfallUri": "https://scryfall.com/card/trc/92/curzon-dax-bound-by-blood?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/cb369f4f-e20a-479d-8e35-8466b05375f7",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.jpg?1793197414",
+        "normal": "https://cards.scryfall.io/normal/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.jpg?1793197414",
+        "large": "https://cards.scryfall.io/large/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.jpg?1793197414",
+        "png": "https://cards.scryfall.io/png/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.png?1793197414",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.jpg?1793197414",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.jpg?1793197414",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.webp?1793197414",
+        "grid": "https://cards.scryfall.io/grid/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.webp?1793197414",
+        "display": "https://cards.scryfall.io/display/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.webp?1793197414",
+        "art": "https://cards.scryfall.io/art/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.webp?1793197414",
+        "crop": "https://cards.scryfall.io/crop/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.webp?1793197414",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/b/cb369f4f-e20a-479d-8e35-8466b05375f7.jpg?1793197414"
+      },
+      "raw": {
+        "name": "Curzon Dax, Bound by Blood",
+        "cost": "{2}{R}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Trill",
+          "Warrior"
+        ],
+        "oracle": "Whenever another Klingon or Warrior you control dies, Curzon Dax deals 1 damage to each opponent.\nWhen Curzon Dax dies, you may put a creature card with mana value 3 or less from your hand onto the battlefield.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "power": "4",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Rite of Ascension",
+      "oracleId": "08c6ca45-09ff-4fe4-bc9b-45876e94f430",
+      "scryfallId": "03932c24-ffdc-4593-b223-342d68a1533c",
+      "canonicalName": "Rite of Ascension",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "R",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "103",
+      "scryfallUri": "https://scryfall.com/card/trc/103/rite-of-ascension?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/03932c24-ffdc-4593-b223-342d68a1533c",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.jpg?1793197423",
+        "normal": "https://cards.scryfall.io/normal/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.jpg?1793197423",
+        "large": "https://cards.scryfall.io/large/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.jpg?1793197423",
+        "png": "https://cards.scryfall.io/png/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.png?1793197423",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.jpg?1793197423",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.jpg?1793197423",
+        "thumb": "https://cards.scryfall.io/thumb/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.webp?1793197423",
+        "grid": "https://cards.scryfall.io/grid/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.webp?1793197423",
+        "display": "https://cards.scryfall.io/display/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.webp?1793197423",
+        "art": "https://cards.scryfall.io/art/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.webp?1793197423",
+        "crop": "https://cards.scryfall.io/crop/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.webp?1793197423",
+        "jpeg": "https://cards.scryfall.io/normal/front/0/3/03932c24-ffdc-4593-b223-342d68a1533c.jpg?1793197423"
+      },
+      "raw": {
+        "name": "Rite of Ascension",
+        "cost": "{2}{R}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Battlefront — Whenever you attack, for each opponent you attacked this turn, create a tapped and attacking 2/1 red Klingon Warrior creature token with haste.",
+        "_ci": [
+          "R",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Sins of the Father",
+      "oracleId": "bce974a2-d9ad-4ef5-bc2e-7aa2833a39f5",
+      "scryfallId": "ebd459db-bde4-4410-b0f4-4ef6bffd956b",
+      "canonicalName": "Sins of the Father",
+      "layout": "saga",
+      "keywords": [],
+      "colorIdentity": [
+        "B",
+        "R"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "104",
+      "scryfallUri": "https://scryfall.com/card/trc/104/sins-of-the-father?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/ebd459db-bde4-4410-b0f4-4ef6bffd956b",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.jpg?1793197425",
+        "normal": "https://cards.scryfall.io/normal/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.jpg?1793197425",
+        "large": "https://cards.scryfall.io/large/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.jpg?1793197425",
+        "png": "https://cards.scryfall.io/png/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.png?1793197425",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.jpg?1793197425",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.jpg?1793197425",
+        "thumb": "https://cards.scryfall.io/thumb/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.webp?1793197425",
+        "grid": "https://cards.scryfall.io/grid/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.webp?1793197425",
+        "display": "https://cards.scryfall.io/display/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.webp?1793197425",
+        "art": "https://cards.scryfall.io/art/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.webp?1793197425",
+        "crop": "https://cards.scryfall.io/crop/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.webp?1793197425",
+        "jpeg": "https://cards.scryfall.io/normal/front/e/b/ebd459db-bde4-4410-b0f4-4ef6bffd956b.jpg?1793197425"
+      },
+      "raw": {
+        "name": "Sins of the Father",
+        "cost": "{3}{B}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Saga"
+        ],
+        "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Each opponent sacrifices a nontoken creature of their choice.\nII — For each opponent, you create a 2/1 red Klingon Warrior creature token with haste.\nIII — Exile target player's graveyard. Each opponent loses life equal to the number of creature cards exiled this way.",
+        "_ci": [
+          "B",
+          "R"
+        ]
+      }
+    },
+    {
+      "requestedName": "I.K.S. Negh'Var, Imperial Flagship",
+      "oracleId": "373e2b58-ccf0-444b-aeb2-0b6e8d4e80e7",
+      "scryfallId": "1a9b48d4-3954-4073-a629-a4e31b9bc962",
+      "canonicalName": "I.K.S. Negh'Var, Imperial Flagship",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "113",
+      "scryfallUri": "https://scryfall.com/card/trc/113/iks-neghvar-imperial-flagship?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/1a9b48d4-3954-4073-a629-a4e31b9bc962",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.jpg?1793197435",
+        "normal": "https://cards.scryfall.io/normal/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.jpg?1793197435",
+        "large": "https://cards.scryfall.io/large/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.jpg?1793197435",
+        "png": "https://cards.scryfall.io/png/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.png?1793197435",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.jpg?1793197435",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.jpg?1793197435",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.webp?1793197435",
+        "grid": "https://cards.scryfall.io/grid/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.webp?1793197435",
+        "display": "https://cards.scryfall.io/display/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.webp?1793197435",
+        "art": "https://cards.scryfall.io/art/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.webp?1793197435",
+        "crop": "https://cards.scryfall.io/crop/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.webp?1793197435",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/a/1a9b48d4-3954-4073-a629-a4e31b9bc962.jpg?1793197435"
+      },
+      "raw": {
+        "name": "I.K.S. Negh'Var, Imperial Flagship",
+        "cost": "{3}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Klingons and Warriors you control have vigilance.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 10+.)\n10+ | Flying, vigilance",
+        "_ci": [],
+        "power": "6",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "K't'inga-Class Battle Cruiser",
+      "oracleId": "8ea8ee52-30e1-415c-af52-66b209f05f0a",
+      "scryfallId": "c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c",
+      "canonicalName": "K't'inga-Class Battle Cruiser",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "115",
+      "scryfallUri": "https://scryfall.com/card/trc/115/ktinga-class-battle-cruiser?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.jpg?1793197438",
+        "normal": "https://cards.scryfall.io/normal/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.jpg?1793197438",
+        "large": "https://cards.scryfall.io/large/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.jpg?1793197438",
+        "png": "https://cards.scryfall.io/png/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.png?1793197438",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.jpg?1793197438",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.jpg?1793197438",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.webp?1793197438",
+        "grid": "https://cards.scryfall.io/grid/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.webp?1793197438",
+        "display": "https://cards.scryfall.io/display/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.webp?1793197438",
+        "art": "https://cards.scryfall.io/art/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.webp?1793197438",
+        "crop": "https://cards.scryfall.io/crop/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.webp?1793197438",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/7/c7a6064b-a29a-4cf1-a8b7-a0d56b8a737c.jpg?1793197438"
+      },
+      "raw": {
+        "name": "K't'inga-Class Battle Cruiser",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Whenever this Spacecraft enters or attacks, one or two target Klingons and/or Warriors you control gain flying until end of turn.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 4+.)\n4+ | Flying",
+        "_ci": [],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "K'Vort-Class Raider",
+      "oracleId": "a52d7ab2-a750-4c3a-9f0c-999121aa81af",
+      "scryfallId": "9e2ad655-5206-4832-a350-ebfffdc180ff",
+      "canonicalName": "K'Vort-Class Raider",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "116",
+      "scryfallUri": "https://scryfall.com/card/trc/116/kvort-class-raider?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/9e2ad655-5206-4832-a350-ebfffdc180ff",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.jpg?1793197446",
+        "normal": "https://cards.scryfall.io/normal/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.jpg?1793197446",
+        "large": "https://cards.scryfall.io/large/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.jpg?1793197446",
+        "png": "https://cards.scryfall.io/png/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.png?1793197446",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.jpg?1793197446",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.jpg?1793197446",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.webp?1793197446",
+        "grid": "https://cards.scryfall.io/grid/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.webp?1793197446",
+        "display": "https://cards.scryfall.io/display/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.webp?1793197446",
+        "art": "https://cards.scryfall.io/art/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.webp?1793197446",
+        "crop": "https://cards.scryfall.io/crop/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.webp?1793197446",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/e/9e2ad655-5206-4832-a350-ebfffdc180ff.jpg?1793197446"
+      },
+      "raw": {
+        "name": "K'Vort-Class Raider",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "During your turn, this Spacecraft and creatures you control have hexproof.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 4+.)\n4+ | Flying, menace, haste",
+        "_ci": [],
+        "power": "5",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "The Sword of Kahless",
+      "oracleId": "3e301803-49ab-4fce-82ae-945a39c458b5",
+      "scryfallId": "dcc0ee8a-3400-4cf8-888e-96c847ebc71b",
+      "canonicalName": "The Sword of Kahless",
+      "layout": "normal",
+      "keywords": [
+        "Equip"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "123",
+      "scryfallUri": "https://scryfall.com/card/trc/123/the-sword-of-kahless?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/dcc0ee8a-3400-4cf8-888e-96c847ebc71b",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.jpg?1792507997",
+        "normal": "https://cards.scryfall.io/normal/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.jpg?1792507997",
+        "large": "https://cards.scryfall.io/large/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.jpg?1792507997",
+        "png": "https://cards.scryfall.io/png/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.png?1792507997",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.jpg?1792507997",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.jpg?1792507997",
+        "thumb": "https://cards.scryfall.io/thumb/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.webp?1792507997",
+        "grid": "https://cards.scryfall.io/grid/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.webp?1792507997",
+        "display": "https://cards.scryfall.io/display/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.webp?1792507997",
+        "art": "https://cards.scryfall.io/art/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.webp?1792507997",
+        "crop": "https://cards.scryfall.io/crop/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.webp?1792507997",
+        "jpeg": "https://cards.scryfall.io/normal/front/d/c/dcc0ee8a-3400-4cf8-888e-96c847ebc71b.jpg?1792507997"
+      },
+      "raw": {
+        "name": "The Sword of Kahless",
+        "cost": "{4}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Equipped creature gets +2/+2 and has \"Whenever this creature attacks, look at the top five cards of your library. You may put a Klingon or Warrior creature card from among them onto the battlefield. Put the rest on the bottom of your library in a random order.\"\nEquip {2}",
+        "_ci": []
+      }
+    },
+    {
+      "requestedName": "Cha'DIch Investigator",
+      "oracleId": "cfdef803-6f7a-4055-8d51-8e8c60953928",
+      "scryfallId": "16281200-4660-4871-afd2-d4720e6a3197",
+      "canonicalName": "Cha'DIch Investigator",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "B"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "97",
+      "scryfallUri": "https://scryfall.com/card/trk/97/chadich-investigator?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/16281200-4660-4871-afd2-d4720e6a3197",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.jpg?1785981461",
+        "normal": "https://cards.scryfall.io/normal/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.jpg?1785981461",
+        "large": "https://cards.scryfall.io/large/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.jpg?1785981461",
+        "png": "https://cards.scryfall.io/png/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.png?1785981461",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.jpg?1785981461",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.jpg?1785981461",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.webp?1785981461",
+        "grid": "https://cards.scryfall.io/grid/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.webp?1785981461",
+        "display": "https://cards.scryfall.io/display/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.webp?1785981461",
+        "art": "https://cards.scryfall.io/art/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.webp?1785981461",
+        "crop": "https://cards.scryfall.io/crop/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.webp?1785981461",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/6/16281200-4660-4871-afd2-d4720e6a3197.jpg?1785981461"
+      },
+      "raw": {
+        "name": "Cha'DIch Investigator",
+        "cost": "{4}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Klingon",
+          "Warrior"
+        ],
+        "oracle": "When this creature enters, create a 2/1 red Klingon Warrior creature token with haste.",
+        "_ci": [
+          "B"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    }
+  ]
+}

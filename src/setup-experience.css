@@ -206,6 +206,7 @@
 #setup .deckspotlightintro h2 { font-weight: 650; }
 #setup .deckspotlightstats b { font: 500 27px/1.2 var(--ds-font-mono); }
 #setup .deckspotlightbadges { gap: 8px; }
+#setup .deckspotlightrelease { grid-column: 1 / -1; margin: 0; color: var(--ds-accent-glow); font: 500 12px/1.5 var(--ds-font-body); }
 #setup .deckspotlightbadges span { border-radius: 6px; border-color: var(--ds-line); }
 #setup .deckspotlightrhythm > li { border-radius: 10px; border-color: var(--ds-line); }
 #setup .deckspotlightactions { background: var(--ds-dialog); border-top-color: var(--ds-line); padding-block: 16px; }

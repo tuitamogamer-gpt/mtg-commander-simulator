@@ -1,0 +1,57 @@
+{
+  "baseCommit": "8dd16a49282b0741a329ac3c620725ae2e3a552b",
+  "results": [
+    {
+      "deck": "We Are the Borg",
+      "opponents": [
+        "Federation Fleet",
+        "Landing Party",
+        "Klingon Fury"
+      ],
+      "seed": 102900,
+      "turns": 25,
+      "winner": "You",
+      "durationMs": 35716,
+      "passed": true
+    },
+    {
+      "deck": "Federation Fleet",
+      "opponents": [
+        "Landing Party",
+        "Klingon Fury",
+        "We Are the Borg"
+      ],
+      "seed": 102901,
+      "turns": 74,
+      "winner": "AI Dragon",
+      "durationMs": 168404,
+      "passed": true
+    },
+    {
+      "deck": "Landing Party",
+      "opponents": [
+        "Klingon Fury",
+        "We Are the Borg",
+        "Federation Fleet"
+      ],
+      "seed": 102902,
+      "turns": 51,
+      "winner": "AI Wolf",
+      "durationMs": 75730,
+      "passed": true
+    },
+    {
+      "deck": "Klingon Fury",
+      "opponents": [
+        "We Are the Borg",
+        "Federation Fleet",
+        "Landing Party"
+      ],
+      "seed": 102903,
+      "turns": 44,
+      "winner": "You",
+      "durationMs": 35897,
+      "passed": true
+    }
+  ]
+}

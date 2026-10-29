@@ -24,7 +24,7 @@ test('the eighteen reviewed native cards retain their provenance and import elig
   M.initData(M.RAW_DATA);
   assert.equal(names.length, 18); assert.deepEqual(Object.keys(M.REVIEWED_LEGACY_IMPORTS).sort(), names);
   const genericCount = M.ORACLE_BATCHES.filter(batch => /^oracle-\d{4}$/.test(batch.id)).reduce((n, batch) => n + batch.cards.length, 0);
-  assert.equal(Object.keys(M.DEFS).length, 3999 + genericCount); assert.equal(Object.keys(M.DECKS).length, 176);
+  assert.equal(Object.keys(M.DEFS).length, 4136 + genericCount); assert.equal(Object.keys(M.DECKS).length, 180);
   assert.ok(M.DECKS['Blame Game']);
   for (const row of source.cards) {
     const review = M.REVIEWED_LEGACY_IMPORTS[row.name], catalog = M.CARD_CATALOG[row.name];

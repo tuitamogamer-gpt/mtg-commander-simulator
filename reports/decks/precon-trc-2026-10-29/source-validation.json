@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "generatedAt": "2026-10-29T19:00:14.692Z",
+  "releaseDate": "2026-11-13",
+  "status": "preview",
+  "physicalCards": 400,
+  "uniqueNames": 302,
+  "reusedNames": 165,
+  "newNativeNames": 137,
+  "sourceLists": [
+    {
+      "name": "We Are the Borg",
+      "commander": "The Borg Queen",
+      "total": 100,
+      "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+      "exportSha256": "adfa02bbafdcec7a897c2921e52d6aa375ddebbb0b1ec4355ff0a960dcd290bb",
+      "previewCards": 37,
+      "importAccepted": true
+    },
+    {
+      "name": "Federation Fleet",
+      "commander": "Jean-Luc Picard, Luminary",
+      "total": 100,
+      "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+      "exportSha256": "d2ae8bd31263676d5d0c1ad93dc748384c2ab53f785a880d4573d1d2a4fc6847",
+      "previewCards": 34,
+      "importAccepted": true
+    },
+    {
+      "name": "Landing Party",
+      "commander": "Commander Spock",
+      "total": 100,
+      "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+      "exportSha256": "756308ab358d1c7e911cfdb2c4f177aba0121ea3bbf1c2a788a3100145b9ded0",
+      "previewCards": 38,
+      "importAccepted": true
+    },
+    {
+      "name": "Klingon Fury",
+      "commander": "Worf, Defiant Commander",
+      "total": 100,
+      "official": "https://magic.wizards.com/en/news/announcements/star-trek-commander-decklists",
+      "independentDecklistStatus": "MTGJSON deck index has no TRC entries; all four direct deck JSON URLs returned HTTP 404 on 2026-10-29",
+      "exportSha256": "9793c0f49e0ef54dc3a0d0f2c5d296ad82b4bbaeec6edefca53bacd215e07de3",
+      "previewCards": 34,
+      "importAccepted": true
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3934,
+  "existingRawDeckRecordsPreserved": 176,
+  "nativeRawDefinitions": 4071,
+  "allNewOracleDefinitionsMatch": true,
+  "assignmentsDisjoint": true,
+  "allPreviewLegalityRetained": true,
+  "idempotentDataSha256": "797f069b0ebf2de8e17eba172e6daa8be7dfd7a221a5d8ec4c9f685f07a69aaa",
+  "current": {
+    "decks": 180,
+    "definitions": 32273,
+    "eligible": 32272
+  }
+}

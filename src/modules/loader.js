@@ -21,6 +21,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      'We Are the Borg': {icon: '⚙️', colors: ['W', 'U', 'B'], style: 'Assimilation and artifact armies', set: 'Star Trek Commander (2026)', blurb: 'Assimilate opposing creatures with the Borg Queen, multiply artifact tokens and station a growing fleet.'},
+      'Federation Fleet': {icon: '🚀', colors: ['W', 'U', 'R'], style: 'Second draws and charged Spacecraft', set: 'Star Trek Commander (2026)', blurb: 'Picard turns historic arrivals into cards, then your second draw each turn strengthens the crew and charges the fleet.'},
+      'Landing Party': {icon: '🪐', colors: ['W', 'U', 'G'], style: 'Different lands, landfall and free spells', set: 'Star Trek Commander (2026)', blurb: 'Explore differently named lands with Spock, cast revealed spells for free and bring Starship Enterprise online.'},
+      'Klingon Fury': {icon: '⚔️', colors: ['W', 'B', 'R'], style: 'Multiplayer attacks and hasty Warriors', set: 'Star Trek Commander (2026)', blurb: 'Spread Worf’s warband across several opponents to gain cards, grow your attackers and fuel another combat.'},
       'Calling All Angels': {icon: '🪽', colors: ['W'], style: 'Angels, counters and lifegain', set: 'Foundations Commander (2026)', blurb: 'Giada helps cast a growing flight of Angels, while lifegain and vigilance keep you safe.'},
       'Keen Engineering': {icon: '⚙️', colors: ['U'], style: 'Artifacts and Thopter tokens', set: 'Foundations Commander (2026)', blurb: 'Cast artifacts with Sai to build a Thopter army, draw cards and power enormous artifact creatures.'},
       'Wretched Ranks': {icon: '🧟', colors: ['B'], style: 'Zombies, sacrifice and recursion', set: 'Foundations Commander (2026)', blurb: 'Ghoulcaller Gisa turns one creature into a Zombie army, with lords, death triggers and graveyard recursion.'},

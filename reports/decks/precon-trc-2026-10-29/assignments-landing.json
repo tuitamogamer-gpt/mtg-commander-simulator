@@ -1,0 +1,1851 @@
+{
+  "deck": "Landing Party",
+  "commander": "Commander Spock",
+  "owner": "landing",
+  "missingInDeck": 38,
+  "ownedCount": 36,
+  "cards": [
+    {
+      "requestedName": "Commander Spock",
+      "oracleId": "60644afe-9645-45a1-9eac-70f327daa6a7",
+      "scryfallId": "cf114392-a38d-4117-aa41-911d6dc1051b",
+      "canonicalName": "Commander Spock",
+      "layout": "normal",
+      "keywords": [
+        "Strange new worlds"
+      ],
+      "colorIdentity": [
+        "G",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "2",
+      "scryfallUri": "https://scryfall.com/card/trc/2/commander-spock?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/cf114392-a38d-4117-aa41-911d6dc1051b",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.jpg?1792551005",
+        "normal": "https://cards.scryfall.io/normal/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.jpg?1792551005",
+        "large": "https://cards.scryfall.io/large/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.jpg?1792551005",
+        "png": "https://cards.scryfall.io/png/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.png?1792551005",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.jpg?1792551005",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.jpg?1792551005",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.webp?1792551005",
+        "grid": "https://cards.scryfall.io/grid/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.webp?1792551005",
+        "display": "https://cards.scryfall.io/display/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.webp?1792551005",
+        "art": "https://cards.scryfall.io/art/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.webp?1792551005",
+        "crop": "https://cards.scryfall.io/crop/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.webp?1792551005",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/f/cf114392-a38d-4117-aa41-911d6dc1051b.jpg?1792551005"
+      },
+      "raw": {
+        "name": "Commander Spock",
+        "cost": "{2}{G}{W}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vulcan",
+          "Human",
+          "Scientist"
+        ],
+        "oracle": "Strange new worlds — Whenever Commander Spock enters or attacks, reveal the top card of your library. You may cast that card without paying its mana cost if that spell's mana value is equal to or less than the number of differently named lands you control. If it's a land card, you may put it onto the battlefield tapped. If that card is still on top of your library, draw a card.",
+        "_ci": [
+          "G",
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Captain Kirk, Boldly Going",
+      "oracleId": "5228fffe-6347-4177-bccb-b15621c7159c",
+      "scryfallId": "6b5d9bd2-cc78-4c30-b6ee-65b76c60a588",
+      "canonicalName": "Captain Kirk, Boldly Going",
+      "layout": "normal",
+      "keywords": [
+        "Vigilance"
+      ],
+      "colorIdentity": [
+        "G",
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "85",
+      "scryfallUri": "https://scryfall.com/card/trc/85/captain-kirk-boldly-going?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.jpg?1793281029",
+        "normal": "https://cards.scryfall.io/normal/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.jpg?1793281029",
+        "large": "https://cards.scryfall.io/large/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.jpg?1793281029",
+        "png": "https://cards.scryfall.io/png/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.png?1793281029",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.jpg?1793281029",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.jpg?1793281029",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.webp?1793281029",
+        "grid": "https://cards.scryfall.io/grid/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.webp?1793281029",
+        "display": "https://cards.scryfall.io/display/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.webp?1793281029",
+        "art": "https://cards.scryfall.io/art/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.webp?1793281029",
+        "crop": "https://cards.scryfall.io/crop/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.webp?1793281029",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/b/6b5d9bd2-cc78-4c30-b6ee-65b76c60a588.jpg?1793281029"
+      },
+      "raw": {
+        "name": "Captain Kirk, Boldly Going",
+        "cost": "{1}{G}{W}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Officer"
+        ],
+        "oracle": "Vigilance\nSpacecraft creatures you control get +3/+3.\nWhenever Captain Kirk enters or attacks, search your library and/or graveyard for a basic land card or a card named Starship Enterprise, reveal it, and put it into your hand. If you search your library this way, shuffle.",
+        "_ci": [
+          "G",
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Balance of Terror",
+      "oracleId": "0b035f3c-ba21-4a73-b4df-11a7e8c19056",
+      "scryfallId": "2fc3e03e-29bd-4d69-b1c1-438183f39eb5",
+      "canonicalName": "Balance of Terror",
+      "layout": "saga",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "10",
+      "scryfallUri": "https://scryfall.com/card/trc/10/balance-of-terror?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/2fc3e03e-29bd-4d69-b1c1-438183f39eb5",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.jpg?1793281149",
+        "normal": "https://cards.scryfall.io/normal/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.jpg?1793281149",
+        "large": "https://cards.scryfall.io/large/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.jpg?1793281149",
+        "png": "https://cards.scryfall.io/png/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.png?1793281149",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.jpg?1793281149",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.jpg?1793281149",
+        "thumb": "https://cards.scryfall.io/thumb/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.webp?1793281149",
+        "grid": "https://cards.scryfall.io/grid/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.webp?1793281149",
+        "display": "https://cards.scryfall.io/display/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.webp?1793281149",
+        "art": "https://cards.scryfall.io/art/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.webp?1793281149",
+        "crop": "https://cards.scryfall.io/crop/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.webp?1793281149",
+        "jpeg": "https://cards.scryfall.io/normal/front/2/f/2fc3e03e-29bd-4d69-b1c1-438183f39eb5.jpg?1793281149"
+      },
+      "raw": {
+        "name": "Balance of Terror",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Saga"
+        ],
+        "oracle": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Destroy up to one other target artifact or enchantment.\nII, III — Exile up to one other target permanent you control. Return that card to the battlefield under its owner's control at the beginning of the next end step.",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Merciful Mandate",
+      "oracleId": "201269a1-8f11-485a-a9be-6447b189b4df",
+      "scryfallId": "30bfd653-fd11-415e-906d-b005edd3b811",
+      "canonicalName": "Merciful Mandate",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "25",
+      "scryfallUri": "https://scryfall.com/card/trc/25/merciful-mandate?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/30bfd653-fd11-415e-906d-b005edd3b811",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.jpg?1793196885",
+        "normal": "https://cards.scryfall.io/normal/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.jpg?1793196885",
+        "large": "https://cards.scryfall.io/large/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.jpg?1793196885",
+        "png": "https://cards.scryfall.io/png/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.png?1793196885",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.jpg?1793196885",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.jpg?1793196885",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.webp?1793196885",
+        "grid": "https://cards.scryfall.io/grid/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.webp?1793196885",
+        "display": "https://cards.scryfall.io/display/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.webp?1793196885",
+        "art": "https://cards.scryfall.io/art/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.webp?1793196885",
+        "crop": "https://cards.scryfall.io/crop/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.webp?1793196885",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/0/30bfd653-fd11-415e-906d-b005edd3b811.jpg?1793196885"
+      },
+      "raw": {
+        "name": "Merciful Mandate",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Untap all creatures you control. If it's a combat phase, you may end the combat phase. (Remove all attackers and blockers from combat. Exile all spells and abilities from the stack, including this spell.)",
+        "_ci": [
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "M'Ress, Crew Coordinator",
+      "oracleId": "a33f6ec8-5992-43a1-a16c-d8e83c4017fa",
+      "scryfallId": "870e5f5c-502e-42d8-92cb-827ea09a83f4",
+      "canonicalName": "M'Ress, Crew Coordinator",
+      "layout": "normal",
+      "keywords": [
+        "Landfall"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "26",
+      "scryfallUri": "https://scryfall.com/card/trc/26/mress-crew-coordinator?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/870e5f5c-502e-42d8-92cb-827ea09a83f4",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.jpg?1793281169",
+        "normal": "https://cards.scryfall.io/normal/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.jpg?1793281169",
+        "large": "https://cards.scryfall.io/large/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.jpg?1793281169",
+        "png": "https://cards.scryfall.io/png/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.png?1793281169",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.jpg?1793281169",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.jpg?1793281169",
+        "thumb": "https://cards.scryfall.io/thumb/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.webp?1793281169",
+        "grid": "https://cards.scryfall.io/grid/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.webp?1793281169",
+        "display": "https://cards.scryfall.io/display/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.webp?1793281169",
+        "art": "https://cards.scryfall.io/art/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.webp?1793281169",
+        "crop": "https://cards.scryfall.io/crop/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.webp?1793281169",
+        "jpeg": "https://cards.scryfall.io/normal/front/8/7/870e5f5c-502e-42d8-92cb-827ea09a83f4.jpg?1793281169"
+      },
+      "raw": {
+        "name": "M'Ress, Crew Coordinator",
+        "cost": "{4}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Caitian",
+          "Officer"
+        ],
+        "oracle": "Landfall — Whenever a land you control enters, create two 1/1 red Officer creature tokens.",
+        "_ci": [
+          "W"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Shuttlecraft Galileo",
+      "oracleId": "12e4e6b6-e684-49df-9373-d1e057664272",
+      "scryfallId": "a4242f45-75c1-4b23-9174-bd0fe70fa039",
+      "canonicalName": "Shuttlecraft Galileo",
+      "layout": "normal",
+      "keywords": [
+        "Station",
+        "Landfall"
+      ],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "28",
+      "scryfallUri": "https://scryfall.com/card/trc/28/shuttlecraft-galileo?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/a4242f45-75c1-4b23-9174-bd0fe70fa039",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.jpg?1793281180",
+        "normal": "https://cards.scryfall.io/normal/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.jpg?1793281180",
+        "large": "https://cards.scryfall.io/large/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.jpg?1793281180",
+        "png": "https://cards.scryfall.io/png/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.png?1793281180",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.jpg?1793281180",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.jpg?1793281180",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.webp?1793281180",
+        "grid": "https://cards.scryfall.io/grid/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.webp?1793281180",
+        "display": "https://cards.scryfall.io/display/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.webp?1793281180",
+        "art": "https://cards.scryfall.io/art/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.webp?1793281180",
+        "crop": "https://cards.scryfall.io/crop/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.webp?1793281180",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/4/a4242f45-75c1-4b23-9174-bd0fe70fa039.jpg?1793281180"
+      },
+      "raw": {
+        "name": "Shuttlecraft Galileo",
+        "cost": "{3}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Landfall — Whenever a land you control enters, create a 1/1 red Officer creature token.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 6+.)\n6+ | Flying\nWhenever Shuttlecraft Galileo attacks, up to seven target attacking creatures gain flying until end of turn.",
+        "_ci": [
+          "W"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Tribble Cluster",
+      "oracleId": "1c1caf0f-9ee8-4eaa-b8e7-309ba9be9282",
+      "scryfallId": "f00ed9b5-a8dc-4774-af85-ea6be45ac9f3",
+      "canonicalName": "Tribble Cluster",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "32",
+      "scryfallUri": "https://scryfall.com/card/trc/32/tribble-cluster?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.jpg?1793281181",
+        "normal": "https://cards.scryfall.io/normal/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.jpg?1793281181",
+        "large": "https://cards.scryfall.io/large/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.jpg?1793281181",
+        "png": "https://cards.scryfall.io/png/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.png?1793281181",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.jpg?1793281181",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.jpg?1793281181",
+        "thumb": "https://cards.scryfall.io/thumb/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.webp?1793281181",
+        "grid": "https://cards.scryfall.io/grid/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.webp?1793281181",
+        "display": "https://cards.scryfall.io/display/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.webp?1793281181",
+        "art": "https://cards.scryfall.io/art/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.webp?1793281181",
+        "crop": "https://cards.scryfall.io/crop/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.webp?1793281181",
+        "jpeg": "https://cards.scryfall.io/normal/front/f/0/f00ed9b5-a8dc-4774-af85-ea6be45ac9f3.jpg?1793281181"
+      },
+      "raw": {
+        "name": "Tribble Cluster",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Tribble"
+        ],
+        "oracle": "At the beginning of combat on your turn, put a +1/+1 counter on this creature.\nWhen this creature dies, create X 1/1 white Tribble creature tokens with \"This token can't block,\" where X is this creature's power.",
+        "_ci": [
+          "W"
+        ],
+        "power": "1",
+        "toughness": "1"
+      }
+    },
+    {
+      "requestedName": "Colossal Clone Master",
+      "oracleId": "94fee2cf-7604-48fa-9d3c-03ca4af0edfd",
+      "scryfallId": "1eadfff4-1e89-4ff2-a91c-d45389b80d69",
+      "canonicalName": "Colossal Clone Master",
+      "layout": "normal",
+      "keywords": [
+        "Strange new worlds"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "38",
+      "scryfallUri": "https://scryfall.com/card/trc/38/colossal-clone-master?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/1eadfff4-1e89-4ff2-a91c-d45389b80d69",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.jpg?1793281192",
+        "normal": "https://cards.scryfall.io/normal/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.jpg?1793281192",
+        "large": "https://cards.scryfall.io/large/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.jpg?1793281192",
+        "png": "https://cards.scryfall.io/png/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.png?1793281192",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.jpg?1793281192",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.jpg?1793281192",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.webp?1793281192",
+        "grid": "https://cards.scryfall.io/grid/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.webp?1793281192",
+        "display": "https://cards.scryfall.io/display/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.webp?1793281192",
+        "art": "https://cards.scryfall.io/art/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.webp?1793281192",
+        "crop": "https://cards.scryfall.io/crop/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.webp?1793281192",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/e/1eadfff4-1e89-4ff2-a91c-d45389b80d69.jpg?1793281192"
+      },
+      "raw": {
+        "name": "Colossal Clone Master",
+        "cost": "{5}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Giant"
+        ],
+        "oracle": "Strange new worlds — You may have this creature enter as a copy of any creature on the battlefield, except it isn't legendary and it has \"This creature's power and toughness are each equal to the number of differently named lands you control.\"",
+        "_ci": [
+          "U"
+        ],
+        "power": "0",
+        "toughness": "0"
+      }
+    },
+    {
+      "requestedName": "Fleet Captain Christopher Pike",
+      "oracleId": "e0a9a7a2-c996-4e3e-817d-9283be690c39",
+      "scryfallId": "5991e424-e91f-4b6d-b6bb-17dbc1cec67e",
+      "canonicalName": "Fleet Captain Christopher Pike",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "41",
+      "scryfallUri": "https://scryfall.com/card/trc/41/fleet-captain-christopher-pike?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/5991e424-e91f-4b6d-b6bb-17dbc1cec67e",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.jpg?1793281193",
+        "normal": "https://cards.scryfall.io/normal/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.jpg?1793281193",
+        "large": "https://cards.scryfall.io/large/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.jpg?1793281193",
+        "png": "https://cards.scryfall.io/png/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.png?1793281193",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.jpg?1793281193",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.jpg?1793281193",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.webp?1793281193",
+        "grid": "https://cards.scryfall.io/grid/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.webp?1793281193",
+        "display": "https://cards.scryfall.io/display/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.webp?1793281193",
+        "art": "https://cards.scryfall.io/art/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.webp?1793281193",
+        "crop": "https://cards.scryfall.io/crop/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.webp?1793281193",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/9/5991e424-e91f-4b6d-b6bb-17dbc1cec67e.jpg?1793281193"
+      },
+      "raw": {
+        "name": "Fleet Captain Christopher Pike",
+        "cost": "{2}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Officer"
+        ],
+        "oracle": "Yes — {1}, {T}: Untap two other target creatures.\nNo — {2}, {T}: Tap two other target creatures.",
+        "_ci": [
+          "U"
+        ],
+        "power": "0",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Giant Space Amoeba",
+      "oracleId": "ff9f3d23-a12f-428b-8001-90dafac0c6d7",
+      "scryfallId": "92791a77-c508-4411-8d5d-abc5c9f881a2",
+      "canonicalName": "Giant Space Amoeba",
+      "layout": "normal",
+      "keywords": [
+        "Flying"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "43",
+      "scryfallUri": "https://scryfall.com/card/trc/43/giant-space-amoeba?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/92791a77-c508-4411-8d5d-abc5c9f881a2",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.jpg?1793281203",
+        "normal": "https://cards.scryfall.io/normal/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.jpg?1793281203",
+        "large": "https://cards.scryfall.io/large/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.jpg?1793281203",
+        "png": "https://cards.scryfall.io/png/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.png?1793281203",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.jpg?1793281203",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.jpg?1793281203",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.webp?1793281203",
+        "grid": "https://cards.scryfall.io/grid/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.webp?1793281203",
+        "display": "https://cards.scryfall.io/display/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.webp?1793281203",
+        "art": "https://cards.scryfall.io/art/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.webp?1793281203",
+        "crop": "https://cards.scryfall.io/crop/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.webp?1793281203",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/2/92791a77-c508-4411-8d5d-abc5c9f881a2.jpg?1793281203"
+      },
+      "raw": {
+        "name": "Giant Space Amoeba",
+        "cost": "{4}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Germ"
+        ],
+        "oracle": "Flying\nWhenever this creature attacks, target creature defending player controls gets -3/-0 until end of turn, then create a token that's a copy of this creature.",
+        "_ci": [
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Lieutenant Nyota Uhura",
+      "oracleId": "d55f0074-2772-48b1-8d60-ca2da52d4c9d",
+      "scryfallId": "4f932b20-3f3e-4f59-ab82-46733e3f54b9",
+      "canonicalName": "Lieutenant Nyota Uhura",
+      "layout": "normal",
+      "keywords": [
+        "Strange new worlds"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "46",
+      "scryfallUri": "https://scryfall.com/card/trc/46/lieutenant-nyota-uhura?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/4f932b20-3f3e-4f59-ab82-46733e3f54b9",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.jpg?1793281206",
+        "normal": "https://cards.scryfall.io/normal/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.jpg?1793281206",
+        "large": "https://cards.scryfall.io/large/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.jpg?1793281206",
+        "png": "https://cards.scryfall.io/png/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.png?1793281206",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.jpg?1793281206",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.jpg?1793281206",
+        "thumb": "https://cards.scryfall.io/thumb/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.webp?1793281206",
+        "grid": "https://cards.scryfall.io/grid/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.webp?1793281206",
+        "display": "https://cards.scryfall.io/display/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.webp?1793281206",
+        "art": "https://cards.scryfall.io/art/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.webp?1793281206",
+        "crop": "https://cards.scryfall.io/crop/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.webp?1793281206",
+        "jpeg": "https://cards.scryfall.io/normal/front/4/f/4f932b20-3f3e-4f59-ab82-46733e3f54b9.jpg?1793281206"
+      },
+      "raw": {
+        "name": "Lieutenant Nyota Uhura",
+        "cost": "{2}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Officer"
+        ],
+        "oracle": "Strange new worlds — {4}, {T}: Target opponent exiles the top X cards of their library, where X is the number of differently named lands you control. You may cast an instant or sorcery spell from among them without paying its mana cost. Then that player puts the rest on the bottom of their library in a random order.",
+        "_ci": [
+          "U"
+        ],
+        "power": "2",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Sam Kirk, Xenoanthropologist",
+      "oracleId": "eec55307-8525-4dae-a030-d210f3895138",
+      "scryfallId": "b2ffe160-1860-41ba-86a5-487211889804",
+      "canonicalName": "Sam Kirk, Xenoanthropologist",
+      "layout": "normal",
+      "keywords": [
+        "Investigate"
+      ],
+      "colorIdentity": [
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "49",
+      "scryfallUri": "https://scryfall.com/card/trc/49/sam-kirk-xenoanthropologist?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/b2ffe160-1860-41ba-86a5-487211889804",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.jpg?1793281216",
+        "normal": "https://cards.scryfall.io/normal/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.jpg?1793281216",
+        "large": "https://cards.scryfall.io/large/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.jpg?1793281216",
+        "png": "https://cards.scryfall.io/png/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.png?1793281216",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.jpg?1793281216",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.jpg?1793281216",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.webp?1793281216",
+        "grid": "https://cards.scryfall.io/grid/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.webp?1793281216",
+        "display": "https://cards.scryfall.io/display/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.webp?1793281216",
+        "art": "https://cards.scryfall.io/art/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.webp?1793281216",
+        "crop": "https://cards.scryfall.io/crop/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.webp?1793281216",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/2/b2ffe160-1860-41ba-86a5-487211889804.jpg?1793281216"
+      },
+      "raw": {
+        "name": "Sam Kirk, Xenoanthropologist",
+        "cost": "{3}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Scientist"
+        ],
+        "oracle": "Whenever an opponent casts a creature spell, investigate. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+        "_ci": [
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Amanda Grayson, Logic's Link",
+      "oracleId": "13d4a70f-c48c-4739-8f3e-5f0302c5484c",
+      "scryfallId": "a07593d8-957d-4a85-9672-f3fabf576fd5",
+      "canonicalName": "Amanda Grayson, Logic's Link",
+      "layout": "normal",
+      "keywords": [
+        "Affinity",
+        "Landfall"
+      ],
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "77",
+      "scryfallUri": "https://scryfall.com/card/trc/77/amanda-grayson-logics-link?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/a07593d8-957d-4a85-9672-f3fabf576fd5",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.jpg?1793281218",
+        "normal": "https://cards.scryfall.io/normal/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.jpg?1793281218",
+        "large": "https://cards.scryfall.io/large/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.jpg?1793281218",
+        "png": "https://cards.scryfall.io/png/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.png?1793281218",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.jpg?1793281218",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.jpg?1793281218",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.webp?1793281218",
+        "grid": "https://cards.scryfall.io/grid/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.webp?1793281218",
+        "display": "https://cards.scryfall.io/display/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.webp?1793281218",
+        "art": "https://cards.scryfall.io/art/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.webp?1793281218",
+        "crop": "https://cards.scryfall.io/crop/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.webp?1793281218",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/0/a07593d8-957d-4a85-9672-f3fabf576fd5.jpg?1793281218"
+      },
+      "raw": {
+        "name": "Amanda Grayson, Logic's Link",
+        "cost": "{3}{G}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Advisor"
+        ],
+        "oracle": "Affinity for Vulcans (This spell costs {1} less to cast for each Vulcan you control.)\nLandfall — Whenever a land you control enters, put two +1/+1 counters on target creature you control.",
+        "_ci": [
+          "G"
+        ],
+        "power": "2",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Christine Chapel, Combat Medic",
+      "oracleId": "330e8a18-d224-4416-b59d-02b749c3a674",
+      "scryfallId": "f2efcab5-3aad-4edd-87d1-289978e8855e",
+      "canonicalName": "Christine Chapel, Combat Medic",
+      "layout": "normal",
+      "keywords": [
+        "Strange new worlds"
+      ],
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "78",
+      "scryfallUri": "https://scryfall.com/card/trc/78/christine-chapel-combat-medic?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/f2efcab5-3aad-4edd-87d1-289978e8855e",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.jpg?1786395991",
+        "normal": "https://cards.scryfall.io/normal/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.jpg?1786395991",
+        "large": "https://cards.scryfall.io/large/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.jpg?1786395991",
+        "png": "https://cards.scryfall.io/png/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.png?1786395991",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.jpg?1786395991",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.jpg?1786395991",
+        "thumb": "https://cards.scryfall.io/thumb/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.webp?1786395991",
+        "grid": "https://cards.scryfall.io/grid/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.webp?1786395991",
+        "display": "https://cards.scryfall.io/display/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.webp?1786395991",
+        "art": "https://cards.scryfall.io/art/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.webp?1786395991",
+        "crop": "https://cards.scryfall.io/crop/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.webp?1786395991",
+        "jpeg": "https://cards.scryfall.io/normal/front/f/2/f2efcab5-3aad-4edd-87d1-289978e8855e.jpg?1786395991"
+      },
+      "raw": {
+        "name": "Christine Chapel, Combat Medic",
+        "cost": "{3}{G}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Doctor"
+        ],
+        "oracle": "Strange new worlds — When Christine Chapel enters, you gain life equal to the number of differently named lands you control.\nWhenever you gain life, put two +1/+1 counters on Christine Chapel.",
+        "_ci": [
+          "G"
+        ],
+        "power": "2",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Janice Rand, Essential Aide",
+      "oracleId": "2130193c-3518-4a7d-9cb3-ea65aec845b4",
+      "scryfallId": "92925156-ffd3-4f8a-8592-ccbd935ab894",
+      "canonicalName": "Janice Rand, Essential Aide",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "79",
+      "scryfallUri": "https://scryfall.com/card/trc/79/janice-rand-essential-aide?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/92925156-ffd3-4f8a-8592-ccbd935ab894",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.jpg?1793281231",
+        "normal": "https://cards.scryfall.io/normal/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.jpg?1793281231",
+        "large": "https://cards.scryfall.io/large/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.jpg?1793281231",
+        "png": "https://cards.scryfall.io/png/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.png?1793281231",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.jpg?1793281231",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.jpg?1793281231",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.webp?1793281231",
+        "grid": "https://cards.scryfall.io/grid/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.webp?1793281231",
+        "display": "https://cards.scryfall.io/display/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.webp?1793281231",
+        "art": "https://cards.scryfall.io/art/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.webp?1793281231",
+        "crop": "https://cards.scryfall.io/crop/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.webp?1793281231",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/2/92925156-ffd3-4f8a-8592-ccbd935ab894.jpg?1793281231"
+      },
+      "raw": {
+        "name": "Janice Rand, Essential Aide",
+        "cost": "{3}{G}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Advisor"
+        ],
+        "oracle": "Whenever a commander you control enters or attacks, put a +1/+1 counter on it, then reveal cards from the top of your library until you reveal a land card. Put that card onto the battlefield tapped and the rest on the bottom of your library in a random order.",
+        "_ci": [
+          "G"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Lieutenant Hikaru Sulu",
+      "oracleId": "565cfa73-8c6b-4296-bcb8-388de8c960ff",
+      "scryfallId": "5c404561-b2e4-4f27-b1a9-486c05ed5870",
+      "canonicalName": "Lieutenant Hikaru Sulu",
+      "layout": "normal",
+      "keywords": [
+        "Explore"
+      ],
+      "colorIdentity": [
+        "G",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "80",
+      "scryfallUri": "https://scryfall.com/card/trc/80/lieutenant-hikaru-sulu?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/5c404561-b2e4-4f27-b1a9-486c05ed5870",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.jpg?1793282341",
+        "normal": "https://cards.scryfall.io/normal/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.jpg?1793282341",
+        "large": "https://cards.scryfall.io/large/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.jpg?1793282341",
+        "png": "https://cards.scryfall.io/png/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.png?1793282341",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.jpg?1793282341",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.jpg?1793282341",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.webp?1793282341",
+        "grid": "https://cards.scryfall.io/grid/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.webp?1793282341",
+        "display": "https://cards.scryfall.io/display/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.webp?1793282341",
+        "art": "https://cards.scryfall.io/art/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.webp?1793282341",
+        "crop": "https://cards.scryfall.io/crop/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.webp?1793282341",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/c/5c404561-b2e4-4f27-b1a9-486c05ed5870.jpg?1793282341"
+      },
+      "raw": {
+        "name": "Lieutenant Hikaru Sulu",
+        "cost": "{2}{G}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Pilot"
+        ],
+        "oracle": "Whenever Lieutenant Sulu becomes tapped, he explores. (Reveal the top card of your library. Put that card into your hand if it's a land. Otherwise, put a +1/+1 counter on this creature, then put the card back or put it into your graveyard.)\n{2}{U}: Target creature can't be blocked this turn.",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Chief Kyle, Transporter Tech",
+      "oracleId": "02583549-b618-4d41-9f46-209a99e30cd7",
+      "scryfallId": "7a310a62-836b-4ed9-99b1-a09c9079ab43",
+      "canonicalName": "Chief Kyle, Transporter Tech",
+      "layout": "normal",
+      "keywords": [
+        "Landfall"
+      ],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "87",
+      "scryfallUri": "https://scryfall.com/card/trc/87/chief-kyle-transporter-tech?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/7a310a62-836b-4ed9-99b1-a09c9079ab43",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.jpg?1793281245",
+        "normal": "https://cards.scryfall.io/normal/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.jpg?1793281245",
+        "large": "https://cards.scryfall.io/large/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.jpg?1793281245",
+        "png": "https://cards.scryfall.io/png/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.png?1793281245",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.jpg?1793281245",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.jpg?1793281245",
+        "thumb": "https://cards.scryfall.io/thumb/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.webp?1793281245",
+        "grid": "https://cards.scryfall.io/grid/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.webp?1793281245",
+        "display": "https://cards.scryfall.io/display/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.webp?1793281245",
+        "art": "https://cards.scryfall.io/art/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.webp?1793281245",
+        "crop": "https://cards.scryfall.io/crop/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.webp?1793281245",
+        "jpeg": "https://cards.scryfall.io/normal/front/7/a/7a310a62-836b-4ed9-99b1-a09c9079ab43.jpg?1793281245"
+      },
+      "raw": {
+        "name": "Chief Kyle, Transporter Tech",
+        "cost": "{2}{W}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Artificer"
+        ],
+        "oracle": "Landfall — Whenever a land you control enters, exile up to one other target creature you control. Return that card to the battlefield under its owner's control at the beginning of the next end step.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "power": "3",
+        "toughness": "2"
+      }
+    },
+    {
+      "requestedName": "Chief Montgomery Scott",
+      "oracleId": "07f9c121-8a12-4f28-ae89-ec71f073b9ba",
+      "scryfallId": "9e26096a-88a1-4086-9fa7-7be932b2885c",
+      "canonicalName": "Chief Montgomery Scott",
+      "layout": "normal",
+      "keywords": [
+        "Strange new worlds"
+      ],
+      "colorIdentity": [
+        "G",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "88",
+      "scryfallUri": "https://scryfall.com/card/trc/88/chief-montgomery-scott?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/9e26096a-88a1-4086-9fa7-7be932b2885c",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.jpg?1793281250",
+        "normal": "https://cards.scryfall.io/normal/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.jpg?1793281250",
+        "large": "https://cards.scryfall.io/large/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.jpg?1793281250",
+        "png": "https://cards.scryfall.io/png/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.png?1793281250",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.jpg?1793281250",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.jpg?1793281250",
+        "thumb": "https://cards.scryfall.io/thumb/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.webp?1793281250",
+        "grid": "https://cards.scryfall.io/grid/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.webp?1793281250",
+        "display": "https://cards.scryfall.io/display/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.webp?1793281250",
+        "art": "https://cards.scryfall.io/art/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.webp?1793281250",
+        "crop": "https://cards.scryfall.io/crop/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.webp?1793281250",
+        "jpeg": "https://cards.scryfall.io/normal/front/9/e/9e26096a-88a1-4086-9fa7-7be932b2885c.jpg?1793281250"
+      },
+      "raw": {
+        "name": "Chief Montgomery Scott",
+        "cost": "{2}{G}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Artificer"
+        ],
+        "oracle": "Strange new worlds — {6}, {T}: You may put a creature or Spacecraft card from your hand onto the battlefield. It enters with X additional +1/+1 counters on it if it's a creature and X additional charge counters on it if it's a Spacecraft, where X is the number of differently named lands you control.",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Lt. Arex, Ever-Adapting",
+      "oracleId": "51a2671b-677e-434c-9f1a-d768fe1190c9",
+      "scryfallId": "16787d1c-3a1c-4c72-a986-9cea0371fd75",
+      "canonicalName": "Lt. Arex, Ever-Adapting",
+      "layout": "normal",
+      "keywords": [
+        "Strange new worlds",
+        "Trample"
+      ],
+      "colorIdentity": [
+        "G",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "98",
+      "scryfallUri": "https://scryfall.com/card/trc/98/lt-arex-ever-adapting?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/16787d1c-3a1c-4c72-a986-9cea0371fd75",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.jpg?1793281261",
+        "normal": "https://cards.scryfall.io/normal/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.jpg?1793281261",
+        "large": "https://cards.scryfall.io/large/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.jpg?1793281261",
+        "png": "https://cards.scryfall.io/png/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.png?1793281261",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.jpg?1793281261",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.jpg?1793281261",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.webp?1793281261",
+        "grid": "https://cards.scryfall.io/grid/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.webp?1793281261",
+        "display": "https://cards.scryfall.io/display/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.webp?1793281261",
+        "art": "https://cards.scryfall.io/art/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.webp?1793281261",
+        "crop": "https://cards.scryfall.io/crop/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.webp?1793281261",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/6/16787d1c-3a1c-4c72-a986-9cea0371fd75.jpg?1793281261"
+      },
+      "raw": {
+        "name": "Lt. Arex, Ever-Adapting",
+        "cost": "{5}{G}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Edosian",
+          "Officer"
+        ],
+        "oracle": "Trample\nStrange new worlds — Lt. Arex's power and toughness are each equal to the number of differently named lands you control.\nWhen Lt. Arex enters, draw three cards. You may put up to three land cards from your hand onto the battlefield tapped.",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "power": "*",
+        "toughness": "*"
+      }
+    },
+    {
+      "requestedName": "McCoy, Not a Bricklayer",
+      "oracleId": "c71c7e0c-64d8-486a-9e66-1b343868eb0a",
+      "scryfallId": "b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff",
+      "canonicalName": "McCoy, Not a Bricklayer",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "99",
+      "scryfallUri": "https://scryfall.com/card/trc/99/mccoy-not-a-bricklayer?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.jpg?1793281264",
+        "normal": "https://cards.scryfall.io/normal/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.jpg?1793281264",
+        "large": "https://cards.scryfall.io/large/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.jpg?1793281264",
+        "png": "https://cards.scryfall.io/png/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.png?1793281264",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.jpg?1793281264",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.jpg?1793281264",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.webp?1793281264",
+        "grid": "https://cards.scryfall.io/grid/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.webp?1793281264",
+        "display": "https://cards.scryfall.io/display/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.webp?1793281264",
+        "art": "https://cards.scryfall.io/art/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.webp?1793281264",
+        "crop": "https://cards.scryfall.io/crop/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.webp?1793281264",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/1/b19d93bc-dfa9-466c-9ebb-44e28ac3d8ff.jpg?1793281264"
+      },
+      "raw": {
+        "name": "McCoy, Not a Bricklayer",
+        "cost": "{3}{G}{W}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Doctor"
+        ],
+        "oracle": "Whenever McCoy or another Doctor you control enters, put a +1/+1 counter on each creature you control.\nCreatures you control with counters on them have lifelink.",
+        "_ci": [
+          "G",
+          "W"
+        ],
+        "power": "0",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Pavel Chekov, First Posting",
+      "oracleId": "473aba5a-5c87-4294-a556-f8aca0e5fe39",
+      "scryfallId": "4015cb79-b698-4f3b-85b7-083cc4ab1e3c",
+      "canonicalName": "Pavel Chekov, First Posting",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "G",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "101",
+      "scryfallUri": "https://scryfall.com/card/trc/101/pavel-chekov-first-posting?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/4015cb79-b698-4f3b-85b7-083cc4ab1e3c",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.jpg?1793281273",
+        "normal": "https://cards.scryfall.io/normal/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.jpg?1793281273",
+        "large": "https://cards.scryfall.io/large/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.jpg?1793281273",
+        "png": "https://cards.scryfall.io/png/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.png?1793281273",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.jpg?1793281273",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.jpg?1793281273",
+        "thumb": "https://cards.scryfall.io/thumb/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.webp?1793281273",
+        "grid": "https://cards.scryfall.io/grid/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.webp?1793281273",
+        "display": "https://cards.scryfall.io/display/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.webp?1793281273",
+        "art": "https://cards.scryfall.io/art/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.webp?1793281273",
+        "crop": "https://cards.scryfall.io/crop/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.webp?1793281273",
+        "jpeg": "https://cards.scryfall.io/normal/front/4/0/4015cb79-b698-4f3b-85b7-083cc4ab1e3c.jpg?1793281273"
+      },
+      "raw": {
+        "name": "Pavel Chekov, First Posting",
+        "cost": "{2}{G}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Pilot"
+        ],
+        "oracle": "If you would draw a card, you may instead choose land or nonland and reveal cards from the top of your library until you reveal a card of the chosen kind. Put that card into your hand and put all other cards revealed this way on the bottom of your library in a random order.",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "power": "1",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "T'Pring, Never Parted",
+      "oracleId": "29775eb6-f658-4839-a434-2fa063069f1c",
+      "scryfallId": "c80275f8-eac0-4541-a62c-1bd77f3591dd",
+      "canonicalName": "T'Pring, Never Parted",
+      "layout": "normal",
+      "keywords": [
+        "Fight"
+      ],
+      "colorIdentity": [
+        "G",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "106",
+      "scryfallUri": "https://scryfall.com/card/trc/106/tpring-never-parted?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/c80275f8-eac0-4541-a62c-1bd77f3591dd",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.jpg?1793281275",
+        "normal": "https://cards.scryfall.io/normal/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.jpg?1793281275",
+        "large": "https://cards.scryfall.io/large/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.jpg?1793281275",
+        "png": "https://cards.scryfall.io/png/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.png?1793281275",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.jpg?1793281275",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.jpg?1793281275",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.webp?1793281275",
+        "grid": "https://cards.scryfall.io/grid/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.webp?1793281275",
+        "display": "https://cards.scryfall.io/display/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.webp?1793281275",
+        "art": "https://cards.scryfall.io/art/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.webp?1793281275",
+        "crop": "https://cards.scryfall.io/crop/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.webp?1793281275",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/8/c80275f8-eac0-4541-a62c-1bd77f3591dd.jpg?1793281275"
+      },
+      "raw": {
+        "name": "T'Pring, Never Parted",
+        "cost": "{3}{G}{U}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vulcan",
+          "Citizen"
+        ],
+        "oracle": "Kal-if-fee — When T'Pring enters, choose another target creature you control and target creature an opponent controls. You may have the chosen creatures fight each other. Whenever a creature that fought this way dies this turn, you draw a card.",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "power": "3",
+        "toughness": "3"
+      }
+    },
+    {
+      "requestedName": "Command Chair",
+      "oracleId": "7132b0ad-7bab-4379-ad82-a9af289f835e",
+      "scryfallId": "e46c4bbc-d4b3-44ae-bf91-cad01a66f302",
+      "canonicalName": "Command Chair",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "111",
+      "scryfallUri": "https://scryfall.com/card/trc/111/command-chair?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/e46c4bbc-d4b3-44ae-bf91-cad01a66f302",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.jpg?1792507982",
+        "normal": "https://cards.scryfall.io/normal/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.jpg?1792507982",
+        "large": "https://cards.scryfall.io/large/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.jpg?1792507982",
+        "png": "https://cards.scryfall.io/png/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.png?1792507982",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.jpg?1792507982",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.jpg?1792507982",
+        "thumb": "https://cards.scryfall.io/thumb/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.webp?1792507982",
+        "grid": "https://cards.scryfall.io/grid/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.webp?1792507982",
+        "display": "https://cards.scryfall.io/display/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.webp?1792507982",
+        "art": "https://cards.scryfall.io/art/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.webp?1792507982",
+        "crop": "https://cards.scryfall.io/crop/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.webp?1792507982",
+        "jpeg": "https://cards.scryfall.io/normal/front/e/4/e46c4bbc-d4b3-44ae-bf91-cad01a66f302.jpg?1792507982"
+      },
+      "raw": {
+        "name": "Command Chair",
+        "cost": "{6}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "This artifact enters tapped.\n{T}: Add three mana of any one color.\n{T}: Add X mana of any one color, where X is the greatest mana value among commanders you control.",
+        "_ci": [],
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "The Guardian of Forever",
+      "oracleId": "5144361a-0308-49b8-96e6-c948d4beae09",
+      "scryfallId": "b682a918-4f3a-41ce-90d9-f7acca9acfde",
+      "canonicalName": "The Guardian of Forever",
+      "layout": "normal",
+      "keywords": [
+        "Defender"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "112",
+      "scryfallUri": "https://scryfall.com/card/trc/112/the-guardian-of-forever?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/b682a918-4f3a-41ce-90d9-f7acca9acfde",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.jpg?1793281284",
+        "normal": "https://cards.scryfall.io/normal/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.jpg?1793281284",
+        "large": "https://cards.scryfall.io/large/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.jpg?1793281284",
+        "png": "https://cards.scryfall.io/png/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.png?1793281284",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.jpg?1793281284",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.jpg?1793281284",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.webp?1793281284",
+        "grid": "https://cards.scryfall.io/grid/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.webp?1793281284",
+        "display": "https://cards.scryfall.io/display/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.webp?1793281284",
+        "art": "https://cards.scryfall.io/art/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.webp?1793281284",
+        "crop": "https://cards.scryfall.io/crop/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.webp?1793281284",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/6/b682a918-4f3a-41ce-90d9-f7acca9acfde.jpg?1793281284"
+      },
+      "raw": {
+        "name": "The Guardian of Forever",
+        "cost": "{3}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "oracle": "Defender\n{4}, Sacrifice another nontoken creature: Return that card to the battlefield under its owner's control at the beginning of the next end step.",
+        "_ci": [],
+        "power": "0",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "Jefferies Tube",
+      "oracleId": "2ca270f1-a8a2-438f-9321-2c653165f3e4",
+      "scryfallId": "6b81db51-ae7e-4f4b-9071-afabc72f61c0",
+      "canonicalName": "Jefferies Tube",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "114",
+      "scryfallUri": "https://scryfall.com/card/trc/114/jefferies-tube?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/6b81db51-ae7e-4f4b-9071-afabc72f61c0",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.jpg?1793281286",
+        "normal": "https://cards.scryfall.io/normal/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.jpg?1793281286",
+        "large": "https://cards.scryfall.io/large/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.jpg?1793281286",
+        "png": "https://cards.scryfall.io/png/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.png?1793281286",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.jpg?1793281286",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.jpg?1793281286",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.webp?1793281286",
+        "grid": "https://cards.scryfall.io/grid/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.webp?1793281286",
+        "display": "https://cards.scryfall.io/display/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.webp?1793281286",
+        "art": "https://cards.scryfall.io/art/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.webp?1793281286",
+        "crop": "https://cards.scryfall.io/crop/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.webp?1793281286",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/b/6b81db51-ae7e-4f4b-9071-afabc72f61c0.jpg?1793281286"
+      },
+      "raw": {
+        "name": "Jefferies Tube",
+        "cost": "{1}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{2}, {T}: Put two charge counters on target artifact.\n{3}, {T}: Target creature you control can't be blocked this turn.\n{4}, {T}: Draw a card. You may put a land card from your hand onto the battlefield tapped.",
+        "_ci": []
+      }
+    },
+    {
+      "requestedName": "Planet Killer",
+      "oracleId": "4c2c8cc6-bb90-468a-867b-db56f4eb7e59",
+      "scryfallId": "3e488b00-6488-4342-b71e-edd9137b8a01",
+      "canonicalName": "Planet Killer",
+      "layout": "normal",
+      "keywords": [
+        "Flying",
+        "Indestructible"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "117",
+      "scryfallUri": "https://scryfall.com/card/trc/117/planet-killer?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/3e488b00-6488-4342-b71e-edd9137b8a01",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.jpg?1793281296",
+        "normal": "https://cards.scryfall.io/normal/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.jpg?1793281296",
+        "large": "https://cards.scryfall.io/large/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.jpg?1793281296",
+        "png": "https://cards.scryfall.io/png/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.png?1793281296",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.jpg?1793281296",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.jpg?1793281296",
+        "thumb": "https://cards.scryfall.io/thumb/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.webp?1793281296",
+        "grid": "https://cards.scryfall.io/grid/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.webp?1793281296",
+        "display": "https://cards.scryfall.io/display/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.webp?1793281296",
+        "art": "https://cards.scryfall.io/art/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.webp?1793281296",
+        "crop": "https://cards.scryfall.io/crop/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.webp?1793281296",
+        "jpeg": "https://cards.scryfall.io/normal/front/3/e/3e488b00-6488-4342-b71e-edd9137b8a01.jpg?1793281296"
+      },
+      "raw": {
+        "name": "Planet Killer",
+        "cost": "{8}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "oracle": "Flying, indestructible\nThis creature attacks each combat if able.\nWhenever this creature deals combat damage to a player, put a +1/+1 counter on it for each land that player controls.",
+        "_ci": [],
+        "power": "9",
+        "toughness": "9"
+      }
+    },
+    {
+      "requestedName": "S.S. Botany Bay",
+      "oracleId": "8284c6ae-d86e-4f72-81da-7d3f9861fd12",
+      "scryfallId": "67ab2c2a-0bc7-4672-bf50-53c96e126859",
+      "canonicalName": "S.S. Botany Bay",
+      "layout": "normal",
+      "keywords": [
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "120",
+      "scryfallUri": "https://scryfall.com/card/trc/120/ss-botany-bay?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/67ab2c2a-0bc7-4672-bf50-53c96e126859",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.jpg?1793282641",
+        "normal": "https://cards.scryfall.io/normal/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.jpg?1793282641",
+        "large": "https://cards.scryfall.io/large/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.jpg?1793282641",
+        "png": "https://cards.scryfall.io/png/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.png?1793282641",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.jpg?1793282641",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.jpg?1793282641",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.webp?1793282641",
+        "grid": "https://cards.scryfall.io/grid/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.webp?1793282641",
+        "display": "https://cards.scryfall.io/display/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.webp?1793282641",
+        "art": "https://cards.scryfall.io/art/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.webp?1793282641",
+        "crop": "https://cards.scryfall.io/crop/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.webp?1793282641",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/7/67ab2c2a-0bc7-4672-bf50-53c96e126859.jpg?1793282641"
+      },
+      "raw": {
+        "name": "S.S. Botany Bay",
+        "cost": "{3}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "{T}: Each opponent exiles a card from their graveyard. You may exile a card from your graveyard.\nStation\n8+ | Flying\nWhenever S.S. Botany Bay deals combat damage to a player, return each creature card you own exiled with it to the battlefield.",
+        "_ci": [],
+        "power": "3",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "Starfleet Communicator",
+      "oracleId": "d5560aaa-7459-498f-b3c5-e096d8c75b51",
+      "scryfallId": "ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5",
+      "canonicalName": "Starfleet Communicator",
+      "layout": "normal",
+      "keywords": [
+        "Equip"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "121",
+      "scryfallUri": "https://scryfall.com/card/trc/121/starfleet-communicator?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.jpg?1792507985",
+        "normal": "https://cards.scryfall.io/normal/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.jpg?1792507985",
+        "large": "https://cards.scryfall.io/large/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.jpg?1792507985",
+        "png": "https://cards.scryfall.io/png/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.png?1792507985",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.jpg?1792507985",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.jpg?1792507985",
+        "thumb": "https://cards.scryfall.io/thumb/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.webp?1792507985",
+        "grid": "https://cards.scryfall.io/grid/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.webp?1792507985",
+        "display": "https://cards.scryfall.io/display/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.webp?1792507985",
+        "art": "https://cards.scryfall.io/art/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.webp?1792507985",
+        "crop": "https://cards.scryfall.io/crop/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.webp?1792507985",
+        "jpeg": "https://cards.scryfall.io/normal/front/a/c/ac87fcef-019e-45d4-bc8a-0ccb3adaa3b5.jpg?1792507985"
+      },
+      "raw": {
+        "name": "Starfleet Communicator",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Communicator",
+          "Equipment"
+        ],
+        "oracle": "When you cast this spell, copy it. (The copy becomes a token.)\nEquipped creature has \"Whenever this creature attacks, draw X cards, then you may put up to X land cards from your hand onto the battlefield tapped, where X is the number of other creatures you control with a Communicator attached to them.\"\nEquip {1}",
+        "_ci": []
+      }
+    },
+    {
+      "requestedName": "Starship Enterprise",
+      "oracleId": "9b627fa4-af4c-482b-b1cf-2ad15938602c",
+      "scryfallId": "66fa6995-4857-466d-8068-508f2904805b",
+      "canonicalName": "Starship Enterprise",
+      "layout": "normal",
+      "keywords": [
+        "Station",
+        "Landfall"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "122",
+      "scryfallUri": "https://scryfall.com/card/trc/122/starship-enterprise?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/66fa6995-4857-466d-8068-508f2904805b",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/6/66fa6995-4857-466d-8068-508f2904805b.jpg?1792645550",
+        "normal": "https://cards.scryfall.io/normal/front/6/6/66fa6995-4857-466d-8068-508f2904805b.jpg?1792645550",
+        "large": "https://cards.scryfall.io/large/front/6/6/66fa6995-4857-466d-8068-508f2904805b.jpg?1792645550",
+        "png": "https://cards.scryfall.io/png/front/6/6/66fa6995-4857-466d-8068-508f2904805b.png?1792645550",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/6/66fa6995-4857-466d-8068-508f2904805b.jpg?1792645550",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/6/66fa6995-4857-466d-8068-508f2904805b.jpg?1792645550",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/6/66fa6995-4857-466d-8068-508f2904805b.webp?1792645550",
+        "grid": "https://cards.scryfall.io/grid/front/6/6/66fa6995-4857-466d-8068-508f2904805b.webp?1792645550",
+        "display": "https://cards.scryfall.io/display/front/6/6/66fa6995-4857-466d-8068-508f2904805b.webp?1792645550",
+        "art": "https://cards.scryfall.io/art/front/6/6/66fa6995-4857-466d-8068-508f2904805b.webp?1792645550",
+        "crop": "https://cards.scryfall.io/crop/front/6/6/66fa6995-4857-466d-8068-508f2904805b.webp?1792645550",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/6/66fa6995-4857-466d-8068-508f2904805b.jpg?1792645550"
+      },
+      "raw": {
+        "name": "Starship Enterprise",
+        "cost": "{5}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Landfall — Whenever a land you control enters, put four charge counters on Starship Enterprise.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 16+.)\n16+ | Flying\nWhenever Starship Enterprise deals combat damage to a player, draw that many cards.",
+        "_ci": [],
+        "power": "4",
+        "toughness": "6"
+      }
+    },
+    {
+      "requestedName": "U.S.S. Defiant, Mirror Migrant",
+      "oracleId": "c7c529c4-08eb-480b-a699-0d783215419b",
+      "scryfallId": "6c347d57-4a92-42eb-b703-d4bec298e94b",
+      "canonicalName": "U.S.S. Defiant, Mirror Migrant",
+      "layout": "normal",
+      "keywords": [
+        "Flash",
+        "Station"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "124",
+      "scryfallUri": "https://scryfall.com/card/trc/124/uss-defiant-mirror-migrant?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/6c347d57-4a92-42eb-b703-d4bec298e94b",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.jpg?1793281306",
+        "normal": "https://cards.scryfall.io/normal/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.jpg?1793281306",
+        "large": "https://cards.scryfall.io/large/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.jpg?1793281306",
+        "png": "https://cards.scryfall.io/png/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.png?1793281306",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.jpg?1793281306",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.jpg?1793281306",
+        "thumb": "https://cards.scryfall.io/thumb/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.webp?1793281306",
+        "grid": "https://cards.scryfall.io/grid/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.webp?1793281306",
+        "display": "https://cards.scryfall.io/display/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.webp?1793281306",
+        "art": "https://cards.scryfall.io/art/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.webp?1793281306",
+        "crop": "https://cards.scryfall.io/crop/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.webp?1793281306",
+        "jpeg": "https://cards.scryfall.io/normal/front/6/c/6c347d57-4a92-42eb-b703-d4bec298e94b.jpg?1793281306"
+      },
+      "raw": {
+        "name": "U.S.S. Defiant, Mirror Migrant",
+        "cost": "{2}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Flash\nWhen U.S.S. Defiant enters, it and up to one target creature you control phase out. (Treat them and anything attached to them as though they don't exist until your next turn.)\nStation\n8+ | Flying",
+        "_ci": [],
+        "power": "5",
+        "toughness": "5"
+      }
+    },
+    {
+      "requestedName": "U.S.S. Farragut, Bold Explorer",
+      "oracleId": "3b2e3deb-1f21-4311-b8a9-4153089ac5ff",
+      "scryfallId": "bfbef056-cf8b-46f8-892e-30742fd78707",
+      "canonicalName": "U.S.S. Farragut, Bold Explorer",
+      "layout": "normal",
+      "keywords": [
+        "Station",
+        "Landfall"
+      ],
+      "colorIdentity": [],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trc",
+      "collectorNumber": "127",
+      "scryfallUri": "https://scryfall.com/card/trc/127/uss-farragut-bold-explorer?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/bfbef056-cf8b-46f8-892e-30742fd78707",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.jpg?1793281307",
+        "normal": "https://cards.scryfall.io/normal/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.jpg?1793281307",
+        "large": "https://cards.scryfall.io/large/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.jpg?1793281307",
+        "png": "https://cards.scryfall.io/png/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.png?1793281307",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.jpg?1793281307",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.jpg?1793281307",
+        "thumb": "https://cards.scryfall.io/thumb/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.webp?1793281307",
+        "grid": "https://cards.scryfall.io/grid/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.webp?1793281307",
+        "display": "https://cards.scryfall.io/display/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.webp?1793281307",
+        "art": "https://cards.scryfall.io/art/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.webp?1793281307",
+        "crop": "https://cards.scryfall.io/crop/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.webp?1793281307",
+        "jpeg": "https://cards.scryfall.io/normal/front/b/f/bfbef056-cf8b-46f8-892e-30742fd78707.jpg?1793281307"
+      },
+      "raw": {
+        "name": "U.S.S. Farragut, Bold Explorer",
+        "cost": "{6}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Spacecraft"
+        ],
+        "oracle": "Landfall — Whenever a land you control enters, you may put a creature card from your hand onto the battlefield. That creature gains haste. At the beginning of the next end step, put it on the bottom of your library. When you do, draw a card.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery. It's an artifact creature at 7+.)\n7+ | Flying",
+        "_ci": [],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Cold-Blooded Crew",
+      "oracleId": "d5e9b04f-4a97-4da1-bf86-3715fc75ab23",
+      "scryfallId": "4f2d1830-baea-4735-b029-cb8c0b538d83",
+      "canonicalName": "Cold-Blooded Crew",
+      "layout": "normal",
+      "keywords": [
+        "Landcycling",
+        "Basic landcycling",
+        "Typecycling",
+        "Cycling"
+      ],
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "189",
+      "scryfallUri": "https://scryfall.com/card/trk/189/cold-blooded-crew?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/4f2d1830-baea-4735-b029-cb8c0b538d83",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.jpg?1785981563",
+        "normal": "https://cards.scryfall.io/normal/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.jpg?1785981563",
+        "large": "https://cards.scryfall.io/large/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.jpg?1785981563",
+        "png": "https://cards.scryfall.io/png/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.png?1785981563",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.jpg?1785981563",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.jpg?1785981563",
+        "thumb": "https://cards.scryfall.io/thumb/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.webp?1785981563",
+        "grid": "https://cards.scryfall.io/grid/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.webp?1785981563",
+        "display": "https://cards.scryfall.io/display/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.webp?1785981563",
+        "art": "https://cards.scryfall.io/art/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.webp?1785981563",
+        "crop": "https://cards.scryfall.io/crop/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.webp?1785981563",
+        "jpeg": "https://cards.scryfall.io/normal/front/4/f/4f2d1830-baea-4735-b029-cb8c0b538d83.jpg?1785981563"
+      },
+      "raw": {
+        "name": "Cold-Blooded Crew",
+        "cost": "{4}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Gorn",
+          "Warrior"
+        ],
+        "oracle": "When this creature enters, put two +1/+1 counters on target creature.\nThis creature can't be blocked by creatures with power 2 or less.\nBasic landcycling {2} ({2}, Discard this card: Search your library for a basic land card, reveal it, put it into your hand, then shuffle.)",
+        "_ci": [
+          "G"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Syndicate Liquidators",
+      "oracleId": "2f32de5c-4d85-42bc-b1bf-f762a46e5efc",
+      "scryfallId": "18bb2edd-8dee-4714-a707-6542b6ebbd53",
+      "canonicalName": "Syndicate Liquidators",
+      "layout": "normal",
+      "keywords": [
+        "Trample",
+        "Landfall"
+      ],
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "218",
+      "scryfallUri": "https://scryfall.com/card/trk/218/syndicate-liquidators?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/18bb2edd-8dee-4714-a707-6542b6ebbd53",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.jpg?1786005573",
+        "normal": "https://cards.scryfall.io/normal/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.jpg?1786005573",
+        "large": "https://cards.scryfall.io/large/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.jpg?1786005573",
+        "png": "https://cards.scryfall.io/png/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.png?1786005573",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.jpg?1786005573",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.jpg?1786005573",
+        "thumb": "https://cards.scryfall.io/thumb/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.webp?1786005573",
+        "grid": "https://cards.scryfall.io/grid/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.webp?1786005573",
+        "display": "https://cards.scryfall.io/display/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.webp?1786005573",
+        "art": "https://cards.scryfall.io/art/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.webp?1786005573",
+        "crop": "https://cards.scryfall.io/crop/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.webp?1786005573",
+        "jpeg": "https://cards.scryfall.io/normal/front/1/8/18bb2edd-8dee-4714-a707-6542b6ebbd53.jpg?1786005573"
+      },
+      "raw": {
+        "name": "Syndicate Liquidators",
+        "cost": "{4}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Orion",
+          "Pirate"
+        ],
+        "oracle": "Trample\nLandfall — Whenever a land you control enters, put two +1/+1 counters on target creature you control.",
+        "_ci": [
+          "G"
+        ],
+        "power": "4",
+        "toughness": "4"
+      }
+    },
+    {
+      "requestedName": "Earth, Sector 001",
+      "oracleId": "c75d87b0-7de9-4c50-b781-9749d67c1e07",
+      "scryfallId": "5278d354-97c4-4c21-a902-2f9252b151eb",
+      "canonicalName": "Earth, Sector 001",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "G",
+        "U"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "281",
+      "scryfallUri": "https://scryfall.com/card/trk/281/earth-sector-001?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/5278d354-97c4-4c21-a902-2f9252b151eb",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.jpg?1792632943",
+        "normal": "https://cards.scryfall.io/normal/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.jpg?1792632943",
+        "large": "https://cards.scryfall.io/large/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.jpg?1792632943",
+        "png": "https://cards.scryfall.io/png/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.png?1792632943",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.jpg?1792632943",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.jpg?1792632943",
+        "thumb": "https://cards.scryfall.io/thumb/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.webp?1792632943",
+        "grid": "https://cards.scryfall.io/grid/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.webp?1792632943",
+        "display": "https://cards.scryfall.io/display/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.webp?1792632943",
+        "art": "https://cards.scryfall.io/art/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.webp?1792632943",
+        "crop": "https://cards.scryfall.io/crop/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.webp?1792632943",
+        "jpeg": "https://cards.scryfall.io/normal/front/5/2/5278d354-97c4-4c21-a902-2f9252b151eb.jpg?1792632943"
+      },
+      "raw": {
+        "name": "Earth, Sector 001",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Planet"
+        ],
+        "oracle": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {U}.",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "_produced": [
+          "G",
+          "U"
+        ]
+      }
+    },
+    {
+      "requestedName": "Risa",
+      "oracleId": "365a4644-74f4-4af9-81ab-0d328ca5edce",
+      "scryfallId": "c89e7680-9868-4fea-9aaf-6af03bfa0692",
+      "canonicalName": "Risa",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "293",
+      "scryfallUri": "https://scryfall.com/card/trk/293/risa?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/c89e7680-9868-4fea-9aaf-6af03bfa0692",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.jpg?1792632968",
+        "normal": "https://cards.scryfall.io/normal/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.jpg?1792632968",
+        "large": "https://cards.scryfall.io/large/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.jpg?1792632968",
+        "png": "https://cards.scryfall.io/png/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.png?1792632968",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.jpg?1792632968",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.jpg?1792632968",
+        "thumb": "https://cards.scryfall.io/thumb/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.webp?1792632968",
+        "grid": "https://cards.scryfall.io/grid/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.webp?1792632968",
+        "display": "https://cards.scryfall.io/display/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.webp?1792632968",
+        "art": "https://cards.scryfall.io/art/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.webp?1792632968",
+        "crop": "https://cards.scryfall.io/crop/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.webp?1792632968",
+        "jpeg": "https://cards.scryfall.io/normal/front/c/8/c89e7680-9868-4fea-9aaf-6af03bfa0692.jpg?1792632968"
+      },
+      "raw": {
+        "name": "Risa",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Planet"
+        ],
+        "oracle": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {W}.",
+        "_ci": [
+          "G",
+          "W"
+        ],
+        "_produced": [
+          "G",
+          "W"
+        ]
+      }
+    },
+    {
+      "requestedName": "Vulcan",
+      "oracleId": "c7b6bc1f-9161-415e-a097-d9c8cd81d4ae",
+      "scryfallId": "fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc",
+      "canonicalName": "Vulcan",
+      "layout": "normal",
+      "keywords": [],
+      "colorIdentity": [
+        "U",
+        "W"
+      ],
+      "commanderLegality": "not_legal",
+      "releasedAt": "2026-11-13",
+      "set": "trk",
+      "collectorNumber": "305",
+      "scryfallUri": "https://scryfall.com/card/trk/305/vulcan?utm_source=api",
+      "oracleSource": "https://api.scryfall.com/cards/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc",
+      "imageUris": {
+        "small": "https://cards.scryfall.io/small/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.jpg?1792632981",
+        "normal": "https://cards.scryfall.io/normal/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.jpg?1792632981",
+        "large": "https://cards.scryfall.io/large/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.jpg?1792632981",
+        "png": "https://cards.scryfall.io/png/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.png?1792632981",
+        "art_crop": "https://cards.scryfall.io/art_crop/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.jpg?1792632981",
+        "border_crop": "https://cards.scryfall.io/border_crop/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.jpg?1792632981",
+        "thumb": "https://cards.scryfall.io/thumb/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.webp?1792632981",
+        "grid": "https://cards.scryfall.io/grid/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.webp?1792632981",
+        "display": "https://cards.scryfall.io/display/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.webp?1792632981",
+        "art": "https://cards.scryfall.io/art/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.webp?1792632981",
+        "crop": "https://cards.scryfall.io/crop/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.webp?1792632981",
+        "jpeg": "https://cards.scryfall.io/normal/front/f/c/fc3fe0da-8d93-4f1c-9aad-c2fdc9fe34fc.jpg?1792632981"
+      },
+      "raw": {
+        "name": "Vulcan",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Planet"
+        ],
+        "oracle": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {W} or {U}.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_produced": [
+          "U",
+          "W"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "status": "PASS",
+  "cases": 8,
+  "errors": [],
+  "results": [
+    {
+      "deck": "We Are the Borg",
+      "width": 1440,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Federation Fleet",
+      "width": 1440,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Landing Party",
+      "width": 1440,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Klingon Fury",
+      "width": 1440,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "We Are the Borg",
+      "width": 390,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Federation Fleet",
+      "width": 390,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Landing Party",
+      "width": 390,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    },
+    {
+      "deck": "Klingon Fury",
+      "width": 390,
+      "stackSeen": true,
+      "done": true,
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "pending": 0,
+      "stack": 0,
+      "fallback": false,
+      "overflow": false
+    }
+  ],
+  "mobileVisualReview": "Borg, Spock and Worf deck spotlights: original artwork, commander identity, preview release date and sticky CTA fit 390px. Picard battlefield/commander rail readable; automated page-overflow checks pass in all eight scenarios."
+}

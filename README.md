@@ -27,7 +27,7 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 | For players | For developers and maintainers |
 | --- | --- |
 | [Modes and card coverage](#what-you-can-play) | [Local setup: Windows, macOS, Linux](#run-locally) |
-| [All precons and commander videos](#176-precon-decks-and-commander-video-animations) | [Application architecture](#how-the-application-works) |
+| [All precons and commander videos](#180-precon-decks-and-commander-video-animations) | [Application architecture](#how-the-application-works) |
 | [First game, combat, mobile controls, and audio](#your-first-game) | [Vercel and multiplayer](#vercel-and-multiplayer) |
 | [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) | [iPhone and iPad app](#iphone-and-ipad-app) |
 | [AI styles and custom skills](#ai-archetypes-and-custom-skills) · [Politics](#diplomacy--politics) | [Tests and release checks](#verification-and-release) |
@@ -44,13 +44,13 @@ For friends, choose **Play with friends** to open Commander Live and invite them
 
 ### Current catalog
 
-Current inventory, compared with the pinned **9 October 2026** Oracle and paper-printing snapshots:
+Current runtime inventory, including the **29 October Star Trek preview import**. The source comparison remains pinned to **9 October 2026**:
 
 | Measure | Available |
 | --- | ---: |
-| Built-in precon decks | **176**, each with 100 cards |
-| Runtime card definitions | **32,136** |
-| Definitions eligible for deck import | **32,135** |
+| Built-in precon decks | **180**, each with 100 cards |
+| Runtime card definitions | **32,273** |
+| Definitions eligible for deck import | **32,272** |
 | Generic Oracle batches | **266**, containing 28,137 definitions |
 | Remaining paper/Commander Oracle IDs in the pinned comparison | **0** of 32,115 |
 | Dedicated commander videos | **28**, across the original 27 decks |
@@ -60,6 +60,8 @@ These counts describe the implemented catalog, not every Magic card or every pos
 Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-card CSV](docs/catalog/remaining-cards.csv), and [machine-readable summary](docs/catalog/summary.json). The [catalog guide](docs/card-catalog.md) explains eligibility, source snapshots, and the limits of certification. Paper availability aggregates all paper printings by Oracle ID; names and face aliases are resolved by the deck importer. A complete pinned comparison does not establish correctness for every rules interaction or cover later cards and legality changes.
 
 ### Recent additions
+
+- **Star Trek Commander:** all four official 100-card precons, 137 new native definitions, local card art and deck guides. These are previews for the 13 November release. [Import report](reports/decks/precon-trc-2026-10-29/README.md)
 
 - **29 October table readability and bot fixes:** tapped lands turn 60 degrees in the desktop mana column, token stacks and counters no longer cover P/T, and the commander tax badge is readable. Bots play their land drops while holding answers and stop retrying actions they cannot pay for. [Verification](reports/releases/2026-10-29-table-readability-and-bot-fixes.md)
 - **28 October attack and instant effects:** directional trails for committed attacks, a short Stack pulse for instants, and bounded effects that preserve clicks and respect reduced motion in Solo and Live. [Verification](reports/releases/2026-10-28-action-effects.md)
@@ -85,13 +87,13 @@ Earlier deck and Oracle imports remain available in the [import history](#catalo
 
 Accounts are optional. Guests can play immediately and retain imported lists in their current browser. Signing in adds a private Solo checkpoint, synced imported decks and favorites, lifetime statistics, and recent match results. Custom AI skills and saved pod presets remain local to the browser.
 
-## 176 precon decks and commander video animations
+## 180 precon decks and commander video animations
 
 Browse the library in a responsive grid with complete commander card images, both default partners, and 24 decks per page. Search by deck, either commander, set, or theme; filter by color, strategy, release year, or favorites, and sort by name, recent play, or newest release. Filters cover the entire library, including older and colorless precons. A compact view is available, and the selected deck and your browsing position stay with you while you explore its guide or build the pod.
 
-The built-in library contains **176 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. Tap a commander or key card for a large image and readable rules text; on phones, swipe through the key-card gallery or use its arrows. Section shortcuts take you straight to the cards, game plan, or mana curve, and closing a card returns to your place in the guide. You can keep browsing before committing to a pod.
+The built-in library contains **180 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. Tap a commander or key card for a large image and readable rules text; on phones, swipe through the key-card gallery or use its arrows. Section shortcuts take you straight to the cards, game plan, or mana curve, and closing a card returns to your place in the guide. You can keep browsing before committing to a pod.
 
-**There are 28 dedicated commander videos across the original 27 decks.** Turtle Power has two default partner commanders, **Leonardo, the Balance** and **Michelangelo, the Heart**, and each has its own clip. The other 148 precons added on 6–26 September use original commander art; these batches add no commander videos.
+**There are 28 dedicated commander videos across the original 27 decks.** Turtle Power has two default partner commanders, **Leonardo, the Balance** and **Michelangelo, the Heart**, and each has its own clip. The other 153 precons use original commander art; these imports add no commander videos.
 
 - **In Deck Spotlight:** the commander video plays as a muted, looping preview alongside the card art and deck guide.
 - **On battlefield entry:** in the Solo arena and Live host view, a supported precon commander receives a short **COMMANDER ENTERS** video announcement. This happens when the commander reaches the battlefield, so putting a spell on the Stack does not by itself trigger the entrance. The announcement has a **Skip** button and closes automatically. Remote Live guests use the synchronized card-based view without these entry clips.
@@ -99,10 +101,14 @@ The built-in library contains **176 precon decks, each with 100 cards**. Choose 
 - **Imported decks:** use ordinary commander card art and a battlefield highlight. They do not inherit a precon's cinematic, even when they use the same commander. Video coverage refers to the predefined decks' default commanders, not every alternate commander in the catalog.
 
 <details>
-<summary>Explore all 176 precon decks and their default commanders</summary>
+<summary>Explore all 180 precon decks and their default commanders</summary>
 
 | Built-in deck | Default commander(s) |
 | --- | --- |
+| We Are the Borg | The Borg Queen |
+| Federation Fleet | Jean-Luc Picard, Luminary |
+| Landing Party | Commander Spock |
+| Klingon Fury | Worf, Defiant Commander |
 | Multiverse Reforged | Jace, Multiverse Architect |
 | Blame Game | Nelly Borca, Impulsive Accuser |
 | Evasive Maneuvers | Derevi, Empyrial Tactician |
@@ -743,6 +749,7 @@ These reports describe their dated imports and checks. Use the [generated catalo
 
 | Report | Recorded scope |
 | --- | --- |
+| [Star Trek Commander import](reports/decks/precon-trc-2026-10-29/README.md) | Four preview decks; 137 native definitions. |
 | [Foundations Commander import](reports/decks/precon-fdc-2026-09-26/README.md) | Five Foundations Commander decks; 17 native definitions. |
 | [Reality Fracture import](reports/decks/precon-frc-2026-09-24/README.md) | Multiverse Reforged; 26 native definitions. |
 | [Oracle 0219](reports/oracle-import/validation-0219.md) | Oracle batch 0219; 100 cards, partial completion of a 1,000-card request. |
