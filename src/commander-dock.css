@@ -116,7 +116,21 @@ body.game-active #game.command-table .ct-commander-card > img {
   line-height: 14px;
 }
 #game.command-table .ct-commander-card .czcost .msym { width: 12px; height: 12px; min-width: 12px; margin: 0; font-size: 9px; }
-#game.command-table .ct-commander-card .tax { position: absolute; top: 7px; left: 0; color: #e2c487; font-size: 9px; }
+/* Same badge treatment as CAST: a bare label at the card's left edge sat
+   behind the tilted art and showed only "(tax". */
+#game.command-table .ct-commander-card .tax {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 7px;
+  padding: 3px 5px;
+  border: 1px solid #ead08c75;
+  border-radius: 4px;
+  background: #2c281ceb;
+  color: #f5db9e;
+  font: 800 9px/12px var(--ds-font-body);
+  white-space: nowrap;
+}
 #game.command-table .ct-commander-card .czgo {
   position: absolute;
   z-index: 2;
