@@ -3302,32 +3302,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   }
 
-  // Target taxes (Pursued Whale, starter-precon taxes, Oracle target
-  // adjustments) are confirmed only once the targets are locked in. A bot that
-  // picks a taxed target it cannot pay for fails the cast and repeats the same
-  // pick in every later window, so its prompt leaves out such targets. Humans
-  // keep every legal target; the payment step still decides for them.
-  function aiAffordableTargetFilter(game, p, card, d, castOpts, cost, xVal, ctx) {
-    if (!p.isAI) return null;
-    const targetTax = targets => {
-      let extra = 0;
-      if (game.starterTargetTax) extra += game.starterTargetTax(p, card, {...castOpts, targets}) - (cost.starterTargetTax || 0);
-      if (MTG.CDK) extra += MTG.CDK.whaleCost(game, p, targets);
-      if (!d.selfTargetCostAdjust && !MTG.oracleSpellTargetAdjustmentV65) return extra;
-      const targetIdentities = game.captureTargetIdentities(targets);
-      if (d.selfTargetCostAdjust) {
-        const generic = value => typeof value === 'object' ? value?.generic || 0 : value || 0;
-        extra += generic(d.selfTargetCostAdjust(game, card, p, {...castOpts, targets, targetIdentities})) - generic(cost.targetCostAdjustment);
-      }
-      if (MTG.oracleSpellTargetAdjustmentV65) {
-        const confirmed = MTG.oracleSpellTargetAdjustmentV65(game, p, card, {...castOpts, targets, targetIdentities}) || {};
-        extra += (confirmed.generic || 0) - (cost.globalTargetAdjustmentV65?.generic || 0);
-      }
-      return extra;
-    };
+  // The cost preview already prices starter, self and Oracle target
+  // adjustments at their cheapest legal choice. Pursued Whale's tax ("spells
+  // your opponents cast that target it cost {3} more") is added only once the
+  // targets are locked in, so a bot aimed removal at a whale it could not pay
+  // for, failed, and repeated the same pick in every later window. Its prompt
+  // now leaves out taxed targets it cannot afford. Humans keep every legal
+  // target; the payment step still decides for them.
+  function aiAffordableTargetFilter(game, p, card, castOpts, cost, xVal, ctx) {
+    if (!p.isAI || !MTG.CDK) return null;
     return (candidate, index) => {
       let extra;
-      try { extra = targetTax([...ctx.targets.slice(0, index), candidate]); } catch { return true; }
+      try { extra = MTG.CDK.whaleCost(game, p, [...ctx.targets.slice(0, index), candidate]); } catch { return true; }
       if (!(extra > 0)) return true;
       const net = cost.generic - (cost.xReduction || 0) + extra;
       const taxed = {...cost, generic: Math.max(0, net), xReduction: Math.max(0, -net)};
@@ -3864,7 +3850,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g: this, src: card, you: p, so, cancelable: !castOpts.suspend,
         quickTargets: Array.isArray(opts.quickTargets) ? opts.quickTargets.slice() : [],
       };
-      const affordable = aiAffordableTargetFilter(this, p, card, d, castOpts, cost, xVal, ctx);
+      const affordable = aiAffordableTargetFilter(this, p, card, castOpts, cost, xVal, ctx);
       if (affordable) ctx.targetChoiceFilter = affordable;
       const ok = await this.pickTargets(ctx, specs, card, p);
       if (!ok) {
@@ -3884,7 +3870,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           g: this, src: card, you: p, so, cancelable: !castOpts.suspend,
           quickTargets: Array.isArray(opts.quickTargets) ? opts.quickTargets.slice() : [],
         };
-        const affordable = aiAffordableTargetFilter(this, p, card, d, castOpts, cost, xVal, ctx);
+        const affordable = aiAffordableTargetFilter(this, p, card, castOpts, cost, xVal, ctx);
         if (affordable) ctx.targetChoiceFilter = affordable;
         const ok = await this.pickTargets(ctx, specs2, card, p);
         if (!ok) {
