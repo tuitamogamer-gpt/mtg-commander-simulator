@@ -61,6 +61,7 @@ Browse the [supported-card CSV](docs/catalog/imported-cards.csv), [remaining-car
 
 ### Recent additions
 
+- **29 October table readability and bot fixes:** tapped lands turn 60 degrees in the desktop mana column, token stacks and counters no longer cover P/T, and the commander tax badge is readable. Bots play their land drops while holding answers and stop retrying actions they cannot pay for. [Verification](reports/releases/2026-10-29-table-readability-and-bot-fixes.md)
 - **28 October attack and instant effects:** directional trails for committed attacks, a short Stack pulse for instants, and bounded effects that preserve clicks and respect reduced motion in Solo and Live. [Verification](reports/releases/2026-10-28-action-effects.md)
 - **28 October commander dock:** a separate left panel with original commander art, a 3D tilt and gold aura in the command zone, stable location indicators after casting, and partner/mobile support. [Verification](reports/releases/2026-10-28-commander-dock.md)
 - **28 October interaction polish:** reliable clicks through table refreshes, uninterrupted X input, fewer duplicate redraws, and shorter Normal-speed pauses. [Verification](reports/releases/2026-10-28-interaction-polish.md)
