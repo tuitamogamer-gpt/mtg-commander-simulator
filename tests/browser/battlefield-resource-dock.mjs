@@ -42,6 +42,24 @@ try {
       assert.ok(board.cards.every(card => card.visible && card.reachable), JSON.stringify(board));
       const lands = page.locator('.myboard .landstrip .ct-land-card');
       assert.equal(await lands.count(), 17, 'identical lands remain separate controls');
+      const tapState = await page.locator('.myboard .landstrip').evaluate(strip => {
+        const cards = [...strip.querySelectorAll('.mini')];
+        const angle = card => {
+          const transform = getComputedStyle(card).transform;
+          if (transform === 'none') return 0;
+          const [a, b] = transform.match(/matrix\(([^)]+)\)/)[1].split(',').map(Number);
+          return Math.round(Math.atan2(b, a) * 180 / Math.PI);
+        };
+        const boxes = cards.map(card => card.getBoundingClientRect());
+        const overlaps = boxes.some((r, i) => boxes.some((other, j) => j > i &&
+          r.left < other.right && other.left < r.right && r.top < other.bottom && other.top < r.bottom));
+        return {tapped: cards.filter(card => card.classList.contains('tapped')).map(angle),
+          untapped: cards.filter(card => !card.classList.contains('tapped')).map(angle), overlaps};
+      });
+      assert.ok(tapState.tapped.length >= 4, 'the fixture taps several resources');
+      assert.ok(tapState.tapped.every(angle => angle === 60), `tapped resources turn 60deg: ${tapState.tapped}`);
+      assert.ok(tapState.untapped.every(angle => angle === 0), `untapped resources stay upright: ${tapState.untapped}`);
+      assert.equal(tapState.overlaps, false, 'turned resources stay inside their own cells');
       await page.locator('.myboard .landstrip').evaluate(element => { element.scrollTop = element.scrollHeight; });
       assert.equal(await page.locator('.myboard .landstrip .mini').last().evaluate(element => {
         const r = element.getBoundingClientRect();

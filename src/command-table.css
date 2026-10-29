@@ -746,8 +746,11 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
     width: 100%; min-height: 0; max-height: none; flex: 1 1 0;
     gap: 5px; padding: 3px; overflow: auto; scrollbar-gutter: stable;
   }
+  /* Tapped resources turn 60deg clockwise and dim. The scale keeps the turned
+     card inside its own cell, so tapping never reflows the column. */
   body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .mini.tapped {
-    transform: none !important;
+    transform: rotate(60deg) scale(.66) !important;
+    filter: brightness(.78) saturate(.75);
   }
   #game.command-table.ct-grid-view :is(.myboard, .opprow) { container-type: size; }
   #game.command-table.ct-grid-view :is(.mybattlefieldmain, .oppstrip) {
