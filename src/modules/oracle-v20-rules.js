@@ -36,9 +36,15 @@
  G.legalTargets=function(spec,source,player,options={}){
   const type=spec?.oracleTargetActionV20||options.oracleTargetActionV20;
   const origin=type==='spell'&&source?.zone!=='stack'&&spec?.oracleTargetColorsV20?{colors:spec.oracleTargetColorsV20}:source;
-  return legalTargets.call(this,spec,source,player,options).filter(card=>{
-   for(const permanent of this.bf())if(!permanent.cur?.abilitiesDisabled&&permanent.def.oracleTargetRestrictionsV20?.some(rule=>denies(this,permanent,permanent.ctrl,rule,card,origin,player,type)))return false;
-   return !this.untilEffects.some(effect=>effect.kind==='oracleTargetRestrictionV20'&&denies(this,effect.source,this.players[effect.seat],effect.rule,card,origin,player,type));
+  const candidates=legalTargets.call(this,spec,source,player,options);
+  if(!candidates.length)return candidates;
+  // Source eligibility is identical for every candidate in this synchronous
+  // query. Scan the board once, then evaluate only the applicable rules.
+  const restrictions=this.bf().filter(permanent=>!permanent.cur?.abilitiesDisabled&&permanent.def.oracleTargetRestrictionsV20?.length);
+  const effects=this.untilEffects.filter(effect=>effect.kind==='oracleTargetRestrictionV20');
+  return candidates.filter(card=>{
+   for(const permanent of restrictions)if(permanent.def.oracleTargetRestrictionsV20.some(rule=>denies(this,permanent,permanent.ctrl,rule,card,origin,player,type)))return false;
+   return !effects.some(effect=>denies(this,effect.source,this.players[effect.seat],effect.rule,card,origin,player,type));
   });
  };
  M.OracleV20Rules={lifeLocked:(game,player)=>lifeRules(game,player,'locked').length>0,survivesZero:(game,player)=>lifeRules(game,player,'survive-zero').length>0,targetMatches(game,card,descriptor,player,source){

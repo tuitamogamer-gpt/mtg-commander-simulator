@@ -894,7 +894,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         super: derived ? (card.cur.super||card.def.super||[]).slice() : (card.def.super||[]).slice(),
         subtypes: derived ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
         changeling: derived ? !!(card.cur.types.includes('Creature')||card.cur.types.includes('Kindred'))&&!!(card.def.changeling&&!card.cur.abilitiesDisabled&&!card.cur.suppressPrintedChangeling||card.cur.allCreatureTypesFromOtherEffects||!card.def.changeling&&card.cur.allCreatureTypes) : !!card.def.changeling,
-        attachments: card.attachments.slice(), attachedTo:card.attachedTo, attachedHostVersion:this.byIid(card.attachedTo)?.zoneVersion, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
+        attachments: card.attachments.slice(), attachedTo:card.attachedTo, attachedHostVersion:card.attachedTo==null?undefined:this.byIid(card.attachedTo)?.zoneVersion, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
         enteredTurn:card.meta._enteredTurn,attackedTurn:card.meta._attackedTurn,damagedTurnV9:card.meta._lastDamageVisual?.turn,renowned:!!card.meta.renowned,
         // Keywordi u trenutku odlaska. Bez ovoga je snap.flying bio undefined,
         // pa se Luminous Broodmoth okidao i na stvorenja koja su umrla SA

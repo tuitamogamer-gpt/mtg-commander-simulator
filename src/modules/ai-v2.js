@@ -4677,7 +4677,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     return mana;
   }
+  // Ranking a set of actions is synchronous and does not perform any action.
+  // Reuse its unrestricted mana estimate only until that ranking returns;
+  // never carry it into resolution, another decision, or an awaited search.
+  let scoringManaMemo = null;
+  function withScoringManaMemo(game, score) {
+    const previous = scoringManaMemo;
+    scoringManaMemo = { game, players: new Map() };
+    try { return score(); }
+    finally { scoringManaMemo = previous; }
+  }
   function availableManaEstimate(game, player, forSpell = null) {
+    const scope = forSpell === null && scoringManaMemo?.game === game ? scoringManaMemo : null;
+    if (!scope) return calculateAvailableManaEstimate(game, player, forSpell);
+    let pools = scope.players.get(player);
+    if (!pools) { pools = new Map(); scope.players.set(player, pools); }
+    // Ritual scoring temporarily adds mana while probing follow-up actions.
+    // That preview must not read or overwrite the ordinary pool's estimate.
+    const poolKey = JSON.stringify(Object.entries(player.pool || {}).sort(([a], [b]) => a.localeCompare(b)));
+    if (pools.has(poolKey)) return pools.get(poolKey);
+    const value = calculateAvailableManaEstimate(game, player, forSpell);
+    pools.set(poolKey, value);
+    return value;
+  }
+  function calculateAvailableManaEstimate(game, player, forSpell = null) {
     try {
       const producers = new Map();
       let available = Object.values(player.pool || {}).reduce((sum, n) => sum + Math.max(0, Number(n) || 0), 0);
@@ -7550,7 +7573,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const view = MTG.createBotPlayerView(game, player.idx, q);
         const profile = MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name);
         const actions = MTG.generateLegalActions(view, { difficulty: 'normal' });
-        const ranked = actions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q).total }))
+        const ranked = withScoringManaMemo(game, () => actions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q).total })))
           .sort((a, b) => b.quick - a.quick || actionKey(a.action).localeCompare(actionKey(b.action)));
         const answer = unwrapDecisionAction(ranked[0] && ranked[0].action);
         if (answer === 'yes') MTG.optionalAITriggerBudget(this, game, player, q, true);
@@ -7678,7 +7701,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const nodeView = MTG.createBotPlayerView(node.state, simPlayer.idx, q);
         const actions = MTG.generateLegalActions(nodeView, { difficulty: config === SEARCH_CONFIG.hard ? 'hard' : 'normal' })
           .filter(action => action.kind !== 'done' && action.kind !== 'pass');
-        const ranked = actions.map(action => ({ action, quick: quickScoreAction(nodeView, action, profile, q) }))
+        const ranked = withScoringManaMemo(node.state, () => actions.map(action => ({ action, quick: quickScoreAction(nodeView, action, profile, q) })))
           .sort((a, b) => b.quick.total - a.quick.total || actionKey(a.action).localeCompare(actionKey(b.action))).slice(0, expansionWidth);
         if (!ranked.length) { next.push(node); continue; }
         for (let i = 0; i < ranked.length && stats.nodes < config.maxNodes && !outOfTime(); i++) {
@@ -7770,7 +7793,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const budgetMs = params.budgetMs === undefined ? SEARCH_DEADLINE_MS[difficulty] : Number(params.budgetMs);
     const stats = { nodes: 0, depth: 0, deadline: budgetMs > 0 ? started + budgetMs : 0 };
     let fallback = false;
-    let candidates = legalActions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q) }));
+    let candidates = withScoringManaMemo(game, () => legalActions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q) })));
     candidates.sort((a, b) => b.quick.total - a.quick.total || actionKey(a.action).localeCompare(actionKey(b.action)));
     const searchKinds = new Set(['cast', 'activate', 'land']);
     // Aggregate headless partije služe stability gateu i mogu sadržati desetine

@@ -133,6 +133,12 @@ body.game-active #game.command-table .mini .pt { top: auto !important; bottom: c
    attachments to the left edge and other counters to the bottom right.
    -1/-1 counters share the +1/+1 slot; the two never coexist (CR 704.5q). */
 body.game-active #game.command-table .mini > :is(.pt, .markeddamagestats) { z-index: 6; }
+/* Unprinted tokens need space for their subtype text above P/T. The generic
+   decorative icon belongs in the larger inspector, not this small face. */
+body.game-active #game.command-table .mini:has(> .pt) > .tokenface { justify-content: flex-start; padding-top: 2px; padding-inline: 2px; gap: 2px; }
+body.game-active #game.command-table .mini:has(> .pt) > .tokenface :is(.tokenface-mark, .tokenface-colors) { display: none; }
+body.game-active #game.command-table .mini:has(> .pt) > .tokenface .tokenface-label { font-size: clamp(7px, calc(var(--ct-mini-width, 64px) * .095), 9px); line-height: 1.1; }
+body.game-active #game.command-table .mini > .tokenface .tokenface-type { font-size: clamp(7px, calc(var(--ct-mini-width, 64px) * .14), 12px); }
 body.game-active #game.command-table .mini .stackn { top: 2px; bottom: auto; right: 2px; z-index: 4; }
 body.game-active #game.command-table .mini .toktag { top: auto; bottom: 2px; left: 2px; right: auto; z-index: 3; padding: 1px 4px; border-radius: 3px; background: #000c; font-size: 7px; line-height: 1.2; }
 body.game-active #game.command-table .mini .att { top: calc(var(--ct-mini-width, 64px) * .31); left: 2px; right: auto; z-index: 3; }

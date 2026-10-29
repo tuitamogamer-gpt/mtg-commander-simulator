@@ -33,6 +33,7 @@
   for (let n = 0; n < 3; n++) token('soldierW', you);
   token('soldierW', you).counters['+1/+1'] = 2;
   token('cat22', you);
+  token('trcKlingonWarrior', you);
   const bearer = put('Riders of Gavony', you); bearer.counters['+1/+1'] = 1;
   const aura = put('Rancor', you); aura.attachedTo = bearer.iid; bearer.attachments.push(aura);
   put('Death Baron', you).attacking = players[1];

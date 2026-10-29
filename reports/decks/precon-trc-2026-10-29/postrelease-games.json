@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "testedOn": "2026-10-29",
+  "generatedAt": "2026-10-29T20:35:21.150263+00:00",
+  "baseCommit": "a8a5cf485fa4ac186c2e62c02186e49470ca68e7",
+  "plannedUniqueSeeds": 12,
+  "completedWithWinner": 11,
+  "openPerformanceCases": 1,
+  "finalFourDeckIntegration": {
+    "passed": 4,
+    "total": 4,
+    "seeds": [
+      102930,
+      102931,
+      102932,
+      102933
+    ]
+  },
+  "checkedCompletedTurns": 467,
+  "checks": [
+    "Real winner before the 200-turn cap for every passed game",
+    "No AI decision fallback or fatal/reference/type errors for passed games",
+    "Zone ownership and membership, card identity, finite resources/counters, and stable repeated recalculation after every completed turn"
+  ],
+  "versions": {
+    "baseline": {
+      "commit": "a8a5cf485fa4ac186c2e62c02186e49470ca68e7",
+      "sourceHashes": [
+        {
+          "path": "src/command-table.css",
+          "sha256": "8d4e44e5ad295b9d75e85f4432d244d4cd78dd5c06c179ce30a5c6ebf281e128"
+        },
+        {
+          "path": "src/modules/ai-v2.js",
+          "sha256": "a0ffa9cd652952e52f26e6f706fd835ac57f5a025d11d091af2c4596f50c9232"
+        },
+        {
+          "path": "src/modules/engine.js",
+          "sha256": "3a9f2b40b744bd12af038848805ec1e5133b78255f442b582a716fd460777898"
+        },
+        {
+          "path": "src/modules/oracle-v20-rules.js",
+          "sha256": "25b6a0140b232547449a30aa6831cf23f11c8c5101c90d9d48b3dab08a31ea8b"
+        },
+        {
+          "path": "src/modules/oracle-v90-common.js",
+          "sha256": "ac9c3f4f3de1a822dc49622b431d81a4e74531034dcf2d76e42e56348b7d082d"
+        },
+        {
+          "path": "src/modules/scripts-afc-equipment.js",
+          "sha256": "bc5aa7d11fc55df61bd4cadad4dd3a89030d3140e9973614c9dcb3a9c4613aad"
+        }
+      ]
+    },
+    "snapshot-watchers": {
+      "baseCommit": "a8a5cf485fa4ac186c2e62c02186e49470ca68e7",
+      "changedSourceHashes": [
+        {
+          "path": "src/modules/engine.js",
+          "sha256": "4f8fe159cd603044f6e57e4f14d292748046d531af2f018990ad15cd1d1c65f3"
+        },
+        {
+          "path": "src/modules/oracle-v90-common.js",
+          "sha256": "433f3843527fefa28d84dbf2fb0f820ad3c2698726dd9209edee531e26ba5f58"
+        }
+      ],
+      "description": "Snapshot absent-host guard and zone-watcher prefilter only; loaded before target and AI optimizations."
+    },
+    "final": {
+      "baseCommit": "a8a5cf485fa4ac186c2e62c02186e49470ca68e7",
+      "changedSourceHashes": [
+        {
+          "path": "src/command-table.css",
+          "sha256": "2636dd5476875a33690f4ce00eb8853b249ff64faaa7a36adeb7d86217343de8"
+        },
+        {
+          "path": "src/modules/ai-v2.js",
+          "sha256": "9fa09453d18bdae5837825dadd48d37625bdeca7246fb9771de08edc21f15699"
+        },
+        {
+          "path": "src/modules/engine.js",
+          "sha256": "4f8fe159cd603044f6e57e4f14d292748046d531af2f018990ad15cd1d1c65f3"
+        },
+        {
+          "path": "src/modules/oracle-v20-rules.js",
+          "sha256": "48b23294257927de55e426d1490dbcf8b3a4f9bc24f300da67b76e7f0311db65"
+        },
+        {
+          "path": "src/modules/oracle-v90-common.js",
+          "sha256": "433f3843527fefa28d84dbf2fb0f820ad3c2698726dd9209edee531e26ba5f58"
+        },
+        {
+          "path": "src/modules/scripts-afc-equipment.js",
+          "sha256": "1464b1fb46f733d9b08b1311ee939e00bd1f29de3d7027b699396cf345fe071a"
+        }
+      ],
+      "description": "Snapshot/watcher, target-source prefilters, and per-ranking AI mana estimates; all source hashes checked unchanged after the final four-deck run."
+    }
+  },
+  "timingCaveat": "Durations are wall-clock headless test times including invariant checks and shared machine load. A stability pass does not establish UI responsiveness. The extreme Scute Swarm turn remains a performance failure.",
+  "reproduceStressCase": "PRECON_ONLY='Federation Fleet' SEED=102911 VARIANT=final node scripts/stress-star-trek-games.mjs 0",
+  "notes": [
+    "Five baseline, two snapshot/watcher and four final-code games completed; the final extreme-seed attempt is recorded as incomplete rather than passed.",
+    "The earlier unmodified and intermediate 102911 diagnostic attempts are excluded from this matrix. Repeated batch2 seeds are represented only by their final-code results.",
+    "The extreme case reached the existing 250 tokens/player table limit; a later observation showed the trigger stack drained and combat damage proceeding, but the same turn exceeded the 10-minute test budget."
+  ],
+  "results": [
+    {
+      "deck": "We Are the Borg",
+      "opponents": [
+        "Federation Fleet",
+        "Landing Party",
+        "Klingon Fury"
+      ],
+      "styles": [
+        "balanced",
+        "aggressive",
+        "opportunist"
+      ],
+      "seed": 102910,
+      "turns": 43,
+      "checkedTurns": 43,
+      "winner": "You",
+      "winningDeck": "We Are the Borg",
+      "durationMs": 105739,
+      "variant": "baseline",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/games-batch-0.json"
+    },
+    {
+      "deck": "Federation Fleet",
+      "opponents": [
+        "Landing Party",
+        "Klingon Fury",
+        "We Are the Borg"
+      ],
+      "styles": [
+        "balanced",
+        "aggressive",
+        "opportunist"
+      ],
+      "seed": 102911,
+      "variant": "final",
+      "status": "performance_budget_exceeded",
+      "turns": 33,
+      "checkedTurns": 32,
+      "winner": null,
+      "turnBudgetMs": 600000,
+      "observedTurnDurationMs": 645812,
+      "stoppedAt": "2026-10-29T20:33:48.071799+00:00",
+      "lastObservation": {
+        "at": "2026-10-29T20:33:47.954Z",
+        "states": [
+          {
+            "turn": 33,
+            "phase": "combat",
+            "step": "damage",
+            "battlefield": 280,
+            "scute": 248,
+            "stack": 0,
+            "pending": 0,
+            "log": [
+              "☠️ AI Wolf loses (life reached 0).",
+              "Scute Swarm dies (lethal damage: 2 marked, 1 required).",
+              "Scute Swarm dies (lethal damage: 2 marked, 1 required)."
+            ]
+          }
+        ]
+      },
+      "reason": "Turn 33 exceeded the 10-minute budget after a large Scute Swarm landfall cascade; the stack had drained and combat damage was still processing at stop. This incomplete performance test had no winner and is not counted as passed. No rules invariant failure was observed before stop.",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/final-performance-failure.json"
+    },
+    {
+      "deck": "Landing Party",
+      "opponents": [
+        "Klingon Fury",
+        "We Are the Borg",
+        "Federation Fleet"
+      ],
+      "styles": [
+        "balanced",
+        "aggressive",
+        "opportunist"
+      ],
+      "seed": 102912,
+      "turns": 47,
+      "checkedTurns": 47,
+      "winner": "AI Dragon",
+      "winningDeck": "Klingon Fury",
+      "durationMs": 127817,
+      "variant": "snapshot-watchers",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/patched-remainder-games-batch-0.json",
+      "slowestTurn": {
+        "turn": 46,
+        "durationMs": 7121,
+        "battlefield": 50
+      },
+      "maxBattlefieldAtTurnBoundary": 62
+    },
+    {
+      "deck": "Klingon Fury",
+      "opponents": [
+        "We Are the Borg",
+        "Federation Fleet",
+        "Landing Party"
+      ],
+      "styles": [
+        "balanced",
+        "aggressive",
+        "opportunist"
+      ],
+      "seed": 102913,
+      "turns": 45,
+      "checkedTurns": 45,
+      "winner": "You",
+      "winningDeck": "Klingon Fury",
+      "durationMs": 163779,
+      "variant": "snapshot-watchers",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/patched-remainder-games-batch-0.json",
+      "slowestTurn": {
+        "turn": 45,
+        "durationMs": 26375,
+        "battlefield": 32
+      },
+      "maxBattlefieldAtTurnBoundary": 87
+    },
+    {
+      "deck": "We Are the Borg",
+      "opponents": [
+        "Klingon Fury",
+        "Federation Fleet",
+        "Landing Party"
+      ],
+      "styles": [
+        "opportunist",
+        "balanced",
+        "aggressive"
+      ],
+      "seed": 102920,
+      "turns": 31,
+      "checkedTurns": 31,
+      "winner": "You",
+      "winningDeck": "We Are the Borg",
+      "durationMs": 93412,
+      "variant": "baseline",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/games-batch-1.json"
+    },
+    {
+      "deck": "Federation Fleet",
+      "opponents": [
+        "We Are the Borg",
+        "Landing Party",
+        "Klingon Fury"
+      ],
+      "styles": [
+        "opportunist",
+        "balanced",
+        "aggressive"
+      ],
+      "seed": 102921,
+      "turns": 49,
+      "checkedTurns": 49,
+      "winner": "AI Raven",
+      "winningDeck": "Klingon Fury",
+      "durationMs": 409163,
+      "variant": "baseline",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/games-batch-1.json"
+    },
+    {
+      "deck": "Landing Party",
+      "opponents": [
+        "Federation Fleet",
+        "Klingon Fury",
+        "We Are the Borg"
+      ],
+      "styles": [
+        "opportunist",
+        "balanced",
+        "aggressive"
+      ],
+      "seed": 102922,
+      "turns": 61,
+      "checkedTurns": 61,
+      "winner": "You",
+      "winningDeck": "Landing Party",
+      "durationMs": 587655,
+      "variant": "baseline",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/games-batch-1.json"
+    },
+    {
+      "deck": "Klingon Fury",
+      "opponents": [
+        "Landing Party",
+        "We Are the Borg",
+        "Federation Fleet"
+      ],
+      "styles": [
+        "opportunist",
+        "balanced",
+        "aggressive"
+      ],
+      "seed": 102923,
+      "turns": 33,
+      "checkedTurns": 33,
+      "winner": "You",
+      "winningDeck": "Klingon Fury",
+      "durationMs": 59636,
+      "variant": "baseline",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/games-batch-1.json"
+    },
+    {
+      "deck": "We Are the Borg",
+      "opponents": [
+        "Landing Party",
+        "Klingon Fury",
+        "Federation Fleet"
+      ],
+      "styles": [
+        "aggressive",
+        "opportunist",
+        "balanced"
+      ],
+      "seed": 102930,
+      "turns": 41,
+      "checkedTurns": 41,
+      "winner": "AI Dragon",
+      "winningDeck": "Landing Party",
+      "durationMs": 150288,
+      "variant": "final",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/final-batch2-games-batch-2.json",
+      "slowestTurn": {
+        "turn": 39,
+        "durationMs": 43364,
+        "battlefield": 62
+      },
+      "maxBattlefieldAtTurnBoundary": 64
+    },
+    {
+      "deck": "Federation Fleet",
+      "opponents": [
+        "Klingon Fury",
+        "We Are the Borg",
+        "Landing Party"
+      ],
+      "styles": [
+        "aggressive",
+        "opportunist",
+        "balanced"
+      ],
+      "seed": 102931,
+      "turns": 22,
+      "checkedTurns": 22,
+      "winner": "AI Dragon",
+      "winningDeck": "Klingon Fury",
+      "durationMs": 53640,
+      "variant": "final",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/final-batch2-games-batch-2.json",
+      "slowestTurn": {
+        "turn": 21,
+        "durationMs": 16248,
+        "battlefield": 48
+      },
+      "maxBattlefieldAtTurnBoundary": 52
+    },
+    {
+      "deck": "Landing Party",
+      "opponents": [
+        "We Are the Borg",
+        "Federation Fleet",
+        "Klingon Fury"
+      ],
+      "styles": [
+        "aggressive",
+        "opportunist",
+        "balanced"
+      ],
+      "seed": 102932,
+      "turns": 35,
+      "checkedTurns": 35,
+      "winner": "AI Wolf",
+      "winningDeck": "Federation Fleet",
+      "durationMs": 54244,
+      "variant": "final",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/final-batch2-games-batch-2.json",
+      "slowestTurn": {
+        "turn": 30,
+        "durationMs": 13057,
+        "battlefield": 51
+      },
+      "maxBattlefieldAtTurnBoundary": 60
+    },
+    {
+      "deck": "Klingon Fury",
+      "opponents": [
+        "Federation Fleet",
+        "Landing Party",
+        "We Are the Borg"
+      ],
+      "styles": [
+        "aggressive",
+        "opportunist",
+        "balanced"
+      ],
+      "seed": 102933,
+      "turns": 28,
+      "checkedTurns": 28,
+      "winner": "AI Raven",
+      "winningDeck": "We Are the Borg",
+      "durationMs": 28802,
+      "variant": "final",
+      "status": "passed",
+      "evidence": "output/precon-trc-postrelease-2026-10-29/final-batch2-games-batch-2.json",
+      "slowestTurn": {
+        "turn": 24,
+        "durationMs": 3157,
+        "battlefield": 53
+      },
+      "maxBattlefieldAtTurnBoundary": 53
+    }
+  ]
+}
