@@ -21,8 +21,9 @@
  function manaRules(g,p,card,source,snapshot,excluded=[]){
   const types=snapshot?.types||card.cur?.types||[],superTypes=snapshot?.super||card.cur?.super||[],subtypes=snapshot?.subtypes||card.cur?.subtypes||[];
   if(!source?.extraCost?.tap||source.m?.viaConvoke||source.m?.viaWaterbendV10)return [];
-  const excludedSet=new Set(excluded),board=g.bf().filter(c=>active(c)&&!excludedSet.has(c)),rules=(M.oracleManaReplacementRulesV65?.(g,p,card,source,snapshot)||[]).filter(rule=>!excludedSet.has(rule.source));
+  const excludedSet=new Set(excluded),rules=(M.oracleManaReplacementRulesV65?.(g,p,card,source,snapshot)||[]).filter(rule=>!excludedSet.has(rule.source));
   if(!types.includes('Land'))return rules;
+  const board=g.bfWithDef('v59TripleBasic','v66ManaMode').filter(c=>active(c)&&!excludedSet.has(c));
   const add=(s,mode,applies,choices,transform)=>rules.push({key:'v66-mana:'+s.iid+':'+s.zoneVersion+':'+mode,source:s,label:s.name,applies,choices,transform});
   for(const s of board){
    if(s.def.v59TripleBasic&&s.ctrl===p&&superTypes.includes('Basic'))add(s,'triple',o=>manaTotal(o)>0,()=>[null],o=>o.ANY?{...o,n:(o.n||1)*3,anyColorGroupV59:(o.anyColorGroupV59||1)*3}:Object.fromEntries(manaColors.filter(k=>o[k]!==undefined).map(k=>[k,o[k]*3])));

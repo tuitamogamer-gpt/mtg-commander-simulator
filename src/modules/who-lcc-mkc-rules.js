@@ -2,7 +2,7 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.CWW,G=M.Game.prototype,T=M.T;
- const sources=(g,p,key)=>g.bf().filter(c=>(!p||c.ctrl===p)&&C.live(c)&&c.def[key]);
+ const sources=(g,p,key)=>g.bfWithDef(key).filter(c=>(!p||c.ctrl===p)&&C.live(c));
  const historic=c=>c.is('Artifact')||C.legendary(c)||c.hasSub('Saga');
  const historicSpell=(g,c,a={})=>{if(a.faceDownCast||a.adventure)return false;const d=g.castDefinition(c,a);return g.castHasType(c,a,'Artifact')||d.super?.includes('Legendary')||d.subtypes?.includes('Saga');};
  const own=(g,c,d)=>d.player===c.ctrl;

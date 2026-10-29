@@ -33,11 +33,13 @@ The selected Node suites cover **583 unique tests** across the initial and targe
 
 Full-game outcomes, tested source variants and hashes are recorded in [postrelease-games.json](../decks/precon-trc-2026-10-29/postrelease-games.json). Interrupted performance reproductions are recorded separately and are never counted as completed games. Each completed game requires a real winner before the turn limit, zero AI fallbacks, valid card/zone state, and stable recalculation after every turn.
 
-## Remaining performance issue
+## Historical performance issue — follow-up available
+
+The failed reproduction below is retained for the published `48e4c56` baseline. The [Scute performance follow-up](2026-10-29-scute-performance.md) now completes the same seed with all turn-state checks passing; it records the remaining multi-minute extreme-turn timings explicitly.
 
 Seed **102911** (Federation Fleet with Landing Party in the pod) still produces multi-minute turns as Scute Swarm multiplies. The final combined build reached **250 Scute Swarm copies, 297 battlefield objects and 234 stack objects** during turn 33. A later sample showed the stack reduced to 86 objects; the existing 250-token-per-player limit prevented further token growth. No unbounded new-card trigger cycle was identified. Nevertheless, this is not acceptable evidence of responsive play, and completion is tracked separately from this timing failure. The optimizations above remove confirmed redundant work; they do **not** establish that large token boards are fully performant.
 
-The run was stopped after turn 33 exceeded the ten-minute budget (**645,812 ms** at termination). Its final sample had drained the trigger stack and reached combat damage, but the game had not completed. This is an **unresolved performance failure**, not a passing game or a rules-error claim.
+The run was stopped after turn 33 exceeded the ten-minute budget (**645,812 ms** at termination). Its final sample had drained the trigger stack and reached combat damage, but the game had not completed. This was an **unresolved performance failure in that baseline**, rather than a passing game or a rules-error claim. See the follow-up above for the completed final run.
 
 ## Reproduction
 

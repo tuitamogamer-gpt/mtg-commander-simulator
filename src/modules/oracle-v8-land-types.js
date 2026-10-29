@@ -21,7 +21,9 @@
  function *typeRows(game,rows,bf){const pending=rows.slice().sort((a,b)=>a.timestamp-b.timestamp);
   const landStatics=row=>(row.def?.statics||[]).filter(s=>s.oracleBasicLandTypes);
   const removes=(row,source)=>row.kind==='oracleLandTypes'?!row.retain&&row.iid===source.iid&&row.zoneVersion===source.zoneVersion:landStatics(row).some(s=>!s.oracleOperation.retain&&s.affects(game,row,source));
-  while(pending.length){const independent=pending.filter(row=>!landStatics(row).length||!pending.some(other=>other!==row&&removes(other,row)));const row=(independent.length?independent:pending)[0];pending.splice(pending.indexOf(row),1);yield row;}
+  // Only the first independent row can be applied next. Recheck dependencies
+  // after each yield without scanning later rows once that row is found.
+  while(pending.length){const row=pending.find(row=>!landStatics(row).length||!pending.some(other=>other!==row&&removes(other,row)))||pending[0];pending.splice(pending.indexOf(row),1);yield row;}
  }
  function stripPrinted(bf,abilityLayers){for(const card of bf)if(card.cur.oracleLandTypeAbilitiesRemoved){card.cur.abilitiesDisabled=true;card.cur.wardCost=null;card.cur.allCreatureTypes=false;card.cur.suppressPrintedChangeling=true;abilityLayers?.suppressPrinted(card);}}
  function addIntrinsicMana(bf){for(const card of bf)if(card.is('Land')){const printed=card.cur.abilitiesDisabled?[]:[card.def.mana].flat().filter(Boolean);for(const type of new Set(card.cur.subtypes))if(mana[type]){const color=colors[type],alreadyPrinted=printed.some(ability=>Object.keys(ability).every(key=>['cost','produce','possibleProduce','label','key'].includes(key)||key==='oraclePrintedManaV87'&&ability[key]===''||key==='activationPaymentV20'&&[undefined,false,0].includes(ability[key]))&&ability.cost?.tap&&Object.keys(ability.cost).length===1&&Array.isArray(ability.produce)&&ability.produce.some(output=>output[color]===1&&Object.keys(output).length===1));if(!alreadyPrinted)card.cur.extraMana.push(mana[type]);}}}

@@ -662,6 +662,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         try {
           const prioritySessionKey = q.type === 'priority'
             ? `${g._prioritySessionId || 0}|${this.p.idx}` : null;
+          const emptyPriorityKey = q.type === 'priority' && !g.stack.length
+            ? `${g.turnNo}|${g.phase}|${g.step}|${this.p.idx}` : null;
+          // The AI action generator always excludes manual mana activations.
+          // With nothing else offered, pass is its only possible choice; skip
+          // the full action ranking for each token trigger.
+          if (q.type === 'priority' && !(q.casts || []).length &&
+              !(q.acts || []).some(entry => !entry.manaAbility)) {
+            if (this._v2PrioritySessionUsed === prioritySessionKey ||
+                emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey) return {kind: 'pass'};
+            const action = {kind: 'pass'}, reason = 'No non-mana response is available.';
+            const log = {chosen: 'Pass priority', alternatives: [], score: 0,
+              scoreBreakdown: {forcedPass: 0}, threatScores: {}, analyzedNodes: 0,
+              reachedDepth: 0, tieBreak: false, seed: null, decisionTimeMs: 0,
+              fallback: false, difficulty: this.difficulty, style: this.p.aiStyle || 'balanced',
+              skill: MTG.getAIStyleSkill?.(this.p.aiStyle)?.id || null,
+              mode: MTG.getAIStyleMode?.(g, this.p) ?? null, forcedPass: true};
+            this.lastV2Decision = {action, score: 0, reason,
+              consideredActions: [{action: log.chosen, score: 0, reason, scoreBreakdown: log.scoreBreakdown}], log};
+            // Keep the history slot: repeat-activation policies inspect this
+            // bounded ring, so removing passes would retain old actions longer.
+            const history = g.aiDecisionLog ||= [];
+            history.push({turn: g.turnNo, playerId: this.p.idx, playerName: this.p.name, ...log});
+            if (history.length > 160) history.splice(0, history.length - 160);
+            g.note('aiDecision', {player: this.p, decision: log});
+            return action;
+          }
           // A new threat or the next useful pump can warrant another action
           // within this priority session. The tactical plans reject redundant
           // unresolved protection and repeated activations without a gain.
@@ -670,8 +696,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             (q.acts || []).some(entry => MTG.botReactionPlan(g, this.p, {kind: 'activate', entry})?.score > 0) ||
             (q.casts || []).some(entry => MTG.botReactionPlan(g, this.p, {kind: 'cast', ...entry})?.score > 0));
           if (prioritySessionKey && this._v2PrioritySessionUsed === prioritySessionKey && !usefulReaction) return { kind: 'pass' };
-          const emptyPriorityKey = q.type === 'priority' && !g.stack.length
-            ? `${g.turnNo}|${g.phase}|${g.step}|${this.p.idx}` : null;
           if (emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey && !usefulReaction) return { kind: 'pass' };
           this.lastV2Decision = await MTG.chooseBotAction({
             gameState: g,

@@ -2384,7 +2384,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.artifactAbilityDiscountAmount = function (p) {
     if ((p.turnState.artifactAbilitiesActivated || 0) !== 0) return 0;
-    return 2 * this.bf().filter(card => card.ctrl === p && card.def.firstArtifactAbilityDiscount && !card.cur?.abilitiesDisabled).length;
+    return 2 * this.bfWithDef('firstArtifactAbilityDiscount').filter(card => card.ctrl === p && !card.cur?.abilitiesDisabled).length;
   };
 
   G.hasArtifactAbilityDiscount = function (p) {
@@ -2399,7 +2399,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       pips: rawCost && rawCost.pips ? rawCost.pips.map(pip => pip.slice()) : [],
     };
     const reductionContext = Object.assign({ player: p, source, targets: [] }, context);
-    const v18Adjustments=this.bf().map(reducer=>reducer.cur?.abilitiesDisabled?0:reducer.def.oracleAbilityCostV18?.(this,reducer,reductionContext)||0);
+    const v18Adjustments=this.bfWithDef('oracleAbilityCostV18').map(reducer=>reducer.cur?.abilitiesDisabled?0:reducer.def.oracleAbilityCostV18?.(this,reducer,reductionContext)||0);
     parsed.generic+=v18Adjustments.reduce((sum,n)=>sum+Math.max(0,n),0);
     if(context.ability?.oracleEquip&&context.ability.cost?.oracleEquipPowerReduction){
       const power=Number(context.targets?.flat(Infinity)[0]?.power)||0;parsed.generic=Math.max(0,parsed.generic-Math.max(0,power));
@@ -2424,7 +2424,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       parsed.generic=Math.max(0,parsed.generic-generic);
     }
-    for (const reducer of this.bf()) {
+    for (const reducer of this.bfWithDef('abilityCostReduction')) {
       if (reducer.ctrl !== p || typeof reducer.def.abilityCostReduction !== 'function') continue;
       const amount = Math.max(0, Number(reducer.def.abilityCostReduction(this, reducer, reductionContext)) || 0);
       parsed.generic = Math.max(0, parsed.generic - amount);

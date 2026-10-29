@@ -2,7 +2,7 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.CWW,G=M.Game.prototype,SC=M.SCRIPTS;
- const sources=(g,p,key)=>g.bf().filter(c=>(!p||c.ctrl===p)&&C.live(c)&&c.def[key]);
+ const sources=(g,p,key)=>g.bfWithDef(key).filter(c=>(!p||c.ctrl===p)&&C.live(c));
  const NO_FLAGS=Object.freeze([]);
  const grant=C.grant;C.grant=(ctx,c,kw,expires='object',extra={})=>{if(!extra.field?.startsWith('cww'))return grant(ctx,c,kw,expires,extra);ctx.g.untilEffects.push({kind:'cwwFlag',expires,iid:c.iid,zoneVersion:c.zoneVersion,...extra});ctx.g.recalc();};
  const damageBatch=G.damageBatch;G.damageBatch=async function(...args){const prior=this.cwwDamageBatch;this.cwwDamageBatch=new Set();try{return await damageBatch.apply(this,args);}finally{this.cwwDamageBatch=prior;}};

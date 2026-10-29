@@ -1,0 +1,400 @@
+{
+  "date": "2026-10-29",
+  "baseCommit": "48e4c56dc52f501861c297d219207637396582f8",
+  "baseline": {
+    "seed": 102911,
+    "deck": "Federation Fleet",
+    "stoppedDuringTurn": 33,
+    "unfinishedTurnMs": 645812,
+    "completed": false,
+    "comparison": "Interrupted baseline supplies a lower bound for turn 33, not a completed-game speed comparison."
+  },
+  "runtimeChanges": [
+    {
+      "path": "src/modules/ai-v2.js",
+      "sha256": "48f3c8e6fb832aa7f530ff776141fbbf6efad6314f65987b3955d485c5c0d3ed"
+    },
+    {
+      "path": "src/modules/ai.js",
+      "sha256": "89f84afc3ff3a4746746fa07258afc5f87b8625d2d2b568b11633352461148b2"
+    },
+    {
+      "path": "src/modules/cmm-woc-who-integration.js",
+      "sha256": "e15d1c36ae96b3d76a6474257352c655b6dc13718d9d145bd2b29713648d1f32"
+    },
+    {
+      "path": "src/modules/engine2.js",
+      "sha256": "47b9e064489fa64296a02c645af88f74502210393181a92ef0c2fb91da343869"
+    },
+    {
+      "path": "src/modules/oracle-v20-costs.js",
+      "sha256": "d371fa30bf05acc9f98d9f3f7743a9f72ec2d3be6a7196c35bc5459c3aea2c6c"
+    },
+    {
+      "path": "src/modules/oracle-v28-common.js",
+      "sha256": "b71494f811397e3c4d99b1fbdc06405537412c9458489a9b4520e594a26c3cc2"
+    },
+    {
+      "path": "src/modules/oracle-v66-common.js",
+      "sha256": "dba5cd0bf7ebb887ac9e3725302458512f7f7b68f079c8497ff23cacb302d9b7"
+    },
+    {
+      "path": "src/modules/oracle-v8-land-types.js",
+      "sha256": "3ef7916600dfdd00040e00f5cb0803ffd91cbe4eedc3ab4139e8c17906816531"
+    },
+    {
+      "path": "src/modules/oracle-v83-common.js",
+      "sha256": "7ff01a40e7054c543e5b7e39fc15fa30538b697eb8739641a4a6008705b2e868"
+    },
+    {
+      "path": "src/modules/oracle-v88-common.js",
+      "sha256": "a3feb3d306104d376d358a3195c95bc87af33eea1cc68d4008f8256b46ecfaa5"
+    },
+    {
+      "path": "src/modules/pip-otc-m3c-rules.js",
+      "sha256": "b8aa2d96e9e24d15a7621b84a3a6315a780e4136962d524e91821ec5ca22bfe7"
+    },
+    {
+      "path": "src/modules/who-lcc-mkc-integration.js",
+      "sha256": "5e5dd33ce4d8a3a9e6ca20cd4c336de834474fdc4770e6a7df2bd4df17fef20f"
+    },
+    {
+      "path": "src/modules/who-lcc-mkc-rules.js",
+      "sha256": "a47bf6681b61f8fb856edac1182715a6151f8683333ead701372a29eec8276ad"
+    }
+  ],
+  "selectedNodeTests": {
+    "passed": 822,
+    "failed": 0,
+    "wholeRepositorySuite": false
+  },
+  "syntaxCheck": "npm run check passed",
+  "exact": {
+    "variant": "release-final",
+    "seed": 102911,
+    "passed": true,
+    "isolated": true,
+    "profiled": false,
+    "sourceCount": 13,
+    "comparedReference": {
+      "variant": "final-full",
+      "profiled": true,
+      "sourceCount": 8
+    },
+    "checks": {
+      "turns": true,
+      "checkedTurns": true,
+      "winner": true,
+      "winningDeck": true,
+      "seenBattlefield": true,
+      "playedCards": true,
+      "all35EndTurnBattlefieldCounts": true,
+      "sourcePathsAndHashes": true
+    },
+    "durationMs": 578159,
+    "turns": 35,
+    "winner": "AI Dragon",
+    "winningDeck": "Landing Party",
+    "worstTurns": [
+      {
+        "turn": 35,
+        "durationMs": 232944,
+        "battlefield": 274
+      },
+      {
+        "turn": 33,
+        "durationMs": 230699,
+        "battlefield": 278
+      },
+      {
+        "turn": 30,
+        "durationMs": 42592,
+        "battlefield": 187
+      },
+      {
+        "turn": 34,
+        "durationMs": 23450,
+        "battlefield": 282
+      },
+      {
+        "turn": 32,
+        "durationMs": 15156,
+        "battlefield": 182
+      }
+    ]
+  },
+  "batch2": {
+    "timings": "Concurrent correctness coverage; not a controlled performance comparison",
+    "passed": 4,
+    "results": [
+      {
+        "deck": "We Are the Borg",
+        "seed": 102930,
+        "turns": 41,
+        "checkedTurns": 41,
+        "winner": "AI Dragon",
+        "winningDeck": "Landing Party",
+        "durationMs": 58451,
+        "passed": true
+      },
+      {
+        "deck": "Federation Fleet",
+        "seed": 102931,
+        "turns": 22,
+        "checkedTurns": 22,
+        "winner": "AI Dragon",
+        "winningDeck": "Klingon Fury",
+        "durationMs": 21311,
+        "passed": true
+      },
+      {
+        "deck": "Landing Party",
+        "seed": 102932,
+        "turns": 35,
+        "checkedTurns": 35,
+        "winner": "AI Wolf",
+        "winningDeck": "Federation Fleet",
+        "durationMs": 31297,
+        "passed": true
+      },
+      {
+        "deck": "Klingon Fury",
+        "seed": 102933,
+        "turns": 28,
+        "checkedTurns": 28,
+        "winner": "AI Raven",
+        "winningDeck": "We Are the Borg",
+        "durationMs": 16712,
+        "passed": true
+      }
+    ]
+  },
+  "browser": {
+    "environment": "Local Chromium on the execution host; desktop and mobile viewport emulation, not physical mobile hardware",
+    "loadNote": "Final local run after headless batch2 finished; earlier driver attempts were concurrent",
+    "timingNote": "Automatic cases disable pacing to isolate CPU work and deliberately do not yield. Response cases use native UI pacing at speed factor 1.25; configuredDelayMs records intentional waits. Long tasks remain measurable.",
+    "screenshotsReviewed": [
+      "390-legal-response-waiting.png",
+      "390-legal-response-resolved.png"
+    ],
+    "errors": [],
+    "changedSourceHashesMatch": true,
+    "servedSources": [
+      {
+        "path": "src/modules/engine.js",
+        "status": 200,
+        "sha256": "4f8fe159cd603044f6e57e4f14d292748046d531af2f018990ad15cd1d1c65f3"
+      },
+      {
+        "path": "src/modules/engine2.js",
+        "status": 200,
+        "sha256": "47b9e064489fa64296a02c645af88f74502210393181a92ef0c2fb91da343869"
+      },
+      {
+        "path": "src/modules/oracle-v8-land-types.js",
+        "status": 200,
+        "sha256": "3ef7916600dfdd00040e00f5cb0803ffd91cbe4eedc3ab4139e8c17906816531"
+      },
+      {
+        "path": "src/modules/oracle-v20-costs.js",
+        "status": 200,
+        "sha256": "d371fa30bf05acc9f98d9f3f7743a9f72ec2d3be6a7196c35bc5459c3aea2c6c"
+      },
+      {
+        "path": "src/modules/oracle-v28-common.js",
+        "status": 200,
+        "sha256": "b71494f811397e3c4d99b1fbdc06405537412c9458489a9b4520e594a26c3cc2"
+      },
+      {
+        "path": "src/modules/cmm-woc-who-integration.js",
+        "status": 200,
+        "sha256": "e15d1c36ae96b3d76a6474257352c655b6dc13718d9d145bd2b29713648d1f32"
+      },
+      {
+        "path": "src/modules/who-lcc-mkc-rules.js",
+        "status": 200,
+        "sha256": "a47bf6681b61f8fb856edac1182715a6151f8683333ead701372a29eec8276ad"
+      },
+      {
+        "path": "src/modules/who-lcc-mkc-integration.js",
+        "status": 200,
+        "sha256": "5e5dd33ce4d8a3a9e6ca20cd4c336de834474fdc4770e6a7df2bd4df17fef20f"
+      },
+      {
+        "path": "src/modules/pip-otc-m3c-rules.js",
+        "status": 200,
+        "sha256": "b8aa2d96e9e24d15a7621b84a3a6315a780e4136962d524e91821ec5ca22bfe7"
+      },
+      {
+        "path": "src/modules/oracle-v66-common.js",
+        "status": 200,
+        "sha256": "dba5cd0bf7ebb887ac9e3725302458512f7f7b68f079c8497ff23cacb302d9b7"
+      },
+      {
+        "path": "src/modules/oracle-v83-common.js",
+        "status": 200,
+        "sha256": "7ff01a40e7054c543e5b7e39fc15fa30538b697eb8739641a4a6008705b2e868"
+      },
+      {
+        "path": "src/modules/oracle-v88-common.js",
+        "status": 200,
+        "sha256": "a3feb3d306104d376d358a3195c95bc87af33eea1cc68d4008f8256b46ecfaa5"
+      },
+      {
+        "path": "src/modules/ai-v2.js",
+        "status": 200,
+        "sha256": "48f3c8e6fb832aa7f530ff776141fbbf6efad6314f65987b3955d485c5c0d3ed"
+      },
+      {
+        "path": "src/modules/ai.js",
+        "status": 200,
+        "sha256": "89f84afc3ff3a4746746fa07258afc5f87b8625d2d2b568b11633352461148b2"
+      },
+      {
+        "path": "src/modules/ui.js",
+        "status": 200,
+        "sha256": "d727136faba3595a5ba1782d7ed8f1d1339afa44276be6a2ecaf0b470662fd65"
+      }
+    ],
+    "scenarios": [
+      {
+        "label": "1440-automatic",
+        "width": 1440,
+        "withResponse": false,
+        "done": true,
+        "triggerCount": 125,
+        "scutes": 250,
+        "tokens": 249,
+        "tokenLimit": 250,
+        "stack": 0,
+        "triggers": 0,
+        "profile": "end",
+        "pending": null,
+        "optZone": null,
+        "optManaSpent": 0,
+        "opponentOptZone": null,
+        "opponentOptManaSpent": 0,
+        "hand": [],
+        "fallback": false,
+        "overflow": false,
+        "error": null,
+        "renderError": null,
+        "totalMs": 6916.4000000003725,
+        "configuredDelayMs": 0,
+        "paced": false,
+        "speedFactor": 1.25,
+        "maxHeartbeatGapMs": 6916.4000000003725,
+        "heartbeatTicks": 0,
+        "animationFrames": 0,
+        "longTaskCount": 1,
+        "maxLongTaskMs": 6917
+      },
+      {
+        "label": "1440-legal-response",
+        "width": 1440,
+        "withResponse": true,
+        "done": true,
+        "triggerCount": 125,
+        "scutes": 250,
+        "tokens": 249,
+        "tokenLimit": 250,
+        "stack": 0,
+        "triggers": 0,
+        "profile": "end",
+        "pending": null,
+        "optZone": "graveyard",
+        "optManaSpent": 1,
+        "opponentOptZone": "graveyard",
+        "opponentOptManaSpent": 1,
+        "hand": [
+          "Forest"
+        ],
+        "fallback": false,
+        "overflow": false,
+        "error": null,
+        "renderError": null,
+        "totalMs": 114156.90000000037,
+        "configuredDelayMs": 100376,
+        "paced": true,
+        "speedFactor": 1.25,
+        "maxHeartbeatGapMs": 940.8000000007451,
+        "heartbeatTicks": 5536,
+        "animationFrames": 4167,
+        "longTaskCount": 212,
+        "maxLongTaskMs": 902
+      },
+      {
+        "label": "390-automatic",
+        "width": 390,
+        "withResponse": false,
+        "done": true,
+        "triggerCount": 125,
+        "scutes": 250,
+        "tokens": 249,
+        "tokenLimit": 250,
+        "stack": 0,
+        "triggers": 0,
+        "profile": "end",
+        "pending": null,
+        "optZone": null,
+        "optManaSpent": 0,
+        "opponentOptZone": null,
+        "opponentOptManaSpent": 0,
+        "hand": [],
+        "fallback": false,
+        "overflow": false,
+        "error": null,
+        "renderError": null,
+        "totalMs": 5976.5999999996275,
+        "configuredDelayMs": 0,
+        "paced": false,
+        "speedFactor": 1.25,
+        "maxHeartbeatGapMs": 5976.5999999996275,
+        "heartbeatTicks": 0,
+        "animationFrames": 0,
+        "longTaskCount": 1,
+        "maxLongTaskMs": 5977
+      },
+      {
+        "label": "390-legal-response",
+        "width": 390,
+        "withResponse": true,
+        "done": true,
+        "triggerCount": 125,
+        "scutes": 250,
+        "tokens": 249,
+        "tokenLimit": 250,
+        "stack": 0,
+        "triggers": 0,
+        "profile": "end",
+        "pending": null,
+        "optZone": "graveyard",
+        "optManaSpent": 1,
+        "opponentOptZone": "graveyard",
+        "opponentOptManaSpent": 1,
+        "hand": [
+          "Forest"
+        ],
+        "fallback": false,
+        "overflow": false,
+        "error": null,
+        "renderError": null,
+        "totalMs": 111119.30000000075,
+        "configuredDelayMs": 100376,
+        "paced": true,
+        "speedFactor": 1.25,
+        "maxHeartbeatGapMs": 630.3999999985099,
+        "heartbeatTicks": 5781,
+        "animationFrames": 5663,
+        "longTaskCount": 184,
+        "maxLongTaskMs": 542
+      }
+    ],
+    "reducedMotion": true
+  },
+  "limits": [
+    "Extreme complete-game headless turns still take about 3.9 minutes.",
+    "Browser fixture measures one 125-trigger wave, with an actual paid response in paced cases.",
+    "Browser telemetry checks page/render errors, not every console or network message."
+  ]
+}

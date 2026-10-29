@@ -2232,7 +2232,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return 2.4 - routineTapExposure(game, player, source);
   };
 
+  // Action generation and its initial ranking ask for the same Station plan.
+  // Reuse it only inside that synchronous prefix, before any action or search
+  // can change the board. Payment questions with an explicit pool stay fresh.
+  let stationPlanningMemo = null;
+  function withStationPlanningMemo(game, evaluate) {
+    const previous = stationPlanningMemo;
+    stationPlanningMemo = { game, players: new Map() };
+    try { return evaluate(); }
+    finally { stationPlanningMemo = previous; }
+  }
+
   MTG.stationPlan = function (game, source, player, pool = null) {
+    const scope = pool === null && !game.c1719TextActive && !game.c1719TextContext &&
+      stationPlanningMemo?.game === game ? stationPlanningMemo : null;
+    if (!scope) return calculateStationPlan(game, source, player, pool);
+    let sources = scope.players.get(player);
+    if (!sources) { sources = new Map(); scope.players.set(player, sources); }
+    let pools = sources.get(source);
+    if (!pools) { pools = new Map(); sources.set(source, pools); }
+    // Ritual previews temporarily change floating mana during scoring.
+    // Keep those contexts distinct, including an opponent's mana pool.
+    const key = JSON.stringify(game.players.map(p =>
+      Object.entries(p.pool || {}).sort(([a], [b]) => a.localeCompare(b))));
+    if (pools.has(key)) return pools.get(key);
+    const plan = calculateStationPlan(game, source, player, pool);
+    pools.set(key, plan);
+    return plan;
+  };
+
+  function calculateStationPlan(game, source, player, pool) {
     const charge = Number(source.counters.charge || 0);
     const finalTier = source.def.stationCreatureAt;
     const tiers = [...new Set([...String(source.def.oracle || '').matchAll(/^(\d+)\+\s*\|/gm)]
@@ -2316,7 +2345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (score > Math.max(0, best.score)) best = { score, picks: plan.picks, target };
     }
     return best;
-  };
+  }
 
   function attackPlanSurvival(game, player, assignments) {
     const opponents = player.opponents(game);
@@ -7789,11 +7818,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const baseProfile = MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name) || buildDeckProfile('unknown', player.deck || { cards: [], commander: '' });
     const profile = profileForStyle(baseProfile, player);
     const seed = params.seed === undefined ? defaultSeed(game, view, player.idx) : Number(params.seed) >>> 0;
-    const legalActions = MTG.generateLegalActions(view, { difficulty });
+    const ranking = withStationPlanningMemo(game, () => {
+      const legalActions = MTG.generateLegalActions(view, { difficulty });
+      const candidates = withScoringManaMemo(game, () => legalActions.map(action =>
+        ({ action, quick: quickScoreAction(view, action, profile, q) })));
+      return { legalActions, candidates };
+    });
+    const legalActions = ranking.legalActions;
     const budgetMs = params.budgetMs === undefined ? SEARCH_DEADLINE_MS[difficulty] : Number(params.budgetMs);
     const stats = { nodes: 0, depth: 0, deadline: budgetMs > 0 ? started + budgetMs : 0 };
     let fallback = false;
-    let candidates = withScoringManaMemo(game, () => legalActions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q) })));
+    let candidates = ranking.candidates;
     candidates.sort((a, b) => b.quick.total - a.quick.total || actionKey(a.action).localeCompare(actionKey(b.action)));
     const searchKinds = new Set(['cast', 'activate', 'land']);
     // Aggregate headless partije služe stability gateu i mogu sadržati desetine

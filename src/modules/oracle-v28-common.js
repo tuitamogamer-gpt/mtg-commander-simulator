@@ -32,7 +32,7 @@
   // the native spell object carries the actual controller (for example Etali).
   const spell=card.zone==='stack'?game?.stack.find(row=>row.kind==='spell'&&!row.isCopy&&row.card===card):null;
   const controller=(asSpell||card.zone==='stack')?((asSpell&&proposedCasters.get(card))||spell?.ctrl||card.ctrl):card.owner;
-  return (game?.bf()||[]).filter(source=>!source.cur?.abilitiesDisabled)
+  return (game?.bfWithDef('oracleAllCreatureTypesV28','bdfAdaptation','oracleChosenCreatureTypesV28')||[]).filter(source=>!source.cur?.abilitiesDisabled)
    .sort((a,b)=>a.timestamp-b.timestamp).flatMap(source=>{
     const effects=[];
     if(source.ctrl===controller){
