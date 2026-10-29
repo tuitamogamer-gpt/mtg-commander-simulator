@@ -3302,6 +3302,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   }
 
+  // Target taxes (Pursued Whale, starter-precon taxes, Oracle target
+  // adjustments) are confirmed only once the targets are locked in. A bot that
+  // picks a taxed target it cannot pay for fails the cast and repeats the same
+  // pick in every later window, so its prompt leaves out such targets. Humans
+  // keep every legal target; the payment step still decides for them.
+  function aiAffordableTargetFilter(game, p, card, d, castOpts, cost, xVal, ctx) {
+    if (!p.isAI) return null;
+    const targetTax = targets => {
+      let extra = 0;
+      if (game.starterTargetTax) extra += game.starterTargetTax(p, card, {...castOpts, targets}) - (cost.starterTargetTax || 0);
+      if (MTG.CDK) extra += MTG.CDK.whaleCost(game, p, targets);
+      if (!d.selfTargetCostAdjust && !MTG.oracleSpellTargetAdjustmentV65) return extra;
+      const targetIdentities = game.captureTargetIdentities(targets);
+      if (d.selfTargetCostAdjust) {
+        const generic = value => typeof value === 'object' ? value?.generic || 0 : value || 0;
+        extra += generic(d.selfTargetCostAdjust(game, card, p, {...castOpts, targets, targetIdentities})) - generic(cost.targetCostAdjustment);
+      }
+      if (MTG.oracleSpellTargetAdjustmentV65) {
+        const confirmed = MTG.oracleSpellTargetAdjustmentV65(game, p, card, {...castOpts, targets, targetIdentities}) || {};
+        extra += (confirmed.generic || 0) - (cost.globalTargetAdjustmentV65?.generic || 0);
+      }
+      return extra;
+    };
+    return (candidate, index) => {
+      let extra;
+      try { extra = targetTax([...ctx.targets.slice(0, index), candidate]); } catch { return true; }
+      if (!(extra > 0)) return true;
+      const net = cost.generic - (cost.xReduction || 0) + extra;
+      const taxed = {...cost, generic: Math.max(0, net), xReduction: Math.max(0, -net)};
+      return game.canPayMana(p, taxed, {card, castOpts, xVal}, {xVal, reservedLife: cost.lifeCost || 0});
+    };
+  }
+
   G.castSpell = async function (p, card, opts = {}) {
     // opts: {alt, from, xVal, aiChosen..., quickTargets}
     if (this.hasSplitSecond()) return false;
@@ -3557,7 +3590,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.x && !castOpts.free || d.additionalCostX || d.lcSummons&&castOpts.flashback || castOpts.oracleFlashbackXV23) {
       let maxX = castOpts.oracleFlashbackXV23 ? MTG.OracleV23Spells.flashbackMaximum(this,p,card,castOpts,cost) : d.lcSummons&&castOpts.flashback ? p.graveyard.filter(c=>c!==card).length : d.additionalCostX ? Math.max(0,typeof d.additionalCostXMax==='function'?d.additionalCostXMax(this,card,p):p.life) : maximumSpellXWithKicker();
       if (typeof d.xMax === 'function') maxX = Math.min(maxX, Math.max(0, Number(d.xMax(this, card, p, castOpts)) || 0));
-      const legalValues = this.legalXValues(p, card, castOpts, maxX);
+      let legalValues = this.legalXValues(p, card, castOpts, maxX);
+      // Mana-value casting limits (Void Winnower: no even mana values) depend
+      // on X. Offer only the values that keep the spell castable; otherwise a
+      // bot announces the largest X and the cast fails silently afterwards.
+      if (!legalValues && maxX <= 100) {
+        const castable = [];
+        for (let x = 0; x <= maxX; x++) if (this.canCastTiming(p, card, {...castOpts, xVal: x})) castable.push(x);
+        if (castable.length && castable.length <= maxX) legalValues = castable;
+      }
       if (legalValues && !legalValues.length) return false;
       const minX = legalValues ? legalValues[0] : 0;
       const maxChoice = legalValues ? legalValues[legalValues.length - 1] : maxX;
@@ -3823,6 +3864,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g: this, src: card, you: p, so, cancelable: !castOpts.suspend,
         quickTargets: Array.isArray(opts.quickTargets) ? opts.quickTargets.slice() : [],
       };
+      const affordable = aiAffordableTargetFilter(this, p, card, d, castOpts, cost, xVal, ctx);
+      if (affordable) ctx.targetChoiceFilter = affordable;
       const ok = await this.pickTargets(ctx, specs, card, p);
       if (!ok) {
         this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
@@ -3841,6 +3884,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           g: this, src: card, you: p, so, cancelable: !castOpts.suspend,
           quickTargets: Array.isArray(opts.quickTargets) ? opts.quickTargets.slice() : [],
         };
+        const affordable = aiAffordableTargetFilter(this, p, card, d, castOpts, cost, xVal, ctx);
+        if (affordable) ctx.targetChoiceFilter = affordable;
         const ok = await this.pickTargets(ctx, specs2, card, p);
         if (!ok) {
           this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
@@ -5541,8 +5586,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const canPayWithSacrifices = (source, cost, manaCost, ability) => {
       if(cost.craftV20)return MTG.OracleV20Costs.craftFeasible(this,p,source,cost.craftV20,manaCost,ability);
       if(cost.discardAlternativeV20&&p.hand.length>=cost.discardAlternativeV20&&this.canPayMana(p,this.abilityManaCost(p,source,'{0}',{ability}),{card:source,isAbility:true,ability}))return true;
+      // "X can't be 0" (Lair of the Hydra): offer the ability only when the
+      // smallest legal X is affordable, not merely X=0.
       const options = {excludeCards: cost.tap || cost.rmCounter ? [source] : [],
-        artifactAbilityAlreadyUsed: source.is('Artifact'), reservedMill: cost.mill || 0, reservedEnergy: cost.energy || 0, reservedLife: cost.life || 0};
+        artifactAbilityAlreadyUsed: source.is('Artifact'), reservedMill: cost.mill || 0, reservedEnergy: cost.energy || 0, reservedLife: cost.life || 0,
+        xVal: manaCost.x ? Math.max(0, Number(ability?.minX) || 0) : 0};
       const fixed = cost.sacSelf ? [source] : [];
       const payable = picks => this.canPayMana(p, manaCost, {card: source, isAbility: true, ability, cdkCostHasX:!!manaCost.x,waterbendV10:cost.waterbendV10},
         {...options, protectedSacrifices: fixed.concat(picks)});
@@ -5585,6 +5633,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cost.counter&&!this.canPutCountersV18(c,cost.counter)) return;
         if(loyaltyCostV74>0&&!this.canPutCountersV18(c,'loyalty'))return;
         if (cost.mill && p.library.length < cost.mill) return;
+        if (cost.energy && (MTG.OracleV8Energy?.count(p) ?? (Number(p.counters?.energy) || 0)) < cost.energy) return;
         if(cost.topHandV56&&p.hand.length<cost.topHandV56)return;
         if (cost.tap && (c.tapped)) return;
         if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')&&!MTG.C21Rules?.abilityHaste(this,c)))return;
@@ -7147,6 +7196,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // Priority
   // ============================================================
+  // A bot action the engine rejected (a cost that could not be paid after
+  // all) is not offered to that bot again while nothing it could depend on
+  // has changed. Without this, every later priority window of the turn asks
+  // again and the bot repeats the same failed attempt.
+  const rejectedActionKey = (kind, entry) => kind === 'activate'
+    ? `activate|${entry.card?.iid}|${entry.card?.zoneVersion}|${entry.idx ?? ''}|${entry.ability?.label || entry.label || ''}`
+    : `cast|${entry.card?.iid}|${entry.card?.zoneVersion}|${entry.from || ''}|${(entry.alt && (entry.alt.name || entry.alt.label)) || ''}`;
+  const rejectionStamp = (game, p) => [game.turnNo, game.battlefield.length, p.hand.length, p.life,
+    Number(p.counters?.energy) || 0, Object.values(p.pool || {}).join(','),
+    game.battlefield.filter(card => card.ctrl === p && !card.tapped).map(card => card.iid).join(',')].join('|');
+  G.rememberRejectedAIAction = function (p, act) {
+    const entry = act?.kind === 'activate' ? act.entry : act?.kind === 'cast' ? act : null;
+    if (!p?.isAI || !entry?.card) return;
+    const rejected = this._rejectedAIActions || (this._rejectedAIActions = new Map());
+    if (!rejected.has(p)) rejected.set(p, new Map());
+    const own = rejected.get(p), stamp = rejectionStamp(this, p), turn = `${this.turnNo}|`;
+    for (const [key, old] of own) if (!old.startsWith(turn)) own.delete(key);
+    own.set(rejectedActionKey(act.kind, entry), stamp);
+  };
+  G.withoutRejectedAIActions = function (p, kind, entries) {
+    const rejected = p?.isAI && this._rejectedAIActions?.get(p);
+    if (!rejected?.size) return entries;
+    const stamp = rejectionStamp(this, p);
+    return entries.filter(entry => rejected.get(rejectedActionKey(kind, entry)) !== stamp);
+  };
+
   // Koliko uzastopnih priority pitanja smije proći BEZ ijedne rezolucije ili
   // odigrane akcije prije nego zaključimo da je petlja zaglavljena.
   const PRIORITY_STALL_LIMIT = 400;
@@ -7195,7 +7270,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           consecutivePasses = 0;
           sinceProgress = 0;
           this._priorityRestart = null;
-          await this.performAction(holder, act);
+          if (await this.performAction(holder, act) === false) this.rememberRejectedAIAction(holder, act);
           holder = this._priorityRestart && !this._priorityRestart.lost ? this._priorityRestart : holder;
           this._priorityRestart = null;
           continue; // igrač koji je djelovao zadržava priority (CR 117.3c)
@@ -7452,8 +7527,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // castableList already applies canCastTiming to each prospective face and
     // alternative. Repeating a printed-keyword gate here hides spells made
     // legal by continuous or temporary timing permissions from both players.
-    const casts = this.castableList(p);
-    const acts = this.activatableList(p, true).filter(e => {
+    const casts = this.withoutRejectedAIActions(p, 'cast', this.castableList(p));
+    const acts = this.withoutRejectedAIActions(p, 'activate', this.activatableList(p, true).filter(e => {
       if (this.stack.length || this.turnPlayer !== p || (this.phase !== 'main1' && this.phase !== 'main2')) {
         // Foretell/Suspend already perform their exact timing checks inside
         // activatableList. Do not discard otherwise-legal special actions
@@ -7462,7 +7537,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           (!e.equip || this.c1719EquipTiming?.(p)) && !e.plot;
       }
       return true;
-    });
+    }));
     // Human controllers apply HOLD and Full control before their automatic
     // pass policy. Even an empty-action window must reach that policy.
     if (p.isAI && !casts.length && !acts.length) return { kind: 'pass' };
@@ -8012,14 +8087,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (this.gameOver) return;
         continue;
       }
-      const casts = this.castableList(p).filter(e => !failed.has(keyOf(e)));
-      const acts = this.activatableList(p).filter(e => !failed.has(actKeyOf(e)));
+      const casts = this.withoutRejectedAIActions(p, 'cast', this.castableList(p).filter(e => !failed.has(keyOf(e))));
+      const acts = this.withoutRejectedAIActions(p, 'activate', this.activatableList(p).filter(e => !failed.has(actKeyOf(e))));
       const lands = this.playableLands(p);
       const act = await p.controller.decide(this, {
         type: 'main', player: p, casts, acts, lands, phase: this.phase,
       });
       if (!act || act.kind === 'done') break;
       const ok = await this.performAction(p, act);
+      if (ok === false) this.rememberRejectedAIAction(p, act);
       if (p.isAI && ok === false && act.kind === 'cast') failed.add(keyOf(act));
       // Aktivacija koja tiho pukne (npr. loyalty već potrošen) isto ne smije
       // vrtiti guard petlju do isteka — ne nudi se ponovo u istoj fazi.

@@ -7344,6 +7344,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const penalty = wipeSequencingPenalty(game, player, action, total, plannedBoardWipes(view, profile, q));
       if (penalty) { breakdown.sequencing = -penalty; total -= penalty; }
     }
+    // A land drop spends neither mana nor tempo, so the bonuses for holding
+    // up answers (or a style's patience) never justify skipping it. Every
+    // land scores at least 6.1, so the window ends only after the land.
+    if (q?.type === 'main' && action.kind === 'done' && q.lands?.length && total > 6) {
+      breakdown.pendingLandDrop = 6 - total;
+      total = 6;
+    }
     return { total: round(total), breakdown: Object.fromEntries(Object.entries(breakdown).map(([key, value]) => [key, round(value)])) };
   }
   MTG.quickScoreBotAction = function (view, action, profile, q) { return quickScoreAction(view, action, profile, q); };
