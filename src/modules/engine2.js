@@ -1274,6 +1274,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (canUseArtifactDiscount ? artifactDiscount : 0));
       const optimisticNetOutput = Math.max(0, maximumOutput - activationMana);
       source.optimisticManaOutput=maximumOutput;
+      source.optimisticNetManaOutput = optimisticNetOutput;
       if (source.card && source.extraCost && source.extraCost.tap) {
         tappedCardOutput.set(source.card,
           Math.max(tappedCardOutput.get(source.card) || 0, optimisticNetOutput));
@@ -1359,6 +1360,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // variants share a second budget so several individually bounded misses
     // cannot add up to a multi-second main-thread stall.
     const totalNodeBudget = converterSources.length ? 24000 : Infinity;
+    // Searching for a cheaper plan after a legal one is found is optional, so
+    // it runs on a fraction of the budget (see the minimization loop below).
+    let budgetScale = 1;
 
     const initiallyUsedArtifactAbility = !!opts.artifactAbilityAlreadyUsed || artifactDiscount === 0;
     const planLifeCost = steps => steps.reduce((total, step) => {
@@ -1560,7 +1564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (priorLife !== undefined && priorLife <= lifeCost) return null;
         seen.set(memoKey, lifeCost);
       }
-      if (++nodes > 6000 || ++totalNodes > Math.max(totalNodeBudget, branchNodeFloor)) return null;
+      if (++nodes > 6000 * budgetScale || ++totalNodes > Math.max(totalNodeBudget * budgetScale, branchNodeFloor)) return null;
       if (!needPips.length && needGen <= 0) {
         return manaActivationResourcePlan(this,p,planAcc,undefined,opts.protectedSacrifices,opts.excludeCards,opts.reservedCounters,opts.reservedMill,opts)&&phyrexianLifeAllowed(this,p,planAcc,forSpell)?{plan:planAcc,pool:availablePool}:null;
       }
@@ -1708,7 +1712,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // Each branch keeps a small allowance of its own, so a payment that
           // exists only in a late (converter reserve) branch is not starved by
           // misses in the earlier branches.
-          branchNodeFloor = totalNodes + 2000;
+          branchNodeFloor = totalNodes + 2000 * budgetScale;
           // Prove the ordinary path first; retain the complete converter
           // search for payments needing a filter or a cheaper resource cost.
           let ordinaryOnly = null;
@@ -1743,12 +1747,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // extra creatures for generic mana. Limit usage of later source groups
         // and retry alternate color/converter allocations, preserving
         // the last proven legal plan if the bounded search finds no improvement.
+        // A legal plan exists, so each improvement attempt is optional: skip a
+        // limit whose optimistic total cannot reach the cost, and give the rest
+        // a fifth of the budget. Proving a tight payment impossible with the
+        // full budget took seconds per attempt on large rock and filter boards.
+        const limitedUpperBound = (rank, limit) => {
+          const early = new Map(), late = new Map();
+          for (const source of eligible) {
+            const net = Math.max(0, Number(source.optimisticNetManaOutput) || 0);
+            // A card taps once (a Chromatic Lantern land offers two {T}
+            // abilities); its other mana abilities may add up.
+            const group = sourcePriority(source) < rank ? early : late, key = source.card || source;
+            const row = group.get(key) || { tap: 0, other: 0 };
+            if (source.extraCost && source.extraCost.tap) row.tap = Math.max(row.tap, net);
+            else row.other += net;
+            group.set(key, row);
+          }
+          const amounts = group => [...group.values()].map(row => row.tap + row.other);
+          const sum = list => list.reduce((total, amount) => total + amount, 0);
+          return floatingManaUpperBound + sum(amounts(early)) + sum(amounts(late).sort((a, b) => b - a).slice(0, limit));
+        };
         for (let rank = priority; rank > 0; rank--) {
           if (!eligible.some(source => sourcePriority(source) < rank)) continue;
           let count = priorityUsage(solution.plan, rank);
           while (count > (rank === priority ? 1 : 0)) {
+            if (limitedUpperBound(rank, count - 1) < minimumManaNeeded) break;
             priorityLimits.set(rank, count - 1);
-            const better = findPayment();
+            budgetScale = 0.2;
+            let better;
+            try { better = findPayment(); } finally { budgetScale = 1; }
             if (!better) break;
             solution = better;
             count = priorityUsage(solution.plan, rank);

@@ -251,3 +251,21 @@ test('local AI targets an expendable token for Jace while preserving a large fin
   const [token] = await f.game.makeTokens(M.TOKENS.soldierW, f.a); card(f, 'Rootbreaker Wurm', 'library');
   await activate(f, c, 1); assert.equal(large.zone, 'battlefield'); assert.notEqual(token.zone, 'battlefield');
 });
+
+test('local AI never copies an opposing Venser with Venser while another permanent can be copied', async () => {
+  // Copies of Venser trigger again; choosing Venser each time never ended and
+  // froze four-player games. A copy's own trigger is answered here, so the test
+  // fails on the first choice instead of looping.
+  const f = setup('ai'), theirs = card(f, 'Venser, Fervent Forger', 'battlefield', f.b), bears = body(f, f.b), picks = [];
+  const decide = f.a.controller.decide.bind(f.a.controller);
+  f.a.controller = {decide: async (g, q) => {
+    if (q.type !== 'chooseTargets' || q.aiHint?.goal !== 'frc-copy-opposing') return decide(g, q);
+    if (q.src?.isToken) return [bears];
+    const answer = await decide(g, q); picks.push(answer); return answer;
+  }};
+  await play(f, 'Venser, Fervent Forger');
+  assert.deepEqual(picks.map(answer => Array.from(answer, target => target.name)), [['Grizzly Bears']]);
+  assert.equal(theirs.zone, 'battlefield');
+  assert.equal(f.game.stack.length, 0);
+  assert.deepEqual(Array.from(f.game.bf().filter(c => c.ctrl === f.a && c.isToken), c => c.name), ['Grizzly Bears', 'Grizzly Bears']);
+});

@@ -97,3 +97,23 @@ test('a converter that nothing can fund is dropped, and a funded one still pays'
   assert.equal(f.game.canPayMana(f.player, M.parseCost('{W}{U}{B}{R}{G}'), { card: spell }), true,
     'five Mountains fund Cascading Cataracts for five mana of any colors');
 });
+
+test('paying the largest X on a rock and filter-land board does not spend seconds looking for a cheaper plan', async () => {
+  const f = setup();
+  for (const name of ['Mountain', 'Sunken Ruins', 'Rakdos Signet', 'Sulfurous Springs', 'Chromatic Lantern', 'Path of Ancestry',
+    'Azorius Signet', 'Talisman of Dominance', 'Island', 'Plains', 'Turbulent Shore']) f.put(name);
+  f.game.recalc();
+  const spell = new M.CardInst(M.DEFS["White Sun's Twilight"], f.player);
+  spell.zone = 'hand'; f.player.hand.push(spell);
+  const cost = M.parseCost(spell.def.cost);
+  const max = f.game.maxAffordableX(f.player, cost, spell, { castOpts: {} });
+  assert.ok(max >= 5, `X ${max}`);
+  const started = performance.now();
+  const paid = await f.game.payMana(f.player, cost, { card: spell, castOpts: {}, xVal: max }, { xVal: max });
+  const elapsed = performance.now() - started;
+  assert.ok(paid, 'the largest affordable X is paid');
+  // A cheaper plan with one artifact fewer cannot reach the total; proving it
+  // with the full search budget used to take about ten seconds here.
+  assert.ok(elapsed < 1500, `payment finished in ${elapsed.toFixed(0)}ms`);
+  assert.equal(f.game.battlefield.filter(card => card.ctrl === f.player && card.tapped).length, max + 2);
+});

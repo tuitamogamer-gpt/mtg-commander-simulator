@@ -1122,6 +1122,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return players.sort((a,b)=>a.life-b.life).filter((p,i,list)=>i===0||i===list.length-1).slice(0,2);
       }
       if(goal==='donate-player-v9')return cands.filter(p=>p!==this.p).slice(0,1);
+      // Copying an opposing permanent of the source's own name repeats the
+      // source's trigger without end (Venser, Fervent Forger).
+      if(goal==='frc-copy-opposing'){
+        const fresh=cands.filter(c=>!(q.src&&c.name===q.src.name));
+        return (fresh.length?fresh:cands).sort((a,b)=>this.permThreat(g,b)-this.permThreat(g,a)||a.iid-b.iid).slice(0,1);
+      }
       if(goal==='donate-card-v9')return cands.sort((a,b)=>(a.ctrl===this.p?0:100)+this.permThreat(g,a)-(b.ctrl===this.p?0:100)-this.permThreat(g,b)).slice(0,1);
       if(goal==='exchange-control-v9'){
         const own=cands.filter(c=>c.ctrl===this.p).sort((a,b)=>this.permThreat(g,a)-this.permThreat(g,b))[0],other=cands.filter(c=>c.ctrl!==this.p).sort((a,b)=>this.permThreat(g,b)-this.permThreat(g,a))[0];return own&&other?[own,other]:cands.slice(0,2);

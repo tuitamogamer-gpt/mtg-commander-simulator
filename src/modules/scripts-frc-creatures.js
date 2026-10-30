@@ -74,6 +74,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       prepareTargets: ctx => {ctx.frcSphinxCount = ctx.data.attackers.filter(a => a.hasSub('Sphinx')).length;}})]};
   S['Venser, Fervent Forger'] = {kws: ['flash'], triggers: [C.modalTrigger(C.enterTrigger('Copy an opposing spell or permanent twice', null, {modes: {pick: 1, list: [
     {label: 'Copy an opposing instant or sorcery twice', targets: [T.spell((g, so, p) => so.ctrl !== p && g.isInstantSorcerySpell(so))], run: ctx => ctx.g.copySpells(ctx.targets[0], ctx.you, 2, {mayNewTargets: true})},
-    {label: 'Make two hasty temporary copies of an opposing permanent', targets: [T.permanent((g, c, p) => c.ctrl !== p)], run: ctx => C.copy(ctx, ctx.targets[0], {n: 2, haste: true, delayed: 'sacrifice'})},
+    {label: 'Make two hasty temporary copies of an opposing permanent', targets: [T.permanent((g, c, p) => c.ctrl !== p, {aiHint: {goal: 'frc-copy-opposing'}})], run: ctx => C.copy(ctx, ctx.targets[0], {n: 2, haste: true, delayed: 'sacrifice'})},
   ]}}))]};
 })();

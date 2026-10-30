@@ -4175,6 +4175,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const reaction = reactionTargetValue(game, player, target, q);
     if(q.aiHint?.goal==='frc-polymorph')return target instanceof U.CardInst&&target.ctrl===player
       ?20-permanentGameValue(game,target,player)+(target.isToken?6:0):-1000;
+    // Venser copying an opposing Venser makes copies whose own triggers copy
+    // it again: an endless chain that froze the table. Any other permanent
+    // comes first; the same name stays only for a forced, single-target case.
+    if(q.aiHint?.goal==='frc-copy-opposing')return target instanceof U.CardInst&&target.ctrl!==player
+      ?(q.src&&target.name===q.src.name?-1000:permanentGameValue(game,target,player)):-1000;
     if(q.aiHint?.goal==='donate-player-v9')return target instanceof U.Player?(target===player?-20:10):-1000;
     if(q.aiHint?.goal==='donate-card-v9')return target instanceof U.CardInst?(target.ctrl===player?20:0)-permanentGameValue(game,target,player):-1000;
     if(q.aiHint?.goal==='exchange-control-v9')return target instanceof U.CardInst?permanentGameValue(game,target,player):-1000;
