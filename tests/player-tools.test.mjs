@@ -65,6 +65,19 @@ test('corrupt or unavailable browser storage cannot prevent player tools from lo
   assert.equal(U.savePlayerPreferences({ handSize: 'large' }), false);
 });
 
+test('decks open newest first; the automatic name order stored by older versions does not override it', () => {
+  const { U, values } = tools();
+  assert.equal(U.playerPreferences().deckOrder, 'newest');
+  values.set('mtgPlayerPreferences', JSON.stringify({ deckSort: 'name', handSort: 'mana' }));
+  assert.equal(U.playerPreferences().deckOrder, 'newest');
+  U.savePlayerPreferences({ deckOrder: 'name' });
+  assert.equal(U.playerPreferences().deckOrder, 'name');
+  U.savePlayerPreferences({ handSort: 'type' });
+  assert.equal(U.playerPreferences().deckOrder, 'name', 'an explicit choice survives other preference changes');
+  U.savePlayerPreferences({ deckOrder: 'sideways' });
+  assert.equal(U.playerPreferences().deckOrder, 'newest');
+});
+
 test('saved pods preserve seats and rules without storing a seed, game state, or another account library', () => {
   const { U, sandbox } = tools();
   const state = { deck: 'Alpha', commanders: ['Commander'], ai: 2, aiDecks: ['Beta', '', ''], aiStyles: ['balanced'], difficulty: 'hard', diplomacyEnabled: true, seed: '0', hand: ['Secret'], resumeSave: { private: true } };

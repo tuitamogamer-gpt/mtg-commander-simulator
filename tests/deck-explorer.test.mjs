@@ -72,3 +72,19 @@ test('shrinking and empty results clamp the page, and larger catalogs remain ful
   const newest = MTG.browseDecks(catalog, { deckSort: 'newest' });
   assert.equal(Number(newest.entries[0].year), Math.max(...catalog.map(entry => Number(entry.year))));
 });
+
+test('newest first leads with the latest dated release, then later additions within each year', () => {
+  const result = MTG.browseDecks(catalog, { deckSort: 'newest' }, [], catalog.length);
+  const latest = catalog.map(entry => entry.released).filter(date => !date.endsWith('-00-00')).sort().at(-1);
+  const dated = catalog.filter(entry => entry.released === latest).length;
+  assert.ok(dated > 0);
+  assert.ok(result.matches.slice(0, dated).every(entry => entry.released === latest), names(result).slice(0, dated).join(', '));
+  const years = result.matches.map(entry => Number(entry.year));
+  assert.ok(years.every((year, index) => index === 0 || year <= years[index - 1]), 'release years never increase');
+  const added = new Map(catalog.map((entry, index) => [entry.name, index]));
+  for (const year of ['2026', '2024', '2014']) {
+    const order = result.matches.filter(entry => entry.year === year && entry.released === `${year}-00-00`).map(entry => added.get(entry.name));
+    assert.deepEqual(order, order.slice().sort((a, b) => b - a), `${year}: later catalog additions first`);
+  }
+  assert.deepEqual(names(MTG.browseDecks(catalog, { deckSort: 'newest', year: '2014', color: 'U', search: 'teferi' })), ['Peer Through Time']);
+});

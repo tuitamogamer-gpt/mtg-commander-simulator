@@ -24,7 +24,7 @@ async function frames() {
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve)))));
 }
 async function clean() {
-  await page.waitForFunction(() => !document.querySelector('.actionfx-attack, .actionfx-instant'), undefined, {timeout: 2000});
+  await page.waitForFunction(() => !document.querySelector('.actionfx-attack, .actionfx-instant, .actionfx-block, .actionfx-clash'), undefined, {timeout: 2000});
 }
 async function prepare(width, height) {
   await clean();
@@ -155,6 +155,34 @@ try {
   assert.ok(counts.length > 0 && counts.length <= 6 && counts.every(count => count > 0 && count <= 8), JSON.stringify(counts));
   await clean();
   check('Duplicate events are ignored and mass attacks stay within the effect/path budget');
+
+  await page.evaluate(() => {
+    const mine = _game.creatures(_ui.me), theirs = _game.creatures(_game.players[1]);
+    window.__blocks = {type: 'combat', kind: 'blockersDeclared',
+      blocks: [{card: mine[0], target: theirs[0]}, {card: mine[1], target: theirs[1]}]};
+    window.__clash = {type: 'gameEffect', kind: 'combatClash', combatStep: 'normal', count: 3, pairs: [
+      {card: theirs[0], targets: [mine[0]], target: _ui.me}, {card: theirs[1], targets: [mine[1]], target: _ui.me},
+      {card: theirs[2], targets: [], target: _ui.me}]};
+    window.__rulesBefore = JSON.stringify({phase: _game.phase, life: _game.players.map(p => p.life), bf: _game.battlefield.length});
+    _ui.showActionEffect(__blocks);
+  });
+  await frames();
+  assert.deepEqual(await page.locator('.actionfx-block').evaluate(node => ({
+    blockers: node.querySelectorAll('.actionfx-frame.blocker').length, attackers: node.querySelectorAll('.actionfx-frame.attacker').length,
+    routes: node.querySelectorAll('.actionfx-route').length, label: node.querySelector('.actionfx-label b')?.textContent})),
+  {blockers: 2, attackers: 2, routes: 2, label: '2 BLOCKERS'});
+  await harmlessLayer(); await shot('blocks-1440');
+  await clean();
+  await page.evaluate(() => _ui.showActionEffect(__clash)); await frames();
+  assert.deepEqual(await page.locator('.actionfx-clash').evaluate(node => ({
+    attackers: node.querySelectorAll('.actionfx-frame.attacker').length, blockers: node.querySelectorAll('.actionfx-frame.blocker').length,
+    collisions: node.querySelectorAll('.actionfx-collision').length, title: node.querySelector('.actionfx-banner b')?.textContent,
+    detail: node.querySelector('.actionfx-banner small')?.textContent})),
+  {attackers: 3, blockers: 2, collisions: 2, title: 'COMBAT DAMAGE', detail: '2 blocked · 1 unblocked'});
+  await harmlessLayer(); await shot('clash-1440');
+  await clean();
+  assert.equal(await page.evaluate(() => JSON.stringify({phase: _game.phase, life: _game.players.map(p => p.life), bf: _game.battlefield.length}) === __rulesBefore), true);
+  check('Blocks and the clash before combat damage frame both sides, then clean up without changing rules');
 
   await page.evaluate(() => {
     _ui.showActionEffect({...__instant(), kind: 'land'});

@@ -5,16 +5,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.deckSearchText = value => String(value || '').normalize('NFD')
     .replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
-  MTG.deckExplorerRecord = (name, deck, meta = {}, commanders = [deck.commander]) => ({
-    name, commanders,
-    year: ((meta.set || '').match(/\b20\d{2}\b/) || [''])[0],
-    colors: (meta.colors || deck.colors || []).filter(color => ['W', 'U', 'B', 'R', 'G'].includes(color)),
-    strategy: MTG.deckStrategy(meta.style),
-    searchText: MTG.deckSearchText([name, ...commanders, meta.set, meta.style, meta.blurb].join(' ')),
-  });
+  MTG.deckExplorerRecord = (name, deck, meta = {}, commanders = [deck.commander]) => {
+    const year = ((meta.set || '').match(/\b20\d{2}\b/) || [''])[0];
+    return {
+      name, commanders, year,
+      // Release order: the exact date where the catalog records one, else the year.
+      released: deck.releaseDate || (year ? `${year}-00-00` : ''),
+      preview: !!deck.preview,
+      colors: (meta.colors || deck.colors || []).filter(color => ['W', 'U', 'B', 'R', 'G'].includes(color)),
+      strategy: MTG.deckStrategy(meta.style),
+      searchText: MTG.deckSearchText([name, ...commanders, meta.set, meta.style, meta.blurb].join(' ')),
+    };
+  };
 
   MTG.browseDecks = (catalog, filters = {}, recents = [], pageSize = 24) => {
     const words = MTG.deckSearchText(filters.search).split(/\s+/).filter(Boolean);
+    // Within one release, later catalog additions come first.
+    const added = new Map(catalog.map((entry, index) => [entry, index]));
     const favorites = filters.favorites || new Set();
     const matches = catalog.filter(entry =>
       words.every(word => entry.searchText.includes(word)) &&
@@ -23,7 +30,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       (!filters.year || filters.year === 'all' || entry.year === filters.year) &&
       (!filters.favoritesOnly || favorites.has(entry.name))
     ).sort((a, b) => {
-      if (filters.deckSort === 'newest') return Number(b.year) - Number(a.year) || a.name.localeCompare(b.name);
+      if (filters.deckSort === 'newest') return String(b.released || '').localeCompare(String(a.released || '')) ||
+        Number(b.year) - Number(a.year) || added.get(b) - added.get(a);
       if (filters.deckSort === 'recent') {
         const rank = name => recents.includes(name) ? recents.indexOf(name) : recents.length;
         return rank(a.name) - rank(b.name) || a.name.localeCompare(b.name);

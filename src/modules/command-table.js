@@ -81,6 +81,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.makeKeyboardButton(control, `${card.name}. ${location}. Open commander details.`);
       }
       control.classList.add('ct-commander-card');
+      // Commander identity is public: hovering shows the large card preview.
+      control.dataset.cname = card.name;
       control.title = card.name;
       slots.append(control);
     }
@@ -137,16 +139,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const colors = card.def.producesColors || [];
       return colors.length === 1 ? colorOrder.indexOf(colors[0]) : colors.length > 1 ? 5 : 6;
     };
-    return game.lands(player).filter(card => !card.is('Creature')).sort((a, b) =>
-      colorKey(a) - colorKey(b) || a.name.localeCompare(b.name) || Number(a.tapped) - Number(b.tapped) || a.iid - b.iid).map(card => {
+    // Tapped copies of one land share a single pile (two Swamps tapped for
+    // {B}{B} read as one stack); untapped lands keep their own cells. Every
+    // copy stays its own control, and a pile with a legal or chosen target
+    // opens up while targets are chosen.
+    const targeting = this.pending?.q.type === 'chooseTargets';
+    const pickable = card => targeting && (this.isCandidate(card) || this.selectedTargetIndex(card) >= 0);
+    const entries = [], piles = new Map();
+    for (const card of game.lands(player).filter(card => !card.is('Creature')).sort((a, b) =>
+      colorKey(a) - colorKey(b) || a.name.localeCompare(b.name) || Number(a.tapped) - Number(b.tapped) || a.iid - b.iid)) {
       const item = this.permanentPile(game, card, { sm: true });
       item.classList.add('ct-land-card');
-      if (card.tapped) {
-        const face = item.matches('.mini') ? item : item.querySelector('.mini');
-        face.append(node('span', 'ct-land-state', 'Tapped'));
-        face.setAttribute('aria-label', `${face.getAttribute('aria-label')} Tapped.`);
-      }
-      return item;
+      if (!card.tapped) { entries.push(item); continue; }
+      const face = item.matches('.mini') ? item : item.querySelector('.mini');
+      face.append(node('span', 'ct-land-state', 'Tapped'));
+      face.setAttribute('aria-label', `${face.getAttribute('aria-label')} Tapped.`);
+      let pile = piles.get(card.name);
+      if (!pile) { pile = { name: card.name, items: [], open: false }; piles.set(card.name, pile); entries.push(pile); }
+      pile.items.push(item);
+      pile.open ||= pickable(card);
+    }
+    return entries.flatMap(entry => {
+      if (!entry.items) return [entry];
+      if (entry.items.length < 2 || entry.open) return entry.items;
+      const stack = node('div', 'ct-land-stack');
+      stack.setAttribute('role', 'group');
+      stack.setAttribute('aria-label', `${entry.items.length} tapped ${entry.name}`);
+      // Up to four visible layers, centred in the cell; the last copy is in front.
+      const layers = Math.min(entry.items.length, 4);
+      entry.items.forEach((item, index) => {
+        item.style.setProperty('--ct-stack-step', String(Math.min(index, layers - 1) - (layers - 1) / 2));
+        stack.append(item);
+      });
+      const count = node('span', 'ct-land-stack-count', `×${entry.items.length}`);
+      count.setAttribute('aria-hidden', 'true');
+      stack.append(count);
+      return [stack];
     });
   };
 

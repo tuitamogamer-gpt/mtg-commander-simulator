@@ -236,6 +236,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (poisonGain >= 3) stats.push({value: poisonGain, label: 'most poison gained'});
     const stack = game.stack.slice().reverse().map(so => so.name);
     const queued = game.pendingTriggers.map(tr => tr.name || tr.desc || publicName(tr.src));
+    // Where the result happened on the table, for presentation beside it: the
+    // source if it is still on the battlefield, then the public permanents the
+    // result found, moved, took or damaged, then its controller's board.
+    const found = [...frame.searches.values()].flatMap(cards => [...cards.keys()]);
+    const taken = [...frame.battlefield].filter(([card, before]) => card.ctrl !== before.controller).map(([card]) => card);
+    const anchor = {playerIdx: frame.actor?.idx ?? null, iids: [...new Set([frame.sourceCard, ...found, ...unexpectedEntries,
+      ...taken, ...entered, ...frame.damagedPermanents].filter(card => card instanceof MTG.CardInst &&
+        card.zone === 'battlefield' && !card.phasedOut).map(card => card.iid))].slice(0, 4)};
     for (const player of frame.humans) {
       // The acting player already made the routine choice. Only table-wide
       // highlights interrupt them; opponents get the short explanation too.
@@ -308,7 +316,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const recap = {name: frame.name, source: frame.source, controllerName: frame.controller,
         combat: frame.combat, details: [...revealedToHand, ...exileRows, ...frame.details], searches, changes, players,
         damage: frame.damage, prevented: frame.prevented, totalDamage: damage, stack, queued,
-        gameOver: !!game.gameOver, impact, summary, highlights};
+        gameOver: !!game.gameOver, impact, summary, highlights, anchor};
       await player.controller.decide(game, {type: 'effectReview', effectKind: 'resolutionRecap',
         player, source: frame.source, prompt: `${frame.name} — what happened`, recap});
     }

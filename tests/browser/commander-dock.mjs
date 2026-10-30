@@ -58,6 +58,15 @@ try {
     await page.addScriptTag({content: fixture});
     await geometry(`${width}x${height}`);
     const commander = page.locator('.ct-commander-card').first();
+    if (width > 900) {
+      await commander.hover();
+      const preview = await page.evaluate(() => {
+        const element = document.getElementById('hoverprev');
+        return {shown: element?.style.display === 'block', image: !!element?.querySelector('img')?.getAttribute('src')};
+      });
+      assert.deepEqual(preview, {shown: true, image: true}, 'hovering the commander shows its large card preview');
+      await page.mouse.move(0, 0);
+    }
     await commander.focus();
     await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => _ui.sheet?.card === _ui.me.commanders[0]), true, 'keyboard opens original commander actions');

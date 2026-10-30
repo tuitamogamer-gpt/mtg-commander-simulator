@@ -829,6 +829,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const addIf = (set, yes, value) => { if (yes) set.add(value); };
   const hasAny = (text, patterns) => patterns.some(pattern => pattern.test(text));
 
+  // The smallest X at which an {X} spell still does something. At X=0 most
+  // X spells resolve with no effect, 0/0 creatures die and X-loyalty
+  // planeswalkers leave at once. Clones, "beneath the top X", fights, team
+  // protection and creatures sized by mana spent keep an effect at X=0, as do
+  // other permanents with abilities of their own (except counter-fed rocks).
+  const X_FLOOR_CACHE = new WeakMap();
+  function xEffectFloor(def) {
+    if (!def) return 0;
+    if (X_FLOOR_CACHE.has(def)) return X_FLOOR_CACHE.get(def);
+    const text = textOf(def).split(/\n(?:cycling\b|when you cycle\b)/)[0]
+      .replace(/\([^)]*\)/g, '').replace(/"[^"]*"/g, '');
+    const types = def.types || [];
+    let floor = 0;
+    if (/\benter as a copy of\b|\bamount of mana spent\b/.test(text)) floor = 0;
+    else if (types.includes('Creature')) floor = Number(def.toughness) > 0 ? 0 : 1;
+    else if (types.includes('Planeswalker')) floor = String(def.loyalty).toUpperCase() === 'X' ? 1 : 0;
+    else if (types.includes('Instant') || types.includes('Sorcery'))
+      floor = /\bbeneath the top x\b|\bfights?\b|\bgains? (?:hexproof|indestructible|protection)\b/.test(text) ? 0 : 1;
+    else floor = /\benters with x (?:charge|study) counters\b/.test(text) ? 1 : 0;
+    X_FLOOR_CACHE.set(def, floor);
+    return floor;
+  }
+
   function inferCardSemantics(def) {
     if (!def) return { roles: [], synergyTags: [] };
     if (ROLE_CACHE.has(def)) return ROLE_CACHE.get(def);
@@ -6302,13 +6325,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.threat += persistentNet;
         if (persistentNet <= 0) breakdown.timing -= 8 + Math.min(24, Math.abs(persistentNet) * 0.6);
       }
-      if (sem.roles.includes('board-wipe') && !compiledGlobalPumps.length) {
+      // X is announced while casting; until then the largest payable X is
+      // the most this spell can do.
+      const paidX = cost.x && !(action.alt && action.alt.free);
+      let maxX = 0;
+      if (paidX) { try { maxX = game.maxAffordableX(player, cost, card); } catch (error) { maxX = 0; } }
+      const oracleText = textOf(card.def);
+      // Martial Coup destroys only at X 5 or more; below that it is a token spell.
+      const xWipeThreshold = /\bif x is (\d+) or more, destroy all\b/.exec(oracleText);
+      if (sem.roles.includes('board-wipe') && !compiledGlobalPumps.length &&
+          !(paidX && xWipeThreshold && maxX < Number(xWipeThreshold[1]))) {
         // Wipe se procjenjuje po STVARNOM skupu koji pogađa. Generički Oracle
         // destroy-all može čistiti artefakte ili enchantmente, dok stariji
         // damage wipeovi i dalje pogađaju stvorenja.
-        const oracle = textOf(card.def);
+        const oracle = oracleText;
         const damageMatch = /(\d+)\s+damage\s+to\s+each\s+creature/.exec(oracle);
-        const wipeDamage = damageMatch ? Number(damageMatch[1]) : null;
+        // "X damage to each creature" and "X -1/-1 counters on each creature"
+        // kill only what the payable X reaches; X=0 kills nothing.
+        const xSweep = paidX && !/\bwhere x is\b/.test(oracle) &&
+          /\bx damage to each creature\b|\bput x -1\/-1 counters on each creature\b/.test(oracle);
+        const wipeDamage = damageMatch ? Number(damageMatch[1]) : xSweep ? maxX : null;
         const destroyAll = resolvingOperations.find(operation => operation.kind === 'spell-destroy-all');
         const affectedType = destroyAll && destroyAll.what
           ? destroyAll.what.charAt(0).toUpperCase() + destroyAll.what.slice(1).replace(/s$/, '')
@@ -6343,11 +6379,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // X spellovi: vrijednost raste sa stvarno dostupnim X. Bacanje damage/draw
       // X spella dok je X sitno je trošenje karte.
-      if (cost.x && !(action.alt && action.alt.free)) {
-        let maxX = 0;
-        try { maxX = game.maxAffordableX(player, cost, card); } catch (error) { maxX = 0; }
+      if (paidX) {
         breakdown.base += Math.min(6, maxX * 0.7) - 1.5;
         if (maxX <= 1 && game.turnNo > 4) breakdown.timing -= 6;
+        // A spell that does nothing at the largest payable X only spends the card.
+        if (maxX < xEffectFloor(card.def)) breakdown.safety -= 1000;
       }
       const openAfter = availableManaEstimate(game, player) - spend;
       const hasInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles.some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
@@ -7342,6 +7378,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else breakdown.choice = action.value * 0.7;
       const source = q && q.src;
       if (source && /lose.*life|pay.*life/i.test(source.def && source.def.oracle || '')) breakdown.safety -= action.value * 0.5;
+      // Announcing X for a spell being cast: an X below its effect floor
+      // resolves with nothing (or a 0/0 that dies) while a larger X is legal.
+      const xFloor = q && q.card && q.cost && q.cost.x ? xEffectFloor(q.card.def) : 0;
+      const largerLegal = Array.isArray(q?.values) && q.values.length
+        ? q.values.some(value => Number(value) >= xFloor) : Number(q?.max) >= xFloor;
+      if (xFloor && Number(action.value) < xFloor && largerLegal) breakdown.choice -= 50;
     } else if (action.kind === 'mulligan') {
       const lands = player.hand.filter(card => card.is('Land')).length;
       const cheap = player.hand.filter(card => !card.is('Land') && card.mv <= 3).length;

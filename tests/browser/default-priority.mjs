@@ -101,7 +101,7 @@ try {
     assert.deepEqual(await page.evaluate(() => ({profile: _ui.prioMode, speed: _ui.speed,
       factor: _game.speedFactor, preference: localStorage.getItem('mtgStopProfile'),
       done: __defaults.done, pending: !!_ui.pending, reaction: !!_ui.react, phase: _game.phase})),
-    {profile: 'end', speed: 'normal', factor: 1.25, preference: null,
+    {profile: 'end', speed: 'normal', factor: 1.5625, preference: null,
       done: true, pending: false, reaction: false, phase: 'main2'});
     await stopSettings();
     assert.equal(await page.locator('[data-stop-mode="end"]').getAttribute('aria-pressed'), 'true');

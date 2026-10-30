@@ -7494,12 +7494,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (myTurn && g.step === 'attackers') return true;
     return false;                                            // PITAJ
   };
-  // Cosmetic pacing only. A 20% lower playback rate means 1 / 0.8 times
-  // the previous delays. Required reviews and priority decisions stay untimed.
+  // Cosmetic pacing only. Each 20% lower playback rate means 1 / 0.8 times
+  // the previous delays (twice so far: Normal 1 → 1.25 → 1.5625). Required
+  // reviews and priority decisions stay untimed.
   MTG.SPEEDS = {
-    normal: ['▶️', 1.25, 'Normal — steady pace, every action visible'],
-    slow: ['🐢', 3.25, 'Slow — for careful tracking'],
-    fast: ['⏩', 0.75, 'Fast — for skipping ahead'],
+    normal: ['▶️', 1.5625, 'Normal — steady pace, every action visible'],
+    slow: ['🐢', 4.0625, 'Slow — for careful tracking'],
+    fast: ['⏩', 0.9375, 'Fast — for skipping ahead'],
   };
   MTG.DEFAULT_PRIO_MODE = 'end';
   MTG.PRIO_MODES = [
@@ -8509,7 +8510,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const reachBlockedFlying = this.combat.attackers.some(attacker => !attacker.faceDown && attacker.kw('flying') &&
       attacker.blockedBy.some(blocker => !blocker.faceDown && blocker.kw('reach')));
-    this.note('combat', {kind: 'blockersDeclared', audioFacts: {keywords: reachBlockedFlying ? ['reach'] : []}});
+    this.note('combat', {kind: 'blockersDeclared',
+      blocks: this.combat.attackers.flatMap(attacker => attacker.blockedBy.map(blocker => ({card: blocker, target: attacker}))),
+      audioFacts: {keywords: reachBlockedFlying ? ['reach'] : []}});
     if (this.combat.attackers.some(a => a.blockedBy.length)) await this.pace(900);
     // REFLEKTOR: bot je blokirao TVOJE napadače
     {
@@ -9012,7 +9015,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         audioKeywords, audioTrampleTarget: d.audioTrampleTarget,
       }};
     });
+    // Presentation pacing only (paced games): show who fights whom before the
+    // simultaneous damage, then keep the marked hits on screen before
+    // state-based actions remove the dead. Assignment above is already fixed.
+    if (plan.length) {
+      this.note('gameEffect', {kind: 'combatClash', combatStep: stepKind, count: plan.length,
+        pairs: cmb.attackers.filter(a => a.zone === 'battlefield' && a.attacking !== null)
+          .map(a => ({card: a, targets: a.blockedBy.filter(b => b.zone === 'battlefield'), target: a.attacking}))});
+      await this.pace(700);
+    }
     await this.damageBatch(damageHits, { combat: true, deferSBA: true, combatStep: stepKind });
+    if (plan.length) await this.pace(450 + Math.min(plan.length, 6) * 110);
     // Redirection may send damage assigned to a creature to a player, or
     // divide one assignment. Combat triggers use the actual recipients.
     for (const d of damageHits) for (const result of d.opts.damageResults) {

@@ -46,7 +46,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const raw = U.readPreference('mtgPlayerPreferences', {}) || {};
     return {
       deckView: choose(raw.deckView, ['gallery', 'compact'], 'gallery'),
-      deckSort: choose(raw.deckSort, ['name', 'recent', 'newest'], 'name'),
+      // Newest first is the default. The key changed with it (formerly
+      // deckSort): older versions stored their automatic 'name' with any setting.
+      deckOrder: choose(raw.deckOrder, ['name', 'recent', 'newest'], 'newest'),
       handSort: choose(raw.handSort, ['draw', 'mana', 'type', 'name'], 'draw'),
       handSize: choose(raw.handSize, ['standard', 'large'], 'standard'),
       contrast: raw.contrast === true,

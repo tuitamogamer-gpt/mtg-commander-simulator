@@ -3728,6 +3728,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const cmd of me.command) {
           const cz = el('div', 'czcard');
           cz.dataset.iid = String(cmd.iid);
+          cz.dataset.cname = cmd.name;
           const actionQ = this.actionQuestion();
           const castEntry = actionQ?.casts?.find(e => e.card === cmd);
           const ninjutsuEntry = actionQ?.acts?.find(e => e.card === cmd && e.ninjutsu);
@@ -4715,6 +4716,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           m.classList.add('wide', 'resolutionrecap');
           m.dataset.testid = 'resolution-recap';
           m.dataset.impact = major ? 'major' : 'minor';
+          // A minor result is placed beside the permanents or board it changed
+          // (effect-anchors.js); without a visible anchor it keeps its corner.
+          if (!major && recap.anchor) {
+            m.dataset.anchorIids = (recap.anchor.iids || []).join(',');
+            if (recap.anchor.playerIdx != null) m.dataset.anchorPlayer = String(recap.anchor.playerIdx);
+          }
           m.setAttribute('role', 'dialog');
           m.setAttribute('aria-modal', 'true');
           m.setAttribute('aria-labelledby', 'resolution-recap-title');
@@ -7188,28 +7195,32 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         `<i></i><i></i><i></i><span></span><strong>−${amount}</strong><small>${lethal ? 'LETHAL' : event.combat ? combatStep : 'DAMAGE'}</small>`);
       impact.style.left = `${x}px`;
       impact.style.top = `${y}px`;
-      impact.style.setProperty('--combat-delay', `${Math.min(180, Math.max(0, Number(event.combatIndex) || 0) * 28)}ms`);
+      // Combat damage is one simultaneous event; its hits are shown one after
+      // another so each attacker and blocker can be followed.
+      const delay = event.combat ? Math.min(660, Math.max(0, Number(event.combatIndex) || 0) * 110) : 0;
+      const later = (callback, ms = 0) => setTimeout(callback, delay + ms);
+      impact.style.setProperty('--combat-delay', `${delay}ms`);
       layer.appendChild(impact);
       if (tier === 'big' || tier === 'huge' || lethal) {
         const gameRoot = document.querySelector('#game');
-        if (gameRoot) {
+        if (gameRoot) later(() => {
           gameRoot.classList.remove('fx-hit-big', 'fx-hit-huge');
           void gameRoot.offsetWidth;
           gameRoot.classList.add(tier === 'huge' || lethal ? 'fx-hit-huge' : 'fx-hit-big');
           setTimeout(() => gameRoot.classList.remove('fx-hit-big', 'fx-hit-huge'), 640);
-        }
-        if (event.targetKind === 'player') {
+        });
+        if (event.targetKind === 'player') later(() => {
           const veil = el('div', `gamefx-vignette${lethal ? ' lethal' : ''}${target === this.me ? ' mine' : ''}`);
           layer.appendChild(veil);
           setTimeout(() => veil.remove(), lethal ? 1100 : 780);
-        }
+        });
       }
-      if (targetNode) {
+      if (targetNode) later(() => {
         targetNode.classList.remove('fx-damage-target');
         void targetNode.offsetWidth;
         targetNode.classList.add('fx-damage-target');
         setTimeout(() => targetNode.classList.remove('fx-damage-target'), 620);
-      }
+      });
       const sourceNode = this.gameEffectCardAnchor(event.source);
       const sourceRect = this.fxRect(sourceNode);
       if (sourceRect) {
@@ -7219,6 +7230,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         line.style.left = `${sx}px`; line.style.top = `${sy}px`;
         line.style.width = `${Math.max(12, Math.hypot(dx, dy))}px`;
         line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+        line.style.animationDelay = `${delay}ms`;
         layer.appendChild(line);
         if (event.combat) {
           const ghost = el('div', `gamefx-combatghost step-${event.combatStep || 'normal'}`);
@@ -7227,20 +7239,23 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
           ghost.style.width = `${sourceRect.width}px`; ghost.style.height = `${sourceRect.height}px`;
           ghost.style.setProperty('--combat-x', `${dx * .2}px`);
           ghost.style.setProperty('--combat-y', `${dy * .2}px`);
+          ghost.style.animationDelay = `${delay}ms`;
           layer.appendChild(ghost);
-          sourceNode.classList.remove('fx-combat-source');
-          void sourceNode.offsetWidth;
-          sourceNode.classList.add('fx-combat-source');
-          document.querySelector('#game')?.classList.remove('fx-combat-camera');
-          void document.querySelector('#game')?.offsetWidth;
-          document.querySelector('#game')?.classList.add('fx-combat-camera');
-          setTimeout(() => { ghost.remove(); sourceNode.classList.remove('fx-combat-source'); }, 620);
-          setTimeout(() => document.querySelector('#game')?.classList.remove('fx-combat-camera'), 430);
+          later(() => {
+            sourceNode.classList.remove('fx-combat-source');
+            void sourceNode.offsetWidth;
+            sourceNode.classList.add('fx-combat-source');
+            document.querySelector('#game')?.classList.remove('fx-combat-camera');
+            void document.querySelector('#game')?.offsetWidth;
+            document.querySelector('#game')?.classList.add('fx-combat-camera');
+          });
+          later(() => { ghost.remove(); sourceNode.classList.remove('fx-combat-source'); }, 620);
+          later(() => document.querySelector('#game')?.classList.remove('fx-combat-camera'), 430);
         }
-        setTimeout(() => line.remove(), event.combat ? 640 : 520);
+        later(() => line.remove(), event.combat ? 640 : 520);
       }
-      setTimeout(() => impact.remove(), 940);
-      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1020);
+      later(() => impact.remove(), 940);
+      later(() => { if (layer && !layer.children.length) layer.remove(); }, 1020);
     }
 
     showZoneMoveEffect(event) {

@@ -1977,8 +1977,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const target = Math.min(...oppPowers);
         return Math.max(Math.min(10, myMax + 1), Math.min(10, target));
       }
-      // default: max X but keep a bit of mana
-      return Math.max(q.min, q.max - (this.r(g) < 0.3 ? 1 : 0));
+      // default: max X but keep a bit of mana — never by dropping X to 0
+      return Math.max(q.min, Math.min(q.max, Math.max(1, q.max - (this.r(g) < 0.3 ? 1 : 0))));
     }
 
     scry(g, q) {

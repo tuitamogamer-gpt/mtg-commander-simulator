@@ -189,7 +189,7 @@ try {
       assert.equal(result.optZone, 'graveyard'); assert.equal(result.optManaSpent, 1);
       assert.equal(result.opponentOptZone, 'graveyard'); assert.equal(result.opponentOptManaSpent, 1);
       assert.equal(result.islandTapped, true); assert.deepEqual(result.hand, ['Forest']);
-      assert.equal(result.paced, true); assert.equal(result.speedFactor, 1.25);
+      assert.equal(result.paced, true); assert.equal(result.speedFactor, 1.5625);
       assert.ok(result.animationFrames > 0, 'the normally paced stack continues painting');
     }
     await page.screenshot({path: `${output}/${label}-resolved.png`});

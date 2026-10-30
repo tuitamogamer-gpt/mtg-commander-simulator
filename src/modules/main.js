@@ -775,7 +775,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       search: '', color: 'all', strategy: 'all', year: 'all', complexity: 'all', favoritesOnly: false,
       setupStage: 'deck', playstyle: 'all', deckPage: 1,
       favorites: new Set(savedFavorites),
-      deckView: U.playerPreferences().deckView, deckSort: U.playerPreferences().deckSort,
+      deckView: U.playerPreferences().deckView, deckSort: U.playerPreferences().deckOrder,
       importedDeckId: null, importedLibraryOwner: null,
     };
     root.dataset.setupStage = state.setupStage;
@@ -1138,7 +1138,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         deckBrowseBar.querySelectorAll('[data-deck-view]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
       };
     });
-    const deckPageSize = 24;
+    // Five or six decks a row on desktop: thirty fill whole rows.
+    const deckPageSize = 30;
+    // The decks of the most recent dated release are marked as new.
+    const newestRelease = deckCatalog.map(record => record.released).filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date) && !date.endsWith('-00-00')).sort().at(-1);
     let browseResult = U.browseDecks(pilotCatalog(), state, U.recentDecks(), deckPageSize);
     const deckList = el('div', 'decklist');
     deckList.id = 'deck-results';
@@ -1160,10 +1163,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = el('button', 'deckcard');
       card.type = 'button';
       card.setAttribute('aria-pressed', 'false');
-      card.setAttribute('aria-label', `${name}, led by ${commanders.join(' and ')}. Select deck and open guide`);
+      const newest = !libraryEntry && newestRelease && record.released === newestRelease;
+      card.setAttribute('aria-label', `${name}, led by ${commanders.join(' and ')}${newest ? ', newest release' : ''}. Select deck and open guide`);
       card.innerHTML = `
         <div class="deckcardheading">
-          <span class="deckedition">${libraryEntry ? 'My Library' : 'Precon'}${year ? ` · ${esc(year)}` : ''}</span>
+          <span class="deckedition">${libraryEntry ? 'My Library' : 'Precon'}${year ? ` · ${esc(year)}` : ''}${newest ? ` <span class="decknew">${record.preview ? 'New · preview' : 'New'}</span>` : ''}</span>
           <span class="deckselectedmark"><b>✓</b> Selected</span>
           <div class="deckname">${esc(name)}</div>
         </div>
@@ -1330,6 +1334,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       browseResult.entries.forEach(record => deckList.appendChild(record.element));
       // Hidden entries follow the visible page, so the list's first item is always a visible deck.
       deckCatalog.forEach(record => { if (record.element.hidden) deckList.appendChild(record.element); });
+      // Newest first reads as release years. The dividers are visual only:
+      // each deck card already announces its year.
+      deckList.querySelectorAll('.deckyeardivider').forEach(node => node.remove());
+      if (state.deckSort === 'newest' && state.year === 'all') {
+        let previous = null;
+        for (const record of browseResult.entries) {
+          const label = record.year || 'My Library';
+          if (label === previous) continue;
+          previous = label;
+          const count = browseResult.matches.filter(item => (item.year || 'My Library') === label).length;
+          const divider = el('div', 'deckyeardivider', `<b>${esc(label)}</b><span>${count} deck${count === 1 ? '' : 's'}</span>`);
+          divider.setAttribute('aria-hidden', 'true');
+          deckList.insertBefore(divider, record.element);
+        }
+      }
       if (focusedDeckControl) {
         const stillVisible = !focusedDeckControl.closest('.deckentry')?.hidden;
         (stillVisible ? focusedDeckControl : deckTools.querySelector('input')).focus({ preventScroll: true });
@@ -1405,7 +1424,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     refreshSetupFavorites = refreshFavorites;
     deckBrowseBar.querySelector('.decksort').onchange = event => {
       state.deckSort = event.target.value;
-      U.savePlayerPreferences({ deckSort: state.deckSort });
+      U.savePlayerPreferences({ deckOrder: state.deckSort });
       filterDecks();
     };
     explorerHead.querySelector('.surprisedeck').onclick = () => {

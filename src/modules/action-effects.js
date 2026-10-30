@@ -1,4 +1,5 @@
-// Short, non-blocking accents for committed attacks and spells entering the Stack.
+// Short, non-blocking accents for committed attacks, blocks, the clash before
+// combat damage and spells entering the Stack.
 // Timelines animate disposable decoration, never the live controls or engine state.
 'use strict';
 (() => {
@@ -60,6 +61,38 @@ const ring = (effect, point, kind, delay) => {
   timeline(effect, disc, [{opacity: 0, transform: 'scale(.45) rotate(-25deg)'},
     {opacity: .8, offset: .2}, {opacity: 0, transform: 'scale(1.35) rotate(35deg)'}], 560, delay);
 };
+// Two crossed blades and a flash where an attacker and its blocker meet.
+const clash = (effect, point, delay) => {
+  const anchor = node('actionfx-collision', effect.element);
+  anchor.style.left = `${point.x}px`; anchor.style.top = `${point.y}px`;
+  for (const turn of [45, -45]) {
+    const blade = node('actionfx-blade', anchor);
+    timeline(effect, blade, [{opacity: 0, transform: `rotate(${turn}deg) scaleX(.2)`},
+      {opacity: 1, transform: `rotate(${turn}deg) scaleX(1.15)`, offset: .3},
+      {opacity: 0, transform: `rotate(${turn}deg) scaleX(.9)`}], 620, delay);
+  }
+  const flash = node('actionfx-flash', anchor);
+  timeline(effect, flash, [{opacity: 0, transform: 'scale(.3)'}, {opacity: .9, transform: 'scale(1)', offset: .25},
+    {opacity: 0, transform: 'scale(1.6)'}], 620, delay + 60);
+};
+// A glowing frame drawn over a fighting creature (layer-owned, so renders
+// that replace the card underneath cannot cut it short).
+const frame = (effect, r, z, kind, delay) => {
+  if (!r) return;
+  const box = node(`actionfx-frame ${kind}`, effect.element);
+  Object.assign(box.style, {left: `${r.x / z}px`, top: `${r.y / z}px`, width: `${r.width / z}px`, height: `${r.height / z}px`});
+  timeline(effect, box, [{opacity: 0, transform: 'scale(.92)'}, {opacity: 1, transform: 'scale(1.05)', offset: .25},
+    {opacity: .9, transform: 'scale(1.02)', offset: .75}, {opacity: 0, transform: 'scale(1)'}], 980, delay);
+};
+const banner = (effect, point, icon, title, detail) => {
+  const copy = node('actionfx-banner', effect.element);
+  copy.style.left = `${point.x}px`; copy.style.top = `${point.y}px`;
+  copy.innerHTML = `${U.icon(icon)}<span><b></b><small></small></span>`;
+  copy.querySelector('b').textContent = title; copy.querySelector('small').textContent = detail;
+  timeline(effect, copy, [{opacity: 0, transform: 'translate(-50%, -50%) scale(.9)'},
+    {opacity: 1, transform: 'translate(-50%, -50%) scale(1)', offset: .16}, {opacity: 1, offset: .8},
+    {opacity: 0, transform: 'translate(-50%, -50%) scale(1.03)'}], 1040, 20);
+};
 const route = (effect, start, end, delay) => {
   const dx = end.x - start.x, dy = end.y - start.y, length = Math.hypot(dx, dy);
   if (length < 12) return;
@@ -105,6 +138,48 @@ function paint(state, event, kind) {
     }
     const origin = center(playerRect(ui, player), z);
     if (origin) label(effect, origin, `${event.count} ATTACKERS`, 'Attack declared', width, height);
+  } else if (kind === 'block') {
+    // Each blocker raises a guard and meets its attacker.
+    let drawn = 0;
+    for (const {card, target} of (event.blocks || []).slice(0, 8)) {
+      const blockerRect = cardRect(card), attackerRect = cardRect(target);
+      const start = center(blockerRect, z), end = center(attackerRect, z);
+      if (!start || !end) continue;
+      const delay = Math.min(drawn++, 6) * 40;
+      frame(effect, blockerRect, z, 'blocker', delay); frame(effect, attackerRect, z, 'attacker', delay + 200);
+      ring(effect, start, 'guard', delay); route(effect, start, end, delay); ring(effect, end, 'meet', delay + 260);
+    }
+    const blocker = event.blocks?.[0]?.card;
+    const origin = center(cardRect(blocker) || playerRect(ui, blocker?.ctrl), z);
+    const n = event.blocks?.length || 0;
+    if (origin) label(effect, origin, `${n} BLOCKER${n === 1 ? '' : 'S'}`, 'Blocks declared', width, height);
+  } else if (kind === 'clash') {
+    // The moment before simultaneous combat damage: every fight is framed and
+    // marked between its creatures, every unblocked attacker gathers itself.
+    let blocked = 0, open = 0, drawn = 0;
+    for (const {card, targets = [], target} of (event.pairs || []).slice(0, 10)) {
+      const attackerRect = cardRect(card), attacker = center(attackerRect, z);
+      const delay = Math.min(drawn++, 6) * 50;
+      frame(effect, attackerRect, z, 'attacker', delay);
+      if (!targets.length) {
+        open++;
+        const defender = center(cardRect(target) || playerRect(ui, target?.idx != null ? target : target?.ctrl), z);
+        if (attacker) ring(effect, attacker, 'commit', delay);
+        if (attacker && defender) route(effect, attacker, defender, delay + 120);
+        continue;
+      }
+      blocked++;
+      for (const blocker of targets.slice(0, 3)) {
+        const guardRect = cardRect(blocker), guard = center(guardRect, z);
+        frame(effect, guardRect, z, 'blocker', delay + 40);
+        if (!attacker || !guard) continue;
+        clash(effect, {x: (attacker.x + guard.x) / 2, y: (attacker.y + guard.y) / 2}, delay + 80);
+        route(effect, attacker, guard, delay);
+      }
+    }
+    const step = event.combatStep === 'first' ? 'FIRST STRIKE' : 'COMBAT DAMAGE';
+    const detail = [blocked && `${blocked} blocked`, open && `${open} unblocked`].filter(Boolean).join(' · ') || 'Damage is dealt';
+    banner(effect, {x: width / 2, y: height * .45}, event.combatStep === 'first' ? 'first-strike' : 'attack', step, detail);
   } else {
     const start = center(cardRect(event.card) || playerRect(ui, player), z);
     // Review/Stack surfaces can be absent on a phone: its Stack tab is the
@@ -115,12 +190,14 @@ function paint(state, event, kind) {
     ring(effect, end, 'spell', 140); ring(effect, end, 'echo', 230);
     label(effect, end, 'INSTANT CAST', event.name || event.card?.name || 'Instant spell', width, height);
   }
-  effect.timer = setTimeout(() => effect.remove(), 960);
+  effect.timer = setTimeout(() => effect.remove(), kind === 'clash' || kind === 'block' ? 1180 : 960);
 }
 U.UI.prototype.showActionEffect = function(event, {replay = false} = {}) {
   prune();
   if (replay || suppressed(this) || currentUI && currentUI !== this || !event) return;
   const kind = event.type === 'combat' && event.kind === 'attackersDeclared' && event.count > 0 ? 'attack'
+    : event.type === 'combat' && event.kind === 'blockersDeclared' && event.blocks?.length ? 'block'
+    : event.type === 'gameEffect' && event.kind === 'combatClash' && event.pairs?.length ? 'clash'
     : event.type === 'cardPlayed' && event.kind === 'spell' && event.spellTypes?.includes('Instant') &&
       event.card && !event.card.faceDown && !event.card.hidden ? 'instant' : null;
   if (!kind) return;

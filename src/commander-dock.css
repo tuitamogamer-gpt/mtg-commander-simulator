@@ -68,7 +68,7 @@ body.game-active #game.command-table .ct-commander-card > img {
   object-fit: contain;
   border-radius: 5px;
   transform-origin: center 80%;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1.15), box-shadow 220ms ease, filter 220ms ease, opacity 220ms ease;
 }
 #game.command-table .ct-commander-card[data-command-state='command'] > img {
   transform: perspective(500px) rotateY(-14deg) rotateX(6deg) rotateZ(-3deg) translateY(-2px);
@@ -98,9 +98,27 @@ body.game-active #game.command-table .ct-commander-card > img {
   background: radial-gradient(ellipse, #e4bc6340, #08090c40 68%);
   box-shadow: 0 2px 7px #0006;
 }
+/* Hover/focus: the card turns to face the player, rises out of the dock and
+   the aura brightens. The large card preview follows the pointer (data-cname). */
 #game.command-table .ct-commander-card[data-command-state='command']:is(:hover, :focus-visible) > img {
-  transform: perspective(500px) rotateY(-5deg) rotateX(2deg) translateY(-5px);
-  box-shadow: 1px 1px 0 #ffe3a2, 2px 2px 0 #b88f43, 7px 12px 14px #0009, 0 0 20px #e6b84f55;
+  transform: perspective(500px) rotateY(0deg) rotateX(0deg) translateY(-6px) scale(1.05);
+  box-shadow: 1px 1px 0 #ffe3a2, 2px 2px 0 #b88f43, 9px 16px 18px #000a, 0 0 28px #f0c25e8c;
+  filter: brightness(1.08) saturate(1.08);
+}
+#game.command-table .ct-commander-card[data-command-state='command']:is(:hover, :focus-visible)::before {
+  inset: -6px -4px 16px;
+  background: radial-gradient(ellipse, #f3c55f5c 0%, #d69b2f2e 44%, transparent 74%);
+  animation-duration: 1.4s;
+}
+#game.command-table .ct-commander-card[data-command-state='command']:is(:hover, :focus-visible)::after {
+  border-color: #f0cd8699;
+  box-shadow: 0 2px 9px #0007, 0 0 14px #e6b84f55;
+}
+#game.command-table .ct-commander-card[data-command-state='command']:is(:hover, :focus-visible) .czname { color: #f5db9e; }
+#game.command-table .ct-commander-card[data-command-state='away']:is(:hover, :focus-visible) > img {
+  opacity: .75;
+  filter: saturate(.75);
+  transform: translateY(-3px);
 }
 #game.command-table .ct-commander-card:focus-visible { outline: 2px solid #f0cd86; outline-offset: -2px; }
 #game.command-table .ct-commander-card .czinfo { flex: 0 0 auto; width: 100%; text-align: center; }

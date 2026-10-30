@@ -1,0 +1,48 @@
+/* Card effects beside their cards (modules/effect-anchors.js), desktop only.
+   A routine resolution recap moves next to the permanent or board it changed;
+   short activity notices become callouts beside their card; the Stack review
+   rail points at its source. */
+#game .overlay.resolutionrecapoverlay.recapminor.effectanchored { display: block; padding: 0; }
+#game .recapminor.effectanchored .modal.resolutionrecap {
+  position: absolute; margin: 0; width: min(360px, calc(100% - 24px));
+  max-height: min(560px, calc(100 * var(--dvhu) - 24px));
+  border-color: rgba(var(--ds-accent-rgb), .55);
+  box-shadow: 0 14px 44px rgba(var(--ds-table-rgb), .7), 0 0 0 1px rgba(var(--ds-table-rgb), .3), 0 0 26px rgba(var(--ds-accent-rgb), .16);
+}
+.effectanchorring {
+  position: absolute; border: 2px solid var(--ds-accent-bright); border-radius: 9px; pointer-events: none;
+  box-shadow: 0 0 0 3px rgba(var(--ds-accent-rgb), .14), 0 0 14px rgba(var(--ds-accent-bright-rgb), .4);
+  animation: effectAnchorPulse 1.6s ease-in-out infinite alternate;
+}
+/* The stable decision rail points at an opponent's Stack source on the table. */
+#game.command-table > .stackanchor { position: absolute; z-index: 29; margin: 0; }
+.effectanchorlink {
+  position: absolute; height: 2px; transform-origin: 0 50%; pointer-events: none;
+  background: linear-gradient(90deg, var(--ds-accent-bright), rgba(var(--ds-accent-bright-rgb), .35));
+}
+@keyframes effectAnchorPulse {
+  to { box-shadow: 0 0 0 6px rgba(var(--ds-accent-rgb), .22), 0 0 26px rgba(var(--ds-accent-bright-rgb), .65); }
+}
+
+.effectcalloutlayer { position: fixed; inset: 0; z-index: 140; overflow: hidden; pointer-events: none; }
+.effectcallout {
+  position: absolute; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px;
+  width: max-content; max-width: 280px; padding: 8px 12px;
+  border: 1px solid rgba(var(--ds-accent-rgb), .45); border-left: 3px solid var(--ds-accent-bright); border-radius: 8px;
+  background: rgba(var(--ds-panel-raised-rgb), .97); box-shadow: 0 10px 26px rgba(var(--ds-table-rgb), .55);
+  animation: effectCalloutIn .2s var(--ds-ease) both;
+}
+.effectcallout small { color: var(--ds-accent-bright); font: 800 9px/1 var(--ds-font-display); letter-spacing: .14em; }
+.effectcallout span { min-width: 0; color: var(--ds-copy); font: 600 12px/1.35 var(--ds-font-body); }
+.effectcallout.counter { border-left-color: var(--ds-danger); }
+/* A small pointer toward the card the notice describes. */
+.effectcallout::before { content: ''; position: absolute; width: 0; height: 0; border: 6px solid transparent; }
+.effectcallout[data-side='right']::before { left: -15px; top: calc(50% - 6px); border-right-color: var(--ds-accent-bright); }
+.effectcallout[data-side='left']::before { right: -12px; top: calc(50% - 6px); border-left-color: var(--ds-accent-bright); }
+.effectcallout[data-side='above']::before { bottom: -12px; left: calc(50% - 6px); border-top-color: var(--ds-accent-bright); }
+.effectcallout[data-side='below']::before { top: -12px; left: calc(50% - 6px); border-bottom-color: var(--ds-accent-bright); }
+.effectcallout.leaving { opacity: 0; transition: opacity .2s ease; }
+@keyframes effectCalloutIn { from { opacity: 0; transform: translateY(4px) scale(.97); } }
+body:not(.game-active) .effectcalloutlayer { display: none; }
+@media (prefers-reduced-motion: reduce) { .effectanchorring, .effectcallout { animation: none; } }
+body.reduced-motion .effectanchorring, body.reduced-motion .effectcallout { animation: none; }

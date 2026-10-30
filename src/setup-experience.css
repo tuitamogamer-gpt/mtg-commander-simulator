@@ -702,3 +702,35 @@ body.reduced-motion #setup .mainmenu .mainmenu-featured-deck .mainmenu-deck-art 
   #setup .podsummary span { font-size: 11px; text-align: right; }
   #setup .livepodinfo { padding: 20px; }
 }
+
+/* Deck gallery: newest releases first, five or six decks a row on desktop.
+   Art leads, then the name, commander, colors and plan; release years divide
+   the newest-first order (visual only, each card names its year). */
+@media (min-width: 701px) {
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important; gap: 14px !important; }
+  #setup[data-deck-view="gallery"] .deckportraits,
+  #setup[data-deck-view="gallery"] .deckvisual.partners .deckportraits { height: 132px; }
+  #setup[data-deck-view="gallery"] .deckcardheading { min-height: 0; padding: 10px 12px 0; gap: 3px; }
+  #setup[data-deck-view="gallery"] .deckname { min-height: 0; font-size: 16px !important; line-height: 1.22 !important; }
+  #setup[data-deck-view="gallery"] .deckinfo { gap: 5px; padding: 6px 12px 12px !important; }
+  #setup[data-deck-view="gallery"] .deckcmd b { font-size: 11.5px; }
+  #setup[data-deck-view="gallery"] .deckstyle { min-height: 0; font-size: 11.5px !important; }
+  #setup[data-deck-view="gallery"] .deckmana { width: 16px !important; height: 16px !important; }
+  #setup[data-deck-view="gallery"] .deckfavorite { width: 36px; height: 36px; font-size: 18px; }
+  #setup[data-deck-view="gallery"] .deckcard { transition: transform var(--ds-t-fast) var(--ds-ease), box-shadow var(--ds-t-fast) ease, border-color var(--ds-t-fast) ease; }
+  #setup[data-deck-view="gallery"] .deckcard:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(var(--ds-table-rgb), .45); }
+}
+#setup .decknew {
+  display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px;
+  background: var(--ds-accent); color: var(--ds-accent-ink);
+  font: 800 9px/1.5 var(--ds-font-body); letter-spacing: .08em; text-transform: uppercase; vertical-align: 1px;
+}
+#setup .deckyeardivider {
+  grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px;
+  margin: 10px 0 -2px; padding-bottom: 7px; border-bottom: 1px solid var(--ds-line-soft);
+}
+#setup .deckyeardivider:first-child { margin-top: 0; }
+#setup .deckyeardivider b { color: var(--ds-text); font: 650 20px/1.1 var(--ds-font-display); letter-spacing: -.01em; }
+#setup .deckyeardivider span { color: var(--ds-muted); font: 500 11px/1.2 var(--ds-font-mono); }
+@media (prefers-reduced-motion: reduce) { #setup[data-deck-view="gallery"] .deckcard:hover { transform: none; } }
+body.reduced-motion #setup[data-deck-view="gallery"] .deckcard:hover { transform: none; }

@@ -653,6 +653,7 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .mini.sm { width: 36px !important; height: 50px !important; }
   body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .permanentpile.sm { width: 36px !important; }
   body.game-active #game.command-table.ct-desktop-lands :is(.landstrip, .oppresourcecards) { max-height: 66px; }
+  body.game-active #game.command-table.ct-desktop-lands .ct-land-stack { width: 36px; height: 52px; }
 }
 
 /* Desktop counters sit between identity and life; cards own the saved height. */
@@ -770,6 +771,27 @@ body.game-active #game.command-table .opphead { background: var(--ds-panel) !imp
   body.game-active #game.command-table.ct-desktop-lands .ct-resource-dock .mini.tapped {
     transform: rotate(60deg) scale(.66) !important;
     filter: brightness(.78) saturate(.75);
+  }
+  /* Tapped copies of one land pile up in a single cell: each copy shifts a
+     few pixels and keeps its own click, preview and target control. A turned
+     card fills the cell's width, so layers only shift within its free height. */
+  body.game-active #game.command-table.ct-desktop-lands .ct-land-stack {
+    position: relative; flex: 0 0 auto; width: 40px; height: 58px;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-land-stack > .ct-land-card {
+    position: absolute; top: 0; left: 0; margin: 0;
+    translate: 0 calc(var(--ct-stack-step, 0) * 4px);
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-land-stack > .ct-land-card:not(:last-of-type) .mini,
+  body.game-active #game.command-table.ct-desktop-lands .ct-land-stack > .mini.ct-land-card:not(:last-of-type) {
+    box-shadow: 0 0 0 1px #0009;
+  }
+  body.game-active #game.command-table.ct-desktop-lands .ct-land-stack-count {
+    position: absolute; z-index: 5; right: -3px; bottom: 3px;
+    padding: 1px 4px; border-radius: 5px;
+    background: var(--ds-accent-bright); color: var(--ds-accent-ink);
+    font: 800 10px/1.2 var(--ds-font-mono, monospace); font-variant-numeric: tabular-nums;
+    box-shadow: 0 1px 3px #000a; pointer-events: none;
   }
   #game.command-table.ct-grid-view :is(.myboard, .opprow) { container-type: size; }
   #game.command-table.ct-grid-view :is(.mybattlefieldmain, .oppstrip) {
@@ -1313,6 +1335,7 @@ body.game-active #game.command-table .ct-battle-blocks .ct-block-link { min-heig
   #game.command-table.ct-battlefield-combat .ct-player-name .manapool { margin: 0; }
   body.game-active #game.command-table.ct-battlefield-combat .ct-resource-dock .mini.sm { width: 30px !important; height: 40px !important; }
   body.game-active #game.command-table.ct-battlefield-combat .ct-resource-dock .permanentpile.sm { width: 30px !important; }
+  body.game-active #game.command-table.ct-battlefield-combat .ct-resource-dock .ct-land-stack { width: 30px; height: 42px; }
   body.game-active #game.command-table.ct-battlefield-combat .ct-resource-dock { padding: 1px 7px !important; }
   body.game-active #game.command-table.ct-battlefield-combat .ct-resource-dock .landstrip { padding-block: 1px; }
 }

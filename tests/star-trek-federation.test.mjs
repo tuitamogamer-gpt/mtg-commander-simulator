@@ -28,6 +28,17 @@ for (const role of ['human', 'ai']) {
     await draw(f, 1); assert.equal(counter(ship, 'charge'), 2);
     f.a.turnState = f.a.freshTurnState(); f.game.turnPlayer = f.b; await draw(f, 2); assert.equal(counter(ship, 'charge'), 4);
   });
+  test(role + ': Picard seek out ignores the third and later draws, also inside one multi-card draw', async () => {
+    const f = setup(role), picard = card(f, 'Jean-Luc Picard, Luminary'), creature = body(f);
+    choose(f, {targets: [creature]});
+    for (let i = 0; i < 12; i++) card(f, 'Grizzly Bears', 'library');
+    await draw(f, 5); assert.equal(counter(creature), 1, 'only the second of five cards drawn at once');
+    await draw(f, 1); assert.equal(counter(creature), 1, 'the sixth card does not trigger');
+    f.a.turnState = f.a.freshTurnState(); f.game.turnPlayer = f.b;
+    await draw(f, 1); assert.equal(counter(creature), 1, 'first draw on an opponent’s turn');
+    await draw(f, 3); assert.equal(counter(creature), 2, 'second draw on an opponent’s turn triggers once');
+    assert.equal(counter(picard), 0);
+  });
   test(role + ': seek out life, counters, tapped Treasures, damage and Officers resolve through Stack', async () => {
     const f = setup(role), beverly = card(f, "Beverly Crusher, Ship's Doctor"), julian = card(f, 'Julian Bashir, Frontier Doctor');
     card(f, 'Dr. Pulaski, Cynical Clinician'); card(f, 'Rom and Leeta, Unlikely Pair'); card(f, 'Ro Laren, Double Agent'); card(f, 'Worf, Son of Mogh');

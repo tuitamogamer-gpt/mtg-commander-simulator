@@ -50,16 +50,30 @@ try {
           const [a, b] = transform.match(/matrix\(([^)]+)\)/)[1].split(',').map(Number);
           return Math.round(Math.atan2(b, a) * 180 / Math.PI);
         };
-        const boxes = cards.map(card => card.getBoundingClientRect());
-        const overlaps = boxes.some((r, i) => boxes.some((other, j) => j > i &&
-          r.left < other.right && other.left < r.right && r.top < other.bottom && other.top < r.bottom));
+        // Copies inside one tapped-land pile overlap by design; nothing else may.
+        const boxes = cards.map(card => ({r: card.getBoundingClientRect(), pile: card.closest('.ct-land-stack')}));
+        const overlaps = boxes.some(({r, pile}, i) => boxes.some((other, j) => j > i && !(pile && pile === other.pile) &&
+          r.left < other.r.right && other.r.left < r.right && r.top < other.r.bottom && other.r.top < r.bottom));
+        const piles = [...strip.querySelectorAll('.ct-land-stack')].map(pile => {
+          pile.scrollIntoView({block: 'nearest'});
+          const minis = [...pile.querySelectorAll('.mini')], top = minis.at(-1), r = top.getBoundingClientRect();
+          return {badge: pile.querySelector('.ct-land-stack-count')?.textContent, size: minis.length,
+            allTapped: minis.every(card => card.classList.contains('tapped')),
+            names: new Set(minis.map(card => card.dataset.cname)).size,
+            topReachable: document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.closest('.mini') === top};
+        });
+        strip.scrollTop = 0;
         return {tapped: cards.filter(card => card.classList.contains('tapped')).map(angle),
-          untapped: cards.filter(card => !card.classList.contains('tapped')).map(angle), overlaps};
+          untapped: cards.filter(card => !card.classList.contains('tapped')).map(angle), overlaps, piles};
       });
       assert.ok(tapState.tapped.length >= 4, 'the fixture taps several resources');
       assert.ok(tapState.tapped.every(angle => angle === 60), `tapped resources turn 60deg: ${tapState.tapped}`);
       assert.ok(tapState.untapped.every(angle => angle === 0), `untapped resources stay upright: ${tapState.untapped}`);
       assert.equal(tapState.overlaps, false, 'turned resources stay inside their own cells');
+      // The fixture taps two Swamps and two Plains: each pair shares one pile.
+      assert.equal(tapState.piles.length, 2, JSON.stringify(tapState.piles));
+      assert.ok(tapState.piles.every(pile => pile.size === 2 && pile.badge === '×2' && pile.allTapped &&
+        pile.names === 1 && pile.topReachable), `tapped copies of one land share a pile: ${JSON.stringify(tapState.piles)}`);
       await page.locator('.myboard .landstrip').evaluate(element => { element.scrollTop = element.scrollHeight; });
       assert.equal(await page.locator('.myboard .landstrip .mini').last().evaluate(element => {
         const r = element.getBoundingClientRect();
