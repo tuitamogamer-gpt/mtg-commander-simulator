@@ -41,8 +41,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const name = hidden ? 'Face-down card' : (typeof card === 'string' ? card : card?.name) || '?';
     const def = card?.def || card || {};
     const token = !hidden && !card?.faceDown && (card?.isToken || def.isTokenDef);
-    const url = hidden ? (U.cardBackURL?.() || U.BLANK_PX) : imgURL(token && def.tokenImageName || name);
-    const image = `<img loading="lazy" class="${escAttr(imageClass)}${hidden ? ' cardback-art' : ''}" src="${escAttr(url)}" alt="${escAttr(name)}" ${token ? 'data-token-art onerror="MTG.tokenArtFailed(this)"' : 'onerror="MTG.imgFail(this)"'}>`;
+    // A concealed card wears its owner's deck sleeve (deck-sleeves.js). The
+    // owner is public; nothing about the card itself picks the back.
+    const owner = hidden && card && typeof card === 'object' ? card.owner : null;
+    const sleeve = Number.isInteger(owner?.idx) ? ` data-sleeve-owner="${owner.idx}"` : '';
+    const url = hidden ? (U.deckBackURL?.(owner) || U.cardBackURL?.() || U.BLANK_PX) : imgURL(token && def.tokenImageName || name);
+    const image = `<img loading="lazy" class="${escAttr(imageClass)}${hidden ? ' cardback-art' : ''}" src="${escAttr(url)}" alt="${escAttr(name)}"${sleeve} ${token ? 'data-token-art onerror="MTG.tokenArtFailed(this)"' : 'onerror="MTG.imgFail(this)"'}>`;
     if (!token) return image;
     const current = card.zone === 'battlefield' ? card.cur : null;
     const types = current?.types || def.types || [];
@@ -1478,7 +1482,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         item.style.setProperty('--fan', String(index - (shown.length - 1) / 2));
         if (!card.faceDown) {
           item.insertAdjacentHTML('beforeend', cardArtHTML(card));
-        }
+        } else U.applyDeckSleeve?.(item, card.owner || player);
         fan.appendChild(item);
       });
       fx.appendChild(fan);
@@ -1861,6 +1865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         stage.appendChild(art);
       } else {
         const back = el('div', 'libraryrevealback cardback-surface');
+        U.applyDeckSleeve?.(back, q.libraryOwner || q.ctrl);
         back.setAttribute('role', 'img');
         back.setAttribute('aria-label', exiling ? 'Unrevealed top card' : 'Unrevealed card');
         stage.appendChild(back);

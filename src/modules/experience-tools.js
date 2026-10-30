@@ -153,7 +153,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       intro('Set the atmosphere', 'Choose the artwork and sound that make this table yours.');
       const art = section('Table style');
       const backs = node('button', 'quickmenuitem settingsaction cardbacksopen'); backs.type = 'button';
-      const thumb = node('img', 'settingscardbackthumb'); thumb.src = U.cardBackURL(); thumb.alt = '';
+      const thumb = node('img', 'settingscardbackthumb'); thumb.src = U.deckBackURL?.(ui.me) || U.cardBackURL(); thumb.alt = '';
+      if (Number.isInteger(ui.me?.idx) && U.deckSleeveSpec?.(ui.me)) thumb.dataset.sleeveOwner = String(ui.me.idx);
       const copy = node('span', 'settingsactioncopy'); copy.append(node('span', '', 'Card backs'), node('small', '', U.selectedCardBack().label));
       backs.append(thumb, copy, icon('next')); backs.onclick = () => { if (isCurrent()) { ui.quickMenuOpen = 'cardbacks'; ui.render(); } }; art.appendChild(backs);
       action(art, 'Arena background', 'playmat'); action(art, 'Playmats', 'cards'); action(art, 'Music & sound', 'mana');
@@ -221,19 +222,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const heroArt = node('img', 'cardbackheroimage'); heroArt.width = 600; heroArt.height = 840; heroArt.decoding = 'async';
     const caption = node('figcaption', 'cardbackcaption');
     const heroName = node('h3', ''), heroDetail = node('p', '');
-    caption.append(node('span', 'cardbackeyebrow', 'Your card back'), heroName, heroDetail);
+    caption.append(node('span', 'cardbackeyebrow', 'Your deck sleeve'), heroName, heroDetail);
     preview.append(heroArt, caption);
     const grid = node('div', 'cardbackgrid'); grid.setAttribute('role', 'group'); grid.setAttribute('aria-label', 'Card back designs');
     const choices = node('div', 'cardbackoptions');
-    choices.append(node('h3', 'cardbackoptiontitle', 'Choose a design'), node('p', 'cardbackintro', 'For your hidden cards and library reveals.'), grid);
+    choices.append(node('h3', 'cardbackoptiontitle', 'Choose a design'), node('p', 'cardbackintro', 'The design is the frame. Each deck adds its commander and colors, so every player at the table has a different sleeve.'), grid);
     const status = node('p', 'cardbackstatus', 'Applied immediately · saved on this device'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+    // Every seat's sleeve, so the difference between decks is visible here.
+    const seats = (game?.players || []).filter(player => U.deckSleeveSpec?.(player));
+    const table = node('section', 'cardbacktable'); table.setAttribute('aria-label', 'Deck sleeves at this table');
+    const seatList = node('ul', 'cardbacktablelist');
+    for (const player of seats) {
+      const seat = node('li', 'cardbacktableseat' + (player === ui.me ? ' mine' : ''));
+      const sleeve = node('img', 'cardbacktablesleeve'); sleeve.alt = ''; sleeve.width = 600; sleeve.height = 840; sleeve.decoding = 'async';
+      sleeve.dataset.sleeveOwner = String(player.idx);
+      const label = node('span', 'cardbacktablename');
+      label.append(node('b', '', player === ui.me ? 'You' : player.name), node('small', '', U.deckSleeveSpec(player).commanders.map(name => name.split(/,| \/\/ /)[0]).join(' & ')));
+      seat.append(sleeve, label); seatList.appendChild(seat);
+    }
+    table.append(node('h3', 'cardbacktabletitle', 'At this table'), seatList);
     const update = () => {
       const back = U.selectedCardBack();
       // Arena reconciliation may reuse an already-decoded image from the
       // previous settings sheet. Always update the image in this preview.
       const image = preview.querySelector('.cardbackheroimage');
-      image.src = back.url; image.alt = `${back.label} card back preview`;
+      image.src = ui.me && U.deckBackURL ? U.deckBackURL(ui.me) : back.url; image.dataset.frame = back.id;
+      if (Number.isInteger(ui.me?.idx) && U.deckSleeveSpec?.(ui.me)) image.dataset.sleeveOwner = String(ui.me.idx);
+      image.alt = `${back.label} card back preview`;
       heroName.textContent = back.label; heroDetail.textContent = back.detail;
+      seatList.querySelectorAll('img').forEach((sleeve, index) => { sleeve.src = U.deckBackURL(seats[index]); });
       grid.querySelectorAll('button').forEach(button => {
         const selected = button.dataset.cardBack === back.id;
         button.setAttribute('aria-pressed', String(selected)); button.querySelector('.cardbackselected').textContent = selected ? 'Selected' : 'Select';
@@ -251,7 +268,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       grid.appendChild(button);
     }
-    update(); showcase.append(preview, choices); body.append(showcase, status);
+    update(); showcase.append(preview, choices); body.append(showcase);
+    if (seats.length > 1) body.append(table);
+    body.append(status);
     const foot = node('footer', 'cardbackfooter');
     const back = node('button', 'pbtn cardbackback', 'Back to settings'); back.type = 'button';
     back.onclick = () => { if (!isCurrent()) return; ui.arenaSettingsTab = 'appearance'; ui.quickMenuOpen = true; ui.render(); document.querySelector('.cardbacksopen')?.focus({ preventScroll: true }); };

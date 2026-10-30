@@ -84,6 +84,15 @@
 .cardbackselected { font-size: 11px; font-weight: 650; color: var(--ds-muted); }
 [aria-pressed='true'] > .cardbackselected { color: var(--ds-accent-bright); }
 .cardbackstatus { margin: 22px 0 0; color: var(--ds-muted); font-size: 12px; line-height: 1.6; text-align: center; }
+.cardbacktable { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--ds-line-soft); }
+.cardbacktabletitle { margin: 0 0 12px; font: 600 15px/1.2 var(--ds-font-display); color: var(--ds-text); letter-spacing: -.01em; }
+.cardbacktablelist { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.cardbacktableseat { min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid var(--ds-line-soft); border-radius: 12px; }
+.cardbacktableseat.mine { border-color: rgba(var(--ds-accent-rgb), .5); background: rgba(var(--ds-accent-rgb), .05); }
+.cardbacktablesleeve { display: block; width: 46px; height: auto; flex: none; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 4px; box-shadow: 0 6px 12px rgba(0,0,0,.3); }
+.cardbacktablename { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.cardbacktablename b { font: 600 13px var(--ds-font-display); color: var(--ds-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardbacktablename small { font-size: 11px; line-height: 1.35; color: var(--ds-muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .cardbackfooter { display: flex; justify-content: space-between; gap: 12px; padding: 16px 26px; border-top: 1px solid var(--ds-line); background: var(--ds-panel); flex: none; }
 .cardbackfooter button { min-width: 120px; }
 .commandpaletteov { padding-top: max(24px, calc(9 * var(--dvhu))); }
@@ -162,6 +171,13 @@ body.reduced-motion :is(.modal, .quickmenu, .commandpalette) .pbtn:not(:disabled
   .cardbackchoice b { font-size: 15px; }
   .cardbackselected { font-size: 11px; }
   .cardbackstatus { margin-top: 16px; font-size: 11px; }
+  .cardbacktable { margin-top: 20px; padding-top: 16px; }
+  .cardbacktablelist { gap: 6px; }
+  .cardbacktableseat { flex-direction: column; gap: 7px; padding: 8px 4px; text-align: center; }
+  .cardbacktablesleeve { width: 42px; }
+  .cardbacktablename { align-items: center; width: 100%; }
+  .cardbacktablename b { max-width: 100%; font-size: 12px; }
+  .cardbacktablename small { display: none; }
   .cardbackfooter { padding: 14px 16px; }
   .cardbackfooter button { flex: 1; min-width: 0; }
   .commandpaletteov { padding: max(10px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom)); }

@@ -107,9 +107,12 @@ try {
     await page.locator(`[data-card-back="${id}"]`).click();
     assert.equal(await page.locator('.cardbackchoice[aria-pressed="true"]').count(), 1);
     assert.equal(await page.evaluate(() => MTG.playerPreferences().cardBack), id);
+    // The large preview is your deck's sleeve drawn in this design (the plain
+    // design until the sleeve is ready).
     await page.waitForFunction(id => {
       const image = document.querySelector('.cardbackheroimage');
-      return image.complete && image.naturalWidth === 600 && image.src.endsWith(`/${id}.webp`);
+      return image.complete && image.naturalWidth === 600 && image.dataset.frame === id &&
+        (image.src.endsWith(`/${id}.webp`) || image.src === MTG.deckBackURL(_ui.me));
     }, id);
     assert.equal(await page.locator('.cardbackcaption h3').textContent(), await page.locator(`[data-card-back="${id}"] b`).textContent());
     assert.equal(await page.evaluate(() => document.activeElement.dataset.cardBack), id, 'Changing the large preview preserves choice focus');

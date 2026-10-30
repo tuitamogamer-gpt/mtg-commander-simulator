@@ -37,6 +37,7 @@ done
 
 ## Presentation constraints
 
-- Apply a chosen back consistently to hidden cards. Never select a design from a card's identity, color, type, mana value or other concealed information.
+- Hidden cards wear their owner's deck sleeve, drawn at runtime by `src/modules/deck-sleeves.js` from the chosen back and the owner's public deck identity: commander art from the existing Scryfall art crops and the commanders' color identity. The back files themselves are unchanged.
+- Never select or alter a back from a card's identity, color, type, mana value or other concealed information. Unknown or random decks keep the plain design.
 - Card backs contain no gameplay information and must not disclose an image URL or accessible label derived from a concealed card face.
 - Preserve the 5:7 aspect ratio. Rounded corners and reveal transitions belong to the existing UI presentation.

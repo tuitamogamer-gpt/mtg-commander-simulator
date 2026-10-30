@@ -13,6 +13,14 @@ Based on `1e14737`.
 - **The response panel points at its source.** An opponent's spell or ability waiting for your response stays in the stable decision rail on the right; moving that full-height panel across the table cut its content or covered other boards in testing. Instead the rail outlines the source permanent of an ability or trigger, or the caster's board heading for a spell, and draws a connecting line when the source is near. Your own objects and target choices draw nothing.
 - **Tapped lands stack.** Tapped copies of one land share a single pile with a ×N badge in the Lands · Mana column; untapped lands keep their own cells. Each copy remains its own control (inspection, preview, targeting), and a pile opens up while one of its lands is a legal or chosen target.
 - **Commander hover.** Hovering the commander in the dock turns the card toward the player, raises it with a stronger gold aura and shows the large card preview used for every other card.
+- **A sleeve for every deck.** All hidden cards used to share one back, so whose face-down card or library was on screen could not be told apart. Each deck now has its own sleeve:
+  - The chosen design (Obsidian, Astral or Ember) stays the frame and keeps its metal.
+  - The deck's color identity tints the stone.
+  - The commander's art fills a medallion in the center. Partners split it.
+  - Face-down permanents and exiled cards, library reveals and face-down card flights wear their **owner's** sleeve, including under another player's control. The owner is public and the card itself never picks the back.
+  - The card back picker shows your sleeve and every seat's under **At this table**.
+  - Two copies of one deck take different frames. Random seats in setup keep the plain design.
+  - Sleeves are drawn once per deck on a canvas when the table opens (about 50 ms each); until then, and without a canvas, the plain design stands in.
 
 ## Combat
 
@@ -43,6 +51,7 @@ Seek out ("Whenever you draw your second card each turn") was checked and works 
 - **AI suites:** all 37 `tests/ai-*.test.mjs` files pass (734 tests; `ai-custom-skills` was killed for memory under parallel load and passes alone, 20 of 20).
 - **Combat, audio, Live and effects:** 64 matching test files, 1,465 of 1,466 pass. The failure (Odds and Ends loyalty pairs in `planeswalker-combat`) fails identically on `1e14737`. Recap and save tests: 62 of 62.
 - **Browser:** `action-effects.mjs` (13, including the new block and clash check), `battlefield-resource-dock.mjs` (3 widths, now asserting two ×2 piles with reachable top cards), `commander-dock.mjs` (6, now asserting the hover preview) and the new `effect-anchors.mjs` (6) pass. `player-experience.mjs` times out on the hidden Challenge pod preset on both revisions.
+- **Deck sleeves:** new `tests/deck-sleeves.test.mjs` (3) covers identity, partners, colorless decks, the design choice, mirror decks and a guest's hidden commander. New `tests/browser/deck-sleeves.mjs` (5) checks four distinct drawn sleeves on face-down cards, the owner's sleeve on a stolen face-down card, private markup, the library reveal back, the picker and redrawing after a design change. `arena-experience.mjs`, with its preview check updated for the sleeve, passed four of five runs. The one failure was its picker size check at 1440 px, in a fixture whose players have no commanders and therefore draw no sleeve; the previous revision passed three of three. `action-effects`, `manifest-delve`, `battlefield-combat`, `effect-anchors`, `commander-dock`, `battlefield-resource-dock` and `setup-experience` pass. `card-art-edges.mjs` and the Live `commander-live-four-player` run fail identically on `1e14737`; `commander-live-parity` also times out there on its first **Continue**.
 - **Real browser games** at 1440×900 (Federation Fleet and Klingon Fury against three bots, no page errors): the Evolving Wilds recap opened beside the Island it found; the Shadowspear review stayed in the rail and outlined its caster.
 - **Full suite:** a run of all `tests/*.test.mjs` was stopped incomplete after about 4,400 tests. Its failures were known or environmental: two byte-equivalence checks need commits older than this shallow clone, and the Esper Sentinel image URL in `commander-staples` fails as before. `headless-smoke` cannot finish its 180-deck sweep inside its 60-second limit here without sharding.
 
