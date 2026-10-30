@@ -37,6 +37,7 @@ Seek out ("Whenever you draw your second card each turn") was checked and works 
 ## Verification
 
 - **X spells:** a probe cast 30 precon X spells for 3 difficulties × payable X of 0, 1 and 2 × 4 seeds. Before: 47 casts announced X=0 (39 easy, 4 normal, 4 hard, including Savage Twister and Martial Coup on normal and hard). After: none. New `tests/ai-x-spell-floor.test.mjs` (9 tests) fails 7 of 9 on `1e14737`; the two that already passed are the normal and hard X announcements.
+- **Full games with X-spell decks:** 33 seeded four-player games, 22 on Normal and 11 on Easy, each led by one of the 131 decks that hold X spells against the next three catalog decks. All finished with a winner inside the turn limit, passed the game-state invariant checks and logged no AI fallback or script error. 34 X spells were cast, none for X=0.
 - **Picard:** `tests/star-trek-federation.test.mjs` gains a human and an AI regression test; with `star-trek-cross-deck` 50 of 50 pass. The three full games are described above.
 - **Deck library:** new `deck-explorer` and `player-tools` tests (newest order, the `deckOrder` default and its survival across other preference changes); with `main-setup-favorites`, 21 of 21 pass. `tests/browser/setup-experience.mjs` passes at desktop and mobile widths.
 - **AI suites:** all 37 `tests/ai-*.test.mjs` files pass (734 tests; `ai-custom-skills` was killed for memory under parallel load and passes alone, 20 of 20).
