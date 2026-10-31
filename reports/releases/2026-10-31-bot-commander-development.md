@@ -36,3 +36,12 @@ Now:
   - With a hand of six creatures, the bot plays the hand first, deploys at least three of them and keeps Multani in the command zone. The old bot cast Multani first and fails this test.
   - With only lands in hand, the bot casts Multani; that test passes on both revisions.
 - **AI suites:** all `tests/ai-*.test.mjs` pass, 766 of 766.
+- **Full games:** 8 seeded four-bot games on each revision, with the same seeds; the games diverge after the first different choice.
+
+  | | Before | After |
+  | --- | --- | --- |
+  | Taxed commander casts while holding four or more nonland cards | 18 of 67 commander casts | 15 of 68 |
+  | Cleanup discards | 31 cards in 28 discards | 40 cards in 29 discards |
+  | Discards with untapped lands for the cheapest card in hand | 3 | 5 |
+
+  At this sample size the full games show the trend but no clear change in discards. The rebuild probe isolates the situation; most discards came after the mana was spent.
