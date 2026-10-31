@@ -5913,6 +5913,77 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       needed[color] > (supplied[color] || 0) ? 2.5 : 0));
   }
 
+  // The castable spells in hand that `budget` mana deploys this main phase,
+  // picked greedily by value per mana. Instant-speed answers stay held, and X
+  // spells are left out because their value depends on the X paid.
+  function handDeployment(game, player, q, budget) {
+    const cheapest = new Map();
+    for (const entry of q.casts || []) {
+      const card = entry.card;
+      if (entry.from !== 'hand' || card.is('Land')) continue;
+      const instant = card.is('Instant') || (card.def.kws || []).includes('flash');
+      if (instant && inferCardSemantics(card.def).roles.some(role => HELD_ANSWER_ROLES.includes(role))) continue;
+      let cost;
+      try { cost = game.spellCost(player, card, Object.assign({}, entry.alt || {}, { from: entry.from })); } catch (error) { continue; }
+      if (cost.x) continue;
+      const spend = (cost.generic || 0) + (cost.pips || []).length;
+      if (!cheapest.has(card) || spend < cheapest.get(card)) cheapest.set(card, spend);
+    }
+    const options = [...cheapest].map(([card, spend]) => ({ spend, value: cardDefinitionValue(card.def) + Math.min(5, spend * 0.35) }))
+      .filter(option => option.value > 0)
+      .sort((a, b) => b.value / Math.max(1, b.spend) - a.value / Math.max(1, a.spend) || b.value - a.value);
+    let left = budget, value = 0, count = 0;
+    for (const option of options) {
+      if (option.spend > left) continue;
+      left -= option.spend; value += option.value; count++;
+    }
+    return { value, count };
+  }
+
+  // How much more a main phase of hand spells is worth than recasting the
+  // commander with the same mana (positive: the hand comes first). Cards above
+  // the hand limit are discarded at cleanup unless cast, so casting them saves
+  // them. With fewer than two spells to deploy the commander is the play.
+  function commanderDevelopmentEdge(game, player, commander, action, profile, q) {
+    const available = availableManaEstimate(game, player);
+    const alone = handDeployment(game, player, q, available);
+    if (alone.count < 2) return 0;
+    const cost = game.spellCost(player, commander, Object.assign({}, action.alt || {}, { from: action.from }));
+    const spend = (cost.generic || 0) + (cost.pips || []).length;
+    const tax = Math.min(spend, 2 * Math.max(0, Number(commander.cmdCasts) || 0));
+    const beside = handDeployment(game, player, q, Math.max(0, available - spend));
+    const limit = typeof game.maximumHandSize === 'function' ? game.maximumHandSize(player) : 7;
+    const overflow = Number.isFinite(limit) ? Math.max(0, player.hand.length - limit) : 0;
+    const saved = count => Math.min(count, overflow) * 2.5;
+    const commanderValue = cardDefinitionValue(commander.def) + Math.min(5, (spend - tax) * 0.35) +
+      2.2 * (profile.commanderImportance || 1);
+    return alone.value + saved(alone.count) - (commanderValue + beside.value + saved(beside.count));
+  }
+
+  // Recasting an expensive commander can take the whole turn. When the same
+  // mana deploys more from hand (a full hand after a wipe, typically), the best
+  // hand spell goes first; the commander waits while it would cost those
+  // spells. It is not pushed below ending the phase, so a weak hand that would
+  // not be cast anyway never turns the commander into doing nothing.
+  function developBeforeCommander(game, player, q, candidates, profile) {
+    if (q?.type !== 'main' || game.turnPlayer !== player || game.stack.length) return;
+    const handCasts = candidates.filter(candidate => candidate.action.kind === 'cast' && candidate.action.from === 'hand' &&
+      !candidate.action.card.is('Land') && candidate.quick.total > -100);
+    if (!handCasts.length) return;
+    const bestHand = Math.max(...handCasts.map(candidate => candidate.quick.total));
+    const done = candidates.find(candidate => candidate.action.kind === 'done');
+    if (done && bestHand <= done.quick.total) return;
+    for (const candidate of candidates) {
+      const card = candidate.action.kind === 'cast' && candidate.action.card;
+      if (!card || !card.commander || card.zone !== 'command' || candidate.quick.total < bestHand) continue;
+      const edge = commanderDevelopmentEdge(game, player, card, candidate.action, profile, q);
+      if (edge <= 0) continue;
+      const lowered = bestHand - 1 - Math.min(4, edge);
+      candidate.quick = { total: round(lowered), breakdown: Object.assign({}, candidate.quick.breakdown,
+        { development: round(lowered - candidate.quick.total) }) };
+    }
+  }
+
   function quickScoreAction(view, action, profile, q) {
     const privateData = PRIVATE_VIEWS.get(view);
     const game = privateData.game, player = privateData.player;
@@ -5941,7 +6012,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const taps = manaTapPayment(game, player, cost, { card, castOpts: action.alt || {} }, defense);
         breakdown.safety -= defense.exposure(taps);
       }
-      breakdown.base = cardDefinitionValue(card.def) + Math.min(5, spend * 0.35);
+      // Commander tax is a cost, not value: a recast scores like the first cast.
+      const fromCommandZone = card.commander && card.zone === 'command';
+      const commanderTax = fromCommandZone ? Math.min(spend, 2 * Math.max(0, Number(card.cmdCasts) || 0)) : 0;
+      breakdown.base = cardDefinitionValue(card.def) + Math.min(5, (spend - commanderTax) * 0.35);
       breakdown.synergy = sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 2;
       if (card.commander) breakdown.synergy += 2.2 * profile.commanderImportance;
       breakdown.synergy += MTG.WLM?.aiPlanScore(game,player,action) || 0;
@@ -7867,8 +7941,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seed = params.seed === undefined ? defaultSeed(game, view, player.idx) : Number(params.seed) >>> 0;
     const ranking = withStationPlanningMemo(game, () => {
       const legalActions = MTG.generateLegalActions(view, { difficulty });
-      const candidates = withScoringManaMemo(game, () => legalActions.map(action =>
-        ({ action, quick: quickScoreAction(view, action, profile, q) })));
+      const candidates = withScoringManaMemo(game, () => {
+        const scored = legalActions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q) }));
+        developBeforeCommander(game, player, q, scored, profile);
+        return scored;
+      });
       return { legalActions, candidates };
     });
     const legalActions = ranking.legalActions;
