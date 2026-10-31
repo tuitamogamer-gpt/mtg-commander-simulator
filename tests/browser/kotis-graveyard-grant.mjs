@@ -55,7 +55,7 @@ try{
    // Ask the real main controller, proving the expired permission is absent
    // from visible graveyard cast buttons while native abilities stay intact.
    await page.evaluate(()=>{void __kotis.human.controller.decide(_game,{type:'main',player:__kotis.human,casts:_game.castableList(__kotis.human),acts:_game.activatableList(__kotis.human),lands:[],phase:_game.phase});});
-   await page.waitForFunction(()=>_ui.pending?.q.type==='main');assert.equal(await page.locator('.offzone button').filter({hasText:'Timeless Witness'}).count(),0);
+   await page.waitForFunction(()=>_ui.pending?.q.type==='main');assert.equal(await page.locator('.offzone button').filter({hasText:'Timeless Witness'}).count(),0);assert.equal(await page.locator('.hand .offzonecard[data-cname="Timeless Witness"]').count(),0);
   }
   assert.equal(s.fallback,false);assert.equal(s.stack.length,0);await shot(label+'-resolved');results.push({label,...s});console.log('PASS',label);
  }

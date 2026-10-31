@@ -19,6 +19,10 @@ const page = await browser.newPage({viewport: {width: 1440, height: 900}});
 page.setDefaultTimeout(15000);
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
+// A back painted through --card-back-image must not resolve into /src/ before
+// its sleeve is drawn (the stylesheet, not the page, resolves that URL).
+const failedBacks = [];
+page.on('response', response => { if (response.status() >= 400 && /cardbacks/.test(response.url())) failedBacks.push(response.url()); });
 
 // The sleeve each rendered face-down permanent shows, by owner.
 const faceDownBacks = () => page.evaluate(() => [...document.querySelectorAll('#game .mini.facedown img.cardback-art')].map(image => ({
@@ -93,6 +97,24 @@ try {
   await page.waitForFunction(() => __answers.length === 1);
   console.log('PASS a library reveal shows the library owner\'s sleeve');
 
+  // A seat whose sleeve is not drawn yet paints the plain design. That URL is
+  // resolved by the stylesheet using --card-back-image, so it must already be
+  // absolute; a relative one pointed into /src/ and failed to load.
+  const plain = await page.evaluate(() => {
+    const node = document.createElement('div');
+    node.className = 'libraryrevealback cardback-surface';
+    document.body.append(node);
+    const seat = {idx: 7, name: 'Guest', commanders: [], commanderNames: ["Atraxa, Praetors' Voice"], deckName: 'Guest deck'};
+    MTG.applyDeckSleeve(node, seat);
+    const result = {background: getComputedStyle(node).backgroundImage, sleeve: MTG.deckBackURL(seat)};
+    node.remove();
+    return result;
+  });
+  assert.ok(!plain.sleeve.startsWith('blob:'), `the new seat's sleeve is still being drawn: ${JSON.stringify(plain)}`);
+  assert.doesNotMatch(plain.background, /\/src\//, `the plain design resolves against the page: ${JSON.stringify(plain)}`);
+  assert.match(plain.background, /\/assets\/cardbacks\/[a-z]+\.webp/);
+  console.log('PASS a back painted before its sleeve is drawn loads the plain design');
+
   await page.evaluate(() => { _ui.quickMenuOpen = 'cardbacks'; _ui.render(); });
   await page.locator('.cardbackpicker').waitFor();
   const picker = () => page.evaluate(() => ({
@@ -128,6 +150,7 @@ try {
   });
   assert.equal(fixed, true);
   console.log('PASS a sleeve stays fixed for the game once its deck is known');
+  assert.deepEqual(failedBacks, [], 'every card back request resolves');
   assert.deepEqual(errors, []);
 } finally {
   await browser.close();

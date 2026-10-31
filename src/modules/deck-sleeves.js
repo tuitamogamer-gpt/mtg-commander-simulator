@@ -67,12 +67,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return spec.frame.url;
   };
 
+  // A URL in a custom property is resolved by the stylesheet that uses it, so
+  // the plain design's relative path would point into /src/. Absolute URLs
+  // work in hosted and packaged builds; blob and data URLs already are.
+  const cssBackURL = url => typeof URL === 'function' && typeof document !== 'undefined' && document.baseURI && url &&
+    !/^(blob|data):/.test(url) ? new URL(url, document.baseURI).href : url;
+
   // A surface painted with CSS (library reveal, card flights) takes the
   // owner's sleeve through --card-back-image.
   U.applyDeckSleeve = (node, player) => {
     if (!node || !player || !Number.isInteger(player.idx)) return node;
     node.dataset.sleeveOwner = String(player.idx);
-    node.style.setProperty('--card-back-image', `url("${U.deckBackURL(player)}")`);
+    node.style.setProperty('--card-back-image', `url("${cssBackURL(U.deckBackURL(player))}")`);
     return node;
   };
 
@@ -86,7 +92,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!player) continue;
       const url = U.deckBackURL(player);
       if (node.tagName === 'IMG') { if (node.getAttribute('src') !== url) node.setAttribute('src', url); }
-      else node.style.setProperty('--card-back-image', `url("${url}")`);
+      else node.style.setProperty('--card-back-image', `url("${cssBackURL(url)}")`);
     }
   };
 

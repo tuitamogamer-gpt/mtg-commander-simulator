@@ -278,3 +278,41 @@ body.game-active #game.command-table .ct-hand-cards .hand { justify-content: fle
 }
 body.reduced-motion #game.command-table .ct-commander-card::before { animation: none !important; }
 body.reduced-motion #game.command-table .ct-commander-card > img { transition: none !important; transform: none !important; }
+
+/* Phones: cards playable from exile, a graveyard or the library top lead the
+   hand row as full cards (ui.js renderOffZoneHandCard). A ribbon names the
+   zone and a footer the window or owner; the green frame still means
+   "playable now". Desktop keeps the thumbnail tray beside the hand. */
+#game .hand .offzonecard { --offzone: 74, 144, 217; }
+#game .hand .offzonecard[data-zone='graveyard'] { --offzone: 168, 128, 208; }
+#game .hand .offzonecard[data-zone='library'] { --offzone: 84, 194, 172; }
+#game .hand .offzonecard:not(.castable) { border-color: rgba(var(--offzone), .8); }
+#game .hand .offzonecard .offzoneribbon {
+  position: absolute; inset: 0 0 auto; z-index: 4; display: flex; align-items: center; justify-content: center; gap: 3px;
+  height: 16px; padding: 0 4px; overflow: hidden; background: rgba(var(--offzone), .94); color: #061019;
+  font: 800 8px/1 var(--ds-font-display, sans-serif); letter-spacing: .1em; white-space: nowrap; pointer-events: none;
+}
+#game .hand .offzonecard .offzoneribbon .gameicon { flex: 0 0 auto; width: 10px; height: 10px; }
+#game .hand .offzonecard .offzonenote {
+  position: absolute; inset: auto 0 0; z-index: 4; padding: 3px 4px; background: rgba(6, 10, 14, .9); color: #eef3f7;
+  font: 700 8px/1.2 var(--ds-font-body, sans-serif); text-align: center; overflow-wrap: anywhere; pointer-events: none;
+}
+/* The full hand is where cards are read: the ribbon and footer become bands
+   above and below the image instead of covering its name and P/T. The card
+   keeps the 5:7 box of its neighbours (command-table.css lets a loaded image
+   set a card's height, which would leave the bands alone). */
+#game[data-mobile-view='hand'] .hand .offzonecard { display: flex; flex-direction: column; aspect-ratio: 5 / 7 !important; height: auto; background: rgba(var(--offzone), .14); }
+#game[data-mobile-view='hand'] .hand .offzonecard > img { flex: 1 1 0; min-height: 0; width: 100%; height: 0; object-fit: contain; }
+#game[data-mobile-view='hand'] .hand .offzonecard .offzoneribbon { position: static; flex: 0 0 auto; order: -1; height: 22px; gap: 5px; font-size: 10px; }
+#game[data-mobile-view='hand'] .hand .offzonecard .offzoneribbon .gameicon { width: 13px; height: 13px; }
+#game[data-mobile-view='hand'] .hand .offzonecard .offzonenote { position: static; flex: 0 0 auto; padding: 4px 6px; font-size: 11px; }
+@media (max-width: 900px) {
+  /* The cards themselves are in the hand row, so their prompt shortcuts stay
+     one swipeable line instead of a stack of full-width buttons. */
+  #game.command-table .promptbar .btnrow.offzone { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+  #game.command-table .promptbar .btnrow.offzone > .pbtn { flex: 0 0 auto; width: auto; max-width: 75%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Views without the hand (Table, Combat, Stack) keep that line; the prompt
+     grows by its height so the primary action is never cut off. */
+  #game.command-table .ct-decision-rail:not(.has-review):not(.has-targets):has(.promptbar .btnrow.offzone) { max-height: 210px; }
+  body.game-active #game.command-table .ct-decision-rail .promptbar:has(> .btnrow.offzone) { max-height: 180px; }
+}

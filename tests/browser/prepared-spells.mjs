@@ -169,15 +169,18 @@ try {
 
   for (const emptyHand of [false, true]) {
     await fixture({ ordinaryExile: true, emptyHand });
-    assert.equal(await page.locator('.exiletraycard').count(), 5, 'Ordinary exile permissions stay visible');
-    assert.equal(await page.locator('.exiletraycard').filter({ hasText: "Maestro's Gift" }).count(), 0);
+    // A phone shows exile permissions as full cards at the front of the hand row.
+    assert.equal(await page.locator('.hand .offzonecard[data-zone="exile"]').count(), 5, 'Ordinary exile permissions stay visible');
+    assert.equal(await page.locator('.exiletraycard').count(), 0, 'The phone hand row replaces the thumbnail tray');
+    assert.equal(await page.locator('.hand .offzonecard').filter({ hasText: "Maestro's Gift" }).count(), 0);
+    assert.equal(await page.locator(`.hand .offzonecard[data-cname="Maestro's Gift"]`).count(), 0);
     for (const [width, height] of [[320, 568], [390, 660], [430, 932], [667, 375]]) {
       await page.setViewportSize({ width, height });
       await layout(`exile-${emptyHand ? 'empty' : 'normal'}-${width}x${height}`);
       await page.screenshot({ path: `${output}/exile-${emptyHand ? 'empty' : 'normal'}-${width}x${height}.png` });
     }
   }
-  check('Real exile cards remain scrollable beside normal and empty hands on narrow and landscape phones');
+  check('Real exile cards appear as full cards in the hand row with normal and empty hands on narrow and landscape phones');
   assert.deepEqual(errors, []);
 } catch (error) {
   await page.screenshot({ path: `${output}/failure.png` });

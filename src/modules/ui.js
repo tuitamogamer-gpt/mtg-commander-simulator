@@ -4063,43 +4063,45 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // 🌀 IMPULSE / PLOT: karte u egzilu koje trenutno smiješ igrati moraju
       // biti stalno vidljive — inače igrač ne zna ŠTA je egzilirano i da li
       // to još može baciti. Zelene su kad su bacive baš sada.
-      {
-        const exilePlayable = [];
-        for (const owner of g.players) {
-          for (const c of owner.exile) {
-            const meta = c.meta || {};
-            // Prepared copies are offered on their source permanent, not in the hand dock.
-            if (meta.preparedBy) continue;
-            if ((meta.playableBy === me && g.hasExilePlayPermission(me, c)) ||
-              (owner === me && (meta.plotted || meta.foretold))) exilePlayable.push(c);
-          }
+      // Phones show them (and other cards playable from outside the hand) as
+      // full cards at the front of the hand row instead: the thumbnail tray
+      // beside the hand left only clipped names on a narrow screen.
+      const phoneHand = !!window.matchMedia?.('(max-width: 900px)').matches;
+      const exilePlayable = [];
+      for (const owner of g.players) {
+        for (const c of owner.exile) {
+          const meta = c.meta || {};
+          // Prepared copies are offered on their source permanent, not in the hand dock.
+          if (meta.preparedBy) continue;
+          if ((meta.playableBy === me && g.hasExilePlayPermission(me, c)) ||
+            (owner === me && (meta.plotted || meta.foretold))) exilePlayable.push(c);
         }
-        if (exilePlayable.length) {
-          const tray = el('div', 'exiletray');
-          tray.appendChild(el('div', 'exiletraytitle', `${U.icon('exile')} Exiled — you may play:`));
-          const list = el('div', 'exiletraylist');
-          for (const c of exilePlayable) {
-            const meta = c.meta || {};
-            const now = castable.has(c);
-            const until = meta.plotted ? 'plotted — cast in your main phase'
-              : meta.foretold ? 'foretold — cast on a later turn'
-              : meta.playableUntilOwnTurn !== undefined ? 'until the end of your turn'
-                : meta.playableUntil !== undefined && meta.playableUntil <= g.turnNo ? 'until end of THIS turn'
-                  : 'for a limited time';
-            const item = el('button', 'exiletraycard' + (now ? ' castable' : ''));
-            item.dataset.cname = c.name;
-            item.dataset.iid = String(c.iid);
-            item.title = `${c.name}: playable from exile ${until}${meta.freePlay ? ' · FREE' : ''}`;
-            item.innerHTML = `
-              ${cardArtHTML(c)}
-              <span><b>${esc(c.name.split(' // ')[0])}</b><small>${meta.freePlay ? 'free · ' : ''}${esc(until)}</small></span>
-              ${now ? '<i class="exgo">PLAY ▶</i>' : ''}`;
-            item.onclick = () => { this.sheet = { card: c }; this.render(); };
-            list.appendChild(item);
-          }
-          tray.appendChild(list);
-          zones.appendChild(tray);
+      }
+      if (exilePlayable.length && !phoneHand) {
+        const tray = el('div', 'exiletray');
+        tray.appendChild(el('div', 'exiletraytitle', `${U.icon('exile')} Exiled — you may play:`));
+        const list = el('div', 'exiletraylist');
+        for (const c of exilePlayable) {
+          const meta = c.meta || {};
+          const now = castable.has(c);
+          const until = meta.plotted ? 'plotted — cast in your main phase'
+            : meta.foretold ? 'foretold — cast on a later turn'
+            : meta.playableUntilOwnTurn !== undefined ? 'until the end of your turn'
+              : meta.playableUntil !== undefined && meta.playableUntil <= g.turnNo ? 'until end of THIS turn'
+                : 'for a limited time';
+          const item = el('button', 'exiletraycard' + (now ? ' castable' : ''));
+          item.dataset.cname = c.name;
+          item.dataset.iid = String(c.iid);
+          item.title = `${c.name}: playable from exile ${until}${meta.freePlay ? ' · FREE' : ''}`;
+          item.innerHTML = `
+            ${cardArtHTML(c)}
+            <span><b>${esc(c.name.split(' // ')[0])}</b><small>${meta.freePlay ? 'free · ' : ''}${esc(until)}</small></span>
+            ${now ? '<i class="exgo">PLAY ▶</i>' : ''}`;
+          item.onclick = () => { this.sheet = { card: c }; this.render(); };
+          list.appendChild(item);
         }
+        tray.appendChild(list);
+        zones.appendChild(tray);
       }
       // Suspend is not a normal "play from exile" permission: the game owns
       // its upkeep counters and casts it automatically after the last one.
@@ -4132,6 +4134,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         tray.appendChild(list);
         zones.appendChild(tray);
+      }
+      if (phoneHand) for (const [c, info] of this.offZoneHandCards(g, actionQ, exilePlayable)) {
+        row.appendChild(this.renderOffZoneHandCard(g, c, info, castable.has(c)));
       }
       for (const c of MTG.sortHandForDisplay(me.hand, this.handSort)) {
         const canSuspendNow = suspendReady.has(c);
@@ -4194,15 +4199,78 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         row.appendChild(d);
       }
-      if (!me.hand.length) {
+      const offZoneShown = !!row.querySelector('.offzonecard');
+      if (!me.hand.length && !offZoneShown) {
         row.classList.add('is-empty');
         row.appendChild(el('div', 'emptyrow', `${U.icon('cards')}<span><b>Empty hand</b><small>Your battlefield and priority controls remain active.</small></span>`));
       }
       if (zones.childElementCount) wrap.appendChild(zones);
       wrap.appendChild(row);
       if (me.hand.length) wrap.appendChild(this.renderHandTools());
-      if (!me.hand.length && !wrap.querySelector('.exiletray, .suspendtray')) wrap.classList.add('is-empty');
+      if (!me.hand.length && !offZoneShown && !wrap.querySelector('.exiletray, .suspendtray')) wrap.classList.add('is-empty');
       return wrap;
+    }
+
+    // Cards the player may play from exile, a graveyard or the top of the
+    // library, in the order: exile permissions first, then other offers.
+    // Commander and prepared copies have their own surfaces; a permanent on
+    // the battlefield is never shown as a hand card.
+    offZoneHandCards(g, actionQ, exilePlayable) {
+      const cards = new Map();
+      for (const c of exilePlayable) cards.set(c, { zone: 'exile' });
+      for (const entry of MTG.offZoneCasts ? MTG.offZoneCasts(actionQ?.casts) : []) {
+        const zone = entry.from || entry.card.zone;
+        if (entry.card.meta?.preparedBy || zone === 'battlefield' || entry.card.zone === 'battlefield') continue;
+        const info = cards.get(entry.card);
+        if (info) info.entry = info.entry || entry;
+        else cards.set(entry.card, { zone, entry });
+      }
+      for (const land of actionQ?.lands || []) {
+        if (land.zone !== 'hand' && land.zone !== 'battlefield' && !cards.has(land)) cards.set(land, { zone: land.zone });
+      }
+      return cards;
+    }
+
+    renderOffZoneHandCard(g, c, info, playableNow) {
+      const me = this.me, meta = c.meta || {}, zone = info.zone;
+      const zoneLabel = { exile: 'Exile', graveyard: 'Graveyard', library: 'Library top' }[zone] || zone;
+      let note = zone === 'exile'
+        ? meta.plotted ? 'Plotted'
+          : meta.foretold ? 'Foretold'
+          : meta.adventureExiled ? 'On an adventure'
+          : meta.playableUntilOwnTurn !== undefined ? 'Until end of your turn'
+          : meta.playableUntil !== undefined && meta.playableUntil <= g.turnNo ? 'This turn only'
+          : meta.playableUntil !== undefined ? 'Limited time' : ''
+        : zone === 'graveyard' ? info.entry?.alt?.label || ''
+        : '';
+      if (meta.freePlay || info.entry?.alt?.free) note = note ? `Free · ${note}` : 'Free';
+      if (c.owner !== me) note = note ? `${c.owner.name}'s · ${note}` : `${c.owner.name}'s card`;
+      const d = el('div', 'hcard offzonecard' + (playableNow ? ' castable' : ''));
+      const colors = c.colors.length ? c.colors : ['C'];
+      d.style.setProperty('--frame', colors.length > 1 ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})` : COLHEX[colors[0]]);
+      d.innerHTML = `
+        ${cardArtHTML(c)}
+        <div class="hcost">${costHTML(c.def.cost || '')}</div>
+        <div class="offzoneribbon">${U.icon(zone === 'library' ? 'library' : zone === 'graveyard' ? 'graveyard' : 'exile')}<span>${esc(zoneLabel.toUpperCase())}</span></div>
+        ${note ? `<div class="offzonenote">${esc(note)}</div>` : ''}
+        <div class="mname">${esc(c.name.split(' // ')[0])}</div>`;
+      d.dataset.cname = c.name;
+      d.dataset.iid = String(c.iid);
+      d.dataset.zone = zone;
+      const where = `${c.owner === me ? 'Your' : `${c.owner.name}'s`} ${zone === 'library' ? 'library top' : zone}`;
+      const label = `${c.name}. ${where}${note ? `, ${note}` : ''}. ${playableNow ? 'Playable now. Open card actions.' : 'Open card details.'}`;
+      d.setAttribute('role', 'button');
+      d.setAttribute('tabindex', '0');
+      d.setAttribute('aria-label', label);
+      d.title = label;
+      d.onclick = () => { this.sheet = { card: c }; this.render(); };
+      d.onkeydown = event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        event.stopPropagation();
+        d.click();
+      };
+      return d;
     }
 
     // ---------- prompt bar ----------
@@ -4283,7 +4351,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // ponude van ruke (groblje/egzil) — inače bi bile nevidljive
       const offZoneRow = () => {
-        const list = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts).filter(entry => !entry.card.meta?.preparedBy) : [];
+        // A phone's Mine and Hand views show these cards in the hand row
+        // (renderOffZoneHandCard); the prompt does not repeat them as names.
+        const inHandRow = !!window.matchMedia?.('(max-width: 900px)').matches && ['mine', 'hand'].includes(this.mobileView);
+        const list = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts).filter(entry => !entry.card.meta?.preparedBy &&
+          !(inHandRow && entry.card.zone !== 'battlefield' && (entry.from || entry.card.zone) !== 'battlefield')) : [];
         if (!list.length) return null;
         const row = el('div', 'btnrow offzone');
         const ZONE = { graveyard: '🪦', exile: '🌀', battlefield: '🎴' };

@@ -35,7 +35,7 @@ try{
    qa.start=()=>{void actor.controller.decide(game,{type:'main',player:actor,casts:game.castableList(actor),acts:game.activatableList(actor),lands:[],phase:game.phase}).then(async action=>{qa.ok=await game.performAction(actor,action);qa.done=true;ui.render();}).catch(error=>qa.error=error.stack);};ui.render();
   },scenario);
   await page.getByRole('button',{name:'HOLD',exact:true}).click();await page.evaluate(()=>__exit.start());
-  if(role==='human'){await page.waitForFunction(()=>_ui.pending?.q.type==='main');const sourceName=await page.evaluate(()=>__exit.card.name);await page.locator('.offzone button').filter({hasText:sourceName}).first().click();}
+  if(role==='human'){await page.waitForFunction(()=>_ui.pending?.q.type==='main');const sourceName=await page.evaluate(()=>__exit.card.name);if(width<=900){await page.locator(`.hand .offzonecard[data-zone="graveyard"][data-cname=${JSON.stringify(sourceName)}]`).first().click();await page.locator('.sheetacts .pbtn.primary').first().click();}else await page.locator('.offzone button').filter({hasText:sourceName}).first().click();}
   let sourceStack=false,responseStack=false,responseStarted=false;
   for(let n=0;n<160;n++){
    const s=await state();assert.equal(s.error,null);if(s.done)break;

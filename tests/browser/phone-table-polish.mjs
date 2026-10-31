@@ -43,6 +43,24 @@ const announce = page => page.evaluate(() => {
   _ui.showEffectNotice(`◆ ${card.name}: +1 +1/+1 counter.`, 'counter', {card});
   _ui.toast('🎯 Swords to Plowshares: click a target');
 });
+// Three exile permissions: an impulse draw castable now, a foretold card that
+// is not, and an opponent's card castable now.
+const offerExile = page => page.evaluate(() => {
+  const g = _game, me = _ui.me, opponent = g.players[1];
+  const exile = (name, owner, meta) => {
+    const card = new MTG.CardInst(MTG.DEFS[name], owner);
+    card.zone = 'exile'; owner.exile.push(card); Object.assign(card.meta, meta);
+    return card;
+  };
+  const impulse = exile('Llanowar Elves', me, {playableBy: me, playableUntil: g.turnNo});
+  exile('Swords to Plowshares', me, {foretold: true});
+  const stolen = exile('Counterspell', opponent, {playableBy: me, playableUntil: g.turnNo + 2});
+  if (_ui.pending) _ui.resolvePendingEntry(_ui.pending, {kind: 'done'});
+  const casts = g.castableList(me).filter(entry => entry.card.zone === 'hand')
+    .concat([{card: impulse, from: 'exile'}, {card: stolen, from: 'exile'}]);
+  void me.controller.decide(g, {type: 'main', player: me, phase: g.phase, casts, acts: [], lands: []});
+  _ui.render();
+});
 const floaters = (page, heading) => page.evaluate(selector => {
   const box = query => document.querySelector(query)?.getBoundingClientRect().toJSON() || null;
   return {notice: box('body > .effectnoticestack'), toast: box('body > .toastmsg'), prompt: box('#game .promptbar'),
@@ -144,6 +162,70 @@ try {
     await context.close();
   }
   {
+    // Cards you may play from exile are full cards at the front of the phone
+    // hand row instead of names; the prompt does not repeat them while the
+    // hand shows, and Table view keeps one line of shortcuts.
+    const {context, page} = await openTable({viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true});
+    await offerExile(page);
+    await page.locator('.hand .offzonecard').first().waitFor();
+    const row = await page.evaluate(() => {
+      const box = node => node.getBoundingClientRect().toJSON();
+      const cards = [...document.querySelectorAll('#game .hand .hcard')];
+      const regular = cards.find(node => !node.classList.contains('offzonecard'));
+      return {cards: cards.filter(node => node.classList.contains('offzonecard')).map(node => ({name: node.dataset.cname, zone: node.dataset.zone,
+        castable: node.classList.contains('castable'), ribbon: node.querySelector('.offzoneribbon')?.textContent.trim(),
+        note: node.querySelector('.offzonenote')?.textContent.trim(), image: !!node.querySelector('img'), box: box(node)})),
+        regular: box(regular), firstHand: cards.indexOf(regular),
+        tray: document.querySelectorAll('.exiletraycard').length, shortcuts: document.querySelectorAll('.promptbar .offzone button').length};
+    });
+    assert.deepEqual(row.cards.map(card => card.name), ['Llanowar Elves', 'Swords to Plowshares', 'Counterspell']);
+    assert.equal(row.firstHand, 3, 'exile cards lead the hand row');
+    assert.ok(row.cards.every(card => card.zone === 'exile' && card.ribbon === 'EXILE' && card.image), JSON.stringify(row.cards));
+    assert.ok(row.cards.every(card => Math.abs(card.box.width - row.regular.width) < 1 && Math.abs(card.box.height - row.regular.height) < 1),
+      `exile cards are hand-card sized: ${JSON.stringify(row)}`);
+    assert.deepEqual(row.cards.map(card => card.castable), [true, false, true], 'the green frame marks the cards playable now');
+    assert.deepEqual(row.cards.map(card => card.note), ['This turn only', 'Foretold', "AI Dragon's · Limited time"]);
+    assert.equal(row.tray, 0, 'no thumbnail tray on a phone');
+    assert.equal(row.shortcuts, 0, 'the prompt does not repeat cards shown in the hand row');
+    await page.screenshot({path: `${output}/exile-hand-row.png`});
+    await page.locator('.hand .offzonecard[data-cname="Counterspell"]').click();
+    assert.deepEqual(await page.locator('.sheetacts button').allInnerTexts(), ['Play from exile', 'Close']);
+    await page.locator('.sheet').getByRole('button', {name: 'Close', exact: true}).click();
+    await page.getByRole('navigation', {name: 'Arena view'}).getByRole('button', {name: /^Table/i}).click();
+    const table = await page.evaluate(() => {
+      const prompt = document.querySelector('#game .promptbar'), shortcuts = [...prompt.querySelectorAll('.offzone button')];
+      return {shortcuts: shortcuts.length, lines: new Set(shortcuts.map(node => Math.round(node.getBoundingClientRect().top))).size,
+        clipped: prompt.scrollHeight > prompt.clientHeight + 1,
+        primary: [...prompt.querySelectorAll('.pbtn.primary')].at(-1).getBoundingClientRect().bottom, bottom: prompt.getBoundingClientRect().bottom};
+    });
+    assert.equal(table.shortcuts, 2, 'Table view keeps shortcuts for the cards playable now');
+    assert.equal(table.lines, 1, 'the shortcuts share one line');
+    assert.ok(!table.clipped && table.primary <= table.bottom + 1, `Continue stays visible: ${JSON.stringify(table)}`);
+    await page.screenshot({path: `${output}/exile-table-view.png`});
+    console.log('PASS cards playable from exile are full cards in the phone hand row');
+
+    // "Counter target spell": the phone opens the Stack view, where the spell glows.
+    await page.getByRole('navigation', {name: 'Arena view'}).getByRole('button', {name: /^Mine/i}).click();
+    await page.evaluate(() => {
+      const owner = _game.players[1], spell = new MTG.CardInst(MTG.DEFS['Lightning Bolt'], owner);
+      spell.zone = 'stack';
+      const object = {kind: 'spell', name: spell.name, card: spell, ctrl: owner, targets: []};
+      _game.stack.push(object);
+      if (_ui.pending) _ui.resolvePendingEntry(_ui.pending, {kind: 'done'});
+      window.__stackAnswer = undefined;
+      void _ui.me.controller.decide(_game, {type: 'chooseTargets', player: _ui.me, prompt: 'Counter target spell', spec: {what: 'spell'},
+        candidates: [object], min: 1, max: 1, src: _ui.me.hand.find(card => card.name === 'Counterspell'), cancelable: true})
+        .then(answer => { window.__stackAnswer = answer; });
+    });
+    await page.waitForFunction(() => document.querySelector('#game').dataset.mobileView === 'stack');
+    await page.getByRole('button', {name: 'Lightning Bolt. Select this spell as a target.', exact: true}).filter({visible: true}).first().click();
+    await page.screenshot({path: `${output}/stack-target.png`});
+    await page.locator('.targetprompt .primary').click();
+    await page.waitForFunction(() => Array.isArray(window.__stackAnswer) && window.__stackAnswer[0]?.name === 'Lightning Bolt');
+    console.log('PASS a spell target on the Stack opens the Stack view');
+    await context.close();
+  }
+  {
     // Landscape keeps the commander column: height is the scarce side.
     const {context, page} = await openTable({viewport: {width: 844, height: 390}, isMobile: true, hasTouch: true});
     await page.getByRole('navigation', {name: 'Arena view'}).getByRole('button', {name: /^Combat/i}).click();
@@ -161,10 +243,17 @@ try {
     await context.close();
   }
   {
-    // A mouse keeps the original wording.
+    // A mouse keeps the original wording, and the desktop keeps the exile tray
+    // beside the hand with its prompt shortcuts.
     const {context, page} = await openTable({viewport: {width: 1440, height: 900}});
     assert.match(await page.locator('#game .promptbar .ptext').first().textContent(), /click/);
     console.log('PASS mouse prompts keep click');
+    await offerExile(page);
+    await page.locator('.exiletraycard').first().waitFor();
+    assert.equal(await page.locator('.exiletraycard').count(), 3);
+    assert.equal(await page.locator('.hand .offzonecard').count(), 0);
+    assert.equal(await page.locator('.promptbar .offzone button').count(), 2);
+    console.log('PASS the desktop keeps its exile tray');
     await context.close();
   }
   assert.deepEqual(errors, []);

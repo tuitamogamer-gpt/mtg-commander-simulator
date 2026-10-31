@@ -267,7 +267,10 @@ try {
       await page.waitForFunction(() => _ui.pending?.q.type === 'main' || __gap.error);
       assert.equal(await page.evaluate(() => _ui.actionQuestion().casts.some(e => e.card === __gap.source && e.from === 'exile')), true,
         'the native adventure permission offers the creature from exile');
-      await page.locator('.offzone button').filter({ hasText: 'Bonecrusher Giant' }).click();
+      // The phone hand row shows the exiled creature as a card; its sheet plays it.
+      assert.equal(await page.locator('.offzone button').filter({ hasText: 'Bonecrusher Giant' }).count(), 0, 'the prompt does not repeat a card shown in the hand row');
+      await page.locator('.hand .offzonecard[data-cname^="Bonecrusher Giant"][data-zone="exile"]').click();
+      await page.locator('.sheetacts .pbtn.primary').filter({ hasText: /^Play from exile/ }).click();
       for (let n = 0; n < 150 && !(await state()).done; n++) await progress(scenario);
       result = await state(); assert.equal(result.error, null); assert.equal(result.done, true);
       assert.equal(result.source.zone, 'battlefield'); assert.equal(result.source.creature, true);

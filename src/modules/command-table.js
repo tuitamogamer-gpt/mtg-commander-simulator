@@ -469,11 +469,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const pd = this.pending;
     if (mobile && pd && ['chooseTargets', 'choosePlayer'].includes(pd.q.type) && !pd.commandTargetViewPrepared) {
       pd.commandTargetViewPrepared = true;
-      const candidate = (pd.q.candidates || []).find(item => item instanceof U.Player || item.zone === 'battlefield');
+      const candidates = pd.q.candidates || [];
+      const candidate = candidates.find(item => item instanceof U.Player || item.zone === 'battlefield');
       const owner = candidate instanceof U.Player ? candidate : candidate?.ctrl;
       if (owner) {
         this.commandMobileBoard = owner === this.me ? 'mine' : 'opponent';
         if (owner !== this.me) this.commandFocusPlayer = owner.idx;
+      } else if (candidates.length && candidates.every(item => this.game.stack.includes(item))) {
+        // Spells and abilities live only in the Stack view on a phone; a
+        // "counter target spell" choice opens it instead of an empty board.
+        this.mobileView = 'stack'; this.utilityDrawerOpen = true; this.sidebarTab = 'table';
       }
     }
     const focus = U.commandTableFocus(this.game, this.me, this.commandFocusPlayer, this.pending?.q.type, followActive);
