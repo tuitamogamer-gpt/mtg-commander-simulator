@@ -7566,7 +7566,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // identity and definition must belong to the cloned graph as well.
     if (prototype instanceof MTG.CardInst) Object.setPrototypeOf(out, cloneGraph(prototype, seen));
     for (const ownKey of Reflect.ownKeys(value)) {
-      if (ownKey === '_resolutionRecap') continue;
+      if (ownKey === '_resolutionRecap' || ownKey === '_simulationMaps') continue;
       const descriptor = Object.getOwnPropertyDescriptor(value, ownKey);
       if (!descriptor || !('value' in descriptor)) continue;
       try { out[ownKey] = cloneGraph(descriptor.value, seen, String(ownKey), value); } catch (error) { /* noncritical UI/cache field */ }
@@ -7605,15 +7605,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // svakog snapshota. Odvoje se samo za trajanje kloniranja.
     const savedLog = game.log, savedDecisionLog = game.aiDecisionLog;
     let clone;
+    const seen = new Map();
     try {
       if (Array.isArray(savedLog)) game.log = [];
       if (Array.isArray(savedDecisionLog)) game.aiDecisionLog = [];
-      clone = cloneGraph(game);
+      clone = cloneGraph(game, seen);
     } finally {
       if (Array.isArray(savedLog)) game.log = savedLog;
       if (Array.isArray(savedDecisionLog)) game.aiDecisionLog = savedDecisionLog;
     }
     clone._simulation = true;
+    // Live object -> this clone's copy, one map per generation of nesting
+    // (see simulationObject below).
+    clone._simulationMaps = [...(game._simulationMaps || []), seen];
     // A nested clone already holds the tokens its parent simulation created;
     // restarting the local counter would hand out duplicate ids inside it.
     clone._nextSimulationIid = game._simulation && Number.isFinite(game._nextSimulationIid) ? game._nextSimulationIid : -1;
@@ -7637,6 +7641,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return clone;
   }
   MTG.cloneGameForAISimulation = cloneGameForSimulation;
+
+  // Simulation isolation. A clone copies the game's objects but not its
+  // closures, so a delayed "return it at the next end step" still holds the
+  // live card and player. When a lookahead resolved such a closure, it moved
+  // the live card into the simulation: the card left its real zone, said
+  // "battlefield", and was on no real battlefield. Inside a simulation, every
+  // live object that reaches a state-changing method stands for its copy.
+  MTG.Game.prototype.simulationObject = function (value) {
+    if (!this._simulation || !value || typeof value !== 'object') return value;
+    for (const map of this._simulationMaps || []) value = map.get(value) || value;
+    return value;
+  };
+  const simulationArgument = (game, value) => Array.isArray(value)
+    ? value.map(item => game.simulationObject(item)) : game.simulationObject(value);
+  for (const name of ['putPermanentOntoBattlefield', 'addCounters', 'removeCounters', 'gainLife', 'loseLife', 'damageCreature',
+    'damagePlayer', 'draw', 'tap', 'untap', 'makeTokens', 'sacrifice', 'destroy', 'discard', 'mill', 'attach', 'exileCard']) {
+    const original = MTG.Game.prototype[name];
+    if (typeof original !== 'function') continue;
+    MTG.Game.prototype[name] = function (...args) {
+      return original.apply(this, this._simulation ? args.map(arg => simulationArgument(this, arg)) : args);
+    };
+  }
+  {
+    // A move's options may name a controller, an attachment host or an
+    // attack target; those are live objects too.
+    const move = MTG.Game.prototype.move;
+    MTG.Game.prototype.move = function (card, toZone, opts) {
+      if (!this._simulation) return move.call(this, card, toZone, opts);
+      const local = opts && {...opts};
+      if (local) for (const key of ['ctrl', 'attachTo', 'attacking', 'cursedPlayer']) if (local[key]) local[key] = this.simulationObject(local[key]);
+      return move.call(this, this.simulationObject(card), toZone, local);
+    };
+  }
 
   function prepareSearchInformation(clone, information) {
     const observer = clone.players.find(player => player.idx === information.observerId);
