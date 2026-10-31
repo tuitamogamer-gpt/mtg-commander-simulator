@@ -239,6 +239,26 @@ body.game-active #game.command-table .ct-hand-cards .hand { justify-content: fle
   body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .handzones { flex: 0 0 auto; width: 100%; max-width: none; max-height: 112px; }
   body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .hand { grid-template-columns: repeat(auto-fill, minmax(min(126px, 100%), 1fr)); }
 }
+/* Portrait phones: the full hand gets the whole width. Beside a 92px commander
+   column only one stretched card fit per row, so the commander becomes a compact
+   row above the cards. Landscape keeps the column: height is the scarce side. */
+@media (max-width: 900px) and (orientation: portrait) {
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .handwrap {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 44px auto minmax(0, 1fr);
+    row-gap: 6px;
+  }
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .ct-commander-dock {
+    grid-row: 2; grid-column: 1; align-self: stretch; min-height: 0; padding: 4px 8px 6px;
+  }
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .ct-commander-card {
+    flex-direction: row; justify-content: flex-start; gap: 10px; padding: 2px 4px;
+  }
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .ct-commander-card > img { width: 46px; height: 64px; }
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .ct-commander-card .czinfo { width: auto; text-align: left; }
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .ct-commander-card .czname { font-size: 13px !important; line-height: 17px !important; }
+  body.game-active #game.command-table.ct-hand-command[data-mobile-view='hand'] .ct-hand-cards { grid-row: 3; grid-column: 1; }
+}
 @media (max-width: 900px) and (max-height: 720px) {
   body.game-active #game.command-table.ct-hand-command { --ct-hand: 160px; --ct-dock-art: 56px; }
 }
@@ -248,6 +268,8 @@ body.game-active #game.command-table .ct-hand-cards .hand { justify-content: fle
   #game.command-table .ct-hand-content .handtools { gap: 2px; padding: 0; }
   #game.command-table .ct-hand-content .handtools:has(.ct-command-extras) .handtoolstitle { display: none; }
   #game.command-table .ct-hand-content .handsort { width: 80px; font-size: 10px; }
+  /* The full-hand header spans the table, so the sort label is not cut short. */
+  #game.command-table[data-mobile-view='hand'] .ct-hand-content .handsort { width: 100px; }
   #game.command-table .ct-hand-content .handexpand { padding-inline: 3px; font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {

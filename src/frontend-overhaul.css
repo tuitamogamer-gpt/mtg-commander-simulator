@@ -1784,6 +1784,9 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
   overflow: visible !important; border: 1px solid var(--ds-line-soft); border-radius: 18px;
   background: var(--ds-panel); box-shadow: none;
 }
+/* The drawer's backdrop (client-v3.css) has nothing to dim once the builder is
+   an inline stage; on phones it showed as a dark strip along the left gutter. */
+#setup[data-setup-stage] .setupright.mobile-open::before { content: none; }
 #setup .setupstagepanel { display: block; }
 #setup .reviewstage { display: none; }
 #setup[data-setup-stage="review"] .podstage { display: none; }

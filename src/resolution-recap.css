@@ -36,6 +36,12 @@
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 8px 24px;
   border-bottom: 1px solid #ffffff18; color: #b2bba7; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
 }
+/* decision-experience.css styles every decision's strip as a bare underline;
+   the recap keeps its padded strip flush with the dialog's top edge. */
+#game .resolutionrecapoverlay .modal.resolutionrecap > .waitownership {
+  margin: 0; padding: 8px 24px; border: 0; border-bottom: 1px solid #ffffff18; background: transparent;
+}
+#game .resolutionrecapoverlay.recapminor .modal.resolutionrecap > .waitownership { padding: 8px 18px; }
 #game .resolutionrecap .waitownership strong { color: inherit; font-weight: inherit; }
 #game .resolutionrecap .waitownership span { color: #8f9a8c; font-weight: 500; letter-spacing: .02em; text-transform: none; }
 
@@ -44,6 +50,9 @@
   align-items: flex-end; justify-content: flex-end; background: transparent;
   backdrop-filter: none; -webkit-backdrop-filter: none; animation: none;
 }
+/* Decision dialogs are centred (decision-experience.css); a routine recap keeps
+   its corner, which on a phone is a bottom sheet under the visible board. */
+#game .overlay.resolutionrecapoverlay.recapminor:has(> .modal[data-decision-type]) { align-items: flex-end; justify-content: flex-end; }
 #game .recapminor .modal.resolutionrecap {
   width: min(420px, 100%); max-height: min(650px, calc(100 * var(--dvhu) - 40px));
   background: #171e1c; border-color: #75856a65;
@@ -124,6 +133,11 @@
 }
 @media (max-width: 520px) {
   #game .recapminor .modal.resolutionrecap { width: 100%; max-height: min(calc(70 * var(--dvhu)), calc(100 * var(--dvhu) - 16px)); }
+  /* A full-width bottom sheet: an inset card let the prompt and tabs behind it
+     show through as slivers along its edges. */
+  #game .overlay.resolutionrecapoverlay.recapminor:has(> .modal[data-decision-type]) { padding: 0; }
+  #game .resolutionrecapoverlay.recapminor .modal.resolutionrecap { border-width: 1px 0 0; border-radius: 14px 14px 0 0; }
+  #game .resolutionrecapoverlay.recapminor .resolutionrecapfoot { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
 }
 @media (max-height: 450px) {
   .recapmajor .resolutionrecaphero > img { width: 38px; height: 53px; }

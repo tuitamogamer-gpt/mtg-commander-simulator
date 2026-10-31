@@ -185,6 +185,8 @@ try {
       assert.equal(await recap.locator('.resolutionrecapdetails').getAttribute('open'), '', 'details stay expanded across game renders');
       assert.match(await recap.innerText(), /The stack is empty/);
       await page.setViewportSize({width: 320, height: 568});
+      // Dynamic viewport units (dvh) settle a frame after the resize.
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const footer = await recap.locator('.resolutionrecapproceed').boundingBox();
       assert.ok(footer && footer.y + footer.height <= 568, 'expanded details keep Proceed reachable on a small phone');
       await page.screenshot({path: `${out}/fetch-details-320x568.png`});

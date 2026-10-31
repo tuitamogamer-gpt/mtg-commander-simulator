@@ -713,6 +713,7 @@ import './modules/command-table.js';
 import './modules/action-effects.js';
 import './modules/effect-anchors.js';
 import './modules/deck-sleeves.js';
+import './modules/phone-table.js';
 import './modules/landing.js';
 import './modules/multiplayer-presentation.js';
 import './modules/multiplayer-arena.js';

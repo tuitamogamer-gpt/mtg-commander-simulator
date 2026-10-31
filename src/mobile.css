@@ -103,12 +103,14 @@
 
   /* Targeting needs the battlefield. Size the prompt to its content, keep
      confirmation outside the scrolling instructions, and use Hand for cards
-     in hand until the choice is complete. */
+     in hand until the choice is complete. Taller phones allow a two-line
+     instruction and the two-line hint (a cast's "no mana has been paid yet")
+     without cutting the last line; small phones keep the board's share. */
   #game.command-table .ct-decision-rail.has-targets {
     height: auto;
-    max-height: 180px;
+    max-height: clamp(180px, calc(26 * var(--dvhu)), 212px);
   }
-  #game.command-table .ct-decision-rail.has-targets:has(.targetzonelinks) { max-height: 228px; }
+  #game.command-table .ct-decision-rail.has-targets:has(.targetzonelinks) { max-height: clamp(228px, calc(32 * var(--dvhu)), 260px); }
   #game.command-table .ct-decision-rail.has-targets .ct-decision-heading { display: none; }
   /* The tray is the human's own decision: the status line only repeats what the
      step header says, and its row is the difference between a two-line glimpse

@@ -24,7 +24,7 @@ async function settle() {
   await page.waitForFunction(() => document.getAnimations().every(animation =>
     animation.effect?.getTiming().iterations === Infinity || ['finished', 'idle'].includes(animation.playState)));
 }
-async function geometry(label) {
+async function geometry(label, {stacked = false} = {}) {
   await settle();
   const result = await page.evaluate(() => {
     const dock = document.querySelector('.ct-commander-dock').getBoundingClientRect();
@@ -38,7 +38,11 @@ async function geometry(label) {
       }), cards: [...document.querySelectorAll('.ct-commander-card .czinfo')].map(el => el.getBoundingClientRect().toJSON())};
   });
   const cardsFit = result.cards.every(r => r.bottom <= result.dock.bottom + 1 && r.left >= result.dock.left && r.right <= result.dock.right);
-  assert.ok(result.dock.right < result.hand.left, `${label}: separate left commander and right hand ${JSON.stringify(result)}`);
+  // A portrait full hand puts the commander in a compact row above a full-width
+  // hand; everywhere else the commander keeps its own column on the left.
+  if (stacked) assert.ok(result.dock.bottom <= result.hand.top + 1 && result.dock.width >= result.hand.width - 2,
+    `${label}: commander row above the full-width hand ${JSON.stringify(result)}`);
+  else assert.ok(result.dock.right < result.hand.left, `${label}: separate left commander and right hand ${JSON.stringify(result)}`);
   if (!cardsFit) await page.screenshot({path: `${output}/failure.png`});
   assert.ok(cardsFit && result.pageFits && result.controls.every(item => item.reachable), `${label}: ${JSON.stringify(result)}`);
 }
@@ -106,7 +110,8 @@ try {
 
     if (width <= 900) {
       await page.locator('.handexpand').click();
-      await geometry(`${width}x${height} full hand`);
+      await geometry(`${width}x${height} full hand`, {stacked: height > width});
+      await page.screenshot({path: `${output}/${width}-full-hand.png`});
       const last = page.locator('.hand .hcard').last();
       await last.scrollIntoViewIfNeeded(); await last.click();
       assert.equal(await page.evaluate(() => _ui.sheet?.card === _ui.me.hand.at(-1)), true);
