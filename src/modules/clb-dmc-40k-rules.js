@@ -19,7 +19,11 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const reveal=async(ctx,n,p=ctx.you)=>{const cards=p.library.slice(-n).reverse();await ctx.g.revealToHuman({cards,ctrl:p,kind:'reveal'});return cards;};
  const look=async(ctx,n,p=ctx.you)=>{const cards=p.library.slice(-n).reverse();if(!p.isAI&&cards.length)await p.controller.decide(ctx.g,{type:'cardReveal',player:p,cards,kind:'look',private:true});return cards;};
  const exileTop=async(ctx,n,p=ctx.you,opts={})=>{const cards=p.library.slice(-n).reverse(),out=[];for(const c of cards){await ctx.g.move(c,'exile',{revealFromLibrary:true,revealSource:ctx.src,revealController:ctx.you});if(c.zone==='exile'){out.push(c);if(opts.play)C.playGrant(ctx,c,opts);}}return out;};
- const returnLater=(ctx,c,to='battlefield',ctrl=c.owner,tapped=false)=>{const r=C.row(c);ctx.g.delayed.push({on:'endStep',once:true,src:ctx.src,ctrl:ctx.you,name:ctx.src.name+': return '+c.name,run:next=>C.current(r)&&(to==='battlefield'?next.g.putPermanentOntoBattlefield(c,ctrl,{tapped}):next.g.move(c,to))});};
+ const returnLater=(ctx,c,to='battlefield',ctrl=c.owner,tapped=false)=>{const r=C.row(c);
+ // A commander's command-zone choice tells its owner what staying keeps:
+ // this return, and when (from inside the end step it is the next turn's).
+ const entry=c.meta?.commanderZoneEntry;if(c.commander&&entry&&entry.zone===c.zone&&entry.version===c.zoneVersion&&to==='battlefield'){entry.returnName=ctx.src.name;entry.returnWhen=ctx.g.phase==='end'?"at the beginning of the next turn's end step":'at the beginning of the next end step';}
+ ctx.g.delayed.push({on:'endStep',once:true,src:ctx.src,ctrl:ctx.you,name:ctx.src.name+': return '+c.name,run:next=>C.current(r)&&(to==='battlefield'?next.g.putPermanentOntoBattlefield(c,ctrl,{tapped}):next.g.move(c,to))});};
  const emit=G.emit;
  G.emit=async function(name,data){
   if(name==='etb'){data.playedLand=this.cdkLandPlay?.card===data.card;data.cdkEntryFrom=data.playedLand?this.cdkLandPlay.from:data.card.meta._enteredFromZone;data.cdkEntryVersion=data.card.zoneVersion;data.card.meta.cdkEnteredTurn=this.turnNo;if(data.card.is('Creature'))data.card.ctrl.turnState.cdkCreatureEntered=true;}

@@ -1598,7 +1598,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       switch (kind) {
         case 'splice-v11': return q.options.find(option=>option.card)?.key||'done';
         case 'recover-v9': return g.canPayMana(this.p,MTG.parseCost(q.aiHint.cost))?'yes':'no';
-        case 'commanderZone': return q.aiHint.toZone === 'hand' ? 'stay' : 'cz';
+        case 'commanderZone': return q.aiHint.toZone === 'hand' || q.aiHint.pendingReturn ? 'stay' : 'cz';
         case 'exertAttack': return MTG.OracleV8Exert.choose(g,this.p,q);
         case 'exploit': return MTG.OracleV8Exploit.choose(g,this.p,q);
         case 'tapUntap': { const target=q.aiHint.target,desired=target?.ctrl===this.p?'untap':'tap';return target?.tapped===(desired==='tap')&&keys.includes('none')?'none':desired; }

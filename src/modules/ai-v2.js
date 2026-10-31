@@ -7176,8 +7176,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice = player.library.length ? (player.hand.length >= 6 ? 2.3 : 1.7) : -2;
         }
       } else if (hintKind === 'commanderZone') {
-        // A bounced commander can be cast from hand without commander tax.
-        const preferred = q.aiHint.toZone === 'hand' ||
+        // A bounced commander can be cast from hand without commander tax, and
+        // one with a pending return (a blink from exile, a graveyard return)
+        // comes back without being cast at all.
+        const preferred = q.aiHint.toZone === 'hand' || q.aiHint.pendingReturn ||
           q.aiHint.toZone === 'graveyard' && q.aiHint.graveyardReturn ? 'stay' : 'cz';
         breakdown.choice = action.value === preferred ? 40 : -8;
       } else if (hintKind === 'cloudKey') {

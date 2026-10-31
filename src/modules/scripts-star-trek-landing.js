@@ -157,7 +157,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await ctx.g.emit('explored', {card: ctx.src, player: ctx.you});
   }, {filter: (g, c, d) => d.card === c})],
     abilities: [{label: 'A creature can’t be blocked this turn', cost: {mana: '{2}{U}'}, targets: [T.creature()], run: ctx => unblock(ctx, ctx.targets[0])}]};
-  S['Chief Kyle, Transporter Tech'] = {triggers: [landfall('Blink up to one other creature you control', ctx => blink(ctx, ctx.targets[0]), {
+  S['Chief Kyle, Transporter Tech'] = {triggers: [landfall('Exile up to one other creature you control; it returns at the beginning of the next end step', ctx => blink(ctx, ctx.targets[0]), {
     targets: [T.creature({filter: (g, c, p, s) => c !== s && c.ctrl === p, count: 1, min: 0, upTo: true})],
   })]};
   S['Chief Montgomery Scott'] = {abilities: [{label: 'Put a creature or Spacecraft onto the battlefield with counters', cost: {mana: '{6}', tap: true}, run: async ctx => {

@@ -4567,9 +4567,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           instruction.setAttribute('aria-live', 'polite');
           instruction.appendChild(el('small', 'targetstep', q.targetSteps > 1
             ? `TARGET ${q.targetStep} OF ${q.targetSteps}` : 'CURRENT CHOICE'));
+          // A triggered ability's generic "choose target" says nothing about
+          // what the choice does; its effect text does.
+          const genericPrompt = !q.prompt || /^(izaberi metu|choose (a )?target)$/i.test(String(q.prompt).trim());
           instruction.appendChild(el('div', 'targetinstructiontext', esc(proliferate
-            ? 'Choose any number of players and permanents with counters.' : q.prompt || 'Choose a target')));
+            ? 'Choose any number of players and permanents with counters.'
+            : genericPrompt && q.effectText ? q.effectText : q.prompt || 'Choose a target')));
           body.appendChild(instruction);
+          // "The beginning of the next end step" chosen inside the end step is
+          // the next turn's end step: say so before a blink exiles anything.
+          if (!proliferate && g.phase === 'end' && /beginning of the next end step/i.test(source?.def?.oracle || '')) {
+            body.appendChild(el('div', 'targetprompthint targetconstraint targettiming',
+              'This is already the end step, so a card exiled now returns at the beginning of the next turn\'s end step, not this one.'));
+          }
           if (q.spec?.sameGraveyard) body.appendChild(el('div', 'targetprompthint targetconstraint',
             'Choose all cards from one graveyard. Clear your selection to switch graveyards.'));
           if(q.spec?.oracleGroupRuleV22){const rule=q.spec.oracleGroupRuleV22;body.appendChild(el('div','targetprompthint targetconstraint',rule.test==='total-mana-value'?'The selected cards must have total mana value '+rule.max+' or less.':rule.test==='different-names'?'Choose cards with different names.':rule.test==='different-mana-values'?'Choose cards with different mana values.':'The selected creature cards must share a creature type.'));}

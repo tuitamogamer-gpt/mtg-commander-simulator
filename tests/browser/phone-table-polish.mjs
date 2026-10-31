@@ -204,6 +204,29 @@ try {
     await page.screenshot({path: `${output}/exile-table-view.png`});
     console.log('PASS cards playable from exile are full cards in the phone hand row');
 
+    // A triggered ability's target tray says what the choice does, and inside
+    // the end step warns that "the next end step" is the next turn's.
+    await page.evaluate(() => {
+      if (_ui.pending) _ui.resolvePendingEntry(_ui.pending, {kind: 'done'});
+      const kyle = new MTG.CardInst(MTG.DEFS['Chief Kyle, Transporter Tech'], _ui.me);
+      kyle.zone = 'battlefield'; kyle.ctrl = _ui.me; _game.battlefield.push(kyle); _game.recalc();
+      _game.phase = 'end'; _game.step = 'end';
+      window.__blinkAnswer = undefined;
+      void _ui.me.controller.decide(_game, {type: 'chooseTargets', player: _ui.me, prompt: 'Izaberi metu', spec: {what: 'creature'},
+        candidates: _game.creatures(_ui.me).filter(card => card !== kyle), min: 0, max: 1, src: kyle,
+        effectText: 'Exile up to one other creature you control; it returns at the beginning of the next end step'})
+        .then(answer => { window.__blinkAnswer = answer; });
+      _ui.render();
+    });
+    await page.locator('.targetprompt .targettiming').waitFor();
+    assert.equal(await page.locator('.targetinstructiontext').textContent(), 'Exile up to one other creature you control; it returns at the beginning of the next end step');
+    assert.match(await page.locator('.targettiming').textContent(), /already the end step.*next turn's end step/);
+    await page.screenshot({path: `${output}/end-step-blink.png`});
+    await page.locator('.targetprompt .primary').click();
+    await page.waitForFunction(() => Array.isArray(window.__blinkAnswer) && window.__blinkAnswer.length === 0);
+    await page.evaluate(() => { _game.phase = 'main1'; _game.step = 'main'; });
+    console.log('PASS a trigger target says what it does and warns about the end step');
+
     // "Counter target spell": the phone opens the Stack view, where the spell glows.
     await page.getByRole('navigation', {name: 'Arena view'}).getByRole('button', {name: /^Mine/i}).click();
     await page.evaluate(() => {

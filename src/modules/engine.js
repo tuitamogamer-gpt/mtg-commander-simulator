@@ -4488,11 +4488,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!card.commander || !entry || entry.zone !== card.zone || entry.version !== card.zoneVersion) continue;
           delete card.meta.commanderZoneEntry;
           const reminder = entry.returnName
-            ? ` Keep it in the graveyard to let ${entry.returnName} return it. Choosing Command zone prevents that return.` : '';
+            ? ` Keep it in ${entry.zone === 'graveyard' ? 'the graveyard' : 'exile'} to let ${entry.returnName} return it${entry.returnWhen ? ' ' + entry.returnWhen : ''}. Choosing Command zone prevents that return.` : '';
           const choice = await owner.controller.decide(this, {
             type: 'chooseOption', prompt: `${card.name}: return it to the command zone?${reminder}`,
             options: [{key: 'cz', label: 'Command zone'}, {key: 'stay', label: entry.zone === 'graveyard' ? 'Graveyard' : 'Exile'}],
-            aiHint: {kind: 'commanderZone', card, toZone: entry.zone, graveyardReturn: !!entry.returnName},
+            aiHint: {kind: 'commanderZone', card, toZone: entry.zone, graveyardReturn: entry.zone === 'graveyard' && !!entry.returnName, pendingReturn: !!entry.returnName},
           });
           if (choice === 'cz') commanderMoves.push({card, zone: entry.zone, version: entry.version});
         }

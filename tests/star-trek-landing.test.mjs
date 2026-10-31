@@ -135,6 +135,63 @@ test('Kyle delays blinking another creature and never targets itself', async () 
   assert.equal(c.zone, 'exile'); assert.equal(kyle.zone, 'battlefield'); await event(f, 'endStep', {player: f.a}); assert.equal(c.zone, 'battlefield');
 });
 
+// Kyle blinks the owner's commander. Kept in exile, it returns at the next end
+// step; the command-zone choice says what staying keeps and when.
+const blinkCommander = async (f, {phase = 'main1', choice = 'stay', secondTarget = false} = {}) => {
+  const kyle = card(f, 'Chief Kyle, Transporter Tech'), spock = card(f, 'Commander Spock');
+  spock.commander = true; f.a.commanders = [spock];
+  const questions = [];
+  let blinks = 0;
+  f.decide = (p, q) => {
+    questions.push(q);
+    if (q.type === 'chooseTargets' && q.src === kyle) return q.candidates.includes(spock) && (blinks++ === 0 || secondTarget) ? [spock] : [];
+    if (q.type === 'chooseOption' && q.aiHint?.kind === 'commanderZone') return choice;
+  };
+  f.game.phase = phase;
+  await land(f);
+  return {kyle, spock, questions, zoneChoices: questions.filter(q => q.aiHint?.kind === 'commanderZone')};
+};
+
+test('Kyle returns a commander its owner keeps in exile, and the choice names that return', async () => {
+  const f = setup(), {spock, questions, zoneChoices} = await blinkCommander(f);
+  assert.equal(spock.zone, 'exile');
+  assert.equal(zoneChoices.length, 1);
+  assert.match(zoneChoices[0].prompt, /Keep it in exile to let Chief Kyle, Transporter Tech return it at the beginning of the next end step/);
+  assert.equal(zoneChoices[0].aiHint.pendingReturn, true);
+  assert.equal(zoneChoices[0].aiHint.graveyardReturn, false);
+  assert.match(questions.find(q => q.type === 'chooseTargets').effectText, /returns at the beginning of the next end step/);
+  await event(f, 'endStep', {player: f.a});
+  assert.equal(spock.zone, 'battlefield');
+  assert.ok(f.game.battlefield.includes(spock));
+});
+
+test('a commander Kyle exiles during the end step is told it returns at the next turn\'s end step', async () => {
+  const f = setup(), {spock, zoneChoices} = await blinkCommander(f, {phase: 'end'});
+  assert.equal(spock.zone, 'exile');
+  assert.match(zoneChoices[0].prompt, /return it at the beginning of the next turn's end step/);
+});
+
+test('choosing the command zone ends Kyle\'s return of the commander', async () => {
+  const f = setup(), {spock} = await blinkCommander(f, {choice: 'cz'});
+  assert.equal(spock.zone, 'command');
+  await event(f, 'endStep', {player: f.a});
+  assert.equal(spock.zone, 'command');
+});
+
+test('bots keep a blinked commander in exile when a return is pending', async () => {
+  const f = setup('ai'), {spock} = await blinkCommander(f, {choice: undefined});
+  assert.equal(spock.zone, 'exile', 'the bot keeps the pending return');
+  await event(f, 'endStep', {player: f.a});
+  assert.equal(spock.zone, 'battlefield');
+  // The legacy chooser agrees, and still sends an exiled commander home when
+  // nothing would return it.
+  const legacy = new M.AIController(f.a, {difficulty: 'hard', style: 'balanced'});
+  const q = {type: 'chooseOption', options: [{key: 'cz', label: 'Command zone'}, {key: 'stay', label: 'Exile'}],
+    aiHint: {kind: 'commanderZone', card: spock, toZone: 'exile', graveyardReturn: false, pendingReturn: true}};
+  assert.equal(legacy.chooseOption(f.game, q), 'stay');
+  assert.equal(legacy.chooseOption(f.game, {...q, aiHint: {...q.aiHint, pendingReturn: false}}), 'cz');
+});
+
 test('Scott supplies charge counters to Spacecraft and plus counters to creatures', async () => {
   const f = setup(), scott = card(f, 'Chief Montgomery Scott'); card(f, 'Forest'); card(f, 'Island'); card(f, 'Forest');
   const ship = card(f, 'Starship Enterprise', 'hand'); choose(f, {cards: [ship]}); await activate(f, scott); assert.equal(ship.counters.charge, 2); assert.equal(ship.counters['+1/+1'] || 0, 0);
