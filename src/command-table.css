@@ -1302,6 +1302,17 @@ body.game-active #game.command-table .ct-battle-blocks .ct-block-link { min-heig
   #game.command-table.ct-expanded-decision .ct-decision-rail .utilityrail { order: 0; border: 0; padding: 0; }
   #game.command-table.ct-expanded-decision .ct-decision-rail.has-targets .ct-decision-content { display: none; }
   body.game-active #game.command-table.ct-expanded-decision .ct-decision-rail.has-targets .targetprompt { display: flex; flex-direction: column; flex: 1; max-height: none; }
+  /* Choosing targets is the one expanded decision that needs the board under
+     the panel: the land column at the right edge of each battlefield. The table
+     makes room for the panel (its 278px, 10px offset and a gap), so every
+     battlefield and the hand stay left of it. The header above the panel keeps
+     its full width; reviews still overlay the table without changing its size. */
+  body.game-active #game.command-table.ct-expanded-decision.ct-target-room {
+    --ct-target-room: 296px; padding-right: var(--ct-target-room) !important;
+  }
+  body.game-active #game.command-table.ct-expanded-decision.ct-target-room > .topbar {
+    margin-right: calc(-1 * var(--ct-target-room));
+  }
   #game.command-table .actionstagebuttons { flex-direction: row; flex-wrap: wrap; }
   #game.command-table .actionstagebuttons .pbtn { flex: 1; min-width: 0; }
   #game.command-table .ct-combat-dock .ct-decision-heading, #game.command-table .ct-combat-dock .ct-decision-content { display: none; }

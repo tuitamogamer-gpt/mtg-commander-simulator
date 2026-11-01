@@ -428,6 +428,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderBattlefieldCombat(this, game, root);
     rail.classList.toggle('has-stack', !!stage || !!popup || !!game.stack.length);
     root.classList.toggle('ct-expanded-decision', !!stage || !!popup || !!game.stack.length || targeting);
+    // On desktop the expanded panel floats over the right edge of the table.
+    // While you choose targets the table makes room for it (command-table.css),
+    // so no legal target, such as a land column, sits underneath.
+    root.classList.toggle('ct-target-room', targeting);
     // The rail holds the stack and combat summary without taking card space.
     center?.querySelector('.stack')?.classList.add('ct-inline-stack');
     const targetGroups = game.stack.at(-1)?.targets || game.stack.at(-1)?.ctx?.targets || [];
