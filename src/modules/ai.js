@@ -1194,6 +1194,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             .sort((a,b) => b.value - a.value || a.card.iid - b.card.iid);
           return scored.filter((row,index) => index < min || row.value > 0).slice(0,max).map(row => row.card);
         }
+        case 'blink-delayed': {
+          // Your permanent returns at the next end step. From an end step that
+          // is the next turn's, so only a save is worth it (ai-v2.js,
+          // delayedBlinkValue); elsewhere the most valuable one goes.
+          const value = card => MTG.delayedBlinkTargetValue?.(g, p, card) ?? 1 + Math.max(0, this.permThreat(g, card)) * 0.01;
+          const scored = cands.map(card => ({card, value: value(card)}))
+            .sort((a,b) => b.value - a.value || a.card.iid - b.card.iid);
+          return scored.filter((row,index) => index < min || row.value > 0).slice(0,max).map(row => row.card);
+        }
         case 'blight': {
           const n = q.aiHint && q.aiHint.n || 1;
           const mine = myPerms.slice().sort((a, b) => this.blightRecipientScore(g, b, n) - this.blightRecipientScore(g, a, n));
@@ -1428,6 +1437,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             Number(b === pumpPlan.cards[0]) - Number(a === pumpPlan.cards[0]) || this.permThreat(g, a) - this.permThreat(g, b))
             : q.aiHint?.sacrificeKind === 'scry'
             ? from.slice().sort((a, b) => MTG.sacrificeScryValue(g, this.p, b) - MTG.sacrificeScryValue(g, this.p, a))
+            // A sacrifice that comes back (The Guardian of Forever) goes to
+            // the creature it saves from removal or combat.
+            : q.aiHint?.ability?.returnsSacrificed && MTG.delayedBlinkTargetValue
+            ? byThreatAsc.slice().sort((a, b) => Number((MTG.delayedBlinkTargetValue(g, this.p, b) ?? 0) > 0) -
+              Number((MTG.delayedBlinkTargetValue(g, this.p, a) ?? 0) > 0))
             : byThreatAsc;
           if (typeof q.aiHint?.canPayRemaining === 'function') {
             const preferred = kind === 'sacX' ? sorted.filter(card => card.isToken).slice(0, Math.max(min, 2)) : sorted.slice(0, Math.max(min, 1));

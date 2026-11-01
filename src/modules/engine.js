@@ -823,7 +823,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // "The beginning of the next end step" seen from inside the end step is
     // the next turn's end step (CR 513.1).
     nextEndStepPhrase() {
-      return this.phase === 'end' ? "at the beginning of the next turn's end step" : 'at the beginning of the next end step';
+      return this.phase === 'end' || this.phase === 'cleanup' ? "at the beginning of the next turn's end step" : 'at the beginning of the next end step';
     }
 
     bf() {

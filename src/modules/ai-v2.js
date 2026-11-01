@@ -2915,6 +2915,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       (!diesOnly || ['destroy', 'damage', 'shrink'].includes(threat.kind)) && threatRemoves(card, threat)));
   }
 
+  // A delayed blink (Chief Kyle, Balance of Terror, Temporal Tribulation, The
+  // Guardian of Forever) puts the bot's own permanent away until "the
+  // beginning of the next end step". Once this turn's end step has begun,
+  // that is the next player's end step: the permanent sits out a whole turn,
+  // the bot's own turn when the bot plays next. A bot blinking its commander
+  // there made it look lost. From an end step a blink is only worth it to
+  // save a permanent from removal or combat, and a token never returns at
+  // all. Anywhere else, null leaves the ordinary target valuation.
+  function nextEndStepIsNextTurn(game) {
+    return game.phase === 'end' || game.phase === 'cleanup';
+  }
+  function delayedBlinkValue(game, player, target) {
+    if (!(target instanceof U.CardInst) || target.ctrl !== player) return -1000;
+    const value = Math.max(0, permanentGameValue(game, target, player));
+    if (target.isToken) return -20 - value;
+    if (pendingCreatureRemoval(game, target) || sourceDiesInDeclaredCombat(game, target)) return 12 + value;
+    return nextEndStepIsNextTurn(game) ? -5 - value * 0.5 : null;
+  }
+  MTG.delayedBlinkTargetValue = delayedBlinkValue;
+  // The best total a delayed-blink spell can reach: each mandatory target,
+  // and each optional one worth taking.
+  function delayedBlinkPlanValue(game, player, source, specs) {
+    let total = 0;
+    for (const spec of specs) {
+      const min = spec.min !== undefined ? spec.min : spec.upTo ? 0 : spec.count ?? 1;
+      const values = game.legalTargets(spec, source, player)
+        .map(target => delayedBlinkValue(game, player, target) ?? 0).sort((a, b) => b - a);
+      values.slice(0, spec.count ?? 1).forEach((value, index) => { if (index < min || value > 0) total += value; });
+    }
+    return total;
+  }
+
   MTG.deathReturnTargetValue = function (game, player, card) {
     if (card.ctrl !== player || card.owner !== player || card.isToken ||
       card.meta.togetherForeverTurn === game.turnNo || (card.counters.finality || 0) > 0) return -30;
@@ -4172,6 +4204,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    if (q.aiHint?.goal === 'blink-delayed') {
+      const blink = delayedBlinkValue(game, player, target);
+      if (blink !== null) return blink;
+      const aiHint = {...q.aiHint};
+      delete aiHint.goal;
+      return targetValue(game, player, target, {...q, aiHint});
+    }
     const reaction = reactionTargetValue(game, player, target, q);
     if(q.aiHint?.goal==='frc-polymorph')return target instanceof U.CardInst&&target.ctrl===player
       ?20-permanentGameValue(game,target,player)+(target.isToken?6:0):-1000;
@@ -4619,6 +4658,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'delve') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if((q.aiHint?.keepTargets||[]).includes(card))return -10000-value;
+      // A sacrifice that comes back (The Guardian of Forever) saves the
+      // creature removal or combat is about to take, so that one goes.
+      if (hint === 'sacCost' && q.aiHint?.ability?.returnsSacrificed && card.zone === 'battlefield' &&
+        (delayedBlinkValue(game, player, card) ?? 0) > 0) return 100 + value;
       if (q.aiHint?.sacrificeKind === 'scry') return MTG.sacrificeScryValue(game, player, card);
       const pumpPlan = MTG.sacrificePumpChoice(game, player, q);
       if (pumpPlan) return pumpPlan.cards[0] === card ? 100 : -1000 - value;
@@ -6030,6 +6073,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (best <= 0) breakdown.timing -= 100;
         else breakdown.combat += best * 0.3;
       }
+      // A delayed blink cast once the end step has begun (an instant at an
+      // opponent's end step) keeps its permanents out for the next turn. It
+      // is cast there only to save one of them (see delayedBlinkValue).
+      if (nextEndStepIsNextTurn(game)) {
+        const blinkSpecs = (game.spellTargetSpecs(card, action.alt || {}, player) || [])
+          .filter(spec => spec.aiHint?.goal === 'blink-delayed');
+        if (blinkSpecs.length && delayedBlinkPlanValue(game, player, card, blinkSpecs) <= 0) breakdown.timing -= 100;
+      }
       if (cost.lifeCost) {
         const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
         breakdown.safety -= Number(cost.lifeCost) * lifePressure;
@@ -6497,6 +6548,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = entry.card;
       const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
+      // A sacrifice that returns at the next end step (The Guardian of
+      // Forever), activated once the end step has begun, keeps the creature
+      // out for the next turn. It is activated there only to save one.
+      if (ability?.returnsSacrificed && nextEndStepIsNextTurn(game)) {
+        const sac = ability.cost || {};
+        const saved = game.bf().some(other => other.ctrl === player && (!(sac.sacOther || sac.sacSelf) || other !== card) &&
+          (sac.sacCreature ? other.is('Creature') : typeof sac.sac === 'function' && sac.sac(game, other, card)) &&
+          game.canSacrificeCost(other) && (delayedBlinkValue(game, player, other) ?? 0) > 0);
+        if (!saved) breakdown.base = -100;
+      }
       const effects = ability?.oracleOperation?.effects || [];
       const reorder = libraryReorderEffect(ability);
       if (reorder) {

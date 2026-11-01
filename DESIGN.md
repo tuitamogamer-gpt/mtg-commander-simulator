@@ -115,6 +115,12 @@ Stay with vanilla JavaScript. Reusable presentation belongs in small factories o
   - S.S. Botany Bay's conditional return, marked uncertain.
 
   Bots keep the commander in that zone only for a certain return.
+- A delayed blink of the bot's own permanent ("return it at the beginning of the next end step") carries the target goal `blink-delayed`; The Guardian of Forever's sacrifice is marked `returnsSacrificed`. Once the end step or cleanup has begun, that return comes at the next player's end step, and the permanent sits out a whole turn. Bots then blink only to save a permanent from removal on the Stack or a declared combat (`delayedBlinkValue` in ai-v2.js). This covers:
+  - the target choice (Kyle and Balance of Terror pick nothing);
+  - casting such a spell (Temporal Tribulation at an opponent's end step);
+  - activating such an ability (The Guardian of Forever), whose sacrifice then goes to the threatened creature.
+
+  In any window, a token is never blinked, since it does not come back, and a threatened permanent is blinked first. Otherwise the ordinary target valuation applies outside the end step.
 - Card choices support keyboard selection, explicit selected state and visible disabled confirmation. Scry has named top/bottom and ordering controls; X accepts a validated integer or an explicitly legal sparse value. Presentation never invents legal choices.
 - Card inspection is two columns on desktop. On phones, a full-width name and type precede the art and scrollable rules. Additional component information belongs inside the rules area. Zone search, type filters and sorting operate on already-visible cards and never reorder engine arrays. Inspection returns to the same pending reveal or filtered zone and restores focus to the invoking card.
 - Only the highest active inspection or required decision surface receives keyboard focus. Covered arena children are inert; temporary ownership attributes are cleared before reconciliation and restored in the same render. Dialog scroll position survives incidental renders.

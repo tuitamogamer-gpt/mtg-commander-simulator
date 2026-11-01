@@ -82,7 +82,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   S['Captain Kirk, Boldly Going'] = {kws: ['vigilance'], statics: [{apply: (g, c, bf) => {
     for (const x of bf) if (x.ctrl === c.ctrl && x.is('Creature') && x.hasSub('Spacecraft')) {x.cur.power += 3; x.cur.toughness += 3;}
   }}], triggers: [C.enterTrigger('Find a basic land or Starship Enterprise', kirk), C.attack('Find a basic land or Starship Enterprise', kirk)]};
-  const blinkChapter = {targets: [T.permanent((g, c, p, s) => c !== s && c.ctrl === p, {count: 1, min: 0, upTo: true})], run: ctx => blink(ctx, ctx.targets[0])};
+  // Bots value these targets with the 'blink-delayed' goal (ai-v2.js,
+  // delayedBlinkValue): from an end step the return is a turn away.
+  const blinkChapter = {targets: [T.permanent((g, c, p, s) => c !== s && c.ctrl === p, {count: 1, min: 0, upTo: true, aiHint: {goal: 'blink-delayed'}})], run: ctx => blink(ctx, ctx.targets[0])};
   S['Balance of Terror'] = {saga: [
     {targets: [T.permanent((g, c, p, s) => c !== s && (c.is('Artifact') || c.is('Enchantment')), {count: 1, min: 0, upTo: true})], run: ctx => ctx.targets[0] && ctx.g.destroy(ctx.targets[0], {source: ctx.src})},
     blinkChapter, blinkChapter,
@@ -158,7 +160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }, {filter: (g, c, d) => d.card === c})],
     abilities: [{label: 'A creature can’t be blocked this turn', cost: {mana: '{2}{U}'}, targets: [T.creature()], run: ctx => unblock(ctx, ctx.targets[0])}]};
   S['Chief Kyle, Transporter Tech'] = {triggers: [landfall('Exile up to one other creature you control; it returns at the beginning of the next end step', ctx => blink(ctx, ctx.targets[0]), {
-    targets: [T.creature({filter: (g, c, p, s) => c !== s && c.ctrl === p, count: 1, min: 0, upTo: true})],
+    targets: [T.creature({filter: (g, c, p, s) => c !== s && c.ctrl === p, count: 1, min: 0, upTo: true, aiHint: {goal: 'blink-delayed'}})],
   })]};
   S['Chief Montgomery Scott'] = {abilities: [{label: 'Put a creature or Spacecraft onto the battlefield with counters', cost: {mana: '{6}', tap: true}, run: async ctx => {
     const [card] = await C.choose(ctx.g, ctx.you, ctx.you.hand.filter(c => c.is('Creature') || c.hasSub('Spacecraft')), 0, 1, 'Put a creature or Spacecraft onto the battlefield');

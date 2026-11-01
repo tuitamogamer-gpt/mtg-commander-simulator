@@ -4576,7 +4576,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           body.appendChild(instruction);
           // "The beginning of the next end step" chosen inside the end step is
           // the next turn's end step: say so before a blink exiles anything.
-          if (!proliferate && g.phase === 'end' && /beginning of the next end step/i.test(source?.def?.oracle || '')) {
+          if (!proliferate && (g.phase === 'end' || g.phase === 'cleanup') && /beginning of the next end step/i.test(source?.def?.oracle || '')) {
             body.appendChild(el('div', 'targetprompthint targetconstraint targettiming',
               'This is already the end step, so a card exiled now returns at the beginning of the next turn\'s end step, not this one.'));
           }

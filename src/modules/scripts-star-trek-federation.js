@@ -69,7 +69,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await C.draw(ctx, n); if (C.same(ctx) && (ctx.src.counters.time || 0) >= 9) await ctx.g.sacrifice(ctx.you, ctx.src);
   })]};
   S['On the Shoulders of Giants'] = {statics: [{apply: (g, c, bf) => {for (const x of bf) if (x.ctrl === c.ctrl && x.is('Creature') && C.historic(x)) x.cur.kw.add('flying');}}]};
-  S['Temporal Tribulation'] = {flashback: '{5}{U}', targets: [T.permanent((g, c, p) => c.ctrl === p, {count: 2, min: 2})], resolve: blink};
+  S['Temporal Tribulation'] = {flashback: '{5}{U}', targets: [T.permanent((g, c, p) => c.ctrl === p, {count: 2, min: 2, aiHint: {goal: 'blink-delayed'}})], resolve: blink};
   S['Tuvok, Chief Tactical Officer'] = {kws: ['flash'], triggers: [C.enterTrigger('You may reselect the defenders of up to two attackers', async ctx => {
     for (const c of C.flat(ctx.targets)) {
       if (!c.attacking) continue;

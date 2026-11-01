@@ -1,6 +1,6 @@
 # A blinked commander, kept in exile — 31 October 2026
 
-Based on `0bd954b`, then `1bb8f47`. Reported from play: Chief Kyle, Transporter Tech exiled Commander Spock, the owner chose to keep Spock in exile, and Spock never came back.
+Based on `0bd954b`, then `1bb8f47`; the end-step bot behavior is based on `2395f18`. Reported from play: Chief Kyle, Transporter Tech exiled Commander Spock, the owner chose to keep Spock in exile, and Spock never came back.
 
 ## The cause: a bot's lookahead moved the real card
 
@@ -58,6 +58,26 @@ Kyle inside the end step says "the next turn's end step", and that end step retu
 
 The shared test helper for game-state invariants now also checks the reverse direction for commanders: a commander is in the collection of the zone it names. Without this, the limbo above passed every check.
 
+## Bots and the end step
+
+Even after these fixes, a bot still blinked its own commander with Kyle during the end step. From there, "the next end step" is the next player's, so Spock sat out that whole turn. When he came back, his reveal could put a land onto the battlefield, and Kyle exiled him again, end step after end step.
+
+A bot was then asked in each window with each blink card: its own second main phase, its own end step and an opponent's end step. That found two more cases:
+
+| Card | Window | Before | After |
+| --- | --- | --- | --- |
+| Chief Kyle, Transporter Tech | its own or an opponent's end step | exiled Spock | picks no target |
+| Temporal Tribulation | an opponent's end step | cast with nothing to save, exiling Spock and Sol Ring for the bot's own turn | waits |
+| The Guardian of Forever | an opponent's end step | sacrificed Grizzly Bears for nothing | waits |
+
+At an end step, bots still blink a permanent that removal on the Stack, or a declared combat, is about to take:
+
+- Kyle exiles the threatened commander.
+- Temporal Tribulation takes the commander and the cheapest other permanent: a Mountain, where it used to take Sol Ring.
+- The Guardian of Forever sacrifices the threatened commander, where it used to sacrifice the cheapest creature.
+
+Outside the end step, nothing changed. After combat, Kyle still blinks Spock for an extra entry at this turn's end step. In any window, bots no longer blink a token, because a token does not come back.
+
 ## Verification
 
 - **`tests/ai-simulation-closure-isolation.test.mjs`** (new) has two tests:
@@ -72,3 +92,22 @@ The shared test helper for game-state invariants now also checks the reverse dir
 - **Commander, precon and Star Trek suites with the stricter invariant:** 405 of 406. The one failure is the manual batch's provenance URL, which also fails without these changes.
 - **All AI suites:** 768 of 768, including the existing isolation suites. They took 207 seconds, against 254 before the change.
 - **A real game on a phone,** driven through the touch UI with Landing Party, with and without diplomacy: Kyle exiles Spock, the owner chooses Exile, the end step returns Spock, and he stays on the battlefield.
+
+### Bots and the end step, on `2395f18`
+
+- **`tests/star-trek-landing-blinks.test.mjs`** now has 36 tests. The 10 new ones cover:
+  - Kyle after combat: the bot blinks Spock, and when Spock's reveal puts a land onto the battlefield during the end step, it does not blink him again;
+  - Kyle at its own end step and at an opponent's end step, with nothing to save;
+  - the three saves from Murder, each followed by the return: Kyle; Temporal Tribulation, with a Mountain rather than Sol Ring; and The Guardian of Forever, sacrificing Spock rather than Grizzly Bears;
+  - a token that Kyle leaves alone;
+  - Temporal Tribulation and the Guardian waiting at an opponent's end step;
+  - the fallback chooser.
+
+  All 10 fail on `2395f18`.
+- **Full games, before and after:** 16 four-player games with every seat a bot, on seeds 5100–5107, once with `2395f18` and once with this change. The blink cards were moved near the top of the Landing Party seat's library. Every bot decision about one of these blinks was recorded with its window, at any seat.
+  - Before: 8 blinks inside an end step with nothing to save, all from Kyle: Commander Spock once, Lt. Arex, Ever-Adapting three times and Planet Killer four times.
+  - After: none. Kyle was asked 11 times inside an end step and chose no target each time. Blinks in main phases and combat went on as before.
+  - The invariant check ran at every turn boundary of all 16 games, 861 turns in total, with no failures.
+- **All AI suites:** 768 of 768.
+- **Commander, precon and Star Trek suites:** 1214 of 1217. The three failures fail the same way on `2395f18`: two byte-equivalence checks of earlier precon data and the manual batch's provenance.
+- **Browser:** `phone-table-polish` passes 11 of 11, and `target-choice-guidance` passes.
