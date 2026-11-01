@@ -7035,6 +7035,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (sacPicked) {
       ctx.sacd = sacPicked.map(x => this.snapshot(x));
       for (const x of sacPicked) if (this.canSacrificeCost(x)) await this.sacrifice(p, x);
+      // An ability that returns what it sacrificed (The Guardian of Forever)
+      // tells a sacrificed commander's owner before the command-zone choice,
+      // which comes while the ability is still on the Stack.
+      if (entry.ability?.returnsSacrificed) for (const x of sacPicked) this.notePendingCommanderReturn(x, c.name, this.nextEndStepPhrase());
     }
     if(plannedHandTop)for(const card of plannedHandTop)await this.move(card,'library');
     if (plannedDiscard) {

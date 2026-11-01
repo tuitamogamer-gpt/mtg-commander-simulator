@@ -22,7 +22,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const returnLater=(ctx,c,to='battlefield',ctrl=c.owner,tapped=false)=>{const r=C.row(c);
  // A commander's command-zone choice tells its owner what staying keeps:
  // this return, and when (from inside the end step it is the next turn's).
- const entry=c.meta?.commanderZoneEntry;if(c.commander&&entry&&entry.zone===c.zone&&entry.version===c.zoneVersion&&to==='battlefield'){entry.returnName=ctx.src.name;entry.returnWhen=ctx.g.phase==='end'?"at the beginning of the next turn's end step":'at the beginning of the next end step';}
+ if(to==='battlefield')ctx.g.notePendingCommanderReturn?.(c,ctx.src.name,ctx.g.nextEndStepPhrase?.());
  ctx.g.delayed.push({on:'endStep',once:true,src:ctx.src,ctrl:ctx.you,name:ctx.src.name+': return '+c.name,run:next=>C.current(r)&&(to==='battlefield'?next.g.putPermanentOntoBattlefield(c,ctrl,{tapped}):next.g.move(c,to))});};
  const emit=G.emit;
  G.emit=async function(name,data){

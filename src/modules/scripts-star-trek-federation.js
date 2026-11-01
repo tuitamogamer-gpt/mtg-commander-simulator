@@ -21,6 +21,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const before = C.flat(ctx.targets).map(C.row);
     await ctx.g.exileMany(before.map(r => r.card));
     const rows = before.filter(r => r.card.zone === 'exile' && r.card.zoneVersion === r.version + 1).map(r => C.row(r.card));
+    for (const r of rows) ctx.g.notePendingCommanderReturn?.(r.card, ctx.src.name, ctx.g.nextEndStepPhrase?.());
     if (rows.length) ctx.g.delayed.push({on: 'endStep', once: true, src: ctx.src, ctrl: ctx.you, name: 'Temporal Tribulation: return the exiled cards', run: next => next.g.withBattlefieldEntryBatch(async () => {for (const r of rows) if (C.current(r)) await next.g.putPermanentOntoBattlefield(r.card, r.card.owner);})});
   };
   S['Jean-Luc Picard, Luminary'] = {triggers: [

@@ -810,6 +810,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // ------------- helpers -------------
+    // A commander's command-zone choice (CR 903.9a) says what staying keeps.
+    // An effect that will return this exact object to the battlefield names
+    // itself and when; the prompt shows it and bots keep a certain return.
+    notePendingCommanderReturn(card, sourceName, when = null, {certain = true} = {}) {
+      const entry = card?.commander ? card.meta?.commanderZoneEntry : null;
+      if (!entry || entry.zone !== card.zone || entry.version !== card.zoneVersion) return false;
+      entry.returnName = sourceName; entry.returnWhen = when; entry.returnCertain = certain;
+      return true;
+    }
+
+    // "The beginning of the next end step" seen from inside the end step is
+    // the next turn's end step (CR 513.1).
+    nextEndStepPhrase() {
+      return this.phase === 'end' ? "at the beginning of the next turn's end step" : 'at the beginning of the next end step';
+    }
+
     bf() {
       // Replacement choices for one simultaneous entry event only see the
       // permanents that existed immediately before that event. Trigger/event
@@ -4492,7 +4508,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const choice = await owner.controller.decide(this, {
             type: 'chooseOption', prompt: `${card.name}: return it to the command zone?${reminder}`,
             options: [{key: 'cz', label: 'Command zone'}, {key: 'stay', label: entry.zone === 'graveyard' ? 'Graveyard' : 'Exile'}],
-            aiHint: {kind: 'commanderZone', card, toZone: entry.zone, graveyardReturn: entry.zone === 'graveyard' && !!entry.returnName, pendingReturn: !!entry.returnName},
+            aiHint: {kind: 'commanderZone', card, toZone: entry.zone, graveyardReturn: entry.zone === 'graveyard' && !!entry.returnName,
+              pendingReturn: !!entry.returnName && entry.returnCertain !== false},
           });
           if (choice === 'cz') commanderMoves.push({card, zone: entry.zone, version: entry.version});
         }

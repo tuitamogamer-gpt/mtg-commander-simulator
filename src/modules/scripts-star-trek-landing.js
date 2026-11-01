@@ -185,7 +185,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     {cost: {tap: true}, produce: C.colors.map(k => ({[k]: 3}))},
     {cost: {tap: true}, produce: (g, c, p) => {const n = Math.max(0, ...g.bf().filter(x => x.ctrl === p && x.commander).map(x => x.mv)); return C.colors.map(k => ({[k]: n}));}},
   ]};
-  S['The Guardian of Forever'] = {kws: ['defender'], abilities: [{label: 'Sacrifice another nontoken creature to return it next end step', cost: {mana: '{4}', sac: (g, c, s) => c !== s && c.is('Creature') && !c.isToken}, run: ctx => {
+  S['The Guardian of Forever'] = {kws: ['defender'], abilities: [{label: 'Sacrifice another nontoken creature to return it next end step', returnsSacrificed: true, cost: {mana: '{4}', sac: (g, c, s) => c !== s && c.is('Creature') && !c.isToken}, run: ctx => {
     const snap = ctx.sacd?.[0], card = snap && ctx.g.byIid(snap.iid);
     if (card && card.zone !== 'battlefield' && card.zoneVersion === snap.zoneVersion + 1) C.returnLater(ctx, card);
   }}]};
@@ -206,7 +206,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const [card] = await C.choose(ctx.g, p, p.graveyard, p !== ctx.you && p.graveyard.length ? 1 : 0, 1, 'Exile a card from your graveyard');
       if (card) selections.push(card);
     }
-    for (const c of selections) {await ctx.g.move(c, 'exile'); if (c.zone === 'exile') ctx.trcLinks.push(C.row(c));}
+    for (const c of selections) {
+      await ctx.g.move(c, 'exile');
+      if (c.zone !== 'exile') continue;
+      ctx.trcLinks.push(C.row(c));
+      if (c.owner === ctx.you && c.is('Creature')) ctx.g.notePendingCommanderReturn?.(c, ctx.src.name, 'when it deals combat damage to a player with eight or more charge counters', {certain: false});
+    }
   }}], triggers: [C.hit('Return your creature cards exiled with this ship', async ctx => {
     await ctx.g.withBattlefieldEntryBatch(async () => {for (const r of ctx.trcLinks.filter(C.current)) if (r.card.owner === ctx.you && r.card.is('Creature')) await ctx.g.putPermanentOntoBattlefield(r.card, ctx.you);});
   }, {filter: (g, c, d) => d.src === c && d.combat && (c.counters.charge || 0) >= 8, prepareTargets: captureLinks})]});

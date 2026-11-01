@@ -43,6 +43,16 @@ export function assertGameStateInvariants(game, label = 'game') {
   // another zone. Spell copies also reference the original CardInst, but are
   // independent Stack objects, not additional physical cards.
   for (const object of game.stack) if (object.kind === 'spell' && !object.isCopy && object.card?.zone === 'stack') visit(object.card, 'stack');
+  // The reverse direction for commanders: a commander is always in the zone it
+  // names. A bot's lookahead once moved a live commander into its simulation,
+  // leaving zone "battlefield" with no battlefield, exile or command zone.
+  for (const player of game.players) {
+    if (player.lost) continue;
+    for (const commander of player.commanders || []) {
+      if (!commander || commander.zone === 'ceased' || commander.isCopySpell) continue;
+      assert.ok(locations.has(commander), `${label}/${commander.name}#${commander.iid}: commander in zone ${commander.zone} is in that zone's collection`);
+    }
+  }
   return { cards: locations.size, players: game.players.length };
 }
 
