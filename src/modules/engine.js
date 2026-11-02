@@ -4234,6 +4234,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           src, so: ctx.so || null, ability: ctx.ability || null, effectText: ctx.effectText || null, prompt: spec.prompt || 'Izaberi metu',
           targetStep: specIndex + 1, targetSteps: ctx.boundTargetSpecs.length,
           previousTargets: ctx.targets.map(target => Array.isArray(target) ? target.slice() : target),
+          // A "may" trigger still announces its required targets now. The
+          // optional action is offered only when it resolves (CR 603.5); expose
+          // that timing so the chooser does not look like a forced effect.
+          ...(ctx.optionalTrigger ? { optionalEffect: {
+            name: String(ctx.optionalTrigger.name || ctx.effectText || 'Optional effect'),
+            choiceTiming: 'resolution',
+          } } : {}),
           // Arena-style drag may suggest one exact target, but legality remains
           // authoritative here. A stale/illegal suggestion is simply omitted
           // and the ordinary target prompt continues unchanged.

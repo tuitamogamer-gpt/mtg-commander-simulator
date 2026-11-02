@@ -2017,10 +2017,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Greedy defense supplements the declaration beam with complete groups,
   // including profitable joint blocks whose individual prefixes lose material.
-  function survivalBlocks(game, player, attackers, potential, initial = {}) {
+  function survivalBlocks(game, player, attackers, potential, initial = {},
+    scoreOutcome = outcome => defenseScore(game, player, outcome, initial.life ?? player.life)) {
     let assignments = [];
     let outcome = forecastCombat(game, player, attackers, assignments, initial);
-    let score = defenseScore(game, player, outcome, initial.life ?? player.life);
+    let score = scoreOutcome(outcome);
     // A token wall of 1/1s adds nothing but search cost: the greedy pass keeps
     // the bodies that can actually change a forecast. Without this cap the
     // declaration search grew with the square of the board and locked the tab.
@@ -2047,7 +2048,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const picks of blockGroups(game, attacker, legal, already)) {
           const next = assignments.concat(picks.map(blocker => ({ blocker, attacker })));
           const result = forecastCombat(game, player, attackers, next, initial);
-          const value = defenseScore(game, player, result, initial.life ?? player.life);
+          const value = scoreOutcome(result);
           if (value > score + 0.01 && (!best || value > best.score)) best = { assignments: next, outcome: result, score: value, picks };
         }
       }
@@ -2641,6 +2642,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Difficulty noise must not replace the payment with the intended target.
     const kitt = MTG.kittKantoAIAction(game, player, q);
     if (kitt) return [kitt];
+    const controlDefense = MTG.domineeringWillAIAction(game, player, q);
+    if (controlDefense) return [controlDefense];
     if (q.type === 'chooseOption' && q.aiHint?.kind === 'reactionMode') {
       const plan = MTG.botReactionModePlan(game, player, q.aiHint.card, q.options);
       const option = q.options.find(option => Number(option.key) === plan.mode);
@@ -3503,9 +3506,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return (cost?.pips || []).some(pip => Array.isArray(pip) ? pip.includes('PHY') : /P/.test(String(pip)));
   }
 
+  function domineeringWillPlan(game, player, source) {
+    const hold = {score: -100, targets: []};
+    // Without haste this temporary control spell needs an immediate purpose.
+    // Wait for actual attackers and use it to improve this player's defense;
+    // after blockers are declared newly borrowed creatures cannot join them.
+    if (game.phase !== 'combat' || game.step !== 'attackers' || game.combat?.blockersDeclared ||
+      game.untilEffects.some(effect => effect.kind === 'preventAllCombat')) return hold;
+    const attackers = (game.combat?.attackers || []).filter(card =>
+      card.zone === 'battlefield' && !card.phasedOut && card.attacking === player);
+    if (!attackers.length) return hold;
+    const specs = game.spellTargetSpecs(source, {}, player);
+    if (!specs?.[1] || !game.legalTargets(specs[0], source, player).includes(player)) return hold;
+    const projections = new Map();
+    for (const card of game.legalTargets(specs[1], source, player)) {
+      if (card.ctrl === player && (!card.tapped || card.cur.tappedCanBlockV43)) continue;
+      const projected = pumpedCreature(card, {power: 0, toughness: 0}, 1);
+      projected.ctrl = player; projected.tapped = false;
+      if (attackers.some(attacker => game.canBlock(projected, attacker))) projections.set(projected, card);
+    }
+    const candidates = [...projections.keys()].sort(byBlockingWeight).slice(0, 3);
+    if (!candidates.length) return hold;
+    const existing = game.creatures(player).filter(card => !card.tapped || card.cur.tappedCanBlockV43);
+    const before = survivalBlocks(game, player, attackers, existing);
+    const scoreOutcome = outcome => defenseScore(game, player, outcome) + [...outcome.dead]
+      // A borrowed opposing creature dying is the opponent's material loss.
+      .filter(card => projections.has(card) && projections.get(card).ctrl !== player)
+      .reduce((value, card) => value + permanentGameValue(game, projections.get(card), player) * 1.65, 0);
+    const after = survivalBlocks(game, player, attackers, existing.concat(candidates), {}, scoreOutcome);
+    const targets = [...new Set(after.assignments.map(pair => projections.get(pair.blocker)).filter(Boolean))];
+    return targets.length ? {score: after.score - before.score - 3.5, targets} : hold;
+  }
+
+  MTG.domineeringWillAIAction = function (game, player, q) {
+    if (q.type !== 'chooseTargets' || q.src?.def.name !== 'Domineering Will' || q.ability) return null;
+    // Coordinate the two target slots: a generic hostile-player preference
+    // must not hand the planned blockers to an opponent.
+    if (!q.previousTargets?.length) return {kind: 'chooseTargets', picks: q.candidates.includes(player) ? [player] : q.candidates.slice(0, q.min)};
+    const plan = domineeringWillPlan(game, player, q.src);
+    return {kind: 'chooseTargets', picks: q.previousTargets[0] === player
+      ? plan.targets.filter(card => q.candidates.includes(card)).slice(0, q.max) : []};
+  };
+
   MTG.botReactionPlan = function (game, player, action) {
     const source = action.card || action.entry?.card, ability = action.entry?.ability;
     if (!source || action.kind === 'activate' && (!ability || ability.loyalty !== undefined)) return null;
+    if (action.kind === 'cast' && source.def.name === 'Domineering Will') return domineeringWillPlan(game, player, source);
     // A sorcery-speed pump (Monstrous Growth) cannot wait for a combat window,
     // so it keeps the ordinary main-phase evaluation instead of being held.
     if (action.kind === 'cast' && !(source.is('Instant') || source.kw('flash') || (source.def.kws || []).includes('flash'))) return null;

@@ -49,7 +49,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     for(const other of g._battlefieldEntryReplacementSnapshot||g.bf())if(other!==c&&other.is('Creature')&&!other.isToken)C.faceDown(g,other);g.recalc();
   }};
   SC['Phyrexian Ingester']={triggers:[enterTrigger('Exile a nontoken creature',async ctx=>{const c=ctx.targets[0];await ctx.g.move(c,'exile');if(same(ctx)&&c.zone==='exile'){ctx.src.meta.c14Ingester=row(c);ctx.g.recalc();}},
-    {opt:true,targets:[T.creature({filter:(g,c)=>c.is('Creature')&&!c.isToken,aiHint:{goal:'exile'}})]})],statics:[{apply:(g,c)=>{
+    {opt:true,aiHint:{effects:[{action:'exile',target:0}]},targets:[T.creature({filter:(g,c)=>c.is('Creature')&&!c.isToken,aiHint:{goal:'exile'}})]})],statics:[{apply:(g,c)=>{
       const r=c.meta.c14Ingester;if(r&&current(r)&&r.card.is('Creature')){c.cur.power+=r.card.power;c.cur.toughness+=r.card.toughness;}
     }}]};
   SC['Shaper Parasite']={morph:'{2}{U}',triggers:[{on:'turnedFaceUp',filter:faced,desc:'Give a creature +2/-2 or -2/+2',targets:[T.creature()],run:async ctx=>{

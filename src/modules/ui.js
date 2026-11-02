@@ -4572,6 +4572,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           instruction.setAttribute('aria-live', 'polite');
           instruction.appendChild(el('small', 'targetstep', q.targetSteps > 1
             ? `TARGET ${q.targetStep} OF ${q.targetSteps}` : 'CURRENT CHOICE'));
+          if (min > 0 && q.optionalEffect?.choiceTiming === 'resolution') {
+            const optional = el('div', 'targetprompthint targetconstraint targetoptional',
+              'Choose a target now. You can choose No when this ability resolves to decline the effect.');
+            optional.dataset.testid = 'optional-target-explanation';
+            instruction.appendChild(optional);
+          }
           // A triggered ability's generic "choose target" says nothing about
           // what the choice does; its effect text does.
           const genericPrompt = !q.prompt || /^(izaberi metu|choose (a )?target)$/i.test(String(q.prompt).trim());

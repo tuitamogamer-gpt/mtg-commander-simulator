@@ -1106,6 +1106,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseTargets(g, q) {
       const kitt = MTG.kittKantoAIAction(g, this.p, q);
       if (kitt) return kitt.picks;
+      const controlDefense = MTG.domineeringWillAIAction(g, this.p, q);
+      if (controlDefense) return controlDefense.picks;
       if (q.aiHint?.kind === 'equipTarget') {
         const clampPlan = MTG.skullclampEquipPlan(g, this.p, q.aiHint.card, q.candidates);
         if (clampPlan?.card) return [clampPlan.card];

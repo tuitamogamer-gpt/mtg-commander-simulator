@@ -187,7 +187,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   const questionKeys = ['type', 'prompt', 'abilityLabel', 'acts', 'allTargets', 'allocation', 'amount', 'attackTargets', 'attackers',
     'attackingPlayer', 'attackTaxPayments', 'by', 'cancelable', 'candidates', 'card', 'cards', 'casts', 'clashSummary', 'ctrl', 'cost', 'data',
-    'effectKind', 'recap', 'eligible', 'forSpell', 'forced', 'free', 'from', 'kind', 'lands', 'max', 'min', 'mulls', 'n',
+    'effectKind', 'effectText', 'optionalEffect', 'recap', 'eligible', 'forSpell', 'forced', 'free', 'from', 'kind', 'lands', 'max', 'min', 'mulls', 'n',
     'names', 'opponents', 'options', 'opts', 'player', 'potential', 'reason', 'repeats', 'revealedCards', 'source',
     'sources', 'spec', 'src', 'stackObject', 'status', 'sub', 'suggested', 'surveil', 'target', 'targets', 'title', 'triggers', 'values', 'quickTarget',
     'targetStep', 'targetSteps', 'previousTargets', 'dungeonChoice', 'ringChoice', 'mutateChoice',
