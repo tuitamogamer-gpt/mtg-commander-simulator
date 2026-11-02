@@ -21,6 +21,7 @@ const browser = await chromium.launch({headless: true,
 const page = await browser.newPage({viewport: {width: 390, height: 844}, hasTouch: true, reducedMotion: 'reduce'});
 page.setDefaultTimeout(20000);
 const receipt = {checks: [], errors: [], layouts: []};
+const computedOnly = process.env.COMBAT_REPLAY_COMPUTED_ONLY === '1';
 page.on('pageerror', error => receipt.errors.push(error.message));
 const check = name => { receipt.checks.push(name); console.log(`PASS ${name}`); };
 const dialog = page.getByRole('dialog', {name: 'Combat replay', exact: true});
@@ -56,6 +57,7 @@ async function start() {
   }
   assert.equal(await page.evaluate(() => _ui.pending?.q.type), 'main', 'The actual Solo game reaches a human decision');
   assert.equal(await page.evaluate(() => typeof _ui.showCombatReplay), 'function', 'Replay module is loaded by the production entry');
+  assert.equal(await page.evaluate(() => _ui.combatAnimationEnabled), true, 'Combat animation is enabled by default in a fresh browser');
   receipt.url = page.url();
   receipt.build = await page.evaluate(() => MTG.BUILD_INFO || null);
   if (process.env.EXPECTED_BUILD_REVISION) {
@@ -101,6 +103,8 @@ async function install(scenario, width) {
         attack(put('Shivan Dragon', enemy)), attack(put('Serra Angel', enemy))];
     } else if (scenario === 'prevented') {
       attackers = [attack(put('Shivan Dragon', enemy), [put('Fog Bank', human)])];
+    } else if (scenario === 'direct') {
+      attackers = [attack(put('Shivan Dragon', enemy))];
     } else if (scenario === 'infect') {
       const attacker = put('Blightsteel Colossus', enemy);
       // Keep this demonstration below the poison loss threshold.
@@ -125,12 +129,31 @@ async function install(scenario, width) {
   }, {scenario, width});
 }
 
-async function damage(step = 'normal') {
+async function damage(step = 'normal', autoplay = true) {
   await page.evaluate(async step => {
     await _game.combatDamage(__combatSubject.enemy, step);
     window.__combatAfter = __combatRules();
   }, step);
-  await dialog.waitFor();
+  if (autoplay) await dialog.waitFor();
+}
+
+async function combatPreference(enabled) {
+  await page.getByTitle('Game controls and display settings', {exact: true}).click();
+  await page.getByRole('tab', {name:'Appearance', exact:true}).click();
+  const toggle = page.getByTestId('combat-animation-toggle');
+  try { await toggle.waitFor(); }
+  catch (error) {
+    await page.screenshot({path: `${output}/menu-failure.png`});
+    receipt.menuFailure = await page.evaluate(() => ({open: _ui.quickMenuOpen,
+      inert: document.getElementById('game').inert, menu: document.querySelector('.quickmenu')?.outerHTML,
+      toggles: [...document.querySelectorAll('[data-testid="combat-animation-toggle"]')].map(node => ({html:node.outerHTML, rect:node.getBoundingClientRect().toJSON()}))}));
+    throw error;
+  }
+  assert.equal(await toggle.getAttribute('role'), 'switch');
+  if ((await toggle.getAttribute('aria-checked') === 'true') !== enabled) await toggle.click();
+  assert.equal(await toggle.getAttribute('aria-checked'), String(enabled));
+  await page.getByRole('button', {name:'Close game menu', exact:true}).click();
+  assert.equal(await page.evaluate(() => _ui.combatAnimationEnabled), enabled);
 }
 
 async function layout(width) {
@@ -165,7 +188,7 @@ async function unchanged() {
 
 try {
   await start();
-  for (const width of [320,390,1440,2560]) {
+  for (const width of computedOnly ? [] : [320,390,1440,2560]) {
     await install('dense', width);
     await damage('first');
     await dialog.getByRole('button', {name: 'Pause', exact: true}).click();
@@ -206,21 +229,36 @@ try {
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.evaluate(() => { _ui.reducedMotion = false; document.body.classList.remove('reduced-motion'); });
   await damage('first');
+  await page.waitForFunction(() => document.querySelector('[data-testid="combat-replay-clash"]')?.dataset.impact === 'true');
+  await page.waitForTimeout(1600);
   await dialog.getByRole('button', {name:'Pause',exact:true}).click();
   const first = await page.evaluate(() => ({life: __combatSubject.human.life, gained: __combatSubject.enemy.life,
     guarded: __combatSubject.attackers[0].blockedBy[0].zone, replay: __combatReplayEvents.at(-1)}));
   assert.deepEqual([first.life,first.gained,first.guarded],[35,46,'battlefield']);
   assert.ok(await dialog.locator('.combat-replay-badge').count() >= 4);
+  assert.ok(await dialog.locator('.combat-replay-hit').first().evaluate(node => Number(getComputedStyle(node).opacity)) > .9,
+    'Creature damage remains readable after the impact animation ends');
   await unchanged();
-  await dialog.getByRole('button',{name:'Skip',exact:true}).click();
   await damage('normal');
   // The indestructible 0/1 already has lethal damage marked, so all six
   // points trample over in the normal step (five in the first step).
   assert.deepEqual(await page.evaluate(() => [__combatSubject.human.life,__combatSubject.enemy.life]),[29,52]);
+  await dialog.getByRole('button', {name:'Next strike',exact:true}).click();
+  assert.equal(await dialog.getByRole('button', {name:'Resume',exact:true}).isVisible(), true, 'Stepping preserves Pause');
+  assert.equal(await dialog.getByTestId('combat-replay-clash').getAttribute('data-impact'), 'true',
+    'Paused Next strike reveals the completed impact without waiting for a timer');
+  for (const card of await dialog.locator('.combat-replay-card').all()) {
+    assert.ok(await card.evaluate(node => Number(getComputedStyle(node).opacity)) > .9, 'Paused stepping keeps every card visible');
+  }
+  assert.match(await dialog.locator('.combat-replay-face-hit').textContent(), /6/);
+  assert.ok(await dialog.locator('.combat-replay-face-hit').evaluate(node => Number(getComputedStyle(node).opacity)) > .9,
+    'Paused stepping keeps actual face damage visible');
+  await unchanged();
   await dialog.getByRole('button',{name:'Skip',exact:true}).click();
   await unchanged();
-  check('Animated double strike resolves twice, indestructible survives, trample hits face and lifelink gains actual damage');
+  check('Animated double strike resolves twice; paused Next reveals cards and damage, indestructible survives, and trample/lifelink match actual outcomes');
 
+  if (!computedOnly) {
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.evaluate(() => { _ui.reducedMotion = true; document.body.classList.add('reduced-motion'); });
   await install('prevented',390); await damage();
@@ -244,6 +282,44 @@ try {
   await page.keyboard.press('Escape'); await dialog.waitFor({state:'hidden'});
   await unchanged();
   check('Reduced-motion infect replay remains visible, shows actual poison and preserves life totals');
+
+  await combatPreference(false);
+  await install('computed', 390);
+  await damage('first', false);
+  assert.equal(await dialog.count(), 0, 'Disabled animation never covers the waiting decision');
+  assert.equal(await page.evaluate(() => _ui.hasCombatReplay()), true, 'Disabling autoplay retains recorded combat');
+  assert.deepEqual(await page.evaluate(() => [__combatSubject.human.life,__combatSubject.enemy.life]),[35,46]);
+  await unchanged();
+  await page.getByRole('button', {name:'Replay last combat', exact:true}).click();
+  await dialog.waitFor();
+  await dialog.getByRole('button', {name:'Pause',exact:true}).click();
+  await unchanged();
+  await dialog.getByRole('button', {name:'Skip',exact:true}).click();
+  assert.equal(await page.evaluate(() => _ui.combatAnimationEnabled), false, 'Manual Replay does not turn autoplay back on');
+  await page.getByTitle('Game controls and display settings', {exact:true}).click();
+  await page.getByRole('tab', {name:'Table', exact:true}).click();
+  await page.locator('.quickmenu').getByRole('button', {name:/Replay last combat/}).click();
+  await dialog.waitFor(); await unchanged();
+  await dialog.getByRole('button', {name:'Skip',exact:true}).click();
+  check('The actual menu disables automatic combat, while damage and manual Replay still work');
+
+  await combatPreference(true);
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.evaluate(() => { _ui.reducedMotion = false; document.body.classList.remove('reduced-motion'); });
+  await install('direct',390); await damage();
+  await page.waitForFunction(() => document.querySelector('[data-testid="combat-replay-clash"]')?.dataset.impact === 'true');
+  await page.waitForTimeout(1600);
+  await dialog.getByRole('button', {name:'Pause',exact:true}).click();
+  const hit = dialog.locator('.combat-replay-face-hit');
+  await hit.waitFor();
+  assert.match(await hit.textContent(), /5/);
+  assert.equal(await page.evaluate(() => __combatSubject.human.life), 35);
+  assert.ok(await hit.evaluate(node => Number(getComputedStyle(node).opacity)) > .9, 'The actual face-damage number remains legible after impact');
+  await layout(390); await unchanged();
+  await page.screenshot({path:`${output}/mtgpod-combat-phone-face-damage.png`});
+  await dialog.getByRole('button', {name:'Skip',exact:true}).click();
+  check('Re-enabling combat restores automatic playback with a readable actual face-damage impact');
+  }
   assert.deepEqual(receipt.errors,[]);
 } finally {
   writeFileSync(`${output}/result.json`,JSON.stringify(receipt,null,2));

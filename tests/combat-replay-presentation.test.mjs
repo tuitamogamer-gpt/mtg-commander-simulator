@@ -6,7 +6,7 @@ import vm from 'node:vm';
 // Exercise the actual Live decoder, event dispatcher and replay controller.
 // Only browser layout, artwork and time are replaced; no replay deduplication
 // or history behavior is implemented by this fixture.
-function presentation() {
+function presentation({reducedMotion = true} = {}) {
   const document = {hidden: false, addEventListener() {}, removeEventListener() {}};
   class Element {
     constructor(tag) {
@@ -52,7 +52,7 @@ function presentation() {
   }
   const MTG = {UI, Player: class {}, CardInst: class {}, Game: class {}};
   const timers = new Map(); let serial = 0;
-  const context = {MTG, document, window: {matchMedia: () => ({matches: true, addEventListener() {}})},
+  const context = {MTG, document, window: {matchMedia: () => ({matches: reducedMotion, addEventListener() {}})},
     location: {href: 'http://localhost/'}, MutationObserver: class {observe() {}},
     setTimeout: callback => {timers.set(++serial, callback); return serial;}, clearTimeout: id => timers.delete(id)};
   for (const file of ['multiplayer-presentation', 'combat-replay', 'multiplayer-arena']) {
@@ -142,4 +142,82 @@ test('event-only delivery is supported and changing games clears prior combat pr
   f.arena.updateSnapshot(wire); f.arena.updateSnapshot(wire); assert.equal(f.count(), 1);
   f.ui.game = {}; assert.equal(f.ui.hasCombatReplay(), false); assert.equal(f.overlay(), null);
   assert.equal(f.timers.size, 0); assert.equal(f.gameRoot.inert, false);
+});
+
+test('turning off automatic combat animation keeps outcomes available for manual Replay', () => {
+  const f = presentation(), first = replay('first'), normal = replay('normal'), pending = f.ui.pending;
+  f.ui.combatAnimationEnabled = false;
+  f.arena.updateSnapshot(snapshot());
+  const wire = snapshot([first, normal], [event(1, first), event(2, normal)]);
+  f.arena.updateSnapshot(wire);
+  assert.equal(f.overlay(), null);
+  assert.equal(f.timers.size, 0);
+  assert.equal(f.gameRoot.inert, false);
+  assert.equal(f.ui.pending, pending);
+  assert.equal(f.ui.hasCombatReplay(), true);
+  f.ui.replayLastCombat();
+  assert.equal(f.count(), 2);
+  assert.equal(f.step(), 'First-strike damage');
+  f.button('Next strike').click();
+  assert.equal(f.step(), 'Combat damage');
+  f.button('Finish').click();
+  f.arena.updateSnapshot(wire);
+  assert.equal(f.overlay(), null);
+  assert.equal(f.ui.pending, pending);
+});
+
+test('re-enabling combat animation plays the next combat without replaying disabled history', () => {
+  const f = presentation(), normal = replay('normal');
+  f.ui.combatAnimationEnabled = false;
+  f.arena.updateSnapshot(snapshot());
+  const past = snapshot([normal], [event(1, normal)]);
+  f.arena.updateSnapshot(past);
+  f.ui.combatAnimationEnabled = true;
+  f.arena.updateSnapshot(past);
+  assert.equal(f.overlay(), null, 'changing the preference must not resurrect previously seen events');
+  const next = replay('normal', 'combat:8:2');
+  f.arena.updateSnapshot(snapshot([next], [event(2, next)]));
+  assert.equal(f.count(), 1);
+  assert.equal(f.ui.hasCombatReplay(), true);
+  f.button('Finish').click();
+  assert.equal(f.gameRoot.inert, false);
+});
+
+test('a shared blocker shows each clash hit once while retaining labeled damage-step totals', () => {
+  const f = presentation(), outcome = replay('normal');
+  const blocker = {id: 'card:3', name: 'Shared blocker', power: 0, toughness: 8, keywords: [],
+    dealtDamage: 0, receivedDamage: 5, countersBefore: {}, countersAfter: {}};
+  const defender = outcome.clashes[0].defender;
+  outcome.clashes = [2, 3].map((amount, index) => {
+    const attacker = {...outcome.clashes[0].attacker, id: `card:${index + 1}`, dealtDamage: amount};
+    return {attacker, defender, blockers: [blocker], blocked: true, effects: [],
+      damage: [{sourceId: attacker.id, targetId: blocker.id, amount, keywords: []}]};
+  });
+  f.arena.updateSnapshot(snapshot());
+  f.arena.updateSnapshot(snapshot([outcome], [event(1, outcome)]));
+  const visibleBlocker = () => f.overlay().querySelector('.fighter-blocker');
+  assert.equal(visibleBlocker().querySelector('.combat-replay-hit').textContent, '−2');
+  assert.match(visibleBlocker().querySelector('.combat-replay-stats').textContent, /5 taken this step/);
+  f.button('Next strike').click();
+  assert.equal(visibleBlocker().querySelector('.combat-replay-hit').textContent, '−3');
+  assert.match(visibleBlocker().querySelector('.combat-replay-stats').textContent, /5 taken this step/);
+  f.button('Finish').click();
+});
+
+test('stepping while paused reveals the result and keeps automatic playback stopped', () => {
+  const f = presentation({reducedMotion: false}), first = replay('first'), normal = replay('normal');
+  f.arena.updateSnapshot(snapshot());
+  f.arena.updateSnapshot(snapshot([first, normal], [event(1, first), event(2, normal)]));
+  f.button('Pause').click();
+  assert.equal(f.timers.size, 0);
+  f.button('Next strike').click();
+  assert.equal(f.step(), 'Combat damage');
+  assert.equal(f.overlay().querySelector('.combat-replay-stage').dataset.impact, 'true');
+  assert.ok(f.button('Resume'), 'manual stepping does not silently resume the replay');
+  assert.equal(f.timers.size, 0);
+  f.button('Resume').click();
+  assert.equal(f.timers.size, 1, 'the revealed strike only needs its next-step timer');
+  f.button('Finish').click();
+  assert.equal(f.timers.size, 0);
+  assert.equal(f.gameRoot.inert, false);
 });

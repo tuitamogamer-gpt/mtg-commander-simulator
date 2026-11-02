@@ -771,6 +771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
       diplomacyEnabled: false,
       arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
+      combatAnimationEnabled: U.combatAnimationPreference(),
       applyingReplay: false,
       search: '', color: 'all', strategy: 'all', year: 'all', complexity: 'all', favoritesOnly: false,
       setupStage: 'deck', playstyle: 'all', deckPage: 1,
@@ -1756,6 +1757,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     right.appendChild(customSkillsButton);
     renderBotStyles();
 
+    const combatAnimationChoice = () => {
+      const row = el('label', 'cmdcheck combatanimationsetup');
+      row.innerHTML = '<input type="checkbox" data-combat-animation-toggle aria-label="Combat animation"> <span><b>Combat animation</b><small>See cards clash, blockers take hits, and unblocked attacks strike the player.</small><em>On by default · saved on this device</em></span>';
+      const input = row.querySelector('input');
+      input.checked = state.combatAnimationEnabled;
+      row.classList.toggle('enabled', input.checked);
+      input.onchange = () => {
+        state.combatAnimationEnabled = input.checked;
+        U.setCombatAnimationPreference(input.checked);
+        root.querySelectorAll('[data-combat-animation-toggle]').forEach(control => {
+          control.checked = state.combatAnimationEnabled;
+          control.closest('.combatanimationsetup').classList.toggle('enabled', control.checked);
+        });
+      };
+      return row;
+    };
+    right.appendChild(combatAnimationChoice());
+
     const advanced = el('details', 'advancedrules');
     advanced.appendChild(el('summary', '', '<span>More table options</span><small>Commanders, politics, controls and custom AI skills</small>'));
     // The reveal animation belongs to the click that opens the panel, not to
@@ -2027,6 +2046,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         reviewStage.appendChild(save);
       }
       reviewStage.querySelector('.reviewback').onclick = () => setSetupStage('pod');
+      reviewStage.querySelector('.reviewactions').before(combatAnimationChoice());
       reviewStage.querySelector('.reviewstart').onclick = launchSelectedTable;
       reviewStage.querySelectorAll('[data-change-seat]').forEach(button => {
         button.onclick = () => {
@@ -2418,6 +2438,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ui.diagnosticReplay = state.diagnosticReplay === true;
     if (ui.diagnosticReplay) ui.accountSaveStatus = { state: 'paused', text: 'Diagnostic replay · saving disabled' };
     if (typeof state.arenaDragEnabled === 'boolean') ui.arenaDragEnabled = state.arenaDragEnabled;
+    if (typeof state.combatAnimationEnabled === 'boolean') ui.combatAnimationEnabled = state.combatAnimationEnabled;
     if (resumeSave) Object.assign(ui, MTG.accountSaveSettingsAt(resumeSave,
       restoringBoard ? replayingBoardTail ? replayCursor : resumeSave.decisions.length : 0));
     let gameRef = null;
@@ -5188,6 +5209,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         deckView: setup?.dataset.deckView || 'gallery',
         visibleDecks: [...(setup?.querySelectorAll('.deckentry:not([hidden])') || [])].map(entry => entry.dataset.deck),
         arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
+        combatAnimationEnabled: U.combatAnimationPreference(),
         selectedDeck: selected && selected.closest('.deckentry')?.dataset.deck || null,
         spotlight: spotlight ? {
           deck: spotlight.dataset.deck,
@@ -5332,6 +5354,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         detail: ui.activePersonaReaction.detail,
       } : null,
       arenaDragEnabled: !!(ui && ui.arenaDragEnabled),
+      combatAnimationEnabled: ui?.combatAnimationEnabled !== false,
       manaMode: ui ? ui.manaMode : 'auto',
       playerTools: ui ? {
         handSort: ui.handSort, handSize: ui.handSize, speed: ui.speed,

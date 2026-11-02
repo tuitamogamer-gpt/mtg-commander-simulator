@@ -173,6 +173,14 @@
 #setup .cmdcheck { min-height: 46px; gap: 12px; line-height: 1.55; }
 #setup .cmdcheck input { width: 18px; height: 18px; flex: none; accent-color: var(--ds-accent); }
 #setup .cmdcheck small, #setup .cmdcheck em { font-size: 12px; line-height: 1.55; }
+.combatanimationsetup { display: flex; align-items: center; gap: 14px; margin: 16px 0; padding: 15px 17px; border: 1px solid var(--ds-line, #31383d); border-radius: 10px; background: var(--ds-panel-raised, #131b20); cursor: pointer; }
+.combatanimationsetup > input { width: 20px; height: 20px; flex: none; accent-color: var(--ds-accent, #dcab70); }
+.combatanimationsetup > span { display: grid; gap: 4px; min-width: 0; }
+.combatanimationsetup b { color: var(--ds-copy, #e8e0d1); font-size: 14px; }
+.combatanimationsetup small { color: var(--ds-muted, #a5b0b5); font-size: 12px; line-height: 1.5; }
+.combatanimationsetup em { color: var(--ds-muted, #a5b0b5); font-size: 10px; font-style: normal; }
+.combatanimationsetup.enabled { border-color: #b88a5066; }
+.combatanimationsetup:focus-within { outline: 2px solid var(--ds-accent, #dcab70); outline-offset: 2px; }
 #setup .difficultynote { border-color: var(--ds-line-soft); border-radius: 10px; padding: 15px; background: var(--ds-panel-raised); }
 #setup .difficultynote b { font-size: 14px; }
 #setup .difficultynote p { margin-bottom: 0; font-size: 13px; line-height: 1.65; color: var(--ds-copy); }

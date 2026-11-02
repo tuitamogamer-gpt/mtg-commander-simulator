@@ -14,6 +14,34 @@ function tools() {
 }
 const plain = value => JSON.parse(JSON.stringify(value));
 
+test('combat animation defaults on, remembers explicit off and survives unrelated display settings', () => {
+  const { U, values, sandbox } = tools();
+  assert.equal(U.playerPreferences().combatAnimationEnabled, true);
+  assert.equal(U.combatAnimationPreference(), true);
+  for (const invalid of ['false', 0, null]) {
+    values.set('mtgPlayerPreferences', JSON.stringify({ combatAnimationEnabled: invalid }));
+    assert.equal(U.combatAnimationPreference(), true, 'only a boolean false disables playback');
+  }
+  assert.equal(U.setCombatAnimationPreference(false), true);
+  U.savePlayerPreferences({ handSize: 'large' });
+  assert.equal(JSON.parse(values.get('mtgPlayerPreferences')).combatAnimationEnabled, false);
+  vm.runInNewContext(readFileSync(new URL('../src/modules/player-tools.js', import.meta.url), 'utf8'), sandbox);
+  assert.equal(U.combatAnimationPreference(), false, 'a fresh page restores the saved choice');
+  assert.equal(U.setCombatAnimationPreference(true), true);
+  assert.equal(U.combatAnimationPreference(), true);
+  assert.equal(U.playerPreferences().handSize, 'large', 'the toggle preserves other preferences');
+});
+
+test('combat animation choice still applies to the current browser session when storage is blocked', () => {
+  const { U, sandbox } = tools();
+  sandbox.localStorage = { getItem() { throw Error('blocked'); }, setItem() { throw Error('quota'); } };
+  assert.equal(U.combatAnimationPreference(), true);
+  assert.equal(U.setCombatAnimationPreference(false), false);
+  assert.equal(U.combatAnimationPreference(), false);
+  assert.equal(U.setCombatAnimationPreference(true), false);
+  assert.equal(U.combatAnimationPreference(), true);
+});
+
 test('card backs use only approved local art and retain a session choice when storage is blocked', () => {
   const { U, values, sandbox } = tools();
   assert.equal(U.cardBackURL(), './assets/cardbacks/obsidian.webp');

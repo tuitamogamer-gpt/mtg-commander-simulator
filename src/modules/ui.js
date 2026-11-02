@@ -145,6 +145,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.handSort = preferences.handSort;
       this.handSize = preferences.handSize;
       this.speed = preferences.speed;
+      this.combatAnimationEnabled = MTG.combatAnimationPreference?.() ?? (preferences.combatAnimationEnabled !== false);
       this.arenaBackground = preferences.arenaBackground || 'table';
       this.playmat = preferences.playmat || 'felt';
       this.playmatStrength = preferences.playmatStrength ?? 20;
@@ -2914,6 +2915,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || MTG.DEFAULT_PRIO_MODE)) || MTG.PRIO_MODES[0];
       action('Priority stops', mode.label, () => { this.quickMenuOpen = false; this.showStops = true; this.render(); });
       section('Display & accessibility');
+      const combatAnimation = action('Combat animation', this.combatAnimationEnabled !== false ? 'On' : 'Off · Replay last combat remains available', () => {
+        this.combatAnimationEnabled = this.combatAnimationEnabled === false;
+        MTG.setCombatAnimationPreference(this.combatAnimationEnabled);
+        this.render();
+      });
+      combatAnimation.dataset.testid = 'combat-animation-toggle';
+      combatAnimation.setAttribute('role', 'switch');
+      combatAnimation.setAttribute('aria-checked', String(this.combatAnimationEnabled !== false));
       action('Music & sound', MTG.audio?.preferences.muted ? 'Muted' : 'Fantasy lo-fi · volume & effects', () => {
         this.quickMenuOpen = 'audio'; this.render();
       }).classList.add('audiosettingsopen');

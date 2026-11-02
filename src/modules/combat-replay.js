@@ -151,14 +151,19 @@
     el.dataset.testid = `combat-replay-${role}`; el.dataset.cardId = String(card.id || card.iid || '');
     const name = card.faceDown ? 'Face-down creature' : card.name || 'Creature';
     el.setAttribute('aria-label', name);
-    const art = node('div', `combat-replay-card${card.died ? ' is-defeated' : ''}`);
+    // Shared blockers can appear in several clashes. Their stats below are
+    // whole-step totals, but the impact shows only this clash's actual hit.
+    const incoming = (state.entries[state.index].clash.damage || []).filter(hit => hit.targetId === card.id && hit.combat !== false)
+      .reduce((total, hit) => total + number(hit.amount), 0);
+    const art = node('div', `combat-replay-card${card.died ? ' is-defeated' : ''}${incoming > 0 ? ' has-damage' : ''}${number(card.preventedDamage) > 0 ? ' has-prevention' : ''}`);
     if (U.cardArtHTML) art.innerHTML = U.cardArtHTML({...card, name, owner: {idx: card.ownerIdx}}).replace('loading="lazy"', 'loading="eager"');
     if (!card.faceDown && card.image && art.querySelector('img')) art.querySelector('img').src = card.image;
     if (!art.children.length) art.append(node('strong', 'combat-replay-fallback', name));
     art.append(aura(card, state.entries[state.index]));
-    if (number(card.receivedDamage) > 0) {
-      const hit = node('span', 'combat-replay-hit', `−${number(card.receivedDamage)}`);
-      hit.setAttribute('aria-label', `${name} received ${number(card.receivedDamage)} damage this step`); art.append(hit);
+    if (incoming > 0) {
+      const contact = node('span', 'combat-replay-contact'); contact.setAttribute('aria-hidden', 'true'); art.append(contact);
+      const hit = node('span', 'combat-replay-hit', `−${incoming}`);
+      hit.setAttribute('aria-label', `${name} received ${incoming} damage in this clash`); art.append(hit);
     }
     el.append(art, node('h3', 'combat-replay-card-name', name));
     const stats = node('div', 'combat-replay-stats');
@@ -191,7 +196,15 @@
     }
     const result = node('div', `combat-replay-player${damage > 0 ? ' has-damage' : ''}`);
     result.dataset.testid = 'combat-replay-defender';
-    result.append(node('div', 'combat-replay-avatar', (defender.name || '?').slice(0, 2).toUpperCase()), node('h3', '', defender.name || 'Defender'));
+    const avatar = node('div', 'combat-replay-avatar', (defender.name || '?').slice(0, 2).toUpperCase());
+    if (damage > 0) {
+      // Infect still deals damage, but does not remove life. Keep the impact
+      // number explicitly about damage; the step totals show life/poison.
+      const hit = node('span', `combat-replay-face-hit${hits.some(hit => hit.infect) ? ' is-poison' : ''}`);
+      hit.setAttribute('aria-hidden', 'true');
+      hit.append(node('strong', '', damage), node('small', '', 'damage')); avatar.append(hit);
+    }
+    result.append(avatar, node('h3', '', defender.name || 'Defender'));
     result.append(node('span', 'combat-replay-player-damage', damage > 0 ? `${damage} damage` : clash.blocked ? 'No damage reached player' : 'No damage dealt'));
     if (damage > 0 && hits.some(hit => hit.keywords?.includes('trample'))) { result.append(node('span', 'combat-replay-trample', 'Trample')); result.dataset.effectCue = 'trample'; }
     return result;
@@ -212,9 +225,12 @@
   function render(state) {
     if (stale(state)) { close(false); return; }
     const entry = state.entries[state.index], {replay, clash} = entry;
-    state.impact = reduced(state); state.hitRemaining = state.impact ? 0 : 650;
+    // Manual stepping while paused should reveal the chosen outcome, not
+    // freeze new cards at the invisible start of their entrance animation.
+    state.impact = state.paused || reduced(state); state.hitRemaining = state.impact ? 0 : 650;
     state.nextRemaining = clash.blockers?.length > 2 ? 4600 : 3300;
     state.overlay.classList.toggle('is-reduced', reduced(state));
+    state.overlay.classList.toggle('is-preview', state.paused);
     state.overlay.classList.toggle('is-paused', state.paused);
     state.title.textContent = clash.blocked ? 'Clash of creatures' : 'Direct strike';
     state.kicker.textContent = `TURN ${replay.turn ?? '—'} · COMBAT`;
@@ -281,7 +297,7 @@
     render(state); state.skip.focus({preventScroll: true});
   }
   function enqueue(ui, replay) {
-    if (ui.game?._simulation || ui.accountReplay || document.hidden || !document.body.classList.contains('game-active')) return;
+    if (ui.combatAnimationEnabled === false || ui.game?._simulation || ui.accountReplay || document.hidden || !document.body.classList.contains('game-active')) return;
     if (active?.ui === ui && active.game === ui.game) {
       // Avoid an unbounded presentation backlog while AI combat advances.
       if (active.entries.length < 400) active.entries.push(...entries([replay]));

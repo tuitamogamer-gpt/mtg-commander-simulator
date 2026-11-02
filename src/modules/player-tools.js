@@ -52,6 +52,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       handSort: choose(raw.handSort, ['draw', 'mana', 'type', 'name'], 'draw'),
       handSize: choose(raw.handSize, ['standard', 'large'], 'standard'),
       contrast: raw.contrast === true,
+      combatAnimationEnabled: raw.combatAnimationEnabled !== false,
       speed: choose(raw.speed, ['normal', 'slow', 'fast'], 'normal'),
       arenaBackground: choose(raw.arenaBackground, U.ARENA_BACKGROUNDS.map(item => item.id), 'table'),
       arenaDim: U.normalizeArenaDim(raw.arenaDim),
@@ -61,6 +62,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   };
   U.savePlayerPreferences = changes => U.writePreference('mtgPlayerPreferences', { ...U.playerPreferences(), ...changes });
+  let sessionCombatAnimation;
+  U.combatAnimationPreference = () => sessionCombatAnimation ?? U.playerPreferences().combatAnimationEnabled;
+  U.setCombatAnimationPreference = enabled => {
+    // Keep this browser's choice even when private browsing blocks storage.
+    sessionCombatAnimation = enabled !== false;
+    return U.savePlayerPreferences({ combatAnimationEnabled: sessionCombatAnimation });
+  };
   let sessionCardBack;
   U.selectedCardBack = () => U.CARD_BACKS.find(item => item.id === (sessionCardBack || U.playerPreferences().cardBack)) || U.CARD_BACKS[0];
   U.cardBackURL = () => U.selectedCardBack().url;

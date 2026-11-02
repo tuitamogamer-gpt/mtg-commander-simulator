@@ -140,13 +140,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       button.setAttribute('aria-labelledby', labelId); button.setAttribute('aria-describedby', detailId);
       button.append(node('span', 'settingsswitchtrack'), node('span', 'settingsswitchvalue', checked ? 'On' : 'Off'));
       button.onclick = () => change(id, label, () => apply(!checked)); line.appendChild(button);
+      return button;
     };
     if (current === 'table') {
       intro('At the table', 'Review the game, find a card, or return to your profile.');
       const context = node('div', 'settingscontext');
       context.append(icon('crown'), node('b', '', ui.me?.name || 'Your seat'), node('span', '', `Turn ${game.turnNo || 1} · ${ui.me?.life ?? 40} life`)); body.appendChild(context);
       const tools = section('Game tools');
-      for (const [label, symbol] of [['Find a card or command', 'cards'], ['Table information', 'stack'], ['Game log', 'log'], ['Dungeons & routes', 'library'], ['Diplomacy & Politics', 'deals']]) action(tools, label, symbol);
+      for (const [label, symbol] of [['Find a card or command', 'cards'], ['Replay last combat', 'attack'], ['Table information', 'stack'], ['Game log', 'log'], ['Dungeons & routes', 'library'], ['Diplomacy & Politics', 'deals']]) action(tools, label, symbol);
       const session = section('Your session');
       for (const label of ['Save & exit', 'Sign in to save', 'Profile & stats', 'I lost', 'Main menu']) action(session, label, label === 'Main menu' ? 'player' : 'crown');
     } else if (current === 'appearance') {
@@ -158,6 +159,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const copy = node('span', 'settingsactioncopy'); copy.append(node('span', '', 'Card backs'), node('small', '', U.selectedCardBack().label));
       backs.append(thumb, copy, icon('next')); backs.onclick = () => { if (isCurrent()) { ui.quickMenuOpen = 'cardbacks'; ui.render(); } }; art.appendChild(backs);
       action(art, 'Arena background', 'playmat'); action(art, 'Playmats', 'cards'); action(art, 'Music & sound', 'mana');
+      const combat = section('Combat');
+      toggle(combat, 'combat-animation', 'Combat animation', 'Automatically show card clashes and damage. Replay last combat stays available when off.', ui.combatAnimationEnabled !== false, value => {
+        ui.combatAnimationEnabled = value; return U.setCombatAnimationPreference(value);
+      }).dataset.testid = 'combat-animation-toggle';
       const readability = section('Readability');
       select(readability, 'hand-size', 'Hand card size', 'Make the cards in your hand easier to inspect.', ui.handSize, [['standard', 'Standard'], ['large', 'Large']], value => {
         ui.handSize = value; return U.savePlayerPreferences({ handSize: value });

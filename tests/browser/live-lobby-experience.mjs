@@ -17,8 +17,9 @@ app.get('/_live-fixture', (_request, response) => response.type('html').send(`<!
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="/src/design-system.css"><link rel="stylesheet" href="/src/styles.css">
 <link rel="stylesheet" href="/src/client-v3.css"><link rel="stylesheet" href="/src/frontend-overhaul.css">
+<link rel="stylesheet" href="/src/setup-experience.css">
 <link rel="stylesheet" href="/src/live-experience.css"></head><body><main id="lobby-root"></main>
-<script src="/src/modules/multiplayer-ui.js"></script></body></html>`));
+<script src="/src/modules/player-tools.js"></script><script src="/src/modules/multiplayer-ui.js"></script></body></html>`));
 app.use(express.static(root));
 const server = app.listen(0, '127.0.0.1');
 await once(server, 'listening');
@@ -76,8 +77,12 @@ async function mount(page, { guest = false, failedJoin = false } = {}) {
   }, { guest, failedJoin });
 }
 try {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+  const hostContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+  const guestContext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const page = await hostContext.newPage();
+  const guestPage = await guestContext.newPage();
   page.on('pageerror', error => errors.push(error.message));
+  guestPage.on('pageerror', error => errors.push(error.message));
   await mount(page);
   assert.equal(await page.locator('.online-start').isDisabled(), true);
   assert.match(await page.locator('.online-ready-summary').innerText(), /3 of 4 seats ready/);
@@ -85,6 +90,29 @@ try {
   assert.match(await page.locator('.onlineseat[data-seat="0"] img').getAttribute('alt'), /Etali/);
   check('host sees readiness, open seats, actual commanders and a disabled start until ready');
   await page.screenshot({ path: `${out}/desktop-lobby.png`, fullPage: true, mask: [page.locator('.online-invite b')], maskColor: '#1a222b' });
+
+  await mount(guestPage, { guest: true });
+  const combatToggle = client => client.locator('[data-combat-animation-toggle]');
+  const publicState = client => client.evaluate(() => JSON.stringify({ room: window.room, calls: window.calls }));
+  assert.equal(await combatToggle(page).isChecked(), true);
+  assert.equal(await combatToggle(guestPage).isChecked(), true);
+  const hostState = await publicState(page), guestState = await publicState(guestPage);
+  await combatToggle(page).uncheck();
+  assert.equal(await publicState(page), hostState, 'local animation preference never dispatches or changes room state');
+  await page.evaluate(() => window.publish());
+  assert.equal(await combatToggle(page).isChecked(), false, 'host rerender keeps the local choice');
+  assert.equal(await combatToggle(guestPage).isChecked(), true, 'guest keeps its own default');
+  await mount(page);
+  assert.equal(await combatToggle(page).isChecked(), false, 'host reload restores saved off');
+  await combatToggle(guestPage).uncheck();
+  assert.equal(await publicState(guestPage), guestState, 'guest preference also sends no room action');
+  await guestPage.evaluate(() => window.publish());
+  assert.equal(await combatToggle(guestPage).isChecked(), false);
+  await mount(guestPage, { guest: true });
+  assert.equal(await combatToggle(guestPage).isChecked(), false, 'guest reload restores its own preference');
+  await combatToggle(page).check();
+  assert.equal(await combatToggle(guestPage).isChecked(), false, 'host changes do not alter the guest choice');
+  check('host and guest default animation on, retain independent choices across rerender/reload, and never mutate room state');
 
   await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { async writeText(value) { window.copiedInvite = value; } } }));
   await page.locator('.online-copy').click();
@@ -140,6 +168,7 @@ try {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}px has no horizontal overflow`);
     const targets = await page.locator('.online-lobby button, .online-lobby select').evaluateAll(nodes => nodes.filter(node => node.getClientRects().length).map(node => ({ name: node.textContent, height: node.getBoundingClientRect().height })));
     assert.equal(targets.every(target => target.height >= 44), true, `${width}px primary controls are touch sized`);
+    assert.ok(await page.locator('.combatanimationsetup').evaluate(node => node.getBoundingClientRect().height >= 44), `${width}px animation checkbox has a full touch-sized label`);
     if (width <= 390) {
       const tallestSeat = await page.locator('.onlineseat').evaluateAll(nodes => Math.max(...nodes.map(node => node.getBoundingClientRect().height)));
       assert.ok(tallestSeat <= 330, `${width}px seats stay compact rather than inheriting desktop grid rows`);
@@ -148,12 +177,12 @@ try {
   }
   check('360px, 390px and tablet lobby fit the viewport with accessible touch targets');
 
-  await mount(page, { guest: true });
-  assert.equal(await page.locator('.online-copy').count(), 0);
-  assert.equal(await page.locator('.online-start').count(), 0);
-  assert.equal(await page.locator('.online-deck-select').count(), 1);
-  await page.locator('.online-deck-select').selectOption('Elven Council');
-  assert.match(await page.locator('.onlineseat.mine .onlineseatstatus').innerText(), /Ready to play/);
+  await mount(guestPage, { guest: true });
+  assert.equal(await guestPage.locator('.online-copy').count(), 0);
+  assert.equal(await guestPage.locator('.online-start').count(), 0);
+  assert.equal(await guestPage.locator('.online-deck-select').count(), 1);
+  await guestPage.locator('.online-deck-select').selectOption('Elven Council');
+  assert.match(await guestPage.locator('.onlineseat.mine .onlineseatstatus').innerText(), /Ready to play/);
   check('guest can configure only their own seat and sees their ready status');
 
   await mount(page);

@@ -218,11 +218,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${view.you === 0 ? `<section class="online-invite" aria-label="Invite friends"><div class="online-invite-copy"><small>YOUR PRIVATE TABLE</small><strong>${openSeats ? `Invite ${openSeats === 1 ? 'a friend' : 'your friends'}` : 'Everyone has a seat'}</strong><span>${openSeats ? `${openSeats} open human seat${openSeats === 1 ? '' : 's'} · Anyone with this link can join an open seat.` : 'Keep this link handy if a player needs to reconnect.'}</span><b title="${esc(share)}">${esc(share)}</b></div><button type="button" class="online-copy" data-live-focus="invite-copy"${this.copyingInvite ? ' disabled' : ''}>${this.copyingInvite ? 'Copying…' : this.inviteFeedback && !this.inviteCopyFailed ? 'Copy again' : 'Copy invite link'}</button><p class="online-invite-feedback" role="status" aria-live="polite">${esc(this.inviteFeedback)}</p>${this.inviteCopyFailed ? `<label class="online-invite-manual"><span>Invite link — select and copy</span><input type="text" readonly value="${esc(share)}" data-live-focus="invite-manual" spellcheck="false" autocomplete="off"></label>` : ''}</section>` : ''}
         <div class="online-seats-heading"><div><small>THE POD</small><h2>${paused ? 'Your players' : 'Choose your seats'}</h2></div><span>Every seat uses a different deck</span></div>
         <section class="online-seats" aria-label="Commander seats"></section>
+        <label class="cmdcheck combatanimationsetup"><input type="checkbox" data-combat-animation-toggle data-live-focus="combat-animation" aria-label="Combat animation"><span><b>Combat animation</b><small>Show card clashes and damage on your screen. Other players keep their own choice.</small><em>On by default · saved on this device</em></span></label>
         <footer class="online-lobby-actions">
           <div class="online-ready-summary" role="status" aria-live="polite"><small>${this.busy ? 'UPDATING TABLE' : 'TABLE STATUS'}</small><b>${esc(this.busy ? this.busyLabel : status)}</b><span>${esc(hint)}</span><div class="online-ready-track" aria-hidden="true">${view.seats.map(seat => `<i class="${seat.connected && seat.ready && seat.deckId ? 'ready' : ''}"></i>`).join('')}</div></div>
         </footer>
         <p class="online-host-note">${icon('info')}<span>${view.you === 0 ? 'Keep this host tab open during the game. The table pauses if a player disconnects.' : 'The table pauses if a player disconnects. Reopen your invite link to return to your seat.'}</span></p>`;
       shell.querySelector('.online-back').onclick = () => this.onBack && this.onBack();
+      const combatAnimation = shell.querySelector('[data-combat-animation-toggle]');
+      combatAnimation.checked = MTG.combatAnimationPreference();
+      combatAnimation.closest('.combatanimationsetup').classList.toggle('enabled', combatAnimation.checked);
+      combatAnimation.onchange = () => {
+        MTG.setCombatAnimationPreference(combatAnimation.checked);
+        combatAnimation.closest('.combatanimationsetup').classList.toggle('enabled', combatAnimation.checked);
+      };
       const copy = shell.querySelector('.online-copy');
       if (copy) copy.onclick = () => this.copyInvite(share);
       const seatsRoot = shell.querySelector('.online-seats');
