@@ -181,7 +181,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       houseRules: data(game.houseRules), monarch: seat(game.monarch), monarchSince: data(game.monarchSince),
       untilEffects: publicEffects,
       threat: U.threatTable ? U.threatTable(game, viewer).map(row => ({ seat: seat(row.p), score: row.score })) : [],
-      events,
+      events, combatReplays: enc.encode(U.combatReplaysFor?.(game) || []),
     };
   };
 
@@ -457,6 +457,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return q;
     }
     bf() { return this.battlefield.filter(card => !card.phasedOut); }
+    // Public card getters share the engine's definition lookup, but the Live
+    // view only reads projected metadata and never runs battlefield scripts.
+    bfWithDef(...keys) { return this.bf().filter(card => card.zone === 'battlefield' && keys.some(key => card.def[key])); }
     byIid(iid) { return this.cards.get(`c:${iid}`) || null; }
     creatures(player) { return this.bf().filter(card => card.ctrl === player && card.is('Creature')); }
     lands(player) { return this.bf().filter(card => card.ctrl === player && card.is('Land')); }

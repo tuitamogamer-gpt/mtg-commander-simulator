@@ -2537,6 +2537,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (state.onlineBridge) { liveArena?.publishEvent(e); queueOnlineSync(); return; }
         MTG.audio?.handle(e, gameRef, { replay: replayingSave || !!ui.accountReplay });
         ui.showActionEffect?.(e, { replay: replayingSave || !!ui.accountReplay });
+        if (e.type === 'combatReplay' && !replayingSave && !ui.accountReplay) ui.showCombatReplay?.(e.replay);
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);

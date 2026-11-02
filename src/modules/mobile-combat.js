@@ -50,6 +50,7 @@ function blockerCards(ui, attacker, blockers, pd = null) {
     const row = node('article', 'ct-mobile-combat-unit ct-mobile-combat-blocker');
     row.dataset.blockerId = String(blocker.iid);
     const card = button('', () => inspect(ui, blocker), 'ct-mobile-combat-card');
+    card.dataset.iid = String(blocker.iid);
     card.setAttribute('aria-label', `Inspect ${blocker.name}, blocking ${attacker.name}`);
     const copy = node('span', 'ct-mobile-combat-unit-copy');
     copy.append(node('b', '', blocker.name), node('strong', '', `${blocker.power}/${blocker.toughness}`));
@@ -117,6 +118,12 @@ export function createMobileCombat(ui, game, root, pd) {
     : pd ? 'Review attack' : game.phase === 'combat' ? 'Combat in progress' : 'Combat';
   head.append(node('h2', '', title));
   head.append(node('span', 'ct-mobile-combat-life', `You · ${ui.me.life} life`));
+  const hasReplay = !!ui.hasCombatReplay?.(game);
+  if (hasReplay) {
+    const replay = button('Replay last combat', () => ui.replayLastCombat(), 'pbtn ct-mobile-combat-replay');
+    replay.dataset.testid = 'replay-last-combat';
+    head.append(replay);
+  }
   const targets = node('div', 'ct-mobile-combat-targets');
   pane.append(head, targets);
   const roster = node('div', 'ct-mobile-combat-roster');
@@ -168,12 +175,14 @@ export function createMobileCombat(ui, game, root, pd) {
     if (!attackers.length) {
       history.append(node('p', 'ct-mobile-combat-empty', game.phase === 'combat'
         ? 'Waiting for attackers. Combat choices will open here when it is your turn to decide.'
+        : hasReplay ? 'Replay last combat to review the damage and effects. Your next attack and block choices will appear here.'
         : 'Your attacks, blocks and combat assignments appear here during combat.'));
     }
     for (const attacker of attackers) {
       const group = node('article', 'ct-mobile-combat-matchup');
       group.dataset.attackerId = String(attacker.iid);
       const card = button('', () => inspect(ui, attacker), 'ct-mobile-combat-card');
+      card.dataset.iid = String(attacker.iid);
       card.setAttribute('aria-label', `Inspect ${attacker.name}`);
       const copy = node('span', 'ct-mobile-combat-unit-copy');
       const blockers = (attacker.blockedBy || []).filter(blocker => blocker.zone === 'battlefield');

@@ -2895,6 +2895,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return button;
       };
       section('Pace & decisions');
+      if (this.hasCombatReplay?.(g)) action('Replay last combat', 'Review the recorded strikes, blockers and damage', () => {
+        this.quickMenuOpen = false;
+        this.render();
+        this.replayLastCombat();
+      });
       action('Dungeons & routes', 'All rooms, effects, and your current progress', () => {
         this.quickMenuOpen = false; this.dungeonPanel = { player: this.me }; this.render();
       });
@@ -7248,7 +7253,16 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     }
 
     gameEffectCardAnchor(card) {
-      return card && document.querySelector(`.mini[data-iid="${card.iid}"]`);
+      if (!card) return null;
+      // The battlefield remains mounted behind the phone's Combat tab. Use a
+      // visible public card, never a hidden duplicate with a zero-size box.
+      const cards = document.querySelectorAll(`.mini[data-iid="${card.iid}"], .ct-mobile-combat-card[data-iid="${card.iid}"]`);
+      return [...cards].find(node => {
+        if (node.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.right > 0 &&
+          rect.top < window.innerHeight && rect.left < window.innerWidth;
+      }) || null;
     }
 
     gameEffectDestination(event) {

@@ -134,6 +134,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.ui.me = this.game.viewer;
       this.ui.lastResortActive = !!snapshot.lastResortPaused;
       const events = snapshot.events || [];
+      const incomingReplays = [];
+      const firstSnapshot = this.eventCursor === null;
       if (this.eventCursor === null) this.eventCursor = events.at(-1)?.id || 0;
       for (const record of events) {
         if (record.id <= this.eventCursor) continue;
@@ -141,22 +143,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const event = this.game.decode(record.event);
         U.audio?.handle(event, this.game, { replay: false });
         this.ui.showActionEffect?.(event);
+        if (event.type === 'combatReplay' && event.replay) incomingReplays.push(event.replay);
         const methods = { effectNotice: 'showEffectNotice', gameEffect: 'showGameEffect', battlefieldArrival: 'showBattlefieldArrival', monarchChanged: 'showMonarchChange' };
         if (event.type === 'turn' && event.p) this.ui.showBanner(event.p === this.ui.me ? '⭐ YOUR TURN' : `Turn ${snapshot.turn}: ${event.p.name}`, event.p === this.ui.me);
         else if (event.type === 'effectNotice') this.ui.showEffectNotice(event.text, event.kind, event);
         else if (methods[event.type]) this.ui[methods[event.type]](event);
       }
+      // Keep the latest combat available even after rapid public events have
+      // rolled out of the transport's short event buffer. Joining never plays
+      // an old combat over the player's first decision.
+      // The retained history owns step order: first strike may have rolled out
+      // while the normal-damage event remains. Older event-only combats still
+      // precede that history, so they cannot replace the latest Replay button.
+      const retainedReplays = snapshot.combatReplays || [];
+      const retainedIds = new Set(retainedReplays.map(replay => replay.id));
+      const replays = [...incomingReplays.filter(replay => !retainedIds.has(replay.id)), ...retainedReplays];
+      this.ui.syncCombatReplays?.(replays, { autoplay: !firstSnapshot });
     }
     updateLocal() {
       if (this.authority) this.updateSnapshot(U.onlineGameViewFor(this.authority, this.authority.players.find(p => (p.onlineSeat ?? p.idx) === this.you)));
     }
     publishEvent(event) {
       if (!this.authority) return;
-      const allowed = new Set(['turn', 'gameEffect', 'effectNotice', 'battlefieldArrival', 'monarchChanged', 'gameover', 'cardPlayed', 'combat', 'dungeon']);
+      const allowed = new Set(['turn', 'gameEffect', 'effectNotice', 'battlefieldArrival', 'monarchChanged', 'gameover', 'cardPlayed', 'combat', 'combatReplay', 'dungeon']);
       if (allowed.has(event.type)) {
         const g = this.authority;
         const fields = ['type', 'p', 'card', 'src', 'source', 'target', 'targets', 'amount', 'n', 'kind', 'text', 'name', 'color', 'combat', 'player', 'winner', 'from', 'to', 'previous', 'current', 'phase', 'step', 'targetKind', 'targetCard', 'targetPlayer', 'toPlayer', 'fromZone', 'toZone', 'combatStep', 'combatIndex', 'previousLife', 'life', 'count', 'counter', 'delta', 'spellTypes', 'dungeon', 'room'];
-        fields.push('attacks', 'blocks', 'pairs');
+        fields.push('attacks', 'blocks', 'pairs', 'replay');
         const entry = Object.fromEntries(fields.filter(key => event[key] !== undefined).map(key => [key, event[key]]));
         const audioFacts = U.sanitizeAudioFacts(event.audioFacts);
         if (audioFacts) entry.audioFacts = audioFacts;
