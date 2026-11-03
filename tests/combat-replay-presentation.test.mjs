@@ -51,10 +51,11 @@ function presentation({reducedMotion = true} = {}) {
     showGameEffect() {} showActionEffect() {} showBanner() {}
   }
   const MTG = {UI, Player: class {}, CardInst: class {}, Game: class {}};
-  const timers = new Map(); let serial = 0;
+  const timers = new Map(), delays = new Map(); let serial = 0;
   const context = {MTG, document, window: {matchMedia: () => ({matches: reducedMotion, addEventListener() {}})},
-    location: {href: 'http://localhost/'}, MutationObserver: class {observe() {}},
-    setTimeout: callback => {timers.set(++serial, callback); return serial;}, clearTimeout: id => timers.delete(id)};
+    location: {href: 'http://localhost/'}, MutationObserver: class {observe() {}}, console,
+    setTimeout: (callback, ms) => {timers.set(++serial, callback); delays.set(serial, ms); return serial;},
+    clearTimeout: id => {timers.delete(id); delays.delete(id);}};
   for (const file of ['multiplayer-presentation', 'combat-replay', 'multiplayer-arena']) {
     vm.runInNewContext(readFileSync(new URL(`../src/modules/${file}.js`, import.meta.url), 'utf8'), context, {filename: `${file}.js`});
   }
@@ -64,7 +65,7 @@ function presentation({reducedMotion = true} = {}) {
   const button = name => overlay()?.querySelectorAll('button').find(node => node.textContent === name);
   const count = () => Number(overlay()?.querySelector('.combat-replay-progress').getAttribute('aria-valuemax') || 0);
   const step = () => overlay()?.querySelector('.combat-replay-step').querySelector('strong').textContent;
-  return {arena, ui, document, gameRoot, timers, overlay, button, count, step};
+  return {arena, ui, document, gameRoot, timers, delays, overlay, button, count, step, MTG};
 }
 
 function replay(step, combatId = 'combat:7:1') {
@@ -220,4 +221,60 @@ test('stepping while paused reveals the result and keeps automatic playback stop
   f.button('Finish').click();
   assert.equal(f.timers.size, 0);
   assert.equal(f.gameRoot.inert, false);
+});
+
+// Solo: the game holds each damage step until its replay has played, so no
+// turn runs on behind the window (main.js binds the gate to the local game).
+function solo(speedFactor = 1.5625) {
+  const f = presentation();
+  f.MTG.SPEEDS = {normal: ['', 1.5625, ''], fast: ['', .9375, ''], slow: ['', 4.0625, '']};
+  f.ui.game = {players: [], speedFactor};
+  return f;
+}
+const settled = async promise => { let done = false; promise.then(() => { done = true; }); await new Promise(resolve => setImmediate(resolve)); return done; };
+
+test('a Solo game waits until its damage step has played, and Skip releases it', async () => {
+  const f = solo(), first = replay('normal', 'combat:7:1'), second = replay('normal', 'combat:8:1');
+  f.ui.showCombatReplay(first);
+  const waiting = f.ui.waitForCombatReplay(first);
+  assert.equal(await settled(waiting), false, 'the game waits while the strike plays');
+  f.button('Finish').click();
+  assert.equal(await settled(waiting), true);
+  assert.equal(f.overlay(), null);
+  f.ui.showCombatReplay(second);
+  const skipped = f.ui.waitForCombatReplay(second);
+  f.button('Skip').click();
+  assert.equal(await settled(skipped), true, 'Skip lets the game go on');
+  assert.equal(await settled(f.ui.waitForCombatReplay(replay('normal', 'combat:9:1'))), true, 'an unshown step never holds the game');
+});
+
+test('first-strike and regular damage play in one window', async () => {
+  const f = solo(), first = replay('first'), normal = replay('normal');
+  f.ui.showCombatReplay(first);
+  const firstDone = f.ui.waitForCombatReplay(first);
+  f.button('Finish').click();
+  assert.equal(await settled(firstDone), true, 'the regular step may now be dealt');
+  assert.ok(f.overlay(), 'the window stays open for the regular step');
+  f.ui.showCombatReplay(normal);
+  assert.equal(f.step(), 'Combat damage');
+  assert.equal(f.count(), 2);
+  const normalDone = f.ui.waitForCombatReplay(normal);
+  assert.equal(await settled(normalDone), false);
+  f.button('Finish').click();
+  assert.equal(await settled(normalDone), true);
+  assert.equal(f.overlay(), null);
+  // A first strike with no regular step closes once the short grace ends.
+  const alone = solo(), only = replay('first', 'combat:9:1');
+  alone.ui.showCombatReplay(only); alone.button('Finish').click();
+  assert.ok(alone.overlay());
+  for (const callback of [...alone.timers.values()]) callback();
+  assert.equal(alone.overlay(), null);
+});
+
+test('time after each hit follows the game speed', () => {
+  const longest = f => Math.max(...[...f.delays.values()].filter(Number.isFinite));
+  const timing = speed => { const f = solo(speed); f.ui.reducedMotion = false; f.ui.showCombatReplay(replay('normal')); return longest(f); };
+  assert.equal(timing(1.5625), 3300, 'Normal keeps the authored timing');
+  assert.ok(timing(.9375) < 3300, 'Fast is quicker');
+  assert.ok(timing(4.0625) > 3300 && timing(4.0625) <= 650 + 2650 * 1.6, 'Slow is slower, within a limit');
 });

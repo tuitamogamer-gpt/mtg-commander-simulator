@@ -2878,6 +2878,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ui.game = g;
     ui.applySpeed();
     if (resumeSave) g.speedFactor = 0;
+    // Solo: the game holds each combat damage step while its replay plays.
+    if (!state.onlineBridge) ui.bindCombatReplayGate?.(g);
     window._game = g;
     window._ui = ui;
     if (state.onlineBridge) {

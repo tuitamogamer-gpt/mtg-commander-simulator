@@ -16,6 +16,9 @@
     const el = node('button', cls, text); el.type = 'button'; el.onclick = action; return el;
   };
   const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+  // "AI Dragon" → "D", "Jordan Lee" → "JL": every bot name starts with AI.
+  const initials = name => String(name || '?').replace(/^AI\s+/i, '').split(/\s+/).filter(Boolean)
+    .slice(0, 2).map(word => word[0]).join('').toUpperCase() || '?';
   const label = keyword => U.KEYWORD_VISUALS?.[keyword.toLowerCase()]?.label || keyword.charAt(0).toUpperCase() + keyword.slice(1);
   const keywords = card => [...new Set((card?.keywords || []).filter(value => typeof value === 'string' && value.trim()).map(value => value.trim()))];
   const category = keyword => /first strike|double strike|trample|flanking|rampage|frenzy|bushido/.test(keyword) ? 'strike'
@@ -55,12 +58,28 @@
   const reduced = state => !!state.ui.reducedMotion || motion.matches || document.body.classList.contains('reduced-motion');
   const stale = state => state.ui.game !== state.game || !document.body.classList.contains('game-active');
   function clearTimers(state) {
-    clearTimeout(state.hitTimer); clearTimeout(state.nextTimer);
-    state.hitTimer = state.nextTimer = null;
+    clearTimeout(state.hitTimer); clearTimeout(state.nextTimer); clearTimeout(state.closeTimer);
+    state.hitTimer = state.nextTimer = state.closeTimer = null;
+  }
+  // A Solo game waits for each recorded step (bindCombatReplayGate). Release
+  // every step whose strikes have all been shown, and everything on close.
+  function release(state, all = false) {
+    const waiting = state.waits || [];
+    state.waits = all ? [] : waiting.filter(wait => wait.last >= state.index);
+    for (const wait of waiting) if (all || wait.last < state.index) wait.resolve();
+  }
+  // Seconds per strike follow the game's speed: Normal keeps the authored
+  // timing, Fast shortens and Slow lengthens the time after the hit. The hit
+  // itself stays in step with the card animation.
+  function dwell(state, ms) {
+    const normal = U.SPEEDS?.normal?.[1] || 1.5625, factor = Number(state.game?.speedFactor);
+    // An instant game (speed 0) has no viewer pace of its own: authored timing.
+    const scale = Math.min(1.6, Math.max(0.6, factor > 0 ? factor / normal : 1));
+    return Math.round(650 + (ms - 650) * scale);
   }
   function close(restore = true) {
     const state = active; if (!state) return;
-    active = null; clearTimers(state);
+    active = null; clearTimers(state); release(state, true);
     state.overlay.remove();
     state.gameRoot?.removeAttribute('data-combat-replay-covered');
     if (state.gameRoot) state.gameRoot.inert = state.previousInert;
@@ -90,17 +109,33 @@
     state.overlay.classList.toggle('is-paused', paused);
     state.pause.textContent = paused ? 'Resume' : 'Pause'; state.pause.setAttribute('aria-pressed', String(paused));
     updateProgress(state);
+    if (!paused && state.ended) { close(); return; }
     if (!paused) schedule(state);
   }
   function next(state) {
     if (active !== state) return;
+    if (state.ended) { close(); return; }
     clearTimers(state);
-    if (++state.index >= state.entries.length) { close(); return; }
-    render(state);
+    ++state.index;
+    release(state);
+    if (state.index >= state.entries.length) {
+      // After first-strike damage the regular step follows at once; keep the
+      // window open briefly so the two steps play as one combat.
+      const last = state.entries.at(-1)?.replay;
+      if (last?.step === 'first' && !state.paused && !stale(state) && !state.game?.gameOver) {
+        state.ended = true; state.closeTimer = setTimeout(() => { if (active === state) close(); }, 700);
+      } else close();
+      return;
+    }
+    show(state);
+  }
+  // A rendering failure must never leave a waiting game behind the window.
+  function show(state) {
+    try { render(state); } catch (error) { console.error(error); close(false); }
   }
   function updateProgress(state) {
     const entry = state.entries[state.index]; if (!entry) return;
-    state.progress.textContent = `${state.index + 1} / ${state.entries.length} strikes${state.paused ? ' · Paused' : ''}`;
+    state.progress.textContent = `${state.entries.length === 1 ? '1 strike' : `Strike ${state.index + 1} of ${state.entries.length}`}${state.paused ? ' · Paused' : ''}`;
     state.next.textContent = state.index + 1 < state.entries.length ? 'Next strike' : 'Finish';
     state.meter.setAttribute('aria-valuenow', String(state.index + 1));
     state.meter.setAttribute('aria-valuemax', String(state.entries.length));
@@ -196,7 +231,19 @@
     }
     const result = node('div', `combat-replay-player${damage > 0 ? ' has-damage' : ''}`);
     result.dataset.testid = 'combat-replay-defender';
-    const avatar = node('div', 'combat-replay-avatar', (defender.name || '?').slice(0, 2).toUpperCase());
+    const avatar = node('div', 'combat-replay-avatar');
+    const seat = state.game?.players?.find(player => player.idx === defender.idx);
+    const commander = seat && (seat.commanders?.length ? seat.commanders : seat.command || [])[0];
+    if (commander && !commander.faceDown && U.cardImageURL) {
+      // Commander identity is public, as in the seat portraits on the table.
+      // Without a local art crop the art URL is the whole card: zoom to its art.
+      const face = String(commander.name).split(' // ')[0];
+      const wholeCard = !U.CARD_ART_PATHS?.[face] && !!U.CARD_IMAGE_PATHS?.[face];
+      const frame = node('span', 'combat-replay-portrait-frame');
+      const art = node('img', `combat-replay-portrait${wholeCard ? ' is-card' : ''}`); art.alt = ''; art.src = U.cardImageURL(commander.name, 'art');
+      art.onerror = () => { frame.remove(); avatar.prepend(node('span', 'combat-replay-initials', initials(defender.name))); };
+      frame.append(art); avatar.append(frame);
+    } else avatar.append(node('span', 'combat-replay-initials', initials(defender.name)));
     if (damage > 0) {
       // Infect still deals damage, but does not remove life. Keep the impact
       // number explicitly about damage; the step totals show life/poison.
@@ -228,14 +275,14 @@
     // Manual stepping while paused should reveal the chosen outcome, not
     // freeze new cards at the invisible start of their entrance animation.
     state.impact = state.paused || reduced(state); state.hitRemaining = state.impact ? 0 : 650;
-    state.nextRemaining = clash.blockers?.length > 2 ? 4600 : 3300;
+    state.nextRemaining = dwell(state, clash.blockers?.length > 2 ? 4600 : 3300);
     state.overlay.classList.toggle('is-reduced', reduced(state));
     state.overlay.classList.toggle('is-preview', state.paused);
     state.overlay.classList.toggle('is-paused', state.paused);
     state.title.textContent = clash.blocked ? 'Clash of creatures' : 'Direct strike';
     state.kicker.textContent = `TURN ${replay.turn ?? '—'} · COMBAT`;
     state.step.textContent = replay.step === 'first' ? 'First-strike damage' : 'Combat damage';
-    state.matchup.textContent = `${clash.attacker?.name || 'Attacker'} · ${entry.index + 1} / ${replay.clashes.length} attackers`;
+    state.matchup.textContent = `${clash.attacker?.name || 'Attacker'}${replay.clashes.length > 1 ? ` · attacker ${entry.index + 1} of ${replay.clashes.length}` : ''}`;
     state.stage = node('div', `combat-replay-stage${(clash.blockers || []).length > 1 ? ' is-multiple' : ''}${clash.blocked ? ' is-blocked' : ' is-direct'}${state.impact ? ' is-impact' : ''}`);
     state.stage.dataset.testid = 'combat-replay-clash'; state.stage.dataset.impact = String(state.impact);
     state.stage.tabIndex = 0; state.stage.setAttribute('aria-label', 'Combat cards; scroll for all blockers and results');
@@ -244,7 +291,7 @@
     attack.setAttribute('aria-label', 'Attacker'); attack.append(node('p', 'combat-replay-owner', `${replay.attackerPlayer?.name || 'Attacker'} · ATTACKING`), fighter(clash.attacker, 'attacker', state));
     const versus = node('div', 'combat-replay-versus', 'VS'); versus.setAttribute('aria-hidden', 'true');
     const defend = node('section', 'combat-replay-side combat-replay-defending'); defend.setAttribute('aria-label', 'Defenders');
-    defend.append(node('p', 'combat-replay-owner', `${clash.defender?.name || 'Defender'} · ${clash.blocked ? `${clash.blockers.length} BLOCKERS` : 'UNBLOCKED'}`));
+    defend.append(node('p', 'combat-replay-owner', `${clash.defender?.name || 'Defender'} · ${clash.blocked ? `${clash.blockers.length} BLOCKER${clash.blockers.length === 1 ? '' : 'S'}` : 'UNBLOCKED'}`));
     if (clash.blocked) {
       const blockers = node('div', 'combat-replay-blockers');
       for (const blocker of clash.blockers || []) blockers.append(fighter(blocker, 'blocker', state));
@@ -256,12 +303,16 @@
     const summary = totals(entry); if (summary) state.stage.append(summary);
     state.body.replaceChildren(state.stage);
     state.pause.textContent = state.paused ? 'Resume' : 'Pause'; state.pause.setAttribute('aria-pressed', String(state.paused));
+    // The centred window keeps the tallest height it has had, so a strike
+    // with less content (no step totals) does not make it jump.
+    const height = Number(state.dialog.offsetHeight);
+    if (height > (state.minHeight || 0)) { state.minHeight = height; state.dialog.style.minHeight = `min(${height}px, calc(100dvh - 40px))`; }
     updateProgress(state); schedule(state);
   }
   function start(ui, replays) {
     if (active) close(false);
     const all = entries(replays); if (!all.length) return;
-    const state = {ui, game: ui.game, entries: all, index: 0, paused: false, impact: false,
+    const state = {ui, game: ui.game, entries: all, index: 0, paused: false, impact: false, waits: [],
       previousFocus: document.activeElement, previousOverflow: document.body.style.overflow,
       gameRoot: document.getElementById('game')};
     active = state;
@@ -294,20 +345,42 @@
     };
     state.onFocus = event => { if (active === state && !dialog.contains(event.target)) state.skip.focus({preventScroll: true}); };
     document.addEventListener('keydown', state.onKey, true); document.addEventListener('focusin', state.onFocus, true);
-    render(state); state.skip.focus({preventScroll: true});
+    show(state); state.skip.focus({preventScroll: true});
   }
   function enqueue(ui, replay) {
     if (ui.combatAnimationEnabled === false || ui.game?._simulation || ui.accountReplay || document.hidden || !document.body.classList.contains('game-active')) return;
     if (active?.ui === ui && active.game === ui.game) {
       // Avoid an unbounded presentation backlog while AI combat advances.
       if (active.entries.length < 400) active.entries.push(...entries([replay]));
-      updateProgress(active); return;
+      if (active.ended && active.index < active.entries.length) {
+        // The regular damage step arrived during the first-strike grace.
+        clearTimers(active); active.ended = false; show(active);
+      } else updateProgress(active);
+      return;
     }
     start(ui, [replay]);
   }
   U.UI.prototype.showCombatReplay = function (replay) { if (remember(this, replay)) enqueue(this, replay); };
   U.UI.prototype.syncCombatReplays = function (replays, {autoplay = false} = {}) {
     for (const replay of replays || []) if (remember(this, replay) && autoplay) enqueue(this, replay);
+  };
+  // Solo only (main.js): the game holds each damage step until this view has
+  // shown it, so turns never run on behind the window. Live hosts publish
+  // events instead and never wait for a viewer.
+  U.UI.prototype.bindCombatReplayGate = function (game) {
+    if (!game || game._simulation || game.onlinePresentation) return;
+    game.uiHooks = game.uiHooks || {};
+    game.uiHooks.combatReplay = {
+      enabled: () => this.game === game && this.combatAnimationEnabled !== false && !this.accountReplay &&
+        !document.hidden && document.body.classList.contains('game-active'),
+      wait: replay => this.waitForCombatReplay(replay),
+    };
+  };
+  U.UI.prototype.waitForCombatReplay = function (replay) {
+    const state = active;
+    const last = state?.ui === this ? state.entries.findLastIndex(entry => entry.replay.id === replay?.id) : -1;
+    if (last < 0 || last < state.index) return Promise.resolve();
+    return new Promise(resolve => state.waits.push({last, resolve}));
   };
   U.UI.prototype.hasCombatReplay = function (game = this.game) {
     const state = history(this); return state.game === game && state.replays.length > 0;

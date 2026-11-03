@@ -9053,10 +9053,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.note('gameEffect', {kind: 'combatClash', combatStep: stepKind, count: plan.length,
         pairs: cmb.attackers.filter(a => a.zone === 'battlefield' && a.attacking !== null)
           .map(a => ({card: a, targets: a.blockedBy.filter(b => b.zone === 'battlefield'), target: a.attacking}))});
-      await this.pace(700);
+      await this.combatPace(700);
     }
     await this.damageBatch(damageHits, { combat: true, deferSBA: true, combatStep: stepKind });
-    if (plan.length) await this.pace(450 + Math.min(plan.length, 6) * 110);
+    if (plan.length) await this.combatPace(450 + Math.min(plan.length, 6) * 110);
     // Redirection may send damage assigned to a creature to a player, or
     // divide one assignment. Combat triggers use the actual recipients.
     for (const d of damageHits) for (const result of d.opts.damageResults) {
@@ -9078,6 +9078,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     await this.checkSBA();
     await this.emit('combatDamageDone', { player: p, step: stepKind });
-    await this.pace(600);
+    await this.combatPace(600);
   };
+  // Presentation pauses of a damage step on the table. When the combat replay
+  // shows the step instead (combat-replay-events.js), they are skipped.
+  G.combatPace = function (ms) { return this.pace(ms); };
 })();

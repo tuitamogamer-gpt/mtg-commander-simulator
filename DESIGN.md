@@ -43,6 +43,8 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 
 Motion explains entry, focus or state change. It does not run as ambient decoration during repeated AI renders. Honor the operating-system reduced-motion preference and the in-app `Reduced motion` setting. Cinematic commander entry always has a visible `Skip` control.
 
+The combat replay (`combat-replay.js`) presents each recorded damage step. In Solo, the game holds that step until its replay has played or been skipped (`uiHooks.combatReplay`, bound in `main.js`), so no step, trigger or turn runs on behind the window. The table's own pauses for that step (`Game.combatPace`) give way to it. The first-strike and regular steps share one window. The time after each hit follows the game speed (Fast 0.6×, Slow up to 1.6×). Live hosts, AI simulations, instant games and disabled animation never wait. Live guests still receive replays from the event stream.
+
 ## Responsive behavior
 
 - Setup on every screen is a real `Deck → Pod → Review` flow. Only the active stage occupies the screen. The deck explorer has a full-width gallery and a compact layout; the selected deck has a persistent Continue control.
