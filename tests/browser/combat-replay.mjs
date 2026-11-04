@@ -1,5 +1,7 @@
 // Real engine damage through the ordinary Solo event dispatcher, including the
-// phone Combat tab after damage has finished. Replays must never answer a choice.
+// phone Combat tab after damage has finished. Combat itself is animated on the
+// table; the replay window opens only from Replay last combat and must never
+// answer a choice.
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {existsSync, mkdirSync, writeFileSync} from 'node:fs';
@@ -129,12 +131,14 @@ async function install(scenario, width) {
   }, {scenario, width});
 }
 
-async function damage(step = 'normal', autoplay = true) {
+async function damage(step = 'normal', open = true) {
+  const before = await dialog.count();
   await page.evaluate(async step => {
     await _game.combatDamage(__combatSubject.enemy, step);
     window.__combatAfter = __combatRules();
   }, step);
-  if (autoplay) await dialog.waitFor();
+  assert.equal(await dialog.count(), before, 'Recorded combat never opens the window by itself');
+  if (open) { await page.evaluate(() => _ui.replayLastCombat()); await dialog.waitFor(); }
 }
 
 async function combatPreference(enabled) {
@@ -221,7 +225,7 @@ try {
       await replay.waitFor(); await replay.click(); await dialog.waitFor();
       await page.keyboard.press('Escape'); await dialog.waitFor({state:'hidden'});
       await unchanged();
-      check(`${width}px real mobile combat automatically opens, six blockers fit, and replay remains available in Main 1`);
+      check(`${width}px real mobile combat is recorded, six blockers fit in Replay, and Replay remains available in Main 1`);
     } else check(`${width}px desktop real combat shows multiple attackers, double-strike steps, trample and lifelink`);
   }
 
@@ -243,6 +247,7 @@ try {
   // The indestructible 0/1 already has lethal damage marked, so all six
   // points trample over in the normal step (five in the first step).
   assert.deepEqual(await page.evaluate(() => [__combatSubject.human.life,__combatSubject.enemy.life]),[29,52]);
+  await dialog.getByRole('button', {name:'Pause',exact:true}).click();
   await dialog.getByRole('button', {name:'Next strike',exact:true}).click();
   assert.equal(await dialog.getByRole('button', {name:'Resume',exact:true}).isVisible(), true, 'Stepping preserves Pause');
   assert.equal(await dialog.getByTestId('combat-replay-clash').getAttribute('data-impact'), 'true',
@@ -318,7 +323,7 @@ try {
   await layout(390); await unchanged();
   await page.screenshot({path:`${output}/mtgpod-combat-phone-face-damage.png`});
   await dialog.getByRole('button', {name:'Skip',exact:true}).click();
-  check('Re-enabling combat restores automatic playback with a readable actual face-damage impact');
+  check('Re-enabling combat keeps Replay with a readable actual face-damage impact');
   }
   assert.deepEqual(receipt.errors,[]);
 } finally {

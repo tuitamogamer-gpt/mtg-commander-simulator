@@ -9080,7 +9080,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.emit('combatDamageDone', { player: p, step: stepKind });
     await this.combatPace(600);
   };
-  // Presentation pauses of a damage step on the table. When the combat replay
-  // shows the step instead (combat-replay-events.js), they are skipped.
+  // Presentation pauses of a damage step on the table. The first one is the
+  // time live combat (action-effects.js) has to charge before damage lands.
   G.combatPace = function (ms) { return this.pace(ms); };
 })();

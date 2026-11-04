@@ -58,15 +58,8 @@
   const reduced = state => !!state.ui.reducedMotion || motion.matches || document.body.classList.contains('reduced-motion');
   const stale = state => state.ui.game !== state.game || !document.body.classList.contains('game-active');
   function clearTimers(state) {
-    clearTimeout(state.hitTimer); clearTimeout(state.nextTimer); clearTimeout(state.closeTimer);
-    state.hitTimer = state.nextTimer = state.closeTimer = null;
-  }
-  // A Solo game waits for each recorded step (bindCombatReplayGate). Release
-  // every step whose strikes have all been shown, and everything on close.
-  function release(state, all = false) {
-    const waiting = state.waits || [];
-    state.waits = all ? [] : waiting.filter(wait => wait.last >= state.index);
-    for (const wait of waiting) if (all || wait.last < state.index) wait.resolve();
+    clearTimeout(state.hitTimer); clearTimeout(state.nextTimer);
+    state.hitTimer = state.nextTimer = null;
   }
   // Seconds per strike follow the game's speed: Normal keeps the authored
   // timing, Fast shortens and Slow lengthens the time after the hit. The hit
@@ -79,7 +72,7 @@
   }
   function close(restore = true) {
     const state = active; if (!state) return;
-    active = null; clearTimers(state); release(state, true);
+    active = null; clearTimers(state);
     state.overlay.remove();
     state.gameRoot?.removeAttribute('data-combat-replay-covered');
     if (state.gameRoot) state.gameRoot.inert = state.previousInert;
@@ -109,27 +102,15 @@
     state.overlay.classList.toggle('is-paused', paused);
     state.pause.textContent = paused ? 'Resume' : 'Pause'; state.pause.setAttribute('aria-pressed', String(paused));
     updateProgress(state);
-    if (!paused && state.ended) { close(); return; }
     if (!paused) schedule(state);
   }
   function next(state) {
     if (active !== state) return;
-    if (state.ended) { close(); return; }
     clearTimers(state);
-    ++state.index;
-    release(state);
-    if (state.index >= state.entries.length) {
-      // After first-strike damage the regular step follows at once; keep the
-      // window open briefly so the two steps play as one combat.
-      const last = state.entries.at(-1)?.replay;
-      if (last?.step === 'first' && !state.paused && !stale(state) && !state.game?.gameOver) {
-        state.ended = true; state.closeTimer = setTimeout(() => { if (active === state) close(); }, 700);
-      } else close();
-      return;
-    }
+    if (++state.index >= state.entries.length) { close(); return; }
     show(state);
   }
-  // A rendering failure must never leave a waiting game behind the window.
+  // A rendering failure closes the window instead of leaving it stuck.
   function show(state) {
     try { render(state); } catch (error) { console.error(error); close(false); }
   }
@@ -312,7 +293,7 @@
   function start(ui, replays) {
     if (active) close(false);
     const all = entries(replays); if (!all.length) return;
-    const state = {ui, game: ui.game, entries: all, index: 0, paused: false, impact: false, waits: [],
+    const state = {ui, game: ui.game, entries: all, index: 0, paused: false, impact: false,
       previousFocus: document.activeElement, previousOverflow: document.body.style.overflow,
       gameRoot: document.getElementById('game')};
     active = state;
@@ -347,40 +328,11 @@
     document.addEventListener('keydown', state.onKey, true); document.addEventListener('focusin', state.onFocus, true);
     show(state); state.skip.focus({preventScroll: true});
   }
-  function enqueue(ui, replay) {
-    if (ui.combatAnimationEnabled === false || ui.game?._simulation || ui.accountReplay || document.hidden || !document.body.classList.contains('game-active')) return;
-    if (active?.ui === ui && active.game === ui.game) {
-      // Avoid an unbounded presentation backlog while AI combat advances.
-      if (active.entries.length < 400) active.entries.push(...entries([replay]));
-      if (active.ended && active.index < active.entries.length) {
-        // The regular damage step arrived during the first-strike grace.
-        clearTimers(active); active.ended = false; show(active);
-      } else updateProgress(active);
-      return;
-    }
-    start(ui, [replay]);
-  }
-  U.UI.prototype.showCombatReplay = function (replay) { if (remember(this, replay)) enqueue(this, replay); };
-  U.UI.prototype.syncCombatReplays = function (replays, {autoplay = false} = {}) {
-    for (const replay of replays || []) if (remember(this, replay) && autoplay) enqueue(this, replay);
-  };
-  // Solo only (main.js): the game holds each damage step until this view has
-  // shown it, so turns never run on behind the window. Live hosts publish
-  // events instead and never wait for a viewer.
-  U.UI.prototype.bindCombatReplayGate = function (game) {
-    if (!game || game._simulation || game.onlinePresentation) return;
-    game.uiHooks = game.uiHooks || {};
-    game.uiHooks.combatReplay = {
-      enabled: () => this.game === game && this.combatAnimationEnabled !== false && !this.accountReplay &&
-        !document.hidden && document.body.classList.contains('game-active'),
-      wait: replay => this.waitForCombatReplay(replay),
-    };
-  };
-  U.UI.prototype.waitForCombatReplay = function (replay) {
-    const state = active;
-    const last = state?.ui === this ? state.entries.findLastIndex(entry => entry.replay.id === replay?.id) : -1;
-    if (last < 0 || last < state.index) return Promise.resolve();
-    return new Promise(resolve => state.waits.push({last, resolve}));
+  // Combat is animated live on the table (action-effects.js). Recorded steps
+  // are only kept here for Replay last combat; the window never opens itself.
+  U.UI.prototype.showCombatReplay = function (replay) { remember(this, replay); };
+  U.UI.prototype.syncCombatReplays = function (replays) {
+    for (const replay of replays || []) remember(this, replay);
   };
   U.UI.prototype.hasCombatReplay = function (game = this.game) {
     const state = history(this); return state.game === game && state.replays.length > 0;

@@ -37,5 +37,12 @@
 /* Combat hits play one after another (ui.showDamageEffect): every part of a
    delayed impact, including the large-hit number punch, waits for its turn. */
 .gamefx-impact.combat > :is(span, i, strong, small) { animation-delay: var(--combat-delay, 0ms) !important; }
+/* Live combat: a copy of each charging card crosses the table to its target;
+   the real card stays in place, faded, until the copy is back. */
+.actionfx-charge { position: absolute; z-index: 2; transform-origin: center; will-change: transform; }
+.actionfx-charge > * { position: relative !important; display: block !important; width: 100% !important; height: 100% !important; margin: 0 !important; transform: none !important; overflow: hidden; border-radius: 7px; box-shadow: 0 14px 34px rgba(var(--ds-table-rgb), .7), 0 0 0 2px rgba(var(--ds-accent-bright-rgb), .9), 0 0 26px rgba(var(--ds-accent-bright-rgb), .5); }
+.actionfx-charge img { width: 100%; height: 100%; object-fit: cover; }
+.actionfx-brace { position: absolute; border: 2px solid var(--ds-spell); border-radius: 7px; box-shadow: 0 0 18px rgba(var(--ds-spell-rgb), .55), inset 0 0 12px rgba(var(--ds-spell-rgb), .3); opacity: 0; }
+#game .fx-charging { opacity: .28 !important; transition: opacity 120ms ease-out; }
 body:not(.game-active) .actionfx-layer, body.reduced-motion .actionfx-layer { display: none; }
 @media (prefers-reduced-motion: reduce) { .actionfx-layer { display: none; } }

@@ -7264,7 +7264,20 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     gameEffectPlayerAnchor(player) {
       if (!player) return null;
       const root = document.querySelector(`[data-player-id="${player.idx}"]`);
-      return root && (root.querySelector('.opplife,.melife') || root);
+      const anchor = root && (root.querySelector('.opplife,.melife') || root);
+      const shown = node => {
+        if (!node || node.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
+        const r = node.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight;
+      };
+      if (shown(anchor)) return anchor;
+      // A phone may show another view (Combat, Stack): a hidden seat would put
+      // the damage number in the corner. Use a visible stand-in for the player.
+      const standIns = [`.ct-seat[data-focus-player="${player.idx}"]`,
+        ...(player === this.me ? ['.ct-mobile-combat-life', '.ct-player-head .melife'] : []),
+        `.ct-mobile-combat-assignment[data-defender-player="${player.idx}"]`];
+      for (const selector of standIns) for (const node of document.querySelectorAll(selector)) if (shown(node)) return node;
+      return anchor;
     }
 
     gameEffectCardAnchor(card) {
@@ -7313,7 +7326,11 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       impact.style.top = `${y}px`;
       // Combat damage is one simultaneous event; its hits are shown one after
       // another so each attacker and blocker can be followed.
-      const delay = event.combat ? Math.min(660, Math.max(0, Number(event.combatIndex) || 0) * 110) : 0;
+      // While attackers charge on the table (action-effects.js) the hits land
+      // with them, closer together, and the charging copy is the motion.
+      const charging = event.combat && !!document.querySelector('.actionfx-charge');
+      const spacing = charging ? 40 : 110;
+      const delay = event.combat ? Math.min(spacing * 6, Math.max(0, Number(event.combatIndex) || 0) * spacing) : 0;
       const later = (callback, ms = 0) => setTimeout(callback, delay + ms);
       impact.style.setProperty('--combat-delay', `${delay}ms`);
       layer.appendChild(impact);
@@ -7339,7 +7356,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       });
       const sourceNode = this.gameEffectCardAnchor(event.source);
       const sourceRect = this.fxRect(sourceNode);
-      if (sourceRect) {
+      if (sourceRect && !charging) {
         const sx = sourceRect.left + sourceRect.width / 2, sy = sourceRect.top + sourceRect.height / 2;
         const dx = x - sx, dy = y - sy;
         const line = el('div', event.combat ? `gamefx-combattrail step-${event.combatStep || 'normal'}` : 'gamefx-damageline');
@@ -7350,9 +7367,11 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         layer.appendChild(line);
         if (event.combat) {
           const ghost = el('div', `gamefx-combatghost step-${event.combatStep || 'normal'}`);
-          ghost.appendChild(sourceNode.cloneNode(true));
-          ghost.style.left = `${sourceRect.left}px`; ghost.style.top = `${sourceRect.top}px`;
-          ghost.style.width = `${sourceRect.width}px`; ghost.style.height = `${sourceRect.height}px`;
+          // The phone's Combat view anchors a whole row; only its art lunges.
+          const art = sourceNode.querySelector?.('.ct-mobile-combat-art') || sourceNode, artRect = this.fxRect(art) || sourceRect;
+          ghost.appendChild(art.cloneNode(true));
+          ghost.style.left = `${artRect.left}px`; ghost.style.top = `${artRect.top}px`;
+          ghost.style.width = `${artRect.width}px`; ghost.style.height = `${artRect.height}px`;
           ghost.style.setProperty('--combat-x', `${dx * .2}px`);
           ghost.style.setProperty('--combat-y', `${dy * .2}px`);
           ghost.style.animationDelay = `${delay}ms`;

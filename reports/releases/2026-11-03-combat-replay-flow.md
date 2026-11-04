@@ -2,6 +2,8 @@
 
 Based on `7316229`, which added the combat replay (`e1c74de`) and its Combat animation setting.
 
+**Superseded on 4 November.** Combat is now animated live on the table and the replay window opens only from Replay last combat, so the game no longer waits for it; see [Live combat on the table](2026-11-04-live-combat.md). The commander portraits, wording, speed-based timing and steady window height described here remain in the replay window.
+
 ## What real games showed
 
 Two real Solo games were driven through the interface: four players with Quick Draw, at 1440×900 and on a 390×844 touch phone. Your seat answered every decision through the interface's own pending choice, as a bot would. A recorder in the page noted when each replay window opened and closed, how many strikes it held, the phases the game went through meanwhile, and any decision of yours waiting behind it. The games ran at game speed 0.3 to reach many combats; at Normal the game behind moves more slowly, but in the same way.

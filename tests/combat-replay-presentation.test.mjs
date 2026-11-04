@@ -99,14 +99,16 @@ test('joining and reconnecting hydrate Replay without automatically playing past
   assert.equal(reconnect.overlay(), null); assert.equal(reconnect.ui.hasCombatReplay(), true);
 });
 
-test('event and snapshot copies produce one ordered playback and preserve the waiting decision', () => {
+test('event and snapshot copies produce one ordered Replay and preserve the waiting decision', () => {
   const f = presentation(), pending = f.ui.pending, first = replay('first'), normal = replay('normal');
   f.arena.updateSnapshot(snapshot());
   f.arena.updateSnapshot(snapshot([first], [event(1, first)]));
-  assert.equal(f.count(), 1); assert.equal(f.step(), 'First-strike damage');
+  assert.equal(f.overlay(), null, 'combat plays on the table; the window never opens itself');
   const wire = snapshot([first, normal], [event(1, first), event(2, normal)]);
   f.arena.updateSnapshot(wire); f.arena.updateSnapshot(wire);
+  f.ui.replayLastCombat();
   assert.equal(f.count(), 2, 'the transport event and retained history share replay identity');
+  assert.equal(f.step(), 'First-strike damage');
   f.button('Next strike').click(); assert.equal(f.step(), 'Combat damage');
   f.button('Finish').click(); f.arena.updateSnapshot(wire);
   assert.equal(f.overlay(), null); assert.equal(f.ui.pending, pending); assert.equal(f.gameRoot.inert, false);
@@ -116,31 +118,33 @@ test('a dropped first-strike event is restored before the surviving normal-damag
   const f = presentation(), first = replay('first'), normal = replay('normal');
   f.arena.updateSnapshot(snapshot());
   f.arena.updateSnapshot(snapshot([first, normal], [event(30, normal)]));
+  assert.equal(f.overlay(), null);
+  f.ui.replayLastCombat();
   assert.equal(f.count(), 2);
   assert.equal(f.step(), 'First-strike damage', 'retained step order wins when the public event buffer loses first strike');
   f.button('Next strike').click(); assert.equal(f.step(), 'Combat damage'); f.button('Finish').click();
   f.arena.updateSnapshot(snapshot([first, normal], [event(31, normal)]));
-  assert.equal(f.overlay(), null, 'a newer transport record cannot replay an already seen combat step');
+  assert.equal(f.overlay(), null, 'a newer transport record never opens the window');
 });
 
 test('full event rollover recovers combat, while older event-only combat cannot replace latest Replay history', () => {
   const f = presentation(), old = replay('normal', 'combat:6:1'), first = replay('first'), normal = replay('normal');
   f.arena.updateSnapshot(snapshot());
   f.arena.updateSnapshot(snapshot([first, normal], [event(5, old)]));
-  assert.equal(f.count(), 3, 'older transport combat followed by recovered current combat appears once');
-  assert.equal(f.step(), 'Combat damage');
-  f.button('Next strike').click(); assert.equal(f.step(), 'First-strike damage');
-  f.button('Next strike').click(); assert.equal(f.step(), 'Combat damage'); f.button('Finish').click();
+  assert.equal(f.overlay(), null);
   f.ui.replayLastCombat(); assert.equal(f.count(), 2); assert.equal(f.step(), 'First-strike damage'); f.button('Skip').click();
   const onlyFallback = presentation(); onlyFallback.arena.updateSnapshot(snapshot());
   onlyFallback.arena.updateSnapshot(snapshot([first, normal]));
+  onlyFallback.ui.replayLastCombat();
   assert.equal(onlyFallback.count(), 2); assert.equal(onlyFallback.step(), 'First-strike damage');
 });
 
 test('event-only delivery is supported and changing games clears prior combat presentation', () => {
   const f = presentation(), normal = replay('normal'); f.arena.updateSnapshot(snapshot());
   const wire = snapshot([], [event(1, normal)]);
-  f.arena.updateSnapshot(wire); f.arena.updateSnapshot(wire); assert.equal(f.count(), 1);
+  f.arena.updateSnapshot(wire); f.arena.updateSnapshot(wire);
+  assert.equal(f.overlay(), null);
+  f.ui.replayLastCombat(); assert.equal(f.count(), 1);
   f.ui.game = {}; assert.equal(f.ui.hasCombatReplay(), false); assert.equal(f.overlay(), null);
   assert.equal(f.timers.size, 0); assert.equal(f.gameRoot.inert, false);
 });
@@ -167,19 +171,17 @@ test('turning off automatic combat animation keeps outcomes available for manual
   assert.equal(f.ui.pending, pending);
 });
 
-test('re-enabling combat animation plays the next combat without replaying disabled history', () => {
-  const f = presentation(), normal = replay('normal');
-  f.ui.combatAnimationEnabled = false;
+test('the Combat animation setting never opens the window; Replay stays available', () => {
+  const f = presentation();
   f.arena.updateSnapshot(snapshot());
-  const past = snapshot([normal], [event(1, normal)]);
-  f.arena.updateSnapshot(past);
-  f.ui.combatAnimationEnabled = true;
-  f.arena.updateSnapshot(past);
-  assert.equal(f.overlay(), null, 'changing the preference must not resurrect previously seen events');
-  const next = replay('normal', 'combat:8:2');
-  f.arena.updateSnapshot(snapshot([next], [event(2, next)]));
-  assert.equal(f.count(), 1);
-  assert.equal(f.ui.hasCombatReplay(), true);
+  for (const [index, enabled] of [[1, false], [2, true]]) {
+    f.ui.combatAnimationEnabled = enabled;
+    const next = replay('normal', `combat:8:${index}`);
+    f.arena.updateSnapshot(snapshot([next], [event(index, next)]));
+    assert.equal(f.overlay(), null);
+    assert.equal(f.ui.hasCombatReplay(), true);
+  }
+  f.ui.replayLastCombat(); assert.equal(f.count(), 1);
   f.button('Finish').click();
   assert.equal(f.gameRoot.inert, false);
 });
@@ -196,6 +198,7 @@ test('a shared blocker shows each clash hit once while retaining labeled damage-
   });
   f.arena.updateSnapshot(snapshot());
   f.arena.updateSnapshot(snapshot([outcome], [event(1, outcome)]));
+  f.ui.replayLastCombat();
   const visibleBlocker = () => f.overlay().querySelector('.fighter-blocker');
   assert.equal(visibleBlocker().querySelector('.combat-replay-hit').textContent, '−2');
   assert.match(visibleBlocker().querySelector('.combat-replay-stats').textContent, /5 taken this step/);
@@ -209,6 +212,7 @@ test('stepping while paused reveals the result and keeps automatic playback stop
   const f = presentation({reducedMotion: false}), first = replay('first'), normal = replay('normal');
   f.arena.updateSnapshot(snapshot());
   f.arena.updateSnapshot(snapshot([first, normal], [event(1, first), event(2, normal)]));
+  f.ui.replayLastCombat();
   f.button('Pause').click();
   assert.equal(f.timers.size, 0);
   f.button('Next strike').click();
@@ -223,57 +227,31 @@ test('stepping while paused reveals the result and keeps automatic playback stop
   assert.equal(f.gameRoot.inert, false);
 });
 
-// Solo: the game holds each damage step until its replay has played, so no
-// turn runs on behind the window (main.js binds the gate to the local game).
+// Replay last combat follows the game speed after each hit.
 function solo(speedFactor = 1.5625) {
   const f = presentation();
   f.MTG.SPEEDS = {normal: ['', 1.5625, ''], fast: ['', .9375, ''], slow: ['', 4.0625, '']};
   f.ui.game = {players: [], speedFactor};
   return f;
 }
-const settled = async promise => { let done = false; promise.then(() => { done = true; }); await new Promise(resolve => setImmediate(resolve)); return done; };
 
-test('a Solo game waits until its damage step has played, and Skip releases it', async () => {
-  const f = solo(), first = replay('normal', 'combat:7:1'), second = replay('normal', 'combat:8:1');
-  f.ui.showCombatReplay(first);
-  const waiting = f.ui.waitForCombatReplay(first);
-  assert.equal(await settled(waiting), false, 'the game waits while the strike plays');
-  f.button('Finish').click();
-  assert.equal(await settled(waiting), true);
+test('combat is animated on the table: a recorded step never opens the window by itself', () => {
+  const f = solo(), first = replay('first'), normal = replay('normal'), pending = f.ui.pending;
+  f.ui.showCombatReplay(first); f.ui.showCombatReplay(normal);
   assert.equal(f.overlay(), null);
-  f.ui.showCombatReplay(second);
-  const skipped = f.ui.waitForCombatReplay(second);
-  f.button('Skip').click();
-  assert.equal(await settled(skipped), true, 'Skip lets the game go on');
-  assert.equal(await settled(f.ui.waitForCombatReplay(replay('normal', 'combat:9:1'))), true, 'an unshown step never holds the game');
-});
-
-test('first-strike and regular damage play in one window', async () => {
-  const f = solo(), first = replay('first'), normal = replay('normal');
-  f.ui.showCombatReplay(first);
-  const firstDone = f.ui.waitForCombatReplay(first);
-  f.button('Finish').click();
-  assert.equal(await settled(firstDone), true, 'the regular step may now be dealt');
-  assert.ok(f.overlay(), 'the window stays open for the regular step');
-  f.ui.showCombatReplay(normal);
-  assert.equal(f.step(), 'Combat damage');
+  assert.equal(f.gameRoot.inert, false);
+  assert.equal(f.ui.pending, pending);
+  assert.equal(f.ui.hasCombatReplay(), true);
+  f.ui.replayLastCombat();
   assert.equal(f.count(), 2);
-  const normalDone = f.ui.waitForCombatReplay(normal);
-  assert.equal(await settled(normalDone), false);
-  f.button('Finish').click();
-  assert.equal(await settled(normalDone), true);
+  assert.equal(f.step(), 'First-strike damage');
+  f.button('Skip').click();
   assert.equal(f.overlay(), null);
-  // A first strike with no regular step closes once the short grace ends.
-  const alone = solo(), only = replay('first', 'combat:9:1');
-  alone.ui.showCombatReplay(only); alone.button('Finish').click();
-  assert.ok(alone.overlay());
-  for (const callback of [...alone.timers.values()]) callback();
-  assert.equal(alone.overlay(), null);
 });
 
 test('time after each hit follows the game speed', () => {
   const longest = f => Math.max(...[...f.delays.values()].filter(Number.isFinite));
-  const timing = speed => { const f = solo(speed); f.ui.reducedMotion = false; f.ui.showCombatReplay(replay('normal')); return longest(f); };
+  const timing = speed => { const f = solo(speed); f.ui.reducedMotion = false; f.ui.showCombatReplay(replay('normal')); f.ui.replayLastCombat(); return longest(f); };
   assert.equal(timing(1.5625), 3300, 'Normal keeps the authored timing');
   assert.ok(timing(.9375) < 3300, 'Fast is quicker');
   assert.ok(timing(4.0625) > 3300 && timing(4.0625) <= 650 + 2650 * 1.6, 'Slow is slower, within a limit');

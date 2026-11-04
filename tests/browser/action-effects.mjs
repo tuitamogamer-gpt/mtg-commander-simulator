@@ -173,14 +173,22 @@ try {
   {blockers: 2, attackers: 2, routes: 2, label: '2 BLOCKERS'});
   await harmlessLayer(); await shot('blocks-1440');
   await clean();
-  await page.evaluate(() => _ui.showActionEffect(__clash)); await frames();
-  assert.deepEqual(await page.locator('.actionfx-clash').evaluate(node => ({
+  const clashShape = () => page.locator('.actionfx-clash').evaluate(node => ({
     attackers: node.querySelectorAll('.actionfx-frame.attacker').length, blockers: node.querySelectorAll('.actionfx-frame.blocker').length,
-    collisions: node.querySelectorAll('.actionfx-collision').length, title: node.querySelector('.actionfx-banner b')?.textContent,
-    detail: node.querySelector('.actionfx-banner small')?.textContent})),
-  {attackers: 3, blockers: 2, collisions: 2, title: 'COMBAT DAMAGE', detail: '2 blocked · 1 unblocked'});
+    collisions: node.querySelectorAll('.actionfx-collision').length, charges: node.querySelectorAll('.actionfx-charge').length,
+    title: node.querySelector('.actionfx-banner b')?.textContent, detail: node.querySelector('.actionfx-banner small')?.textContent}));
+  // Live combat (the default): every attacker charges, blocked ones meet their
+  // blockers; no banner covers the table.
+  await page.evaluate(() => { _game.speedFactor = 1.5625; _ui.combatAnimationEnabled = true; _ui.showActionEffect(__clash); }); await frames();
+  assert.deepEqual(await clashShape(), {attackers: 3, blockers: 2, collisions: 2, charges: 3, title: undefined, detail: undefined});
   await harmlessLayer(); await shot('clash-1440');
   await clean();
+  // Combat animation off: the framed clash and its banner, as before.
+  await page.evaluate(() => { _ui.combatAnimationEnabled = false; _ui.showActionEffect({...__clash}); }); await frames();
+  assert.deepEqual(await clashShape(), {attackers: 3, blockers: 2, collisions: 2, charges: 0, title: 'COMBAT DAMAGE', detail: '2 blocked · 1 unblocked'});
+  await harmlessLayer();
+  await clean();
+  await page.evaluate(() => { _ui.combatAnimationEnabled = true; });
   assert.equal(await page.evaluate(() => JSON.stringify({phase: _game.phase, life: _game.players.map(p => p.life), bf: _game.battlefield.length}) === __rulesBefore), true);
   check('Blocks and the clash before combat damage frame both sides, then clean up without changing rules');
 

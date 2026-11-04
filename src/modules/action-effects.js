@@ -116,13 +116,128 @@ const label = (effect, point, title, detail, width, height) => {
     {opacity: 1, transform: 'translate(-50%, 0)', offset: .2}, {opacity: 1, offset: .7},
     {opacity: 0, transform: 'translate(-50%, -5px)'}], 760, 80);
 };
-function paint(state, event, kind) {
+// Live combat on the table: just before a damage step, every attacker charges
+// its blockers or the defending player. The engine waits 700 ms × game speed
+// before it deals the damage (engine2.js combatPace), so the charge lands as
+// the damage is dealt; the numbers, life totals and deaths then follow on the
+// table itself (ui.js showDamageEffect, zone moves). The card that moves is a
+// copy; the real card stays in place, faded, and is never touched.
+const phone = window.matchMedia('(max-width: 900px)');
+const liveCombat = ui => ui.combatAnimationEnabled !== false && Number(ui.game?.speedFactor) > 0;
+const pace = ui => Number(ui.game?.speedFactor) || 1;
+const cardElement = card => {
+  if (card?.iid == null) return null;
+  for (const el of document.querySelectorAll(`.ct-mobile-combat-card[data-iid="${card.iid}"], .mini[data-iid="${card.iid}"]`)) {
+    // In the phone's Combat view only the card's art charges, not its row.
+    const face = el.classList.contains('ct-mobile-combat-card') ? el.querySelector('.ct-mobile-combat-art') || el : el;
+    if (visible(face)) return face;
+  }
+  return null;
+};
+const playerElement = (ui, player) => {
+  if (!player) return null;
+  // In order of preference: the life total in view, then the seat.
+  // On a phone's Combat view an opponent's seat is out of view: the attacker's
+  // own "→ player" line stands for it.
+  const assignment = `.ct-mobile-combat-assignment[data-defender-player="${player.idx}"]`;
+  const selectors = player === ui.me ? ['.ct-mobile-combat-life', '.ct-player-head .melife', '.ct-player-head', '.mobileviewtab[data-view="mine"]']
+    : [`.opprow[data-player-id="${player.idx}"] .opplife`, `.ct-seat[data-focus-player="${player.idx}"]`, `.opprow[data-player-id="${player.idx}"] .opphead`, assignment];
+  for (const selector of selectors) for (const el of document.querySelectorAll(selector)) if (visible(el)) return el;
+  return null;
+};
+const chargingCards = iid => document.querySelectorAll(`.mini[data-iid="${iid}"], .ct-mobile-combat-card[data-iid="${iid}"] .ct-mobile-combat-art`);
+function charge(effect, ui, pairs, z, late = 0) {
+  // The engine's pause began when the event was sent; this paint comes a few
+  // frames later. Land just before the damage, whatever the frame rate.
+  const speed = pace(ui), approach = Math.round(Math.min(3000, Math.max(220, 700 * speed - late - 60)));
+  const hold = Math.round(150 * speed), recoil = Math.round(Math.min(900, Math.max(200, 260 * speed)));
+  let charged = 0;
+  // Which attackers charged and why others did not (inspectable in tests).
+  const record = U.lastCombatCharge = {charged: [], skipped: []};
+  for (const {card, targets = [], target} of pairs.slice(0, 10)) {
+    const source = cardElement(card);
+    const blockers = targets.map(cardElement).filter(Boolean);
+    // A blocked attacker charges only a blocker in view, never the player.
+    const destination = targets.length ? blockers[0] : cardElement(target) || playerElement(ui, target?.idx != null ? target : target?.ctrl);
+    if (!source || !destination) {
+      const mini = !source && document.querySelector(`.mini[data-iid="${card?.iid}"]`), r = mini?.getBoundingClientRect();
+      const over = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      record.skipped.push({iid: card?.iid, reason: !source ? 'attacker not in view' : targets.length ? 'blocker not in view' : 'defender not in view',
+        ...(over ? {covered: `${over.tagName}.${String(over.className).slice(0, 60)}`, rect: [r.x, r.y, r.width, r.height].map(Math.round)} : {})});
+      continue;
+    }
+    const from = source.getBoundingClientRect(), to = destination.getBoundingClientRect();
+    const dx = (to.x + to.width / 2 - from.x - from.width / 2) / z, dy = (to.y + to.height / 2 - from.y - from.height / 2) / z;
+    const distance = Math.hypot(dx, dy);
+    if (distance < 8) { record.skipped.push({iid: card.iid, reason: 'already at its target'}); continue; }
+    record.charged.push(card.iid);
+    // Stop at contact: the copy's leading edge meets the target, not its centre.
+    const reach = Math.max(0, distance - Math.min(from.height, to.height) / z * .42);
+    const ux = dx / distance, uy = dy / distance, x = ux * reach, y = uy * reach;
+    const ghost = node('actionfx-charge', effect.element);
+    ghost.dataset.iid = String(card.iid);
+    Object.assign(ghost.style, {left: `${from.x / z}px`, top: `${from.y / z}px`, width: `${from.width / z}px`, height: `${from.height / z}px`});
+    // A picture of the card, not a second control: no ids, focus or buttons.
+    const copy = source.cloneNode(true);
+    for (const el of [copy, ...copy.querySelectorAll('[id], [tabindex], [role]')]) { el.removeAttribute('id'); el.removeAttribute('tabindex'); el.removeAttribute('role'); }
+    copy.querySelectorAll('button, a[href], input, select, textarea').forEach(el => el.replaceWith(...el.childNodes));
+    ghost.append(copy);
+    source.classList.add('fx-charging');
+    effect.charging.push(card.iid);
+    const stagger = Math.min(charged++, 5) * 40;
+    // Wind up (pull back and lift), dash to contact, then a short recoil home.
+    timeline(effect, ghost, [
+      {transform: 'translate(0, 0) scale(1)', offset: 0},
+      {transform: `translate(${-ux * 10}px, ${-uy * 10}px) scale(1.08)`, offset: .25, easing: 'cubic-bezier(.45, 0, .7, .7)'},
+      {transform: `translate(${x}px, ${y}px) scale(1.1)`, offset: 1},
+    ], Math.max(120, approach - stagger), stagger, 'linear');
+    // Forwards only: a backwards fill would hold the copy at contact from the start.
+    effect.animations.push(ghost.animate([{transform: `translate(${x}px, ${y}px) scale(1.1)`}, {transform: 'translate(0, 0) scale(1)'}],
+      {duration: recoil, delay: approach + hold, easing: 'cubic-bezier(.22, .61, .36, 1)', fill: 'forwards'}));
+    const contact = {x: (from.x + from.width / 2) / z + x, y: (from.y + from.height / 2) / z + y};
+    if (blockers.length) {
+      clash(effect, contact, approach - 40);
+      for (const blocker of blockers.slice(0, 3)) {
+        // Blockers brace: a small step towards the attacker as it arrives.
+        const r = blocker.getBoundingClientRect(), bx = -ux * 10, by = -uy * 10;
+        const brace = node('actionfx-brace', effect.element);
+        Object.assign(brace.style, {left: `${r.x / z}px`, top: `${r.y / z}px`, width: `${r.width / z}px`, height: `${r.height / z}px`});
+        timeline(effect, brace, [{opacity: 0, transform: 'translate(0, 0)'}, {opacity: 1, transform: `translate(${bx}px, ${by}px)`, offset: .5},
+          {opacity: 0, transform: 'translate(0, 0)'}], approach * .7 + hold, approach * .45);
+      }
+    } else ring(effect, contact, 'meet', approach - 60);
+  }
+  return charged ? approach + hold + recoil + 80 : 0;
+}
+// A phone shows a combat in its Combat view; the view it left comes back once
+// the damage step is over, unless the player moved on in the meantime.
+let phoneCombat = null;
+function openPhoneCombat(ui) {
+  if (!phone.matches || ui.pending || ui.react) return;
+  clearTimeout(phoneCombat?.timer);
+  if (ui.mobileView !== 'combat') phoneCombat = {ui, view: ui.mobileView || 'mine'};
+  else if (phoneCombat?.ui !== ui) return;
+  ui.mobileView = 'combat'; ui.utilityDrawerOpen = false; ui.render();
+}
+function closePhoneCombat(ui, after) {
+  const entry = phoneCombat;
+  if (!entry || entry.ui !== ui) return;
+  entry.timer = setTimeout(() => {
+    if (phoneCombat !== entry) return;
+    // Still in combat (more damage steps, end of combat): look again shortly.
+    if (ui.mobileView === 'combat' && ui.game?.phase === 'combat' && !ui.game.gameOver) { closePhoneCombat(ui, 500); return; }
+    phoneCombat = null;
+    if (ui.mobileView === 'combat' && !ui.pending && !ui.react) { ui.mobileView = entry.view; ui.render(); }
+  }, after);
+}
+function paint(state, event, kind, shownAt = performance.now()) {
   if (active !== state || state.game !== state.ui.game || suppressed(state.ui)) { prune(); return; }
   const ui = state.ui, z = ui.viewportZoom(state.layer), width = innerWidth / z, height = innerHeight / z;
   if (state.effects.size >= 6) state.effects.values().next().value.remove();
   const element = node(`actionfx-${kind}`, state.layer);
-  const effect = {element, animations: [], timer: null, remove() {
+  const effect = {element, animations: [], charging: [], timer: null, remove() {
     clearTimeout(this.timer); this.animations.forEach(animation => animation.cancel()); this.element.remove(); state.effects.delete(this);
+    for (const iid of this.charging) for (const card of chargingCards(iid)) card.classList.remove('fx-charging');
     if (!state.effects.size && !state.frames.size) { state.layer.remove(); if (active === state) active = null; }
   }};
   state.effects.add(effect);
@@ -156,6 +271,8 @@ function paint(state, event, kind) {
   } else if (kind === 'clash') {
     // The moment before simultaneous combat damage: every fight is framed and
     // marked between its creatures, every unblocked attacker gathers itself.
+    // With live combat the attackers then charge (charge above).
+    const live = liveCombat(ui);
     let blocked = 0, open = 0, drawn = 0;
     for (const {card, targets = [], target} of (event.pairs || []).slice(0, 10)) {
       const attackerRect = cardRect(card), attacker = center(attackerRect, z);
@@ -165,21 +282,28 @@ function paint(state, event, kind) {
         open++;
         const defender = center(cardRect(target) || playerRect(ui, target?.idx != null ? target : target?.ctrl), z);
         if (attacker) ring(effect, attacker, 'commit', delay);
-        if (attacker && defender) route(effect, attacker, defender, delay + 120);
+        if (attacker && defender && !live) route(effect, attacker, defender, delay + 120);
         continue;
       }
       blocked++;
       for (const blocker of targets.slice(0, 3)) {
         const guardRect = cardRect(blocker), guard = center(guardRect, z);
         frame(effect, guardRect, z, 'blocker', delay + 40);
-        if (!attacker || !guard) continue;
+        if (!attacker || !guard || live) continue;
         clash(effect, {x: (attacker.x + guard.x) / 2, y: (attacker.y + guard.y) / 2}, delay + 80);
         route(effect, attacker, guard, delay);
       }
     }
     const step = event.combatStep === 'first' ? 'FIRST STRIKE' : 'COMBAT DAMAGE';
     const detail = [blocked && `${blocked} blocked`, open && `${open} unblocked`].filter(Boolean).join(' · ') || 'Damage is dealt';
-    banner(effect, {x: width / 2, y: height * .45}, event.combatStep === 'first' ? 'first-strike' : 'attack', step, detail);
+    // Live, the charge itself shows the fights; a banner would cover the seats.
+    if (!live) banner(effect, {x: width / 2, y: height * .45}, event.combatStep === 'first' ? 'first-strike' : 'attack', step, detail);
+    const length = live ? charge(effect, ui, event.pairs || [], z, performance.now() - shownAt) : 0;
+    if (length) {
+      effect.timer = setTimeout(() => effect.remove(), Math.max(1180, length));
+      closePhoneCombat(ui, length + 900);
+      return;
+    }
   } else {
     const start = center(cardRect(event.card) || playerRect(ui, player), z);
     // Review/Stack surfaces can be absent on a phone: its Stack tab is the
@@ -213,11 +337,13 @@ U.UI.prototype.showActionEffect = function(event, {replay = false} = {}) {
   const state = active;
   if (state.frames.size >= 6) return;
   seen.add(event);
+  if (kind === 'clash' && liveCombat(this)) openPhoneCombat(this);
   // Wait for the event's ordinary arena render before measuring destinations.
   const schedule = callback => {
     const id = requestAnimationFrame(() => { state.frames.delete(id); callback(); }); state.frames.add(id);
   };
-  schedule(() => { if (active === state) schedule(() => paint(state, event, kind)); });
+  const shownAt = performance.now();
+  schedule(() => { if (active === state) schedule(() => paint(state, event, kind, shownAt)); });
 };
 // A new game can replace the UI without another event arriving. Clear old
 // decorations at that render, and also when preferences change mid-effect.
@@ -225,6 +351,10 @@ const render = U.UI.prototype.render;
 U.UI.prototype.render = function(...args) {
   if (active && (active.ui !== this || active.game !== this.game || suppressed(this))) clear();
   currentUI = this;
-  return render.apply(this, args);
+  const result = render.apply(this, args);
+  // A render may replace a charging card; the new one stays faded too.
+  if (active) for (const effect of active.effects) for (const iid of effect.charging || [])
+    for (const card of chargingCards(iid)) card.classList.add('fx-charging');
+  return result;
 };
 })();

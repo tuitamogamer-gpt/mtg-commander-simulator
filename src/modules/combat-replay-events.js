@@ -103,7 +103,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       clashes, players, effects: frame.effects, damage: frame.damage});
     history.replays = freeze([...history.replays.filter(row => row.combatId === history.combatId), replay].slice(-3));
     game.note('combatReplay', {replay});
-    return replay;
   }
 
   // Runtime-only history is deliberately outside the Game object: save files,
@@ -150,19 +149,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     return gained;
   };
-  // A local Solo view presents each damage step before the game goes on: the
-  // view binds uiHooks.combatReplay (main.js). Live hosts, AI simulations,
-  // unpaced or instant games and disabled animation never wait for it.
-  G.combatReplayPresents = function () {
-    const hook = this.uiHooks?.combatReplay;
-    return !!hook && !this._simulation && !!this.paced && this.speedFactor > 0 && !this.gameOver && hook.enabled() === true;
-  };
-  // The replay shows the step, so its separate pauses on the table are skipped.
-  const combatPace = G.combatPace;
-  G.combatPace = function (ms) {
-    if (frames.get(this)?.presents) return Promise.resolve();
-    return combatPace.call(this, ms);
-  };
   const combatDamage = G.combatDamage;
   G.combatDamage = async function (player, step) {
     if (this._simulation || frames.has(this) || !this.combat || !pairsFor(this).length) return combatDamage.call(this, player, step);
@@ -173,16 +159,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         replays: history?.replays || freeze([])};
       histories.set(this, history);
     }
-    const frame = {step, player, damage: [], effects: [], died: new Set(), sawClash: false, presents: this.combatReplayPresents()};
+    const frame = {step, player, damage: [], effects: [], died: new Set(), sawClash: false};
     capture(frame, this, pairsFor(this));
     frames.set(this, frame);
     try {
       const result = await combatDamage.call(this, player, step);
       frames.delete(this);
-      const replay = finish(this, frame);
-      // The next step, triggers and decisions wait until the view has shown
-      // this step (or the player skipped it), so nothing happens behind it.
-      if (replay && frame.presents && this.combatReplayPresents()) await this.uiHooks.combatReplay.wait(replay);
+      finish(this, frame);
       return result;
     } finally { frames.delete(this); }
   };

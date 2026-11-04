@@ -188,8 +188,12 @@ export function createMobileCombat(ui, game, root, pd) {
       const blockers = (attacker.blockedBy || []).filter(blocker => blocker.zone === 'battlefield');
       const afterBlocks = ['firstStrike', 'damage', 'endCombat'].includes(game.step)
         || game.step === 'blockers' && (ui.pending?.q.type === 'priority' || ui.react?.q.type === 'priority');
+      const assignment = node('span', 'ct-mobile-combat-assignment', `→ ${defenderText(ui, attacker.attacking)}`);
+      // Live combat charges here, and damage to that player shows here, when
+      // the defending player's seat is not in this view.
+      if (attacker.attacking?.iid == null && Number.isInteger(attacker.attacking?.idx)) assignment.dataset.defenderPlayer = String(attacker.attacking.idx);
       copy.append(node('b', '', attacker.name), node('strong', '', `${attacker.power}/${attacker.toughness}`),
-        node('span', 'ct-mobile-combat-assignment', `→ ${defenderText(ui, attacker.attacking)}`),
+        assignment,
         node('small', 'ct-mobile-combat-block-status', blockers.length ? `Blocked by ${blockers.length} creature${blockers.length === 1 ? '' : 's'}`
           : attacker.wasBlocked ? 'Blocked · blocker left combat' : afterBlocks ? 'Unblocked' : 'Awaiting blocks'));
       cardDetails(ui, attacker, copy);
