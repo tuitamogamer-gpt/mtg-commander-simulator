@@ -318,6 +318,8 @@
   #game.command-table .ct-mobile-combat-unit-copy strong { font: 650 16px var(--ds-font-mono); }
   #game.command-table .ct-mobile-combat-unit-copy small { font-size: 11px; color: #b6c9d2; line-height: 1.4; }
   #game.command-table .ct-mobile-combat :is(.ct-mobile-combat-unit-copy, .ct-battle-copy) .ct-mobile-combat-damage { color: var(--ds-danger); font: 500 12px/1.4 var(--ds-font-mono); }
+  #game.command-table .ct-mobile-combat-stats { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 8px; min-width: 0; }
+  #game.command-table .ct-mobile-combat-stats > .ct-mobile-combat-damage { line-height: 1; white-space: nowrap; }
   #game.command-table .ct-mobile-combat-assignment { color: #ebbb8f; font-size: 12px; overflow-wrap: anywhere; }
   #game.command-table .ct-mobile-combat-unit:has(.ct-combat-selected) { border-color: #dfac78; }
   #game.command-table .ct-mobile-combat-card.ct-combat-selected { background: #302b23; box-shadow: none; outline: 0; }

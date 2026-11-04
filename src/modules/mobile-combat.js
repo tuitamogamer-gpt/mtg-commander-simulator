@@ -32,7 +32,15 @@ function cardDetails(ui, card, copy, showTapped = false) {
   if (damage) {
     const marked = node('small', 'ct-mobile-combat-damage', `${damage.amount} damage marked`);
     marked.title = damage.detail;
-    copy.append(marked);
+    // Beside power/toughness, on a line the row already has: damage lands
+    // while the live combat is still playing over these rows, and a new line
+    // would push every row below it away from its hit.
+    const stats = copy.querySelector(':scope > strong');
+    if (stats) {
+      const line = node('span', 'ct-mobile-combat-stats');
+      stats.replaceWith(line);
+      line.append(stats, marked);
+    } else copy.append(marked);
   }
 }
 const face = card => {

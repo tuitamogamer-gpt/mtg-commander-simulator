@@ -1,6 +1,9 @@
 // Live combat on the table: a real damage step at Normal speed. Each attacker
 // charges its blocker or the defending player and lands as the damage is
 // dealt; nothing covers or locks the table, and no replay window opens.
+// On a phone the Combat view stands in for the table: hits land on each row's
+// picture, rows keep their place while damage is marked, and a dying blocker
+// leaves as a picture toward a place that is on screen.
 // Run like the other browser suites: PLAYWRIGHT_MODULE may point to an
 // installed Playwright package; GAME_URL may select an existing preview.
 import assert from 'node:assert/strict';
@@ -62,7 +65,19 @@ function fight(page) {
     const centre = node => { const r = node.getBoundingClientRect(); return {x: r.x + r.width / 2, y: r.y + r.height / 2}; };
     const gap = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
     const t0 = performance.now(), marks = {}, near = {dragon: Infinity, bears: Infinity};
-    let running = true, inert = false, replay = false;
+    let running = true, inert = false, replay = false, ghost = null;
+    const hit = {guard: Infinity, dragon: Infinity};
+    const rows = {};
+    // The dying blocker's flight: its size and where it ends, read when it starts.
+    const watch = new MutationObserver(records => { for (const record of records) for (const added of record.addedNodes) {
+      if (ghost || !added.classList?.contains('gamefx-cardghost')) continue;
+      const r = added.getBoundingClientRect(), style = added.style;
+      const end = {x: r.x + r.width / 2 + parseFloat(style.getPropertyValue('--fx-x')), y: r.y + r.height / 2 + parseFloat(style.getPropertyValue('--fx-y'))};
+      const toward = visible('.ct-mobile-combat-life') || visible('.meinfo .zbtn[data-z="graveyard"]');
+      ghost = {width: Math.round(r.width), height: Math.round(r.height), end: {x: Math.round(end.x), y: Math.round(end.y)},
+        fromDestination: toward ? Math.round(gap(end, centre(toward))) : null};
+    } });
+    watch.observe(document.body, {childList: true, subtree: true});
     const tick = () => {
       const t = performance.now() - t0;
       const dragonCopy = document.querySelector(`.actionfx-charge[data-iid="${dragon.iid}"]`);
@@ -81,6 +96,19 @@ function fight(page) {
         if (d < near.bears) { near.bears = d; marks.bearsContact = t; }
       }
       if (marks.damage == null && human.life < 40) marks.damage = t;
+      // Each creature's hit lands on its picture.
+      const dragonFace = visible(`.ct-mobile-combat-card[data-iid="${dragon.iid}"] .ct-mobile-combat-art, .mini[data-iid="${dragon.iid}"]`);
+      for (const impact of document.querySelectorAll('.gamefx-impact.permanent')) for (const [key, face] of [['guard', guardFace], ['dragon', dragonFace]]) {
+        if (!face) continue;
+        hit[key] = Math.min(hit[key], Math.round(gap(centre(impact), centre(face))));
+      }
+      // The Bears' row must not move when the Dragon's row shows marked damage.
+      const bearsRow = visible(`.ct-mobile-combat-matchup[data-attacker-id="${bears.iid}"]`);
+      if (bearsRow && guard.zone === 'battlefield') {
+        const top = Math.round(bearsRow.getBoundingClientRect().top);
+        if (marks.charge != null && marks.damage == null) rows.before = top;
+        if (marks.damage != null && t > marks.damage + 120) rows.after = top;
+      }
       if (marks.died == null && guard.zone !== 'battlefield') marks.died = t;
       if (ui.mobileView === 'combat' && marks.combatView == null) marks.combatView = t;
       inert ||= !!document.querySelector('#game')?.inert;
@@ -93,10 +121,11 @@ function fight(page) {
     // Combat ends; a phone goes back to the view it came from.
     game.phase = 'main2'; game.step = '';
     await new Promise(resolve => setTimeout(resolve, 2600));
-    running = false;
+    running = false; watch.disconnect();
     const round = value => Number.isFinite(value) ? Math.round(value) : value;
     return {marks: Object.fromEntries(Object.entries(marks).map(([key, value]) => [key, round(value)])),
-      near: {dragon: round(near.dragon), bears: round(near.bears)}, inert, replay,
+      near: {dragon: round(near.dragon), bears: round(near.bears)}, inert, replay, hit, ghost, rows,
+      viewport: {width: innerWidth, height: innerHeight},
       life: human.life, guard: guard.zone, view: ui.mobileView,
       after: {copies: document.querySelectorAll('.actionfx-charge').length, faded: document.querySelectorAll('#game .fx-charging').length},
       replayAvailable: ui.hasCombatReplay()};
@@ -156,9 +185,18 @@ try {
     assert.equal(result.inert, false, `${label}: the table is never locked`);
     assert.deepEqual(result.after, {copies: 0, faded: 0});
     assert.equal(result.replayAvailable, true, `${label}: Replay last combat stays available`);
+    assert.ok(result.hit.guard < 12 && result.hit.dragon < 12, `${label}: each creature's hit is centred on its picture: ${JSON.stringify(result.hit)}`);
+    const {ghost, viewport} = result;
+    assert.ok(ghost, `${label}: the dying blocker leaves the table visibly`);
+    assert.ok(ghost.end.x > 24 && ghost.end.y > 24 && ghost.end.x < viewport.width && ghost.end.y < viewport.height,
+      `${label}: the dying blocker never flies to the screen's corner: ${JSON.stringify(ghost)}`);
+    assert.ok(ghost.fromDestination != null && ghost.fromDestination < 40, `${label}: it goes to the graveyard, or the life total that stands in for it: ${JSON.stringify(ghost)}`);
     if (width <= 600) {
       assert.ok(marks.combatView != null && marks.combatView < marks.charge, `${label}: the phone shows the Combat view: ${JSON.stringify(marks)}`);
       assert.equal(result.view, 'mine', `${label}: the phone returns to the view it left`);
+      assert.ok(ghost.width <= 60 && ghost.height <= 80, `${label}: only the Combat row's picture leaves, not the whole row: ${JSON.stringify(ghost)}`);
+      assert.ok(result.rows.before != null && Math.abs(result.rows.before - result.rows.after) <= 1,
+        `${label}: marked damage does not move the rows under the hits: ${JSON.stringify(result.rows)}`);
     }
     await page.screenshot({path: `${output}/${width}-after.png`});
     console.log(`PASS ${label} live combat: charge ${marks.charge}ms, contact ${marks.dragonContact}ms, damage ${marks.damage}ms`);

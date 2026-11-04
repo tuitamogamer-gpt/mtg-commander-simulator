@@ -7261,15 +7261,17 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       return { width: window.innerWidth / z, height: window.innerHeight / z };
     }
 
+    fxShown(node) {
+      if (!node || node.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
+      const r = node.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight;
+    }
+
     gameEffectPlayerAnchor(player) {
       if (!player) return null;
       const root = document.querySelector(`[data-player-id="${player.idx}"]`);
       const anchor = root && (root.querySelector('.opplife,.melife') || root);
-      const shown = node => {
-        if (!node || node.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
-        const r = node.getBoundingClientRect();
-        return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight;
-      };
+      const shown = node => this.fxShown(node);
       if (shown(anchor)) return anchor;
       // A phone may show another view (Combat, Stack): a hidden seat would put
       // the damage number in the corner. Use a visible stand-in for the player.
@@ -7293,13 +7295,22 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       }) || null;
     }
 
+    // The phone's Combat view anchors a whole row (art, name, stats). Effects
+    // that show a card use only its picture, at the picture's place and size.
+    gameEffectCardArt(node) {
+      return node?.classList?.contains('ct-mobile-combat-card') ? node.querySelector('.ct-mobile-combat-art') || node : node;
+    }
+
     gameEffectDestination(event) {
       const owner = event.toPlayer || event.card && event.card.owner;
       if (owner === this.me) {
-        if (event.toZone === 'hand') return document.querySelector('.handwrap,.handrow');
-        if (['graveyard', 'exile'].includes(event.toZone)) return document.querySelector(`.meinfo .zbtn[data-z="${event.toZone}"]`);
-        if (event.toZone === 'library') return document.querySelector('.meinfo .zbtn[data-z="library-top"]');
-        if (event.toZone === 'command') return document.querySelector('.cmdzone,.commanderzone,.meinfo');
+        const zone = event.toZone === 'hand' ? document.querySelector('.handwrap,.handrow')
+          : ['graveyard', 'exile'].includes(event.toZone) ? document.querySelector(`.meinfo .zbtn[data-z="${event.toZone}"]`)
+          : event.toZone === 'library' ? document.querySelector('.meinfo .zbtn[data-z="library-top"]')
+          : event.toZone === 'command' ? document.querySelector('.cmdzone,.commanderzone,.meinfo') : null;
+        // A phone's Combat or Stack view hides the zones: a hidden pile has
+        // no box and the card would fly to the screen's corner.
+        if (this.fxShown(zone)) return zone;
       }
       return this.gameEffectPlayerAnchor(owner) || document.querySelector('#game');
     }
@@ -7308,7 +7319,11 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const target = event.targetCard || event.targetPlayer || event.target;
       const targetNode = event.targetKind === 'player'
         ? this.gameEffectPlayerAnchor(target)
-        : this.gameEffectCardAnchor(target);
+        : this.gameEffectCardArt(this.gameEffectCardAnchor(target));
+      // A blocker scrolled out of the phone's Combat list has no place on
+      // screen; its hit is not drawn in the middle of the view. Its row
+      // shows the marked damage.
+      if (event.combat && event.targetKind !== 'player' && !targetNode) return;
       const layer = this.gameEffectLayer();
       const rect = this.fxRect(targetNode);
       const vp = this.fxViewport();
@@ -7354,7 +7369,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         targetNode.classList.add('fx-damage-target');
         setTimeout(() => targetNode.classList.remove('fx-damage-target'), 620);
       });
-      const sourceNode = this.gameEffectCardAnchor(event.source);
+      const sourceNode = this.gameEffectCardArt(this.gameEffectCardAnchor(event.source));
       const sourceRect = this.fxRect(sourceNode);
       if (sourceRect && !charging) {
         const sx = sourceRect.left + sourceRect.width / 2, sy = sourceRect.top + sourceRect.height / 2;
@@ -7368,7 +7383,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         if (event.combat) {
           const ghost = el('div', `gamefx-combatghost step-${event.combatStep || 'normal'}`);
           // The phone's Combat view anchors a whole row; only its art lunges.
-          const art = sourceNode.querySelector?.('.ct-mobile-combat-art') || sourceNode, artRect = this.fxRect(art) || sourceRect;
+          const art = this.gameEffectCardArt(sourceNode), artRect = this.fxRect(art) || sourceRect;
           ghost.appendChild(art.cloneNode(true));
           ghost.style.left = `${artRect.left}px`; ghost.style.top = `${artRect.top}px`;
           ghost.style.width = `${artRect.width}px`; ghost.style.height = `${artRect.height}px`;
@@ -7394,13 +7409,14 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     }
 
     showZoneMoveEffect(event) {
-      const sourceNode = this.gameEffectCardAnchor(event.card);
+      const sourceNode = this.gameEffectCardArt(this.gameEffectCardAnchor(event.card));
       const sourceRect = this.fxRect(sourceNode);
       if (!sourceRect) return;
       const destination = this.gameEffectDestination(event);
-      const destRect = this.fxRect(destination);
+      // Without a visible destination the card sinks where it stood.
+      const destRect = this.fxShown(destination) ? this.fxRect(destination) : null;
       const endX = destRect ? destRect.left + destRect.width / 2 : sourceRect.left + sourceRect.width / 2;
-      const endY = destRect ? destRect.top + destRect.height / 2 : -80;
+      const endY = destRect ? destRect.top + destRect.height / 2 : sourceRect.top + sourceRect.height / 2 + 48;
       const layer = this.gameEffectLayer();
       const ghost = el('div', `gamefx-cardghost to-${event.toZone || 'away'}`);
       const clone = sourceNode.cloneNode(true);

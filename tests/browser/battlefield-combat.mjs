@@ -328,7 +328,8 @@ try {
   assert.equal(await defense.getAttribute('open'), '', 'Selecting a defender opens their public creatures');
   assert.match(await defense.locator('summary').textContent(), /36 life.*3\/4 untapped creatures/);
   const angel = defense.locator(`[data-defense-card="${defenseIds.angel}"]`);
-  assert.match(await angel.textContent(), /4\/4.*flying.*vigilance.*Untapped.*2 damage marked/);
+  // Marked damage sits beside power/toughness, on a line the row already has.
+  assert.match(await angel.textContent(), /4\/4\s*2 damage marked.*flying.*vigilance.*Untapped/);
   assert.match(await card(ids.creatures[0]).textContent(), /1 damage marked/);
   assert.doesNotMatch(await page.locator('.ct-mobile-combat').textContent(), /Doom Blade/, 'Combat never includes opponent hand identities');
   await angel.tap();
@@ -346,7 +347,9 @@ try {
   await page.setViewportSize({width:390,height:844});
   await fixture(); ids = await combat('blockers');
   await page.evaluate(() => { _game.combat.attackers[0].damage = 1; _ui.render(); });
-  assert.match(await page.locator(`[data-combat-attacker="${ids.attackers[0]}"]`).textContent(), /You · 32 life.*menace.*1 damage marked/);
+  const incomingText = await page.locator(`[data-combat-attacker="${ids.attackers[0]}"]`).textContent();
+  assert.match(incomingText, /You · 32 life.*menace/);
+  assert.match(incomingText, /1 damage marked/);
   assert.match(await page.locator(`[data-combat-attacker="${ids.attackers[1]}"]`).textContent(), /vigilance/);
   check('Mobile public defender creatures, life totals, keywords and marked damage remain inspectable without losing assignments');
   await fixture(); ids = await combat('attackers');

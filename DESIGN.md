@@ -50,6 +50,8 @@ Phones have a small graphics memory budget, and an iPhone tab that runs out is c
 
 Combat is animated live on the table (`action-effects.js`, the `clash` effect). Just before a damage step, every attacker charges its blocker, or the defending player's life total when unblocked. It lands as the damage is dealt, because the engine's pause before damage (`Game.combatPace(700)`, scaled by game speed) is the charge's duration, less the frames it took to paint. The copy that moves is a clone in the effect layer; the real card stays in place, faded (`fx-charging`, kept across renders), and nothing is ever covered or made inert. A blocked attacker charges only a blocker in view. On a phone, the Combat view opens for the step, unless a decision is open, and gives way to the previous view when combat ends. Combat animation off, reduced motion and instant games keep the table still. The replay window (`combat-replay.js`) opens only from Replay last combat.
 
+On a phone's Combat view, an effect that shows a card uses the row's picture, at its place and size (`gameEffectCardArt`): hits land on the picture, and a creature that dies leaves as its picture. A row keeps its height when damage is marked; the amount sits beside power and toughness. A hit on a row scrolled out of view is not drawn. A card leaving for a zone that is not on screen flies to its owner's visible life total, or sinks where it stood, never to a corner.
+
 ## Responsive behavior
 
 - Setup on every screen is a real `Deck → Pod → Review` flow. Only the active stage occupies the screen. The deck explorer has a full-width gallery and a compact layout; the selected deck has a persistent Continue control.
