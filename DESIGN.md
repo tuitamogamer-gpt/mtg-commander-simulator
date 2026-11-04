@@ -43,6 +43,11 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 
 Motion explains entry, focus or state change. It does not run as ambient decoration during repeated AI renders. Honor the operating-system reduced-motion preference and the in-app `Reduced motion` setting. Cinematic commander entry always has a visible `Skip` control.
 
+Phones have a small graphics memory budget, and an iPhone tab that runs out is closed by Safari. At device pixel ratio 3, measure an effect's layers (Chrome DevTools: Layers, or `LayerTree` over CDP) before adding it. Rules that follow from it:
+- On phones, avoid large blurred elements, `backdrop-filter` on full-screen surfaces, full-page `mix-blend-mode` and transforms of the whole table.
+- A closed drawer is `visibility: hidden`, not only translated away.
+- Restoring a saved table draws no effects of the replayed actions (`main.js`, `restoring`).
+
 Combat is animated live on the table (`action-effects.js`, the `clash` effect). Just before a damage step, every attacker charges its blocker, or the defending player's life total when unblocked. It lands as the damage is dealt, because the engine's pause before damage (`Game.combatPace(700)`, scaled by game speed) is the charge's duration, less the frames it took to paint. The copy that moves is a clone in the effect layer; the real card stays in place, faded (`fx-charging`, kept across renders), and nothing is ever covered or made inert. A blocked attacker charges only a blocker in view. On a phone, the Combat view opens for the step, unless a decision is open, and gives way to the previous view when combat ends. Combat animation off, reduced motion and instant games keep the table still. The replay window (`combat-replay.js`) opens only from Replay last combat.
 
 ## Responsive behavior

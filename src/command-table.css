@@ -283,6 +283,14 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
 #game.command-table .utilitybutton { flex: 1; min-height: 46px; width: auto; padding: 5px; }
 #game.command-table .utilitylabel { font-size: 10px !important; letter-spacing: .03em !important; }
 #game.command-table .sidebar { z-index: 80 !important; width: min(400px, calc(100 * var(--vwu) - 20px)) !important; }
+/* A closed drawer only slid off screen, still painted with its backdrop blur:
+   a layer larger than a phone screen (23 MB at device pixel ratio 3) held all
+   game long. Closed, it is hidden after its slide; it then neither paints nor
+   reaches the keyboard or a screen reader. The Stack view shows it in place. */
+#game.command-table:not(.sidebar-open):not([data-mobile-view='stack']) .sidebar {
+  visibility: hidden; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  transition: transform .24s ease, visibility 0s linear .24s;
+}
 #game.command-table .systemstatus { position: absolute; z-index: 90; top: 62px; left: 12px; right: 12px; }
 #game.command-table > .overlay { z-index: 140; }
 

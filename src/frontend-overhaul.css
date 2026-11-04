@@ -1216,6 +1216,15 @@ body.game-active #game .sheet,
 }
 body.reduced-motion #game.fx-hit-big, body.reduced-motion #game.fx-hit-huge, body.reduced-motion #game.fx-boardwipe-camera { animation: none !important; }
 body.reduced-motion .gamefx-vignette, body.reduced-motion .gamefx-flash, body.reduced-motion .gamefx-shock i { display: none !important; }
+/* Phones have a small graphics memory budget. At device pixel ratio 3 a board
+   wipe added about 100 MB of layers at once: the blurred cloud alone (170% of
+   the screen, filter: blur) took 47 MB, and the camera shake turned the whole
+   table into one more full-screen layer. A phone keeps the flash, shockwaves,
+   rune and title, and the falling cards, without those two. */
+@media (max-width: 900px) {
+  .gamefx-wipecloud { display: none; }
+  #game.fx-boardwipe-camera, #game.fx-hit-big, #game.fx-hit-huge { animation: none !important; }
+}
 
 /* ============================================================
    Obsidian & ember refresh (2026-09-02, v2).
@@ -1237,6 +1246,9 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
 }
+/* The 5.5% grain is not visible on a small high-density screen, but blending
+   it over the whole page kept one more full-screen layer on every frame. */
+@media (max-width: 900px) { body::after { content: none; } }
 #setup[data-app-view="home"] {
   background:
     radial-gradient(60% 42% at 82% -6%, rgba(var(--ds-accent-rgb), .16), transparent 70%),

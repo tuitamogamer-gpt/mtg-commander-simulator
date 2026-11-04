@@ -2556,15 +2556,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       onEvent: (e) => {
         if (state.onlineBridge) { liveArena?.publishEvent(e); queueOnlineSync(); return; }
-        MTG.audio?.handle(e, gameRef, { replay: replayingSave || !!ui.accountReplay });
-        ui.showActionEffect?.(e, { replay: replayingSave || !!ui.accountReplay });
-        if (e.type === 'combatReplay' && !replayingSave && !ui.accountReplay) ui.showCombatReplay?.(e.replay);
-        if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
-        if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
-        if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
-        if (e.type === 'gameEffect') ui.showGameEffect(e);
-        if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
-        if (e.type === 'monarchChanged') ui.showMonarchChange(e);
+        // Resuming a saved table replays every action since the checkpoint at
+        // once. Drawing their effects then started them all together (board
+        // wipes, arrivals, hits, banners), enough to run a phone out of memory
+        // right after it had crashed. The restored board is the result.
+        const restoring = replayingSave || !!ui.accountReplay;
+        MTG.audio?.handle(e, gameRef, { replay: restoring });
+        ui.showActionEffect?.(e, { replay: restoring });
+        if (e.type === 'combatReplay' && !restoring) ui.showCombatReplay?.(e.replay);
+        if (!restoring) {
+          if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
+          if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
+          if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
+          if (e.type === 'gameEffect') ui.showGameEffect(e);
+          if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
+          if (e.type === 'monarchChanged') ui.showMonarchChange(e);
+        }
         if (e.type === 'diplomacy' && e.text) {
           ui.showDiplomacyEvent(e);
           if (e.proposal && e.proposal.status === 'pending-human' && e.proposal.toId === ui.me?.idx) {
@@ -2572,7 +2579,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ui.utilityDrawerOpen = true;
           }
         }
-        const signatureReaction = gameRef && MTG.signatureReactionForEvent && MTG.signatureReactionForEvent(gameRef, e);
+        const signatureReaction = !restoring && gameRef && MTG.signatureReactionForEvent && MTG.signatureReactionForEvent(gameRef, e);
         if (signatureReaction) ui.showPersonaReaction(signatureReaction);
         if (e.type === 'gameover') completeAccountMatch();
         ui.queueRender();

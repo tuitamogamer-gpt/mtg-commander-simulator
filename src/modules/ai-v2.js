@@ -6119,6 +6119,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (best <= 0) breakdown.timing -= 100;
         else breakdown.combat += best * 0.3;
       }
+      // "X is the number of attacking creatures" / "for each attacking creature"
+      // (Galadhrim Ambush, Collective Override): with nothing attacking the
+      // spell does nothing, so it waits for a combat. A spell that also
+      // prevents the combat damage of creatures without a type (Galadhrim
+      // Ambush: non-Elf) is not cast on the bot's own attack of such creatures.
+      const castOracle = String(card.def.oracle || '');
+      if (/where x is the number of attacking creatures|for each attacking creature/i.test(castOracle)) {
+        const attacking = game.phase === 'combat' ? (game.combat?.attackers || []).filter(c => c.zone === 'battlefield' && c.attacking != null) : [];
+        const exempt = castOracle.match(/prevent all combat damage that would be dealt this turn by non-([a-z]+) creatures/i)?.[1];
+        if (!attacking.length) breakdown.timing -= 100;
+        else if (exempt && attacking.some(c => c.ctrl === player && !c.hasSub(exempt[0].toUpperCase() + exempt.slice(1).toLowerCase()))) breakdown.timing -= 100;
+      }
       // A delayed blink cast once the end step has begun (an instant at an
       // opponent's end step) keeps its permanents out for the next turn. It
       // is cast there only to save one of them (see delayedBlinkValue).
