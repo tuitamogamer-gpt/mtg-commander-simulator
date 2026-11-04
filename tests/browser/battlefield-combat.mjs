@@ -426,12 +426,16 @@ try {
   await shot('mobile-declared-blockers');
   await page.evaluate(() => {
     const attacker = _game.combat.attackers[0];
+    window.__goneBlockers = attacker.blockedBy.slice();
     for (const blocker of attacker.blockedBy) blocker.zone = 'graveyard';
     attacker.blockedBy = [];
     _ui.render();
   });
   assert.equal(await matchup.locator('.ct-mobile-combat-blocker').count(), 0, 'Cards that left combat are not shown as active blockers');
-  assert.match(await matchup.locator('.ct-mobile-combat-block-status').textContent(), /Blocked · blocker left combat/);
+  // Blockers that died are named as such; any other way out of combat is "left combat".
+  assert.match(await matchup.locator('.ct-mobile-combat-block-status').textContent(), /^Blocked · blockers died$/);
+  await page.evaluate(() => { window.__goneBlockers[0].zone = 'exile'; _ui.render(); });
+  assert.match(await matchup.locator('.ct-mobile-combat-block-status').textContent(), /^Blocked · blocker left combat$/);
   check('Mobile attacker-first defense, separate inspect/remove controls and declared blocker artwork during responses');
   await fixture(); await combat('combatReview');
   await page.locator('[data-combat-attacker]').first().tap();

@@ -212,22 +212,36 @@ function charge(effect, ui, pairs, z, late = 0) {
 // A phone shows a combat in its Combat view; the view it left comes back once
 // the damage step is over, unless the player moved on in the meantime.
 let phoneCombat = null;
+// The view fades in and out rather than cutting. Opacity only: the charge
+// measures the cards' places while the view appears.
+const combatPane = () => document.querySelector("#game[data-mobile-view='combat'] .ct-mobile-combat");
 function openPhoneCombat(ui) {
   if (!phone.matches || ui.pending || ui.react) return;
   clearTimeout(phoneCombat?.timer);
-  if (ui.mobileView !== 'combat') phoneCombat = {ui, view: ui.mobileView || 'mine'};
+  const switching = ui.mobileView !== 'combat';
+  if (switching) phoneCombat = {ui, view: ui.mobileView || 'mine'};
   else if (phoneCombat?.ui !== ui) return;
   ui.mobileView = 'combat'; ui.utilityDrawerOpen = false; ui.render();
+  if (switching) combatPane()?.animate([{opacity: 0}, {opacity: 1}], {duration: 180, easing: 'ease-out'});
 }
 function closePhoneCombat(ui, after) {
   const entry = phoneCombat;
   if (!entry || entry.ui !== ui) return;
+  const leave = () => {
+    if (phoneCombat !== entry) return;
+    phoneCombat = null;
+    if (ui.mobileView === 'combat' && !ui.pending && !ui.react) { ui.mobileView = entry.view; ui.render(); }
+  };
   entry.timer = setTimeout(() => {
     if (phoneCombat !== entry) return;
     // Still in combat (more damage steps, end of combat): look again shortly.
     if (ui.mobileView === 'combat' && ui.game?.phase === 'combat' && !ui.game.gameOver) { closePhoneCombat(ui, 500); return; }
-    phoneCombat = null;
-    if (ui.mobileView === 'combat' && !ui.pending && !ui.react) { ui.mobileView = entry.view; ui.render(); }
+    const pane = ui.mobileView === 'combat' && !ui.pending && !ui.react && !suppressed(ui) && combatPane();
+    if (!pane) { leave(); return; }
+    // leave() checks again: a decision that opened during the fade keeps the
+    // Combat view, and cancelling the fade shows it fully again.
+    const fade = pane.animate([{opacity: 1}, {opacity: 0}], {duration: 160, easing: 'ease-in', fill: 'forwards'});
+    fade.onfinish = () => { leave(); fade.cancel(); };
   }, after);
 }
 function paint(state, event, kind, shownAt = performance.now()) {

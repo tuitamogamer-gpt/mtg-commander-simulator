@@ -7331,14 +7331,6 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const y = rect ? rect.top + rect.height / 2 : vp.height / 2;
       const combatStep = event.combatStep === 'first' ? 'FIRST STRIKE' : 'COMBAT';
       const amount = Math.max(0, Number(event.amount) || 0);
-      // Impact tiers scale the number, the ring and the camera with the hit.
-      // A blow that empties a life total is announced as lethal.
-      const tier = amount >= 10 ? 'huge' : amount >= 5 ? 'big' : amount >= 3 ? 'mid' : 'low';
-      const lethal = event.targetKind === 'player' && target && typeof target.life === 'number' && target.life <= 0 && amount > 0;
-      const impact = el('div', `gamefx-impact ${event.targetKind || 'permanent'}${event.combat ? ' combat' : ''} tier-${tier}${lethal ? ' lethal' : ''}`,
-        `<i></i><i></i><i></i><span></span><strong>−${amount}</strong><small>${lethal ? 'LETHAL' : event.combat ? combatStep : 'DAMAGE'}</small>`);
-      impact.style.left = `${x}px`;
-      impact.style.top = `${y}px`;
       // Combat damage is one simultaneous event; its hits are shown one after
       // another so each attacker and blocker can be followed.
       // While attackers charge on the table (action-effects.js) the hits land
@@ -7347,6 +7339,28 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const spacing = charging ? 40 : 110;
       const delay = event.combat ? Math.min(spacing * 6, Math.max(0, Number(event.combatIndex) || 0) * spacing) : 0;
       const later = (callback, ms = 0) => setTimeout(callback, delay + ms);
+      // Several hits on one player land close together: fan their numbers out
+      // around the life total instead of stacking them on one spot.
+      let fan = 0;
+      if (event.targetKind === 'player' && target) {
+        const at = performance.now() + delay, last = (this.playerHitFan ||= new Map()).get(target.idx);
+        fan = last && Math.abs(at - last.at) < 700 ? last.n + 1 : 0;
+        this.playerHitFan.set(target.idx, {at, n: fan});
+        if (amount > 0) {
+          const hit = (this.lifeHits ||= new Map()).get(target.idx);
+          this.lifeHits.set(target.idx, {at, amount: hit && at - hit.at < 1200 ? hit.amount + amount : amount});
+        }
+      }
+      const [fanX, fanY] = [[0, 0], [-34, 8], [34, 8], [-17, 26], [17, 26]][fan % 5];
+      const hitX = Math.max(36, Math.min(vp.width - 36, x + fanX)), hitY = y + fanY;
+      // Impact tiers scale the number, the ring and the camera with the hit.
+      // A blow that empties a life total is announced as lethal.
+      const tier = amount >= 10 ? 'huge' : amount >= 5 ? 'big' : amount >= 3 ? 'mid' : 'low';
+      const lethal = event.targetKind === 'player' && target && typeof target.life === 'number' && target.life <= 0 && amount > 0;
+      const impact = el('div', `gamefx-impact ${event.targetKind || 'permanent'}${event.combat ? ' combat' : ''} tier-${tier}${lethal ? ' lethal' : ''}`,
+        `<i></i><i></i><i></i><span></span><strong>−${amount}</strong><small>${lethal ? 'LETHAL' : event.combat ? combatStep : 'DAMAGE'}</small>`);
+      impact.style.left = `${hitX}px`;
+      impact.style.top = `${hitY}px`;
       impact.style.setProperty('--combat-delay', `${delay}ms`);
       layer.appendChild(impact);
       if (tier === 'big' || tier === 'huge' || lethal) {
@@ -7363,7 +7377,17 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
           setTimeout(() => veil.remove(), lethal ? 1100 : 780);
         });
       }
-      if (targetNode) later(() => {
+      // The phone's Combat view rebuilds its life line on each render; the hit
+      // is marked there by markLifeHit, at this render and the next ones.
+      const combatLife = targetNode?.classList.contains('ct-mobile-combat-life');
+      if (combatLife) later(() => {
+        const node = document.querySelector('.ct-mobile-combat-life');
+        if (!node) return;
+        node.classList.remove('fx-life-hit'); node.querySelector('.fx-life-delta')?.remove();
+        void node.offsetWidth;
+        this.markLifeHit(node, target);
+      });
+      else if (targetNode) later(() => {
         targetNode.classList.remove('fx-damage-target');
         void targetNode.offsetWidth;
         targetNode.classList.add('fx-damage-target');
@@ -7408,6 +7432,21 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       later(() => { if (layer && !layer.children.length) layer.remove(); }, 1020);
     }
 
+    // A player's recent combat hit, kept across renders: the life total flashes
+    // and shows what it lost. Damage then shows on the number itself.
+    markLifeHit(node, player) {
+      const hit = player && this.lifeHits?.get(player.idx);
+      if (!node || !hit || this.reducedMotion || document.body.classList.contains('reduced-motion')) return;
+      const elapsed = performance.now() - hit.at;
+      if (elapsed > 900 || elapsed < -1500) return;
+      node.classList.add('fx-life-hit');
+      node.style.animationDelay = `${-elapsed}ms`;
+      const delta = el('b', 'fx-life-delta', `−${hit.amount}`);
+      delta.setAttribute('aria-hidden', 'true');
+      delta.style.animationDelay = `${-elapsed}ms`;
+      node.append(delta);
+    }
+
     showZoneMoveEffect(event) {
       const sourceNode = this.gameEffectCardArt(this.gameEffectCardAnchor(event.card));
       const sourceRect = this.fxRect(sourceNode);
@@ -7427,9 +7466,14 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       ghost.style.setProperty('--fx-x', `${endX - sourceRect.left - sourceRect.width / 2}px`);
       ghost.style.setProperty('--fx-y', `${endY - sourceRect.top - sourceRect.height / 2}px`);
       const zoneLabels = { hand: 'RETURN TO HAND', graveyard: 'GRAVEYARD', exile: 'EXILE', command: 'COMMAND ZONE', library: 'LIBRARY' };
-      const badge = el('div', `gamefx-zonebadge to-${event.toZone || 'away'}`, zoneLabels[event.toZone] || 'LEAVES PLAY');
+      // In the phone's Combat view the row is gone at once and the next row
+      // slides into its place: the label leaves with the card, not over it.
+      const travel = sourceNode.classList.contains('ct-mobile-combat-art');
+      const badge = el('div', `gamefx-zonebadge to-${event.toZone || 'away'}${travel ? ' travel' : ''}`, zoneLabels[event.toZone] || 'LEAVES PLAY');
       badge.style.left = `${sourceRect.left + sourceRect.width / 2}px`;
       badge.style.top = `${sourceRect.top + sourceRect.height / 2}px`;
+      badge.style.setProperty('--fx-x', `${endX - sourceRect.left - sourceRect.width / 2}px`);
+      badge.style.setProperty('--fx-y', `${endY - sourceRect.top - sourceRect.height / 2}px`);
       layer.appendChild(ghost); layer.appendChild(badge);
       sourceNode.classList.add('fx-zone-leaving');
       setTimeout(() => sourceNode.classList.remove('fx-zone-leaving'), 500);

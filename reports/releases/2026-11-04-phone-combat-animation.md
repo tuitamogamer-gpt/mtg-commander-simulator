@@ -51,3 +51,51 @@ The desktop is unchanged, except in one case: if the destination pile is missing
   - `command-table`
   - `stable-table-ui`
 - **Node tests:** the 14 files that use the game effects or the phone views pass 184 of 190. The six failures are in `responsive-client-v3.test.mjs`. They fail the same way on `22caa59`.
+
+## Second pass
+
+Based on `994143e`. Request: one more round of polish. The same four combats were filmed again, and five rough spots remained on the phone.
+
+### What was wrong
+
+- **Rows jumped when a creature died.** A dead blocker's row disappeared, and every row below it jumped up about 60 px at once.
+- **The "Graveyard" label stayed behind.** It stayed where the dead blocker had been. The next row moved under it, so the label seemed to name the wrong creature.
+- **"Blocked · blocker left combat" for a blocker that died.** The engine forgets a blocker once it leaves the battlefield, so the row could not say why it was gone.
+- **Your life total in the Combat view did not react to a hit.** The flash was set on the life line, but the view is rebuilt as soon as life changes, so the flash was lost at once.
+- **Hits on one player piled up.** Five unblocked attackers put five numbers and rings on the same spot.
+
+The switch to and from the Combat view was also a hard cut.
+
+### Changes
+
+- **Rows slide** to their new places, in 280 ms, when a row leaves the list. Places are kept in the list's own coordinates, so scrolling is not mistaken for a move. A slide cut short by a new render continues from where the row was. With reduced motion, rows do not slide.
+- **The zone label travels with the card** toward where it goes, in the Combat view. The desktop is unchanged.
+- **The attacker's row says "Blocked · blocker died"** (or "blockers died") when its blockers went to the graveyard. It keeps "blocker left combat" for other cases, such as exile, a bounce, or removal from combat. The blockers seen this turn are remembered for this.
+- **Your life line flashes red and shows the total lost**, such as "−10", for about a second. It stays marked across renders, timed from the hit.
+- **Hits on one player fan out** around the life total: centre, then left, right and below.
+- **The Combat view fades in** when live combat opens it, and **fades out** before the previous view returns. It uses opacity only, so the charge still measures the cards' places correctly. A decision that opens during the fade keeps the Combat view.
+
+### Verification
+
+- **`tests/browser/live-combat.mjs` has five new phone checks:**
+  - the rows below the dead blocker slide;
+  - the attacker's row reads "Blocked · blocker died";
+  - your life line shows "−2";
+  - the zone label travels;
+  - two quick hits on one player land at least 24 px apart.
+
+  On `994143e` the first of these fails: `{"slid":false,"lifeHit":null,"badge":false,"status":"Blocked · blocker left combat"}`.
+- **`tests/browser/battlefield-combat.mjs`** now expects "Blocked · blockers died" when both blockers went to the graveyard. When one of them was exiled instead, it expects "blocker left combat".
+- **Browser suites pass:**
+  - `live-combat`
+  - `battlefield-combat`
+  - `phone-memory`
+  - `action-effects`
+  - `mobile-table-view`
+  - `phone-table-polish`
+  - `resolution-recap`
+  - `combat-replay`
+  - `command-table`
+  - `stable-table-ui`
+  - `interaction-continuity`
+- **Node tests:** the same 14 files pass 184 of 190. The six failures are the same ones in `responsive-client-v3.test.mjs`.

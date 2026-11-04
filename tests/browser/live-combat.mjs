@@ -3,7 +3,8 @@
 // dealt; nothing covers or locks the table, and no replay window opens.
 // On a phone the Combat view stands in for the table: hits land on each row's
 // picture, rows keep their place while damage is marked, and a dying blocker
-// leaves as a picture toward a place that is on screen.
+// leaves as a picture toward a place that is on screen. The rows below it
+// slide up, its attacker's row says it died, and the life total shows a hit.
 // Run like the other browser suites: PLAYWRIGHT_MODULE may point to an
 // installed Playwright package; GAME_URL may select an existing preview.
 import assert from 'node:assert/strict';
@@ -67,9 +68,10 @@ function fight(page) {
     const t0 = performance.now(), marks = {}, near = {dragon: Infinity, bears: Infinity};
     let running = true, inert = false, replay = false, ghost = null;
     const hit = {guard: Infinity, dragon: Infinity};
-    const rows = {};
+    const rows = {}, seen = {slid: false, lifeHit: null, badge: null, status: null};
     // The dying blocker's flight: its size and where it ends, read when it starts.
     const watch = new MutationObserver(records => { for (const record of records) for (const added of record.addedNodes) {
+      if (added.classList?.contains('gamefx-zonebadge') && seen.badge == null) seen.badge = added.classList.contains('travel');
       if (ghost || !added.classList?.contains('gamefx-cardghost')) continue;
       const r = added.getBoundingClientRect(), style = added.style;
       const end = {x: r.x + r.width / 2 + parseFloat(style.getPropertyValue('--fx-x')), y: r.y + r.height / 2 + parseFloat(style.getPropertyValue('--fx-y'))};
@@ -110,6 +112,14 @@ function fight(page) {
         if (marks.damage != null && t > marks.damage + 120) rows.after = top;
       }
       if (marks.died == null && guard.zone !== 'battlefield') marks.died = t;
+      // On a phone: the rows below a dead blocker slide up, the life total
+      // shows its hit, and the attacker's row says what became of its blocker.
+      const liveBears = document.querySelector(`.ct-mobile-combat-matchup[data-attacker-id="${bears.iid}"]`);
+      if (marks.died != null && liveBears?.getAnimations().length) seen.slid = true;
+      const lifeHit = document.querySelector('.ct-mobile-combat-life.fx-life-hit .fx-life-delta');
+      if (lifeHit && !seen.lifeHit) seen.lifeHit = lifeHit.textContent;
+      const status = document.querySelector(`.ct-mobile-combat-matchup[data-attacker-id="${dragon.iid}"] .ct-mobile-combat-block-status`);
+      if (marks.died != null && status) seen.status = status.textContent;
       if (ui.mobileView === 'combat' && marks.combatView == null) marks.combatView = t;
       inert ||= !!document.querySelector('#game')?.inert;
       replay ||= !!document.querySelector('.combat-replay-overlay');
@@ -124,7 +134,7 @@ function fight(page) {
     running = false; watch.disconnect();
     const round = value => Number.isFinite(value) ? Math.round(value) : value;
     return {marks: Object.fromEntries(Object.entries(marks).map(([key, value]) => [key, round(value)])),
-      near: {dragon: round(near.dragon), bears: round(near.bears)}, inert, replay, hit, ghost, rows,
+      near: {dragon: round(near.dragon), bears: round(near.bears)}, inert, replay, hit, ghost, rows, seen,
       viewport: {width: innerWidth, height: innerHeight},
       life: human.life, guard: guard.zone, view: ui.mobileView,
       after: {copies: document.querySelectorAll('.actionfx-charge').length, faded: document.querySelectorAll('#game .fx-charging').length},
@@ -197,6 +207,21 @@ try {
       assert.ok(ghost.width <= 60 && ghost.height <= 80, `${label}: only the Combat row's picture leaves, not the whole row: ${JSON.stringify(ghost)}`);
       assert.ok(result.rows.before != null && Math.abs(result.rows.before - result.rows.after) <= 1,
         `${label}: marked damage does not move the rows under the hits: ${JSON.stringify(result.rows)}`);
+      assert.equal(result.seen.slid, true, `${label}: the rows below the dead blocker slide up: ${JSON.stringify(result.seen)}`);
+      assert.equal(result.seen.status, 'Blocked · blocker died', `${label}: the attacker's row says its blocker died`);
+      assert.equal(result.seen.lifeHit, '−2', `${label}: your life total shows the hit: ${JSON.stringify(result.seen)}`);
+      assert.equal(result.seen.badge, true, `${label}: the zone label leaves with the card`);
+      // Two hits on one player in quick succession do not stack on one spot.
+      const fan = await page.evaluate(() => {
+        _ui.mobileView = 'combat'; _game.phase = 'combat'; _game.step = 'damage'; _ui.render();
+        for (const index of [0, 1]) _ui.showDamageEffect({kind: 'damage', targetKind: 'player', target: _ui.me, targetPlayer: _ui.me, amount: 1, combat: true, combatIndex: index});
+        const shown = [...document.querySelectorAll('.gamefx-impact.player')].slice(-2);
+        const hits = shown.map(hit => [parseFloat(hit.style.left), parseFloat(hit.style.top)]);
+        shown.forEach(hit => hit.remove());
+        _game.phase = 'main2'; _game.step = ''; _ui.mobileView = 'mine'; _ui.render();
+        return hits;
+      });
+      assert.ok(fan.length === 2 && Math.hypot(fan[0][0] - fan[1][0], fan[0][1] - fan[1][1]) >= 24, `${label}: hits on one player fan out: ${JSON.stringify(fan)}`);
     }
     await page.screenshot({path: `${output}/${width}-after.png`});
     console.log(`PASS ${label} live combat: charge ${marks.charge}ms, contact ${marks.dragonContact}ms, damage ${marks.damage}ms`);

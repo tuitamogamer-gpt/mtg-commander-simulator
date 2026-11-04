@@ -281,7 +281,7 @@
   }
   #game.command-table .ct-mobile-combat-head { flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; padding: 10px 12px 8px; }
   #game.command-table .ct-mobile-combat-head > .ct-combat-instruction { flex-basis: 100%; }
-  #game.command-table .ct-mobile-combat-life { margin-left: auto; color: var(--ds-copy); font: 500 12px var(--ds-font-mono); }
+  #game.command-table .ct-mobile-combat-life { position: relative; margin-left: auto; color: var(--ds-copy); font: 500 12px var(--ds-font-mono); }
   #game.command-table .ct-mobile-combat-head h2 { margin: 0 0 5px; font: 650 18px var(--ds-font-body); color: #f5deca; }
   #game.command-table .ct-mobile-combat .ct-combat-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
   #game.command-table .ct-mobile-combat .ct-combat-copy b { font-size: 13px; }

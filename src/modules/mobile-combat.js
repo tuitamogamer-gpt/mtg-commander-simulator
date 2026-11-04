@@ -49,6 +49,57 @@ const face = card => {
   return art;
 };
 
+// The blockers each attacker had this turn. The engine forgets a blocker once
+// it leaves the battlefield; the row still says what became of it.
+const seenBlockers = new WeakMap();
+function blockerMemory(game) {
+  let memory = seenBlockers.get(game);
+  if (!memory || memory.turn !== game.turnNo) seenBlockers.set(game, memory = {turn: game.turnNo, byAttacker: new Map()});
+  return memory.byAttacker;
+}
+function rememberBlockers(game, attacker, blockers) {
+  const memory = blockerMemory(game), known = memory.get(attacker.iid) || new Set();
+  for (const blocker of blockers) known.add(blocker);
+  memory.set(attacker.iid, known);
+}
+function goneBlockers(game, attacker) {
+  const gone = [...(blockerMemory(game).get(attacker.iid) || [])].filter(blocker => blocker.zone !== 'battlefield');
+  return gone.length && gone.every(blocker => blocker.zone === 'graveyard')
+    ? `blocker${gone.length === 1 ? '' : 's'} died` : 'blocker left combat';
+}
+
+// When the list changes (a creature dies, a blocker leaves), rows slide to
+// their new places instead of jumping under the effects still playing over
+// them. Places are kept in the list's own coordinates, so scrolling between
+// renders is not a move. A slide cut short by a render carries on from where
+// the row was.
+const rowPlaces = new WeakMap();
+const SLIDE = 280;
+function slideRows(ui, game, history) {
+  if (!history.isConnected || typeof history.getBoundingClientRect !== 'function') return;
+  const box = history.getBoundingClientRect();
+  if (!box.width || !box.height) return;
+  const previous = rowPlaces.get(ui), same = previous?.game === game && previous.turn === game.turnNo;
+  const now = performance.now(), places = new Map(), moves = [];
+  for (const row of history.querySelectorAll(':scope > [data-attacker-id], :scope > [data-flip-key], [data-blocker-id]')) {
+    const parent = row.dataset.blockerId ? row.closest('[data-attacker-id]') : null;
+    const key = row.dataset.blockerId ? `b${row.dataset.blockerId}` : row.dataset.attackerId ? `a${row.dataset.attackerId}` : row.dataset.flipKey;
+    const top = row.getBoundingClientRect().top - (parent ? parent.getBoundingClientRect().top : box.top - history.scrollTop);
+    const before = same ? previous.places.get(key) : null;
+    let dy = 0;
+    if (before) {
+      const t = Math.min(1, (now - before.at) / SLIDE), left = before.dy * (1 - t) ** 3;
+      dy = before.top + left - top;
+    }
+    const move = Math.abs(dy) > 2 && Math.abs(dy) < 400;
+    places.set(key, {top, dy: move ? dy : 0, at: now});
+    if (move) moves.push([row, dy]);
+  }
+  rowPlaces.set(ui, {game, turn: game.turnNo, places});
+  if (ui.reducedMotion || document.body.classList.contains('reduced-motion') || globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  for (const [row, dy] of moves) row.animate?.([{transform: `translateY(${dy}px)`}, {transform: 'none'}], {duration: SLIDE, easing: 'cubic-bezier(.33, 1, .68, 1)'});
+}
+
 // Reuse public card faces for both the editable draft and declared blocks.
 // Inspection and removal are separate controls so looking at a card is safe.
 function blockerCards(ui, attacker, blockers, pd = null) {
@@ -125,7 +176,9 @@ export function createMobileCombat(ui, game, root, pd) {
   const title = pd?.q.type === 'attackers' ? 'Declare attackers' : pd?.q.type === 'blockers' ? 'Assign blockers'
     : pd ? 'Review attack' : game.phase === 'combat' ? 'Combat in progress' : 'Combat';
   head.append(node('h2', '', title));
-  head.append(node('span', 'ct-mobile-combat-life', `You · ${ui.me.life} life`));
+  const life = node('span', 'ct-mobile-combat-life', `You · ${ui.me.life} life`);
+  ui.markLifeHit?.(life, ui.me);
+  head.append(life);
   const hasReplay = !!ui.hasCombatReplay?.(game);
   if (hasReplay) {
     const replay = button('Replay last combat', () => ui.replayLastCombat(), 'pbtn ct-mobile-combat-replay');
@@ -194,6 +247,7 @@ export function createMobileCombat(ui, game, root, pd) {
       card.setAttribute('aria-label', `Inspect ${attacker.name}`);
       const copy = node('span', 'ct-mobile-combat-unit-copy');
       const blockers = (attacker.blockedBy || []).filter(blocker => blocker.zone === 'battlefield');
+      rememberBlockers(game, attacker, blockers);
       const afterBlocks = ['firstStrike', 'damage', 'endCombat'].includes(game.step)
         || game.step === 'blockers' && (ui.pending?.q.type === 'priority' || ui.react?.q.type === 'priority');
       const assignment = node('span', 'ct-mobile-combat-assignment', `→ ${defenderText(ui, attacker.attacking)}`);
@@ -203,7 +257,7 @@ export function createMobileCombat(ui, game, root, pd) {
       copy.append(node('b', '', attacker.name), node('strong', '', `${attacker.power}/${attacker.toughness}`),
         assignment,
         node('small', 'ct-mobile-combat-block-status', blockers.length ? `Blocked by ${blockers.length} creature${blockers.length === 1 ? '' : 's'}`
-          : attacker.wasBlocked ? 'Blocked · blocker left combat' : afterBlocks ? 'Unblocked' : 'Awaiting blocks'));
+          : attacker.wasBlocked ? `Blocked · ${goneBlockers(game, attacker)}` : afterBlocks ? 'Unblocked' : 'Awaiting blocks'));
       cardDetails(ui, attacker, copy);
       card.append(face(attacker), copy);
       group.append(card);
@@ -211,10 +265,13 @@ export function createMobileCombat(ui, game, root, pd) {
       history.append(group);
     }
     const actions = node('div', 'ct-mobile-combat-links');
+    actions.dataset.flipKey = 'links';
     actions.append(button('View battlefield', () => ui.showMobileView('mine'), 'pbtn'),
       button('View hand', () => ui.showMobileView('hand'), 'pbtn'));
     history.append(actions);
     pane.append(history);
+    // After this render is in the page, before it is painted.
+    queueMicrotask(() => slideRows(ui, game, history));
   }
   root.append(pane);
   return pane;

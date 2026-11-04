@@ -2454,6 +2454,11 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 .fx-combat-source { animation:gamefxCombatSource .58s ease-out both !important; }
 #game.fx-combat-camera { animation:gamefxCombatCamera .38s ease-out both; }
 .fx-damage-target { animation:gamefxTargetHit .58s cubic-bezier(.2,.8,.2,1) both !important; }
+/* A life total that was just hit, kept across renders (ui.js markLifeHit). */
+.fx-life-hit { transform-origin:right center; animation:gamefxLifeHit .72s cubic-bezier(.2,.8,.2,1) both; }
+.fx-life-delta { position:absolute; right:0; top:100%; margin-top:3px; color:#ff8a7a; font:700 12px/1 var(--ds-font-mono,monospace); text-shadow:0 0 8px rgba(255,80,60,.55); white-space:nowrap; pointer-events:none; animation:gamefxLifeDelta .9s ease-out both; }
+@keyframes gamefxLifeHit { 0% { color:#ff6a55; transform:scale(1.16); text-shadow:0 0 12px rgba(255,90,70,.8); } 100% { transform:none; text-shadow:none; } }
+@keyframes gamefxLifeDelta { 0% { opacity:0; transform:translateY(-5px); } 14%,70% { opacity:1; transform:none; } 100% { opacity:0; transform:translateY(6px); } }
 
 .gamefx-cardghost,.gamefx-wipecard { position:absolute; transform-origin:center; will-change:transform,opacity,filter; }
 .gamefx-cardghost { animation:gamefxZoneFlight 1s cubic-bezier(.22,.68,.16,1) both; }
@@ -2464,6 +2469,7 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 .gamefx-cardghost.to-command { filter:drop-shadow(0 0 16px #f1c86f); }
 .gamefx-zonebadge { position:absolute; transform:translate(-50%,-50%); padding:6px 10px; color:#e7fbff; background:rgba(11,31,36,.9); border:1px solid #69c9d8; box-shadow:0 8px 25px #000b,0 0 20px rgba(92,213,230,.25); font:850 8px/1 var(--tbl-cond,inherit); letter-spacing:.17em; white-space:nowrap; animation:gamefxZoneBadge .82s ease-out both; }
 .gamefx-zonebadge.to-graveyard { color:#e1ddd2; background:#232321ee; border-color:#928c80; }
+.gamefx-zonebadge.travel { animation:gamefxZoneBadgeTravel .9s cubic-bezier(.22,.68,.16,1) both; }
 .gamefx-zonebadge.to-exile { color:#ead8ff; background:#281a35ee; border-color:#a97adc; }
 .gamefx-zonebadge.to-command { color:#fff0bd; background:#352813ee; border-color:#d2ad58; }
 .fx-zone-leaving { opacity:.2 !important; filter:saturate(.1) brightness(1.45) !important; transition:opacity .24s ease,filter .24s ease; }
@@ -2575,6 +2581,7 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 @keyframes gamefxCombatCamera { 0%,100% { transform:none; } 28% { transform:translate(-2px,1px); } 48% { transform:translate(2px,-1px); } 70% { transform:translate(-1px,0); } }
 @keyframes gamefxTargetHit { 0%,100% { filter:none; } 25% { filter:brightness(2) saturate(1.5); transform:translateX(-4px) rotate(-1deg); } 48% { transform:translateX(5px) rotate(1deg); } 70% { transform:translateX(-2px); } }
 @keyframes gamefxZoneFlight { 0% { opacity:1; transform:translate(0,0) rotate(0) scale(1); } 26% { transform:translate(calc(var(--fx-x) * .16),calc(var(--fx-y) * .08 - 42px)) rotate(-5deg) scale(1.08); } 100% { opacity:0; transform:translate(var(--fx-x),var(--fx-y)) rotate(13deg) scale(.22); filter:blur(4px) brightness(1.5); } }
+@keyframes gamefxZoneBadgeTravel { 0% { opacity:0; transform:translate(-50%,-50%) scale(.8); } 18% { opacity:1; transform:translate(-50%,-95%) scale(1); } 100% { opacity:0; transform:translate(calc(-50% + var(--fx-x) * .85),calc(-50% + var(--fx-y) * .85)) scale(.75); } }
 @keyframes gamefxZoneBadge { 0% { opacity:0; transform:translate(-50%,-30%) scale(.7); } 25%,65% { opacity:1; transform:translate(-50%,-70%) scale(1); } 100% { opacity:0; transform:translate(-50%,-120%) scale(.9); } }
 @keyframes gamefxWipeFrame { 0%,100% { opacity:0; } 12%,76% { opacity:1; } }
 @keyframes gamefxWipeCloud { 0% { opacity:0; transform:rotate(-35deg) scale(.5); } 35% { opacity:1; } 100% { opacity:0; transform:rotate(105deg) scale(1.35); } }
@@ -2619,7 +2626,8 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
   .gamefx-impact > span,.gamefx-impact > i,.gamefx-impact > strong,.gamefx-impact > small,
   .gamefx-zonebadge,.gamefx-wipe,.gamefx-wiperune,.gamefx-wipetitle,.gamefx-counterspell,.counterspell-seal,.counterspell-copy,.gamefx-keyword,.gamefx-minuscounter,.gamefx-strike,.gamefx-proliferatepulse,.gamefx-proliferatetitle { animation-duration:.55s !important; animation-iteration-count:1 !important; }
   #game.fx-boardwipe { filter:none; }
-  #game.fx-combat-camera,.fx-combat-source,.fx-damage-target,.fx-keyword-gold,.fx-keyword-blue,.fx-keyword-violet,.fx-keyword-red,.fx-keyword-orange { animation:none !important; }
+  .fx-life-delta { display:none; }
+  #game.fx-combat-camera,.fx-combat-source,.fx-damage-target,.fx-life-hit,.fx-keyword-gold,.fx-keyword-blue,.fx-keyword-violet,.fx-keyword-red,.fx-keyword-orange { animation:none !important; }
 }
 
 body.reduced-motion .personareaction,body.reduced-motion .personareactionflare { animation:none !important; }
