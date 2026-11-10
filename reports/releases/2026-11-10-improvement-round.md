@@ -106,6 +106,14 @@ In game 1203 the longest single decision went from 7.2 s to 2.3 s. These are tim
 - **Node tests.** The complete run was cut short by a restart of the session after 1,791 top-level tests. One had failed: `bom-precons.test.mjs` reads `git show 22dcc14:src/data.js`, and this checkout is a shallow clone without that commit. On the final source, 31 files were run again: those that use mill or discard, the Live presentation, saves, bot isolation and the files nearest to the changes. 1,296 of 1,297 tests pass. The one failure is not from this round: `oracle-token-forms-source.test.mjs` compares the engine's creature types with a pinned official list, and the Star Trek preview decks added types (Aenar, Andorian, Borg and others) that the list does not have. `ui-english.test.mjs` did not finish within ten minutes here and was not waited for.
 - Syntax check, source audit and `git diff --check` pass. Strict certification passes: 180 decks, 6,651 unique active cards, 15,021 card and deck checks, and all 32,273 definitions. Its timestamp-only report change is not committed.
 
+## Opening the table
+
+From the click on **Play solo** to the deck list, the game loads about 750 files and 90 MB of JavaScript: 12.9 s on a desktop and 39.4 s with the processor slowed four times, as on a phone (measured against a local server, so without any network delay). It happens on every visit.
+
+One part of that is shorter now. To support text-changing effects, every function of every card definition is wrapped once at load (`c17-c19-text-rules.js`, `executable`). The walk carried the whole key path as a new array for every value of all 32,273 definitions, only to know whether it was under a `targets` key. It now carries that one flag. The engine and catalog load in Node took 10.3 to 12.1 s before and 9.9 to 10.2 s after, three runs each, while another job shared the machine. The 364 tests of the `c17-c19` files and the target audit pass.
+
+The larger part is not changed. 25,622 of the 32,273 definitions are used by no built-in deck; they are needed only for imported decks, and are still fetched, parsed and compiled before setup opens. Loading them on demand is a change of its own and was proposed as a separate task.
+
 ## Not changed
 
 - **Bot turns on very wide boards are still slow.** After this change, a bot's own decisions are about a quarter of the time of the slowest game. The rest is the engine listing castable spells at every priority window and recalculating the board after every action. The slowest turn seen in the 42 games, 149 s on the old code under load, was not measured again.
