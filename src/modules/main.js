@@ -5697,6 +5697,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
     }
   };
+  // An effect that offers every card name loads the rest of the collection in
+  // the middle of a game. The table waits for it: say why.
+  window.addEventListener('mtg:card-catalog-loading', () => {
+    if (window._game && typeof window._ui?.toast === 'function') window._ui.toast('Loading the complete card collection…');
+  });
+  // The page starts the entry itself, after it has decided whether the table
+  // opens with the complete card collection (src/public-entry.js). Without
+  // that page, the entry starts here as soon as the document is ready.
+  MTG.initializeEntry = initializeEntry;
+  const entryLeftToPage = window.__mtgDeferEntry === true;
+  delete window.__mtgDeferEntry;
   window.addEventListener('mtg:account-change', () => {
     refreshSetupFavorites?.();
     if (!entryInitialized || !MTG.CARD_CATALOG) return;
@@ -5723,20 +5734,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (owner !== 'loading') void refreshImportedDeckLibrary({ force: true }).then(announceImportedLibraryChange);
   });
-  // An effect that offers every card name loads the rest of the collection in
-  // the middle of a game. The table waits for it: say why.
-  window.addEventListener('mtg:card-catalog-loading', () => {
-    if (window._game && typeof window._ui?.toast === 'function') window._ui.toast('Loading the complete card collection…');
-  });
-
-  // The page starts the entry itself, after it has decided whether the table
-  // opens with the complete card collection (src/public-entry.js).
-  MTG.initializeEntry = initializeEntry;
-  if (window.__mtgDeferEntry) {
-    delete window.__mtgDeferEntry;
-  } else if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', initializeEntry, { once: true });
-  } else {
+  if (document.readyState === 'loading') {
+    if (!entryLeftToPage) window.addEventListener('DOMContentLoaded', initializeEntry, { once: true });
+  } else if (!entryLeftToPage) {
     initializeEntry();
   }
 })();

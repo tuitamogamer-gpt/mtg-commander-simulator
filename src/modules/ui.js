@@ -7134,6 +7134,18 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       return ov;
     }
 
+    // The story of the match for its last screen: who went out, when and why,
+    // and who won. The last few lines of the log said neither. The places
+    // left go to the latest attacks, damage and arrivals, in table order.
+    matchHighlights(g, limit = 6) {
+      const story = g.log.filter(entry => entry.cls === 'lose' || entry.cls === 'win').slice(-limit);
+      const rest = g.log.filter(entry => ['combat', 'dmg', 'monarch', 'arrival'].includes(entry.cls));
+      // slice(-0) would take every line: count the places from the front.
+      const room = Math.max(0, limit - story.length);
+      const chosen = new Set(story.concat(rest.slice(rest.length - Math.min(room, rest.length))));
+      return g.log.filter(entry => chosen.has(entry));
+    }
+
     // Records the completed loss on the profile, then leaves for the profile
     // view. Falls back to the ordinary exit when no account game is running.
     async leaveAsLoss(button) {
@@ -7150,18 +7162,6 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         if (button) { button.disabled = false; button.textContent = 'I lost'; }
         this.toast('Could not leave the table. Try again.');
       }
-    }
-
-    // The story of the match for its last screen: who went out, when and why,
-    // and who won. The last few lines of the log said neither. The places
-    // left go to the latest attacks, damage and arrivals, in table order.
-    matchHighlights(g, limit = 6) {
-      const story = g.log.filter(entry => entry.cls === 'lose' || entry.cls === 'win').slice(-limit);
-      const rest = g.log.filter(entry => ['combat', 'dmg', 'monarch', 'arrival'].includes(entry.cls));
-      // slice(-0) would take every line: count the places from the front.
-      const room = Math.max(0, limit - story.length);
-      const chosen = new Set(story.concat(rest.slice(rest.length - Math.min(room, rest.length))));
-      return g.log.filter(entry => chosen.has(entry));
     }
 
     renderGameOver(g) {

@@ -128,5 +128,6 @@ test('the page starts the entry itself, after the decision', () => {
   // Saved lists alone do not keep the table closed when the collection fails.
   assert.match(load, /if \(complete === 'required'\) throw error;/);
   const main = read('../src/modules/main.js');
-  assert.match(main, /MTG\.initializeEntry = initializeEntry;\s*if \(window\.__mtgDeferEntry\) \{\s*delete window\.__mtgDeferEntry;/);
+  assert.match(main, /MTG\.initializeEntry = initializeEntry;\s*const entryLeftToPage = window\.__mtgDeferEntry === true;\s*delete window\.__mtgDeferEntry;/);
+  assert.match(main, /if \(document\.readyState === 'loading'\) \{\s*if \(!entryLeftToPage\) window\.addEventListener\('DOMContentLoaded', initializeEntry, \{ once: true \}\);\s*\} else if \(!entryLeftToPage\) \{\s*initializeEntry\(\);/);
 });
