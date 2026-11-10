@@ -104,8 +104,30 @@ try {
     assert.ok(hand.columns >= 2, `the full hand shows at least two cards per row: ${JSON.stringify(hand)}`);
     assert.ok(hand.dock.width >= hand.width - 60 && hand.dock.height <= 110, `the commander is a compact full-width row: ${JSON.stringify(hand.dock)}`);
     assert.ok(hand.cards.every(card => card.top >= hand.dock.bottom - 1), 'hand cards start below the commander row');
+    // The commander's pedestal ring stays under its card. In this row it used
+    // to be 74% of the row wide and ran through the commander's name.
+    const pedestal = await page.evaluate(() => {
+      const card = document.querySelector('#game .ct-commander-card[data-command-state="command"]');
+      const ring = getComputedStyle(card, '::after'), box = card.getBoundingClientRect();
+      const left = box.left + parseFloat(ring.left);
+      return {ringRight: Math.round(left + parseFloat(ring.width)), nameLeft: Math.round(card.querySelector('.czname').getBoundingClientRect().left)};
+    });
+    assert.ok(pedestal.ringRight <= pedestal.nameLeft, `the pedestal ring ends before the commander's name: ${JSON.stringify(pedestal)}`);
     await page.screenshot({path: `${output}/hand-portrait.png`});
     console.log('PASS the portrait full hand uses the width');
+
+    // Keyboard shortcuts are not offered under a finger: not in the menu, and
+    // not as the search window's "Navigate / Enter / Esc" footer.
+    await page.locator('#game button.tbtn').filter({hasText: 'MENU'}).first().click();
+    const findEntry = page.locator('.quickmenu button').filter({hasText: /^Find a card or command/}).first();
+    await findEntry.waitFor();
+    assert.doesNotMatch(await findEntry.textContent(), /Ctrl\+K|⌘K/, 'the phone menu names no keyboard shortcut');
+    await findEntry.click();
+    await page.locator('.commandfooter').waitFor({state: 'attached'});
+    assert.equal(await page.locator('.commandfooter').evaluate(node => getComputedStyle(node).display), 'none', 'the search window shows no keyboard hints on a phone');
+    await page.keyboard.press('Escape');
+    await page.locator('.commandfooter').waitFor({state: 'detached'});
+    console.log('PASS a phone is not offered keyboard shortcuts');
 
     // A routine recap is a full-width bottom sheet whose status strip is padded.
     await page.getByRole('navigation', {name: 'Arena view'}).getByRole('button', {name: /^Mine/i}).click();
@@ -271,6 +293,12 @@ try {
     const {context, page} = await openTable({viewport: {width: 1440, height: 900}});
     assert.match(await page.locator('#game .promptbar .ptext').first().textContent(), /click/);
     console.log('PASS mouse prompts keep click');
+    await page.locator('#game button.tbtn').filter({hasText: 'FIND'}).first().click();
+    await page.locator('.commandfooter').waitFor();
+    assert.match(await page.locator('.commandfooter').textContent(), /Navigate/, 'a keyboard keeps the search hints');
+    await page.keyboard.press('Escape');
+    await page.locator('.commandfooter').waitFor({state: 'detached'});
+    console.log('PASS a keyboard keeps its search hints');
     await offerExile(page);
     await page.locator('.exiletraycard').first().waitFor();
     assert.equal(await page.locator('.exiletraycard').count(), 3);

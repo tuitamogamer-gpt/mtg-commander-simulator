@@ -3021,7 +3021,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.render();
       });
       section('Table & profile');
-      action('Find a card or command', '⌘K / Ctrl+K · your hand and public cards', () => {
+      // A keyboard shortcut means nothing under a finger.
+      const fingerOnly = !!window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+      action('Find a card or command', fingerOnly ? 'Your hand and public cards' : '⌘K / Ctrl+K · your hand and public cards', () => {
         this.quickMenuOpen = false; this.render(); this.openCommandPalette();
       });
       action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
@@ -7149,7 +7151,9 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     matchHighlights(g, limit = 6) {
       const story = g.log.filter(entry => entry.cls === 'lose' || entry.cls === 'win').slice(-limit);
       const rest = g.log.filter(entry => ['combat', 'dmg', 'monarch', 'arrival'].includes(entry.cls));
-      const chosen = new Set(story.concat(rest.slice(-Math.max(0, limit - story.length))));
+      // slice(-0) would take every line: count the places from the front.
+      const room = Math.max(0, limit - story.length);
+      const chosen = new Set(story.concat(rest.slice(rest.length - Math.min(room, rest.length))));
       return g.log.filter(entry => chosen.has(entry));
     }
 

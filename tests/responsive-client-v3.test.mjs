@@ -311,3 +311,23 @@ test('mobile combat, hand, table and stack navigation preserves the unanswered e
   assert.equal(arena.mobileView, 'mine');
   assert.equal(renders, 6);
 });
+
+test('the match\'s last screen lists who went out and who won before anything else', () => {
+  const arena = new (loadUIForKeyboardTest().UI)();
+  const line = (t, cls, msg) => ({t, cls, msg});
+  const log = [
+    line(3, 'combat', 'early attack'), line(9, 'lose', 'You lose (life reached 0).'), line(10, 'effect', 'pump A'),
+    line(11, 'dmg', 'hit one'), line(12, 'lose', 'AI Wolf loses (life reached 0).'), line(13, 'arrival', 'a dragon arrives'),
+    line(14, 'dmg', 'hit two'), line(14, 'effect', 'pump B'), line(14, 'effect', 'pump C'), line(14, 'effect', 'pump D'),
+    line(14, 'lose', 'AI Raven loses (life reached 0).'), line(14, 'win', 'AI Dragon WINS!'),
+  ];
+  // Every elimination and the win, in table order; the two places left go to
+  // the latest damage and arrival. Pumps are never highlights.
+  assert.deepEqual(Array.from(arena.matchHighlights({log}), entry => entry.msg),
+    ['You lose (life reached 0).', 'AI Wolf loses (life reached 0).', 'a dragon arrives', 'hit two', 'AI Raven loses (life reached 0).', 'AI Dragon WINS!']);
+  // When the story fills every place, nothing else is added.
+  assert.deepEqual(Array.from(arena.matchHighlights({log}, 4), entry => entry.cls), ['lose', 'lose', 'lose', 'win']);
+  // A match with no elimination in the log still shows its latest moments.
+  assert.deepEqual(Array.from(arena.matchHighlights({log: log.filter(entry => !['lose', 'win'].includes(entry.cls))}, 3), entry => entry.msg),
+    ['hit one', 'a dragon arrives', 'hit two']);
+});
