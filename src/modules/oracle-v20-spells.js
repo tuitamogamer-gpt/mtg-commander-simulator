@@ -59,6 +59,9 @@
   game.queueWardTriggers(object,{wardTargets:game.captureWardTargets([...new Set(fresh)],object.ctrl)});return true;
  }
  async function chooseName(ctx,quality='any'){
+  // A choice among every card name needs every card: a table that opened with
+  // the cards of built-in decks loads the rest first.
+  if(!M.oracleCatalogComplete())await M.ensureFullCatalog();
   const defs=Object.values(M.DEFS).filter(Boolean).flatMap(def=>def.oracleFaces?def.oracleFaces.faces.map(face=>face.def):def.oracleSplit?def.oracleSplit.faces:[def]).filter(Boolean);
   const valid=def=>{if(quality==='any')return true;if(quality==='nonland')return !def.types?.includes('Land');if(quality==='not-basic-land')return !(def.types?.includes('Land')&&def.super?.includes('Basic'));if(quality==='nonartifact, nonland')return !def.types?.some(type=>['Artifact','Land'].includes(type));return def.types?.includes(quality[0].toUpperCase()+quality.slice(1));};
   const names=[...new Set(defs.filter(valid).map(def=>def.name).filter(Boolean))].sort(),answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:ctx.src.name+': choose a card name',searchableChoices:true,options:names.map(key=>({key,label:key})),aiHint:{kind:'cardName'}});

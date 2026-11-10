@@ -4901,6 +4901,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       throw new Error(`Duplicate Oracle batch id: ${batch.id}`);
     }
     if (batch.startupSubset) catalogComplete = false;
+    if (completingCatalog) completionOrder.push(batch.id);
 
     const pending = [];
     for (const entry of batch.cards) {
@@ -4944,19 +4945,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // these two calls. The cards that were not in the startup subset then get
   // their raw data, definitions and catalog rows. Definitions that already
   // exist keep their identity: cards in play point at them.
-  MTG.beginOracleCatalogCompletion = function () { completingCatalog = true; };
+  const completionOrder = [];
+  // Keys of `object` in the order of `names`; keys that are not named keep
+  // their relative order after them. The object keeps its identity.
+  const reorderKeys = (object, names) => {
+    const values = new Map(Object.entries(object));
+    for (const key of values.keys()) delete object[key];
+    for (const name of names) if (values.has(name)) { object[name] = values.get(name); values.delete(name); }
+    for (const [key, value] of values) object[key] = value;
+  };
+  MTG.beginOracleCatalogCompletion = function () { completingCatalog = true; completionOrder.length = 0; };
   MTG.finishOracleCatalogCompletion = function () {
     completingCatalog = false;
     const waiting = batches.filter(batch => batch.startupSubset).map(batch => batch.id);
     if (waiting.length) throw new Error(`The complete card catalog is missing ${waiting.length} batch${waiting.length === 1 ? '' : 'es'}: ${waiting.slice(0, 3).join(', ')}.`);
+    // The complete batches arrive in the order of src/app.js. The batches,
+    // the raw cards and the definitions take that order, so a list made from
+    // them (a choice of card names) reads the same however the catalog was
+    // loaded.
+    const arrival = new Map(completionOrder.map((id, position) => [id, position]));
+    batches.sort((a, b) => (arrival.get(a.id) ?? -1) - (arrival.get(b.id) ?? -1));
     const rawDB = MTG.DB;
     if (rawDB && MTG.DEFS) {
       MTG.applyOracleBatches(rawDB);
+      const names = Object.keys(rawDB.cards).filter(name => !rawDB.cards[name]._oracleBatch);
+      for (const batch of batches) {
+        for (const entry of batch.cards) if (rawDB.cards[entry.raw.name]?._oracleBatch === batch.id) names.push(entry.raw.name);
+      }
+      reorderKeys(rawDB.cards, names);
       const added = {};
       for (const [name, raw] of Object.entries(rawDB.cards)) {
         if (!Object.prototype.hasOwnProperty.call(MTG.DEFS, name)) added[name] = raw;
       }
       Object.assign(MTG.DEFS, MTG.buildDefs(added, MTG.SCRIPTS));
+      reorderKeys(MTG.DEFS, names);
       MTG.buildCardCatalog(rawDB, MTG.DEFS);
     }
     catalogComplete = true;
@@ -4969,12 +4991,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.ensureFullCatalog = function () {
     if (catalogComplete) return Promise.resolve(false);
     if (!catalogCompletion) {
+      const announce = name => {
+        if (typeof window !== 'undefined' && typeof CustomEvent === 'function') window.dispatchEvent(new CustomEvent(name));
+      };
       catalogCompletion = (async () => {
         MTG.beginOracleCatalogCompletion();
+        announce('mtg:card-catalog-loading');
         try {
           await (MTG.loadFullOracleCatalog ? MTG.loadFullOracleCatalog() : import('../oracle-catalog-full.js'));
           MTG.finishOracleCatalogCompletion();
         } finally { completingCatalog = false; }
+        announce('mtg:card-catalog-complete');
         return true;
       })();
     }

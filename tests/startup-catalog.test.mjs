@@ -102,9 +102,10 @@ test('an imported list is never checked against the startup subset', async () =>
   assert.throws(() => MTG.validateImportedDeck({ cards: [{ name: outside, n: 1 }], commanders: [], ignored: [] }, {}),
     /not loaded yet/);
   assert.throws(() => MTG.importCommanderDeck(`1 ${outside}`, { register: false }), /not loaded yet/);
-  // The page asks once; in this harness the batches are registered directly.
-  MTG.loadFullOracleCatalog = async () => { throw new Error('this harness completes the catalog itself'); };
-  assert.equal(complete(), true);
+  // The page asks once and every caller gets the same answer.
+  const [first, second] = await Promise.all([MTG.ensureFullCatalog(), MTG.ensureFullCatalog()]);
+  assert.deepEqual([first, second], [true, true]);
+  assert.equal(complete(), false, 'already complete');
   assert.equal(MTG.oracleCatalogComplete(), true);
   assert.equal(await MTG.ensureFullCatalog(), false, 'nothing left to load');
   assert.ok(MTG.DEFS[outside] && MTG.CARD_CATALOG[outside].deckImportEligible);
@@ -122,9 +123,13 @@ test('a collection completed later is the same collection, card for card', () =>
   const before = new Map(Object.entries(MTG.DEFS));
   complete();
   for (const [name, definition] of before) assert.equal(MTG.DEFS[name], definition, `${name} keeps its definition object`);
-  assert.deepEqual(Object.keys(MTG.DEFS).sort(), Object.keys(full.DEFS).sort());
+  // The same cards in the same order: a list made from the definitions, such
+  // as a choice of card names, reads the same however the catalog was loaded.
+  assert.deepEqual(Object.keys(MTG.DEFS), Object.keys(full.DEFS));
+  assert.deepEqual(Object.keys(MTG.DB.cards), Object.keys(full.DB.cards));
+  assert.deepEqual(Object.keys(MTG.CARD_CATALOG), Object.keys(full.CARD_CATALOG));
+  assert.deepEqual(Array.from(MTG.ORACLE_BATCHES, batch => batch.id), Array.from(full.ORACLE_BATCHES, batch => batch.id));
   assert.deepEqual(Object.keys(MTG.SCRIPTS).sort(), Object.keys(full.SCRIPTS).sort());
-  assert.deepEqual(Object.keys(MTG.CARD_CATALOG).sort(), Object.keys(full.CARD_CATALOG).sort());
   // A batch that arrives later compiles as it did in its original place among
   // the modules, and gets the revisions of the modules that came after it.
   const differing = [];
@@ -135,4 +140,25 @@ test('a collection completed later is the same collection, card for card', () =>
     if (found.length) differing.push(`${name}: ${found.slice(0, 3).join('; ')}`);
   }
   assert.deepEqual(differing.slice(0, 10), [], `${differing.length} cards differ`);
+});
+
+test('an effect that offers every card name completes the collection first', async () => {
+  // "Choose a card name" lists the loaded definitions. Offered from the
+  // startup subset, the list would depend on how the page was opened, and a
+  // saved game would not replay in another session.
+  const namesOffered = async MTG => {
+    const game = new MTG.Game({ seed: 3, paced: false });
+    let offered = null;
+    const player = game.addPlayer('You', { name: 'Test' }, { decide: async (g, q) => { offered = Array.from(q.options, option => option.key); return q.options[0].key; } }, false);
+    const source = new MTG.CardInst(MTG.DEFS['Sol Ring'], player);
+    await MTG.OracleV20Spells.chooseName({ g: game, you: player, src: source }, 'nonland');
+    return offered;
+  };
+  const expected = await namesOffered(loadEngine());
+  const { MTG } = loadStartupEngine();
+  assert.equal(MTG.oracleCatalogComplete(), false);
+  const offered = await namesOffered(MTG);
+  assert.equal(MTG.oracleCatalogComplete(), true, 'the choice loaded the rest of the collection');
+  assert.ok(offered.length > 20000);
+  assert.deepEqual(offered, expected);
 });

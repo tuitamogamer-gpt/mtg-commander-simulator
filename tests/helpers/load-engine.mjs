@@ -36,13 +36,17 @@ export function loadStartupEngine() {
   new vm.Script(readModuleList('app-startup.js'), { filename: 'src/app-startup.js' }).runInContext(sandbox);
   runData(sandbox);
   const MTG = sandbox.MTG;
+  const registerEveryBatch = () => new vm.Script(readModuleList('oracle-catalog-full.js'), { filename: 'src/oracle-catalog-full.js' }).runInContext(sandbox);
   const complete = () => {
     if (MTG.oracleCatalogComplete()) return false;
     MTG.beginOracleCatalogCompletion();
-    new vm.Script(readModuleList('oracle-catalog-full.js'), { filename: 'src/oracle-catalog-full.js' }).runInContext(sandbox);
+    registerEveryBatch();
     MTG.finishOracleCatalogCompletion();
     return true;
   };
+  // What the page does with a module import when a game effect asks for the
+  // complete collection (MTG.ensureFullCatalog).
+  MTG.loadFullOracleCatalog = async () => { registerEveryBatch(); };
   return { MTG, sandbox, complete };
 }
 

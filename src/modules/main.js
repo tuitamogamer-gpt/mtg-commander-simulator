@@ -5694,6 +5694,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (owner !== 'loading') void refreshImportedDeckLibrary({ force: true }).then(announceImportedLibraryChange);
   });
+  // An effect that offers every card name loads the rest of the collection in
+  // the middle of a game. The table waits for it: say why.
+  window.addEventListener('mtg:card-catalog-loading', () => {
+    if (window._game && typeof window._ui?.toast === 'function') window._ui.toast('Loading the complete card collection…');
+  });
+
   // The page starts the entry itself after it has loaded the complete card
   // collection, when it was asked to load it before the table opens.
   MTG.initializeEntry = initializeEntry;
