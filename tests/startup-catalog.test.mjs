@@ -46,6 +46,57 @@ function differences(a, b, path, out, seen = new Set()) {
   return out;
 }
 
+// Everything else the modules and the compiler leave on MTG: registries,
+// tables and helpers, compared member by member. A registry that a card
+// writes into when it compiles must end up the same however the card arrived.
+function surroundingsDifferences(full, MTG, skip) {
+  const kind = value => value === null ? 'null' : Array.isArray(value) ? 'array'
+    : typeof value === 'object' ? Object.prototype.toString.call(value).slice(8, -1) : typeof value;
+  const out = [], seen = new Set();
+  const walk = (a, b, path, depth) => {
+    if (out.length >= 20) return;
+    const ka = kind(a), kb = kind(b);
+    if (ka !== kb) { out.push(`${path}: ${ka} / ${kb}`); return; }
+    if (ka === 'function') {
+      if (a.toString() !== b.toString()) { out.push(`${path}: function body`); return; }
+      const members = Object.keys(a);
+      if (members.sort().join() !== Object.keys(b).sort().join()) out.push(`${path}: function properties`);
+      else if (depth < 6) for (const key of members) walk(a[key], b[key], `${path}.${key}`, depth + 1);
+    } else if (ka === 'array') {
+      if (seen.has(a)) return;
+      seen.add(a);
+      if (a.length !== b.length) out.push(`${path}: length ${a.length} / ${b.length}`);
+      else if (depth < 6) a.forEach((item, index) => walk(item, b[index], `${path}[${index}]`, depth + 1));
+    } else if (ka === 'Object') {
+      if (seen.has(a)) return;
+      seen.add(a);
+      const mine = Object.keys(a), theirs = new Set(Object.keys(b)), own = new Set(mine);
+      const missing = mine.filter(key => !theirs.has(key)), extra = [...theirs].filter(key => !own.has(key));
+      if (missing.length || extra.length) {
+        out.push(`${path}: ${mine.length} / ${theirs.size} keys; only in the original order: ${missing.slice(0, 4).join(', ')}; only when completed later: ${extra.slice(0, 4).join(', ')}`);
+      }
+      if (depth < 6) for (const key of mine) if (theirs.has(key)) walk(a[key], b[key], `${path}.${key}`, depth + 1);
+    } else if (ka === 'Map' || ka === 'Set') {
+      const names = collection => new Set([...(ka === 'Map' ? collection.keys() : collection)].filter(key => typeof key === 'string'));
+      const mine = names(a), theirs = names(b);
+      if (a.size !== b.size) out.push(`${path}: ${ka} size ${a.size} / ${b.size}`);
+      else if ([...mine].some(key => !theirs.has(key))) out.push(`${path}: ${ka} members`);
+    } else if (ka === 'RegExp') {
+      if (String(a) !== String(b)) out.push(`${path}: pattern`);
+    } else if (['string', 'number', 'boolean', 'bigint', 'undefined', 'null'].includes(ka)) {
+      if (a !== b && !(Number.isNaN(a) && Number.isNaN(b))) out.push(`${path}: ${String(a).slice(0, 40)} / ${String(b).slice(0, 40)}`);
+    }
+    // Symbols, weak collections and other instances are made per load.
+  };
+  for (const key of Object.keys(full)) {
+    if (skip.has(key)) continue;
+    if (!(key in MTG)) out.push(`MTG.${key}: only in the original order`);
+    else walk(full[key], MTG[key], `MTG.${key}`, 0);
+  }
+  for (const key of Object.keys(MTG)) if (!(key in full) && !skip.has(key)) out.push(`MTG.${key}: only when completed later`);
+  return out;
+}
+
 test('the generated startup files are current', () => {
   assert.deepEqual(staleStartupCatalog(), [], 'run: npm run build:startup');
   const { output, summary } = buildStartupCatalog();
@@ -140,6 +191,15 @@ test('a collection completed later is the same collection, card for card', () =>
     if (found.length) differing.push(`${name}: ${found.slice(0, 3).join('; ')}`);
   }
   assert.deepEqual(differing.slice(0, 10), [], `${differing.length} cards differ`);
+  // And so is everything else on MTG. A card that compiles later writes into
+  // the registries of its original place among the modules; a later module
+  // may have replaced one since (MTG.E.preparedSpellDefinitions), and the
+  // entry must still reach the registry that the game reads today.
+  assert.ok(Object.keys(full.E.preparedSpellDefinitions).some(key => !key.startsWith('oracle-v10:')) &&
+    Object.keys(full.E.preparedSpellDefinitions).filter(key => key.startsWith('oracle-v10:')).length > 40,
+    'the fixture has a registry that cards and a later module both fill');
+  assert.deepEqual(surroundingsDifferences(full, MTG,
+    new Set(['SCRIPTS', 'DEFS', 'CARD_CATALOG', 'DB', 'RAW_DATA', 'ORACLE_BATCHES', 'DECKS', 'loadFullOracleCatalog'])), []);
 });
 
 test('an effect that offers every card name completes the collection first', async () => {

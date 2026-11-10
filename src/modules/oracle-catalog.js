@@ -4863,13 +4863,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const id of batchIds) compileStages.set(id, stage);
   };
   // Runs `compile` with those surroundings put back, then restores today's.
+  // What the compile added to a registry is kept: a registry that a later
+  // module has replaced since, or that did not exist yet at that place
+  // (MTG.E.preparedSpellDefinitions is both), receives its entries on the
+  // member the compile saw, and today's member gets them when it comes back.
+  const contentsOf = value => plainObject(value) ? new Set(Object.keys(value)) : Array.isArray(value) ? value.length : null;
+  const keepAdditions = (today, seen, before) => {
+    if (plainObject(today) && plainObject(seen)) {
+      for (const key of Object.keys(seen)) {
+        if (before instanceof Set && before.has(key)) continue;
+        if (!Object.prototype.hasOwnProperty.call(today, key)) today[key] = seen[key];
+      }
+    } else if (Array.isArray(today) && Array.isArray(seen)) {
+      for (const item of seen.slice(typeof before === 'number' ? before : 0)) if (!today.includes(item)) today.push(item);
+    }
+  };
   function atCompileStage(stage, compile) {
     if (!stage) return compile();
     const undo = [], lists = [];
     const putBack = (object, wanted) => {
       for (const key of Object.keys(object)) {
         if (wanted.has(key) && wanted.get(key) === object[key]) continue;
-        undo.push([object, key, true, object[key]]);
+        undo.push([object, key, true, object[key], contentsOf(wanted.get(key))]);
         if (wanted.has(key)) object[key] = wanted.get(key);
         else delete object[key];
       }
@@ -4880,13 +4895,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     try {
       putBack(MTG, stage.root);
       for (const [object, wanted] of stage.namespaces) putBack(object, wanted);
-      for (const [list, wanted] of stage.lists) { lists.push([list, list.slice()]); list.splice(0, list.length, ...wanted); }
+      for (const [list, wanted] of stage.lists) { lists.push([list, list.slice(), wanted.length]); list.splice(0, list.length, ...wanted); }
       return compile();
     } finally {
-      for (const [list, today] of lists) list.splice(0, list.length, ...today);
+      for (const [list, today, shown] of lists) {
+        const added = list.slice(shown).filter(item => !today.includes(item));
+        list.splice(0, list.length, ...today, ...added);
+      }
       for (let index = undo.length - 1; index >= 0; index--) {
-        const [object, key, existed, value] = undo[index];
-        if (existed) object[key] = value; else delete object[key];
+        const [object, key, existed, value, before] = undo[index];
+        const seen = object[key];
+        if (existed) { object[key] = value; if (seen !== value) keepAdditions(value, seen, before); }
+        else delete object[key];
       }
     }
   }
