@@ -147,3 +147,42 @@ test('Scalelord copies share a trigger budget instead of growing a quadratic sta
   assert.equal(game.pendingTriggers.length + game.stack.length, 0);
   assert.ok(resolved > 12 && resolved < 100, 'useful counters resolve without a flood of optional copies');
 });
+
+test('AI does not activate an {X} ability it can pay only with X=0', async () => {
+  // Helix Pinnacle: "{X}: Put X tower counters on Helix Pinnacle." With every
+  // land tapped the bot activated it for X=0 again and again, dozens of
+  // times a turn in a real game, each one put on the stack and resolved.
+  const {game, bot, add, decide, resolve, choices} = table();
+  const pinnacle = add('Helix Pinnacle');
+  assert.ok(game.activatableList(bot).some(e => e.card === pinnacle), 'X=0 is a legal activation');
+  assert.equal((await decide()).kind, 'done', 'with no mana the bot leaves the Pinnacle alone');
+  // With mana it is still used, for everything it can pay.
+  for (let i = 0; i < 3; i++) add('Forest');
+  const choice = await decide();
+  assert.equal(choice.kind, 'activate');
+  assert.equal(choice.entry.card, pinnacle);
+  await resolve(choice.entry);
+  assert.equal(choices.at(-1).max, 3);
+  assert.equal(pinnacle.counters.tower, 3);
+  // The mana is spent: the next look at the table does not start an empty loop.
+  assert.equal((await decide()).kind, 'done');
+});
+
+test('X=0 stays available where X picks a mana value', async () => {
+  // Lazav, the Multifarious: "{X}: Lazav becomes a copy of target creature
+  // card in your graveyard with mana value X." X=0 copies an Ornithopter;
+  // affordability alone must not rule the activation out.
+  const {game, bot, add} = table();
+  bot.deckName = 'Quick Draw'; bot.aiStyle = 'balanced';
+  const lazav = add('Lazav, the Multifarious');
+  const thopter = new M.CardInst(M.DEFS.Ornithopter, bot); thopter.zone = 'graveyard'; bot.graveyard.push(thopter);
+  game.recalc();
+  const entry = game.activatableList(bot).find(e => e.card === lazav && /mana value X/i.test(e.ability?.label || ''));
+  assert.ok(entry, 'the mana-value ability is offered');
+  const q = {type: 'main', player: bot, phase: game.phase, casts: [], lands: [], acts: [entry]};
+  const view = M.createBotPlayerView(game, bot.idx, q), profile = M.getBotEvaluationProfile(bot);
+  const action = M.generateLegalActions(view).find(row => row.kind === 'activate' && row.entry?.card === lazav);
+  assert.ok(action, 'the activation is a candidate');
+  const score = M.quickScoreBotAction(view, action, profile, q);
+  assert.ok(score.total > -1000, `not ruled out by the X=0 rule: ${score.total}`);
+});

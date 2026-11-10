@@ -2208,6 +2208,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         typeof ability.cost?.mana === 'string' && ability.cost.mana.includes('{X}')) ? effect : null;
   };
 
+  // An {X} ability that can be paid only with X=0 gives nothing: no counter,
+  // card, damage or size for each of zero. It is legal and free, so a bot chose
+  // it again at every opportunity. X=0 still matters where X picks a mana
+  // value (Steel Hellkite at tokens, Valki, Lazav).
+  function abilityAffordsOnlyZeroX(game, player, card, ability) {
+    const printed = ability?.cost?.mana;
+    if (!printed) return false;
+    try {
+      const mana = typeof printed === 'function' ? printed(game, card) : printed;
+      if (typeof mana !== 'string' || !mana.includes('{X}')) return false;
+      if (/\b(?:mana value|MV) X\b/i.test(String(ability.label || ''))) return false;
+      const cost = game.abilityManaCost(player, card, mana, {ability});
+      return game.maxAffordableX(player, cost, card, {
+        forSpell: {card, isAbility: true, ability, cdkCostHasX: !!cost.x},
+        excludeCards: ability.cost.tap || ability.cost.sacSelf ? [card] : [],
+      }) <= 0;
+    } catch (error) { return false; }
+  }
+
   function manaTapPayment(game, player, cost, context, defense, fixed = []) {
     const plan = game.manaSolve(player, cost, context, { excludeCards: fixed })?.plan || [];
     const taps = plan.filter(step => step.src?.extraCost?.tap).map(step => step.src.card);
@@ -6651,6 +6670,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         else if ((game.aiDecisionLog || []).some(decision => decision.turn === game.turnNo &&
           decision.playerId === player.idx && decision.chosen === actionLabel(action))) breakdown.timing -= 35;
       }
+      // Helix Pinnacle with every land tapped: "{X}: put X tower counters" for
+      // X=0, dozens of times a turn, each one put on the stack and resolved.
+      else if (abilityAffordsOnlyZeroX(game, player, card, ability)) breakdown.safety -= 1000000;
       const routineDraw = effects.some(effect => effect.action === 'draw' && effect.who === 'you') &&
         effects.every(effect => ['draw', 'discard', 'scry', 'surveil', 'lose-life'].includes(effect.action) &&
           effect.who === 'you');
