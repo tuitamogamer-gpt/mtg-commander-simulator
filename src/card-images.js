@@ -7333,11 +7333,12 @@ MTG.cardImageCatalogName = (function () {
     }
     if (resolvedNames.has(name)) return resolvedNames.get(name);
     const resolved = MTG.resolveDeckCardName?.(name);
-    if (resolved && catalog?.[resolved]) {
-      resolvedNames.set(name, resolved);
-      return resolved;
-    }
-    return null;
+    // A name the catalog does not know is remembered too. "Face-down card",
+    // "Hidden card" and tokens without their own art were looked up again for
+    // every face drawn, and each lookup lists every name in the catalog.
+    const known = resolved && catalog?.[resolved] ? resolved : null;
+    resolvedNames.set(name, known);
+    return known;
   };
 })();
 
