@@ -1188,30 +1188,140 @@ const UI_ENGLISH_RULES = [
 // so e.g. countera cannot damage uncounterable,
 // and singular words cannot consume the beginning of plural/inflected words.
 // All full phrases must run before individual words, including legacy rules.
+const UI_WORD_TRI = uiWord('Tri').source, UI_WORD_DA = uiWord('da').source;
+const UI_WORD_TRI_SENTINEL = uiWord('Tri(?!-Sentinel)').source;
+const UI_WORD_DA_NAMES = uiWord('da(?!(?<=Leonardo\\x20da)\\x20Vinci(?![\\p{L}\\p{N}_-]))(?!(?<=Ezio\\x20Auditore\\x20da)\\x20Firenze(?![\\p{L}\\p{N}_-]))').source;
+const UI_WORD_BEFORE = '(?<![\\p{L}\\p{N}_])', UI_WORD_AFTER = '(?![\\p{L}\\p{N}_])';
+
+// What a text must contain before a rule can match it. Almost every string
+// the table shows is already English, and trying all 1,800 patterns on it
+// took about 8 ms for each new string. A rule is tried only when the text
+// has its word as a whole token, or its longest plain run of characters.
+// Both are necessary for a match, never sufficient: the pattern still decides.
+//
+// The longest run of plain characters that every match of `source` contains,
+// lowercased. Empty when the pattern has an alternative at its top level or
+// uses a construct this does not read: such a rule is always tried.
+function uiRequiredText(source) {
+  let best = '', run = '', depth = 0, plain = false, quantified = false;
+  const close = () => { if (run.length > best.length) best = run; run = ''; plain = false; };
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    const afterQuantifier = quantified;
+    quantified = false;
+    if (ch === '\\') {
+      const next = source[++i];
+      if (next === undefined || /[ukc0-9]/.test(next)) return '';
+      if (next === 'p' || next === 'P') {
+        if (source[i + 1] === '{') { i = source.indexOf('}', i); if (i < 0) return ''; }
+        if (!depth) close();
+      } else if (next === 'x') {
+        const code = source.slice(i + 1, i + 3);
+        if (!/^[0-9a-fA-F]{2}$/.test(code)) return '';
+        i += 2;
+        if (!depth) { run += String.fromCharCode(parseInt(code, 16)); plain = true; }
+      } else if (/[dDsSwWbBnrtfv]/.test(next)) {
+        if (!depth) close();
+      } else if (!depth) { run += next; plain = true; }
+      continue;
+    }
+    if (ch === '[') {
+      for (i++; i < source.length && source[i] !== ']'; i++) if (source[i] === '\\') i++;
+      if (i >= source.length) return '';
+      if (!depth) close();
+      continue;
+    }
+    if (ch === '(') { if (!depth) close(); depth++; continue; }
+    if (ch === ')') { if (!depth) return ''; depth--; continue; }
+    if (depth) continue;
+    if (ch === '|') return '';
+    if (ch === '?' || ch === '*' || ch === '{') {
+      // The character before an optional quantifier may be absent.
+      if (!afterQuantifier && plain) run = run.slice(0, -1);
+      close();
+      if (ch === '{') { i = source.indexOf('}', i); if (i < 0) return ''; }
+      quantified = true;
+      continue;
+    }
+    if (ch === '+') { close(); quantified = true; continue; }
+    if (ch === '.' || ch === '^' || ch === '$') { close(); continue; }
+    run += ch; plain = true;
+  }
+  if (depth) return '';
+  close();
+  return best.toLowerCase();
+}
+// A rule that is one whole word: it can match only a complete token of the text.
+function uiRequiredWord(source) {
+  let word = source;
+  if (word.startsWith(UI_WORD_BEFORE)) word = word.slice(UI_WORD_BEFORE.length);
+  if (word.endsWith(UI_WORD_AFTER)) word = word.slice(0, -UI_WORD_AFTER.length);
+  return /^[\p{L}\p{N}_-]+$/u.test(word) ? word.toLowerCase() : '';
+}
+
 const UI_ENGLISH_COMPILED_RULES = [
   ...UI_ENGLISH_ADDITIONS, ...UI_ENGLISH_PRIORITY_RULES, ...UI_ENGLISH_RULES,
 ].map(([pattern, replacement]) => {
   let source = pattern.source.replace(/\\b/g, '');
   if (source === 'Nema') source = 'Nema(?! Siltlurker)';
-  if (source === uiWord('Tri').source) source = uiWord('Tri(?!-Sentinel)').source;
+  if (source === UI_WORD_TRI) source = UI_WORD_TRI_SENTINEL;
   // Escape name spaces to keep this single-word rule after complete phrases.
-  if (source === uiWord('da').source) source = uiWord('da(?!(?<=Leonardo\\x20da)\\x20Vinci(?![\\p{L}\\p{N}_-]))(?!(?<=Ezio\\x20Auditore\\x20da)\\x20Firenze(?![\\p{L}\\p{N}_-]))').source;
+  if (source === UI_WORD_DA) source = UI_WORD_DA_NAMES;
   const whitespaceRule = source.startsWith('(\\s)');
   // English possessives (including letter names such as "u's") are whole words.
   const rightBoundary = source.includes('(?=\\d)') ? '' : "(?![\\p{L}\\p{N}_-]|['’]s(?![\\p{L}\\p{N}_-]))";
   const bounded = whitespaceRule ? source : `(?<![\\p{L}\\p{N}_-])(?:${source})${rightBoundary}`;
-  return [new RegExp(bounded, pattern.flags.includes('u') ? pattern.flags : pattern.flags + 'u'), replacement, source.includes(' '), source.replace(/\(\?[=!<].*?\)/g, '').length];
-}).sort((a, b) => Number(b[2]) - Number(a[2]) || b[3] - a[3]);
+  // A whitespace rule has no word boundary of its own, and a rule that ends
+  // before a digit may stop inside a token: neither is a whole-token rule.
+  const word = whitespaceRule || !rightBoundary ? '' : uiRequiredWord(source);
+  return {
+    source: bounded, flags: pattern.flags.includes('u') ? pattern.flags : pattern.flags + 'u', replacement,
+    phrase: source.includes(' '), length: source.replace(/\(\?[=!<].*?\)/g, '').length,
+    word, text: word ? '' : uiRequiredText(source), pattern: null,
+  };
+}).sort((a, b) => Number(b.phrase) - Number(a.phrase) || b.length - a.length);
+// Patterns are built when a rule is first tried: most never are.
+const uiRulePattern = rule => rule.pattern || (rule.pattern = new RegExp(rule.source, rule.flags));
+// Letters whose case folding in a pattern differs from toLowerCase(). A text
+// with one of them is checked against every rule.
+const UI_UNUSUAL_CASE = /[İıſẛẞιKÅﬀ-ﬆ]/;
+const UI_TOKEN_BREAK = /[^\p{L}\p{N}_-]+/u;
+const UI_NOT_PROSE = /^(?:https?:\/\/|data:|blob:|\.{0,2}\/)/;
+
+// Every rule in order, with no shortcut: the definition of the translation.
+MTG.uiTextReference = function (value) {
+  let text = String(value ?? '');
+  // Asset paths and URLs are identifiers; prose translation must not rewrite them.
+  if (UI_NOT_PROSE.test(text)) return text;
+  for (const rule of UI_ENGLISH_COMPILED_RULES) text = text.replace(uiRulePattern(rule), rule.replacement);
+  return text;
+};
 
 const UI_ENGLISH_CACHE = new Map();
+const UI_ENGLISH_CACHE_LIMIT = 8192;
 MTG.uiText = function (value) {
   const source = String(value ?? '');
-  // Asset paths and URLs are identifiers; prose translation must not rewrite them.
-  if (/^(?:https?:\/\/|data:|blob:|\.{0,2}\/)/.test(source)) return source;
-  if (UI_ENGLISH_CACHE.has(source)) return UI_ENGLISH_CACHE.get(source);
+  if (UI_NOT_PROSE.test(source)) return source;
+  const cached = UI_ENGLISH_CACHE.get(source);
+  if (cached !== undefined) return cached;
   let text = source;
-  for (const [pattern, replacement] of UI_ENGLISH_COMPILED_RULES) text = text.replace(pattern, replacement);
-  if (UI_ENGLISH_CACHE.size >= 2048) UI_ENGLISH_CACHE.clear();
+  if (UI_UNUSUAL_CASE.test(source)) text = MTG.uiTextReference(source);
+  else {
+    let lower = text.toLowerCase(), tokens = null;
+    for (const rule of UI_ENGLISH_COMPILED_RULES) {
+      if (rule.word) {
+        if (!tokens) tokens = new Set(lower.split(UI_TOKEN_BREAK));
+        if (!tokens.has(rule.word)) continue;
+      } else if (rule.text && !lower.includes(rule.text)) continue;
+      const next = text.replace(uiRulePattern(rule), rule.replacement);
+      if (next !== text) { text = next; lower = text.toLowerCase(); tokens = null; }
+    }
+  }
+  // A full cache drops its oldest quarter instead of everything at once.
+  if (UI_ENGLISH_CACHE.size >= UI_ENGLISH_CACHE_LIMIT) {
+    let drop = UI_ENGLISH_CACHE_LIMIT >> 2;
+    for (const key of UI_ENGLISH_CACHE.keys()) { UI_ENGLISH_CACHE.delete(key); if (--drop <= 0) break; }
+  }
   UI_ENGLISH_CACHE.set(source, text);
   return text;
 };
