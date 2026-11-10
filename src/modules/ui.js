@@ -1394,17 +1394,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           hand: new Set(p.hand.map(card => card.iid)),
           graveyard: new Set(p.graveyard.map(card => card.iid)),
           exile: new Set(p.exile.map(card => card.iid)),
+          library: new Set(p.library.map(card => card.iid)),
         });
       }
       this._zoneSnapshot = snapshot;
       if (!prev || prev.game !== g || g.gameOver) return;
       const zoneOf = iid => {
         for (const zones of prev.players.values()) {
-          for (const zone of ['hand', 'graveyard', 'exile']) if (zones[zone].has(iid)) return zone;
+          for (const zone of ['hand', 'graveyard', 'exile', 'library']) if (zones[zone] && zones[zone].has(iid)) return zone;
         }
         if (prev.battlefield.has(iid)) return 'battlefield';
         if (prev.stack.has(iid)) return 'stack';
-        return 'library';
+        // In no zone at the last render: a spell that was resolving, or a card
+        // in the command zone. It was not in a library, so it is not "milled".
+        return 'limbo';
       };
       const groups = new Map();
       for (const p of g.players) {
@@ -1413,9 +1416,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const zone of ['exile', 'graveyard', 'hand']) {
           for (const card of p[zone]) {
             if (was[zone].has(card.iid)) continue;
-            const from = zoneOf(card.iid);
-            const label = this.zoneFlightLabel(from, zone, card);
+            const label = this.zoneFlightLabel(zoneOf(card.iid), zone, card);
             if (!label) continue;
+            // A discard leaves the hand, even if the card was drawn since the last render.
+            const from = label === 'DISCARDED' ? 'hand' : zoneOf(card.iid);
             const key = `${p.idx}|${from}|${zone}|${label}`;
             if (!groups.has(key)) groups.set(key, { player: p, from, to: zone, label, cards: [] });
             groups.get(key).cards.push(card);
@@ -1434,7 +1438,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.isToken || card.isCopySpell) return null;
       if (to === 'exile') return card.meta && card.meta.playableBy ? 'EXILED · MAY PLAY' : 'EXILED';
       if (to === 'graveyard') {
-        if (from === 'hand') return 'DISCARDED';
+        // Two renders can be several moves apart. A land played and sacrificed,
+        // or a spell cast and resolved, also goes from hand to graveyard: only
+        // the engine's own discard mark makes it a discard.
+        if (this.cardWasDiscarded(card)) return 'DISCARDED';
         if (from === 'library') return 'MILLED';
         return null;   // a spell resolving from the stack is routine
       }
@@ -1442,17 +1449,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return null;
     }
 
+    // The engine marks a discarded card with the zone version it got in the
+    // graveyard. A later move changes the version, so an old mark never counts.
+    cardWasDiscarded(card) {
+      const meta = card && card.meta;
+      if (!meta || meta._discardedTurn === undefined) return false;
+      if (meta._discardedZoneVersion !== undefined) return meta._discardedZoneVersion === card.zoneVersion;
+      return meta._discardedTurn === this.game?.turnNo;
+    }
+
+    // A zone's place on screen for a card flight. A phone view may hide the
+    // zone (another player's seat, your piles behind Combat or Stack): then the
+    // player's visible stand-in is used. Null when the player is not on screen.
+    zoneFlightAnchor(player, zone) {
+      const boxed = node => {
+        if (!node) return false;
+        const r = node.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.bottom > 0 && r.right > 0 && r.top < window.innerHeight && r.left < window.innerWidth;
+      };
+      const node = this.zoneAnchor(player, zone);
+      if (boxed(node)) return node;
+      const standIn = this.gameEffectPlayerAnchor(player);
+      return boxed(standIn) ? standIn : null;
+    }
+
     zoneAnchor(player, zone) {
       if (player === this.me) {
         if (zone === 'hand') return document.querySelector('#game .handwrap, #game .hand');
         if (zone === 'library') return document.querySelector('#game .meinfo .zbtn[data-z="library-top"]');
         if (zone === 'graveyard' || zone === 'exile') return document.querySelector(`#game .meinfo .zbtn[data-z="${zone}"]`);
-        if (zone === 'stack') return document.querySelector('#game .center .stack, #game .stackpop, #game .center');
+        if (zone === 'stack' || zone === 'limbo') return document.querySelector('#game .center .stack, #game .stackpop, #game .center');
         return document.querySelector('#game .meinfo');
       }
       const root = document.querySelector(`#game [data-player-id="${player.idx}"]`);
       if (!root) return null;
-      if (zone === 'stack') return document.querySelector('#game .center .stack, #game .stackpop') || root;
+      if (zone === 'stack' || zone === 'limbo') return document.querySelector('#game .center .stack, #game .stackpop') || root;
       return root.querySelector('.oppmeta') || root.querySelector('.opplife') || root;
     }
 
@@ -1460,8 +1491,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const { player, from, to, label, cards } = group;
       const layer = this.gameEffectLayer();
       const vp = this.fxViewport();
-      const source = this.fxRect(this.zoneAnchor(player, from));
-      const dest = this.fxRect(this.zoneAnchor(player, to));
+      const sourceNode = this.zoneFlightAnchor(player, from), destNode = this.zoneFlightAnchor(player, to);
+      // Neither end is on screen: a hidden box would put the flight in the
+      // screen's corner. The log and the zone counts still carry the move.
+      if (!sourceNode && !destNode) return;
+      const source = this.fxRect(sourceNode || destNode);
+      const dest = this.fxRect(destNode || sourceNode);
       const sx = source ? source.left + source.width / 2 : vp.width / 2;
       const sy = source ? source.top + source.height / 2 : vp.height / 2;
       let ex = dest ? dest.left + dest.width / 2 : sx;
@@ -1491,6 +1526,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       fx.appendChild(el('div', 'gamefx-flightbadge',
         `<small>${esc(player.name)} · ${esc(label)}${cards.length > 1 ? ` ×${cards.length}` : ''}</small><b>${esc(names)}</b>`));
       layer.appendChild(fx);
+      // Keep the name badge on screen: an anchor near the edge would cut it.
+      const half = fx.offsetWidth / 2 + 6;
+      if (half > 6 && half * 2 <= vp.width) {
+        const clamp = x => Math.max(half, Math.min(vp.width - half, x));
+        const startX = clamp(sx), endX = clamp(ex);
+        fx.style.left = `${startX}px`;
+        fx.style.setProperty('--fx-x', `${endX - startX}px`);
+      }
       setTimeout(() => fx.remove(), 1600 + delay);
       setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1660 + delay);
     }
@@ -1709,7 +1752,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           `<b>CREATURE SPELL — NOT ON THE BATTLEFIELD YET</b>` +
           `<span>Normal “target creature” removal cannot select it on the Stack. Counter it now, or click Proceed; after it resolves, removal can target it when you receive priority.</span>`));
       }
-      info.appendChild(el('div', 'actionstagetarget', `🎯 LOCKED TARGET MAP · ${targets.length} target${targets.length === 1 ? '' : 's'}${targets.length ? ` · ${esc(targetText)}` : ''}`));
+      // A spell without targets has no map to lock: say so in two words.
+      info.appendChild(el('div', 'actionstagetarget', targets.length
+        ? `🎯 LOCKED TARGET MAP · ${targets.length} target${targets.length === 1 ? '' : 's'} · ${esc(targetText)}`
+        : '🎯 NO TARGETS'));
       const targetFlow = this.renderStackTargetFlow(top);
       if (targetFlow) info.appendChild(targetFlow);
       if (damageDivision.length) {
@@ -7097,12 +7143,22 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       }
     }
 
+    // The story of the match for its last screen: who went out, when and why,
+    // and who won. The last few lines of the log said neither. The places
+    // left go to the latest attacks, damage and arrivals, in table order.
+    matchHighlights(g, limit = 6) {
+      const story = g.log.filter(entry => entry.cls === 'lose' || entry.cls === 'win').slice(-limit);
+      const rest = g.log.filter(entry => ['combat', 'dmg', 'monarch', 'arrival'].includes(entry.cls));
+      const chosen = new Set(story.concat(rest.slice(-Math.max(0, limit - story.length))));
+      return g.log.filter(entry => chosen.has(entry));
+    }
+
     renderGameOver(g) {
       const ov = el('div', 'overlay dark');
       const m = el('div', 'modal wide matchrecap');
       const won = g.winner === this.me;
       const alive = g.players.filter(player => !player.lost);
-      const moments = g.log.filter(entry => ['win', 'combat', 'dmg', 'monarch', 'effect', 'arrival'].includes(entry.cls)).slice(-5);
+      const moments = this.matchHighlights(g);
       m.appendChild(el('div', 'recaphead', `
         <span>${won ? 'VICTORY' : 'MATCH COMPLETE'}</span>
         <div class="gameover">${won ? 'You held the table.' : `${g.winner ? esc(g.winner.name) + ' wins.' : 'Game over.'}`}</div>
@@ -7115,7 +7171,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       m.appendChild(standings);
       const highlights = el('section', 'recaphighlights');
       highlights.innerHTML = `<small>PUBLIC MATCH HIGHLIGHTS</small>${moments.length
-        ? `<ol>${moments.map(entry => `<li><span>T${entry.t}</span>${esc(entry.msg)}</li>`).join('')}</ol>`
+        ? `<ol>${moments.map(entry => `<li${['lose', 'win'].includes(entry.cls) ? ` class="${entry.cls}"` : ''}><span>T${entry.t}</span>${esc(entry.msg)}</li>`).join('')}</ol>`
         : '<p>The complete public sequence is available in the game log.</p>'}`;
       m.appendChild(highlights);
       const actions = el('div', 'recapactions');

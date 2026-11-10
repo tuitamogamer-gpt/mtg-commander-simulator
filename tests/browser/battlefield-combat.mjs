@@ -326,7 +326,7 @@ try {
   await card(ids.creatures[0]).tap();
   const defense = page.locator(`[data-defense-player="${ids.opponent}"]`);
   assert.equal(await defense.getAttribute('open'), '', 'Selecting a defender opens their public creatures');
-  assert.match(await defense.locator('summary').textContent(), /36 life.*3\/4 untapped creatures/);
+  assert.match(await defense.locator('summary').textContent(), /36 life.*3 of 4 creatures untapped/);
   const angel = defense.locator(`[data-defense-card="${defenseIds.angel}"]`);
   // Marked damage sits beside power/toughness, on a line the row already has.
   assert.match(await angel.textContent(), /4\/4\s*2 damage marked.*flying.*vigilance.*Untapped/);

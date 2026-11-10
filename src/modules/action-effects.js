@@ -160,7 +160,10 @@ function charge(effect, ui, pairs, z, late = 0) {
     // A blocked attacker charges only a blocker in view, never the player.
     const destination = targets.length ? blockers[0] : cardElement(target) || playerElement(ui, target?.idx != null ? target : target?.ctrl);
     if (!source || !destination) {
-      const mini = !source && document.querySelector(`.mini[data-iid="${card?.iid}"]`), r = mini?.getBoundingClientRect();
+      // Only a missing attacker is looked up. With the attacker in view this was
+      // `false`, and `false?.getBoundingClientRect()` threw: the whole charge
+      // stopped whenever a blocker or the defender was out of view.
+      const mini = source ? null : document.querySelector(`.mini[data-iid="${card?.iid}"]`), r = mini?.getBoundingClientRect();
       const over = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
       record.skipped.push({iid: card?.iid, reason: !source ? 'attacker not in view' : targets.length ? 'blocker not in view' : 'defender not in view',
         ...(over ? {covered: `${over.tagName}.${String(over.className).slice(0, 60)}`, rect: [r.x, r.y, r.width, r.height].map(Math.round)} : {})});
@@ -266,7 +269,7 @@ function paint(state, event, kind, shownAt = performance.now()) {
       ring(effect, start, 'commit', delay); route(effect, start, end, delay);
     }
     const origin = center(playerRect(ui, player), z);
-    if (origin) label(effect, origin, `${event.count} ATTACKERS`, 'Attack declared', width, height);
+    if (origin) label(effect, origin, `${event.count} ATTACKER${event.count === 1 ? '' : 'S'}`, 'Attack declared', width, height);
   } else if (kind === 'block') {
     // Each blocker raises a guard and meets its attacker.
     let drawn = 0;

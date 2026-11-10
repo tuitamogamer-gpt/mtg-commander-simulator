@@ -177,6 +177,38 @@ function sideFight(page) {
   });
 }
 
+// A blocker that has no place on screen (a hidden seat, a scrolled lane): its
+// attacker does not charge, and the attackers that can still do. This used to
+// throw in the charge: nothing charged and the effect stayed on screen.
+function hiddenBlocker(page) {
+  return page.evaluate(async () => {
+    const game = _game, ui = _ui, human = ui.me, enemy = game.players.find(player => player !== human);
+    game.battlefield = game.battlefield.filter(card => card.is('Land')); game.stack = []; game.pendingTriggers = [];
+    game.turnNo++; game.turnPlayer = enemy; game.phase = 'combat'; game.step = 'damage';
+    const put = (name, owner) => { const card = new MTG.CardInst(MTG.DEFS[name], owner); card.zone = 'battlefield'; card.sick = false; game.battlefield.push(card); return card; };
+    const dragon = put('Shivan Dragon', enemy), bears = put('Grizzly Bears', enemy);
+    // A real card that has no place on the table: never put on the battlefield.
+    const unseen = new MTG.CardInst(MTG.DEFS['Serra Angel'], human); unseen.zone = 'battlefield';
+    dragon.attacking = human; dragon.blockedBy = [unseen]; dragon.wasBlocked = true;
+    bears.attacking = human; bears.blockedBy = []; bears.wasBlocked = false;
+    game.combat = {attackers: [dragon, bears]}; game.recalc();
+    game.speedFactor = (MTG.SPEEDS.normal || [])[1] || 1.5625; game.paced = true;
+    ui.pendings = []; ui.mobileView = 'mine'; ui.combatAnimationEnabled = true; ui.reducedMotion = false;
+    document.body.classList.remove('reduced-motion'); ui.render();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    MTG.lastCombatCharge = null;
+    game.note('gameEffect', {kind: 'combatClash', combatStep: 'normal', count: 2,
+      pairs: [{card: dragon, targets: [unseen], target: human}, {card: bears, targets: [], target: human}]});
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const during = {copies: [...document.querySelectorAll('.actionfx-charge')].map(node => Number(node.dataset.iid))};
+    await new Promise(resolve => setTimeout(resolve, 3200));
+    game.phase = 'main2'; game.step = ''; ui.render();
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return {charge: MTG.lastCombatCharge, during, dragon: dragon.iid, bears: bears.iid,
+      left: document.querySelectorAll('.actionfx-charge, .actionfx-layer > *').length};
+  });
+}
+
 try {
   for (const width of [1440, 390]) {
     const page = await open(width);
@@ -231,6 +263,19 @@ try {
     assert.ok(side.near < 90, `${label}: an attack on another opponent charges that player: ${JSON.stringify(side)}`);
     assert.ok(side.impact != null && side.impact < 90, `${label}: the damage number appears at that player: ${JSON.stringify(side)}`);
     console.log(`PASS ${label} an opponent attacked by another opponent is charged and hit where they are shown`);
+
+    // On the table view. A phone's Combat view lists every blocker in a row.
+    if (width > 600) {
+    const hidden = await hiddenBlocker(page);
+    assert.deepEqual(errors, [], `${label}: a blocker out of view raises no error`);
+    assert.ok(hidden.charge, `${label}: the charge ran to its end: ${JSON.stringify(hidden)}`);
+    assert.deepEqual(hidden.charge.charged, [hidden.bears], `${label}: the unblocked attacker still charges: ${JSON.stringify(hidden)}`);
+    assert.deepEqual(hidden.charge.skipped.map(row => [row.iid, row.reason]), [[hidden.dragon, 'blocker not in view']],
+      `${label}: the blocked attacker waits, and does not hit the player: ${JSON.stringify(hidden)}`);
+    assert.deepEqual(hidden.during.copies, [hidden.bears], `${label}: only the unblocked attacker's copy moves`);
+    assert.equal(hidden.left, 0, `${label}: nothing of the charge stays on screen: ${JSON.stringify(hidden)}`);
+    console.log(`PASS ${label} a blocker out of view: the other attackers still charge`);
+    }
 
     // Combat animation off, then reduced motion: no charge, the same damage.
     for (const [name, setup] of [['animation off', () => { _ui.combatAnimationEnabled = false; }],

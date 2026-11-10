@@ -268,7 +268,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Group mass outcomes by player and destination, so a wipe does not
       // read like a separate announcement for every creature that died.
       const losses = new Map();
+      // An exile row already names a card and its whole way, such as a
+      // commander's "battlefield → exile" and "exile → command zone". Counting
+      // it again as "1 permanent → command zone" pushed a real result out.
+      const namedByExile = new Set(frame.exileMoves.map(row => row.object));
       for (const [card, before] of departed) if (card.zone !== 'battlefield') {
+        if (namedByExile.has(card)) continue;
         const key = `${before.controller.idx}:${card.zone}`;
         if (!losses.has(key)) losses.set(key, {name: before.controller.name, zone: zoneName(card.zone), count: 0});
         losses.get(key).count++;

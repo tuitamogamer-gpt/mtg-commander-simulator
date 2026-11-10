@@ -312,6 +312,22 @@ test('own fetch is quiet while an opponent reanimation and blink explain the sou
   assert.match(prose(reviews[1]), /left and returned/);
 });
 
+test('an exiled commander is told once: its way to the command zone, then the life gained', async () => {
+  const {game, players: [human, opponent], reviews} = setup();
+  const commander = card(game, human, 'Serra Angel');
+  commander.commander = true;
+  stack(game, opponent, 'Swords to Plowshares', [commander]);
+  await game.resolveTop();
+  assert.equal(commander.zone, 'command');
+  assert.equal(reviews.length, 1);
+  const lines = Array.from(reviews[0].recap.highlights, row => row.text);
+  assert.deepEqual(lines.slice(0, 2), ['You: Serra Angel · battlefield → exile.', 'You: Serra Angel · exile → command zone.']);
+  // The card's whole way is named above. A third line counting it again as
+  // "1 permanent → command zone" used to take the place of the life change.
+  assert.ok(!lines.some(text => /1 permanent → command zone/.test(text)), lines.join(' | '));
+  assert.ok(lines.some(text => /You: 40 → 44 life/.test(text)), lines.join(' | '));
+});
+
 test('control changes explain which player now controls a permanent', async () => {
   const {game, players: [human, owner], reviews} = setup();
   const stolen = card(game, human, 'Grizzly Bears');

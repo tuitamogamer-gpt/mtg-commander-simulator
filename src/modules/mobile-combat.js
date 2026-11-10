@@ -148,8 +148,11 @@ function defendingCreatures(ui, game, pd) {
       if (group.isConnected && ui.pending === pd) pd.mobileDefenseOpen[player.idx] = group.open;
     };
     const summary = node('summary', '');
+    // "1/1 untapped creatures" read like a creature's power and toughness.
+    const untapped = creatures.filter(card => !card.tapped).length;
     summary.append(node('b', '', defenderText(ui, player)),
-      node('span', '', `${creatures.filter(card => !card.tapped).length}/${creatures.length} untapped creatures`));
+      node('span', '', creatures.length
+        ? `${untapped} of ${creatures.length} creature${creatures.length === 1 ? '' : 's'} untapped` : 'No creatures'));
     group.append(summary);
     const list = node('div', 'ct-mobile-combat-defense-cards');
     for (const creature of [...creatures].sort((a, b) => Number(a.tapped) - Number(b.tapped))) {
