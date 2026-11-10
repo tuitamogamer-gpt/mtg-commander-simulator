@@ -45,6 +45,7 @@ Based on `1a54d7d`. Request: improve everything in the game that can be improved
   - A card drawn and discarded between two renders is a discard.
   - A flight starts and ends at a place on screen: the zone, or the player's visible stand-in (seat chip, life total). If the player is not on screen, no flight is drawn.
   - The name badge is kept inside the screen.
+  - **Live guests.** A guest cannot see hands or libraries, so the table cannot tell where a card came from. The engine now marks a milled card as it marks a discarded one (`engine.js`, `mill`), and both marks are published to guests (`multiplayer-presentation.js`). A guest sees "DISCARDED" and "MILLED" from the marks alone, and no longer "MILLED" for every card an opponent puts into a graveyard.
 - **Match end** (`ui.js`, `matchHighlights`). The highlights list every elimination with its turn and reason and the win, in order. The places left, up to six lines, go to the latest attacks, damage and arrivals.
 - **Result recap** (`resolution-recap.js`). A card whose way is already named by an exile row is not counted again.
 - **Phone details** (`commander-dock.css`, `experience-tools.css`, `ui.js`). The pedestal ring sits under the commander's card. On touch screens the menu entry reads "Your hand and public cards" and the search window has no keyboard footer. A mouse and keyboard keep both.
@@ -80,7 +81,10 @@ In game 1203 the longest single decision went from 7.2 s to 2.3 s. These are tim
   - the engine's discard and mill are shown, for you and for an opponent, with the name badge inside the screen;
   - a card drawn and discarded is a discard.
 
+  - a card from no zone the table knew, as a Live guest sees it, is named by the engine's mark alone, and not announced without one.
+
   On `1a54d7d` it fails at the first check: `"AI Dragon · MILLED"` for Swords to Plowshares, with the badge at −45 px.
+- **New test `tests/zone-flight-marks.test.mjs`** (3 tests): a mill and a discard mark their cards with the graveyard zone version, the mark stops counting once the card moves again, and a guest receives the marks of public cards and nothing of a hidden one.
 - **`tests/browser/live-combat.mjs`** has a new desktop check: a blocked attacker whose blocker has no place on the table is skipped as "blocker not in view", the unblocked attacker still charges, and nothing stays on screen. On `1a54d7d` it fails with the page error.
 - **`tests/resolution-recap.test.mjs`** has a new test: an exiled commander is told in two lines, followed by "You: 40 → 44 life". On `1a54d7d` the third line is "1 permanent → command zone". 33 of 33 pass.
 - **`tests/browser/battlefield-combat.mjs`** expects "3 of 4 creatures untapped".
@@ -91,19 +95,21 @@ In game 1203 the longest single decision went from 7.2 s to 2.3 s. These are tim
 
 ### Suites
 
+- **Live:** `mass-wipe-live` (three wipes on both screens, host and guest) and `commander-live-launch` (two browsers, a guest's decision over WebSockets, reload and resume) pass.
 - **Browser suites that pass on the fixed source:**
   - `live-combat`, `battlefield-combat`, `zone-flights`, `action-effects`, `effect-anchors`, `combat-replay`;
   - `phone-table-polish`, `phone-memory`, `mobile-table-view`;
   - `command-table`, `stable-table-ui`, `interaction-continuity`, `decision-experience`, `resolution-recap`;
   - `player-experience` and `player-gameplay`, a complete game through the interface up to the rematch. Both use a Quick preset and stopped at that click before.
-  - `c21-precons`, all ten decks on both screens, and `afc-mic-precons` for one deck (Planar Portal), as samples of the 49 repaired suites.
+  - `c21-precons` and `starter-precons`, every deck on both screens, and `afc-mic-precons` for one deck (Planar Portal), as samples of the 49 repaired suites.
 
-- **Node tests.** The complete run was cut short by a restart of the session after 1,791 top-level tests. One had failed: `bom-precons.test.mjs` reads `git show 22dcc14:src/data.js`, and this checkout is a shallow clone without that commit. The 113 tests of the files nearest to the changes were run again on the final source and pass. `ui-english.test.mjs` did not finish within ten minutes here and was not waited for.
-- Syntax check and `git diff --check` pass.
+- **Node tests.** The complete run was cut short by a restart of the session after 1,791 top-level tests. One had failed: `bom-precons.test.mjs` reads `git show 22dcc14:src/data.js`, and this checkout is a shallow clone without that commit. On the final source, 31 files were run again: those that use mill or discard, the Live presentation, saves, bot isolation and the files nearest to the changes. 1,296 of 1,297 tests pass. The one failure is not from this round: `oracle-token-forms-source.test.mjs` compares the engine's creature types with a pinned official list, and the Star Trek preview decks added types (Aenar, Andorian, Borg and others) that the list does not have. `ui-english.test.mjs` did not finish within ten minutes here and was not waited for.
+- Syntax check, source audit and `git diff --check` pass. Strict certification passes: 180 decks, 6,651 unique active cards, 15,021 card and deck checks, and all 32,273 definitions. Its timestamp-only report change is not committed.
 
 ## Not changed
 
 - **Bot turns on very wide boards are still slow.** After this change, a bot's own decisions are about a quarter of the time of the slowest game. The rest is the engine listing castable spells at every priority window and recalculating the board after every action. The slowest turn seen in the 42 games, 149 s on the old code under load, was not measured again.
 - **The 49 repaired browser suites were not all run.** They take one to six minutes each. The ones run are listed above; the others may have further stale steps behind the repaired click.
-- **Live in a browser** was not exercised. `afc-mic-live` timed out waiting for a guest's decision while several other runs shared the machine; it was not repeated alone.
+- **The pinned creature-type list** was not updated for the Star Trek preview types. It needs the official list once the set is released.
+- **Live precon suites** were not run. `afc-mic-live` timed out waiting for a guest's decision while several other runs shared the machine; the two Live suites above pass when run alone.
 - **An empty optional card choice** still has both "Confirm ✓ (0)" and "None".
