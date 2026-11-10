@@ -39,18 +39,21 @@ let loadPhase = 'catalog';
 // The rest of the card collection, about four of five definitions, is used
 // only by imported decks and loads when one needs it (MTG.ensureFullCatalog).
 // A player who already has saved imported lists gets it before the table
-// opens: completing it stops the page for several seconds, and that belongs
-// behind the loading message. The address can decide instead:
+// opens, and so does a Live room, which builds every seat's deck: completing
+// it stops the page for several seconds, and that belongs behind the loading
+// message. The address can decide instead:
 //   ?catalog=full     everything before the table opens, as every page did;
 //   ?catalog=startup  never at entry;
 //   ?catalog=visitor  as for a visitor, also on a page under automation.
 // A page under automation otherwise loads everything: test fixtures put any
 // card on the table by name.
-async function wantsFullCatalogAtEntry() {
-  const choice = new URLSearchParams(window.location.search).get('catalog');
+async function wantsFullCatalogAtEntry(mode) {
+  const address = new URLSearchParams(window.location.search);
+  const choice = address.get('catalog');
   if (choice === 'full') return 'required';
   if (choice === 'startup') return null;
   if (choice !== 'visitor' && navigator.webdriver === true) return 'required';
+  if ((mode === 'online' || address.get('room')) && typeof globalThis.MTG.createHiggsfieldRoomClient === 'function') return 'required';
   return await globalThis.MTG.playerHasImportedLists() ? 'for-saved-lists' : null;
 }
 
@@ -128,7 +131,7 @@ async function loadGame(mode = null) {
         // the table opens with the complete collection.
         window.__mtgDeferEntry = true;
         await import('./app-startup.js');
-        const complete = await wantsFullCatalogAtEntry();
+        const complete = await wantsFullCatalogAtEntry(mode);
         if (complete) {
           try { await globalThis.MTG.ensureFullCatalog(); }
           catch (error) {
