@@ -43,7 +43,7 @@ Based on `1a54d7d`. Request: improve everything in the game that can be improved
 - **Combat charge** (`action-effects.js`). An attacker whose blocker or defender is out of view is skipped without an error; the other attackers still charge.
 - **Card flights** (`ui.js`, `syncZoneEffects`).
   - "DISCARDED" needs the engine's own discard mark on the card.
-  - "MILLED" needs a card that was in a library at the last render.
+  - "MILLED" needs a card that was in a library at the last render, or the engine's mill mark.
   - A card that was in no zone, such as a resolving spell, draws no flight to the graveyard.
   - A card drawn and discarded between two renders is a discard.
   - A flight starts and ends at a place on screen: the zone, or the player's visible stand-in (seat chip, life total). If the player is not on screen, no flight is drawn.
@@ -83,8 +83,7 @@ In game 1203 the longest single decision went from 7.2 s to 2.3 s. These are tim
   - a spell that resolved draws no flight;
   - a land played and sacrificed draws no flight;
   - the engine's discard and mill are shown, for you and for an opponent, with the name badge inside the screen;
-  - a card drawn and discarded is a discard.
-
+  - a card drawn and discarded is a discard;
   - a card from no zone the table knew, as a Live guest sees it, is named by the engine's mark alone, and not announced without one.
 
   On `1a54d7d` it fails at the first check: `"AI Dragon · MILLED"` for Swords to Plowshares, with the badge at −45 px.
@@ -108,7 +107,7 @@ In game 1203 the longest single decision went from 7.2 s to 2.3 s. These are tim
   - `c21-precons` and `starter-precons`, every deck on both screens, and `afc-mic-precons` for one deck (Planar Portal), as samples of the 49 repaired suites.
 
 - **Node tests.** The complete run was cut short by a restart of the session after 1,791 top-level tests. One had failed: `bom-precons.test.mjs` reads `git show 22dcc14:src/data.js`, and this checkout is a shallow clone without that commit. On the final source, 31 files were run again: those that use mill or discard, the Live presentation, saves, bot isolation and the files nearest to the changes. 1,296 of 1,297 tests pass. The one failure is not from this round: `oracle-token-forms-source.test.mjs` compares the engine's creature types with a pinned official list, and the Star Trek preview decks added types (Aenar, Andorian, Borg and others) that the list does not have. `ui-english.test.mjs` did not finish within ten minutes here and was not waited for.
-- **Bot games on the final engine.** One shard of the headless smoke test, ten four-bot games with the state checks at every turn, passes with no bot fallback.
+- **Bot games on the final engine.** Two shards of the headless smoke test, twenty four-bot games with the state checks at every turn, pass with no bot fallback. The second ran with the empty-activation rule.
 - **Another failure that is not from this round:** `commander-staples.test.mjs` expects the seven staples' pictures to be pinned Scryfall addresses; they now resolve to local copies, so `new URL(...)` throws. It fails the same way without this round's changes.
 - Syntax check, source audit and `git diff --check` pass. Strict certification passes: 180 decks, 6,651 unique active cards, 15,021 card and deck checks, and all 32,273 definitions. Its timestamp-only report change is not committed.
 
