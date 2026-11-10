@@ -97,6 +97,28 @@ function surroundingsDifferences(full, MTG, skip) {
   return out;
 }
 
+// A compiled script points at operations of its batch entry: the same
+// objects, not copies. For every card, which of its entry's operations the
+// script and the definition hold, as a string of 1 and 0.
+function sharedOperations(MTG) {
+  const shared = new Map();
+  const reachable = (root, found, depth) => {
+    if (!root || typeof root !== 'object' && typeof root !== 'function' || found.has(root) || depth > 5) return;
+    found.add(root);
+    for (const value of Array.isArray(root) ? root : Object.values(root)) reachable(value, found, depth + 1);
+  };
+  for (const batch of MTG.ORACLE_BATCHES) {
+    for (const entry of batch.cards) {
+      const found = new Set();
+      reachable(MTG.SCRIPTS[entry.raw.name], found, 0);
+      reachable(MTG.DEFS[entry.raw.name], found, 0);
+      const operations = (entry.implementation || []).flatMap(operation => [operation, ...Object.values(operation).flat().filter(value => value && typeof value === 'object')]);
+      shared.set(entry.raw.name, operations.map(operation => found.has(operation) ? 1 : 0).join(''));
+    }
+  }
+  return shared;
+}
+
 test('the generated startup files are current', () => {
   assert.deepEqual(staleStartupCatalog(), [], 'run: npm run build:startup');
   const { output, summary } = buildStartupCatalog();
@@ -200,6 +222,13 @@ test('a collection completed later is the same collection, card for card', () =>
     'the fixture has a registry that cards and a later module both fill');
   assert.deepEqual(surroundingsDifferences(full, MTG,
     new Set(['SCRIPTS', 'DEFS', 'CARD_CATALOG', 'DB', 'RAW_DATA', 'ORACLE_BATCHES', 'DECKS', 'loadFullOracleCatalog'])), []);
+  // The batches hold the entries that the scripts were compiled from, also
+  // for the cards that were registered with a startup subset: a script points
+  // at its entry's operations, and tools find a card's rules by them.
+  const expected = sharedOperations(full), actual = sharedOperations(MTG);
+  assert.ok([...expected.values()].filter(row => row.includes('1')).length > 1000, 'many scripts hold operations of their entries');
+  const unshared = [...expected].filter(([name, row]) => actual.get(name) !== row).map(([name, row]) => `${name}: ${row} / ${actual.get(name)}`);
+  assert.deepEqual(unshared.slice(0, 10), [], `${unshared.length} cards hold other operation objects than their batch entries`);
 });
 
 test('an effect that offers every card name completes the collection first', async () => {

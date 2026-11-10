@@ -4922,6 +4922,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (batch.startupSubset) catalogComplete = false;
     if (completingCatalog) completionOrder.push(batch.id);
+    // The complete batch keeps the entries that its startup subset registered.
+    // A compiled script points at the operations of its entry (the attachment
+    // layers, the static rules), and a tool that walks the batches finds a
+    // card's rules by those same objects.
+    if (started) {
+      const registered = new Map(started.cards.map(entry => [entry.raw.name, entry]));
+      batch.cards = batch.cards.map(entry => registered.get(entry && entry.raw && entry.raw.name) || entry);
+    }
 
     const pending = [];
     for (const entry of batch.cards) {
