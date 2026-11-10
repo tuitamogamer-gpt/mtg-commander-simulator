@@ -38,14 +38,20 @@ let loadPhase = 'catalog';
 // The table opens with the cards of the built-in decks (src/app-startup.js).
 // The rest of the card collection, about four of five definitions, is used
 // only by imported decks and loads when one needs it (MTG.ensureFullCatalog).
-// `?catalog=full` loads it before the table opens, as every page did before;
-// `?catalog=startup` never does at entry. A page under automation defaults to
-// the complete collection: test fixtures put any card on the table by name.
-function wantsFullCatalogAtEntry() {
+// A player who already has saved imported lists gets it before the table
+// opens: completing it stops the page for several seconds, and that belongs
+// behind the loading message. The address can decide instead:
+//   ?catalog=full     everything before the table opens, as every page did;
+//   ?catalog=startup  never at entry;
+//   ?catalog=visitor  as for a visitor, also on a page under automation.
+// A page under automation otherwise loads everything: test fixtures put any
+// card on the table by name.
+async function wantsFullCatalogAtEntry() {
   const choice = new URLSearchParams(window.location.search).get('catalog');
-  if (choice === 'full') return true;
-  if (choice === 'startup') return false;
-  return navigator.webdriver === true;
+  if (choice === 'full') return 'required';
+  if (choice === 'startup') return null;
+  if (choice !== 'visitor' && navigator.webdriver === true) return 'required';
+  return await globalThis.MTG.playerHasImportedLists() ? 'for-saved-lists' : null;
 }
 
 function updateLoadPhase(phase) {
@@ -118,15 +124,21 @@ async function loadGame(mode = null) {
       gameLoad = (async () => {
         await import('./data.js');
         updateLoadPhase('table');
-        const complete = wantsFullCatalogAtEntry();
-        // main.js starts the entry when it loads, unless asked to wait for
-        // the complete collection.
-        if (complete) window.__mtgDeferEntry = true;
+        // main.js leaves the entry to this page, which first decides whether
+        // the table opens with the complete collection.
+        window.__mtgDeferEntry = true;
         await import('./app-startup.js');
+        const complete = await wantsFullCatalogAtEntry();
         if (complete) {
-          await globalThis.MTG.ensureFullCatalog();
-          globalThis.MTG.initializeEntry();
+          try { await globalThis.MTG.ensureFullCatalog(); }
+          catch (error) {
+            // Saved lists alone do not keep the table closed: the built-in
+            // decks open, and My Library reports that it could not load.
+            if (complete === 'required') throw error;
+            console.error('The complete card collection failed to load.', error);
+          }
         }
+        globalThis.MTG.initializeEntry();
       })();
     }
     await gameLoad;

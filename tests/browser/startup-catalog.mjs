@@ -1,7 +1,9 @@
 // The table opens with the cards of built-in decks only. The rest of the card
 // collection is loaded when an imported deck needs it: here, when My Library
-// opens. `?catalog=startup` asks for that path; a page under automation would
-// otherwise load the complete collection before the table opens.
+// opens, and when a problem report with an imported deck is chosen. A player
+// who already has saved imported lists gets it before the table opens.
+// `?catalog=startup` and `?catalog=visitor` ask for those paths; a page under
+// automation would otherwise load the complete collection first.
 // Run like the other browser suites: PLAYWRIGHT_MODULE may point to an
 // installed Playwright package; GAME_URL may select an existing preview.
 import assert from 'node:assert/strict';
@@ -18,12 +20,13 @@ const browser = await chromium.launch({headless: true,
   ...(process.env.BROWSER_EXECUTABLE ? {executablePath: process.env.BROWSER_EXECUTABLE} : {})});
 const errors = [];
 
-async function open(viewport, catalog) {
+async function open(viewport, catalog, stored = {}) {
   const page = await browser.newPage(viewport);
   const requests = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => requests.push(new URL(request.url()).pathname));
-  await page.addInitScript(() => localStorage.setItem('mtgOnboardingComplete', '1'));
+  await page.addInitScript(items => { for (const [key, value] of Object.entries(items)) localStorage.setItem(key, value); },
+    {mtgOnboardingComplete: '1', ...stored});
   const url = new URL(base);
   url.searchParams.set('catalog', catalog);
   await page.goto(url.href);
@@ -31,6 +34,7 @@ async function open(viewport, catalog) {
   return {page, requests, batches};
 }
 
+let importedList = null;
 try {
   for (const [label, viewport] of [['1440px', {viewport: {width: 1440, height: 900}}],
     ['390px', {viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true}]]) {
@@ -98,6 +102,7 @@ try {
       text: document.querySelector('.mainmenu-deckimport-result').textContent.slice(0, 300)}));
     assert.equal(result.state, 'ready', `${label}: the list with ${list.outside} passes: ${result.text}`);
     console.log(`PASS ${label} My Library completes the collection; a list with ${list.outside} is ready to play`);
+    importedList = list;
     await page.close();
   }
 
@@ -110,7 +115,78 @@ try {
     assert.equal(table.complete, true);
     assert.ok(table.definitions > 30000 && batches() > 200, JSON.stringify(table));
     console.log(`PASS ?catalog=full opens the table with all ${table.definitions} definitions`);
+
+    // A problem report of a game played with that imported list, written by
+    // this page, which has every card.
+    const report = await page.evaluate(text => {
+      const name = 'Startup report deck';
+      const imported = MTG.importCommanderDeck(text, {name});
+      if (!imported.ok) return {error: imported.errors[0]?.message || 'the list did not pass'};
+      MTG.hydrateImportedDeckLibrary([MTG.createImportedDeckRecord(imported, {id: 'deck-startup-report'})], {source: 'guest'});
+      const setup = {deck: name, commanders: MTG.defaultCommanders(MTG.DECKS[name], MTG.DEFS), ai: 1,
+        aiDecks: ['Elven Council'], aiStyles: ['balanced'], seed: '31'};
+      const save = MTG.buildAccountSave({turnNo: 1}, setup, [], 'match-startup-report-0001');
+      return {text: JSON.stringify({schema: MTG.PROBLEM_REPORT_SCHEMA, description: 'A game with an imported deck.',
+        diagnostics: {reproduction: {mode: 'solo'}, checkpoint: {turn: 1}}, replay: save})};
+    }, importedList.text);
+    assert.ok(report.text, `the report is written: ${report.error}`);
+    // The same list saved on this device, as My Library stores it.
+    const saved = await page.evaluate(text => {
+      const imported = MTG.importCommanderDeck(text, {name: 'Startup saved deck', register: false});
+      MTG.upsertGuestImportedDeck(MTG.createImportedDeckRecord(imported, {id: 'deck-startup-saved'}));
+      return {key: MTG.IMPORTED_LIBRARY_KEY, value: localStorage.getItem(MTG.IMPORTED_LIBRARY_KEY)};
+    }, importedList.text);
+    assert.ok(saved.value && saved.value.includes('Startup saved deck'), 'the list is saved on the device');
     await page.close();
+
+    // Chosen in Diagnostics on a page that opened with the startup subset:
+    // reading the report checks its decklist, so the collection completes
+    // first, and the replay deals the imported deck.
+    const visitor = await open({viewport: {width: 1440, height: 900}}, 'startup');
+    await visitor.page.locator('[data-menu-action="solo"]').first().click();
+    await visitor.page.locator('.deckentry').first().waitFor({timeout: 120000});
+    await visitor.page.locator('.decksearch input').fill('Quick Draw');
+    await visitor.page.locator('.deckcard:visible').first().click();
+    await visitor.page.locator('.deckspotlightcontinue').click();
+    assert.equal(await visitor.page.evaluate(() => MTG.oracleCatalogComplete()), false);
+    await visitor.page.locator('.supportdiagnostics > summary').click();
+    const chooser = visitor.page.waitForEvent('filechooser');
+    await visitor.page.getByRole('button', {name: 'Open problem replay', exact: true}).click();
+    await (await chooser).setFiles({name: 'problem-report.json', mimeType: 'application/json', buffer: Buffer.from(report.text)});
+    await visitor.page.getByRole('button', {name: 'Start diagnostic replay', exact: true}).waitFor({timeout: 180000});
+    assert.equal(await visitor.page.evaluate(() => MTG.oracleCatalogComplete()), true, 'the report is read from the complete collection');
+    assert.ok(visitor.batches() > 200);
+    await visitor.page.getByRole('button', {name: 'Start diagnostic replay', exact: true}).click();
+    await visitor.page.waitForFunction(() => !!window._ui?.diagnosticReplay && _ui.pending?.q.type === 'mulligan', undefined, {timeout: 120000});
+    const replay = await visitor.page.evaluate(outside => {
+      const you = _game.players.find(player => !player.isAI);
+      const cards = [...you.library, ...you.hand, ...you.command];
+      return {deck: you.deckName || _ui.setup?.deck || null, cards: cards.length, outside: cards.some(card => card.def.name === outside)};
+    }, importedList.outside);
+    assert.equal(replay.cards, 100, JSON.stringify(replay));
+    assert.equal(replay.outside, true, `the replay deals ${importedList.outside}: ${JSON.stringify(replay)}`);
+    console.log(`PASS a problem report with an imported deck opens on a startup page and deals ${importedList.outside}`);
+    await visitor.page.close();
+
+    // A visitor's page decides by the player's saved lists. With none, the
+    // table opens with the startup subset.
+    const fresh = await open({viewport: {width: 1440, height: 900}}, 'visitor');
+    await fresh.page.locator('[data-menu-action="solo"]').first().click();
+    await fresh.page.locator('.deckentry').first().waitFor({timeout: 120000});
+    assert.equal(await fresh.page.evaluate(() => MTG.oracleCatalogComplete()), false, 'a visitor without saved lists opens with the startup subset');
+    assert.equal(fresh.batches(), 0);
+    await fresh.page.close();
+    // With a saved list, the collection is complete when the table opens,
+    // behind the loading message, and the saved deck is ready in My Library.
+    const returning = await open({viewport: {width: 1440, height: 900}}, 'visitor', {[saved.key]: saved.value});
+    await returning.page.locator('[data-menu-action="solo"]').first().click();
+    await returning.page.locator('.deckentry').first().waitFor({timeout: 180000});
+    assert.equal(await returning.page.evaluate(() => MTG.oracleCatalogComplete()), true, 'a player with a saved list opens with the complete collection');
+    assert.ok(returning.batches() > 200);
+    await returning.page.waitForFunction(() => MTG.DECKS['Startup saved deck']?.custom === true &&
+      MTG.getImportedDeckLibrary().entries.some(entry => entry.id === 'deck-startup-saved' && entry.ready), undefined, {timeout: 60000});
+    console.log('PASS a visitor without saved lists opens with the startup subset; with a saved list, with the complete collection');
+    await returning.page.close();
   }
   assert.deepEqual(errors, []);
 } finally {

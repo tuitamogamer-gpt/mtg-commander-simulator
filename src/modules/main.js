@@ -125,7 +125,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       try {
         const accountId = globalThis.MTGAccount.user.id;
-        const records = await globalThis.MTGAccount.loadDecks();
+        // The lists the page already fetched to decide how to open the table.
+        const fetched = entryAccountDecks && entryAccountDecks.accountId === accountId ? entryAccountDecks.records : null;
+        entryAccountDecks = null;
+        const records = fetched || await globalThis.MTGAccount.loadDecks();
         if (Array.isArray(records) && records.length) await U.ensureFullCatalog();
         if (generation !== importedLibraryGeneration || owner !== currentImportedLibraryOwner() || globalThis.MTGAccount?.user?.id !== accountId) {
           return U.getImportedDeckLibrary();
@@ -141,6 +144,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     })();
     return importedLibraryRefresh;
   }
+
+  // Whether this player has saved imported lists: the page asks before the
+  // table opens. Saved lists are checked against the complete card collection,
+  // and completing it stops the page for several seconds. For a player who
+  // has lists that happens behind the loading message, not later while a deck
+  // is chosen or a game is played. Never waits long: a profile or a list
+  // request that is slow counts as no lists, and the library loads the
+  // collection when it arrives.
+  let entryAccountDecks = null;
+  MTG.playerHasImportedLists = async function ({ wait = 2500 } = {}) {
+    const late = new Promise(resolve => setTimeout(resolve, wait, null));
+    try {
+      await Promise.race([globalThis.MTGAccount?.whenReady?.(), late]);
+      const owner = currentImportedLibraryOwner();
+      if (owner === 'loading') return false;
+      if (owner === 'guest') return U.readGuestImportedDeckRecords().records.length > 0;
+      const accountId = globalThis.MTGAccount.user.id;
+      const request = globalThis.MTGAccount.loadDecks();
+      request.catch(() => {});
+      const records = await Promise.race([request, late]);
+      if (!Array.isArray(records)) return false;
+      entryAccountDecks = { accountId, records };
+      return records.length > 0;
+    } catch { return false; }
+  };
 
   async function ensureImportedLibraryOwner() {
     await globalThis.MTGAccount?.whenReady?.();
@@ -5701,8 +5729,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (window._game && typeof window._ui?.toast === 'function') window._ui.toast('Loading the complete card collection…');
   });
 
-  // The page starts the entry itself after it has loaded the complete card
-  // collection, when it was asked to load it before the table opens.
+  // The page starts the entry itself, after it has decided whether the table
+  // opens with the complete card collection (src/public-entry.js).
   MTG.initializeEntry = initializeEntry;
   if (window.__mtgDeferEntry) {
     delete window.__mtgDeferEntry;
