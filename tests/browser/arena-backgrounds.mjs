@@ -45,7 +45,7 @@ async function startGame() {
   await page.locator('.decksearch input').fill('Quick Draw');
   await page.locator('.deckentry:visible').first().click();
   await page.locator('.deckspotlightcontinue').click();
-  await page.locator('[data-pod-preset="learn"]').click();
+  await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
   await page.locator('.setupnext').click();
   await page.locator('.reviewstart').click();
   await page.waitForFunction(() => window._ui?.pending?.q.type === 'mulligan');

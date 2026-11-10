@@ -51,7 +51,7 @@ try {
   await page.locator('.decksearch input').fill('Abzan Armor');
   await page.locator('.deckcard:visible').click();
   await page.locator('.deckspotlightcontinue').click();
-  await page.locator('[data-pod-preset="learn"]').click();
+  await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
   await page.locator('.botfields .deckselect').selectOption('Turtle Power');
   await page.locator('.setupnext').click();
   await page.evaluate(() => {window.__qaRandom = Math.random; Math.random = () => 11081 / 1e9;});

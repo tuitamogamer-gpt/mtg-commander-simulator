@@ -45,7 +45,7 @@ try {
   await page.locator('.decksearch input').fill(process.env.PLAYER_HUMAN_DECK || 'Elven Empire');
   await page.locator('.deckcard:visible').click();
   await page.locator('.deckspotlightcontinue').click();
-  await page.locator('[data-pod-preset="learn"]').click();
+  await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
   await page.locator('.botfields .deckselect').selectOption(process.env.PLAYER_AI_DECK || 'Reap the Tides');
   await page.locator('.setupnext').click();
   // Pin only seed generation. Every gameplay decision still uses the real UI.

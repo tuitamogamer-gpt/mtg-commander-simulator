@@ -82,7 +82,7 @@ try {
     await page.locator('.dungeonrules summary').click();
     assert.match(await page.locator('.dungeonrules').innerText(),/Losing initiative keeps your progress/);
     check('all four maps, room effects, arrows, and rules before play');
-    await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();
+    await page.locator('.deckspotlightcontinue').click();await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
     await page.locator('.setupnext').click();await page.locator('.reviewstart').click();
     await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');
     await page.evaluate(()=>{

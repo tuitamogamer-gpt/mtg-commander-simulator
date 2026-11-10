@@ -74,7 +74,7 @@ try {
   await page.locator('.deckanalysis').scrollIntoViewIfNeeded();
   await shot('deck-analysis');
   await page.locator('.deckspotlightcontinue').click();
-  await page.locator('[data-pod-preset="challenge"]').click();
+  await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="challenge"]').click();
   await page.locator('.setupnext').click();
   assert.equal((await state()).stage, 'review');
   assert.match(await page.locator('.reviewrules').innerText(), /hard/i);
@@ -113,7 +113,7 @@ try {
   check('320, 390, 820, 1280 and 1900px setup flows without horizontal overflow');
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.locator('[data-step="pod"]').click();
-  await page.locator('[data-pod-preset="learn"]').click();
+  await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
   await page.locator('.setupnext').click();
   await page.locator('.reviewstart').click();
   await page.waitForFunction(() => window._ui?.pending?.q.type === 'mulligan');

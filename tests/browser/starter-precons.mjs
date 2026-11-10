@@ -24,7 +24,7 @@ try{
     await page.locator('.decksearch input').fill(deck.name);await page.locator(`.deckentry[data-deck="${deck.name}"] .deckcard:visible`).click();
     assert.ok((await page.locator('.deckspotlight').innerText()).includes(deck.commander));
     await page.screenshot({path:`${out}/${deck.slug}-${width}-select.png`});
-    await page.locator('.deckspotlightcontinue').click();await page.locator('[data-pod-preset="learn"]').click();
+    await page.locator('.deckspotlightcontinue').click();await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
     const opponent=starterPrecons[(index+1)%5].name;await page.locator('.botfields .deckselect').selectOption(opponent);
     await page.locator('.setupnext').click();await page.locator('.reviewstart').click();
     await page.waitForFunction(()=>window._ui?.pending?.q.type==='mulligan');

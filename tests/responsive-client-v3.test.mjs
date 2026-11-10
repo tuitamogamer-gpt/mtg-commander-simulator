@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { runInNewContext } from 'node:vm';
+import { createContext, runInContext, runInNewContext } from 'node:vm';
 import { loadEngine } from './helpers/load-engine.mjs';
 
 const index = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const main = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
 const ui = readFileSync(new URL('../src/modules/ui.js', import.meta.url), 'utf8');
+const engine2 = readFileSync(new URL('../src/modules/engine2.js', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../src/client-v3.css', import.meta.url), 'utf8');
 
@@ -24,7 +25,13 @@ function loadUIForKeyboardTest() {
   };
   const localStorage = { getItem() { return null; }, setItem() {} };
   const sandbox = { document, localStorage, console, setTimeout, clearTimeout };
-  runInNewContext(ui, sandbox);
+  // The UI reads the engine's priority modes when it is constructed. Take
+  // them from the engine source, so the isolated UI gets the real list.
+  const priorityModes = engine2.match(/  MTG\.DEFAULT_PRIO_MODE = [^\n]*\n  MTG\.PRIO_MODES = \[[\s\S]*?\n  \];/);
+  assert.ok(priorityModes, 'the engine defines its priority modes');
+  const context = createContext(sandbox);
+  runInContext(`var MTG = globalThis.MTG || (globalThis.MTG = {});\n${priorityModes[0]}`, context);
+  runInContext(ui, context);
   return { UI: sandbox.MTG.UI, keydown: () => keydown };
 }
 
