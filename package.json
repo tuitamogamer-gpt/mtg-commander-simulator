@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-info.mjs",
+    "build:startup": "node scripts/build-startup-catalog.mjs --write",
+    "check:startup": "node scripts/build-startup-catalog.mjs --check",
     "db:migrate": "node scripts/migrate-postgres.mjs",
     "test:postgres": "node --test tests/postgres-storage.test.mjs",
     "audit": "node scripts/audit.mjs",

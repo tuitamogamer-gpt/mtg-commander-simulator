@@ -4817,31 +4817,168 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.compileOracleTextDefinition=(base,implementation,raw)=>compileOracleScript({id:base.oracleBatch||'text-change'},{raw,implementation,oracleId:base.oracleId,semanticClass:base.semanticClass,implementedKeywords:base.implementedKeywords||[],oracleContracts:base.oracleContracts||[]});
 
+  // A batch can arrive in two parts. The page first registers a startup
+  // subset of it: only the cards that built-in decks use, generated into
+  // src/oracle-startup/ by scripts/build-startup-catalog.mjs and marked
+  // `startupSubset`. The complete batch follows when an imported deck needs
+  // the rest of the catalog (MTG.ensureFullCatalog), after every script module
+  // has run. Tools and tests load the complete batches in their original
+  // places, and never see a subset.
+  let catalogComplete = true;
+  let completingCatalog = false;
+  MTG.oracleCatalogComplete = () => catalogComplete;
+
+  // What a batch compiles to depends on the modules loaded before it: later
+  // modules add compile hooks and replace helpers. A batch that completes the
+  // catalog must compile as it would have in its original place, or a card
+  // would get rules that only newer batches were written for. Each startup
+  // part therefore marks its place (beginOracleCompileStage) with the ids of
+  // all batches of its run, and the engine remembers the compiler's
+  // surroundings there: the members of MTG and of its plain namespaces, and
+  // the handler lists in them (MTG.OracleV20.handlers), which later modules
+  // extend in place.
+  const compileStages = new Map();
+  const plainObject = value => !!value && typeof value === 'object' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+  const membersOf = object => new Map(Object.keys(object).map(key => [key, object[key]]));
+  const handlerList = value => Array.isArray(value) && value.length > 0 && value.every(item =>
+    typeof item === 'function' || plainObject(item) && Object.values(item).some(member => typeof member === 'function'));
+  // A module can revise every script registered before it: a new rule for an
+  // old mechanic. The batches that stood before that module and arrive later
+  // get the same revision when they complete the catalog.
+  const scriptRevisions = [];
+  MTG.reviseRegisteredScripts = function (revise) {
+    for (const script of Object.values(MTG.SCRIPTS)) revise(script);
+    scriptRevisions.push({ revise, stagesBefore: compileStageCount });
+  };
+  let compileStageCount = 0;
+  MTG.beginOracleCompileStage = function (batchIds) {
+    const stage = { order: ++compileStageCount, root: membersOf(MTG), namespaces: new Map(), lists: new Map() };
+    for (const value of stage.root.values()) {
+      if (!plainObject(value) || value === MTG.SCRIPTS) continue;
+      const members = membersOf(value);
+      stage.namespaces.set(value, members);
+      for (const member of members.values()) if (handlerList(member)) stage.lists.set(member, member.slice());
+    }
+    for (const id of batchIds) compileStages.set(id, stage);
+  };
+  // Runs `compile` with those surroundings put back, then restores today's.
+  function atCompileStage(stage, compile) {
+    if (!stage) return compile();
+    const undo = [], lists = [];
+    const putBack = (object, wanted) => {
+      for (const key of Object.keys(object)) {
+        if (wanted.has(key) && wanted.get(key) === object[key]) continue;
+        undo.push([object, key, true, object[key]]);
+        if (wanted.has(key)) object[key] = wanted.get(key);
+        else delete object[key];
+      }
+      for (const [key, value] of wanted) {
+        if (!Object.prototype.hasOwnProperty.call(object, key)) { undo.push([object, key, false]); object[key] = value; }
+      }
+    };
+    try {
+      putBack(MTG, stage.root);
+      for (const [object, wanted] of stage.namespaces) putBack(object, wanted);
+      for (const [list, wanted] of stage.lists) { lists.push([list, list.slice()]); list.splice(0, list.length, ...wanted); }
+      return compile();
+    } finally {
+      for (const [list, today] of lists) list.splice(0, list.length, ...today);
+      for (let index = undo.length - 1; index >= 0; index--) {
+        const [object, key, existed, value] = undo[index];
+        if (existed) object[key] = value; else delete object[key];
+      }
+    }
+  }
+
   MTG.registerOracleBatch = function (batch) {
     if (!batch || !batch.id || !Array.isArray(batch.cards)) {
       throw new Error('Oracle batch needs an id and cards array.');
     }
-    if (batches.some(existing => existing.id === batch.id)) {
+    const index = batches.findIndex(existing => existing.id === batch.id);
+    const started = index >= 0 ? batches[index] : null;
+    if (started && (!started.startupSubset || batch.startupSubset)) {
       throw new Error(`Duplicate Oracle batch id: ${batch.id}`);
     }
+    if (batch.startupSubset) catalogComplete = false;
 
+    const pending = [];
     for (const entry of batch.cards) {
       const name = entry && entry.raw && entry.raw.name;
       if (!name || !entry.oracleId || !entry.semanticClass) {
         throw new Error(`${batch.id}: every Oracle card needs name, oracleId, and semanticClass.`);
       }
+      // Registered with the startup subset of this batch.
+      if (started && registeredNames.get(name) === batch.id) continue;
       if (registeredNames.has(name)) {
         throw new Error(`${name} is already registered by ${registeredNames.get(name)}.`);
       }
       if (MTG.SCRIPTS[name]) {
-        throw new Error(`${name} already has a manual engine script; Oracle batches never overwrite it.`);
+        // In its original place this batch ran before the later script modules,
+        // and a manual script assigned there replaced the generated one. A
+        // batch that completes the catalog runs after them: keep that script.
+        if (!completingCatalog) throw new Error(`${name} already has a manual engine script; Oracle batches never overwrite it.`);
+        registeredNames.set(name, batch.id);
+        continue;
       }
 
       registeredNames.set(name, batch.id);
-      try{MTG.SCRIPTS[name]=compileOracleScript(batch,entry);}catch(error){throw new Error(batch.id+'/'+name+': '+error.message,{cause:error});}
+      pending.push(entry);
+    }
+    const stage = completingCatalog ? compileStages.get(batch.id) : null;
+    const compiled = atCompileStage(stage, () => pending.map(entry => {
+      try { return compileOracleScript(batch, entry); }
+      catch (error) { throw new Error(batch.id + '/' + entry.raw.name + ': ' + error.message, { cause: error }); }
+    }));
+    pending.forEach((entry, position) => { MTG.SCRIPTS[entry.raw.name] = compiled[position]; });
+    // Revisions by the modules that came after this batch's original place.
+    if (stage) for (const revision of scriptRevisions) {
+      if (revision.stagesBefore >= stage.order) for (const script of compiled) revision.revise(script);
     }
 
-    batches.push(batch);
+    if (started) batches[index] = batch;
+    else batches.push(batch);
+  };
+
+  // Completing the catalog: the complete batches are registered between
+  // these two calls. The cards that were not in the startup subset then get
+  // their raw data, definitions and catalog rows. Definitions that already
+  // exist keep their identity: cards in play point at them.
+  MTG.beginOracleCatalogCompletion = function () { completingCatalog = true; };
+  MTG.finishOracleCatalogCompletion = function () {
+    completingCatalog = false;
+    const waiting = batches.filter(batch => batch.startupSubset).map(batch => batch.id);
+    if (waiting.length) throw new Error(`The complete card catalog is missing ${waiting.length} batch${waiting.length === 1 ? '' : 'es'}: ${waiting.slice(0, 3).join(', ')}.`);
+    const rawDB = MTG.DB;
+    if (rawDB && MTG.DEFS) {
+      MTG.applyOracleBatches(rawDB);
+      const added = {};
+      for (const [name, raw] of Object.entries(rawDB.cards)) {
+        if (!Object.prototype.hasOwnProperty.call(MTG.DEFS, name)) added[name] = raw;
+      }
+      Object.assign(MTG.DEFS, MTG.buildDefs(added, MTG.SCRIPTS));
+      MTG.buildCardCatalog(rawDB, MTG.DEFS);
+    }
+    catalogComplete = true;
+  };
+
+  // The one place that asks for the rest of the catalog. Resolves at once when
+  // nothing was deferred. The page loads the complete batches as modules; a
+  // failed module import cannot be retried in the same document.
+  let catalogCompletion = null;
+  MTG.ensureFullCatalog = function () {
+    if (catalogComplete) return Promise.resolve(false);
+    if (!catalogCompletion) {
+      catalogCompletion = (async () => {
+        MTG.beginOracleCatalogCompletion();
+        try {
+          await (MTG.loadFullOracleCatalog ? MTG.loadFullOracleCatalog() : import('../oracle-catalog-full.js'));
+          MTG.finishOracleCatalogCompletion();
+        } finally { completingCatalog = false; }
+        return true;
+      })();
+    }
+    return catalogCompletion;
   };
 
   MTG.applyOracleBatches = function (rawDB) {

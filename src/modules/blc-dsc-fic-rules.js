@@ -2,7 +2,7 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.POM,G=M.Game.prototype,T=M.T;
- for(const s of Object.values(M.SCRIPTS))if(s.miracle)s.oracleMiracle=true;
+ M.reviseRegisteredScripts(s=>{if(s.miracle)s.oracleMiracle=true;});
  const types=cs=>[...new Set(cs.flatMap(c=>c.zone==='battlefield'&&c.cur?c.cur.types:c.def.types))];
  const ownPermanents=(g,p)=>g.bf().filter(c=>c.ctrl===p);
  const winAt=(on,desc,condition)=>C.trigger(on,desc,ctx=>{

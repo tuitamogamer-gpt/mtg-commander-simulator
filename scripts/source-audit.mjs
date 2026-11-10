@@ -19,9 +19,11 @@ function readOracleBatchReports() {
     .filter(batch => batch && batch.id && Array.isArray(batch.cards));
 }
 
-function readAppModules() {
-  if (!fs.existsSync(appPath)) return null;
-  const entry = fs.readFileSync(appPath, 'utf8');
+// `entryPath` is src/app.js, the complete engine, unless a caller asks for
+// another list of imports (src/app-startup.js, src/oracle-catalog-full.js).
+function readAppModules(entryPath = appPath) {
+  if (!fs.existsSync(entryPath)) return null;
+  const entry = fs.readFileSync(entryPath, 'utf8');
   const imports = [...entry.matchAll(/import ['"](.+?)['"];?/g)].map(match => match[1]);
   if (!imports.length) return entry;
   // Keep named-import helpers scoped just as they are in the browser modules.
@@ -41,7 +43,14 @@ function readAppModules() {
       return `const {${bindings.map(row => row.exported + ':' + row.local).join(',')}} = (() => {\n${dependency}\nreturn {${bindings.map(row => row.exported).join(',')}};\n})();`;
     });
   };
-  return imports.map(specifier => readModule(path.resolve(path.dirname(appPath), specifier))).join('\n');
+  return imports.map(specifier => readModule(path.resolve(path.dirname(entryPath), specifier))).join('\n');
+}
+
+// One script from the side-effect imports of a module list under src/.
+export function readModuleList(file) {
+  const source = readAppModules(path.join(root, 'src', file));
+  if (source === null) throw new Error('Missing module list: src/' + file);
+  return source;
 }
 
 export function readSource() {

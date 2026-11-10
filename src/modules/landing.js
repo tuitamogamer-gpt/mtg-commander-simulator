@@ -5,7 +5,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function (U) {
   U.landingCounts = () => ({
     decks: U.DECKS ? Object.values(U.DECKS).filter(deck => !deck.custom).length : U.CATALOG_SUMMARY.decks,
-    importableCards: U.CARD_CATALOG ? Object.values(U.CARD_CATALOG).filter(card => card.deckImportEligible).length : U.CATALOG_SUMMARY.importableCards,
+    // The loaded catalog counts every importable card only once it is complete.
+    importableCards: U.CARD_CATALOG && U.oracleCatalogComplete?.() !== false
+      ? Object.values(U.CARD_CATALOG).filter(card => card.deckImportEligible).length : U.CATALOG_SUMMARY.importableCards,
   });
   U.syncLandingCounts = page => {
     const counts = U.landingCounts();

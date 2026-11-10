@@ -35,6 +35,19 @@ let gameLoad = null;
 let loadTrigger = null;
 let loadPhase = 'catalog';
 
+// The table opens with the cards of the built-in decks (src/app-startup.js).
+// The rest of the card collection, about four of five definitions, is used
+// only by imported decks and loads when one needs it (MTG.ensureFullCatalog).
+// `?catalog=full` loads it before the table opens, as every page did before;
+// `?catalog=startup` never does at entry. A page under automation defaults to
+// the complete collection: test fixtures put any card on the table by name.
+function wantsFullCatalogAtEntry() {
+  const choice = new URLSearchParams(window.location.search).get('catalog');
+  if (choice === 'full') return true;
+  if (choice === 'startup') return false;
+  return navigator.webdriver === true;
+}
+
 function updateLoadPhase(phase) {
   loadPhase = phase;
   const veil = root.querySelector('.mainmenu-loadveil');
@@ -105,7 +118,15 @@ async function loadGame(mode = null) {
       gameLoad = (async () => {
         await import('./data.js');
         updateLoadPhase('table');
-        await import('./app.js');
+        const complete = wantsFullCatalogAtEntry();
+        // main.js starts the entry when it loads, unless asked to wait for
+        // the complete collection.
+        if (complete) window.__mtgDeferEntry = true;
+        await import('./app-startup.js');
+        if (complete) {
+          await globalThis.MTG.ensureFullCatalog();
+          globalThis.MTG.initializeEntry();
+        }
       })();
     }
     await gameLoad;
@@ -135,6 +156,8 @@ globalThis.MTGAccount?.setGameLoader(async (save, options) => {
   try {
     await loadGame(null);
     if (!globalThis.MTG?.resumeAccountSave) throw new Error('The saved-game module did not finish loading.');
+    // A saved table with an imported deck is rebuilt from the complete collection.
+    if (save?.setup?.importedDecks?.length) await globalThis.MTG.ensureFullCatalog();
     return await globalThis.MTG.resumeAccountSave(save, options);
   } finally {
     hideLoading();

@@ -107,6 +107,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     importedLibraryRefresh = (async () => {
       if (owner === 'guest') {
         try {
+          // Saved lists are checked against the complete card collection. A
+          // player with no saved list never loads it.
+          if (U.readGuestImportedDeckRecords().records.length) await U.ensureFullCatalog();
+          if (generation !== importedLibraryGeneration || owner !== currentImportedLibraryOwner()) return U.getImportedDeckLibrary();
           const loaded = U.loadGuestImportedDeckLibrary();
           if (generation !== importedLibraryGeneration || owner !== currentImportedLibraryOwner()) return U.getImportedDeckLibrary();
           return loaded;
@@ -122,6 +126,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       try {
         const accountId = globalThis.MTGAccount.user.id;
         const records = await globalThis.MTGAccount.loadDecks();
+        if (Array.isArray(records) && records.length) await U.ensureFullCatalog();
         if (generation !== importedLibraryGeneration || owner !== currentImportedLibraryOwner() || globalThis.MTGAccount?.user?.id !== accountId) {
           return U.getImportedDeckLibrary();
         }
@@ -582,14 +587,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           fileButton.textContent = 'Open .txt file';
         }
       };
-      form.onsubmit = event => {
+      // A decklist is checked against the complete card collection, which the
+      // page loads only for imported decks. It starts loading when this window
+      // opens, while the list is pasted, and a check waits for it.
+      const catalogReady = U.ensureFullCatalog();
+      catalogReady.catch(() => {});
+      const whenCatalogReady = async () => {
+        if (U.oracleCatalogComplete()) return true;
+        resultBox.dataset.state = 'loading';
+        resultBox.innerHTML = '<p>Loading the card collection for imported decks…</p>';
+        try { await catalogReady; }
+        catch (error) {
+          if (overlay.isConnected) {
+            resultBox.dataset.state = 'error';
+            resultBox.innerHTML = '<strong>The card collection could not be loaded</strong><p>Check your connection, reload the page and try again.</p>';
+          }
+          return false;
+        }
+        return overlay.isConnected;
+      };
+      const checkButton = form.querySelector('button[type="submit"]');
+      form.onsubmit = async event => {
         event.preventDefault();
-        const validation = U.importCommanderDeck(textInput.value, {
-          name: nameInput.value.trim() || undefined,
-          register: false,
-        });
-        showValidation(validation);
-        resultBox.focus();
+        if (checkButton) checkButton.disabled = true;
+        try {
+          if (!await whenCatalogReady()) return;
+          const validation = U.importCommanderDeck(textInput.value, {
+            name: nameInput.value.trim() || undefined,
+            register: false,
+          });
+          showValidation(validation);
+          resultBox.focus();
+        } finally { if (checkButton) checkButton.disabled = false; }
       };
       saveButton.onclick = async () => {
         if (textInput.value !== validatedText || nameInput.value.trim() !== validatedName) {
@@ -599,6 +628,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         saveButton.disabled = true;
         saveButton.textContent = 'Saving…';
         try {
+          if (!await whenCatalogReady()) { saveButton.textContent = 'Save to My Library'; return; }
           const currentValidation = U.importCommanderDeck(textInput.value, {
             name: validatedName || undefined,
             register: false,
@@ -2190,10 +2220,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             importStatus.appendChild(description);
           }
           const open = el('button', 'pbtn primary', 'Start diagnostic replay');
-          open.onclick = () => {
+          open.onclick = async () => {
             if (!open.isConnected) return;
             open.disabled = true;
-            try { MTG.resumeAccountSave(problem.save, { diagnosticReplay: true }); }
+            try {
+              // A reported game may have been played with an imported deck.
+              if (problem.save?.setup?.importedDecks?.length) await MTG.ensureFullCatalog();
+              MTG.resumeAccountSave(problem.save, { diagnosticReplay: true });
+            }
             catch (error) { open.disabled = false; showImportStatus(error.message, true); }
           };
           importStatus.appendChild(open);
@@ -2362,6 +2396,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     root.style.display = 'block';
     $('#game').style.display = 'none';
     document.body.classList.remove('game-active');
+    // A Live table builds every seat's deck on the host, and any seat may bring
+    // an imported list: a room always has the complete card collection.
+    if (!MTG.oracleCatalogComplete() && typeof MTG.createHiggsfieldRoomClient === 'function') {
+      root.setAttribute('aria-busy', 'true');
+      try { await MTG.ensureFullCatalog(); }
+      catch (error) {
+        console.error('The complete card collection failed to load.', error);
+        root.removeAttribute('aria-busy');
+        root.innerHTML = `
+          <main class="online-lobby unavailable">
+            <header class="online-lobby-head"><button type="button" class="online-back">← Back</button><div><span>COMMANDER LIVE</span><h1>The card collection could not be loaded.</h1><p>Check your connection and reload the page to open a room.</p></div></header>
+          </main>`;
+        root.querySelector('.online-back').onclick = renderSetup;
+        return null;
+      }
+      root.removeAttribute('aria-busy');
+    }
     if (typeof MTG.createHiggsfieldRoomClient !== 'function') {
       root.innerHTML = `
         <main class="online-lobby unavailable">
@@ -5643,7 +5694,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (owner !== 'loading') void refreshImportedDeckLibrary({ force: true }).then(announceImportedLibraryChange);
   });
-  if (document.readyState === 'loading') {
+  // The page starts the entry itself after it has loaded the complete card
+  // collection, when it was asked to load it before the table opens.
+  MTG.initializeEntry = initializeEntry;
+  if (window.__mtgDeferEntry) {
+    delete window.__mtgDeferEntry;
+  } else if (document.readyState === 'loading') {
     window.addEventListener('DOMContentLoaded', initializeEntry, { once: true });
   } else {
     initializeEntry();

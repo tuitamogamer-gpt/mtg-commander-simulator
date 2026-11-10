@@ -787,6 +787,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   MTG.validateImportedDeck = function (parsed, options) {
+    // A page starts with the cards of built-in decks only. Checked against
+    // those, most cards of an imported list would be called unsupported and a
+    // saved deck would look broken. Callers load the rest first.
+    if (MTG.oracleCatalogComplete && !MTG.oracleCatalogComplete()) {
+      throw new Error('The card collection for imported decks is not loaded yet (await MTG.ensureFullCatalog() first).');
+    }
     options = options || {};
     const errors = [];
     const warnings = [];
