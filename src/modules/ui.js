@@ -1418,8 +1418,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (was[zone].has(card.iid)) continue;
             const label = this.zoneFlightLabel(zoneOf(card.iid), zone, card);
             if (!label) continue;
-            // A discard leaves the hand, even if the card was drawn since the last render.
-            const from = label === 'DISCARDED' ? 'hand' : zoneOf(card.iid);
+            // A discard leaves the hand, even if the card was drawn since the
+            // last render. A Live guest cannot see a library: a mill is known
+            // from the engine's mark alone.
+            const from = label === 'DISCARDED' ? 'hand' : label === 'MILLED' ? 'library' : zoneOf(card.iid);
             const key = `${p.idx}|${from}|${zone}|${label}`;
             if (!groups.has(key)) groups.set(key, { player: p, from, to: zone, label, cards: [] });
             groups.get(key).cards.push(card);
@@ -1442,7 +1444,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // or a spell cast and resolved, also goes from hand to graveyard: only
         // the engine's own discard mark makes it a discard.
         if (this.cardWasDiscarded(card)) return 'DISCARDED';
-        if (from === 'library') return 'MILLED';
+        if (from === 'library' || this.cardWasMilled(card)) return 'MILLED';
         return null;   // a spell resolving from the stack is routine
       }
       if (to === 'hand') return from === 'graveyard' || from === 'exile' ? 'RETURNED TO HAND' : null;
@@ -1456,6 +1458,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!meta || meta._discardedTurn === undefined) return false;
       if (meta._discardedZoneVersion !== undefined) return meta._discardedZoneVersion === card.zoneVersion;
       return meta._discardedTurn === this.game?.turnNo;
+    }
+
+    cardWasMilled(card) {
+      const meta = card && card.meta;
+      return !!meta && meta._milledZoneVersion !== undefined && meta._milledZoneVersion === card.zoneVersion;
     }
 
     // A zone's place on screen for a card flight. A phone view may hide the

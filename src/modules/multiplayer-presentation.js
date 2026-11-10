@@ -36,7 +36,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   const metaKeys = ['stickersV87', 'colorsV87', 'visitedV87', 'chosenType', 'chosenColor', 'oracleChosenColor', 'oracleChosenSubtypeV16', 'oracleChosenSubtypeBindingV16', 'thrivingColor', 'siegeMode', 'level', 'unlocked',
     'suspended', 'foretold', 'plotted', 'freePlay', 'playableBy', 'playableUntil', 'playableUntilOwnTurn', 'ringBearer', 'crewedTurn',
-    'prepared', 'preparedCopy', 'preparedBy'];
+    'prepared', 'preparedCopy', 'preparedBy',
+    // Public facts about how a card reached its zone, for the card flights.
+    '_discardedTurn', '_discardedZoneVersion', '_milledZoneVersion'];
   U.onlineCardPresentation = function (card, viewer, mayInspect = false) {
     const meta = card.meta || {};
     const mayLook = card.ctrl === viewer && !!meta.faceDownDef || meta.revealedTo === 'all' ||

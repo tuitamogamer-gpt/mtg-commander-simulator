@@ -2734,6 +2734,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = 0; i < n && p.library.length; i++) {
           const c = p.library[p.library.length - 1];
           await this.move(c, 'graveyard');
+          // Like the discard mark: the table names a milled card "MILLED", also
+          // for a Live guest, who cannot see which cards were in the library.
+          if (c.zone === 'graveyard' && c.meta) c.meta._milledZoneVersion = c.zoneVersion;
           milled.push(c);
         }
       });

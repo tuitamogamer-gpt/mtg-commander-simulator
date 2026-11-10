@@ -128,6 +128,20 @@ try {
     assert.equal(flights.length, 1, JSON.stringify(flights));
     assert.match(flights[0].label, / · DISCARDED$/, `${label}: drawn and discarded reads as a discard`);
     console.log(`PASS ${label} a card drawn and discarded is a discard`);
+
+    // A Live guest cannot see hands or libraries: a card arrives in a graveyard
+    // from no zone the table knew. The engine's marks alone name the flight.
+    for (const [mark, expected] of [['_milledZoneVersion', 'MILLED'], ['_discardedZoneVersion', 'DISCARDED'], [null, null]]) {
+      flights = await flightsOf(page, new Function(`return async () => {
+        const card = new MTG.CardInst(MTG.DEFS['Grizzly Bears'], enemy);
+        card.zone = 'graveyard'; card.zoneVersion = 1; enemy.graveyard.push(card);
+        if (${JSON.stringify(mark)}) card.meta[${JSON.stringify(mark)}] = 1;
+        if (${JSON.stringify(mark)} === '_discardedZoneVersion') card.meta._discardedTurn = game.turnNo;
+      }`)());
+      if (expected) assert.match(flights[0]?.label || '', new RegExp(` · ${expected}$`), `${label}: a hidden card with the ${expected} mark: ${JSON.stringify(flights)}`);
+      else assert.deepEqual(flights, [], `${label}: a hidden card without a mark is not announced: ${JSON.stringify(flights)}`);
+    }
+    console.log(`PASS ${label} a hidden card is named by the engine's mark alone`);
     await page.close();
   }
   assert.deepEqual(errors, []);
