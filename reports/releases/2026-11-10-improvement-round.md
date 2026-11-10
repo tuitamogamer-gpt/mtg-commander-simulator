@@ -10,6 +10,8 @@ Based on `1a54d7d`. Request: improve everything in the game that can be improved
 
 **Bots froze late in the game.** All 42 bot games finished without an error, but on wide boards one bot turn could take over a minute of thinking. The profile of the slowest game put 41% of all time in one forecast: which attacks get through if a mana payment taps the bot's blockers. That forecast was rebuilt for every action the bot ranked, and again inside every mana plan it tried. Each of its combat forecasts also looked up every creature's damage again.
 
+**A bot repeated an empty ability all turn.** One of the 42 games stood out: 10,669 bot decisions where the others had about 1,100, and one turn of 149 s. The bot playing 20 Ways to Win had Helix Pinnacle ("{X}: Put X tower counters on Helix Pinnacle") and no untapped land. Activating it for X=0 is legal and free, so the bot did it at every opportunity: 2,152 times in the game, each one put on the stack and resolved. At the table that is minutes of the same line in the log.
+
 **The combat charge could crash.** With an attacker in view and its blocker or the defender out of view, the charge threw `getBoundingClientRect is not a function`. Nothing charged in that damage step, and the effect's layer stayed on screen. It happened in a real game on the phone.
 
 **Card flights named the wrong thing.** The ghost card that flies between zones is drawn from two renders of the table. Three errors followed from that:
@@ -37,6 +39,7 @@ Based on `1a54d7d`. Request: improve everything in the game that can be improved
 ## Changes
 
 - **Bots: one tap forecast per ranking** (`ai-v2.js`, `rankingTapDefense`). A ranking scores every action against one unchanged board, so the forecast is built once per ranking and shared by the action scores and the mana solver. The combat forecasts of one search share their damage lookups (`baseDamage`). Nothing is kept after the ranking returns.
+- **Bots: no empty {X} activation** (`ai-v2.js`, `abilityAffordsOnlyZeroX`). A bot does not activate an ability with {X} in its mana cost when the most it can pay is X=0. Where X picks a mana value (Steel Hellkite, Valki, Lazav), X=0 stays available. 133 abilities in the catalog have {X} in a mana cost, 35 of them in the built-in decks.
 - **Combat charge** (`action-effects.js`). An attacker whose blocker or defender is out of view is skipped without an error; the other attackers still charge.
 - **Card flights** (`ui.js`, `syncZoneEffects`).
   - "DISCARDED" needs the engine's own discard mark on the card.
@@ -71,7 +74,8 @@ In game 1203 the longest single decision went from 7.2 s to 2.3 s. These are tim
   - Every score equals the score of the same action scored alone.
   - The ranking makes 546 damage lookups; scored alone, the actions make 2,292. On `1a54d7d` both are 23,440, and the test fails.
   - After a blocker is tapped, an attacker arrives or life drops, the next ranking reads the board again.
-- **All bot test files** (`tests/ai-*.test.mjs`): 784 of 784 pass.
+- **The empty activation.** `tests/ai-repeatable-abilities.test.mjs` has two new tests. With no mana the bot leaves Helix Pinnacle alone; with three Forests it activates it once for X=3 and stops. Lazav's "mana value X" ability is not ruled out at X=0. The first fails on `1a54d7d`. The same game (seed 1107) now has 1,244 bot decisions instead of 10,669, and its longest turn is 12.8 s instead of 105 s (both measured with the faster forecast, under load). No other game of the 42 had more than 32 decisions per turn; the median is 17.
+- **All bot test files** (`tests/ai-*.test.mjs`): 789 of 789 pass.
 
 ### Table
 
@@ -120,7 +124,7 @@ The larger part is not changed. 25,622 of the 32,273 definitions are used by no 
 
 ## Not changed
 
-- **Bot turns on very wide boards are still slow.** After this change, a bot's own decisions are about a quarter of the time of the slowest game. The rest is the engine listing castable spells at every priority window and recalculating the board after every action. The slowest turn seen in the 42 games, 149 s on the old code under load, was not measured again.
+- **Bot turns on very wide boards are still slow.** After this change, a bot's own decisions are about a quarter of the time of a slow game. The rest is the engine listing castable spells at every priority window and recalculating the board after every action.
 - **The 49 repaired browser suites were not all run.** They take one to six minutes each. The ones run are listed above; the others may have further stale steps behind the repaired click.
 - **The pinned creature-type list** was not updated for the Star Trek preview types. It needs the official list once the set is released.
 - **Live precon suites** were not run. `afc-mic-live` timed out waiting for a guest's decision while several other runs shared the machine; the two Live suites above pass when run alone.
