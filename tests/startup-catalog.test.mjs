@@ -162,3 +162,41 @@ test('an effect that offers every card name completes the collection first', asy
   assert.ok(offered.length > 20000);
   assert.deepEqual(offered, expected);
 });
+
+test('a saved table and a problem report with an imported deck are read from the complete collection', async () => {
+  // Made by a page that had the complete collection: a real 100-card list.
+  const full = loadEngine();
+  const name = 'Startup Yuriko archive';
+  const text = fs.readFileSync(new URL('./fixtures/yuriko-custom-deck.txt', import.meta.url), 'utf8');
+  const imported = full.importCommanderDeck(text, { name, commanders: ["Yuriko, the Tiger's Shadow"] });
+  assert.equal(imported.ok, true);
+  full.hydrateImportedDeckLibrary([full.createImportedDeckRecord(imported, { id: 'deck-startup-catalog-yuriko' })], { source: 'guest' });
+  const setup = { deck: name, commanders: ["Yuriko, the Tiger's Shadow"], ai: 1, aiDecks: ['Elven Council'], aiStyles: ['balanced'], seed: '31' };
+  const save = JSON.stringify(full.buildAccountSave({ turnNo: 1 }, setup, [], 'match-startup-catalog-0001'));
+  full.hydrateImportedDeckLibrary([], { source: 'guest' });
+  delete full.DECKS[name]; delete full.DECK_META[name];
+  const report = JSON.stringify({ schema: full.PROBLEM_REPORT_SCHEMA, description: 'imported deck',
+    diagnostics: { reproduction: { mode: 'solo' }, checkpoint: { turn: 1 } }, replay: JSON.parse(save) });
+
+  // Read by a page that opened with the startup subset.
+  const { MTG } = loadStartupEngine();
+  const outside = JSON.parse(save).setup.importedDecks[0].cards.filter(row => !MTG.DEFS[row.name]);
+  assert.ok(outside.length > 0, 'the list has cards that no built-in deck uses');
+  assert.throws(() => MTG.validateAccountSave(JSON.parse(save)), /not loaded yet/);
+  assert.throws(() => MTG.parseProblemReport(report), /not loaded yet/);
+  assert.equal(MTG.DECKS[name], undefined, 'a refused save registers nothing');
+  await MTG.ensureFullCatalog();
+  assert.equal(MTG.parseProblemReport(report).save.setup.deck, name);
+  assert.equal(MTG.validateAccountSave(JSON.parse(save)).setup.deck, name);
+  assert.ok(outside.every(row => MTG.DEFS[row.name]));
+
+  // The page asks for the collection before it reads either: Continue from
+  // the profile or the device, and a report chosen in Diagnostics.
+  const entry = fs.readFileSync(new URL('../src/public-entry.js', import.meta.url), 'utf8');
+  const loader = entry.slice(entry.indexOf('setGameLoader('));
+  assert.ok(loader.indexOf('ensureFullCatalog()') > 0 && loader.indexOf('ensureFullCatalog()') < loader.indexOf('resumeAccountSave(save'));
+  const main = fs.readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
+  const chosen = main.slice(main.indexOf('importFile.onchange'));
+  assert.ok(chosen.indexOf('await MTG.ensureFullCatalog()') > 0 &&
+    chosen.indexOf('await MTG.ensureFullCatalog()') < chosen.indexOf('MTG.parseProblemReport(contents)'));
+});

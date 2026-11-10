@@ -2209,6 +2209,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const contents = await file.text();
         const input = JSON.parse(contents);
         if (input?.schema === MTG.PROBLEM_REPORT_SCHEMA) {
+          // A reported game may have been played with an imported deck, and
+          // reading the report checks its decklists: against every card.
+          if (input.replay?.setup?.importedDecks?.length) await MTG.ensureFullCatalog();
           const problem = MTG.parseProblemReport(contents);
           const capturedTurn = Number(problem.checkpoint.turn) || Number(problem.save.summary?.turn) || 0;
           showImportStatus(`Solo replay ready · captured at turn ${capturedTurn}. ${problem.versionMismatch
@@ -2224,8 +2227,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (!open.isConnected) return;
             open.disabled = true;
             try {
-              // A reported game may have been played with an imported deck.
-              if (problem.save?.setup?.importedDecks?.length) await MTG.ensureFullCatalog();
               MTG.resumeAccountSave(problem.save, { diagnosticReplay: true });
             }
             catch (error) { open.disabled = false; showImportStatus(error.message, true); }

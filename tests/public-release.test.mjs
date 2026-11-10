@@ -103,7 +103,11 @@ test('first-game onboarding explains the complete user decision model without ex
 
 test('heavy rules and deck modules wait for a real setup or deep-link request', () => {
   assert.match(publicEntry, /await import\('\.\/data\.js'\)/);
-  assert.match(publicEntry, /await import\('\.\/app\.js'\)/);
+  // The page loads the startup list: every module, and the cards of built-in
+  // decks. The rest of the card collection waits for an imported deck.
+  assert.match(publicEntry, /await import\('\.\/app-startup\.js'\)/);
+  assert.doesNotMatch(publicEntry, /import\('\.\/app\.js'\)/);
+  assert.doesNotMatch(publicEntry, /oracle-batches|oracle-catalog-full/);
   assert.match(publicEntry, /window\.__mtgPendingSetupMode = mode/);
   assert.match(publicEntry, /new URLSearchParams\(window\.location\.search\)/);
   assert.match(publicEntry, /room.*onlineSmoke.*smokeDeck/s);
