@@ -1922,8 +1922,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const active = card => !state.get(card).dead && !state.get(card).removed;
     // dmgAmount je najskuplji poziv u prognozi, a unutar jedne prognoze je
-    // konstanta po karti — mijenja se samo lokalni counterReduction.
-    const baseDamage = new Map();
+    // konstanta po karti — mijenja se samo lokalni counterReduction. Pretraga
+    // blokova pravi stotine prognoza nad istom tablom, pa dijeli jednu mapu.
+    const baseDamage = initial.baseDamage || new Map();
     const printedDamage = card => {
       let value = baseDamage.get(card);
       if (value === undefined) {
@@ -2019,6 +2020,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // including profitable joint blocks whose individual prefixes lose material.
   function survivalBlocks(game, player, attackers, potential, initial = {},
     scoreOutcome = outcome => defenseScore(game, player, outcome, initial.life ?? player.life)) {
+    // Every forecast of this search reads the same unchanged board.
+    if (!initial.baseDamage) initial = { ...initial, baseDamage: new Map() };
     let assignments = [];
     let outcome = forecastCombat(game, player, attackers, assignments, initial);
     let score = scoreOutcome(outcome);
@@ -2120,6 +2123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (attackers.length) windows.push({ attackers, current, declared });
     }
     const cache = new Map();
+    const baseDamage = new Map();
     const score = (taps = [], lifeLoss = 0) => {
       const removed = new Set(taps);
       const key = taps.map(card => card.iid).sort((a, b) => a - b).join(',') + ':' + lifeLoss;
@@ -2129,7 +2133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         commanderDamage: { ...player.commanderDamage } };
       let danger = combatDanger({ ...position, lethal: position.life <= 0 });
       for (const window of windows) {
-        const initial = { ...position, freshTurn: !window.current };
+        const initial = { ...position, freshTurn: !window.current, baseDamage };
         // Tapping a declared blocker does not undo its block. Forecast that
         // combat unchanged, but do not reuse a tapped/dead body next turn.
         const outcome = window.declared ? forecastCombat(game, player, window.attackers,
@@ -2158,8 +2162,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } };
   }
 
+  // Ranking scores every action against one unchanged board, and the mana
+  // solver asks for the same creature order for each of them. Build the tap
+  // forecast once per ranking; outside a ranking nothing is kept.
+  function rankingTapDefense(game, player) {
+    const scope = scoringManaMemo && scoringManaMemo.game === game ? scoringManaMemo : null;
+    if (!scope) return tapDefense(game, player);
+    const forecasts = scope.tapDefense || (scope.tapDefense = new Map());
+    let defense = forecasts.get(player);
+    if (!defense) { defense = tapDefense(game, player); forecasts.set(player, defense); }
+    return defense;
+  }
+
   function routineTapExposure(game, player, source) {
-    return !source.is('Creature') || source.tapped ? 0 : tapDefense(game, player).exposure([source]);
+    return !source.is('Creature') || source.tapped ? 0 : rankingTapDefense(game, player).exposure([source]);
   }
 
   function tapPayment(game, player, pool, count, defense, fixed = []) {
@@ -2210,7 +2226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // first; this orders equally legal creature sources by defensive usefulness.
   MTG.botManaTapOrder = function (game, player, cards, fixed = []) {
     if (!cards.length) return [];
-    const defense = tapDefense(game, player);
+    const defense = rankingTapDefense(game, player);
     const unique = [...new Set(cards)].filter(card => !fixed.includes(card));
     const first = tapPayment(game, player, unique, Math.min(8, unique.length), defense, fixed);
     // Large token/mana boards must not turn one payment into an unbounded
@@ -6097,7 +6113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         sem.roles.every(role => ['card-draw', 'card-selection', 'ramp', 'mana-rock'].includes(role));
       if (!card.is('Creature') && routineSpell &&
           game.creatures(player).some(creature => !creature.tapped)) {
-        const defense = privateData.tapDefense || (privateData.tapDefense = tapDefense(game, player));
+        const defense = privateData.tapDefense || (privateData.tapDefense = rankingTapDefense(game, player));
         const taps = manaTapPayment(game, player, cost, { card, castOpts: action.alt || {} }, defense);
         breakdown.safety -= defense.exposure(taps);
       }
@@ -6646,7 +6662,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const routineValue = routineValueEffects(effects);
       if (routineValue && !isStationAbility(entry) && (tapCost?.tap || tapCost?.tapPermanents || tapCost?.mana) &&
           tapCost.tapPermanents?.totalPower === undefined) {
-        const defense = privateData.tapDefense || (privateData.tapDefense = tapDefense(game, player));
+        const defense = privateData.tapDefense || (privateData.tapDefense = rankingTapDefense(game, player));
         const taps = tapCost.tap ? [card] : [];
         const info = tapCost.tapPermanents;
         if (info && Number.isInteger(info.n)) {
@@ -6856,7 +6872,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
       }
       if (tapChoiceKinds.has(q?.aiHint?.kind)) {
-        const defense = privateData.tapDefense || (privateData.tapDefense = tapDefense(game, player));
+        const defense = privateData.tapDefense || (privateData.tapDefense = rankingTapDefense(game, player));
         breakdown.safety -= defense.exposure(action.picks);
       }
     } else if (action.kind === 'chooseOption') {
