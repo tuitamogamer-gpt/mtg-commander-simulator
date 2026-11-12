@@ -6403,7 +6403,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(graveyardBaseMana.x||a.oracleTargetX){
         const maximum=this.maxAffordableX(p,graveyardBaseMana,c,{forSpell:{card:c,isAbility:true,ability:a,cdkCostHasX:!!graveyardBaseMana.x},artifactAbilityAlreadyUsed:c.zone==='battlefield'&&c.is('Artifact'),excludeCards:[c]});
         const preferredXValues=this.oraclePreferredTargetXValues(p,c,targetSpecs,maximum);
-        const selected=await p.controller.decide(this,{type:'chooseX',min:0,max:maximum,preferredXValues:preferredXValues||undefined,card:c,prompt:`X for ${c.name} — ${a.label||'graveyard ability'}?`,aiHint:{kind:'chooseX',card:c}});
+        const selected=await p.controller.decide(this,{type:'chooseX',min:0,max:maximum,preferredXValues:preferredXValues||undefined,card:c,prompt:`X for ${c.name} — ${a.label||'graveyard ability'}?`,aiHint:{kind:'chooseX',card:c,ability:a}});
         if(!Number.isInteger(Number(selected))||Number(selected)<0||Number(selected)>maximum)return false;
         gctx.x=Number(selected);
       }
@@ -6635,7 +6635,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const maxX=this.maxAffordableX(p,baseMana,c,{forSpell:{card:c,isAbility:true,ability:a,cdkCostHasX:!!baseMana.x,waterbendV10:cost.waterbendV10},artifactAbilityAlreadyUsed:c.zone==='battlefield'&&c.is('Artifact'),excludeCards:cost.tap||cost.sacSelf?[c]:[]});
       const minX=a.minX??0;if(!Number.isSafeInteger(minX)||minX<0||maxX<minX)return false;
       const preferredXValues=this.oraclePreferredTargetXValues(p,c,a.targets,maxX);
-      const chosen=await p.controller.decide(this,{type:'chooseX',min:minX,max:maxX,preferredXValues:preferredXValues||undefined,card:c,prompt:`X for ${c.name} — ${a.label||'ability'}?`,aiHint:{kind:'chooseX',card:c}});
+      const chosen=await p.controller.decide(this,{type:'chooseX',min:minX,max:maxX,preferredXValues:preferredXValues||undefined,card:c,prompt:`X for ${c.name} — ${a.label||'ability'}?`,aiHint:{kind:'chooseX',card:c,ability:a}});
       if(!Number.isInteger(Number(chosen))||Number(chosen)<minX||Number(chosen)>maxX)return false;
       ctx.x=Number(chosen);
     }

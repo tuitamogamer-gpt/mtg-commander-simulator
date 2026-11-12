@@ -4180,6 +4180,148 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card instanceof U.CardInst && card.zone === 'battlefield' && card.kw('indestructible');
   }
 
+  // ---- What a target choice does -----------------------------------------
+  // A destroy does nothing to an indestructible permanent, and damage does
+  // not kill an indestructible creature. Compiled Oracle cards name a destroy
+  // in their hint (removalKind). Hand-written scripts name it in a prompt or
+  // a label, or not at all, so the bot spent Beast Within, Assassin's Trophy
+  // and Feed the Swarm on a creature wearing Darksteel Plate, turn after
+  // turn. The printed text settles it: every "target …" instruction, whether
+  // its object is destroyed or dealt damage, what it may be and whose.
+  const PERMANENT_TYPE_WORDS = ['creature', 'artifact', 'enchantment', 'land', 'planeswalker', 'battle'];
+  const PERMANENT_SUBTYPE_WORDS = ['equipment', 'aura', 'vehicle', 'saga'];
+  const TARGET_NOUNS = [...PERMANENT_TYPE_WORDS, ...PERMANENT_SUBTYPE_WORDS, 'permanent', 'token', 'player', 'opponent', 'spell', 'card', 'ability']
+    // "nonland permanent" names a permanent, "noncreature" no creature.
+    .map(word => [word, new RegExp(`(?:^|[^a-z-])${word}s?\\b`)]);
+  const TARGET_VERB = /\b(destroy|exile|return|sacrifice|untap|tap|put|deal|gain control|counter|attach|copy|fight|regenerate|goad|detain|prevent|choose|shuffle|mill|discard|draw|create|reveal|look|remove|double|transform|flip|phase|exchange|switch)s?\b/gi;
+  const OTHER_REMOVAL_WORDS = /\bexile|\breturn|\bbounce|[-−]\d+\/[-−]\d+|\bgain control\b|\bsteal\b|\bshuffle\b|\btuck\b|\bcounter\b/i;
+  const CHAPTER_NUMERALS = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+  const DEFAULT_TARGET_PROMPT = /^(?:izaberi metu|choose targets?)$/i;
+  const instructionCache = new Map();
+
+  function targetInstructions(text) {
+    const source = String(text || '');
+    const cached = instructionCache.get(source);
+    if (cached) return cached;
+    const out = [];
+    for (const line of source.replace(/\([^()]*\)/g, ' ').split('\n')) {
+      // "{T}, Sacrifice a creature: …" and "−3: …" are activated; a colon
+      // inside a quoted, granted ability is not this permanent's cost.
+      const activated = /^[^"“]*?[^\s"“]:(?:\s|$)/.test(line);
+      const chapters = (/^\s*((?:[IVX]+)(?:\s*,\s*[IVX]+)*)\s*—/.exec(line)?.[1] || '').split(/\s*,\s*/).filter(Boolean);
+      const sentences = line.split(/[.•]+/).map(part => part.trim()).filter(Boolean);
+      sentences.forEach((sentence, index) => {
+        const verbs = [...sentence.matchAll(TARGET_VERB)].map(match => ({ at: match.index, verb: match[1].toLowerCase() }));
+        const destroyedNext = /^(?:then,? )?destroy (?:it|them|that|those)\b/i.test(sentences[index + 1] || '');
+        for (const match of sentence.matchAll(/\btarget\b/gi)) {
+          const before = sentence.slice(0, match.index);
+          // "a new target", "the target of", "for each target beyond the
+          // first", "its targets" choose nothing.
+          if (/\b(?:new|the|its|their|that|those|same|legal|each|every|per|first|additional|change (?:the|its)) $/i.test(before) ||
+            /^target(?:s|ed|ing)\b/i.test(sentence.slice(match.index))) continue;
+          const rest = sentence.slice(match.index + match[0].length);
+          const phrase = rest.split(/\btarget\b|,? (?:and(?!\/)|then|unless|if|gets?|gains?|deals?|loses?|can't|has|have|is|are|becomes?|to|from|until)\b/i)[0].toLowerCase();
+          const named = TARGET_NOUNS.filter(([, pattern]) => pattern.test(phrase)).map(([word]) => word);
+          const own = /\byou (?:don't|do not) control\b|\ban opponent controls\b|\btarget opponent controls\b|\bopponents control\b/.test(phrase) ? false
+            : /\byou (?:control|own)\b/.test(phrase) ? true : null;
+          // The verb that governs this object is the one before it; "target
+          // creature … destroy it" and "Destroy it" as the next sentence count.
+          const previous = verbs.filter(verb => verb.at < match.index).pop();
+          const later = verbs.find(verb => verb.at > match.index);
+          const governing = previous?.verb || later?.verb || '';
+          const destroys = governing === 'destroy' || !previous && /\bdestroy (?:it|them|that|those)\b/i.test(rest) || !governing && destroyedNext;
+          const kind = destroys ? 'destroy' : previous?.verb === 'deal' && /\bdamage\b/i.test(before) ? 'damage' : 'other';
+          out.push({ kind, named, own, activated, chapters });
+        }
+      });
+    }
+    if (instructionCache.size > 4000) instructionCache.clear();
+    instructionCache.set(source, out);
+    return out;
+  }
+
+  // May this instruction be the one that offers these candidates?
+  function instructionOffers(instruction, candidates, player) {
+    const { named, own } = instruction;
+    if (named.some(word => word === 'card' || word === 'spell' || word === 'ability')) return false;
+    const kinds = named.filter(word => PERMANENT_TYPE_WORDS.includes(word) || PERMANENT_SUBTYPE_WORDS.includes(word));
+    const anyPermanent = named.includes('permanent') || named.includes('token');
+    if (named.length && !kinds.length && !anyPermanent) return false;
+    if (own === true && !candidates.some(card => card.ctrl === player)) return false;
+    if (own === false && candidates.every(card => card.ctrl === player)) return false;
+    if (!kinds.length || anyPermanent) return true;
+    return candidates.every(card => kinds.some(word => PERMANENT_TYPE_WORDS.includes(word)
+      ? card.is(word.charAt(0).toUpperCase() + word.slice(1))
+      : card.hasSub(word.charAt(0).toUpperCase() + word.slice(1))));
+  }
+
+  // 'destroy' when this choice is for a destroy, 'damage' when it is for
+  // damage, 'other' when it is for another effect, '' when the cards do not
+  // say.
+  function choiceRemovalKind(game, player, q) {
+    const hint = q.aiHint || q.spec?.aiHint || null;
+    if (hint?.removalKind) return hint.removalKind === 'destroy' ? 'destroy' : 'other';
+    if (/^destroy/i.test(String(hint?.goal || ''))) return 'destroy';
+    let candidates = q.candidates;
+    if (!candidates && q.spec && q.src) {
+      try { candidates = game.legalTargets(q.spec, q.src, player); } catch (error) { candidates = []; }
+    }
+    candidates = (candidates || []).filter(card => card instanceof U.CardInst && card.zone === 'battlefield');
+    if (!candidates.length) return '';
+    const step = Number(q.targetStep || 0), steps = Number(q.targetSteps || 0);
+    const decide = instructions => {
+      if (!instructions.length) return '';
+      // One instruction for each target step: this step is that instruction.
+      if (steps && instructions.length === steps && step >= 1 && step <= steps) return instructions[step - 1].kind;
+      const offered = instructions.filter(instruction => instructionOffers(instruction, candidates, player));
+      if (!offered.length) return '';
+      return offered.every(instruction => instruction.kind === offered[0].kind) ? offered[0].kind : '';
+    };
+    // What the script itself calls this choice: a rules sentence, or a few
+    // words such as "Sacrifice: destroy art/ench".
+    const label = q.so?.ctx?.ability?.label || q.ability?.label || q.so?.ability?.label || '';
+    for (const text of [label, q.effectText].map(value => String(value || '').trim()).filter(Boolean)) {
+      // A label cut short for display may have lost an instruction; the
+      // printed text below has all of them.
+      if (/(?:…|\.\.\.)$/.test(text)) continue;
+      if (/\btarget\b/i.test(text)) {
+        const kind = decide(targetInstructions(text));
+        if (kind) return kind;
+        continue;
+      }
+      const effect = text.includes(':') ? text.slice(text.indexOf(':') + 1) : text;
+      const said = [/\bdestroy/i.test(effect) && 'destroy', /\bdamage\b/i.test(effect) && 'damage', OTHER_REMOVAL_WORDS.test(effect) && 'other'].filter(Boolean);
+      if (said.length === 1) return said[0];
+    }
+    const prompt = String(q.prompt || q.spec?.prompt || '');
+    if (!DEFAULT_TARGET_PROMPT.test(prompt) && /\bdestroy/i.test(prompt) && !OTHER_REMOVAL_WORDS.test(prompt) && !/\bdamage\b/i.test(prompt)) return 'destroy';
+    // The printed text of the source: its chapter, its activated abilities or
+    // its other abilities, as the choice comes from one of them.
+    let instructions = targetInstructions(q.src?.def?.oracle || q.so?.card?.def?.oracle || '');
+    const chapter = CHAPTER_NUMERALS[Number(/(?:poglavlje|chapter)\s*(\d+)/i.exec(String(q.effectText || ''))?.[1] || 0)] || '';
+    const activated = q.ability ? true : q.so?.kind === 'spell' ? null : q.effectText ? false : null;
+    if (chapter && instructions.some(instruction => instruction.chapters.includes(chapter))) {
+      instructions = instructions.filter(instruction => instruction.chapters.includes(chapter));
+    } else if (activated !== null && instructions.some(instruction => instruction.activated === activated)) {
+      instructions = instructions.filter(instruction => instruction.activated === activated);
+    }
+    return decide(instructions);
+  }
+
+  const choiceKindCache = new WeakMap();
+  function choiceKind(game, player, q) {
+    if (!q) return '';
+    let kind = choiceKindCache.get(q);
+    if (kind === undefined) {
+      try { kind = choiceRemovalKind(game, player, q); } catch (error) { kind = ''; }
+      choiceKindCache.set(q, kind);
+    }
+    return kind;
+  }
+  const choiceDestroys = (game, player, q) => choiceKind(game, player, q) === 'destroy';
+  MTG.targetChoiceRemovalKind = choiceRemovalKind;
+  MTG.targetChoiceDestroys = choiceDestroys;
+
   // ---- Ward -------------------------------------------------------------
   // Ward nije obična cijena mete: ako ostane neplaćen, spell ili sposobnost
   // biva counterovana. Bot je zbog toga bacao removal za jednu-dvije mane na
@@ -4550,13 +4692,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return value + Math.max(0, power) * 1.5 + Math.max(0, toughness) +
           (addsKeyword || hasteMatters ? 2 : 0) + strikeDamage;
       }
-      if (hint === 'removal' && q.aiHint && q.aiHint.removalKind === 'destroy' &&
-        hostile && indestructibleStopsDestroy(target)) {
+      if (hostile && (!hint || /^(?:removal|destroy)/i.test(hint)) &&
+        indestructibleStopsDestroy(target) && choiceDestroys(game, player, q)) {
         // The target remains rules-legal for human players. For the AI this is
         // a dead effect, so it must lose to any effective target and normally
-        // to keeping the destroy spell in hand.
+        // to keeping the destroy spell in hand. The choice may say that it
+        // destroys in a hint, in its prompt or label, or only in the printed
+        // text (choiceDestroys).
         return -100 - value;
       }
+      // Damage does not kill an indestructible creature either. Where the
+      // hint states the amount, the lethal case is settled above; where it
+      // states none, the creature that cannot die is not the one to burn.
+      if (hostile && (!hint || /^(?:removal|damage)/i.test(hint)) && target.is('Creature') &&
+        indestructibleStopsDestroy(target) && choiceKind(game, player, q) === 'damage') return -10 - value * 0.12;
       // Tapovanje je za Magma Opus obavezna, neprijateljska interakcija. Bez
       // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
       // viši zbir vlastitim Veyran/Storm-Kiln metama samo zato što su vrednije.
@@ -5697,24 +5846,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let specs;
     try { specs = game.spellTargetSpecs ? game.spellTargetSpecs(card, alt || {}) : (typeof card.def.targets === 'function' ? card.def.targets(game, card, alt || {}) : card.def.targets); }
     catch (error) { return null; }
+    let enters = null;
     if ((!specs || !specs.length) && !card.is('Instant') && !card.is('Sorcery')) {
       // A permanent chooses its ETB targets after resolving, not while being
       // cast. Its spell target list is therefore correctly empty, but that
       // must not hide a useful removal trigger from the local cast evaluator.
-      specs = (card.def.triggers || []).filter(trigger => trigger.on === 'etb')
-        .flatMap(trigger => typeof trigger.targets === 'function'
-          ? trigger.targets(game, card, { card }) : trigger.targets || [])
-        .filter(spec => ['removal', 'damage', 'bounce', 'debuff'].includes(spec.aiHint?.goal));
+      specs = [];
+      for (const trigger of (card.def.triggers || []).filter(trigger => trigger.on === 'etb')) {
+        const removal = (typeof trigger.targets === 'function' ? trigger.targets(game, card, { card }) : trigger.targets || [])
+          .filter(spec => ['removal', 'damage', 'bounce', 'debuff'].includes(spec.aiHint?.goal));
+        if (removal.length && !specs.length) enters = trigger;
+        specs.push(...removal);
+      }
     }
     if (!specs || !specs.length) return null;
-    const candidates = game.legalTargets(specs[0], card, player).filter(target => target instanceof U.CardInst && (target.ctrl !== player || persecutorExitValue(game,target,player)>0));
+    const legal = game.legalTargets(specs[0], card, player);
+    const candidates = legal.filter(target => target instanceof U.CardInst && (target.ctrl !== player || persecutorExitValue(game,target,player)>0));
     if (!candidates.length) return null;
     const compiledDamage = (card.def.oracleImplementation || []).find(operation =>
       operation.kind === 'spell-damage' && operation.what !== 'each opponent');
-    const compiledDestroy = specs[0].aiHint && specs[0].aiHint.removalKind === 'destroy';
+    // A destroy removes nothing that is indestructible, whether the card says
+    // "destroy" in its hint, its prompt or only in its printed text.
+    const destroys = choiceDestroys(game, player, {
+      src: card, spec: specs[0], aiHint: specs[0].aiHint, prompt: specs[0].prompt, candidates: legal,
+      ...(enters ? { effectText: enters.desc || enters.name || 'enters' } : { so: { kind: 'spell' }, targetStep: 1, targetSteps: specs.length }),
+    });
     const best = candidates.map(target => {
       let score = permanentGameValue(game, target, player) * (target.ctrl === player ? -1 : 1);
-      if (compiledDestroy && indestructibleStopsDestroy(target)) score = Number.NEGATIVE_INFINITY;
+      if (destroys && indestructibleStopsDestroy(target)) score = Number.NEGATIVE_INFINITY;
       if (compiledDamage && target.is('Creature') && damageProtectionSaves(target)) {
         // A damage spell cannot claim a lethal-removal bonus against a shield,
         // regeneration shield or indestructible creature. Keep a tiny chip
@@ -5740,6 +5899,56 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     })
       .sort((a, b) => b.score - a.score || a.target.iid - b.target.iid)[0];
     return best && Number.isFinite(best.score) ? best : null;
+  }
+
+  // "Destroy target creature. Scry 1." with only indestructible creatures to
+  // aim at destroys nothing; the rider is not worth the card and the mana.
+  function destroySpellRemovesNothing(game, player, card, alt) {
+    if (!card.is('Instant') && !card.is('Sorcery')) return false;
+    let specs;
+    try { specs = game.spellTargetSpecs(card, alt || {}, player) || []; } catch (error) { return false; }
+    const spec = specs[0];
+    if (specs.length !== 1 || spec.upTo || spec.min === 0) return false;
+    const legal = game.legalTargets(spec, card, player);
+    const hostile = legal.filter(target => target instanceof U.CardInst && target.ctrl !== player);
+    if (!hostile.length || hostile.some(target => !indestructibleStopsDestroy(target))) return false;
+    return choiceDestroys(game, player, { src: card, spec, aiHint: spec.aiHint, prompt: spec.prompt, candidates: legal,
+      so: { kind: 'spell' }, targetStep: 1, targetSteps: 1 });
+  }
+
+  // "Destroy target artifact or creature with mana value X": an X is worth
+  // what it lets the effect choose. The largest X is not the best one, and an
+  // X whose only object is indestructible buys nothing. null when the targets
+  // of this choice do not depend on X.
+  function xBoundTargetValue(game, player, q, x) {
+    if (!Array.isArray(q?.preferredXValues) || !q.preferredXValues.length) return null;
+    const card = q.card || q.aiHint?.card, ability = q.aiHint?.ability || null;
+    if (!(card instanceof U.CardInst)) return null;
+    let specs;
+    try {
+      specs = ability ? typeof ability.targets === 'function' ? ability.targets(game, card, { player }) : ability.targets
+        : game.spellTargetSpecs(card, { xVal: x }, player);
+    } catch (error) { return null; }
+    if (!Array.isArray(specs) || !specs.some(spec => typeof spec.bindOracleContext === 'function')) return null;
+    const bind = (spec, value) => typeof spec.bindOracleContext === 'function'
+      ? spec.bindOracleContext({ g: game, src: card, you: player, x: value }) : spec;
+    // "X target lands" wants its X large: only where X limits what may be
+    // chosen, not how many, does its worth lie in the object chosen.
+    if (specs.some(spec => (bind(spec, x).count ?? 1) !== (bind(spec, x + 1).count ?? 1))) return null;
+    let total = 0, destroys = false;
+    for (const spec of specs) {
+      const bound = bind(spec, x);
+      const legal = game.legalTargets(bound, card, player);
+      const choice = { src: card, spec: bound, aiHint: bound.aiHint, prompt: bound.prompt, candidates: legal,
+        ...(ability ? { ability } : { so: { kind: 'spell' } }) };
+      if (choiceDestroys(game, player, choice)) destroys = true;
+      const best = legal.reduce((value, target) => Math.max(value, targetValue(game, player, target, choice)), -Infinity);
+      if (best >= 0) total += best;
+      else if (!(bound.upTo || bound.min === 0)) return destroys ? -20 - x * 0.2 : null;
+    }
+    // Other effects keep the plain rule for X; a destroy is the one that an
+    // indestructible permanent turns into nothing.
+    return destroys ? total - x * 0.3 : null;
   }
 
   function publicVoteCount(q, key) {
@@ -6364,6 +6573,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (best && best.score > removalThreshold) breakdown.threat += best.score * 0.85;
         else if (canBurnOpponent) breakdown.threat += 1.2;
         else breakdown.timing -= 10;
+        if (!best && destroySpellRemovesNothing(game, player, card, action.alt)) breakdown.timing -= 40;
         const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
         if (promised) {
           // A public removal pact should materially change the bot's plan. The
@@ -6820,12 +7030,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const sem = inferCardSemantics(entry.turnFaceUp ? entry.faceUpDef || card.meta.faceDownDef : card.def);
       breakdown.synergy += sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 0.7;
       const abilityTargets = typeof ability?.targets === 'function' ? ability.targets(game, card, {player}) || [] : ability?.targets || [];
+      // "{T}, Sacrifice a creature: Destroy target creature" at a creature
+      // that cannot be destroyed pays the cost for nothing. What an ability
+      // would remove counts only where it removes it.
+      const firstTarget = abilityTargets[0];
+      const firstGoal = String(firstTarget?.aiHint?.goal || '');
+      const firstLegal = firstTarget && (!firstGoal || /^(?:removal|destroy)/i.test(firstGoal))
+        ? game.legalTargets(firstTarget, card, player) : null;
+      const destroyAbility = !!firstLegal && choiceDestroys(game, player, {
+        src: card, spec: firstTarget, aiHint: firstTarget.aiHint, prompt: firstTarget.prompt, ability, candidates: firstLegal,
+        targetStep: 1, targetSteps: abilityTargets.length });
+      const removable = target => target instanceof U.CardInst && target.ctrl !== player &&
+        !(destroyAbility && indestructibleStopsDestroy(target));
       if (abilityTargets.some(spec => spec.aiHint && spec.aiHint.goal === 'removal')) {
-        const candidates = game.legalTargets(abilityTargets[0], card, player).filter(target => target instanceof U.CardInst && target.ctrl !== player);
+        const candidates = (firstLegal || game.legalTargets(firstTarget, card, player)).filter(removable);
         const best = Math.max(0, ...candidates.map(target => permanentGameValue(game, target, player)));
         breakdown.threat += best * 0.75;
         if (best < 3) breakdown.timing -= 5;
       }
+      // A required destroy with nothing of an opponent's to destroy is held.
+      if (destroyAbility && !(firstTarget.upTo || firstTarget.min === 0) && ability?.loyalty === undefined &&
+        firstLegal.some(target => target instanceof U.CardInst && target.ctrl !== player) && !firstLegal.some(removable)) breakdown.timing -= 12;
       // Score the actual benefit for each target slot, including timing and
       // redundant keywords. Optional empty targets can still grow loyalty.
       for (const spec of abilityTargets) {
@@ -7613,7 +7838,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const afterPower = target ? (Number(target.power) || 0) + x : x;
         const preservesDistinctPower = before.has(afterPower) ? -3.5 : 3.5;
         breakdown.choice = x * 0.65 + preservesDistinctPower + (target ? permanentGameValue(game, target, player) * 0.08 : 0);
-      } else breakdown.choice = action.value * 0.7;
+      } else {
+        const bound = xBoundTargetValue(game, player, q, Number(action.value) || 0);
+        breakdown.choice = bound === null ? action.value * 0.7 : bound;
+      }
       const source = q && q.src;
       if (source && /lose.*life|pay.*life/i.test(source.def && source.def.oracle || '')) breakdown.safety -= action.value * 0.5;
       // Announcing X for a spell being cast: an X below its effect floor

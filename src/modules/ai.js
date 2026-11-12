@@ -1219,8 +1219,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return scored.length ? [scored[0].card] : pick(cands);
         }
         case 'removal': case 'removalLand': {
-          if (enemyPerms.length) return pick(enemyPerms);
+          // A destroy does nothing to an indestructible permanent. The choice
+          // says that it destroys in its hint, its label or only its printed
+          // text (ai-v2.js, choiceDestroys).
+          const effective = MTG.targetChoiceDestroys?.(g, p, q)
+            ? enemyPerms.filter(card => !card.kw('indestructible')) : enemyPerms;
+          if (effective.length) return pick(effective);
           if (min === 0) return [];
+          if (enemyPerms.length) return pick(enemyPerms);
           return pick(byThreatDesc.length ? byThreatDesc : cands);
         }
         case 'damage': {
@@ -1366,6 +1372,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         default: {
           if (min === 0 && !enemyPerms.length && !oppPlayers.length && !myPerms.length) return [];
+          // An unhinted destroy is aimed at what it can destroy.
+          const effective = enemyPerms.length && (goal === 'generic' || goal === 'destroy') && MTG.targetChoiceDestroys?.(g, p, q)
+            ? enemyPerms.filter(card => !card.kw('indestructible')) : enemyPerms;
+          if (effective.length) return pick(effective);
+          if (enemyPerms.length && min === 0) return [];
           if (enemyPerms.length) return pick(enemyPerms);
           return pick(cands);
         }

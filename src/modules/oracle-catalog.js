@@ -2761,6 +2761,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (goal === 'tap') return hostile && !target.tapped;
           if (goal === 'untap') return !hostile && !!target.tapped;
           if (goal === 'buff' || goal === 'recur' || goal === 'protect') return !hostile;
+          // A destroy has nothing to do to an indestructible permanent.
+          if (goal === 'removal' && spec.aiHint.removalKind === 'destroy' && target instanceof MTG.CardInst &&
+              target.zone === 'battlefield' && target.kw('indestructible')) return false;
           if (goal === 'removal' || goal === 'damage' || goal === 'bounce' ||
               goal === 'debuff' || goal === 'discard') return hostile;
           return true;
