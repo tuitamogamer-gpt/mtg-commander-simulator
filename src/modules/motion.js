@@ -162,12 +162,27 @@ function surfaces(root) {
   return list;
 }
 
+// Motion is decoration. A failure here must never reach the render, whose
+// own failure is a recovery dialog over the table: it is reported once to
+// the console and the table simply does not move for that render.
+let reported = false;
+const guarded = (ui, run) => {
+  try { return run(); } catch (error) {
+    ui._motion = null;
+    clear();
+    if (!reported) { reported = true; console.error('Table motion skipped', error); }
+    return undefined;
+  }
+};
+
 // Called by the render just before the new arena is committed: what the table
 // shows now.
 P.captureMotion = function (root) {
   if (still(this) || !root) { this._motion = null; return; }
-  this._motion = {game: this.game, layout: layoutKey(this, root), cards: snapshot(root), zones: this._zoneSnapshot || null,
-    chrome: chrome(root), surfaces: surfaces(root)};
+  guarded(this, () => {
+    this._motion = {game: this.game, layout: layoutKey(this, root), cards: snapshot(root), zones: this._zoneSnapshot || null,
+      chrome: chrome(root), surfaces: surfaces(root)};
+  });
 };
 
 // The layer is a child of the arena, so a flying copy is drawn by the same
@@ -451,8 +466,20 @@ function cardFace(ui, iid) {
 const drops = new Map();
 U.noteCardDrop = (iid, x, y) => { drops.set(String(iid), {x, y, at: performance.now()}); };
 
+// Equal permanents are drawn as one pile, as its first card. When that card
+// leaves, the next one stands for the pile in the same place: nothing arrived.
+function standsIn(before, now, next) {
+  const name = next.node.dataset?.cname;
+  if (!name) return false;
+  for (const [key, prev] of before.cards) {
+    if (key[0] !== 'b' || now.has(key) || prev.node.dataset?.cname !== name) continue;
+    if (Math.abs(prev.x - next.x) < 6 && Math.abs(prev.y - next.y) < 6) return true;
+  }
+  return false;
+}
+
 // A card that is drawn where it was not drawn before.
-function arrive(ui, before, key, next, order) {
+function arrive(ui, before, now, key, next, order) {
   const t = design(), kind = key[0], iid = Number(key.slice(1));
   const shown = shownBefore(before, kind, key.slice(1));
   const drop = drops.get(key.slice(1));
@@ -485,6 +512,7 @@ function arrive(ui, before, key, next, order) {
   }
   // The Stack's own window and the dock present their cards themselves.
   if (kind === 's' || kind === 'c') return;
+  if (kind === 'b' && !next.shared && standsIn(before, now, next)) return;
   note('set', key);
   if (next.shared) { nod(next.node); return; }
   // Set down in place: a card rises into your hand, a permanent lands on the
@@ -538,10 +566,13 @@ function showBoards(root) {
 P.playMotion = function (root) {
   const before = this._motion;
   this._motion = null;
-  if (!before || !root || still(this) || before.game !== this.game) return;
-  playChrome(this, root, before.chrome);
-  playRail(this, root, before.chrome.rail);
-  playClosed(this, root, before.surfaces);
+  if (!before || !root || still(this) || before.game !== this.game) { left.clear(); return; }
+  guarded(this, () => play(this, root, before));
+};
+function play(ui, root, before) {
+  playChrome(ui, root, before.chrome);
+  playRail(ui, root, before.chrome.rail);
+  playClosed(ui, root, before.surfaces);
   const now = snapshot(root), clock = performance.now();
   // Keep a card hidden while its flight from an earlier render is in the air.
   for (const [key, entry] of flights) {
@@ -549,22 +580,22 @@ P.playMotion = function (root) {
     if (box && !entry.shared) hideUntilLanding(box.node, entry, box.opacity);
   }
   for (const [key, entry] of left) if (clock - entry.at > LEFT_FOR) left.delete(key);
-  if (before.layout !== layoutKey(this, root)) { left.clear(); showBoards(root); return; }
-  const z = zoomOf(this, root), settled = new Set();
+  if (before.layout !== layoutKey(ui, root)) { left.clear(); showBoards(root); return; }
+  const z = zoomOf(ui, root), settled = new Set();
   let arrivals = 0, moved = 0;
   for (const [key, next] of now) {
     if (flights.has(key)) continue;
     const prev = before.cards.get(key);
-    if (!prev) arrive(this, before, key, next, arrivals++);
+    if (!prev) arrive(ui, before, now, key, next, arrivals++);
     else if (key[0] === 'b' || key[0] === 'h') {
       // A count is one node for several lands: it moves once.
       if (next.shared) { if (settled.has(next.node)) continue; settled.add(next.node); }
-      if (moved < 90 && settle(this, key, prev, next, z, moved + 1)) moved++;
+      if (moved < 90 && settle(ui, key, prev, next, z, moved + 1)) moved++;
     }
     // The Stack's rows and the dock are not cards on the table: they keep
     // still. A spell that comes forward for your response (from its thumbnail
     // to the review's art) or goes back is the same card: it travels.
-    else if (key[0] === 's' && (prev.w / next.w < .6 || prev.w / next.w > 1.6) && onScreen(prev) && onScreen(next)) settle(this, key, prev, next, z, 99);
+    else if (key[0] === 's' && (prev.w / next.w < .6 || prev.w / next.w > 1.6) && onScreen(prev) && onScreen(next)) settle(ui, key, prev, next, z, 99);
   }
   // What is shown nowhere any more is remembered for its next appearance.
   const tab = stackTab();
@@ -572,9 +603,9 @@ P.playMotion = function (root) {
     if (now.has(key) || prev.shared || !onScreen(prev) || KINDS.some(kind => now.has(kind + key.slice(1)))) continue;
     // Your card went on the Stack and a phone shows the Stack as a tab: the
     // card flies into the tab.
-    if (key[0] === 'h' && tab && this.game.stack?.some(spell => spell.card && String(spell.card.iid) === key.slice(1))) {
+    if (key[0] === 'h' && tab && ui.game.stack?.some(spell => spell.card && String(spell.card.iid) === key.slice(1))) {
       note('away', key, 'stack');
-      flyAway(this, prev, tab);
+      flyAway(ui, prev, tab);
       continue;
     }
     left.set(key, {box: prev, at: clock});
@@ -583,19 +614,19 @@ P.playMotion = function (root) {
   // that counter. A permanent spell is met on the table instead (arrive).
   for (const [key, entry] of left) {
     if (key[0] !== 's') continue;
-    const card = this.game.byIid?.(Number(key.slice(1)));
+    const card = ui.game.byIid?.(Number(key.slice(1)));
     if (!card || card.zone !== 'graveyard' && card.zone !== 'exile' || !card.owner) continue;
     left.delete(key);
-    const target = zoneBox(this, card.owner, card.zone);
+    const target = zoneBox(ui, card.owner, card.zone);
     if (!target) continue;
     note('away', key, card.zone);
-    flyAway(this, entry.box, target);
+    flyAway(ui, entry.box, target);
   }
-};
+}
 
 // Tests and tools: what is in the air.
 U.motionState = () => ({flights: flights.size, remembered: left.size, layer: !!document.querySelector('#game > .motionlayer')});
-const clear = () => { document.querySelector('#game > .motionlayer')?.remove(); flights.clear(); left.clear(); drops.clear(); };
+function clear() { document.querySelector('#game > .motionlayer')?.remove(); flights.clear(); left.clear(); drops.clear(); }
 document.addEventListener('visibilitychange', clear);
 window.addEventListener('resize', clear);
 reduce.addEventListener?.('change', clear);

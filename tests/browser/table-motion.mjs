@@ -189,6 +189,28 @@ try {
     await settle(page);
     check('1440px a closed dialog fades as an empty plate and dim');
 
+    // A failure inside motion never reaches the render, whose own failure is
+    // a recovery dialog over the table: that render keeps still, the next moves.
+    const survived = await page.evaluate(() => {
+      const animate = Element.prototype.animate, error = console.error;
+      let reported = 0;
+      Element.prototype.animate = () => { throw new Error('animation refused'); };
+      console.error = () => { reported++; };
+      try {
+        const card = _game.creatures(_ui.me)[2];
+        card.tapped = true;
+        _ui.render();
+        return {recovery: !!document.querySelector('[data-testid="view-recovery"]'), reported,
+          drawnTapped: document.querySelector(`.myboard .mini[data-iid="${card.iid}"]`).classList.contains('tapped'),
+          layer: !!document.querySelector('#game > .motionlayer')};
+      } finally { Element.prototype.animate = animate; console.error = error; }
+    });
+    assert.deepEqual(survived, {recovery: false, reported: 1, drawnTapped: true, layer: false}, JSON.stringify(survived));
+    report = await change(page, () => { _game.creatures(_ui.me)[3].tapped = true; });
+    assert.deepEqual(kinds(report), ['turn:b'], 'the next render moves again');
+    await settle(page);
+    check('1440px a failure inside motion leaves the render whole and the table still for that render');
+
     assert.equal(report.samePending, true);
     // The changes above were made by this test; motion itself changed nothing.
     const state = await page.evaluate(() => ({pending: _ui.pending?.q.type, phase: _game.phase}));
