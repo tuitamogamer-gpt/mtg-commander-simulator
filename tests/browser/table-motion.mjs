@@ -97,14 +97,15 @@ try {
       const node = document.querySelector(`.myboard .mini[data-iid="${__tapped}"]`);
       const animation = node.getAnimations().find(item => !item.animationName);
       const frames = animation.effect.getKeyframes();
-      return {from: frames[0].transform, to: frames.at(-1).transform, running: animation.playState};
+      return {from: frames[0].transform, ends: frames.length, running: animation.playState};
     });
     assert.equal(turning.running, 'running');
     assert.doesNotMatch(turning.from, /matrix|rotate/, 'the turn starts from the untapped pose');
-    assert.match(turning.to, /matrix|rotate/, 'and ends in the tapped one');
+    // The end keyframe is left out: the card ends in whatever pose the stylesheet gives it.
+    assert.equal(turning.ends, 1);
     await settle(page);
-    assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(`.myboard .mini[data-iid="${__tapped}"]`)).transform), turning.to,
-      'which is the pose the card rests in');
+    const resting = await page.evaluate(() => new DOMMatrixReadOnly(getComputedStyle(document.querySelector(`.myboard .mini[data-iid="${__tapped}"]`)).transform));
+    assert.ok(Math.abs(Math.atan2(resting.b, resting.a)) > .05, 'and rests turned');
     check('1440px a tap turns the card from its last pose');
 
     // Your land flies from your hand to its place; its copy is a plain picture
@@ -155,6 +156,20 @@ try {
     assert.ok(kinds(report).includes('away:s<graveyard'), JSON.stringify(report.log));
     await settle(page);
     check('1440px a spell flies to the Stack and from there to its owner\'s graveyard');
+
+    // A card under the pointer is lifted by the stylesheet. When the table is
+    // redrawn with a new decision its node is replaced: that is no change of
+    // the table, and motion leaves the card to the stylesheet.
+    await page.locator('.hand .hcard').nth(1).hover();
+    await page.waitForTimeout(350);
+    report = await change(page, () => {
+      _ui.pendings = [];
+      void _ui.me.controller.decide(_game, {type: 'main', player: _ui.me, phase: _game.phase, casts: [], acts: [], lands: []});
+    });
+    assert.deepEqual(report.log, [], JSON.stringify(report.log));
+    await page.mouse.move(1, 1);
+    await settle(page);
+    check('1440px a redrawn card under the pointer is not treated as moved');
 
     // A permanent that leaves play is carried by the engine's own effect: no second copy.
     report = await change(page, async () => { await _game.move(_game.creatures(_ui.me)[1], 'graveyard'); });

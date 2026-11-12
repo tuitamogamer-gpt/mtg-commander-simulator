@@ -51,10 +51,6 @@ const matrix = transform => {
   try { const m = new DOMMatrixReadOnly(transform); return m.is2D ? m : null; } catch { return null; }
 };
 const linear = m => m ? `matrix(${m.a}, ${m.b}, ${m.c}, ${m.d}, 0, 0)` : '';
-const sameLinear = (a, b) => {
-  const [x, y] = [a || {a: 1, b: 0, c: 0, d: 1}, b || {a: 1, b: 0, c: 0, d: 1}];
-  return Math.abs(x.a - y.a) < .002 && Math.abs(x.b - y.b) < .002 && Math.abs(x.c - y.c) < .002 && Math.abs(x.d - y.d) < .002;
-};
 const onScreen = box => box.y + box.rh / 2 > 0 && box.y - box.rh / 2 < innerHeight && box.x + box.rw / 2 > 0 && box.x - box.rw / 2 < innerWidth;
 
 // What decides where everything sits. When it changes (another phone view or
@@ -527,25 +523,29 @@ function arrive(ui, before, now, key, next, order) {
 }
 
 // A card that is drawn where it was drawn before, in another place or pose.
+// What the pointer adds to a card (a hover lift, a little scale) is no change
+// of the table: a redrawn card under the pointer is left to the stylesheet,
+// as before. So a card's place is its place without its transform's shift,
+// and its turn is the angle of its transform, not its scale.
+const angle = m => m ? Math.atan2(m.b, m.a) : 0;
 function settle(ui, key, prev, next, z, count) {
   const t = design();
   const from = matrix(prev.transform), to = matrix(next.transform);
-  // The card's own place, without what its transform adds (a hover lift).
   const homeX = next.x - (to ? to.e * z : 0), homeY = next.y - (to ? to.f * z : 0);
-  const dx = (prev.x - homeX) / z, dy = (prev.y - homeY) / z;
+  const wasX = prev.x - (from ? from.e * z : 0), wasY = prev.y - (from ? from.f * z : 0);
   const sx = prev.w / next.w, sy = prev.h / next.h;
-  const turned = !sameLinear(from, to), resized = Math.abs(sx - 1) > .01 || Math.abs(sy - 1) > .01;
-  const shifted = Math.hypot(dx - (to ? to.e : 0), dy - (to ? to.f : 0)) > 1;
+  const turned = Math.abs(angle(from) - angle(to)) > .01, resized = Math.abs(sx - 1) > .01 || Math.abs(sy - 1) > .01;
+  const shifted = Math.hypot(wasX - homeX, wasY - homeY) > 1;
   const faded = Math.abs(prev.opacity - next.opacity) > .02;
   if (!turned && !resized && !shifted && !faded) return false;
   if (!onScreen(prev) && !onScreen(next)) return false;
-  const own = next.transform === 'none' ? '' : next.transform;
+  // From the pose it was drawn in to the pose the stylesheet gives it now,
+  // whatever that becomes while it travels (the end keyframe is left out).
+  const dx = (prev.x - homeX) / z, dy = (prev.y - homeY) / z;
   // A turn in place is a tap: short, with a little weight at the end.
   const tap = turned && !shifted && !resized;
-  next.node.animate([
-    {transform: `translate(${dx}px, ${dy}px) ${linear(from)}${resized ? ` scale(${sx}, ${sy})` : ''}`.trim(), opacity: prev.opacity},
-    {transform: own || 'none', opacity: next.opacity},
-  ], {duration: tap ? t.base + 40 : Math.round(Math.min(t.flight, Math.max(t.base, t.fast + Math.hypot(dx, dy) * .5))), easing: tap ? t.spring : t.out});
+  next.node.animate([{transform: `translate(${dx}px, ${dy}px) ${linear(from)}${resized ? ` scale(${sx}, ${sy})` : ''}`.trim(), opacity: prev.opacity}],
+    {duration: tap ? t.base + 40 : Math.round(Math.min(t.flight, Math.max(t.base, t.fast + Math.hypot(dx, dy) * .5))), easing: tap ? t.spring : t.out});
   if (count <= 12) note(tap ? 'turn' : 'move', key);
   return true;
 }

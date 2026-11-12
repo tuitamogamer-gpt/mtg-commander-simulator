@@ -192,6 +192,9 @@ try {
       receipt.checks.push('390: full art and expanded hand, keyboard inspection, no viewport overflow');
     }
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${width}: no viewport overflow`);
+    // An answered decision queues one more render (the decision-wait hook).
+    // A render after the forced failure draws a fresh image and hides the name.
+    await page.waitForFunction(() => !_ui.renderQueued);
     await page.evaluate(() => {
       const card = document.querySelector('.myboard .mini[data-cname="Riders of Gavony"] > img');
       MTG.imgFail(card); MTG.imgFail(card);

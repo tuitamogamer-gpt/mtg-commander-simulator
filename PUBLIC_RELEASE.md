@@ -47,6 +47,7 @@ node tests/browser/mobile-table-view.mjs
 node tests/browser/commander-live-launch.mjs --output output/playwright/release-live
 node tests/browser/commander-live-four-player.mjs --output output/playwright/release-live-four
 node tests/browser/battlefield-combat.mjs
+node tests/browser/table-motion.mjs
 node tests/browser/diplomacy-options.mjs
 ```
 

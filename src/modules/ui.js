@@ -2722,16 +2722,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let curName = null, zoom = 1;
       // Sve u viewport pikselima: preview je unutar zoomovanog body-ja, pa su mu
       // stvarne dimenzije offset × zoom, a left/top se upisuju podijeljeni zoomom.
-      // The preview belongs to the card, not to the pointer: it stands still
-      // beside a card on the table and above a card in your hand or dock, so
-      // it never covers the row you are reading along.
+      // The preview belongs to the card, not to the pointer, and it never
+      // covers the cards you are reading along. Cards in a row (a lane, your
+      // hand, the dock) show it above them, or below when there is no room
+      // above; cards in a column (lands and mana) and in the decision panel
+      // show it beside them.
       const place = card => {
         const r = card.getBoundingClientRect();
         const w = (prev.offsetWidth || 300) * zoom, h = Math.max(prev.offsetHeight, 418) * zoom;
         const gap = 14 * zoom, margin = 8;
+        const row = !!card.closest('.boardlanecards, .hand, .ct-commander-dock') && !card.closest('.resourcezone, .oppresourcelane, .ct-resource-dock');
         let x, y, origin;
-        if (r.top > window.innerHeight * .55 && r.top - gap - margin >= h) {
+        if (row && r.top - gap - margin >= h) {
           x = r.left + r.width / 2 - w / 2; y = r.top - gap - h; origin = '50% 100%';
+        } else if (row && window.innerHeight - r.bottom - gap - margin >= h) {
+          x = r.left + r.width / 2 - w / 2; y = r.bottom + gap; origin = '50% 0';
         } else {
           const right = r.right + gap + w <= window.innerWidth - margin;
           x = right ? r.right + gap : r.left - gap - w; y = r.top + r.height / 2 - h / 2; origin = right ? '0 50%' : '100% 50%';
