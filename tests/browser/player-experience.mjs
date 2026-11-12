@@ -115,8 +115,14 @@ try {
   await page.locator('[data-step="pod"]').click();
   await page.locator('.podpresets').evaluate(details=>{details.open=true;});await page.locator('[data-pod-preset="learn"]').click();
   await page.locator('.setupnext').click();
+  // Pin only seed generation; every decision still goes through the interface.
+  // The opening hand is a function of the seed alone, and 85 of 3,000 seeds
+  // (2.8%) deal this deck no land in seven cards. This suite plays one land.
+  await page.evaluate(() => { window.__qaRandom = Math.random; Math.random = () => 11081 / 1e9; });
   await page.locator('.reviewstart').click();
   await page.waitForFunction(() => window._ui?.pending?.q.type === 'mulligan');
+  assert.equal(await page.evaluate(() => MTG.activeAccountMatch.setup.seed), '11081');
+  await page.evaluate(() => { Math.random = window.__qaRandom; delete window.__qaRandom; });
   const openingName = await page.evaluate(() => _ui.me.hand[0].name);
   await page.keyboard.press('Control+k');
   await page.locator('.commandsearch').fill(openingName);
