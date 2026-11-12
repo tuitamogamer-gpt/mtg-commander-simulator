@@ -120,7 +120,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // the cursor would move every surviving panel in front of it, stopping
       // touch momentum and replaying media even though identity was retained.
       const survivors = new Set(desired);
-      for (const child of [...parent.childNodes]) if (!survivors.has(child)) child.remove();
+      // The motion layer (motion.js) holds flights that outlive a render.
+      for (const child of [...parent.childNodes]) {
+        if (!survivors.has(child) && !(parent === root && child.classList?.contains('motionlayer'))) child.remove();
+      }
       let cursor = parent.firstChild;
       for (const result of desired) {
         if (result === cursor) cursor = cursor.nextSibling;

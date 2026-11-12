@@ -1039,6 +1039,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sourceCard && sourceCard.name) {
           if (!sourceCard.faceDown) sourceBox.dataset.cname = sourceCard.name;
           sourceBox.insertAdjacentHTML('beforeend', cardArtHTML(sourceCard));
+          if (so.kind === 'spell' && !so.isCopy && so.card === sourceCard) sourceBox.dataset.stackIid = String(sourceCard.iid);
         }
         const copyLabel = so.isCopy ? `SPELL COPY #${so.copyIndex || '?'}` : (so.kind || 'effect').toUpperCase();
         const sourceText = el('div');
@@ -1353,6 +1354,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const context = [g, this.me, this.pending, this.pending?.q, this.react, this.react?.q, this.arenaDragEnabled, this.handSort, this.sheet?.card, this.playerSheet, this.zoneBrowse, this.showJudge, this.lastResortPlayerSeat, this.manualPick, ...(this.pendings || [])];
       const previous = this._arenaRenderContext;
       const surfaces = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort, this.showJudge, this.lastResortPlayerSeat];
+      // What the table shows now; playMotion below moves it to what it becomes.
+      this.captureMotion?.(liveRoot);
       U.commitArenaRender(liveRoot, root, {
         sameGame: !!previous && previous[0] === g && previous[1] === this.me,
         retain: !!previous && previous.length === context.length && context.every((value, index) => previous[index] === value),
@@ -1374,6 +1377,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.fitBattlefieldLanes(liveRoot);
       this.initLaneFit();
       this.syncZoneEffects(g);
+      this.playMotion?.(liveRoot);
     }
 
     // Cards that change zone without crossing the battlefield (impulse exile
@@ -1736,6 +1740,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const stage = el('div', 'actionstage');
       const art = el('div', 'actionstageart');
       if (!source.faceDown) art.dataset.cname = source.name;
+      // Where this spell is shown while it is on the Stack (motion.js).
+      if (top.kind === 'spell' && !top.isCopy && top.card) art.dataset.stackIid = String(top.card.iid);
       art.innerHTML = `${cardArtHTML(source)}`;
       stage.appendChild(art);
       const info = el('div', 'actionstageinfo');
@@ -1997,6 +2003,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const kind = so.kind === 'trigger' ? 'trigger' : so.kind === 'ability' ? 'ability' : 'spell';
         if (so.card) {
           main.insertAdjacentHTML('beforeend', cardArtHTML(so.card));
+          if (kind === 'spell' && !so.isCopy) it.dataset.stackIid = String(so.card.iid);
         }
         const info = el('div', 'stackpopinfo');
         info.appendChild(el('div', 'stackpopname', esc(nm)));
@@ -2712,37 +2719,50 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let curName = null, zoom = 1;
       // Sve u viewport pikselima: preview je unutar zoomovanog body-ja, pa su mu
       // stvarne dimenzije offset × zoom, a left/top se upisuju podijeljeni zoomom.
-      const place = ev => {
-        const w = (prev.offsetWidth || 300) * zoom, h = (prev.offsetHeight || 420) * zoom;
-        const gap = 26 * zoom;
-        let x = ev.clientX + gap;
-        if (x + w > window.innerWidth - 8) x = ev.clientX - w - gap;
-        const y = Math.max(8, Math.min(window.innerHeight - h - 8, ev.clientY - h / 2));
-        prev.style.left = (x / zoom) + 'px'; prev.style.top = (y / zoom) + 'px';
-      };
-      gameEl.addEventListener('mouseover', ev => {
-        if (this.arenaDragState || Date.now() < (this._arenaSuppressHoverUntil || 0)) {
-          prev.style.display = 'none'; curName = null; return;
+      // The preview belongs to the card, not to the pointer: it stands still
+      // beside a card on the table and above a card in your hand or dock, so
+      // it never covers the row you are reading along.
+      const place = card => {
+        const r = card.getBoundingClientRect();
+        const w = (prev.offsetWidth || 300) * zoom, h = Math.max(prev.offsetHeight, 418) * zoom;
+        const gap = 14 * zoom, margin = 8;
+        let x, y, origin;
+        if (r.top > window.innerHeight * .55 && r.top - gap - margin >= h) {
+          x = r.left + r.width / 2 - w / 2; y = r.top - gap - h; origin = '50% 100%';
+        } else {
+          const right = r.right + gap + w <= window.innerWidth - margin;
+          x = right ? r.right + gap : r.left - gap - w; y = r.top + r.height / 2 - h / 2; origin = right ? '0 50%' : '100% 50%';
         }
+        x = Math.max(margin, Math.min(window.innerWidth - w - margin, x));
+        y = Math.max(margin, Math.min(window.innerHeight - h - margin, y));
+        prev.style.left = (x / zoom) + 'px'; prev.style.top = (y / zoom) + 'px';
+        prev.style.transformOrigin = origin;
+      };
+      const hide = () => { prev.style.display = 'none'; curName = null; };
+      gameEl.addEventListener('mouseover', ev => {
+        if (this.arenaDragState || Date.now() < (this._arenaSuppressHoverUntil || 0)) { hide(); return; }
         const m = ev.target.closest ? ev.target.closest('.mini,[data-cname]') : null;
         const nm = m && m.dataset ? m.dataset.cname : null;
-        if (!nm) { prev.style.display = 'none'; curName = null; return; }
+        if (!nm) { hide(); return; }
+        const shown = prev.style.display === 'block';
         if (nm !== curName) {
           curName = nm;
           prev.innerHTML = `<img src="${imgURL(nm, true)}" onerror="MTG.imgFail(this)">`;
         }
         prev.style.display = 'block';
         zoom = this.viewportZoom(prev);
-        place(ev);
+        place(m);
+        // It grows out of its card when it appears; between two cards it only
+        // changes place. A short wait keeps a pointer crossing the table quiet.
+        const still = this.reducedMotion || document.body.classList.contains('reduced-motion') ||
+          window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!shown && !still && prev.animate) prev.animate([{ opacity: 0, transform: 'scale(.955)' }, { opacity: 1, transform: 'none' }],
+          { duration: 150, delay: 55, easing: 'cubic-bezier(.16, 1, .3, 1)', fill: 'backwards' });
       });
-      gameEl.addEventListener('mousemove', ev => {
-        if (this.arenaDragState || Date.now() < (this._arenaSuppressHoverUntil || 0)) {
-          prev.style.display = 'none'; curName = null; return;
-        }
-        if (prev.style.display !== 'block') return;
-        place(ev);
+      gameEl.addEventListener('mousemove', () => {
+        if (this.arenaDragState || Date.now() < (this._arenaSuppressHoverUntil || 0)) hide();
       });
-      gameEl.addEventListener('mouseleave', () => { prev.style.display = 'none'; curName = null; });
+      gameEl.addEventListener('mouseleave', hide);
     }
 
     phaseName(g) {
@@ -7839,10 +7859,29 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       setTimeout(dismiss, introURL ? 4300 : 3200);
     }
 
-    showBanner(text, gold) {
-      const b = el('div', 'turnbanner' + (gold ? ' gold' : ''), esc(text));
+    // The turn announcement. Your turn is said across the middle of the
+    // table; an opponent's turn is said on their own lane, so no seat is
+    // covered. `turn` carries the player and the turn number; without it the
+    // text is shown as given.
+    showBanner(text, gold, turn) {
+      document.querySelectorAll('.turnbanner').forEach(node => node.remove());
+      const player = turn && turn.player;
+      const mine = !!player && player === this.me;
+      const b = el('div', 'turnbanner' + (gold ? ' gold' : '') + (player ? (mine ? ' mine' : ' seat') : ''),
+        player
+          ? `<i aria-hidden="true"></i><span><small>Turn ${esc(turn.turn ?? '')}</small><b>${mine ? 'Your turn' : esc(player.name)}</b></span><i aria-hidden="true"></i>`
+          : `<span><b>${esc(text)}</b></span>`);
       document.body.appendChild(b);
-      setTimeout(() => b.remove(), 1500);
+      if (player && !mine) {
+        const lane = document.querySelector(`#game .opprow[data-player-id="${player.idx}"]`);
+        const rect = lane && lane.getBoundingClientRect();
+        if (rect && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight) {
+          const z = this.viewportZoom(b);
+          b.style.left = `${(rect.left + rect.width / 2) / z}px`;
+          b.style.top = `${(rect.top + rect.height / 2) / z}px`;
+        }
+      }
+      setTimeout(() => b.remove(), mine || !player ? 1500 : 1200);
     }
 
     showMonarchChange(event) {

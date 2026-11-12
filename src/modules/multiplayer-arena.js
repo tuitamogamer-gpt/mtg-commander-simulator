@@ -145,7 +145,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.ui.showActionEffect?.(event);
         if (event.type === 'combatReplay' && event.replay) incomingReplays.push(event.replay);
         const methods = { effectNotice: 'showEffectNotice', gameEffect: 'showGameEffect', battlefieldArrival: 'showBattlefieldArrival', monarchChanged: 'showMonarchChange' };
-        if (event.type === 'turn' && event.p) this.ui.showBanner(event.p === this.ui.me ? '⭐ YOUR TURN' : `Turn ${snapshot.turn}: ${event.p.name}`, event.p === this.ui.me);
+        if (event.type === 'turn' && event.p) this.ui.showBanner(event.p === this.ui.me ? 'YOUR TURN' : `Turn ${snapshot.turn}: ${event.p.name}`, event.p === this.ui.me, { player: event.p, turn: snapshot.turn });
         else if (event.type === 'effectNotice') this.ui.showEffectNotice(event.text, event.kind, event);
         else if (methods[event.type]) this.ui[methods[event.type]](event);
       }

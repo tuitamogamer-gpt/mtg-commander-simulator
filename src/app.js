@@ -711,6 +711,7 @@ import './modules/arena-tools.js';
 import './modules/experience-tools.js';
 import './modules/help-experience.js';
 import './modules/command-table.js';
+import './modules/motion.js';
 import './modules/action-effects.js';
 import './modules/combat-replay.js';
 import './modules/effect-anchors.js';

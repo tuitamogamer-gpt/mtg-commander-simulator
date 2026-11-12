@@ -1,0 +1,123 @@
+/* Table continuity (modules/motion.js) and the transitions every surface
+   shares. Loaded last: it adds motion to what the other sheets draw and
+   changes no layout. Durations and easings come from design-system.css. */
+
+/* Flights live in a click-through layer inside the arena, so a flying copy is
+   drawn by the same rules as the card it copies. */
+#game > .motionlayer {
+  position: fixed; inset: 0; z-index: 110; overflow: hidden;
+  pointer-events: none; contain: layout style;
+}
+#game > .motionlayer * { pointer-events: none !important; }
+.motion-flight { position: absolute; transform-origin: center; will-change: transform, opacity; }
+.motion-lift { width: 100%; height: 100%; transform-origin: center; }
+/* The copy's box is set inline by motion.js; a card in the air casts a longer shadow. */
+.motion-lift > * {
+  box-shadow: 0 18px 38px rgba(var(--ds-table-rgb), .62), 0 0 0 1px rgba(var(--ds-accent-bright-rgb), .34) !important;
+}
+.motion-lift > img { object-fit: cover; border-radius: 6px; }
+
+/* A closed dialog's dim and plate (no content, no dialog class names). */
+.motion-veil { position: absolute; inset: 0; }
+.motion-plate { position: absolute; box-sizing: border-box; transform-origin: center; }
+
+body.reduced-motion #game > .motionlayer { display: none; }
+@media (prefers-reduced-motion: reduce) { #game > .motionlayer { display: none; } }
+
+/* ---------- Turn announcement ----------
+   Your turn is said across the middle of the table; an opponent's turn is
+   said on their own lane (ui.js showBanner places it), smaller and shorter.
+   Words on a soft band, no box: nothing to read around. */
+body .turnbanner {
+  position: fixed; left: 50%; top: 46%; z-index: 95;
+  display: flex; align-items: center; gap: 22px; box-sizing: border-box;
+  width: max-content; max-width: calc(100 * var(--vwu) - 24px);
+  margin: 0; padding: 0; overflow: visible;
+  color: var(--ds-text); background: none; border: 0; border-radius: 0; box-shadow: none;
+  font: 600 16px/1 var(--ds-font-body); letter-spacing: 0; text-transform: none; white-space: nowrap;
+  pointer-events: none; transform: translate(-50%, -50%);
+  animation: turnBannerIn 1.5s var(--ds-ease) both;
+}
+body .turnbanner::before {
+  content: ''; position: absolute; z-index: -1; inset: -46px -190px;
+  background: radial-gradient(closest-side, rgba(var(--ds-table-rgb), .94), rgba(var(--ds-table-rgb), .72) 52%, rgba(var(--ds-table-rgb), 0));
+}
+body .turnbanner::after { content: none; animation: none; }
+body .turnbanner > span { display: grid; justify-items: center; gap: 8px; }
+body .turnbanner small { color: var(--ds-muted); font: 600 11px/1 var(--ds-font-mono); letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; }
+body .turnbanner b { color: var(--ds-text); font: 640 26px/1 var(--ds-font-display); letter-spacing: -.01em; }
+body .turnbanner.mine b { color: var(--ds-accent-bright); font-size: 44px; letter-spacing: -.025em; text-shadow: 0 0 34px rgba(var(--ds-accent-rgb), .42); }
+/* Your turn: one strip across the table with a hairline above and below. */
+body .turnbanner.mine::before {
+  inset: -34px calc(-50 * var(--vwu));
+  background: linear-gradient(90deg, rgba(var(--ds-table-rgb), 0), rgba(var(--ds-table-rgb), .95) 24%, rgba(var(--ds-table-rgb), .95) 76%, rgba(var(--ds-table-rgb), 0));
+  border-block: 1px solid;
+  border-image: linear-gradient(90deg, rgba(var(--ds-accent-rgb), 0), rgba(var(--ds-accent-rgb), .5) 32%, rgba(var(--ds-accent-rgb), .5) 68%, rgba(var(--ds-accent-rgb), 0)) 1;
+}
+body .turnbanner > i {
+  display: block; flex: 0 0 auto; width: 132px; height: 1px; transform-origin: 100% 50%;
+  background: linear-gradient(90deg, rgba(var(--ds-accent-bright-rgb), 0), rgba(var(--ds-accent-bright-rgb), .85));
+  animation: turnBannerRule 1.5s var(--ds-ease-out) both;
+}
+body .turnbanner > i:last-child { rotate: 180deg; }
+body .turnbanner.seat { gap: 14px; animation-duration: 1.2s; }
+body .turnbanner.seat::before { inset: -30px -110px; }
+body .turnbanner.seat > i { width: 56px; background: linear-gradient(90deg, rgba(var(--ds-accent-soft-rgb), 0), rgba(var(--ds-accent-soft-rgb), .6)); animation-duration: 1.2s; }
+body .turnbanner.seat small { font-size: 10px; }
+body .turnbanner.seat b { font-size: 22px; }
+@keyframes turnBannerIn {
+  0% { opacity: 0; transform: translate(-50%, calc(-50% + 12px)) scale(.97); }
+  14% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, calc(-50% - 8px)) scale(1); }
+}
+@keyframes turnBannerRule {
+  0%, 8% { transform: scaleX(0); opacity: 0; }
+  34% { transform: scaleX(1); opacity: 1; }
+  80% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(.6); opacity: 0; }
+}
+@media (max-width: 700px) {
+  body .turnbanner { gap: 12px; }
+  body .turnbanner > i { width: 44px; }
+  body .turnbanner.mine b { font-size: 34px; }
+  body .turnbanner::before { inset: -40px -60px; }
+  body .turnbanner.mine::before { inset: -28px calc(-50 * var(--vwu)); }
+}
+body.reduced-motion .turnbanner, body.reduced-motion .turnbanner > i { animation: none; }
+@media (prefers-reduced-motion: reduce) { body .turnbanner, body .turnbanner > i { animation: none; } }
+
+/* ---------- Opening hand ----------
+   Seven cards in one row on a desktop, dealt one after another. A dialog that
+   is only redrawn (.settled) keeps its cards still. */
+@media (min-width: 901px) {
+  #game .modal[data-decision-type="mulligan"] { width: min(1160px, calc(100 * var(--vwu) - 56px)); max-width: none; padding: 26px 28px 24px; }
+  #game .modal[data-decision-type="mulligan"] .cardgrid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+  #game .modal[data-decision-type="mulligan"] .mtitle { margin-bottom: 18px; }
+  #game .modal[data-decision-type="mulligan"] .decision-footer { margin-top: 20px; }
+}
+#game .modal[data-decision-type="mulligan"]:not(.settled) .bigcard {
+  animation: openingDeal 460ms var(--ds-ease-out) both;
+  animation-delay: calc(140ms + var(--deal, 0) * 55ms);
+}
+#game .modal[data-decision-type="mulligan"] .bigcard:nth-child(2) { --deal: 1; }
+#game .modal[data-decision-type="mulligan"] .bigcard:nth-child(3) { --deal: 2; }
+#game .modal[data-decision-type="mulligan"] .bigcard:nth-child(4) { --deal: 3; }
+#game .modal[data-decision-type="mulligan"] .bigcard:nth-child(5) { --deal: 4; }
+#game .modal[data-decision-type="mulligan"] .bigcard:nth-child(6) { --deal: 5; }
+#game .modal[data-decision-type="mulligan"] .bigcard:nth-child(n+7) { --deal: 6; }
+@keyframes openingDeal {
+  from { opacity: 0; transform: translateY(38px) rotate(-3.5deg) scale(.92); }
+  55% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+body.reduced-motion #game .modal[data-decision-type="mulligan"] .bigcard { animation: none; }
+@media (prefers-reduced-motion: reduce) { #game .modal[data-decision-type="mulligan"] .bigcard { animation: none; } }
+
+/* ---------- Header ----------
+   The turn tracker keeps its place: the title beside it has one width, so a
+   longer step name ("Combat attackers") no longer pushes the tracker along. */
+@media (min-width: 1251px) {
+  body.game-active #game.command-table .arenaheader .phase { flex: 0 0 348px; min-width: 0; }
+  body.game-active #game.command-table .arenaheader .phase em { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}

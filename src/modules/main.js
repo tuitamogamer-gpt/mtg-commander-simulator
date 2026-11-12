@@ -2645,7 +2645,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ui.showActionEffect?.(e, { replay: restoring });
         if (e.type === 'combatReplay' && !restoring) ui.showCombatReplay?.(e.replay);
         if (!restoring) {
-          if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
+          if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? 'YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me, { player: e.p, turn: g.turnNo });
           if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
           if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
           if (e.type === 'gameEffect') ui.showGameEffect(e);
