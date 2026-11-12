@@ -43,6 +43,43 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 
 Motion explains entry, focus or state change. It does not run as ambient decoration during repeated AI renders. Honor the operating-system reduced-motion preference and the in-app `Reduced motion` setting. Cinematic commander entry always has a visible `Skip` control.
 
+Durations and easings are tokens in `design-system.css`: things arrive decelerating (`--ds-ease`, `--ds-ease-out`), leave accelerating (`--ds-ease-in`) and travel between two places with `--ds-ease-travel`; the spring is for small confirmations. `--ds-t-fast` (140 ms), `--ds-t-base` (220 ms) and `--ds-t-slow` (360 ms) time surfaces, `--ds-t-travel` (440 ms) a flight. `motion.js` reads the same values.
+
+### Table continuity
+
+The arena is rebuilt on every render, so nothing on it has a transition of its own. `motion.js` compares each render with what the table showed just before it (`captureMotion` before the commit, `playMotion` after the lanes are fitted) and animates the difference:
+
+- A card still in its place travels from where it was drawn to where it is drawn now, and turns as it taps or untaps.
+- A card that was shown somewhere else flies from there. The places are a permanent (`b`), a card in your hand (`h`), a spell where the Stack shows it (`s`, marked `data-stack-iid`) and your commander in its dock (`c`). The larger of the two is the picture that flies, so nothing is drawn enlarged, and it lands in the pose of its destination: a land that enters tapped lands tapped. The real card appears under the copy as it lands; the copy then fades.
+- A card from a zone the table shows as a count flies from that player's counter: a drawn card from your library, an opponent's land or spell from their hand, a commander from the command-zone mark. Between two small places the card comes forward on the way, large enough to be recognised. A spell that resolved flies to its owner's graveyard or exile counter.
+- A card with no place to come from, such as a token, is set down in its place.
+- A card can be shown nowhere for a render or two (a land drop being applied, a spell resolving). Where it was last shown is remembered for 1.1 s, so its next appearance still starts there.
+- A card that leaves a battlefield is carried by the engine's zone-move effect (`ui.js`, `showZoneMoveEffect`); `motion.js` draws no second copy. That effect takes your commander to its dock.
+- On a phone the Stack is a tab: a cast card flies into the tab and a resolved permanent comes out of it. Lands are counts per name there; a played land flies into its count (`data-land-iids`), which is never hidden.
+- The header's current step wipes in from the side of the step before it. A zone count that changed nods. A life total rolls over: the old number leaves upward as a copy and the new one arrives from below in the colour of the change. The number in the page is the true one at every moment; a transition never writes a number between two totals into it.
+- A dialog that closes leaves an empty plate and its dim, which fade; they carry no content and none of the dialog's class names. The Stack's window leaves the same plate. On a desktop the decision panel opens over the table's edge and closes into its strip; a phone keeps the panel in place, so nothing plays there.
+
+- A card you dragged and dropped continues from where you let go, not from its place in your hand (`MTG.noteCardDrop`).
+
+Flights live in a click-through, `aria-hidden` layer inside the arena (`.motionlayer`), which the commit keeps (`arena-render.js`), so a copy is drawn by the same rules as the card it copies. A copy carries no card id, focus stop or control. A render during a flight replaces the card it flies to; the new node stays hidden until landing.
+
+Another phone view or board, another focused opponent, Table/Focus, another hand size or a resized window redraw the table somewhere else: nothing travels then, and the boards now shown come up with a short fade of their contents. That layout is read from the arena as it is drawn (`layoutKey`), never from the UI's state, which a render has already changed when it captures the table it is about to replace. A phone follows the active player to their board on every new turn; read from the state, every card of that board "arrived". A fade of this kind fades a surface's contents, not the surface: a transparent lane or Combat view shows the playmat behind it, a bright flash between two dark views.
+
+Reduced motion (either preference), a hidden tab, a restored save, bot simulations and instant games keep the table still. `MTG.motionLog` records what moved and from where; `tests/browser/table-motion.mjs` reads it. On a phone at device pixel ratio 3, a render that moves eight cards holds 35 layers and about 55 MB for under a second, against 21 layers and 44 MB at rest (measured as in the notes of 4 November: `LayerTree` over CDP); a render takes as long with the table moving as still.
+
+### Announcements
+
+- The turn announcement is words on a soft band, without a box: across the middle of the table for your turn, smaller and shorter on the player's own lane for an opponent's, so no seat is covered. One shows at a time.
+- The opening hand is one row of seven on a desktop and is dealt one after another; a dialog that is only redrawn keeps its cards still.
+- A powerhouse's arrival is a compact plate under the header with the whole card, its name on one line and Skip beside it; a phone places it above the prompt with the other notices (`phone-table.js`). The card that arrived is lit twice, not bounced: how it comes to its place is the table's own motion. The commander's cinematic keeps its frame.
+- The spotlight line ("a bot did something aimed at you"), the Monarch change and a table negotiation are plates of the dialog material with the tone on the leading edge, the table's own icons and copy of 12 px or more. They come down into place and leave upward; none cuts out. On a phone a negotiation's action takes its own row.
+- One toast shows at a time; it rises in and fades before it is removed.
+
+### Setup and header
+
+- A setup step (Deck, Pod, Review) comes up instead of cutting in: its grid fades and its title rises. The grid only fades, because a transform on it would move the fixed and sticky bars inside it for the length of the animation. The deck spotlight rises into place; on a phone, where it fills the screen, it fades.
+- The header's turn tracker keeps its place. The title beside it has one width; when it does not fit, the player's name gives way, never the step. A step's name stays on one line.
+
 Phones have a small graphics memory budget, and an iPhone tab that runs out is closed by Safari. At device pixel ratio 3, measure an effect's layers (Chrome DevTools: Layers, or `LayerTree` over CDP) before adding it. Rules that follow from it:
 - On phones, avoid large blurred elements, `backdrop-filter` on full-screen surfaces, full-page `mix-blend-mode` and transforms of the whole table.
 - A closed drawer is `visibility: hidden`, not only translated away.
@@ -54,7 +91,7 @@ On a phone's Combat view, an effect that shows a card uses the row's picture, at
 
 A card that changes zone without crossing the battlefield flies there as a ghost with a name badge (`ui.js`, `syncZoneEffects`). The flight is read from two renders of the table, which can be several moves apart, so it is named only by what is certain: "DISCARDED" needs the engine's discard mark on the card, "MILLED" a card that was in a library at the last render or carries the engine's mill mark. The marks are published to Live guests, who see neither hands nor libraries. A card that was in no zone then, such as a resolving spell, is not announced on its way to the graveyard. Both ends of a flight are places on screen: the zone, or the player's visible stand-in (`zoneFlightAnchor`). If the player is not on screen, no flight is drawn. The badge stays inside the screen.
 
-The match's last screen tells the match (`matchHighlights`): every elimination with its turn and reason, then the win. Only the places left go to the latest attacks, damage and arrivals.
+The match's last screen (`renderGameOver`, `resolution-recap.css`) is headed by the winner's commander art and says Victory, Defeat or Match complete. It lists the final standing with commander portraits and tells the match (`matchHighlights`): every elimination with its turn and reason, then the win. Only the places left go to the latest attacks, damage and arrivals. It reads at body size (12 px or more) and arrives in order: the art settles, the result is said, then the standing, row by row.
 
 ## Responsive behavior
 
@@ -75,6 +112,8 @@ The match's last screen tells the match (`matchHighlights`): every elimination w
 ## CSS architecture
 
 `design-system.css` owns new tokens and shared primitives in cascade layers. Existing `styles.css` and `client-v3.css` remain the legacy compatibility layer while the interface is migrated. `frontend-overhaul.css` bridges older declarations; `command-table.css` follows it and owns the scoped Command Table composition. New one-off styling must not be added to `styles.css`.
+
+`motion.css` loads last. It owns the flight layer of `motion.js` and the moments that are motion first (the turn announcement, the opening deal, the arrival plate, toasts); it moves no part of the table. A layout rule belongs to the sheet that owns its surface: the opening hand's row is in `decision-experience.css`, the match's last screen in `resolution-recap.css`, the header's tracker and lane marks in `arena-experience.css`.
 
 The experience sheets load after the mobile compatibility rules: `experience-theme.css` supplies shared readable surfaces and controls; `setup-experience.css`, `decision-experience.css`, `experience-tools.css`, `help-experience.css`, `account-experience.css`, and `live-experience.css` own their respective flows. `arena-experience.css` loads last and owns arena chrome only: the segmented turn tracker (full step names when the header has room), active-turn lane light and badge, low/critical life bands (≤10 / ≤5), lane labels, the decision status chip, and the opaque review overlay. It uses shadows rather than borders or sizes, so no lane moves; the active-turn badge is exactly one 14px line so a lane head keeps its height and the battlefield below it keeps its room. During blocker and damage steps it keeps lanes from clipping their cards: at layout heights of 769–860px (real heights translated through the arena zoom regimes) the hand row hides for the step, as the ≤800px combat rules already do; at 861–1000px the hand stays, lane heads and land docks tighten, and the card size is fluid in `--vhu` so it follows the remaining height. They do not change battlefield grid placement. Keep selectors scoped and use fixed SVG dimensions inside grid controls so external symbol sprites cannot fall back to a 150px intrinsic height.
 
@@ -102,6 +141,8 @@ A bot ranks its actions against one unchanged board: a forecast that every actio
 - Phone polish lives in `phone-table.js`. Activity notices, spell-copy notices and toasts float just above the prompt bar, never over the board or hand heading with your life total; while a sheet or modal is open they keep their place under the seats. On touch screens the prompt bar and toasts say "tap" instead of "click" (whole words only, so card names keep their spelling). A portrait full hand puts the commander in a compact row above a hand of at least two columns; landscape keeps the commander column because height is the scarce side. The phone target tray is only as tall as its content, up to a cap that grows with the screen so a cast's two-line hint is not cut off.
 - On phones (≤900px), cards you may play from outside your hand appear as full cards at the front of the hand row. This covers exile permissions (impulse, foretold, plotted, adventure, an opponent's card) and graveyard or library-top casts. A ribbon names the zone; a footer gives the window ("This turn only", "Foretold") and the owner of an opponent's card; the green frame still means "playable now". In the full-hand view the ribbon and footer are bands above and below the card, so its name and P/T stay readable. Tapping one opens the ordinary card sheet with its "Play from exile" or graveyard cast action. The thumbnail tray beside the hand is a desktop surface. While the Mine or Hand view shows these cards, the prompt does not repeat them as name buttons; Table, Combat and Stack keep them as one swipeable line, and the prompt grows by that line so its primary action stays visible. A target choice whose only legal targets are on the Stack opens the Stack view on a phone, where the spells glow.
 - All card and commander face images must come from Scryfall, including existing local copies. This applies to the main menu, player portraits, review seats and every game zone. Original generated card backs are allowed for concealed cards, unrevealed library checkpoints and unknown/random seat decoration; they never replace a face or commander illustration.
+- The large card preview belongs to its card, not to the pointer: it stands beside a card on the table and above a card in your hand or dock, so it never covers the row you are reading along, and it grows out of its card when it appears.
+- A prompt, hint or toast written with a leading emoji shows the matching icon of the table's own set (`MTG.iconizeLead`); every platform draws emoji in its own colour font. The text itself is unchanged.
 - Scroll position is presentation state and survives ordinary arena renders. No opponent hand identity or library ordering is added to the new presentation model.
 
 ## Player tools

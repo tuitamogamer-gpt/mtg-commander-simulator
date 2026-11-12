@@ -357,7 +357,9 @@ The mobile navigation has **Mine**, **Table**, **Combat**, and **Stack**. **View
 
 Open **MENU → Music & sound** to choose among three background tracks, adjust music and effects independently, mute playback, or preview an effect. Short cues mark combat, dungeon rooms, counters, and spellcasting; major arrivals, damage, board wipes, and game endings have their own effects. Audio preferences stay in the current browser.
 
-Browsers may require a click or tap before audio starts. Reduced motion is available for presentation, and commander entrances fall back to card art when it is enabled. Sound and cinematics do not change game decisions or card rules.
+**Cards in motion:** nothing on the table jumps. A card that taps turns; a card you play flies from your hand to its place, a spell to where the Stack shows it and on to the battlefield or the graveyard; a drawn card comes out of your library counter and an opponent's card out of their hand counter. When a creature leaves, its lane closes the gap. A life total rolls over to its new value, and your turn is announced across the table. These motions show what the engine already did and never delay a decision.
+
+Browsers may require a click or tap before audio starts. Reduced motion is available for presentation: it keeps the table still, and commander entrances fall back to card art when it is enabled. Sound and cinematics do not change game decisions or card rules.
 
 ## Automatic and manual mana
 

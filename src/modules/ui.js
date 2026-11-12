@@ -473,6 +473,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             event.stopPropagation();
           }
           cleanup();
+          // A card you dropped continues from where you let go (motion.js).
+          if (hit && hit.valid) U.noteCardDrop?.(source.card.iid, event.clientX, event.clientY);
           if (hit && hit.valid) this.performArenaDrop(source, hit.target);
           else if (active) this.toast('That is not a legal drop. Nothing changed.');
         };
@@ -7897,7 +7899,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const mine = !!player && player === this.me;
       const b = el('div', 'turnbanner' + (gold ? ' gold' : '') + (player ? (mine ? ' mine' : ' seat') : ''),
         player
-          ? `<i aria-hidden="true"></i><span><small>Turn ${esc(turn.turn ?? '')}</small><b>${mine ? 'Your turn' : esc(player.name)}</b></span><i aria-hidden="true"></i>`
+          ? `<i aria-hidden="true"></i><span><small>Turn ${esc(turn.turn ?? '')}</small> <b>${mine ? 'Your turn' : esc(player.name)}</b></span><i aria-hidden="true"></i>`
           : `<span><b>${esc(text)}</b></span>`);
       document.body.appendChild(b);
       if (player && !mine) {
@@ -7928,14 +7930,14 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
           ? `Via ${event.source.name}`
           : event.reason || (previous ? `Crown taken from ${previous.name}` : 'The crown enters the game');
         notice.innerHTML = `
-          <span class="monarchannouncementcrown" aria-hidden="true">♛</span>
+          <span class="monarchannouncementcrown" aria-hidden="true">${U.icon('crown')}</span>
           <div class="monarchannouncementcopy">
             <small>${previous ? 'THE CROWN CHANGES HANDS' : 'A MONARCH RISES'} · ${esc(when)}</small>
             <b>${esc(holder)} ${player === this.me ? 'ARE' : 'IS'} THE MONARCH</b>
             <em>${esc(detail)}${previous && previous !== player ? ` · Previous: ${esc(previous.name)}` : ''}</em>
           </div>`;
       } else {
-        notice.innerHTML = `<span class="monarchannouncementcrown" aria-hidden="true">♛</span><div class="monarchannouncementcopy"><small>${esc(when)}</small><b>THERE IS NO MONARCH</b><em>${esc(event.reason || '')}</em></div>`;
+        notice.innerHTML = `<span class="monarchannouncementcrown" aria-hidden="true">${U.icon('crown')}</span><div class="monarchannouncementcopy"><small>${esc(when)}</small><b>THERE IS NO MONARCH</b><em>${esc(event.reason || '')}</em></div>`;
       }
       document.body.appendChild(notice);
       setTimeout(() => {
@@ -7956,7 +7958,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const eventKind = event.kind === 'agreement' ? 'accepted' : proposal?.isCounteroffer ? 'countered' : event.kind === 'completed' ? 'completed' : 'proposal';
       const notice = el('div', `diplomacyannouncement status-${eventKind}` + (proposal && proposal.toId === this.me?.idx ? ' incoming' : ''));
       notice.setAttribute('role', 'status');
-      notice.innerHTML = `<span class="diplomacyannouncementicon" aria-hidden="true">${eventKind === 'accepted' || eventKind === 'completed' ? '✓' : eventKind === 'countered' ? '↩' : '🕊'}</span><div class="diplomacyannouncementcopy">` +
+      notice.innerHTML = `<span class="diplomacyannouncementicon" aria-hidden="true">${eventKind === 'accepted' || eventKind === 'completed' ? '✓' : eventKind === 'countered' ? '↩' : U.icon('deals')}</span><div class="diplomacyannouncementcopy">` +
         `<small>${esc(event.kind === 'agreement' ? 'PUBLIC AGREEMENT' : event.kind === 'completed' ? 'AGREEMENT UPDATE' : 'TABLE NEGOTIATION')}</small>` +
         `<b>${esc(event.title || 'Diplomacy & Politics')}</b>` +
         (names.length ? `<em>${esc(names.join(' · '))}</em>` : '') +
@@ -7983,7 +7985,8 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const b = el('div', 'spotbar ' + (kind || 'info'), esc(text));
       document.body.appendChild(b);
       const ms = Math.round(1900 * (this.game ? this.game.speedFactor : 1));
-      b._t = setTimeout(() => b.remove(), ms);
+      // It fades out over its last moments instead of cutting.
+      b._t = setTimeout(() => { b.classList.add('leaving'); setTimeout(() => b.remove(), 200); }, Math.max(0, ms - 200));
     }
   }
   MTG.UI = UI;

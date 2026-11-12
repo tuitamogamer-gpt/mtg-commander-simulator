@@ -747,3 +747,21 @@ body.reduced-motion #setup .mainmenu .mainmenu-featured-deck .mainmenu-deck-art 
 #setup .deckyeardivider span { color: var(--ds-muted); font: 500 11px/1.2 var(--ds-font-mono); }
 @media (prefers-reduced-motion: reduce) { #setup[data-deck-view="gallery"] .deckcard:hover { transform: none; } }
 body.reduced-motion #setup[data-deck-view="gallery"] .deckcard:hover { transform: none; }
+
+/* A setup step and the deck spotlight come up instead of cutting in. The
+   step's grid only fades: a transform on it would move the fixed and sticky
+   bars inside it for the length of the animation. */
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.reduced-motion) #setup.stage-enter .setupgrid { animation: setupFade 260ms var(--ds-ease) both; }
+  body:not(.reduced-motion) #setup.stage-enter .menuhead :is(h1, .subtitle) { animation: setupRise var(--ds-t-slow) var(--ds-ease-out) both; }
+  body:not(.reduced-motion) #setup.stage-enter .menuhead .subtitle { animation-delay: 50ms; }
+  body:not(.reduced-motion) #setup .deckspotlightoverlay { animation: setupFade 200ms var(--ds-ease) both; }
+  body:not(.reduced-motion) #setup .deckspotlight { animation: spotlightIn var(--ds-t-slow) var(--ds-ease-out) both; }
+}
+@keyframes setupFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes setupRise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes spotlightIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+/* A phone's spotlight fills the screen: it fades, without moving a full-screen layer. */
+@media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+  body:not(.reduced-motion) #setup .deckspotlight { animation-name: setupFade; animation-duration: 220ms; }
+}

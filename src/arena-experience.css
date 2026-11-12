@@ -227,10 +227,23 @@ body.reduced-motion #game .waitownership strong::before { animation: none !impor
 }
 
 /* The turn tracker keeps its place: the title beside it has one width, so a
-   longer step name ("Combat attackers") no longer pushes the tracker along. */
+   longer step name no longer pushes the tracker along (it stood at 242px for
+   "You · Main 1" and at 383px for "AI Dragon · Combat first strike"). When
+   the title does not fit, the player's name gives way, never the step: the
+   active lane already names the player. */
 @media (min-width: 1251px) {
-  body.game-active #game.command-table .arenaheader .phase { flex: 0 0 348px; min-width: 0; }
-  body.game-active #game.command-table .arenaheader .phase em { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  body.game-active #game.command-table .arenaheader .phase { flex: 0 0 348px; min-width: 0; flex-wrap: nowrap; }
+  body.game-active #game.command-table .arenaheader .phase > :is(b, em) { flex: 0 0 auto; }
+  body.game-active #game.command-table .arenaheader .phase > span { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (min-width: 1366px) {
+  body.game-active #game.command-table .arenaheader .phase { flex-basis: 372px; }
+}
+/* A step's name stays on one line. On a 1280px desktop the full names were
+   4px wider than the room left of Table/Focus, and "Main 1" broke in two. */
+body.game-active #game.command-table .arenaheader .stepper .step { white-space: nowrap; }
+@media (min-width: 1251px) and (max-width: 1365px) {
+  body.game-active #game.command-table .arenaheader .stepper .step { padding-inline: 7px !important; }
 }
 
 /* The faint "SEAT 01" mark at a lane's bottom right belongs to an older

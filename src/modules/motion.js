@@ -57,11 +57,21 @@ const sameLinear = (a, b) => {
 };
 const onScreen = box => box.y + box.rh / 2 > 0 && box.y - box.rh / 2 < innerHeight && box.x + box.rw / 2 > 0 && box.x - box.rw / 2 < innerWidth;
 
-// What decides where everything sits. When it changes (another phone view,
-// Table/Focus, another hand size, a resized window) the table is redrawn
-// somewhere else and nothing travels.
-const layoutKey = (ui, root) => [root.dataset.mobileView || '', ui.commandTableView || '', ui.commandMobileBoard ?? '',
-  ui.commandFocusPlayer ?? '', root.dataset.handSize || '', innerWidth, innerHeight, zoomOf(ui, root)].join('|');
+// What decides where everything sits. When it changes (another phone view or
+// board, another focused opponent, Table/Focus, another hand size, a resized
+// window) the table is redrawn somewhere else and nothing travels.
+// It is read from the arena as it is drawn, never from the UI's state: a
+// render has already changed that state when it captures the table it is
+// about to replace. A phone follows the active player to their board on
+// every new turn; read from the state, that board's cards all "arrived".
+const layoutKey = (ui, root) => {
+  // A desktop that shows every lane (Table, or Focus while you choose targets
+  // or declare combat) keeps its lanes whichever opponent is focused.
+  const grid = root.classList.contains('ct-grid-view');
+  return [root.dataset.mobileView || '', root.dataset.mobileBoard || '', grid ? 'grid' : root.classList.contains('ct-show-all') ? 'all' : 'one',
+    grid ? '' : root.querySelector('.opprow.ct-focused')?.dataset.playerId || '', root.dataset.handSize || '',
+    innerWidth, innerHeight, zoomOf(ui, root)].join('|');
+};
 
 // A node's box: its centre and painted size in viewport pixels, its layout
 // size, and the transform and opacity it is drawn with.
@@ -120,10 +130,11 @@ function chrome(root) {
       if (!counts.has(key)) counts.set(key, counter.querySelector('b')?.textContent || '');
     }
   }
-  // The decision panel: a strip under the table, or a panel over its right
-  // edge while a review, the Stack or a choice of targets is open.
+  // A phone's Stack tab carries the Stack's count.
   const tab = root.querySelector('.mobileviewtab[data-view="stack"]');
   if (tab) counts.set('tab|stack', tab.textContent.trim());
+  // The decision panel: a strip under the table, or a panel over its right
+  // edge while a review, the Stack or a choice of targets is open.
   const rail = root.querySelector(':scope > .ct-decision-rail');
   return {step: on ? on.dataset.step : null, stepIndex: on ? [...on.parentNode.children].indexOf(on) : -1, life, counts,
     rail: rail ? {open: root.classList.contains('ct-expanded-decision'), plate: plateOf(rail)} : null};
@@ -295,8 +306,12 @@ function zoneBefore(ui, zones, iid) {
   for (const [player, was] of zones?.players || []) {
     for (const zone of ['hand', 'graveyard', 'exile', 'library']) if (was[zone]?.has(iid)) return {zone, player};
   }
-  const card = ui.game.byIid?.(iid);
+  const card = cardOf(ui, iid);
   return card?.commander && card.owner && !zones?.battlefield?.has(iid) && !zones?.stack?.has(iid) ? {zone: 'command', player: card.owner} : null;
+}
+// A card by its id, wherever it is: in a zone or on the Stack.
+function cardOf(ui, iid) {
+  return ui.game.byIid?.(iid) || ui.game.stack?.find(spell => spell.card && spell.card.iid === iid)?.card || null;
 }
 // The place on screen that stands for a player's zone: its counter, the
 // command-zone mark, or the stand-in the card flights use (ui.js).
@@ -431,10 +446,18 @@ function cardFace(ui, iid) {
   return face;
 }
 
+// A card you dragged and dropped (ui.js) continues from where you let go,
+// not from the place in your hand it was picked up from.
+const drops = new Map();
+U.noteCardDrop = (iid, x, y) => { drops.set(String(iid), {x, y, at: performance.now()}); };
+
 // A card that is drawn where it was not drawn before.
 function arrive(ui, before, key, next, order) {
   const t = design(), kind = key[0], iid = Number(key.slice(1));
   const shown = shownBefore(before, kind, key.slice(1));
+  const drop = drops.get(key.slice(1));
+  drops.delete(key.slice(1));
+  if (shown && drop && performance.now() - drop.at < 1500) shown.box = {...shown.box, x: drop.x, y: drop.y};
   for (const other of KINDS) left.delete(other + key.slice(1));
   // A card that left a battlefield is carried away by the engine's own
   // zone-move effect (ui.js showZoneMoveEffect): no second copy flies.
@@ -499,6 +522,18 @@ function settle(ui, key, prev, next, z, count) {
   return true;
 }
 
+// Another view, board or focus: the boards now shown come up softly instead
+// of cutting in. Their contents fade, not the lanes themselves: a transparent
+// lane would show the playmat behind it, a bright flash between two dark
+// views. Opacity only, so nothing is measured in a place it will not keep.
+function showBoards(root) {
+  const t = design();
+  for (const lane of root.querySelectorAll('.opprow, .myboard')) {
+    if (!lane.getClientRects().length) continue;
+    for (const part of lane.children) part.animate([{opacity: 0}, {opacity: 1}], {duration: t.fast + 40, easing: t.standard});
+  }
+}
+
 // Called by the render after the arena is committed and the lanes are fitted.
 P.playMotion = function (root) {
   const before = this._motion;
@@ -514,7 +549,7 @@ P.playMotion = function (root) {
     if (box && !entry.shared) hideUntilLanding(box.node, entry, box.opacity);
   }
   for (const [key, entry] of left) if (clock - entry.at > LEFT_FOR) left.delete(key);
-  if (before.layout !== layoutKey(this, root)) { left.clear(); return; }
+  if (before.layout !== layoutKey(this, root)) { left.clear(); showBoards(root); return; }
   const z = zoomOf(this, root), settled = new Set();
   let arrivals = 0, moved = 0;
   for (const [key, next] of now) {
@@ -560,7 +595,7 @@ P.playMotion = function (root) {
 
 // Tests and tools: what is in the air.
 U.motionState = () => ({flights: flights.size, remembered: left.size, layer: !!document.querySelector('#game > .motionlayer')});
-const clear = () => { document.querySelector('#game > .motionlayer')?.remove(); flights.clear(); left.clear(); };
+const clear = () => { document.querySelector('#game > .motionlayer')?.remove(); flights.clear(); left.clear(); drops.clear(); };
 document.addEventListener('visibilitychange', clear);
 window.addEventListener('resize', clear);
 reduce.addEventListener?.('change', clear);

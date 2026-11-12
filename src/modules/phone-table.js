@@ -15,7 +15,9 @@ const GAP = 8, STACK_GAP = 6;
 // board heading (and the hand heading in the hand view). While a sheet or
 // modal is open they keep that place: the sheet owns the bottom of the screen.
 function placeFloaters() {
-  const items = FLOATERS.flatMap(cls => [...document.querySelectorAll(`body > .${cls}`)]);
+  // A powerhouse's arrival plate joins them, farthest from the prompt.
+  const items = [...FLOATERS.flatMap(cls => [...document.querySelectorAll(`body > .${cls}`)]),
+    ...document.querySelectorAll('body > .battlefieldarrival:not(.commander)')];
   if (!items.length) return;
   const reset = () => items.forEach(item => { item.style.removeProperty('top'); item.style.removeProperty('bottom'); });
   if (!phone.matches || !document.body.classList.contains('game-active') || document.querySelector('#game .overlay')) return reset();
@@ -71,7 +73,7 @@ U.UI.prototype.render = function (...args) {
 // Notices and toasts are added to and removed from <body> directly.
 new MutationObserver(records => {
   if (records.some(record => [...record.addedNodes, ...record.removedNodes]
-    .some(item => item.nodeType === 1 && FLOATERS.some(cls => item.classList.contains(cls))))) placeFloaters();
+    .some(item => item.nodeType === 1 && [...FLOATERS, 'battlefieldarrival'].some(cls => item.classList.contains(cls))))) placeFloaters();
 }).observe(document.body, {childList: true});
 window.addEventListener('resize', placeFloaters);
 phone.addEventListener?.('change', placeFloaters);

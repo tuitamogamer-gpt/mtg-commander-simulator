@@ -216,8 +216,11 @@ function charge(effect, ui, pairs, z, late = 0) {
 // the damage step is over, unless the player moved on in the meantime.
 let phoneCombat = null;
 // The view fades in and out rather than cutting. Opacity only: the charge
-// measures the cards' places while the view appears.
+// measures the cards' places while the view appears. Its contents fade, not
+// the panel: a transparent panel showed the playmat behind it, a bright flash
+// between two dark views.
 const combatPane = () => document.querySelector("#game[data-mobile-view='combat'] .ct-mobile-combat");
+const fadeContents = (pane, frames, options) => [...pane.children].map(child => child.animate(frames, options));
 function openPhoneCombat(ui) {
   if (!phone.matches || ui.pending || ui.react) return;
   clearTimeout(phoneCombat?.timer);
@@ -225,7 +228,8 @@ function openPhoneCombat(ui) {
   if (switching) phoneCombat = {ui, view: ui.mobileView || 'mine'};
   else if (phoneCombat?.ui !== ui) return;
   ui.mobileView = 'combat'; ui.utilityDrawerOpen = false; ui.render();
-  if (switching) combatPane()?.animate([{opacity: 0}, {opacity: 1}], {duration: 180, easing: 'ease-out'});
+  const pane = switching && combatPane();
+  if (pane) fadeContents(pane, [{opacity: 0}, {opacity: 1}], {duration: 180, easing: 'ease-out'});
 }
 function closePhoneCombat(ui, after) {
   const entry = phoneCombat;
@@ -243,8 +247,12 @@ function closePhoneCombat(ui, after) {
     if (!pane) { leave(); return; }
     // leave() checks again: a decision that opened during the fade keeps the
     // Combat view, and cancelling the fade shows it fully again.
-    const fade = pane.animate([{opacity: 1}, {opacity: 0}], {duration: 160, easing: 'ease-in', fill: 'forwards'});
-    fade.onfinish = () => { leave(); fade.cancel(); };
+    const fades = fadeContents(pane, [{opacity: 1}, {opacity: 0}], {duration: 160, easing: 'ease-in', fill: 'forwards'});
+    let finished = false;
+    const done = () => { if (finished) return; finished = true; leave(); fades.forEach(fade => fade.cancel()); };
+    if (fades.length) fades[fades.length - 1].onfinish = done;
+    // A render during the fade may replace the faded parts: leave on time anyway.
+    setTimeout(done, fades.length ? 220 : 0);
   }, after);
 }
 function paint(state, event, kind, shownAt = performance.now()) {

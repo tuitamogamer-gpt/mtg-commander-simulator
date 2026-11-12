@@ -93,6 +93,66 @@ body .turnbanner.seat b { font-size: 22px; }
 body.reduced-motion .turnbanner, body.reduced-motion .turnbanner > i { animation: none; }
 @media (prefers-reduced-motion: reduce) { body .turnbanner, body .turnbanner > i { animation: none; } }
 
+/* ---------- Arrival announcement ----------
+   A powerhouse entering play is announced on a compact plate under the
+   header: the whole card, its name on one line, Skip beside it. It was a
+   teal bar across the header's turn tracker with a cropped card, and on a
+   phone it covered the header and cut the name ("Gray Merc..."). A phone
+   places it above the prompt with the other notices (phone-table.js). The
+   commander's cinematic keeps its own frame. */
+body .battlefieldarrival:not(.commander) {
+  top: 64px; width: min(540px, calc(100 * var(--vwu) - 32px)); min-height: 0;
+  grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; padding: 10px 14px 10px 10px;
+  color: var(--ds-text); background: var(--ds-dialog);
+  border: 1px solid rgba(var(--ds-accent-rgb), .5); border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(2, 6, 12, .62), 0 0 0 1px rgba(255, 255, 255, .03), 0 0 44px rgba(var(--ds-accent-rgb), .14);
+  animation: arrivalPlateIn var(--ds-t-slow) var(--ds-ease-out) both;
+}
+body .battlefieldarrival:not(.commander) > :is(img, .tokenface) {
+  width: 58px; height: 81px; object-fit: cover; object-position: center top;
+  border: 0; border-radius: 5px; box-shadow: 0 6px 18px rgba(2, 6, 12, .7);
+}
+body .battlefieldarrival:not(.commander) .arrivalcopy small {
+  color: var(--ds-accent-bright); font: 600 10px/1 var(--ds-font-mono); letter-spacing: .22em; white-space: nowrap;
+}
+body .battlefieldarrival:not(.commander) .arrivalcopy b {
+  margin: 8px 0 6px; color: var(--ds-text); font: 650 22px/1.1 var(--ds-font-display); letter-spacing: -.015em; text-shadow: none;
+}
+body .battlefieldarrival:not(.commander) .arrivalcopy span { color: var(--ds-muted); font: 500 12px/1.2 var(--ds-font-mono); letter-spacing: .06em; }
+body .battlefieldarrival:not(.commander) .arrivalskip {
+  position: relative; top: auto; right: auto; align-self: center; min-width: 58px; min-height: 34px; padding: 0 14px;
+  color: var(--ds-copy); background: rgba(var(--ds-panel-raised-rgb), .9); border-color: var(--ds-line);
+  font: 650 11px/1 var(--ds-font-body); letter-spacing: .04em;
+}
+body .battlefieldarrival:not(.commander) .arrivalflare {
+  background: linear-gradient(110deg, transparent 38%, rgba(var(--ds-accent-bright-rgb), .16) 49%, transparent 59%);
+}
+body .battlefieldarrival:not(.commander).leaving { transform: translateX(-50%) translateY(-8px); transition: opacity var(--ds-t-base) var(--ds-ease-in), transform var(--ds-t-base) var(--ds-ease-in); }
+@keyframes arrivalPlateIn { from { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(.98); } to { opacity: 1; transform: translateX(-50%); } }
+/* The commander's cinematic frame shares the dialogs' corners. */
+body .battlefieldarrival.commander, body .battlefieldarrival.commander::after, body .battlefieldarrival.commander .arrivalmedia { border-radius: 14px; }
+body .battlefieldarrival.commander .arrivalcopy { border-radius: 0 0 14px 14px; }
+@media (max-width: 767px) {
+  body .battlefieldarrival:not(.commander) {
+    top: 112px; width: calc(100 * var(--vwu) - 20px);
+    grid-template-columns: 44px minmax(0, 1fr) auto; gap: 11px; padding: 8px 10px 8px 8px; border-radius: 12px;
+  }
+  body .battlefieldarrival:not(.commander) > :is(img, .tokenface) { width: 44px; height: 61px; }
+  body .battlefieldarrival:not(.commander) .arrivalcopy small { font-size: 9px; letter-spacing: .16em; }
+  body .battlefieldarrival:not(.commander) .arrivalcopy b { margin: 6px 0 4px; font-size: 17px; }
+  body .battlefieldarrival:not(.commander) .arrivalcopy span { font-size: 11px; }
+}
+body.reduced-motion .battlefieldarrival:not(.commander) { animation: none; }
+@media (prefers-reduced-motion: reduce) { body .battlefieldarrival:not(.commander) { animation: none; } }
+
+/* The card that arrived is lit, not bounced: it used to hop three times. The
+   way it comes to its place is the table's own motion (motion.js). */
+#game .mini.arrival-highlight { z-index: 8; animation: arrivalGlow 1.5s var(--ds-ease) 2 both; }
+@keyframes arrivalGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--ds-accent-bright-rgb), 0), 0 0 8px rgba(var(--ds-accent-rgb), .3); }
+  42% { box-shadow: 0 0 0 2px var(--ds-accent-bright), 0 0 30px 8px rgba(var(--ds-accent-bright-rgb), .55); }
+}
+
 /* ---------- Opening hand ----------
    The cards are dealt one after another (their row is laid out in
    decision-experience.css). A dialog that is only redrawn (.settled) keeps
@@ -115,6 +175,81 @@ body.reduced-motion .turnbanner, body.reduced-motion .turnbanner > i { animation
 body.reduced-motion #game .modal[data-decision-type="mulligan"] .bigcard { animation: none; }
 @media (prefers-reduced-motion: reduce) { #game .modal[data-decision-type="mulligan"] .bigcard { animation: none; } }
 
+
+/* ---------- Monarch and diplomacy announcements ----------
+   The same plate as the other announcements: dialog material, rounded
+   corners, the table's crown icon. They were square boxes with gold and green
+   gradients of their own and 8 to 10px copy. */
+body .monarchannouncement {
+  top: 30%; gap: 18px; width: min(calc(100 * var(--vwu) - 28px), 540px); padding: 18px 24px 18px 20px;
+  color: var(--ds-text); border: 1px solid rgba(226, 182, 90, .55); border-radius: 14px;
+  background: linear-gradient(100deg, rgba(226, 182, 90, .14), transparent 58%), var(--ds-dialog);
+  box-shadow: 0 24px 60px rgba(2, 6, 12, .7), 0 0 0 1px rgba(255, 255, 255, .03), 0 0 56px rgba(226, 182, 90, .14);
+  animation: plateDropIn var(--ds-t-slow) var(--ds-ease-out) both;
+}
+body .monarchannouncement.mine { border-color: #f1c862; box-shadow: 0 24px 60px rgba(2, 6, 12, .7), 0 0 0 1px rgba(255, 255, 255, .03), 0 0 72px rgba(239, 189, 76, .26); }
+body .monarchannouncementcrown { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; color: #f5cf69; background: rgba(226, 182, 90, .12); box-shadow: inset 0 0 0 1px rgba(226, 182, 90, .4); text-shadow: none; }
+body .monarchannouncementcrown .gameicon { width: 28px; height: 28px; stroke-width: 1.6; }
+body .monarchannouncementcopy { gap: 6px; min-width: 0; }
+body .monarchannouncementcopy small { color: #e2b65a; font: 600 10px/1.2 var(--ds-font-mono); letter-spacing: .18em; text-transform: uppercase; }
+body .monarchannouncementcopy b { color: var(--ds-text); font: 650 22px/1.12 var(--ds-font-display); letter-spacing: -.01em; }
+body .monarchannouncementcopy em { color: var(--ds-copy); font: 500 12px/1.4 var(--ds-font-body); }
+body .monarchannouncement.leaving, body .diplomacyannouncement.leaving {
+  opacity: 0; transform: translateX(-50%) translateY(-8px); transition: opacity var(--ds-t-base) var(--ds-ease-in), transform var(--ds-t-base) var(--ds-ease-in);
+}
+body .diplomacyannouncement {
+  gap: 16px; padding: 18px 20px; color: var(--ds-text);
+  border: 1px solid rgba(var(--ds-accent-soft-rgb), .34); border-left: 3px solid var(--ds-accent); border-radius: 14px;
+  background: var(--ds-dialog); box-shadow: 0 24px 60px rgba(2, 6, 12, .7), 0 0 0 1px rgba(255, 255, 255, .03);
+  animation: plateDropIn var(--ds-t-slow) var(--ds-ease-out) both;
+}
+body .diplomacyannouncement.incoming { border-color: rgba(var(--ds-accent-rgb), .6); border-left-color: var(--ds-accent-bright); box-shadow: 0 24px 60px rgba(2, 6, 12, .7), 0 0 56px rgba(var(--ds-accent-rgb), .2); }
+body .diplomacyannouncementicon { display: grid; place-items: center; font-size: 30px; line-height: 1; }
+body .diplomacyannouncementicon .gameicon { width: 30px; height: 30px; stroke-width: 1.6; }
+body .diplomacyannouncementcopy { gap: 5px; }
+body .diplomacyannouncementcopy small { color: var(--ds-accent-soft); font: 600 10px/1.2 var(--ds-font-mono); letter-spacing: .18em; }
+body .diplomacyannouncementcopy b { color: var(--ds-text); font: 650 19px/1.15 var(--ds-font-display); letter-spacing: -.01em; }
+body .diplomacyannouncementcopy em { color: var(--ds-muted); font: 500 12px/1.3 var(--ds-font-body); }
+body .diplomacyannouncementcopy p { margin: 2px 0 0; color: var(--ds-copy); font: 500 13px/1.45 var(--ds-font-body); }
+@keyframes plateDropIn { from { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(.98); } to { opacity: 1; transform: translateX(-50%); } }
+body.reduced-motion :is(.monarchannouncement, .diplomacyannouncement) { animation: none; }
+@media (prefers-reduced-motion: reduce) { body :is(.monarchannouncement, .diplomacyannouncement) { animation: none; } }
+@media (max-width: 640px) {
+  body .monarchannouncement { gap: 14px; padding: 14px 16px; }
+  body .monarchannouncementcrown { width: 44px; height: 44px; }
+  body .monarchannouncementcopy small { letter-spacing: .1em; }
+  body .monarchannouncementcopy b { font-size: 19px; }
+  /* The action takes its own row: beside the copy it left a column three words wide. */
+  body .diplomacyannouncement { grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 14px 16px; }
+  body .diplomacyannouncementicon, body .diplomacyannouncementicon .gameicon { font-size: 24px; width: 26px; height: 26px; }
+  body .diplomacyannouncementcopy b { font-size: 17px; }
+  body .diplomacyannouncementopen { grid-column: 1 / -1; min-height: 44px; }
+}
+
+/* ---------- Spotlight ----------
+   "A bot did something aimed at you": a plate of the dialog material with the
+   tone on its leading edge. It was a grey box with a 2px border in colours of
+   its own, and it cut out; it now fades over its last moments (ui.js showSpot). */
+body .spotbar {
+  top: 38%; max-width: min(calc(92 * var(--vwu)), 640px); padding: 12px 20px 12px 17px;
+  color: var(--ds-text); background: var(--ds-dialog);
+  border: 1px solid rgba(var(--ds-accent-soft-rgb), .34); border-left: 3px solid var(--ds-accent-bright); border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(2, 6, 12, .62), 0 0 0 1px rgba(255, 255, 255, .03);
+  font: 600 14px/1.4 var(--ds-font-body); text-align: left;
+  animation: spotPlateIn var(--ds-t-base) var(--ds-ease-out) both;
+}
+body .spotbar.danger {
+  color: #ffe5df; border-color: rgba(239, 139, 123, .42); border-left-color: var(--ds-danger);
+  background: linear-gradient(100deg, rgba(239, 139, 123, .13), transparent 62%), var(--ds-dialog);
+}
+body .spotbar.warn {
+  color: #fff0cf; border-color: rgba(226, 182, 90, .4); border-left-color: #e2b65a;
+  background: linear-gradient(100deg, rgba(226, 182, 90, .11), transparent 62%), var(--ds-dialog);
+}
+body .spotbar.leaving { opacity: 0; transform: translate(-50%, -6px); transition: opacity 200ms var(--ds-ease-in), transform 200ms var(--ds-ease-in); }
+@keyframes spotPlateIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+body.reduced-motion .spotbar { animation: none; }
+@media (prefers-reduced-motion: reduce) { body .spotbar { animation: none; } }
 
 /* ---------- Toasts ----------
    One at a time (ui.js toast): it rises in and fades before it is removed. */

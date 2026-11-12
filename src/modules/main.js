@@ -2155,6 +2155,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         right.scrollTop = 0;
       }
       if (previousStage !== state.setupStage) {
+        // The new step comes up instead of cutting in (setup-experience.css).
+        root.classList.remove('stage-enter');
+        void root.offsetWidth;
+        root.classList.add('stage-enter');
         window.scrollTo({ top: state.setupStage === 'deck' ? deckBrowseScroll : 0, behavior: 'instant' });
         // A step replaces the focused control. Keep keyboard navigation in
         // the new step without losing the player's deck browsing position.
