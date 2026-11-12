@@ -18,6 +18,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return `<svg class="gameicon${safeClass ? ` ${safeClass}` : ''}" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-${safeName}"></use></svg>`;
   };
 
+  // Prompts, hints and toasts were written with a leading emoji, which every
+  // platform draws in its own colour font. Shown, the mark is the matching
+  // icon of the table's own set; the text itself is unchanged.
+  const LEAD_ICONS = [['\u{1F3B4}', 'cards'], ['\u{1F3AF}', 'target'], ['\u{1F590}', 'hold'], ['\u26A1', 'flash'], ['\u{1F451}', 'crown']];
+  MTG.iconizeLead = function iconizeLead(root, selector) {
+    if (!root || !root.querySelectorAll) return;
+    const nodes = selector ? root.querySelectorAll(selector) : [root];
+    for (const node of nodes) {
+      const first = node.firstChild;
+      if (!first || first.nodeType !== 3) continue;
+      const text = first.nodeValue.replace(/^\s+/, '');
+      const lead = LEAD_ICONS.find(([mark]) => text.startsWith(mark));
+      if (!lead) continue;
+      first.nodeValue = text.slice(lead[0].length).replace(/^\uFE0F?\s*/, '');
+      node.insertAdjacentHTML('afterbegin', MTG.icon(lead[1], 'leadicon'));
+    }
+  };
+
   // One visual language shared by battlefield badges, notices and full-screen
   // gameplay FX.  Labels stay explicit because similar shield-like keywords
   // must never depend on colour alone.

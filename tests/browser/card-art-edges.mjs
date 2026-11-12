@@ -142,14 +142,17 @@ try {
       check(await tapped.evaluate(node => getComputedStyle(node).transform !== 'none'), `${width}: tapped card remains rotated`);
       check(await tapped.locator('.ct-land-state').isVisible() === false, `${width}: no printed Tapped land label`);
       const header = await page.locator('.opprow[data-player-id="1"]').evaluate(row => {
-        const rect = node => {const r = node.getBoundingClientRect(); return {top:r.top, bottom:r.bottom, height:r.height, width:r.width};};
-        return {head:rect(row.querySelector('.opphead')), dock:rect(row.querySelector('.ct-resource-dock')),
+        const rect = node => {const r = node.getBoundingClientRect(); return {top:r.top, bottom:r.bottom, left:r.left, right:r.right, height:r.height, width:r.width};};
+        return {head:rect(row.querySelector('.opphead')), dock:rect(row.querySelector('.ct-resource-dock')), lane:rect(row),
           cards:[...row.querySelectorAll('.oppboardmain .mini')].map(node => ({name:node.dataset.cname, ...rect(node)})),
           dungeon:rect(row.querySelector('.dungeonbadge')), effects:rect(row.querySelector('.playereffectsbadge'))};
       });
       receipt.headers.push({width, ...header});
       check(header.dungeon.height >= 24, `${width}: dungeon remains a visible usable button`);
-      for (const card of header.cards) check(card.top >= header.head.bottom && card.bottom <= header.dock.top + 1,
+      // The land dock is a column at the lane's right edge (Lands · Mana), not
+      // a row under the cards: a card is clear of the header above it, of the
+      // lane's bottom edge and of the dock beside it.
+      for (const card of header.cards) check(card.top >= header.head.bottom && card.bottom <= header.lane.bottom + 1 && card.right <= header.dock.left + 1,
         `${width}: ${card.name} is fully visible between header and land dock`);
       const before = await geometry();
       await page.getByRole('button', {name: "Open AI Raven's dungeon map", exact:true}).click();

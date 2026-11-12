@@ -397,3 +397,12 @@ body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { border-color
   #game .logpanel.activitylog { inset: 8px; width: calc(100 * var(--vwu) - 16px); height: calc(100 * var(--dvhu) - 16px); padding: 14px; gap: 12px; }
   #game .logsearch { font-size: 16px; }
 }
+
+/* Opening hand: seven cards in one row on a desktop (they are dealt by
+   motion.css). The dialog was a 5 + 2 grid at card-choice width. */
+@media (min-width: 901px) {
+  #game .modal[data-decision-type="mulligan"] { width: min(1160px, calc(100 * var(--vwu) - 56px)); max-width: none; padding: 26px 28px 24px; }
+  #game .modal[data-decision-type="mulligan"] .cardgrid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+  #game .modal[data-decision-type="mulligan"] .mtitle { margin-bottom: 18px; }
+  #game .modal[data-decision-type="mulligan"] .decision-footer { margin-top: 20px; }
+}

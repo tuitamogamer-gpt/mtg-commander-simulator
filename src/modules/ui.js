@@ -1336,6 +1336,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.fatalError) root.appendChild(this.renderFatalRecovery(g));
       this.renderCommandTable?.(g, root);
       U.localizeTree(root);
+      U.iconizeLead?.(root, '.promptbar .ptext, .promptbar .pbtn, .actionstagetarget, .stackpoptargetsummary, .sitargets, .stackinlinegoal, .threattargets, .sidetitle');
       // Entrance motion belongs
       // to a surface's first appearance only: a dialog, prompt bar or popup
       // that shows the same content as in the previous rebuild is marked
@@ -3425,6 +3426,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           if (lands.length) {
             const lc = el('div', 'oppLands', `🌍<br>${untapped}/${lands.length}`);
+            // Which lands this count stands for (motion.js flies a land to it).
+            lc.dataset.landIids = lands.map(land => land.iid).join(' ');
             lc.title = 'Lands (untapped/total)';
             lc.onclick = () => { this.playerSheet = p; this.render(); };
             resourceCards.appendChild(lc);
@@ -3713,6 +3716,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const untapped = lands.filter(l => !l.tapped).length;
         const lc = el('div', 'landstack' + (untapped === 0 ? ' tapped' : ''));
         lc.dataset.iid = String(lands[0].iid);
+        lc.dataset.landIids = lands.map(land => land.iid).join(' ');
         this.registerArenaDropTarget(lc, { kind: 'entity', value: lands[0] });
         const cols = (lands[0].def.producesColors || []).map(c => `<span class="dot" style="background:${COLHEX[c]}"></span>`).join('');
         lc.innerHTML = `<div class="lname">${esc(name)}</div><div>${cols}</div><div class="lcount">${untapped}/${lands.length}</div>`;
@@ -7184,20 +7188,40 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       }
     }
 
+    // The match's last screen: who won, under the winner's commander, the
+    // table's final standing and how the match went.
     renderGameOver(g) {
-      const ov = el('div', 'overlay dark');
-      const m = el('div', 'modal wide matchrecap');
+      const ov = el('div', 'overlay dark matchrecapov');
       const won = g.winner === this.me;
+      const m = el('div', 'modal wide matchrecap' + (won ? ' won' : g.winner ? ' lost' : ''));
       const alive = g.players.filter(player => !player.lost);
       const moments = this.matchHighlights(g);
-      m.appendChild(el('div', 'recaphead', `
-        <span>${won ? 'VICTORY' : 'MATCH COMPLETE'}</span>
+      // Commander identity is public; the art is the same Scryfall crop the seats use.
+      const artOf = player => {
+        const commander = (player.commanders && player.commanders[0]) || (player.command && player.command[0]);
+        return commander && commander.name && !commander.faceDown ? MTG.cardImageURL(commander.name, 'art') : '';
+      };
+      const head = el('header', 'recaphead');
+      const winnerArt = g.winner ? artOf(g.winner) : '';
+      if (winnerArt) head.appendChild(el('div', 'recapart', `<img src="${escAttr(winnerArt)}" alt="" onerror="MTG.imgFail(this)">`));
+      head.appendChild(el('div', 'recaptitle', `
+        <span>${won ? 'VICTORY' : g.winner ? 'DEFEAT' : 'MATCH COMPLETE'}</span>
         <div class="gameover">${won ? 'You held the table.' : `${g.winner ? esc(g.winner.name) + ' wins.' : 'Game over.'}`}</div>
         <p>${g.turnNo} turns · ${g.players.length} players · ${alive.length} survivor${alive.length === 1 ? '' : 's'}</p>`));
+      m.appendChild(head);
       const standings = el('div', 'recapstandings');
+      standings.setAttribute('role', 'list');
+      standings.setAttribute('aria-label', 'Final standings');
       [...g.players].sort((a, b) => Number(a.lost) - Number(b.lost) || b.life - a.life).forEach((player, index) => {
-        standings.appendChild(el('div', player === g.winner ? 'winner' : player.lost ? 'eliminated' : '',
-          `<i>P${player.idx + 1}</i><span><b>${esc(player.name)}</b><small>${esc(player.deckName || '')}</small></span><strong>${player.life}<small>LIFE</small></strong>`));
+        const art = artOf(player);
+        const status = player === g.winner ? 'Winner' : player.lost ? 'Eliminated' : 'Survivor';
+        const row = el('div', player === g.winner ? 'winner' : player.lost ? 'eliminated' : '',
+          `<i>${index + 1}</i>${art ? `<img src="${escAttr(art)}" alt="" loading="lazy" onerror="MTG.imgFail(this)">` : '<em></em>'}` +
+          `<span><b>${esc(player === this.me && !/^you$/i.test(player.name) ? `${player.name} (you)` : player.name)}</b><small>${esc(player.deckName || '')}</small></span>` +
+          `<u>${status}</u><strong>${player.life}<small>LIFE</small></strong>`);
+        row.setAttribute('role', 'listitem');
+        row.style.setProperty('--place', String(index));
+        standings.appendChild(row);
       });
       m.appendChild(standings);
       const highlights = el('section', 'recaphighlights');
@@ -7250,7 +7274,9 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     }
 
     toast(msg) {
+      document.querySelectorAll('.toastmsg').forEach(node => node.remove());
       const t = el('div', 'toastmsg', esc(msg));
+      U.iconizeLead?.(t);
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 2500);
     }
@@ -7394,7 +7420,9 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         const zone = event.toZone === 'hand' ? document.querySelector('.handwrap,.handrow')
           : ['graveyard', 'exile'].includes(event.toZone) ? document.querySelector(`.meinfo .zbtn[data-z="${event.toZone}"]`)
           : event.toZone === 'library' ? document.querySelector('.meinfo .zbtn[data-z="library-top"]')
-          : event.toZone === 'command' ? document.querySelector('.cmdzone,.commanderzone,.meinfo') : null;
+          // Your commander returns to its dock beside your hand.
+          : event.toZone === 'command' ? document.querySelector(`.ct-commander-card[data-iid="${event.card ? event.card.iid : ''}"]`) ||
+            document.querySelector('.ct-commander-dock, .meinfo') : null;
         // A phone's Combat or Stack view hides the zones: a hidden pile has
         // no box and the card would fly to the screen's corner.
         if (this.fxShown(zone)) return zone;

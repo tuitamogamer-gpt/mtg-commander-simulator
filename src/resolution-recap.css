@@ -214,3 +214,123 @@ body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { flex: 0 0 au
   .libraryrevealbackmark { width: 56px; height: 72px; font-size: 44px; }
   .libraryrevealbacklabel { font-size: 9px; }
 }
+
+/* ---------- The match's last screen (ui.js renderGameOver) ----------
+   The winner's commander art heads the panel; the standing, the highlights
+   and the next step read at body size. The older rules (frontend-overhaul.css)
+   set this screen in 7-11px type. */
+#game .matchrecapov { padding: 20px; }
+#game .matchrecapov .matchrecap {
+  display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden auto;
+  width: min(880px, calc(100 * var(--vwu) - 40px)); max-width: none;
+  max-height: calc(100 * var(--dvhu) - 40px);
+  border: 1px solid rgba(var(--ds-accent-soft-rgb), .28); border-radius: 18px;
+  background: var(--ds-dialog); box-shadow: var(--ds-shadow-dialog);
+}
+#game .matchrecap.won { border-color: rgba(var(--ds-accent-rgb), .6); box-shadow: var(--ds-shadow-dialog), 0 0 90px rgba(var(--ds-accent-rgb), .16); }
+#game .matchrecap .recaphead {
+  position: relative; flex: 0 0 auto; display: flex; align-items: flex-end; min-height: 212px;
+  padding: 30px 32px 26px; overflow: hidden; text-align: left;
+  border-bottom: 1px solid rgba(var(--ds-accent-soft-rgb), .22);
+  background: linear-gradient(135deg, var(--ds-panel-raised), var(--ds-dialog) 70%);
+}
+#game .matchrecap .recapart { position: absolute; inset: 0 0 0 30%; }
+#game .matchrecap .recapart img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 24%; display: block; }
+#game .matchrecap .recapart::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, var(--ds-dialog) 0%, rgba(17, 24, 32, .82) 26%, rgba(17, 24, 32, .22) 62%, rgba(17, 24, 32, .5) 100%),
+    linear-gradient(0deg, rgba(17, 24, 32, .88), transparent 46%);
+}
+#game .matchrecap .recaptitle { position: relative; display: grid; gap: 10px; min-width: 0; max-width: 620px; }
+#game .matchrecap .recaptitle > span {
+  color: var(--ds-muted); font: 600 11px/1 var(--ds-font-mono); letter-spacing: .3em; text-transform: uppercase;
+}
+#game .matchrecap.won .recaptitle > span { color: var(--ds-accent-bright); }
+#game .matchrecap.lost .recaptitle > span { color: var(--ds-danger); }
+#game .matchrecap .recaptitle .gameover {
+  margin: 0; color: var(--ds-text); text-align: left;
+  font: 650 clamp(34px, 4.6 * var(--vwu), 56px)/1.02 var(--ds-font-display); letter-spacing: -.035em;
+  text-shadow: 0 2px 24px rgba(2, 6, 12, .8);
+}
+#game .matchrecap.won .recaptitle .gameover { color: var(--ds-accent-glow); }
+#game .matchrecap .recaptitle p { margin: 0; color: var(--ds-copy); font: 500 13px/1.4 var(--ds-font-body); text-shadow: 0 1px 10px rgba(2, 6, 12, .9); }
+
+#game .matchrecap .recapstandings { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 20px 24px 4px; }
+#game .matchrecap .recapstandings > div {
+  min-height: 62px; padding: 9px 14px 9px 10px; display: grid; grid-template-columns: 22px 44px minmax(0, 1fr) auto auto;
+  align-items: center; gap: 11px; opacity: 1;
+  background: rgba(var(--ds-panel-raised-rgb), .5); border: 1px solid var(--ds-line-soft); border-radius: 12px;
+}
+#game .matchrecap .recapstandings > div.winner {
+  border-color: rgba(var(--ds-accent-rgb), .7);
+  background: linear-gradient(100deg, rgba(var(--ds-accent-rgb), .16), rgba(var(--ds-panel-raised-rgb), .5) 70%);
+}
+#game .matchrecap .recapstandings > div.eliminated > :is(img, span, strong) { opacity: .55; }
+#game .matchrecap .recapstandings i {
+  width: auto; height: auto; display: block; color: var(--ds-muted); background: none; border-radius: 0;
+  font: 600 13px/1 var(--ds-font-mono); font-style: normal; text-align: center;
+}
+#game .matchrecap .recapstandings > div.winner i { color: var(--ds-accent-bright); }
+#game .matchrecap .recapstandings :is(img, em) {
+  width: 44px; height: 44px; display: block; object-fit: cover; object-position: 50% 20%;
+  border-radius: 9px; background: var(--ds-panel); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+}
+#game .matchrecap .recapstandings span { min-width: 0; display: grid; gap: 3px; }
+#game .matchrecap .recapstandings span b { overflow: hidden; color: var(--ds-text); font: 650 14px/1.25 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#game .matchrecap .recapstandings span small { overflow: hidden; color: var(--ds-muted); font: 500 12px/1.3 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#game .matchrecap .recapstandings u {
+  padding: 4px 8px; border-radius: 999px; color: var(--ds-muted); background: rgba(255, 255, 255, .04);
+  font: 600 10px/1 var(--ds-font-body); letter-spacing: .06em; text-decoration: none; text-transform: uppercase; white-space: nowrap;
+}
+#game .matchrecap .recapstandings > div.winner u { color: var(--ds-accent-ink); background: var(--ds-accent-bright); }
+#game .matchrecap .recapstandings strong { min-width: 44px; color: var(--ds-text); font: 600 24px/1 var(--ds-font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+#game .matchrecap .recapstandings strong small { display: block; margin-top: 4px; color: var(--ds-muted); font: 600 9px/1 var(--ds-font-body); letter-spacing: .14em; }
+
+#game .matchrecap .recaphighlights { margin: 14px 24px 0; padding: 14px 16px; background: rgba(var(--ds-table-rgb), .45); border: 1px solid var(--ds-line-soft); border-radius: 12px; }
+#game .matchrecap .recaphighlights > small { color: var(--ds-accent-soft); font: 600 10px/1 var(--ds-font-mono); letter-spacing: .2em; }
+#game .matchrecap .recaphighlights ol { margin: 12px 0 0; padding: 0; display: grid; gap: 8px; list-style: none; }
+#game .matchrecap .recaphighlights li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: baseline; color: var(--ds-copy); font: 500 13px/1.45 var(--ds-font-body); }
+#game .matchrecap .recaphighlights li span { color: var(--ds-muted); font: 600 11px/1.4 var(--ds-font-mono); }
+#game .matchrecap .recaphighlights li.lose { color: var(--ds-text); }
+#game .matchrecap .recaphighlights li.win { color: var(--ds-accent-bright); font-weight: 700; }
+#game .matchrecap .recaphighlights p { margin: 10px 0 0; color: var(--ds-copy); font: 500 13px/1.5 var(--ds-font-body); }
+
+#game .matchrecap .recapactions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin: 0; padding: 18px 24px 22px; }
+#game .matchrecap .recapactions .pbtn { min-height: 46px; min-width: 132px; max-width: none; padding: 0 20px; font: 650 13px/1 var(--ds-font-body); }
+#game .matchrecap .recapactions .pbtn.primary { order: 9; min-width: 190px; }
+
+@media (max-width: 760px) {
+  #game .matchrecapov { padding: 10px; align-items: center; }
+  #game .matchrecapov .matchrecap { width: 100%; max-height: calc(100 * var(--dvhu) - 20px); border-radius: 16px; }
+  #game .matchrecap .recaphead { min-height: 176px; padding: 22px 18px 18px; }
+  #game .matchrecap .recapart { inset: 0; }
+  #game .matchrecap .recapart::after { background: linear-gradient(0deg, var(--ds-dialog) 4%, rgba(17, 24, 32, .72) 46%, rgba(17, 24, 32, .28)); }
+  #game .matchrecap .recapstandings { grid-template-columns: minmax(0, 1fr); padding: 14px 14px 2px; }
+  #game .matchrecap .recapstandings > div { grid-template-columns: 18px 40px minmax(0, 1fr) auto; }
+  #game .matchrecap .recapstandings :is(img, em) { width: 40px; height: 40px; }
+  #game .matchrecap .recapstandings u { display: none; }
+  #game .matchrecap .recapstandings > div.winner u { display: block; grid-column: 3; grid-row: 2; justify-self: start; margin-top: -4px; }
+  #game .matchrecap .recapstandings > div.winner { grid-template-rows: auto auto; }
+  #game .matchrecap .recapstandings > div.winner :is(i, img, em, strong) { grid-row: 1 / span 2; }
+  #game .matchrecap .recaphighlights { margin: 12px 14px 0; padding: 12px; }
+  #game .matchrecap .recapactions { display: grid; grid-template-columns: 1fr 1fr; padding: 14px 14px 16px; }
+  #game .matchrecap .recapactions .pbtn { min-width: 0; }
+  #game .matchrecap .recapactions .pbtn.primary { order: -1; grid-column: 1 / -1; min-width: 0; }
+}
+
+/* The screen arrives in order: the art settles, the result is said, then the
+   standing, row by row. A redrawn screen (.settled) keeps still. */
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) .recapart img { animation: matchArt 1.4s var(--ds-ease-out) both; }
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) .recaptitle > * { animation: matchRise 520ms var(--ds-ease-out) both; }
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) .recaptitle > span { animation-delay: 160ms; }
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) .recaptitle > .gameover { animation-delay: 240ms; }
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) .recaptitle > p { animation-delay: 340ms; }
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) .recapstandings > div {
+    animation: matchRise 420ms var(--ds-ease-out) both; animation-delay: calc(460ms + var(--place, 0) * 70ms);
+  }
+  body:not(.reduced-motion) #game .matchrecapov:not(.settled) :is(.recaphighlights, .recapactions) { animation: dsFadeIn 420ms var(--ds-ease) 760ms both; }
+}
+@keyframes matchArt { from { opacity: 0; transform: scale(1.09); } to { opacity: 1; transform: none; } }
+@keyframes matchRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

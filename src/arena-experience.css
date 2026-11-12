@@ -225,3 +225,15 @@ body.reduced-motion #game .waitownership strong::before { animation: none !impor
 @media (max-width: 900px) {
   body.game-active #game .stackpopwrap:not(.revealwrap) { display: none; }
 }
+
+/* The turn tracker keeps its place: the title beside it has one width, so a
+   longer step name ("Combat attackers") no longer pushes the tracker along. */
+@media (min-width: 1251px) {
+  body.game-active #game.command-table .arenaheader .phase { flex: 0 0 348px; min-width: 0; }
+  body.game-active #game.command-table .arenaheader .phase em { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* The faint "SEAT 01" mark at a lane's bottom right belongs to an older
+   layout; in the Command Table the land column stands there and the mark ran
+   under its last cards. The lane head already names the seat. */
+#game.command-table .opprow::after { content: none; }

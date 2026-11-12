@@ -77,3 +77,11 @@ body.high-contrast :is(.quickmenu, .commandpalette, .sheet, .modal, .reveal) { b
   :is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) *, .gamefx-flightcard { animation: none !important; transition: none !important; }
 }
 body.reduced-motion :is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) *, body.reduced-motion .gamefx-flightcard { animation: none !important; transition: none !important; }
+
+/* The mark that leads a prompt, hint or toast (MTG.iconizeLead): the table's
+   own icon in place of a platform emoji. */
+.gameicon.leadicon {
+  display: inline-block; width: 1.1em; height: 1.1em; margin-right: .42em;
+  vertical-align: -.18em; color: var(--ds-accent-bright); stroke-width: 1.8;
+}
+.pbtn > .gameicon.leadicon { color: currentColor; }

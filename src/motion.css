@@ -1,6 +1,7 @@
-/* Table continuity (modules/motion.js) and the transitions every surface
-   shares. Loaded last: it adds motion to what the other sheets draw and
-   changes no layout. Durations and easings come from design-system.css. */
+/* Table continuity (modules/motion.js) and the moments that are motion
+   first: the turn announcement, the opening deal, toasts. Loaded last: it
+   adds motion to what the other sheets draw and moves no part of the table.
+   Durations and easings come from design-system.css. */
 
 /* Flights live in a click-through layer inside the arena, so a flying copy is
    drawn by the same rules as the card it copies. */
@@ -16,6 +17,11 @@
   box-shadow: 0 18px 38px rgba(var(--ds-table-rgb), .62), 0 0 0 1px rgba(var(--ds-accent-bright-rgb), .34) !important;
 }
 .motion-lift > img { object-fit: cover; border-radius: 6px; }
+
+/* A life total that changed: the old number leaves as a copy (motion.js
+   rollLife). The totals are boxes so the new number can slide in. */
+.motion-number { position: absolute; white-space: nowrap; }
+#game .opplife b, #game .ct-seat-life { display: inline-block; }
 
 /* A closed dialog's dim and plate (no content, no dialog class names). */
 .motion-veil { position: absolute; inset: 0; }
@@ -88,14 +94,9 @@ body.reduced-motion .turnbanner, body.reduced-motion .turnbanner > i { animation
 @media (prefers-reduced-motion: reduce) { body .turnbanner, body .turnbanner > i { animation: none; } }
 
 /* ---------- Opening hand ----------
-   Seven cards in one row on a desktop, dealt one after another. A dialog that
-   is only redrawn (.settled) keeps its cards still. */
-@media (min-width: 901px) {
-  #game .modal[data-decision-type="mulligan"] { width: min(1160px, calc(100 * var(--vwu) - 56px)); max-width: none; padding: 26px 28px 24px; }
-  #game .modal[data-decision-type="mulligan"] .cardgrid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
-  #game .modal[data-decision-type="mulligan"] .mtitle { margin-bottom: 18px; }
-  #game .modal[data-decision-type="mulligan"] .decision-footer { margin-top: 20px; }
-}
+   The cards are dealt one after another (their row is laid out in
+   decision-experience.css). A dialog that is only redrawn (.settled) keeps
+   its cards still. */
 #game .modal[data-decision-type="mulligan"]:not(.settled) .bigcard {
   animation: openingDeal 460ms var(--ds-ease-out) both;
   animation-delay: calc(140ms + var(--deal, 0) * 55ms);
@@ -114,10 +115,15 @@ body.reduced-motion .turnbanner, body.reduced-motion .turnbanner > i { animation
 body.reduced-motion #game .modal[data-decision-type="mulligan"] .bigcard { animation: none; }
 @media (prefers-reduced-motion: reduce) { #game .modal[data-decision-type="mulligan"] .bigcard { animation: none; } }
 
-/* ---------- Header ----------
-   The turn tracker keeps its place: the title beside it has one width, so a
-   longer step name ("Combat attackers") no longer pushes the tracker along. */
-@media (min-width: 1251px) {
-  body.game-active #game.command-table .arenaheader .phase { flex: 0 0 348px; min-width: 0; }
-  body.game-active #game.command-table .arenaheader .phase em { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- Toasts ----------
+   One at a time (ui.js toast): it rises in and fades before it is removed. */
+body .toastmsg { animation: toastLife 2.5s var(--ds-ease) both; }
+@keyframes toastLife {
+  0% { opacity: 0; translate: 0 8px; }
+  7% { opacity: 1; translate: 0 0; }
+  90% { opacity: 1; translate: 0 0; }
+  100% { opacity: 0; translate: 0 -4px; }
 }
+body.reduced-motion .toastmsg { animation: none; }
+@media (prefers-reduced-motion: reduce) { body .toastmsg { animation: none; } }
