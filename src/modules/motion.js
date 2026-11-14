@@ -340,7 +340,7 @@ function zoneBox(ui, player, zone) {
 // disposable copy, the new one arrives from below in the colour of the change.
 // The number the table shows is the true one at every moment.
 // A player's life is shown in their lane head and, on a phone, on their seat.
-const lifeNodes = id => document.querySelectorAll(`#game [data-player-id="${id}"] :is(.opplife b, .melife), #game .ct-seat[data-focus-player="${id}"] .ct-seat-life`);
+const lifeNodes = id => document.querySelectorAll(`#game [data-player-id="${id}"] :is(.opplife b, .melife), #game .ct-seat[data-focus-player="${id}"] .ct-seat-life b`);
 function rollLife(ui, id, was, value) {
   const t = design();
   const tone = getComputedStyle(document.documentElement).getPropertyValue(value > was ? '--ds-good' : '--ds-danger').trim() || (value > was ? '#7fcaa4' : '#ef8b7b');

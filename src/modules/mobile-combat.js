@@ -237,6 +237,10 @@ export function createMobileCombat(ui, game, root, pd) {
     const battlefield = new Set(game.bf());
     const attackers = game.phase === 'combat' ? (game.combat?.attackers || []).filter(card => battlefield.has(card) && card.attacking) : [];
     if (!attackers.length) {
+      history.classList.add('is-empty');
+      const mark = node('span', 'ct-mobile-combat-emptymark');
+      mark.innerHTML = globalThis.MTG.icon('attack');
+      history.append(mark);
       history.append(node('p', 'ct-mobile-combat-empty', game.phase === 'combat'
         ? 'Waiting for attackers. Combat choices will open here when it is your turn to decide.'
         : hasReplay ? 'Replay last combat to review the damage and effects. Your next attack and block choices will appear here.'

@@ -2216,3 +2216,25 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
+
+
+/* Threat list: a rank is a number in a small disc, the first one in the
+   accent. Medals drawn by the platform's emoji font belonged to no icon set. */
+#game .threatrow .trank {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--ds-line);
+  border-radius: 50%;
+  color: var(--ds-muted);
+  font: 700 11px/1 var(--ds-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+#game .threatrow .trank[data-rank="1"] { border-color: rgba(var(--ds-accent-rgb), .7); background: rgba(var(--ds-accent-rgb), .16); color: var(--ds-accent-bright); }
+#game .threatrow .trank[data-rank="2"], #game .threatrow .trank[data-rank="3"] { color: var(--ds-copy); }
+
+/* Commander damage: each column is headed by its commander's art. */
+#game .cdgrid .cdh.cdart { display: grid; place-items: center; padding: 0 0 4px; }
+#game .cdgrid .cdh.cdart img { width: 26px; height: 26px; border: 1px solid var(--ds-line); border-radius: 7px; object-fit: cover; object-position: 50% 22%; display: block; }
+#game .cdgrid .cdh.cdart .cdartname { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

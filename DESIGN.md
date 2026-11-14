@@ -28,7 +28,7 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 
 - `Bricolage Grotesque` (variable: optical size, width, weight) carries product, deck and card-display titles and, at 88% width, the short uppercase labels.
 - `Manrope` carries reading text and controls.
-- `JetBrains Mono` with tabular figures carries every number that changes during play: life totals, power/toughness, counts.
+- `JetBrains Mono` with tabular figures carries every number that changes during play: life totals, power/toughness, counts. A number inside a sentence ("You · 26 life") keeps the sentence's face, with tabular figures.
 - Body copy is at least 12px on compact screens and 13px when space allows.
 - Muted text must remain readable on the table. Never use low contrast as the only signal for disabled, selected or dangerous state.
 - Brass marks the human's current path; green marks valid progress/sync; red is reserved for danger, failure and destructive actions.
@@ -38,6 +38,25 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 - Every colour comes from `src/design-system.css`; stylesheets never hard-code the accent or the base. `--ds-table`, `--ds-panel`, `--ds-panel-raised` and `--ds-dialog` are one cool blue-black material; `--ds-accent` (ember `#e07a4a`), `--ds-accent-bright` and `--ds-accent-soft` are the only warm colours, with `--ds-*-rgb` triplets for tints. `--ds-brass` and `--ds-brass-bright` remain as aliases of the accent for older rules.
 - Surfaces: a fixed soft-light grain (`body::after`), radial ambient light in the accent hue, hairlines at 7–9% white, tinted shadows (`rgba(2, 6, 12, …)`), never pure black.
 - Interaction: every control lifts 1px on hover, presses to 98.5% on `:active`, and shows a two-ring focus (outline plus accent halo). Reduced motion removes the lifts.
+
+### Symbols and marks (2026-11-14)
+
+- **A rules symbol is drawn, never printed as braces.** `{T}`, `{2}`, `{B}`, `{W/U}` in a card sheet, on an ability's button, in a prompt, a toast or the log are the glyphs of the local mana set (`assets/mana`); a number or a letter without a picture sits in a disc of the same size. `MTG.symbolizeTextNode` (`visuals.js`) does it for one text node. `MTG.localizeTree` calls it, so a render is complete before `commitArenaRender` compares it with the table, and one observer covers the surfaces that assign their markup directly.
+- **The characters stay in the page.** A symbol is `<span class="tsym"><span class="tsymraw">{T}</span>glyph</span>`: the glyph is hidden from assistive technology, `.tsymraw` is clipped and not removed. Text content, a copy, a screen reader and a test read what the card says. Form fields, code and anything under `[data-raw-symbols]` are left as typed.
+- **A mark is an icon of the table's set, not a platform emoji.** Labels and scripts write ⚙️, ⚔️, 🛡️, 🌙, ⏸️, 👁, 🔗 and others. Shown, each is the matching symbol of `assets/icons/game-ui.svg` in the colour of its text. A new mark needs three things: a `<symbol id="icon-NAME">` (24×24, strokes only), its name in `ICONS`, and a row in `MARKS`. An emoji without a row is shown as typed.
+- In the 9px badges on a card a mark takes the stroke weight of the keyword icons.
+
+### Wording
+
+- A control says where it leads, in words and not in a parenthesis: `Continue to combat`, `Continue to next phase`, `End turn`. The button that advances a main phase keeps `Continue` as its first word; guides and automated players find it by that word.
+- Prompts say `choose`, `select` and `press`, which fit a finger and a mouse; `tap` is a word of the game. A text that still says `click` is reworded for a finger on a touch device (`phone-table.js`).
+- A count is stated once: `25 cards`, or `3 of 25 cards` when a filter hides some. An empty zone shows no count.
+- A rank is a number in a disc and a column is headed by what it stands for (the commander's art over its damage column), not by a medal or four letters of a name.
+
+### Card sheet actions
+
+- What can be done now is a button in the accent tint. `Close` stays neutral and comes last.
+- What cannot be done now is a quiet row: the ability's own text, then its state (`UNAVAILABLE NOW`) as a small label. It is not a disabled block, and contrast is not the only thing that says so.
 
 ## Motion
 
@@ -99,6 +118,8 @@ The match's last screen (`renderGameOver`, `resolution-recap.css`) is headed by 
 - Arena phone navigation is one level: `Mine / Table / Stack / Politics`. A destination does not add a second tab row. The floating "The Stack" window is a desktop surface; on phones the Stack destination and its count badge are the stack review, so no window covers the decision tray or the battlefield targets.
 - An empty hand collapses to a compact status rail; it must not reserve card-height space.
 - All primary touch targets are at least 44px.
+- A seat chip of the phone's ribbon shows life as the lane heads do: the heart, then the number. The word `life` stays in the page for readers.
+- The phone's Combat view between combats is one composed block in the middle of the pane (mark, sentence, two links), not a line over an empty pane.
 - Internal battlefield and drawer scrolling is preferred over page-level horizontal overflow.
 - The client is drawn on a fixed pixel grid sized for ~1440px desktops. Wider screens scale the whole document through `body { zoom: var(--ui-zoom) }` (`design-system.css`, stepped by viewport width and height) instead of shrinking type into the corners. Because zoom multiplies viewport units, stylesheets and inline styles never use raw `vh`/`dvh`/`vw`; they use `calc(N * var(--vhu|--dvhu|--svhu|--vwu))`.
 - Exile and suspend trays sit beside the hand cards, never above them; the hand row may grow but must never push cards below the screen edge.

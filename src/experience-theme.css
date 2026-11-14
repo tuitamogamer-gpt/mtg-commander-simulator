@@ -85,3 +85,39 @@ body.reduced-motion :is(.modal, .sheet, .quickmenu, .commandpalette, .reveal) *,
   vertical-align: -.18em; color: var(--ds-accent-bright); stroke-width: 1.8;
 }
 .pbtn > .gameicon.leadicon { color: currentColor; }
+
+/* Symbols inside running text (visuals.js, symbolizeTextNode): the glyph is
+   shown, the characters "{T}" stay in the page for readers, copies and tests. */
+.tsym { position: relative; white-space: nowrap; }
+.tsymraw {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.msym.mana-glyph.tsymglyph {
+  width: 1.1em;
+  height: 1.1em;
+  min-width: 13px;
+  min-height: 13px;
+  margin: 0 .07em;
+  /* A picture and a number in a disc have different baselines of their own;
+     the middle is the same for both. */
+  vertical-align: middle;
+  position: relative;
+  top: -.06em;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .16) inset, 0 1px 3px rgba(2, 6, 12, .45);
+}
+/* A number or a letter in its disc keeps the size of the picture symbols:
+   the disc is measured in the text's em, the character inside is smaller. */
+span.msym.mana-glyph.tsymglyph { font: inherit; font-weight: 700; line-height: 1; letter-spacing: 0; }
+span.msym.mana-glyph.tsymglyph.wide { width: auto; padding: 0 .34em; border-radius: 999px; }
+.tsymglyph[data-symbol]::before { content: attr(data-symbol); font-size: .62em; font-family: var(--ds-font-body); }
+.tsymglyph.mana-combo { grid-template-columns: 1fr 1fr; }
+.tsymglyph.mana-combo::before { content: attr(data-left); font-size: .5em; }
+.tsymglyph.mana-combo::after { content: attr(data-right); font-size: .5em; }
+.gameicon.tmarkicon { width: 1.05em; height: 1.05em; vertical-align: -.17em; margin-inline: .04em; }
+/* In the 9px badges on a card a mark needs the weight of the keyword icons. */
+.mini .cnt2 .tmarkicon, .mini .att .tmarkicon { width: 1.2em; height: 1.2em; vertical-align: -.22em; stroke-width: 2.2; }

@@ -123,7 +123,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       seat.setAttribute('aria-label', `Focus ${player.name}, ${player.life} life${counters.length ? ', ' + counters.join(', ') : ''}${player === game.turnPlayer ? ', active turn' : ''}`);
       if (player === game.turnPlayer) seat.setAttribute('aria-current', 'true');
       const copy = node('span', 'ct-seat-copy');
-      copy.append(node('b', '', player.name), node('span', 'ct-seat-life' + (this.lifeBandClass?.(player) || ''), `${player.life} life`));
+      // The total as on a lane head: the heart, then the number. The word
+      // stays in the page for readers.
+      const life = node('span', 'ct-seat-life' + (this.lifeBandClass?.(player) || ''));
+      life.innerHTML = `${U.icon('life')}<b>${Number(player.life)}</b><span class="ct-seat-life-word"> life</span>`;
+      copy.append(node('b', '', player.name), life);
       if (counters.length) copy.append(node('small', '', counters.join(' · ')));
       seat.append(portrait(player), copy);
       ribbon.append(seat);

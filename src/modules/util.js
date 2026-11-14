@@ -1335,6 +1335,8 @@ MTG.localizeTree = function (root) {
     if (node.parentElement && !['SCRIPT', 'STYLE'].includes(node.parentElement.tagName)) {
       const translated = MTG.uiText(node.nodeValue);
       if (translated !== node.nodeValue) node.nodeValue = translated;
+      // {T}, {2}, {B}: drawn as the table's own symbols (visuals.js).
+      MTG.symbolizeTextNode?.(node);
     }
   }
   const elements = root.nodeType === 1 ? [root, ...root.querySelectorAll('*')] : [...root.querySelectorAll('*')];

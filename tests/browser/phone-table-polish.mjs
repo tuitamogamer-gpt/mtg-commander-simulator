@@ -72,9 +72,11 @@ try {
     const {context, page} = await openTable({viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true});
     assert.equal(await page.evaluate(() => document.querySelector('#game').dataset.mobileView), 'mine');
     const prompt = await page.locator('#game .promptbar .ptext').first().textContent();
-    assert.match(prompt, /tap a card for actions/, prompt);
+    // The prompt's own words fit a finger and a mouse; a text that still says
+    // "click" (the toast below) is reworded for a finger.
+    assert.match(prompt, /choose a card to act/, prompt);
     assert.doesNotMatch(prompt, /click/i, 'touch prompts never ask for a click');
-    console.log('PASS touch prompts say tap');
+    console.log('PASS touch prompts never ask for a click');
 
     await announce(page);
     let geo = await floaters(page, '#game .myboard .ct-player-head');
@@ -175,11 +177,11 @@ try {
     assert.match(tray.hint, /No mana or other cost has been paid yet/);
     const choice = await page.evaluate(() => _game.battlefield.find(card => card.ctrl !== _ui.me && card.is('Creature')).iid);
     await page.evaluate(iid => _ui.pickCandidate(_game.battlefield.find(card => card.iid === iid)), choice);
-    assert.match(await page.locator('.targetprompthint').textContent(), /Tap a selected target or × to remove it/);
+    assert.match(await page.locator('.targetprompthint').textContent(), /Choose a selected target again, or ×, to remove it/);
     await page.screenshot({path: `${output}/target-tray.png`});
     await page.locator('.targetprompt .primary').click();
     await page.waitForFunction(() => Array.isArray(window.__targetAnswer) || window.__targetAnswer?.length === 1);
-    console.log('PASS the target tray shows its whole hint and says tap');
+    console.log('PASS the target tray shows its whole hint and how to remove a target');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no horizontal page overflow');
     await context.close();
   }
@@ -288,11 +290,14 @@ try {
     await context.close();
   }
   {
-    // A mouse keeps the original wording, and the desktop keeps the exile tray
-    // beside the hand with its prompt shortcuts.
+    // The prompt's own words are the same for a mouse. A text that says
+    // "click" keeps it there: only a finger gets the other word. The desktop
+    // keeps the exile tray beside the hand with its prompt shortcuts.
     const {context, page} = await openTable({viewport: {width: 1440, height: 900}});
-    assert.match(await page.locator('#game .promptbar .ptext').first().textContent(), /click/);
-    console.log('PASS mouse prompts keep click');
+    assert.match(await page.locator('#game .promptbar .ptext').first().textContent(), /choose a card to act/);
+    await announce(page);
+    assert.match(await page.locator('body > .toastmsg').first().textContent(), /click a target/);
+    console.log('PASS mouse texts keep click');
     await page.locator('#game button.tbtn').filter({hasText: 'FIND'}).first().click();
     await page.locator('.commandfooter').waitFor();
     assert.match(await page.locator('.commandfooter').textContent(), /Navigate/, 'a keyboard keeps the search hints');

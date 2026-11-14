@@ -253,10 +253,14 @@ try {
     // Prompts lead with the table's icon, not a platform emoji.
     const prompt = await page.evaluate(() => {
       const text = document.querySelector('.promptbar .ptext');
-      return {icon: !!text.querySelector('svg.leadicon'), text: text.textContent.trim()};
+      const mark = text.querySelector('.tmark .tsymraw');
+      return {icon: !!text.querySelector('svg.leadicon, .tmark > svg.tmarkicon'), text: text.textContent.trim(),
+        // The emoji stays in the page for readers and is not painted.
+        markBox: mark ? mark.getBoundingClientRect().width : 0};
     });
     assert.equal(prompt.icon, true);
-    assert.match(prompt.text, /^Main phase 1/);
+    assert.match(prompt.text, /Main phase 1/);
+    assert.ok(prompt.markBox <= 1.5, `the emoji itself is clipped: ${prompt.markBox}`);
     check('1440px the prompt leads with an icon of the table\'s set');
 
     await page.screenshot({path: `${output}/desktop.png`});

@@ -406,3 +406,50 @@ body.game-active #game .stackpop.libraryreveal .libraryrevealfoot { border-color
   #game .modal[data-decision-type="mulligan"] .mtitle { margin-bottom: 18px; }
   #game .modal[data-decision-type="mulligan"] .decision-footer { margin-top: 20px; }
 }
+
+
+/* Card sheet actions. What the card can do now is the brightest thing under
+   its text. What it cannot do yet is a quiet line that says so in words, not
+   by fading alone. Close comes last and stays neutral.
+   The colours are !important because the neutral style of every wide button
+   in the arena is (frontend-overhaul.css, .pbtn.wide:not(.primary)). */
+body.game-active #game .cardinspectionactions > .pbtn.wide.abilitybtn:not(:disabled) {
+  border-color: rgba(var(--ds-accent-rgb), .58) !important;
+  background: linear-gradient(180deg, rgba(var(--ds-accent-rgb), .22), rgba(var(--ds-accent-rgb), .1)) !important;
+  color: var(--ds-accent-glow) !important;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 8px 22px rgba(2, 6, 12, .28);
+}
+body.game-active #game .cardinspectionactions > .pbtn.wide.abilitybtn:not(:disabled):hover,
+body.game-active #game .cardinspectionactions > .pbtn.wide.abilitybtn:not(:disabled):focus-visible {
+  border-color: var(--ds-accent-bright) !important;
+  background: linear-gradient(180deg, rgba(var(--ds-accent-rgb), .32), rgba(var(--ds-accent-rgb), .16)) !important;
+}
+body.game-active #game .cardinspectionactions > .pbtn.wide.abilitybtn:not(:disabled) .tmarkicon { color: var(--ds-accent-bright); }
+body.game-active #game .cardinspectionactions > .pbtn.wide:disabled {
+  flex-basis: 100%;
+  min-height: 0;
+  padding: 9px 12px;
+  border-color: var(--ds-line-soft) !important;
+  background: transparent !important;
+  box-shadow: none;
+  color: var(--ds-copy) !important;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  opacity: 1;
+  cursor: default;
+}
+body.game-active #game .cardinspectionactions > .pbtn.wide:disabled .tmarkicon { color: var(--ds-muted); }
+body.game-active #game .cardinspectionactions > .pbtn.wide:disabled .tsymglyph { opacity: .78; }
+#game .cardinspectionactions .actsep { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+#game .cardinspectionactions .actstate {
+  display: block;
+  margin-top: 3px;
+  color: var(--ds-accent-soft);
+  font: 700 12px/1.3 var(--ds-font-body);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}

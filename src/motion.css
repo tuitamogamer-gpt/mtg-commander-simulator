@@ -21,7 +21,7 @@
 /* A life total that changed: the old number leaves as a copy (motion.js
    rollLife). The totals are boxes so the new number can slide in. */
 .motion-number { position: absolute; white-space: nowrap; }
-#game .opplife b, #game .ct-seat-life { display: inline-block; }
+#game .opplife b, #game .ct-seat-life b { display: inline-block; }
 
 /* A closed dialog's dim and plate (no content, no dialog class names). */
 .motion-veil { position: absolute; inset: 0; }

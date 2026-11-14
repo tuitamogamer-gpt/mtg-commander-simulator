@@ -138,7 +138,7 @@ try {
       const entry = await fixture(scenario);
       assert.equal(entry.cast, true); assert.equal(entry.zone, 'battlefield'); assert.equal(entry.enchanted, 0);
       assert.deepEqual(entry.tokens.sort(), ['Clue Token', 'Food Token', 'Junk Token']); assert.equal(entry.paid, 2);
-      await page.getByRole('button', {name: 'Continue ▶ (combat)', exact: true}).click();
+      await page.getByRole('button', {name: 'Continue to combat ▶', exact: true}).click();
       await page.waitForFunction(() => _ui.pending?.q.type !== 'main' || __overencumbered.done || __overencumbered.error);
       const before = await state();
       receipt.checks.push({name, entry, before});

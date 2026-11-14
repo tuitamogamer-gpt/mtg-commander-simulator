@@ -1766,7 +1766,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (creatureSpell) {
         info.appendChild(el('div', 'actionstagerules',
           `<b>CREATURE SPELL — NOT ON THE BATTLEFIELD YET</b>` +
-          `<span>Normal “target creature” removal cannot select it on the Stack. Counter it now, or click Proceed; after it resolves, removal can target it when you receive priority.</span>`));
+          `<span>Normal “target creature” removal cannot select it on the Stack. Counter it now, or press Proceed; after it resolves, removal can target it when you receive priority.</span>`));
       }
       // A spell without targets has no map to lock: say so in two words.
       info.appendChild(el('div', 'actionstagetarget', targets.length
@@ -2137,7 +2137,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const tbl = el('div', 'cdgrid');
           tbl.style.gridTemplateColumns = `minmax(0,1fr) repeat(${cmds.length}, 30px)`;
           tbl.appendChild(el('div', 'cdh', ''));
-          for (const { c } of cmds) tbl.appendChild(el('div', 'cdh', esc(c.name.split(/[ ,]/)[0].slice(0, 4))));
+          // A column is a commander: its art, with its name and owner for
+          // readers. Four letters of a name ("TEMM") said neither.
+          for (const { p, c } of cmds) {
+            const head = el('div', 'cdh cdart', `<img src="${imgURL(c.name, true)}" alt="" onerror="MTG.imgFail(this)"><span class="cdartname">${esc(c.name.split(/[ ,]/)[0].slice(0, 4))}</span>`);
+            head.title = `${c.name} · ${p.name}`;
+            head.setAttribute('aria-label', `${c.name}, ${p.name}'s commander`);
+            tbl.appendChild(head);
+          }
           for (const p of g.players) {
             tbl.appendChild(el('div', 'cdname' + (p === this.me ? ' me' : '') + (p.lost ? ' lost' : ''), esc(p.name)));
             for (const { c } of cmds) {
@@ -2162,7 +2169,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const pct = max === min ? 60 : Math.round(12 + 88 * (t.score - min) / (max - min));
         const grudgeMe = this.me && t.p.isAI && ((t.p.grudges || {})[this.me.idx] || 0) >= 2;
         row.innerHTML = `
-          <span class="trank">${['🥇', '🥈', '🥉', '4.'][i] || (i + 1) + '.'}</span>
+          <span class="trank" data-rank="${i + 1}">${i + 1}</span>
           <span class="tname">${esc(t.p.name)}${styleMeta ? ` <span class="persona" title="${escAttr(styleMeta.label)}">${styleMeta.icon}</span>` : ''}${grudgeMe ? ' <span class="persona" title="Remembers your attacks and holds a grudge!">💢</span>' : ''}</span>
           <span class="tbarwrap"><span class="tbar" style="width:${pct}%"></span></span>
           <span class="tscore">${t.score}</span>`;
@@ -2909,7 +2916,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hold = el('button', 'tbtn hudaction' + (this.holdNext ? ' armed' : ''), `${U.icon('hold')}<span>HOLD</span>`);
       hold.type = 'button';
       hold.title = this.holdNext
-        ? 'HOLD armed. The game stops at the next priority window. Click to cancel.'
+        ? 'HOLD armed. The game stops at the next priority window. Press again to cancel.'
         : 'Stop at the next priority window so you can react.';
       hold.onclick = () => {
         if (this.react) { this.takeReactWindow(); return; }
@@ -2922,8 +2929,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const mana = el('button', 'tbtn hudaction manamode' + (this.manaMode === 'manual' ? ' on' : ''), `${U.icon('mana')}<span>MANA</span>`);
       mana.type = 'button';
       mana.title = this.manaMode === 'manual'
-        ? 'Manual mana is active. Click for automatic mana.'
-        : 'Automatic mana is active. Click to choose sources manually.';
+        ? 'Manual mana is active. Press for automatic mana.'
+        : 'Automatic mana is active. Press to choose sources manually.';
       mana.onclick = () => {
         this.manaMode = this.manaMode === 'manual' ? 'auto' : 'manual';
         localStorage.setItem('mtgManaMode', this.manaMode);
@@ -4166,7 +4173,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Phones show them (and other cards playable from outside the hand) as
       // full cards at the front of the hand row instead: the thumbnail tray
       // beside the hand left only clipped names on a narrow screen.
-      const phoneHand = !!window.matchMedia?.('(max-width: 900px)').matches;
+      const phoneHand = typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 900px)').matches;
       const exilePlayable = [];
       for (const owner of g.players) {
         for (const c of owner.exile) {
@@ -4445,7 +4452,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return b;
       };
       if (this.manualPick) {
-        bar.appendChild(el('div', 'ptext', `🎯 <b>${esc(this.manualPick.label)}</b>: click a target`));
+        bar.appendChild(el('div', 'ptext', `🎯 <b>${esc(this.manualPick.label)}</b>: choose a target`));
         bar.appendChild(btn('Cancel', () => { this.manualPick = null; this.render(); }, 'danger'));
         return bar;
       }
@@ -4453,7 +4460,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const offZoneRow = () => {
         // A phone's Mine and Hand views show these cards in the hand row
         // (renderOffZoneHandCard); the prompt does not repeat them as names.
-        const inHandRow = !!window.matchMedia?.('(max-width: 900px)').matches && ['mine', 'hand'].includes(this.mobileView);
+        const inHandRow = typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 900px)').matches &&
+          ['mine', 'hand'].includes(this.mobileView);
         const list = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts).filter(entry => !entry.card.meta?.preparedBy &&
           !(inHandRow && entry.card.zone !== 'battlefield' && (entry.from || entry.card.zone) !== 'battlefield')) : [];
         if (!list.length) return null;
@@ -4480,7 +4488,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         bar.classList.add('diplomacypausebar');
         bar.appendChild(el('div', 'ptext', incoming
           ? '⏸️ Politics paused. Accept or decline the offer before the game can continue.'
-          : '⏸️ Politics paused. Review the full negotiation, then click Proceed.'));
+          : '⏸️ Politics paused. Review the full negotiation, then press Proceed.'));
         return bar;
       }
       switch (q.type) {
@@ -4495,11 +4503,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'main': {
           const additionalMain = g.phase === 'main2' && g.step === 'additional';
           let hint = additionalMain
-            ? '◆ Additional main phase: click a card for actions'
-            : g.phase === 'main1' ? '🎴 Main phase 1: click a card for actions' : '🎴 Main phase 2';
-          if (this.arenaDragEnabled) hint = hint.replace('click a card for actions', 'drag a playable card to act now, or click for actions');
+            ? '◆ Additional main phase: choose a card to act'
+            : g.phase === 'main1' ? '🎴 Main phase 1: choose a card to act' : '🎴 Main phase 2';
+          if (this.arenaDragEnabled) hint = hint.replace('choose a card to act', 'drag a playable card to act now, or choose one for its actions');
           if (this.actable && this.actable.size) hint += ` · <span class="hintact">⚙️ = ability (${this.actable.size})</span>`;
-          if ((q.casts || []).some(entry => entry.card.meta?.preparedBy)) hint += ' · Click a prepared creature to cast its spell';
+          if ((q.casts || []).some(entry => entry.card.meta?.preparedBy)) hint += ' · Choose a prepared creature to cast its spell';
           bar.appendChild(el('div', 'ptext', hint));
           const oz = offZoneRow();
           if (oz) bar.appendChild(oz);
@@ -4516,8 +4524,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           for(const entry of q.acts||[])if(entry.c14Emblem)bar.appendChild(btn('◆ '+esc(entry.card.name)+' — '+esc(this.activationLabel(entry)),()=>this.resolvePending({kind:'activate',entry}),'abilitybtn'));
           const row = el('div', 'btnrow');
-          row.appendChild(btn(additionalMain ? 'Continue ▶ (next phase)'
-            : g.phase === 'main1' ? 'Continue ▶ (combat)' : 'End turn ▶',
+          row.appendChild(btn(additionalMain ? 'Continue to next phase ▶'
+            : g.phase === 'main1' ? 'Continue to combat ▶' : 'End turn ▶',
           () => this.resolvePending({ kind: 'done' }), 'primary'));
           bar.appendChild(row);
           break;
@@ -4546,8 +4554,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const ozc = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts) : [];
           const inHandN = (q.casts || []).length - ozc.length;
           const actN = (q.acts || []).length;
-          const where = [inHandN ? (this.arenaDragEnabled ? 'drag or click a card in your hand' : 'click a card in your hand') : '',
-            (q.casts || []).some(entry => entry.card.meta?.preparedBy) ? 'click a prepared creature to cast its spell' : '', actN ? 'or use an ability below' : '']
+          const where = [inHandN ? (this.arenaDragEnabled ? 'drag or choose a card in your hand' : 'choose a card in your hand') : '',
+            (q.casts || []).some(entry => entry.card.meta?.preparedBy) ? 'choose a prepared creature to cast its spell' : '', actN ? 'or use an ability below' : '']
             .filter(Boolean).join(' ');
           const hint = nOpt
             ? ` <span class="hintact">${nOpt} option${nOpt === 1 ? '' : 's'}${where ? ': ' + where : ''}</span>`
@@ -4617,8 +4625,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'blockers': {
           bar.appendChild(el('div', 'ptext', this.arenaDragEnabled && pd.boardPeek
-            ? '🛡️ Blocks: drag a glowing blocker directly onto an incoming attacker, or use the click flow.'
-            : '🛡️ Blocks: click an attacker above, then click your blocker.'));
+            ? '🛡️ Blocks: drag a glowing blocker directly onto an incoming attacker, or choose an attacker, then your blocker.'
+            : '🛡️ Blocks: choose an attacker above, then your blocker.'));
           const atkRow = el('div', 'atkrow');
           for (const a of q.attackers) {
             const chip = el('div', 'atkchipbig' + (pd.mode === a ? ' selchip' : ''), `⚔ ${esc(a.name)} ${a.power}/${a.toughness}${a.kw('flying') ? '✈' : ''}${a.kw('menace') ? '👿' : ''}${a.kw('trample') ? '💢' : ''}`);
@@ -4702,7 +4710,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               ? 'This is a choice, not targeting — hexproof, shroud and ward do not apply. Every chosen player or permanent gets one additional counter of every kind already there.'
               : pd.sel.length < min
               ? `Choose ${min - pd.sel.length} more target${min - pd.sel.length === 1 ? '' : 's'}. Glowing cards and players are legal.${q.cancelable ? ' No mana or other cost has been paid yet.' : ''}`
-              : `Review the numbered targets, then confirm.${q.cancelable ? ' You can still abort with no mana spent.' : ''} Click a selected target or × to remove it.`));
+              : `Review the numbered targets, then confirm.${q.cancelable ? ' You can still abort with no mana spent.' : ''} Choose a selected target again, or ×, to remove it.`));
           const picked = el('div', 'targetpickchips');
           pd.sel.forEach((target, index) => {
             const additions = proliferate
@@ -5786,7 +5794,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.showJudge = false;
       this.manualPick = { label, cb, players: opts.players };
       this.render();
-      this.toast('🎯 ' + label + ': click a target');
+      this.toast('🎯 ' + label + ': choose a target');
     }
 
     // ---------- DECLARE BLOCKERS — veliki pregledni prozor ----------
@@ -5874,7 +5882,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <div class="blockassigned">${mine.length
               ? mine.map(b => `<span class="blockchip" data-biid="${b.iid}">🛡 ${esc(b.name)} <i>×</i></span>`).join('')
               : a.cur.unblockable ? '<span class="blocknone">This creature can’t be blocked.</span>'
-              : '<span class="blocknone">no blockers — click this row, then a blocker below</span>'}</div>
+              : '<span class="blocknone">no blockers — choose this row, then a blocker below</span>'}</div>
             <div class="blockoutcome">${outcomeText}</div>
           </div>`;
         lane.onclick = ev => {
@@ -5891,7 +5899,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       m.appendChild(el('div', 'mtitle small blockyourstitle',
         pd.mode?.cur.unblockable ? `<b>${esc(pd.mode.name)}</b> can’t be blocked.`
-          : pd.mode ? `Your untapped creatures — click to block <b>${esc(pd.mode.name)}</b>:` : 'Your untapped creatures:'));
+          : pd.mode ? `Your untapped creatures — choose one to block <b>${esc(pd.mode.name)}</b>:` : 'Your untapped creatures:'));
       const row = el('div', 'blockcandidates');
       for (const b of q.potential) {
         const assigned = this.blockTargets(b, pd);
@@ -5903,7 +5911,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span><b>${esc(b.name)}</b><small>${b.power}/${b.toughness}${bkws ? ' · ' + esc(bkws) : ''}</small>
           ${assigned.length ? `<i class="assignedto">🛡 blocks ${esc(assigned.map(card => card.name).join(', '))}</i>` : ''}</span>`;
         cell.onclick = () => {
-          if (!pd.mode) { this.toast('First click the attacker row you want to block.'); return; }
+          if (!pd.mode) { this.toast('First choose the attacker row you want to block.'); return; }
           this.assignBlocker(b, pd.mode);
         };
         row.appendChild(cell);
@@ -5978,7 +5986,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             : 'A public table deal is ready for review'));
       modal.appendChild(el('div', 'dippreamble', incoming
         ? 'The entire game is stopped. Read every public term, then accept or decline; there is no timer.'
-        : 'The entire game is stopped. No bot action, timer, phase, or turn can advance until you click Proceed.'));
+        : 'The entire game is stopped. No bot action, timer, phase, or turn can advance until you press Proceed.'));
 
       if (participants.length) {
         modal.appendChild(el('div', 'diplomacyreviewroute', participants.map(player =>
@@ -6152,7 +6160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       modal.appendChild(lanes);
 
       const poolHead = el('div', 'attackpoolhead', '<span>ELIGIBLE ATTACKERS</span><small>' +
-        (pd.attackTarget ? 'Click assigns to the highlighted defender. Click again to remove.' : 'Select creatures, then choose their defender above.') + '</small>');
+        (pd.attackTarget ? 'A creature you choose attacks the highlighted defender. Choose it again to remove it.' : 'Select creatures, then choose their defender above.') + '</small>');
       modal.appendChild(poolHead);
       const pool = el('div', 'attackpool');
       for (const card of eligible) {
@@ -6329,7 +6337,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const useCurrentCharacteristics = card.zone === 'battlefield' && card.cur && !hiddenFaceDown;
       const shownTypes = useCurrentCharacteristics ? card.cur.types : shownDef.types;
       const shownSubtypes = useCurrentCharacteristics ? card.cur.subtypes : shownDef.subtypes;
-      const typeLine = [(shownDef.super || []).join(' '), shownTypes.join(' '), shownSubtypes.length ? '- ' + shownSubtypes.join(' ') : ''].join(' ');
+      const typeLine = [(shownDef.super || []).join(' '), shownTypes.join(' '), shownSubtypes.length ? '— ' + shownSubtypes.join(' ') : ''].filter(Boolean).join(' ');
       const landCreature = !hiddenFaceDown && card.is('Land') && card.is('Creature');
       const suspendInHand = card.zone === 'hand' && card.def.suspend;
       const suspendInExile = card.zone === 'exile' && card.meta && Object.prototype.hasOwnProperty.call(card.meta, 'suspended');
@@ -6411,7 +6419,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card.zone === 'battlefield' && card.ctrl === this.me && card.def.abilities) {
           for (const ab of card.def.abilities) {
             if (usedAbilities.has(ab) || !ab.label || g.onlinePresentation && (q.acts || []).some(entry => entry.card === card && entry.ability?.label === ab.label)) continue;
-            const b = el('button', 'pbtn wide disabled abilitybtn', `⚙️ ${esc(ab.label)}: unavailable now`);
+            const b = el('button', 'pbtn wide disabled abilitybtn', `⚙️ ${esc(ab.label)}<span class="actsep">: </span><small class="actstate">unavailable now</small>`);
             b.disabled = true;
             acts.appendChild(b);
           }
@@ -6422,7 +6430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             let options = null;
             try { options = card.def.mana.produce(g, card, this.me) || []; } catch { options = null; }
             if (options && !options.length) {
-              const b = el('button', 'pbtn wide disabled abilitybtn', '⚡ Mana ability: adds no mana right now');
+              const b = el('button', 'pbtn wide disabled abilitybtn', '⚡ Mana ability<span class="actsep">: </span><small class="actstate">adds no mana right now</small>');
               b.disabled = true;
               acts.appendChild(b);
             }
@@ -6430,7 +6438,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (card.zone === 'command' && card.owner === this.me && !(q.casts || []).some(e => e.card === card)) {
           const cost = g.spellCost(card.owner, card, {});
-          const b = el('button', 'pbtn wide disabled', `Cast ${U.costStr(cost)}: not enough mana or not your main phase`);
+          const b = el('button', 'pbtn wide disabled', `Cast ${U.costStr(cost)}<span class="actsep">: </span><small class="actstate">not enough mana or not your main phase</small>`);
           b.disabled = true;
           acts.appendChild(b);
         }
@@ -6698,6 +6706,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sort.value === 'name') matches.sort((a, b) => a.name.localeCompare(b.name) || a.index - b.index);
         if (sort.value === 'mana') matches.sort((a, b) => (a.mv ?? Infinity) - (b.mv ?? Infinity) || a.index - b.index);
         status.textContent = privateZone ? `${count} hidden card${count === 1 ? '' : 's'}. Identities are private.`
+          : !records.length ? ''
+          : matches.length === records.length ? `${records.length} card${records.length === 1 ? '' : 's'}${choosingTargets ? ' · choose a highlighted target' : ''}`
           : `${matches.length} of ${records.length} card${records.length === 1 ? '' : 's'}${choosingTargets ? ' · choose a highlighted target' : ''}`;
         for (const {card: c, name, playable} of matches) {
           const cc = this.bigCardEl(c); cc.dataset.zoneCard = String(c.iid);
@@ -6829,7 +6839,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const c = pd.q.card;
         m.appendChild(el('div', 'mtitle', `⚒️ ${esc(c.name)}`));
         m.appendChild(el('div', 'soracle', esc(c.def.oracle || '').replace(/\n/g, '<br>')));
-        m.appendChild(el('div', 'importnote', 'Perform the card instructions with the controls below, then click "Done".'));
+        m.appendChild(el('div', 'importnote', 'Perform the card instructions with the controls below, then press "Done".'));
       } else {
         m.appendChild(el('div', 'mtitle', '⚒️ Judge panel: manual actions'));
       }
@@ -6890,7 +6900,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.showJudge = false;
         this.zoneBrowse = { player: me, zone: 'graveyard', judgeReturn: true };
         this.render();
-        this.toast('Click a card in the graveyard to return it to the battlefield.');
+        this.toast('Choose a card in the graveyard to return it to the battlefield.');
       });
       // tokeni
       m.appendChild(el('div', 'mtitle small', 'Create a token'));
@@ -7087,12 +7097,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(head);
       m.appendChild(el('div', 'helptext', `
 <div class="shortcutguide"><span><kbd>⌘K / Ctrl+K</kbd> Find cards & commands</span><span><kbd>/</kbd> Open search</span><span><kbd>?</kbd> This guide</span><span><kbd>R</kbd> Hold priority</span><span><kbd>Space</kbd> Proceed</span><span><kbd>Esc</kbd> Close panel</span></div>
-<b>🎴 Playing cards:</b> click a card in your hand to open its available actions, such as Cast, Play land, or Cycling. Cards with a <span style="color:#5aa860">green frame</span> can be played now. The <b>✨/🖐 MANA</b> button switches between automatic payment and choosing exact mana sources.<br><br>
-<b>👑 Commander:</b> your commander stays in the COMMAND ZONE above your hand until cast. Click it, then choose Cast. When it dies, you may return it to the command zone; each recast adds {2} commander tax.<br><br>
-<b>⚙️ Abilities and tokens:</b> a permanent with a ⚙️ badge has an available activated ability. Click it, then choose an action such as creating Food, equipping, or crewing.<br><br>
-<b>⚔️ Attacking:</b> during combat, click one of your creatures, then choose the player, planeswalker or Battle it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
-<b>🎯 Targets:</b> legal targets <span style="color:#e8c05a">glow gold</span>. Click a card or an opponent panel to select it.<br><br>
-<b>Opponents:</b> click a name or the info button for a public overview. Use the expand button to focus a battlefield. Hand and library counts stay visible; graveyard, exile and command zones open for inspection.<br><br>
+<b>🎴 Playing cards:</b> select a card in your hand to open its available actions, such as Cast, Play land, or Cycling. Cards with a <span style="color:#5aa860">green frame</span> can be played now. The <b>✨/🖐 MANA</b> button switches between automatic payment and choosing exact mana sources.<br><br>
+<b>👑 Commander:</b> your commander stays in the COMMAND ZONE above your hand until cast. Select it, then choose Cast. When it dies, you may return it to the command zone; each recast adds {2} commander tax.<br><br>
+<b>⚙️ Abilities and tokens:</b> a permanent with a ⚙️ badge has an available activated ability. Select it, then choose an action such as creating Food, equipping, or crewing.<br><br>
+<b>⚔️ Attacking:</b> during combat, select one of your creatures, then choose the player, planeswalker or Battle it attacks. Every declared combat gets a review and waits for <b>Proceed</b>, even when you are not being attacked. <b>🛡️ Blocking:</b> click an attacker first, then one of your blockers.<br><br>
+<b>🎯 Targets:</b> legal targets <span style="color:#e8c05a">glow gold</span>. Choose a card or an opponent panel.<br><br>
+<b>Opponents:</b> select a name or the info button for a public overview. Use the expand button to focus a battlefield. Hand and library counts stay visible; graveyard, exile and command zones open for inspection.<br><br>
 <b>⚡ Instants and priority:</b> <b>Combat responses + before my turn</b> is the default. It waits when you have a legal response during combat or the end step immediately before your turn; empty windows pass automatically. Opposing nonland cards still wait for <b>Proceed</b>. Change the profile under <b>MENU → Priority stops</b>.<br>
 <b>🃏 Manifest and cloak:</b> a face-down permanent is a real hidden 2/2 card, not a token. You may inspect your own card and turn a creature face up when legal. Cloak also grants ward {2}.<br>
 <b>🖐️ HOLD (R key):</b> arm HOLD whenever you want the game to stop at your next priority window.<br>

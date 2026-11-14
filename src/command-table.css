@@ -1457,3 +1457,12 @@ body.game-active #game.command-table .mini.has-marked-damage > :is(img, .markedd
 body.game-active #game.command-table .mini.has-marked-damage > .markeddamagestats { align-self: start; }
 /* Rotation conveys tapped lands visually; their accessible label still says it. */
 #game.command-table .ct-land-state { display: none; }
+
+
+/* A seat chip shows its life like a lane head does: the heart, then the
+   number. The word "life" stays in the page, clipped. */
+#game.command-table .ct-seat-life { display: inline-flex; align-items: center; gap: 4px; }
+#game.command-table .ct-seat-life > .gameicon { width: .82em; height: .82em; margin: 0; color: #d49b9d; }
+#game.command-table .ct-seat-life > b { font: inherit; }
+#game.command-table .ct-seat-life-word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#game.command-table .ct-seat-life.life-low > .gameicon, #game.command-table .ct-seat-life.life-critical > .gameicon { color: currentColor; }

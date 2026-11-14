@@ -10,6 +10,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'flying', 'deathtouch', 'lifelink', 'trample', 'haste', 'vigilance',
     'menace', 'reach', 'defender', 'flash', 'prowess', 'ward', 'wither',
     'forestwalk', 'myriad', 'skulk',
+    'ability', 'hourglass', 'clock', 'warning', 'lock', 'arrow', 'map', 'fire',
+    'moon', 'pause', 'eye', 'mute', 'forward', 'hint', 'link', 'controls', 'help', 'book', 'stun', 'gift', 'box', 'rotate',
   ]);
 
   MTG.icon = function icon(name, extraClass = '') {
@@ -35,6 +37,87 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       node.insertAdjacentHTML('afterbegin', MTG.icon(lead[1], 'leadicon'));
     }
   };
+
+  // Rules text speaks in symbols: {T}, {2}, {B}, {W/U}. Printed as braces
+  // they read as code, in a card sheet, on an ability's button, in a prompt.
+  // Shown, each is the glyph of the local mana set. The characters stay in the
+  // page, clipped, so what a screen reader, a copy or a test finds in the text
+  // is unchanged.
+  const SYMBOL_FILES = new Set(['W', 'U', 'B', 'R', 'G', 'C', 'X', 'T']);
+  const SYMBOL_HEX = { W: '#e8e3c8', U: '#4a90d9', B: '#7a5f8a', R: '#d95a4a', G: '#5aa860', C: '#9a9a9a' };
+  const RAW_PARENTS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'OPTION', 'TITLE', 'CODE', 'PRE', 'KBD']);
+  function symbolGlyph(code) {
+    if (SYMBOL_FILES.has(code)) return `<img class="msym mana-glyph tsymglyph" src="./assets/mana/${code}.svg" alt="" aria-hidden="true">`;
+    if (code.includes('/')) {
+      const [left, right] = code.split('/');
+      const hue = part => SYMBOL_HEX[part] || (part === 'P' ? '#7f5a72' : '#b9b4a6');
+      return `<span class="msym mana-glyph mana-combo tsymglyph" data-left="${left}" data-right="${right}" style="--mana-left:${hue(left)};--mana-right:${hue(right)}" aria-hidden="true"></span>`;
+    }
+    return `<span class="msym mana-glyph mana-generic tsymglyph${code.length > 2 ? ' wide' : ''}" data-symbol="${code}" aria-hidden="true"></span>`;
+  }
+  // Marks that scripts and labels write as emoji, which every platform draws
+  // in its own colour font. Shown, each is the matching icon of the table's
+  // set; the character stays in the page like a symbol's braces do.
+  const MARKS = new Map([
+    ['\u2699', 'ability'], ['\u2692', 'ability'], ['\u26A1', 'flash'], ['\u{1F0CF}', 'cards'], ['\u{1F3B4}', 'cards'],
+    ['\u23F3', 'hourglass'], ['\u23F0', 'clock'], ['\u26A0', 'warning'], ['\u{1F512}', 'lock'], ['\u25B6', 'arrow'],
+    ['\u2728', 'effects'], ['\u2726', 'effects'], ['\u{1F451}', 'crown'], ['\u265B', 'crown'], ['\u{1F3AF}', 'target'],
+    ['\u{1F590}', 'hold'], ['\u2694', 'attack'], ['\u{1F6E1}', 'shield'], ['\u{1F91D}', 'deals'], ['\u{1F54A}', 'deals'],
+    ['\u{1FA78}', 'life'], ['\u2620', 'deathtouch'], ['\u{1F480}', 'deathtouch'], ['\u{1FAA6}', 'graveyard'],
+    ['\u{1F4DC}', 'log'], ['\u{1F5FA}', 'map'], ['\u{1F48D}', 'ring'], ['\u{1F525}', 'fire'],
+    ['\u{1F319}', 'moon'], ['\u23F8', 'pause'], ['\u{1F441}', 'eye'], ['\u{1F515}', 'mute'], ['\u23E9', 'forward'],
+    ['\u{1F4A1}', 'hint'], ['\u{1F517}', 'link'], ['\u{1F39B}', 'controls'], ['\u2753', 'help'], ['\u{1F4D6}', 'book'],
+    ['\u{1F4AB}', 'stun'], ['\u{1F381}', 'gift'], ['\u{1F4E6}', 'box'], ['\u{1F504}', 'rotate'], ['\u{1F300}', 'exile'],
+    ['\u2764', 'life'], ['\u{1F52E}', 'mana'],
+  ]);
+  const TOKEN = new RegExp(`\\{([A-Z0-9]{1,5}(?:\\/[A-Z0-9]{1,2}){0,2})\\}|(${[...MARKS.keys()].join('|')})\\uFE0F?`, 'gu');
+  const MAYBE_TOKEN = new RegExp(`\\{|${[...MARKS.keys()].join('|')}`, 'u');
+  MTG.hasTextSymbols = text => MAYBE_TOKEN.test(text);
+  MTG.symbolizeTextNode = function symbolizeTextNode(node) {
+    const parent = node && node.parentNode, text = node && node.nodeValue;
+    if (!parent || parent.nodeType !== 1 || !text || !MAYBE_TOKEN.test(text)) return false;
+    if (parent.namespaceURI !== 'http://www.w3.org/1999/xhtml' || RAW_PARENTS.has(parent.tagName) ||
+      parent.classList.contains('tsymraw') || parent.isContentEditable || parent.closest?.('[data-raw-symbols]')) return false;
+    // matchAll starts where a global expression last stopped.
+    TOKEN.lastIndex = 0;
+    const matches = [...text.matchAll(TOKEN)];
+    if (!matches.length) return false;
+    const doc = node.ownerDocument, fragment = doc.createDocumentFragment();
+    let last = 0;
+    for (const match of matches) {
+      if (match.index > last) fragment.append(text.slice(last, match.index));
+      const symbol = doc.createElement('span');
+      symbol.className = match[1] ? 'tsym' : 'tsym tmark';
+      symbol.innerHTML = `<span class="tsymraw">${match[0]}</span>` +
+        (match[1] ? symbolGlyph(match[1]) : MTG.icon(MARKS.get(match[2]), 'tmarkicon'));
+      fragment.append(symbol);
+      last = match.index + match[0].length;
+    }
+    if (last < text.length) fragment.append(text.slice(last));
+    parent.replaceChild(fragment, node);
+    return true;
+  };
+  MTG.symbolizeTree = function symbolizeTree(root) {
+    const doc = root && (root.ownerDocument || (root.nodeType === 9 ? root : null));
+    if (!doc || !doc.createTreeWalker) return root;
+    if (root.nodeType === 3) { MTG.symbolizeTextNode(root); return root; }
+    const walker = doc.createTreeWalker(root, 4);
+    const nodes = [];
+    while (walker.nextNode()) if (MAYBE_TOKEN.test(walker.currentNode.nodeValue)) nodes.push(walker.currentNode);
+    for (const node of nodes) MTG.symbolizeTextNode(node);
+    return root;
+  };
+  // Sheets, dialogs, toasts and menus are built in many places. Whatever
+  // enters the page is read once here, before it is painted.
+  if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined' && document.documentElement) {
+    const watch = new MutationObserver(records => {
+      for (const record of records) for (const node of record.addedNodes) {
+        if (node.nodeType === 3) MTG.symbolizeTextNode(node);
+        else if (node.nodeType === 1 && !node.classList.contains('tsym') && MAYBE_TOKEN.test(node.textContent)) MTG.symbolizeTree(node);
+      }
+    });
+    watch.observe(document.documentElement, { childList: true, subtree: true });
+  }
 
   // One visual language shared by battlefield badges, notices and full-screen
   // gameplay FX.  Labels stay explicit because similar shield-like keywords
