@@ -132,7 +132,17 @@ try {
     await page.setViewportSize({ width, height });
     await page.evaluate(() => { _ui.quickMenuOpen = 'cardbacks'; _ui.render(); });
     await page.locator('.cardbackpicker').waitFor({ state: 'visible' });
-    const box = await page.locator('.cardbackpicker').boundingBox(), done = await page.locator('.cardbackdone').boundingBox();
+    // The resize renders the menu again; a node measured while it is being
+    // replaced has no box. Measure the one that stays.
+    const measured = async selector => {
+      for (let attempt = 0; attempt < 40; attempt++) {
+        const found = await page.locator(selector).boundingBox();
+        if (found) return found;
+        await page.waitForTimeout(50);
+      }
+      return null;
+    };
+    const box = await measured('.cardbackpicker'), done = await measured('.cardbackdone');
     assert.ok(box.x >= -1 && box.y >= -1 && box.x + box.width <= width + 1 && box.y + box.height <= height + 1, `Card backs fit ${width}: ${JSON.stringify(box)}`);
     await shot(`cardbacks-${width}`);
     assert.ok(done.height >= 44 && done.y + done.height <= height + 1, `Cardback action fits ${width}: ${JSON.stringify(done)}`);

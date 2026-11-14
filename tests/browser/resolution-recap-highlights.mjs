@@ -81,7 +81,7 @@ async function reachRecap(kind){
       await button(/^Confirm.*\(/);
     }else if(s.question==='chooseOption'){
       await page.locator('.modal [data-choice-key]').filter({visible:true}).first().click();
-    }else await button(/^(Proceed|Pass|Continue|Let it|Let resolve|Got it|Confirm order)/);
+    }else await button(/^(Proceed|Pass|Continue|Let it|Let resolve|Got it|Confirm order|Reveal cards|Exile top card)/);
     await page.waitForTimeout(40);
   }
   throw Error('No native highlight '+JSON.stringify(await state()));

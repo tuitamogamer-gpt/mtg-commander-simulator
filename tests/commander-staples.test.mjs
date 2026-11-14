@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { loadEngine } from './helpers/load-engine.mjs';
 import { auditNativeCatalog } from './helpers/native-execution-audit.mjs';
 
 const MTG = loadEngine();
 const BATCH_ID = 'manual-commander-staples';
 const report = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/commander-staples-cards.json', import.meta.url), 'utf8'));
+const SHIPPED_IMAGES = new Map(JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-candidates-2026-10-27/images.json', import.meta.url), 'utf8'))
+  .added.map(row => [row.relative, row]));
 
 // Exact Oracle wording from the SHA-256-verified pinned Scryfall feed.
 const ORACLE = {
@@ -141,9 +144,20 @@ test('the manual batch preserves its provenance and registers seven certified, i
     assert.equal(catalog.typeLine, typeLine);
     assert.deepEqual(Array.from(catalog.colorIdentity), identity);
     assert.equal(catalog.scryfallId, entry.scryfallId);
-    // Images resolve to the exact pinned printing.
+    // Images resolve to the exact pinned printing: from Scryfall by its id, or
+    // from a copy of that printing shipped with the game (Esper Sentinel, with
+    // the precon candidates of 2026-10-27), whose digest its report records.
     for (const [variant, version] of [[undefined, 'normal'], ['art', 'art_crop']]) {
-      const url = new URL(MTG.cardImageURL(name, variant));
+      const address = MTG.cardImageURL(name, variant);
+      if (address.startsWith('./assets/cards/')) {
+        const shipped = SHIPPED_IMAGES.get(address);
+        assert.ok(shipped, `${name}: the shipped image is recorded`);
+        assert.equal(shipped.scryfallId, entry.scryfallId, `${name}: shipped copy of the pinned print`);
+        assert.equal(createHash('sha256').update(fs.readFileSync(new URL('../' + address.slice(2), import.meta.url))).digest('hex'),
+          shipped.sha256, `${name}: shipped image digest`);
+        continue;
+      }
+      const url = new URL(address);
       assert.equal(url.origin + url.pathname, MTG.CARD_IMAGE_ID_API_BASE + entry.scryfallId, `${name}: pinned Scryfall print`);
       assert.equal(url.searchParams.get('format'), 'image');
       assert.equal(url.searchParams.get('version'), version);

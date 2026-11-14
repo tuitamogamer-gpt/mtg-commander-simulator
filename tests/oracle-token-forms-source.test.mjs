@@ -24,7 +24,11 @@ async function activate(c,card){for(const color of'WUBRGC')c.a.pool[color]=20;ca
 const end=async c=>{await c.game.emit('endStep',{player:c.a});await settle(c.game);};
 function humanSelect(c,kind){const decide=c.a.controller.decide.bind(c.a.controller);c.a.controller.decide=(g,q)=>q.type===kind?(q.from||q.candidates).slice(0,1):decide(g,q);}
 test('official creature types include token-only types, keep Time Lord whole, and exclude other subtype families',()=>{
- assert.deepEqual([...M.CREATURE_SUBTYPES].sort(),[...ORACLE_CREATURE_TYPES].sort());for(const type of ORACLE_CREATURE_TYPES)assert.ok(ORACLE_SUBTYPES.has(type),type);
+ // The table's vocabulary is the complete catalog retrieved with the Star Trek previews (2026-10-29). The compiler's
+ // list is the Comprehensive Rules of 2026-08-19 and stays as compiled batches recorded it; the catalog contains it.
+ const catalog=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-trc-2026-10-29/creature-types.json',import.meta.url))).catalog.data;
+ assert.deepEqual([...M.CREATURE_SUBTYPES].sort(),[...catalog].sort());
+ for(const type of ORACLE_CREATURE_TYPES){assert.ok(M.CREATURE_SUBTYPES.has(type),type);assert.ok(ORACLE_SUBTYPES.has(type),type);}
  const c=context(M),changeling=put(M,c.game,c.a,'Universal Automaton');for(const type of ['Balloon','Camarid','Time Lord','Pentavite'])assert.equal(changeling.hasSub(type),true,type);
  for(const type of ['Forest','Aura','Equipment','Vehicle','Lord','creature','red,'])assert.equal(changeling.hasSub(type),false,type);
 });
