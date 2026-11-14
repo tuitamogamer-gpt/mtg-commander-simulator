@@ -51,7 +51,9 @@ try {
   await page.reload(); await page.locator('[data-menu-action="solo"]').first().click();
   await page.waitForFunction(()=>!!window.MTG?.captureGameState && !MTGAccount.loading,null,{timeout:90000});
   const raw = readFileSync(`${root}tests/fixtures/yuriko-custom-deck.txt`,'utf8');
-  const initial = await page.evaluate(raw=>{
+  // The page opens with the cards of the built-in decks; an imported list needs the whole collection.
+  const initial = await page.evaluate(async raw=>{
+    await MTG.ensureFullCatalog();
     const name='Saved mana audit';
     const imported=MTG.importCommanderDeck(raw,{name,commanders:["Yuriko, the Tiger's Shadow"]});
     if(!imported.ok)throw Error('The native imported fixture must be valid.');

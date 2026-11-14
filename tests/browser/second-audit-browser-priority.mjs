@@ -159,7 +159,7 @@ async function run(s){
       if(s.kind==='battle'){battleReview=a.combatReviewLabels.join(' ');await shot(`${s.label}-native-combat-review-label`);}
       await page.locator('[data-testid="confirm-combat-battlefield"]').filter({visible:true}).click();
     }
-    else if(a.question)await button(/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order)/);
+    else if(a.question)await button(/^(Proceed|Pass|Resolve|Continue|Got it|Confirm order|Reveal cards|Exile top card)/);
     else await page.waitForTimeout(20);
   }
   const a=await state();assert.equal(a.done,true,'Native combat finishes after visible actions');assert.equal(a.error,null);assert.equal(a.fallback,false);

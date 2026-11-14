@@ -60,7 +60,7 @@ Home, the setup flow, the menu and Find needed nothing.
 
 ## Tests that failed before this work
 
-Six node test files and one browser suite failed on the released commit and on the commits before it. None was caused by the game's rules.
+Six node test files and four browser suites failed on the released commit and on the commits before it; the last three rows were found when every browser suite was run, and each was confirmed on the released commit. None was caused by the game's rules.
 
 | File | Cause | What was done |
 | --- | --- | --- |
@@ -70,6 +70,9 @@ Six node test files and one browser suite failed on the released commit and on t
 | `commander-staples` | Esper Sentinel's picture is served from a shipped copy since 27 October; the test parsed every address as a Scryfall URL. | A shipped copy passes when its report records the same pinned printing and the file has the recorded digest. Both hold. |
 | `bom-precons`, `clb-dmc-40k-precons` | Each compares today's data with `src/data.js` of commit `22dcc14`, which a shallow clone does not hold. | With the commit present the comparison runs and passes (91 decks, 2,592 card records, 4,065 picture paths, no difference). Without it the test skips and says why. |
 | `resolution-recap-highlights` (browser, 2 of 6 cases) | A revealed library card is shown in two steps since the library-reveal dialog; the suite pressed `Continue` and never `Reveal cards`, so Yuriko's trigger never reached its result. | The suite presses the first step too. All six cases pass. |
+| `second-audit-browser-priority` (browser, 3 of 25 cases) | The same first step of a library reveal, in its three Yuriko cases. | The suite presses it. All 25 cases pass. |
+| `save-mana-mode` (browser) | It imported a deck before the whole card collection was loaded, which the page no longer does on its own since 10 November. | It waits for the collection first, as the page does. |
+| `four-hour-engine-audit` (browser) | The home screen can show two return buttons since saves are also kept on the device; the suite's locator matched both. | It names the account's button. It then passed two runs of three; the third stopped at its first main phase of a game that is dealt at random, and that was not seen again. |
 
 ## Verification
 
@@ -90,8 +93,15 @@ Everything below ran on the code of this commit unless it says otherwise.
 
 **Real games.** Two four-player games were played through the interface with your seat answered by a bot after each decision was shown: 24 turns on a 390×844 phone and 18 turns on a 1440×900 desktop. No page error in either.
 
-**Not finished when this was written.**
+**All 145 browser suites, after the push.** The other 98 play built-in decks and engine scenarios through the page.
 
-- The other 98 browser suites play built-in decks and engine scenarios through the page. One had passed and the rest were still to run. Their result is added below when they finish.
-- The complete node suite and the 180-game bot sweep of the released commit `42dbe8c`, left open on 12 November, were paused to give these checks the processors: 60 of 870 test files had run (4,202 tests pass; the 4 failures are `ui-priority-action-callbacks`, repaired above) and 42 of 180 games had finished without a fault. This pass changes no rule and no bot code.
+- 128 of the 145 passed in a two-lane run. The 17 others were then run one at a time on a quiet machine, and each of the three that looked like a fault of this pass was also run on the released commit.
+- Nine pass unchanged when run alone: the six named above and three Live suites (`afc-mic-live`, `clb-dmc-40k-live`, `voc-ncc-live`), which wait at most 90 s for a turn of a four-browser game.
+- Three need the page served with its account API on port 8319 or 8320 and pass with it: `c15-c16-experience`, `c17-c19-text`, `c15-c16-control`.
+- Five needed a change to the suite: the two named above, and three that also fail on the released commit (in the table above).
+- No suite fails because of this pass.
+
+**Not finished.**
+
+- The complete node suite and the 180-game bot sweep, left open on 12 November, were paused to give these checks the processors, and stopped when the session restarted. 60 of 870 test files had run on the released commit `42dbe8c` (4,202 tests pass; the 4 failures are `ui-priority-action-callbacks`, repaired above) and 42 of 180 games had finished without a fault. The rest did not run. This pass changes no rule and no bot code.
 - The pictures were judged on Chromium at phone and desktop sizes. No iPhone was at hand: Safari draws the same SVG symbols and sprite, which the game already used, but it was not looked at.

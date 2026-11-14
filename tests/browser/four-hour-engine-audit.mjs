@@ -412,8 +412,8 @@ async function importAndContinue() {
     return MTG.buildAccountSave(g,setup,[],'match-mobile-native-floating-mana',state,0);
   });
   const controlResponse=await page.request.post(`${base}/api/account`,{data:{action:'save',save:controlSave,expectedOwnerId:await page.evaluate(()=>MTGAccount.user.id)}});
-  assert.equal((await controlResponse.json()).ok,true);await page.reload();await page.locator('.mainmenu-account-return').waitFor({timeout:60000});
-  await page.locator('.mainmenu-account-return').click();await page.locator('.account-continue').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
+  assert.equal((await controlResponse.json()).ok,true);await page.reload();await page.locator('.mainmenu-account-return:not(.mainmenu-device-return)').waitFor({timeout:60000});
+  await page.locator('.mainmenu-account-return:not(.mainmenu-device-return)').click();await page.locator('.account-continue').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
   assert.equal(await page.evaluate(()=>_ui.manaMode),'manual');await page.waitForTimeout(1000);
   const portable=await page.evaluate(()=>({state:MTGAccount.save.state,index:MTGAccount.save.checkpointTimelineIndex,total:MTGAccount.save.decisions.length}));
   const hacker=await page.evaluate(()=>_ui.me.hand.find(c=>c.name==='Moon-Circuit Hacker').iid);
@@ -427,7 +427,7 @@ async function importAndContinue() {
   await page.waitForTimeout(1000);const fallback=await page.evaluate(()=>({state:MTGAccount.save.state,index:MTGAccount.save.checkpointTimelineIndex,total:MTGAccount.save.decisions.length}));
   assert.deepEqual(fallback.state,portable.state);assert.equal(fallback.index,portable.index);assert.ok(fallback.total>portable.total);
   await page.locator('.menubutton').click();await page.getByRole('tab',{name:'Table',exact:true}).click();await page.locator('.quickmenuitem').filter({hasText:/^Save & exit/}).click();await page.locator('.mainmenu-account-return').waitFor({timeout:30000});await page.reload();
-  await page.locator('.mainmenu-account-return').waitFor({timeout:60000});await page.locator('.mainmenu-account-return').click();await page.locator('.account-continue').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
+  await page.locator('.mainmenu-account-return:not(.mainmenu-device-return)').waitFor({timeout:60000});await page.locator('.mainmenu-account-return:not(.mainmenu-device-return)').click();await page.locator('.account-continue').click();await page.waitForFunction(()=>window._ui?.pending?.q.type==='main',null,{timeout:60000});
   const floatedAgain=await savedView();assert.deepEqual(floatedAgain,floating);
   await page.screenshot({path:`${output}/account-nonportable-mana-checkpoint-tail.png`,animations:'disabled'});
   results.push({label:'account-nonportable-mana-keeps-checkpoint-replays-tail',initialPosition:'400 native cards from exact four decks; Island and Sol Ring on BF, Moon-Circuit Hacker in hand',floating,floatedAgain,offset:portable.index,priorDecisions:portable.total,latestDecisions:fallback.total,fullMatches:0});
