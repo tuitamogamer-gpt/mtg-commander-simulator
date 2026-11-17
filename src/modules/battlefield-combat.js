@@ -21,6 +21,7 @@ export function prepareBattlefieldCombat(ui, mobile = false) {
   const pd = ui.pending;
   if (!combatDecision(pd)) return;
   pd.mobileCombatLayout = mobile;
+  const viewBefore = ui.mobileView;
   if (!pd.battlefieldCombat) {
     pd.battlefieldCombat = true;
     pd.boardPeek = true;
@@ -32,6 +33,8 @@ export function prepareBattlefieldCombat(ui, mobile = false) {
     pd.boardPeek = true;
     if (!pd.mobileCombatPrepared) {
       pd.mobileCombatPrepared = true;
+      // The view the player had comes back when combat is over (action-effects.js).
+      ui.notePhoneCombatView?.(viewBefore);
       ui.mobileView = 'combat';
       ui.utilityDrawerOpen = false;
     }

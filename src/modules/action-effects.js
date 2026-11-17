@@ -212,9 +212,16 @@ function charge(effect, ui, pairs, z, late = 0) {
   }
   return charged ? approach + hold + recoil + 80 : 0;
 }
-// A phone shows a combat in its Combat view; the view it left comes back once
-// the damage step is over, unless the player moved on in the meantime.
+// A phone shows a combat in its Combat view. The view opens for the charge
+// (openPhoneCombat) and for a combat decision (battlefield-combat.js, through
+// notePhoneCombatView). Whoever opened it, the view the player had comes back
+// when combat is over, unless the player chose another view in the meantime.
 let phoneCombat = null;
+// What the Combat view is there for: the combat phase itself, and a combat
+// decision. A main-phase or end-step decision is answered on the board.
+const COMBAT_DECISIONS = ['attackers', 'blockers', 'combatReview'];
+const combatHolds = ui => !!ui.game && !ui.game.gameOver && (ui.game.phase === 'combat' ||
+  (ui.pendings?.length ? ui.pendings : [ui.pending]).some(pd => COMBAT_DECISIONS.includes(pd?.q?.type)));
 // The view fades in and out rather than cutting. Opacity only: the charge
 // measures the cards' places while the view appears. Its contents fade, not
 // the panel: a transparent panel showed the playmat behind it, a bright flash
@@ -224,8 +231,9 @@ const fadeContents = (pane, frames, options) => [...pane.children].map(child => 
 function openPhoneCombat(ui) {
   if (!phone.matches || ui.pending || ui.react) return;
   clearTimeout(phoneCombat?.timer);
+  if (phoneCombat) phoneCombat.timer = null;
   const switching = ui.mobileView !== 'combat';
-  if (switching) phoneCombat = {ui, view: ui.mobileView || 'mine'};
+  if (switching) phoneCombat = {ui, view: ui.mobileView || 'mine', timer: null};
   else if (phoneCombat?.ui !== ui) return;
   ui.mobileView = 'combat'; ui.utilityDrawerOpen = false; ui.render();
   const pane = switching && combatPane();
@@ -236,17 +244,22 @@ function closePhoneCombat(ui, after) {
   if (!entry || entry.ui !== ui) return;
   const leave = () => {
     if (phoneCombat !== entry) return;
+    // Combat again (a second combat phase, a combat decision that opened
+    // during the fade): the view stays, and so does the way back.
+    if (combatHolds(ui)) return;
     phoneCombat = null;
-    if (ui.mobileView === 'combat' && !ui.pending && !ui.react) { ui.mobileView = entry.view; ui.render(); }
+    if (ui.mobileView === 'combat') { ui.mobileView = entry.view; ui.render(); }
   };
+  clearTimeout(entry.timer);
   entry.timer = setTimeout(() => {
+    entry.timer = null;
     if (phoneCombat !== entry) return;
+    if (ui.mobileView !== 'combat') { phoneCombat = null; return; }
     // Still in combat (more damage steps, end of combat): look again shortly.
-    if (ui.mobileView === 'combat' && ui.game?.phase === 'combat' && !ui.game.gameOver) { closePhoneCombat(ui, 500); return; }
-    const pane = ui.mobileView === 'combat' && !ui.pending && !ui.react && !suppressed(ui) && combatPane();
+    if (combatHolds(ui)) { closePhoneCombat(ui, 500); return; }
+    const pane = !suppressed(ui) && combatPane();
     if (!pane) { leave(); return; }
-    // leave() checks again: a decision that opened during the fade keeps the
-    // Combat view, and cancelling the fade shows it fully again.
+    // leave() checks again, and cancelling the fade shows the view fully.
     const fades = fadeContents(pane, [{opacity: 1}, {opacity: 0}], {duration: 160, easing: 'ease-in', fill: 'forwards'});
     let finished = false;
     const done = () => { if (finished) return; finished = true; leave(); fades.forEach(fade => fade.cancel()); };
@@ -254,6 +267,20 @@ function closePhoneCombat(ui, after) {
     // A render during the fade may replace the faded parts: leave on time anyway.
     setTimeout(done, fades.length ? 220 : 0);
   }, after);
+}
+// A combat decision opened the Combat view over `previous`.
+U.UI.prototype.notePhoneCombatView = function(previous) {
+  if (!phone.matches || phoneCombat?.ui === this) return;
+  clearTimeout(phoneCombat?.timer);
+  phoneCombat = {ui: this, view: previous && previous !== 'combat' ? previous : 'mine', timer: null};
+};
+// Asked after every render: with no charge to wait for, the way back starts
+// as soon as nothing holds the view.
+function settlePhoneCombat(ui) {
+  const entry = phoneCombat;
+  if (!entry || entry.ui !== ui || entry.timer) return;
+  if (ui.mobileView !== 'combat') { phoneCombat = null; return; }
+  if (!combatHolds(ui)) closePhoneCombat(ui, 260);
 }
 function paint(state, event, kind, shownAt = performance.now()) {
   if (active !== state || state.game !== state.ui.game || suppressed(state.ui)) { prune(); return; }
@@ -380,6 +407,7 @@ U.UI.prototype.render = function(...args) {
   // A render may replace a charging card; the new one stays faded too.
   if (active) for (const effect of active.effects) for (const iid of effect.charging || [])
     for (const card of chargingCards(iid)) card.classList.add('fx-charging');
+  settlePhoneCombat(this);
   return result;
 };
 })();

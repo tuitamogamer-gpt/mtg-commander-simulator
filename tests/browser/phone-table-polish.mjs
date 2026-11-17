@@ -312,6 +312,59 @@ try {
     console.log('PASS the desktop keeps its exile tray');
     await context.close();
   }
+  for (const motion of ['reduce', 'no-preference']) {
+    // Combat opens the Combat view by itself. When combat is over the view
+    // the player had comes back, with a decision waiting or not: it used to
+    // stay on Combat through the second main phase and the turns after it.
+    const {context, page} = await openTable({viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true, reducedMotion: motion});
+    if (motion === 'no-preference') await page.evaluate(() => { _ui.reducedMotion = false; document.body.classList.remove('reduced-motion'); });
+    const views = await page.evaluate(async () => {
+      const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+      const until = async (test, ms = 3000) => { const end = performance.now() + ms; while (!test() && performance.now() < end) await wait(30); return test(); };
+      const me = _ui.me, g = _game, seen = {};
+      // My attack, then my second main phase with its decision waiting.
+      _ui.pendings = []; _ui.mobileView = 'mine'; _ui.render();
+      g.phase = 'combat'; g.step = 'attackers';
+      const declared = me.controller.decide(g, {type: 'attackers', player: me, eligible: g.creatures(me).filter(card => !card.tapped)});
+      _ui.render(); await wait(60);
+      seen.attackDecision = _ui.mobileView;
+      _ui.resolvePendingEntry(_ui.pendings.find(pd => pd.q.type === 'attackers'), []);
+      await declared; _ui.render(); await wait(400);
+      seen.stillInCombat = _ui.mobileView;
+      g.phase = 'main2'; g.step = '';
+      void me.controller.decide(g, {type: 'main', player: me, casts: [], acts: [], lands: [], phase: 'main2'});
+      _ui.render();
+      seen.returned = await until(() => _ui.mobileView === 'mine');
+      seen.afterMyCombat = _ui.mobileView; seen.waiting = _ui.pending?.q.type;
+      // An opponent attacks me from another view; afterwards nothing waits.
+      _ui.pendings = []; g.phase = 'main1'; _ui.showMobileView('table');
+      g.phase = 'combat'; g.step = 'blockers';
+      const attacker = g.creatures(g.players[1])[0];
+      attacker.attacking = me; g.combat = {attackers: [attacker], blockersDeclared: false};
+      void me.controller.decide(g, {type: 'blockers', player: me, attackers: [attacker], blockers: g.creatures(me).filter(card => !card.tapped)});
+      _ui.render(); await wait(60);
+      seen.blockDecision = _ui.mobileView;
+      _ui.resolvePendingEntry(_ui.pendings.find(pd => pd.q.type === 'blockers'), []);
+      attacker.attacking = null; g.combat = null; g.phase = 'main2'; _ui.render();
+      seen.afterBlock = await until(() => _ui.mobileView !== 'combat') ? _ui.mobileView : 'combat';
+      // The Combat view the player opens stays open.
+      _ui.showMobileView('combat'); await wait(900);
+      seen.opened = _ui.mobileView;
+      // A view the player chooses during combat is kept afterwards.
+      _ui.pendings = []; _ui.showMobileView('mine'); g.phase = 'combat'; g.step = 'attackers';
+      const again = me.controller.decide(g, {type: 'attackers', player: me, eligible: g.creatures(me).filter(card => !card.tapped)});
+      _ui.render(); await wait(60);
+      _ui.resolvePendingEntry(_ui.pendings.find(pd => pd.q.type === 'attackers'), []);
+      await again; _ui.showMobileView('stack'); g.phase = 'main2'; _ui.render(); await wait(900);
+      seen.chosenDuringCombat = _ui.mobileView;
+      _ui.showMobileView('mine');
+      return seen;
+    });
+    assert.deepEqual(views, {attackDecision: 'combat', stillInCombat: 'combat', returned: true, afterMyCombat: 'mine', waiting: 'main',
+      blockDecision: 'combat', afterBlock: 'mine', opened: 'combat', chosenDuringCombat: 'stack'}, JSON.stringify(views));
+    console.log(`PASS the phone leaves the Combat view when combat is over (${motion === 'reduce' ? 'reduced motion' : 'with motion'})`);
+    await context.close();
+  }
   assert.deepEqual(errors, []);
 } finally {
   await browser.close();
