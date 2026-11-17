@@ -7579,10 +7579,80 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       node.append(delta);
     }
 
+    // What a spell or ability did to another player's card that it took off
+    // the battlefield. The engine sends the resolving source with the move,
+    // and whether the card was destroyed or sacrificed (engine.js, move). A
+    // Treasure or a Clue spent on the way is a payment, not a removal.
+    removalOf(event) {
+      const card = event.card;
+      if (!card || event.fromZone !== 'battlefield' || !(event.name || event.source || event.player)) return null;
+      // What a player's own effect does to their own card (a bounce land's
+      // return, a sacrifice of their own) is not a removal: it leaves as before.
+      if (event.player && (event.fromPlayer || event.toPlayer || card.owner) === event.player) return null;
+      const types = card.cur?.types || card.def?.types || card.types || [];
+      if (event.cause === 'sacrifice' && card.isToken && types.includes('Artifact') && !types.includes('Creature')) return null;
+      const verb = event.cause === 'sacrifice' ? 'SACRIFICED' : event.cause === 'destroy' ? 'DESTROYED'
+        : event.toZone === 'exile' ? 'EXILED' : event.toZone === 'hand' ? 'RETURNED TO HAND'
+        : event.toZone === 'library' ? 'PUT INTO LIBRARY' : event.toZone === 'command' ? 'TO THE COMMAND ZONE'
+        : event.toZone === 'graveyard' ? types.includes('Creature') ? 'DIED' : 'TO THE GRAVEYARD' : 'LEFT PLAY';
+      const mode = event.toZone === 'exile' ? 'void' : ['hand', 'library', 'command'].includes(event.toZone) && !event.cause ? 'lift' : 'cut';
+      const sourceName = event.source?.faceDown ? 'A face-down card' : event.name || event.source?.name || '';
+      return {verb, mode, name: card.faceDown ? 'Face-down card' : event.cardName || card.name,
+        by: [sourceName, event.player?.name].filter(Boolean).join(' · ')};
+    }
+
+    // The plate that says what happened: the verb, the card, then what did it
+    // and whose it was. Beside the card when the card is on screen; with the
+    // card's picture in the upper part of the screen when it is not (a phone
+    // on another view, a board that is not shown).
+    removalPlate(layer, removal, at, card) {
+      const plate = el('div', `removalfx-plate mode-${removal.mode}${card ? ' withcard' : ''}`,
+        `${card ? `<span class="removalfx-art">${cardArtHTML(card)}<i></i></span>` : ''}` +
+        `<span class="removalfx-copy"><small>${esc(removal.verb)}</small><b>${esc(removal.name)}</b>${removal.by ? `<em>${esc(removal.by)}</em>` : ''}</span>`);
+      const vp = this.fxViewport();
+      if (at) {
+        // Above the card; under it when the card is near the top of the screen.
+        const above = at.top >= 96;
+        plate.classList.add(above ? 'above' : 'below');
+        plate.style.left = `${Math.max(126, Math.min(vp.width - 126, at.left + at.width / 2))}px`;
+        plate.style.top = `${above ? at.top - 8 : at.top + at.height + 8}px`;
+      } else {
+        // Several at once (two targets) sit under each other.
+        const shown = layer.querySelectorAll('.removalfx-plate.withcard').length;
+        plate.style.left = `${vp.width / 2}px`;
+        plate.style.top = `${Math.round(vp.height * .24) + Math.min(shown, 3) * 84}px`;
+      }
+      layer.appendChild(plate);
+      if (at) {
+        // One spell, two cards side by side: the second plate goes under its
+        // card, a third one further down, so each can be read.
+        const covered = () => {
+          const box = plate.getBoundingClientRect();
+          return [...layer.querySelectorAll('.removalfx-plate')].filter(other => other !== plate).map(other => other.getBoundingClientRect())
+            .filter(other => other.left < box.right && box.left < other.right && other.top < box.bottom && box.top < other.bottom).length;
+        };
+        if (covered() && plate.classList.contains('above')) {
+          plate.classList.replace('above', 'below');
+          plate.style.top = `${at.top + at.height + 8}px`;
+        }
+        const still = covered();
+        if (still) plate.style.top = `${parseFloat(plate.style.top) + still * (plate.getBoundingClientRect().height / this.viewportZoom(layer) + 6)}px`;
+      }
+      setTimeout(() => plate.remove(), 1500);
+      return plate;
+    }
+
     showZoneMoveEffect(event) {
       const sourceNode = this.gameEffectCardArt(this.gameEffectCardAnchor(event.card));
       const sourceRect = this.fxRect(sourceNode);
-      if (!sourceRect) return;
+      const removal = this.removalOf(event);
+      if (!sourceRect) {
+        if (!removal) return;
+        const layer = this.gameEffectLayer();
+        this.removalPlate(layer, removal, null, event.card);
+        setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1580);
+        return;
+      }
       const destination = this.gameEffectDestination(event);
       // Without a visible destination the card sinks where it stood.
       const destRect = this.fxShown(destination) ? this.fxRect(destination) : null;
@@ -7606,11 +7676,40 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       badge.style.top = `${sourceRect.top + sourceRect.height / 2}px`;
       badge.style.setProperty('--fx-x', `${endX - sourceRect.left - sourceRect.width / 2}px`);
       badge.style.setProperty('--fx-y', `${endY - sourceRect.top - sourceRect.height / 2}px`);
-      layer.appendChild(ghost); layer.appendChild(badge);
+      layer.appendChild(ghost);
+      // A removal: the card is marked and hit where it stands, then leaves.
+      // Its plate names the zone's verb, so the zone badge stays out.
+      const hold = removal ? 440 : 0;
+      if (removal) {
+        ghost.classList.add('struck');
+        // The lane closes the gap when the card leaves, not under the hit (motion.js).
+        this.removalHoldUntil = performance.now() + hold;
+        const strike = el('div', `removalfx mode-${removal.mode}`, '<i class="removalfx-ring"></i><i class="removalfx-flash"></i><i class="removalfx-mark"></i>');
+        Object.assign(strike.style, {left: `${sourceRect.left}px`, top: `${sourceRect.top}px`, width: `${sourceRect.width}px`, height: `${sourceRect.height}px`});
+        layer.appendChild(strike);
+        setTimeout(() => strike.remove(), 760);
+        // From the one who did it: the source if it is a permanent on screen,
+        // otherwise its controller's seat.
+        const origin = this.fxRect(this.gameEffectCardArt(this.gameEffectCardAnchor(event.source))) ||
+          (this.fxShown(this.gameEffectPlayerAnchor(event.player)) ? this.fxRect(this.gameEffectPlayerAnchor(event.player)) : null);
+        if (origin) {
+          const x1 = origin.left + origin.width / 2, y1 = origin.top + origin.height / 2;
+          const x2 = sourceRect.left + sourceRect.width / 2, y2 = sourceRect.top + sourceRect.height / 2;
+          const length = Math.hypot(x2 - x1, y2 - y1);
+          if (length > 24) {
+            const beam = el('div', `removalfx-beam mode-${removal.mode}`);
+            Object.assign(beam.style, {left: `${x1}px`, top: `${y1}px`, width: `${length}px`});
+            beam.style.setProperty('--beam-angle', `${Math.atan2(y2 - y1, x2 - x1)}rad`);
+            layer.appendChild(beam);
+            setTimeout(() => beam.remove(), 560);
+          }
+        }
+        this.removalPlate(layer, removal, travel ? null : sourceRect, travel ? event.card : null);
+      } else layer.appendChild(badge);
       sourceNode.classList.add('fx-zone-leaving');
-      setTimeout(() => sourceNode.classList.remove('fx-zone-leaving'), 500);
-      setTimeout(() => { ghost.remove(); badge.remove(); }, 1060);
-      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1140);
+      setTimeout(() => sourceNode.classList.remove('fx-zone-leaving'), 500 + hold);
+      setTimeout(() => { ghost.remove(); badge.remove(); }, 1060 + hold);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1600);
     }
 
     showBoardWipeEffect(event) {

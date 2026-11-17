@@ -262,3 +262,129 @@ body .toastmsg { animation: toastLife 2.5s var(--ds-ease) both; }
 }
 body.reduced-motion .toastmsg { animation: none; }
 @media (prefers-reduced-motion: reduce) { body .toastmsg { animation: none; } }
+
+/* ---------- Removal ----------
+   A spell or ability that takes a card off the battlefield marks it first,
+   whoever cast it and whoever owned the card: a beam from the one who did
+   it, a frame around the card, the hit, and a plate that says what happened
+   (ui.js showZoneMoveEffect). Then the card leaves as it always did. Three or
+   more cards at once are a wipe (styles.css). The parts are the size of a
+   card: no screen-wide layer and no blur, for a phone's memory. */
+.removalfx, .removalfx-beam, .removalfx-plate {
+  --rm: var(--ds-danger); --rm-rgb: 239, 139, 123;
+  position: absolute; pointer-events: none;
+}
+:is(.removalfx, .removalfx-beam, .removalfx-plate).mode-void { --rm: #c3a6f5; --rm-rgb: 195, 166, 245; }
+:is(.removalfx, .removalfx-beam, .removalfx-plate).mode-lift { --rm: var(--ds-spell); --rm-rgb: var(--ds-spell-rgb); }
+.removalfx > i { position: absolute; display: block; }
+/* The frame is the highlight: it closes on the card before the hit. */
+.removalfx-ring {
+  inset: -5px; border: 2px solid var(--rm); border-radius: 10px;
+  box-shadow: 0 0 18px rgba(var(--rm-rgb), .5), inset 0 0 12px rgba(var(--rm-rgb), .28);
+  animation: removalRing 760ms var(--ds-ease-out) both;
+}
+@keyframes removalRing {
+  0% { opacity: 0; transform: scale(1.28); }
+  22%, 68% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+.removalfx-flash { inset: 0; border-radius: 7px; background: var(--rm); opacity: 0; animation: removalFlash 500ms ease-out 180ms both; }
+@keyframes removalFlash { 0% { opacity: 0; } 30% { opacity: .6; } 100% { opacity: 0; } }
+/* Destroyed, sacrificed, died: a blade across the card. */
+.removalfx.mode-cut .removalfx-mark {
+  left: 50%; top: 50%; width: 150%; height: 3px; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, #fff 36%, var(--rm) 70%, transparent);
+  box-shadow: 0 0 10px rgba(var(--rm-rgb), .8);
+  transform: translate(-50%, -50%) rotate(38deg);
+  animation: removalSweep 460ms var(--ds-ease-out) 140ms both;
+}
+@keyframes removalSweep {
+  0% { opacity: 1; clip-path: inset(0 100% 0 0); }
+  45% { opacity: 1; clip-path: inset(0); }
+  100% { opacity: 0; clip-path: inset(0); }
+}
+/* Exiled: a ring that closes on the card. */
+.removalfx.mode-void .removalfx-mark {
+  left: 50%; top: 50%; width: 130%; aspect-ratio: 1; border: 2px solid var(--rm); border-radius: 50%;
+  box-shadow: 0 0 14px rgba(var(--rm-rgb), .7), inset 0 0 14px rgba(var(--rm-rgb), .5);
+  animation: removalVoid 560ms var(--ds-ease-in) 100ms both;
+}
+@keyframes removalVoid {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.12); }
+}
+/* Returned to hand, library or command zone: a streak that rises through it. */
+.removalfx.mode-lift .removalfx-mark {
+  left: 10%; right: 10%; top: 78%; height: 26%;
+  background: linear-gradient(0deg, transparent, rgba(var(--rm-rgb), .85) 42%, #fff 50%, rgba(var(--rm-rgb), .85) 58%, transparent);
+  animation: removalLift 500ms var(--ds-ease-out) 120ms both;
+}
+@keyframes removalLift {
+  0% { opacity: 0; transform: translateY(0); }
+  25% { opacity: .95; }
+  100% { opacity: 0; transform: translateY(-330%); }
+}
+/* From the one who did it to the card. */
+.removalfx-beam {
+  height: 2px; border-radius: 2px; transform-origin: 0 50%; transform: rotate(var(--beam-angle, 0rad));
+  background: linear-gradient(90deg, transparent, rgba(var(--rm-rgb), .35) 20%, var(--rm) 82%, #fff);
+  box-shadow: 0 0 8px rgba(var(--rm-rgb), .6);
+  animation: removalBeam 520ms var(--ds-ease-out) both;
+}
+@keyframes removalBeam {
+  0% { opacity: 0; clip-path: inset(-6px 100% -6px 0); }
+  38% { opacity: 1; clip-path: inset(-6px 0 -6px 0); }
+  100% { opacity: 0; clip-path: inset(-6px 0 -6px 100%); }
+}
+/* The card takes the hit where it stands, then flies. The shake uses the
+   separate translate and rotate, so the flight's transform is its own. */
+.gamefx-cardghost.struck {
+  animation: gamefxZoneFlight 860ms cubic-bezier(.3, .55, .2, 1) 440ms both, removalShake 440ms ease-out both;
+}
+@keyframes removalShake {
+  0%, 40% { translate: 0 0; rotate: 0deg; }
+  52% { translate: -3px 1px; rotate: -1.4deg; }
+  66% { translate: 3px -1px; rotate: 1.1deg; }
+  82% { translate: -1px 0; rotate: -.4deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+/* What happened, in words. */
+.removalfx-plate {
+  z-index: 3; display: grid; grid-auto-flow: column; align-items: center; gap: 10px;
+  width: max-content; max-width: min(252px, calc(100 * var(--vwu) - 16px)); padding: 8px 12px 9px;
+  color: var(--ds-text); background: var(--ds-dialog);
+  border: 1px solid rgba(var(--rm-rgb), .55); border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(2, 6, 12, .6), 0 0 0 1px rgba(255, 255, 255, .03);
+  transform: translate(-50%, 0);
+  animation: removalPlate 1500ms var(--ds-ease-out) both;
+}
+.removalfx-plate.above { transform: translate(-50%, -100%); }
+@keyframes removalPlate {
+  0% { opacity: 0; translate: 0 6px; }
+  11%, 82% { opacity: 1; translate: 0 0; }
+  100% { opacity: 0; translate: 0 -5px; }
+}
+.removalfx-copy { display: grid; gap: 3px; min-width: 0; text-align: left; }
+.removalfx-copy small { color: var(--rm); font: 700 10px/1 var(--ds-font-mono); letter-spacing: .2em; white-space: nowrap; }
+.removalfx-copy :is(b, em) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.removalfx-copy b { color: var(--ds-text); font: 650 15px/1.15 var(--ds-font-display); letter-spacing: -.01em; }
+.removalfx-copy em { color: var(--ds-muted); font: 500 12px/1.2 var(--ds-font-body); font-style: normal; }
+/* With the card out of view the plate carries its picture, and the hit lands there. */
+.removalfx-art { position: relative; display: block; width: 44px; height: 61px; border-radius: 5px; overflow: hidden; box-shadow: 0 6px 16px rgba(2, 6, 12, .7); }
+.removalfx-art > :is(img, .tokenface) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; border: 0; border-radius: 0; }
+.removalfx-art > i { position: absolute; inset: 0; background: var(--rm); opacity: 0; animation: removalFlash 500ms ease-out 220ms both; }
+.removalfx-plate.mode-cut .removalfx-art::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 160%; height: 2px;
+  background: linear-gradient(90deg, transparent, #fff 36%, var(--rm) 70%, transparent);
+  transform: translate(-50%, -50%) rotate(38deg);
+  animation: removalSweep 460ms var(--ds-ease-out) 180ms both;
+}
+body.reduced-motion :is(.removalfx, .removalfx-beam, .removalfx-art > i), body.reduced-motion .removalfx-art::after { display: none; }
+body.reduced-motion .removalfx-plate { animation-name: removalPlateCalm; }
+body.reduced-motion .gamefx-cardghost.struck { animation: gamefxZoneFlight 1s cubic-bezier(.22, .68, .16, 1) both; }
+@keyframes removalPlateCalm { 0% { opacity: 0; } 10%, 85% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .removalfx, .removalfx-beam, .removalfx-art > i, .removalfx-art::after { display: none !important; }
+  .removalfx-plate { animation-name: removalPlateCalm; }
+}

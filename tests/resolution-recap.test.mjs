@@ -268,19 +268,140 @@ test('a large global drain has one completed recap and no duplicate preview', as
   assert.equal(reviews[0].recap.impact.level, 'major');
 });
 
-test('ordinary casts, single removal, counterspells and small life changes stay quiet', async () => {
-  const {game, players: [human, owner], reviews} = setup();
+test('ordinary casts, counterspells and small life changes stay quiet', async () => {
+  const {game, players: [, owner], reviews} = setup();
   stack(game, owner, 'Grizzly Bears'); await game.resolveTop();
-  const target = card(game, human, 'Llanowar Elves');
-  await effect(game, owner, () => game.destroy(target));
   stack(game, owner, 'Grizzly Bears');
   game.stack.at(-1).countered = true;
   await game.resolveTop();
   await effect(game, owner, () => game.gainLife(owner, 5));
   await effect(game, owner, () => game.note('gameEffect', {kind: 'boardWipe'}));
-  assert.equal(target.zone, 'graveyard');
   assert.equal(owner.life, 45);
   assert.equal(reviews.length, 0);
+});
+
+// A single removal is a table highlight, whoever cast it and whoever lost
+// the card. It used to pass with nothing but the card leaving.
+test('an opponent destroying your permanent is a highlight that names the card', async () => {
+  const {game, players: [human, owner], reviews} = setup();
+  const target = card(game, human, 'Llanowar Elves');
+  await effect(game, owner, () => game.destroy(target), 'Murder');
+  assert.equal(target.zone, 'graveyard');
+  assert.equal(reviews.length, 1);
+  const recap = reviews[0].recap;
+  assert.equal(recap.impact.level, 'major');
+  assert.equal(recap.impact.headline, 'Destroyed');
+  assert.equal(recap.summary, 'Llanowar Elves was destroyed.');
+  assert.deepEqual(Array.from(recap.highlights, row => row.text), ['Llanowar Elves · You: destroyed, battlefield → graveyard.']);
+  assert.deepEqual(JSON.parse(JSON.stringify(recap.impact.stats)), [{value: 1, label: 'permanent removed'}]);
+});
+
+test('your own removal of an opposing permanent is shown to you as well', async () => {
+  const {game, players: [human, owner], reviews} = setup();
+  const target = card(game, owner, 'Birds of Paradise');
+  await effect(game, human, () => game.destroy(target), 'Murder');
+  assert.equal(reviews.length, 1, 'the acting player sees the highlight too');
+  assert.equal(reviews[0].player, human);
+  assert.equal(reviews[0].recap.impact.headline, 'Destroyed');
+  assert.match(reviews[0].recap.highlights[0].text, /^Birds of Paradise · Opponent: destroyed, battlefield → graveyard\.$/);
+});
+
+test('a removal between two opponents is a highlight for the player who watches', async () => {
+  const {game, players: [, owner, third], reviews} = setup();
+  const target = card(game, third, 'Serra Angel');
+  await effect(game, owner, () => game.destroy(target), 'Murder');
+  assert.equal(reviews.length, 1);
+  assert.match(reviews[0].recap.highlights[0].text, /^Serra Angel · Third: destroyed/);
+});
+
+test('the highlight says how the card left: sacrificed, returned to hand, put into library, died', async () => {
+  const cases = [
+    ['Sacrificed', (g, target, victim) => g.sacrifice(victim, target), /sacrificed, battlefield → graveyard/, 'Llanowar Elves was sacrificed.'],
+    ['Returned to hand', (g, target) => g.move(target, 'hand'), /returned to hand, battlefield → hand/, 'Llanowar Elves was returned to hand.'],
+    ['Put into library', (g, target) => g.move(target, 'library'), /put into library, battlefield → library/, 'Llanowar Elves was put into library.'],
+    ['Creature died', (g, target, victim, source) => g.damageCreature(source, target, 3), /died, battlefield → graveyard/, 'Llanowar Elves died.'],
+  ];
+  for (const [headline, run, row, summary] of cases) {
+    const {game, players: [human, owner], reviews} = setup();
+    const target = card(game, human, 'Llanowar Elves');
+    const source = card(game, owner, 'Prodigal Pyromancer');
+    await effect(game, owner, () => run(game, target, human, source), headline);
+    assert.notEqual(target.zone, 'battlefield', headline);
+    assert.equal(reviews.length, 1, headline);
+    assert.equal(reviews[0].recap.impact.headline, headline);
+    assert.match(reviews[0].recap.highlights[0].text, row, headline);
+    assert.equal(reviews[0].recap.summary, summary);
+  }
+});
+
+test('a destroyed commander is named with its way to the command zone', async () => {
+  const {game, players: [human, owner], reviews} = setup();
+  const commander = card(game, human, 'Serra Angel');
+  commander.commander = true;
+  await effect(game, owner, () => game.destroy(commander), 'Murder');
+  assert.equal(commander.zone, 'command');
+  assert.equal(reviews.length, 1);
+  assert.equal(reviews[0].recap.impact.headline, 'Destroyed');
+  assert.equal(reviews[0].recap.highlights[0].text, 'Serra Angel · You: destroyed, battlefield → command zone.');
+});
+
+test('two removals in one resolution name both cards; three are the upheaval they were', async () => {
+  const two = setup();
+  const [human, owner] = two.players;
+  const first = card(two.game, human, 'Llanowar Elves'), second = card(two.game, human, 'Serra Angel');
+  await effect(two.game, owner, async () => { await two.game.destroy(first); await two.game.destroy(second); }, 'Double strike');
+  assert.equal(two.reviews.length, 1);
+  assert.equal(two.reviews[0].recap.impact.headline, 'Destroyed');
+  assert.equal(two.reviews[0].recap.summary, '2 permanents left the battlefield.');
+  assert.deepEqual(Array.from(two.reviews[0].recap.highlights, row => row.text), [
+    'Llanowar Elves · You: destroyed, battlefield → graveyard.', 'Serra Angel · You: destroyed, battlefield → graveyard.']);
+  const three = setup();
+  const cards = ['Llanowar Elves', 'Serra Angel', 'Grizzly Bears'].map(name => card(three.game, three.players[0], name));
+  await effect(three.game, three.players[1], async () => { for (const c of cards) await three.game.destroy(c); }, 'Triple strike');
+  assert.equal(three.reviews[0].recap.impact.headline, 'Battlefield upheaval');
+  assert.match(JSON.stringify(three.reviews[0].recap.highlights), /You: 3 permanents → graveyard/);
+});
+
+test('what is not a removal stays quiet: your own sacrifice, a token, a spent Treasure', async () => {
+  const {game, players: [human, owner], reviews} = setup();
+  const own = card(game, owner, 'Birds of Paradise');
+  await effect(game, owner, () => game.sacrifice(owner, own), 'Own sacrifice');
+  assert.equal(own.zone, 'graveyard');
+  const token = card(game, human, 'Grizzly Bears'); token.isToken = true;
+  await effect(game, owner, () => game.destroy(token), 'Token removal');
+  assert.notEqual(token.zone, 'battlefield');
+  const treasure = card(game, human, 'Sol Ring'); treasure.isToken = true;
+  await effect(game, owner, () => game.sacrifice(human, treasure), 'A tax paid with a token');
+  assert.equal(reviews.length, 0);
+});
+
+test('the engine says what removed a card and how, for the table\'s removal effect', async () => {
+  const {game, players: [human, owner]} = setup();
+  const notes = [];
+  const note = game.note; game.note = function (type, data) { if (type === 'gameEffect' && data?.kind === 'zoneMove') notes.push(data); return note.call(this, type, data); };
+  const destroyed = card(game, human, 'Llanowar Elves'), edict = card(game, human, 'Serra Angel'), bounced = card(game, human, 'Grizzly Bears');
+  await effect(game, owner, () => game.destroy(destroyed), 'Murder');
+  await effect(game, owner, () => game.sacrifice(human, edict), 'Diabolic Edict');
+  await effect(game, owner, () => game.move(bounced, 'hand'), 'Unsummon');
+  // Outside a resolution (a cost, combat, a state-based death) nothing is named.
+  const cost = card(game, human, 'Birds of Paradise');
+  await game.sacrifice(human, cost);
+  const rows = notes.filter(row => [destroyed, edict, bounced, cost].includes(row.card))
+    .map(row => [row.card.name, row.toZone, row.cause, row.name || null, row.player?.name || null]);
+  assert.deepEqual(rows, [
+    ['Llanowar Elves', 'graveyard', 'destroy', 'Murder', 'Opponent'],
+    ['Serra Angel', 'graveyard', 'sacrifice', 'Diabolic Edict', 'Opponent'],
+    ['Grizzly Bears', 'hand', null, 'Unsummon', 'Opponent'],
+    ['Birds of Paradise', 'graveyard', 'sacrifice', null, null],
+  ]);
+  // An ability's own source leaving is not something it removed.
+  const self = card(game, owner, 'Sol Ring');
+  game.stack.push({kind: 'ability', name: 'Self sacrifice', ctrl: owner, srcCard: self, targets: [],
+    ctx: {g: game, you: owner, src: self}, run: () => game.sacrifice(owner, self)});
+  await game.resolveTop();
+  const own = notes.find(row => row.card === self);
+  assert.equal(own.cause, 'sacrifice');
+  assert.equal(own.name, undefined);
 });
 
 for (const n of [1, 2, 4, 5, 12]) test(`${n} tokens produce ${n >= 5 ? 'one army highlight' : 'no recap'}`, async () => {

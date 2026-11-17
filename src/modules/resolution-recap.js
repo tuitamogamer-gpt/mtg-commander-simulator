@@ -17,11 +17,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const frame = {
       source: cardView(source), sourceCard: source, name, controller: controller?.name || '', actor: controller, combat,
       humans: game.reviewHumans(), details: [], searches: new Map(), revealed: new Set(),
-      publicReveals: new Map(), exileMoves: [],
+      publicReveals: new Map(), exileMoves: [], causes: new Map(),
       damage: [], prevented: [], damagedPermanents: new Set(), damageTargets: new Set(), draws: new Map(),
       battlefield: new Map(game.bf().map(card => [card, {
         card: cardView(card), version: card.zoneVersion, controller: card.ctrl,
-        power: card.power, toughness: card.toughness,
+        power: card.power, toughness: card.toughness, token: !!card.isToken,
       }])),
       players: game.players.map(player => ({player, life: player.life, poison: player.poison || 0,
         hand: player.hand.length, lost: player.lost})),
@@ -80,6 +80,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (data.kind === 'damage' ? frame.damage : frame.prevented).push(row);
       }
       if (data.kind === 'boardWipe') frame.boardWipe = true;
+      // Destroyed and sacrificed cards both end in a graveyard (engine.js, move).
+      if (data.kind === 'zoneMove' && data.card && data.cause) frame.causes.set(data.card, data.cause);
       if (data.kind === 'keyword' && data.keyword === 'indestructible' && data.state === 'prevented' && data.card) frame.damagedPermanents.add(data.card);
       if (data.kind === 'counterspell') frame.details.push({text: `${data.stackObject?.name || 'Spell'} was countered.`});
     }
@@ -177,6 +179,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Visual weight follows public, completed outcomes, never a card's name or
     // a tutor's hidden result. Routine searches keep the table in view.
     const removed = departed.filter(([card]) => card.zone !== 'battlefield').length;
+    // One removal is a table event as well, whoever cast it and whoever lost
+    // the card: a permanent of another player that this spell or ability took
+    // off the battlefield. Three or more is the upheaval below. Not counted:
+    // what the acting player gave up of their own, a token (the table shows
+    // it leave), and combat, which has its own review.
+    const struck = frame.combat ? [] : departed.filter(([card, before]) => card.zone !== 'battlefield' &&
+      card !== frame.sourceCard && before.controller !== frame.actor && !before.token);
+    const struckVerb = ([card, before]) => frame.causes.get(card) === 'sacrifice' ? 'sacrificed' :
+      frame.causes.get(card) === 'destroy' ? 'destroyed' : card.zone === 'exile' ? 'exiled' :
+      card.zone === 'hand' ? 'returned to hand' : card.zone === 'library' ? 'put into library' :
+      card.zone === 'command' ? 'sent to the command zone' :
+      before.card.types.includes('Creature') ? 'died' : 'put into the graveyard';
+    const struckVerbs = [...new Set(struck.map(struckVerb))];
+    const struckRows = struck.map(row => ({card: row[1].card,
+      text: `${row[1].card.name} · ${row[1].controller.name}: ${struckVerb(row)}, battlefield → ${zoneName(row[0].zone)}.`}));
     const eliminated = players.filter(row => row.eliminated).length;
     const lifeSwing = Math.max(0, ...players.map(row => Math.abs(row.after - row.before)));
     const handSwing = Math.max(0, ...players.map(row => Math.abs(row.handAfter - row.handBefore)));
@@ -197,7 +214,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const publicOutcome = revealedToHand.length || exileRows.length;
     const opponentLifeLost = frame.players.filter(row => row.player !== frame.actor)
       .reduce((n, row) => n + Math.max(0, row.life - row.player.life), 0);
-    const major = !!publicOutcome || !!game.gameOver || eliminated > 0 || removed >= 3 || prevented >= 10 ||
+    const major = !!publicOutcome || !!game.gameOver || eliminated > 0 || removed >= 3 || struck.length > 0 || prevented >= 10 ||
       lifeSwing >= 10 || totalLifeLost >= 12 || (damage >= 12 && frame.damageTargets.size >= 3) ||
       entered.length >= 5 || handSwing >= 5 || drawn >= 5 || poisonGain >= 3 || controlChanges.length >= 3 || boosted.length >= 3;
     const explain = frame.searches.size || frame.explain || unexpectedEntries.length || controlChanges.length || prevented >= 3;
@@ -207,6 +224,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         frame.exileMoves.some(row => row.from === 'exile' && row.to === 'battlefield') ? 'Gone and back' :
         frame.exileMoves.some(row => row.to === 'exile') ? 'Into exile' : 'From exile' :
       frame.boardWipe && removed >= 3 ? 'Board wipe' : removed >= 3 ? 'Battlefield upheaval' :
+      struck.length ? struckVerbs.length > 1 ? 'Removed from the battlefield' :
+        ({destroyed: 'Destroyed', sacrificed: 'Sacrificed', exiled: 'Into exile', 'returned to hand': 'Returned to hand',
+          'put into library': 'Put into library', 'sent to the command zone': 'Sent to the command zone',
+          died: struck.length > 1 ? 'Creatures died' : 'Creature died'})[struckVerbs[0]] || 'Removed from the battlefield' :
       prevented >= 10 ? 'Damage stopped' : controlChanges.length >= 3 ? 'Changing sides' :
       entered.length >= 5 ? entered.filter(card => card.is('Creature')).length >= 5 ? 'Army assembled' :
         entered.filter(card => card.is('Land')).length >= 3 ? 'Mana surge' : 'Board rebuilt' :
@@ -224,7 +245,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         label: intoExile ? 'cards moved to exile' : 'cards left exile'});
     }
     if (eliminated) stats.push({value: eliminated, label: 'players eliminated'});
-    if (removed) stats.push({value: removed, label: 'permanents removed'});
+    if (removed) stats.push({value: removed, label: removed === 1 ? 'permanent removed' : 'permanents removed'});
     if (damage) stats.push({value: damage, label: 'damage dealt'});
     if (prevented) stats.push({value: prevented, label: 'damage prevented'});
     if (!damage && lifeSwing) stats.push({value: lifeSwing, label: 'largest life change'});
@@ -244,6 +265,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const anchor = {playerIdx: frame.actor?.idx ?? null, iids: [...new Set([frame.sourceCard, ...found, ...unexpectedEntries,
       ...taken, ...entered, ...frame.damagedPermanents].filter(card => card instanceof MTG.CardInst &&
         card.zone === 'battlefield' && !card.phasedOut).map(card => card.iid))].slice(0, 4)};
+    // The table shows a removal first (ui.js showZoneMoveEffect): the hit on
+    // the card, then the card leaving. The highlight follows it.
+    if (struck.length && removed < 3) await game.pace(900);
     for (const player of frame.humans) {
       // The acting player already made the routine choice. Only table-wide
       // highlights interrupt them; opponents get the short explanation too.
@@ -272,8 +296,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // commander's "battlefield → exile" and "exile → command zone". Counting
       // it again as "1 permanent → command zone" pushed a real result out.
       const namedByExile = new Set(frame.exileMoves.map(row => row.object));
+      // A single removal names its card as well (struckRows).
+      const namedByRemoval = new Set(removed < 3 ? struck.map(([card]) => card) : []);
       for (const [card, before] of departed) if (card.zone !== 'battlefield') {
-        if (namedByExile.has(card)) continue;
+        if (namedByExile.has(card) || namedByRemoval.has(card)) continue;
         const key = `${before.controller.idx}:${card.zone}`;
         if (!losses.has(key)) losses.set(key, {name: before.controller.name, zone: zoneName(card.zone), count: 0});
         losses.get(key).count++;
@@ -293,7 +319,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .map(row => `${row.player.name}: ${row.life} → ${row.player.life} life (${Math.max(0, row.life - row.player.life)} lost)`)
         .join('; ') + '.'}] : [];
       const highlights = major
-        ? [...revealedToHand, ...revealLife, ...exileRows, ...(eliminated ? lifeRows : []), ...survivors.slice(0, 1), ...aftermath, ...(!eliminated ? lifeRows : []),
+        ? [...revealedToHand, ...revealLife, ...exileRows, ...(eliminated ? lifeRows : []),
+          ...(removed < 3 ? struckRows.filter(row => !exileRows.some(exile => exile.card?.name === row.card?.name)) : []),
+          // What the effect itself explained (Chaos Warp's reveal) stays in view under the removal.
+          ...(removed < 3 && struck.length && frame.explain ? frame.details.slice(-2) : []),
+          ...survivors.slice(0, 1), ...aftermath, ...(!eliminated ? lifeRows : []),
           ...drawRows, ...handRows, ...(entered.length >= 5 ? entryRows : []), ...controlChanges, ...boosted, ...frame.prevented].slice(0, 3)
         : searches.length ? searches : frame.explain ? frame.details.slice(-2) : controlChanges.length ? controlChanges : unexpectedEntries.length ?
           entries.filter((row, index) => unexpectedEntries.includes(entered[index])) : frame.prevented;
@@ -305,6 +335,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           revealedToHand.length ? 'The revealed card is now in hand. Actual life totals are shown below.' :
           exileRows.length ? 'Cards moved through exile. Their actual source and destination zones are shown below.' :
           removed >= 3 ? `${removed} permanents left the battlefield${survivors.length ? `; ${survivors.length} survived the effect` : ''}.` :
+          struck.length === 1 ? `${struck[0][1].card.name} ${struckVerbs[0] === 'died' ? 'died' : 'was ' + struckVerbs[0]}.` :
+          struck.length ? `${struck.length} permanents left the battlefield.` :
           entered.length >= 5 ? `${entered.length} new permanents changed the board.` :
           boosted.length >= 3 ? `${boosted.length} creatures grew stronger at once.` :
           controlChanges.length >= 3 ? `${controlChanges.length} permanents changed controllers.` :

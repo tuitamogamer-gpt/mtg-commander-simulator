@@ -141,7 +141,8 @@ try {
     await install(scenario); await toRecap();
     const recap = page.locator('[data-testid="resolution-recap"]');
     const text = await recap.innerText();
-    const major = ['wipe', 'army', 'combat', 'lethal'].includes(scenario);
+    // Chaos Warp shuffles your permanent away: a single removal is a table highlight too.
+    const major = ['wipe', 'army', 'combat', 'lethal'].includes(scenario) || scenario.startsWith('chaos');
     assert.equal(await recap.getAttribute('data-impact'), major ? 'major' : 'minor');
     if (major) {
       assert.match(text, /TABLE HIGHLIGHT.*RESOLVED/s);

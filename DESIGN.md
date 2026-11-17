@@ -94,6 +94,15 @@ Reduced motion (either preference), a hidden tab, a restored save, bot simulatio
 - The spotlight line ("a bot did something aimed at you"), the Monarch change and a table negotiation are plates of the dialog material with the tone on the leading edge, the table's own icons and copy of 12 px or more. They come down into place and leave upward; none cuts out. On a phone a negotiation's action takes its own row.
 - One toast shows at a time; it rises in and fades before it is removed.
 
+### Removal (2026-11-17)
+
+- A spell or ability that takes another player's card off the battlefield marks it first, whoever cast it and whoever owned the card: a beam from the one who did it (its source if that is a permanent on screen, otherwise its controller's seat), a frame that closes on the card, the hit, and a plate with the verb, the card and the source (`DESTROYED · Riders of Gavony · Murder · AI Dragon`). The card takes the hit where it stands and its lane closes the gap when it leaves, not under it.
+- Three hits, three colours: a blade in the danger red for a card that was destroyed, sacrificed or died; a ring that closes, in violet, for exile; a rising streak in the spell blue for a card returned to hand, library or command zone.
+- With the card out of view (a phone on another view) the plate comes to the upper part of the screen with the card's picture, and the hit lands on the picture.
+- The engine names the cause with the move: the resolving source, its controller, and whether the card was destroyed or sacrificed (`engine.js`, `move`). What a player's own effect does to their own card (a bounce land's return), a cost paid with nothing resolving, a Treasure or Clue spent on the way, combat and a state-based death outside a resolution leave as before, with the zone's label.
+- The parts are the size of a card: no screen-wide layer and no blur, for a phone's memory. Reduced motion keeps the plate and drops the beam and the hit.
+- A removal of another player's nontoken permanent is also a table highlight for every player at the table, the one who cast it included: its headline is the verb (`Destroyed`, `Sacrificed`, `Returned to hand`, `Into exile`), its row names the card and its way. The highlight waits for the hit. Three or more removals are the board wipe they were.
+
 ### Setup and header
 
 - A setup step (Deck, Pod, Review) comes up instead of cutting in: its grid fades and its title rises. The grid only fades, because a transform on it would move the fixed and sticky bars inside it for the length of the animation. The deck spotlight rises into place; on a phone, where it fills the screen, it fades.
@@ -118,6 +127,7 @@ The match's last screen (`renderGameOver`, `resolution-recap.css`) is headed by 
 - Arena phone navigation is one level: `Mine / Table / Stack / Politics`. A destination does not add a second tab row. The floating "The Stack" window is a desktop surface; on phones the Stack destination and its count badge are the stack review, so no window covers the decision tray or the battlefield targets.
 - An empty hand collapses to a compact status rail; it must not reserve card-height space.
 - All primary touch targets are at least 44px.
+- The phone's Combat view opens by itself for a combat decision and for the charge. When combat is over, the view the player had comes back, with a decision waiting or not. A view the player chose during combat is kept, and a Combat view the player opened stays open (`action-effects.js`).
 - A seat chip of the phone's ribbon shows life as the lane heads do: the heart, then the number. The word `life` stays in the page for readers.
 - The phone's Combat view between combats is one composed block in the middle of the pane (mark, sentence, two links), not a line over an empty pane.
 - Internal battlefield and drawer scrolling is preferred over page-level horizontal overflow.

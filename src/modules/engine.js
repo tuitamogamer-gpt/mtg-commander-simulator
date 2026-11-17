@@ -1027,10 +1027,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`${card.name} ${verb}${reason}.`);
         const coveredByBoardWipeVisual = card.meta._boardWipeVisualTurn === this.turnNo;
         if (!opts.suppressVisualEffect && !coveredByBoardWipeVisual) {
+          // The spell or ability that is resolving, for the removal effect on
+          // the table. A state-based death right after it belongs to it too;
+          // its own source leaving is not something it removed.
+          const resolving = this.c1516Resolving;
+          const resolvingSource = resolving && (resolving.card || resolving.srcCard || resolving.ctx?.src) || null;
+          const removed = resolving && resolvingSource !== card ? {
+            source: resolvingSource, player: resolving.ctrl || null,
+            name: resolvingSource?.faceDown ? 'A face-down card' : resolving.name || resolvingSource?.name || null,
+          } : null;
           this.note('gameEffect', {
             kind: 'zoneMove', card, cardId: card.iid, cardName: card.name,
             fromZone, toZone, fromPlayer: snap.ctrl, toPlayer: card.owner,
             reason: opts.departureReason || null,
+            // destroy and sacrifice both end in the graveyard; only this says which.
+            cause: opts.departureCause || null,
+            ...removed,
           });
         }
         // The marker belongs only to this simultaneous departure. A card that
@@ -2827,7 +2839,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
       const snap=this.snapshot(card);
-      await this.move(card, 'graveyard', opts);
+      await this.move(card, 'graveyard', {...opts, departureCause: 'sacrifice'});
       await this.emit('sacrificed', { player: p, card, snap });
       return true;
     }
@@ -2845,7 +2857,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const card of unique) {
             const snapshot=batch.find(entry=>entry.card===card).snap,player=p||snapshot.ctrl;
             this.lg(`${U.playerVerb(player, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
-            await this.move(card, 'graveyard');
+            await this.move(card, 'graveyard', {departureCause: 'sacrifice'});
             await this.emit('sacrificed', { player, card, snap:snapshot });
           }
         });
@@ -2889,7 +2901,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return false;
       }
       const destroyedSnapshotV74=this.snapshot(card),destroyedVersionV74=card.zoneVersion;
-      await this.move(card, 'graveyard', {deferAuraStateActions:!!opts.deferAuraStateActions});
+      await this.move(card, 'graveyard', {deferAuraStateActions:!!opts.deferAuraStateActions, departureCause: 'destroy'});
       if(card.zoneVersion!==destroyedVersionV74)await this.emit('destroyedV74',{card,snap:destroyedSnapshotV74,player:destroyedSnapshotV74.ctrl});
       return true;
     }
@@ -2943,7 +2955,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.withGraveyardEntryBatch(async () => {
           for (const card of doomed) if (card.zone === 'battlefield') {
             const entry=batch.find(row=>row.card===card),version=card.zoneVersion;
-            await this.move(card, 'graveyard', { suppressVisualEffect: visualBatch, deferAuraStateActions:!!opts.deferAuraStateActions });
+            await this.move(card, 'graveyard', { suppressVisualEffect: visualBatch, deferAuraStateActions:!!opts.deferAuraStateActions, departureCause: 'destroy' });
             if(card.zoneVersion!==version)await this.emit('destroyedV74',{card,snap:entry.snap,player:entry.ctrl});
           }
         });

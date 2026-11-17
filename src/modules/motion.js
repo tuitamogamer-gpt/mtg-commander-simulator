@@ -544,8 +544,12 @@ function settle(ui, key, prev, next, z, count) {
   const dx = (prev.x - homeX) / z, dy = (prev.y - homeY) / z;
   // A turn in place is a tap: short, with a little weight at the end.
   const tap = turned && !shifted && !resized;
+  // A card that a spell removed takes its hit where it stood (ui.js
+  // showZoneMoveEffect): its neighbours close the gap when it leaves.
+  const hold = key[0] === 'b' && shifted ? Math.max(0, Math.min(600, (ui.removalHoldUntil || 0) - performance.now())) : 0;
   next.node.animate([{transform: `translate(${dx}px, ${dy}px) ${linear(from)}${resized ? ` scale(${sx}, ${sy})` : ''}`.trim(), opacity: prev.opacity}],
-    {duration: tap ? t.base + 40 : Math.round(Math.min(t.flight, Math.max(t.base, t.fast + Math.hypot(dx, dy) * .5))), easing: tap ? t.spring : t.out});
+    {duration: tap ? t.base + 40 : Math.round(Math.min(t.flight, Math.max(t.base, t.fast + Math.hypot(dx, dy) * .5))), easing: tap ? t.spring : t.out,
+      ...(hold ? {delay: hold, fill: 'backwards'} : {})});
   if (count <= 12) note(tap ? 'turn' : 'move', key);
   return true;
 }
