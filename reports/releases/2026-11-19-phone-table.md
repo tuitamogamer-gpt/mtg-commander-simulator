@@ -1,6 +1,6 @@
 # The phone table — 19 November 2026
 
-Based on `3161452`. The request: tidy the phone version too, after the way MTG Arena and Hearthstone lay a card game out on a phone. What was taken from them is how the screen is used, not how they look: the board is the screen, your side is at your thumb, the hand is a fan, there is one clear action, and a player is a portrait with a life total.
+Based on `3161452`. The request: tidy the phone version too, after the way MTG Arena and Hearthstone lay a card game out on a phone. What was taken from them is how the screen is used, not how they look: the board is the screen, your side is at your thumb, there is one clear action, and a player is a portrait with a life total.
 
 ## What the phone showed
 
@@ -20,7 +20,7 @@ On a 390×844 phone the Mine view was a dashboard:
 - **Two sides.** The seats are round portraits with a name and a life total; the active one is ringed. On a phone 760 px tall or more, the creatures of the opponent across the table stand above your board as a strip of small cards under that opponent's name, and the seat across points at it. A seat opens that opponent's whole board, with its name and piles on one line; your own creatures are then the strip, below it. Shorter phones show one board at a time.
 - **You are beside your hand.** Your portrait (ringed on your turn), your life in 28 px figures and your piles are one bar between the board and the prompt, whichever side is open. The Hand pile opens the whole hand, where the heading and sorting are. Floating mana takes your name's place.
 - **The board has no frame or titles.** With 700 px of height your creatures face the table and their support stands behind them at a smaller size, each row scrolling sideways on its own. Lands are one line of counts by name with the mana rocks at its start. The cards are anchored from the top: a prompt that grows or shrinks moves the lands and your bar, not the cards.
-- **The hand is a fan.** Cards of 90×126 px on a tall phone (81×114 before) overlap, and each keeps its middle in view, so a touch on the middle of a card is that card and at least five cards of a hand are whole in view; a larger hand scrolls. What you can play stands up in its green frame; the cost sits on the part the next card leaves; a card from exile or the graveyard is shown whole with its ribbon and note. The commander stands at the head of the fan as a flat card under a crown.
+- **The hand has larger cards.** Cards of 90×126 px on a tall phone (81×114 before), side by side in a row that scrolls sideways, with the commander at its head as a flat card under a crown. *The first version was a fan of overlapping cards with playable ones standing up; it was taken out on 20 November after the first play test, at the player's request. See the note at the end.*
 - **One action.** A prompt with one button is one line, the button at the right thumb.
 - **Combat is cards.** Attackers and blockers are a grid, three to a row (four on a short phone): the picture, the name, power and toughness, keywords, what the card is doing. A chosen card steps forward in a ring; Inspect is a mark in the corner with 44 px around it. What stands above the cards is shorter: six creatures are in view where three rows of the list were.
 - **The card sheet** shows the card at 44% of its width instead of 36%, and its action is a 52 px button.
@@ -46,7 +46,7 @@ Both rules are in `DESIGN.md` now, and `tests/browser/phone-table.mjs` reads the
 
 ## Two things the tests found
 
-- **The fan and a touch on a card's middle.** With a deeper overlap, a touch in the middle of a card landed on the card over it. Each card now keeps more than half its width in view (never less than 44 px). The price is that a hand of seven does not fit whole beside the commander: at least five do, the rest scroll.
+- **The fan and a touch on a card's middle** (the fan is gone now). With a deep overlap, a touch in the middle of a card landed on the card over it, so each card kept more than half its width in view.
 - **Cards that jumped.** The first version anchored your cards to the bottom of the board, so they moved whenever the prompt changed height; a removal's hit then landed beside its card (`single-removal`). They are anchored from the top.
 
 ## Verification
@@ -82,3 +82,9 @@ Both rules are in `DESIGN.md` now, and `tests/browser/phone-table.mjs` reads the
 - The Combat view between decisions (the fights in progress) and the attackers you block are still rows.
 - A tablet (768 px and wider) gets the same table with a lot of empty middle; it was looked at once and not designed for.
 - The other 91 browser suites and the rest of the node suite did not run. The two node tests that failed on the released commit before this work (`planeswalker-combat`, `save-state`) were not touched.
+
+## 20 November: the fan is taken out
+
+After the first play test the player liked the phone table and did not like the fan of hand cards. The hand is a row of cards side by side again, as it was before this work, at the larger size. Nothing else of the table changed: the bar with your portrait and piles, the Hand pile that opens the whole hand, the two sides, the one-line prompt and the Combat cards stay.
+
+`tests/browser/phone-table.mjs` now checks the row: the cards do not overlap, stand in one line (a playable card is framed, not raised), a touch on a card is that card, at least three whole cards are in view and the last one is reached by scrolling. All ten checks pass; at rest the table holds 27.5 MB of layers (the hand's row is 1.5 MB larger than the fan's was). Where this report says "fan" above, in what was verified, it describes the first version.

@@ -84,8 +84,8 @@ phone.addEventListener?.('change', placeFloaters);
 
 // The phone table (src/phone-experience.css). The board is the screen: the
 // front line of the opponent across the table stands above your own board,
-// your portrait and life sit beside your hand, the hand is a fan with every
-// card in view, and the prompt is one line with its action under the thumb.
+// your portrait and life sit beside your hand, the hand is a row of large
+// cards, and the prompt is one line with its action under the thumb.
 // The stylesheet does the work; this marks what it needs on the table as it
 // is composed, before it reaches the screen, so motion measures the layout
 // the player sees. Every control keeps its handler.
@@ -139,10 +139,6 @@ U.UI.prototype.renderCommandTable = function (game, root) {
   // With an opponent's board open, your own front line stands below it.
   const front = root.querySelector('.myboard > .mybattlefieldmain');
   if (front) front.dataset.acrossName = say('You');
-
-  // The fan: how many cards share the row decides how far they overlap.
-  const hand = root.querySelector('.handwrap .hand');
-  if (hand) hand.style.setProperty('--ph-hand-count', String(Math.max(2, hand.querySelectorAll(':scope > .hcard').length)));
 
   // One action: the instruction and its button share a line.
   const prompt = root.querySelector('.ct-decision-rail > .promptbar');

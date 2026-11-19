@@ -1,6 +1,6 @@
 /* The phone table. The board is the screen: the front line of the opponent
    across the table stands above your own board, your portrait and life sit
-   beside your hand, the hand is a fan with every card in view, and the prompt
+   beside your hand, the hand is a row of large cards, and the prompt
    is one line with its action under the thumb. `phone-table.js` marks the
    composed table (`ct-phone`, `ct-across`, `ct-hero`, `ct-one-action`); every
    control keeps its handler. A short landscape screen keeps the side-by-side
@@ -15,8 +15,6 @@
     --ct-hand: 142px;
     --ph-card-h: calc(var(--ct-hand) + var(--ct-hand-extra) - 24px);
     --ph-card-w: calc(var(--ph-card-h) / 1.4);
-    /* A card of the fan keeps its middle in view: more than half of it, never less than a finger. */
-    --ph-slice: max(44px, calc(var(--ph-card-w) / 2 + 3px));
     --ph-across-card: 58px;
     --ph-edge: 8px;
     --ph-top: 52px;
@@ -288,7 +286,8 @@
   #game.command-table.ct-phone .promptbar .waitownership strong { font-size: 12px; }
   #game.command-table.ct-phone .promptbar > .btnrow > .pbtn { border-radius: 12px; font-size: 13px; min-height: 48px; }
 
-  /* ── The hand: a fan. Every card shows; what you can play stands up. ── */
+  /* ── The hand: a row of cards side by side, larger than before, that
+     scrolls sideways. (A fan of overlapping cards was tried and taken out.) ── */
   body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .handwrap {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr);
@@ -307,15 +306,15 @@
     grid-row: 1;
     display: flex !important;
     flex-wrap: nowrap;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-start;
-    gap: 0 !important;
+    gap: 7px !important;
     width: 100%;
     height: 100% !important;
-    padding: 12px 2px 6px !important;
+    padding: 6px 3px !important;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: none;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
   body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard {
@@ -324,31 +323,10 @@
     height: var(--ph-card-h) !important;
     margin: 0 !important;
     border-radius: 7px;
-    box-shadow: -3px 0 8px rgba(0, 0, 0, .5);
-    scroll-snap-align: none;
-    transition: transform .16s ease-out;
+    scroll-snap-align: start;
   }
-  /* Each card keeps its middle in view; a larger hand scrolls. */
-  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard + .hcard {
-    margin-left: clamp(calc(var(--ph-slice) - var(--ph-card-w)), calc((100% - 4px - var(--ph-hand-count) * var(--ph-card-w)) / (var(--ph-hand-count) - 1)), 6px) !important;
-  }
-  /* A card from another zone carries a ribbon and a note: it is shown whole. */
-  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .offzonecard + .hcard { margin-left: 5px !important; }
-  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard:is(.castable, .targetable, .suspendready) { transform: translateY(-9px); }
-  #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard.castable { box-shadow: -3px 0 8px rgba(0, 0, 0, .5), 0 0 0 2px #7fd08a, 0 0 12px rgba(127, 208, 138, .5); }
-  /* The cost stays in view on the part of a card that the next one leaves. */
-  #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard > .hcost {
-    top: auto;
-    right: auto;
-    left: 3px;
-    bottom: 3px;
-    padding: 2px 4px;
-    border-radius: 9px;
-    background: rgba(8, 11, 14, .82);
-  }
-  #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard > .hcost:empty { display: none; }
 
-  /* The commander stands at the head of the fan. */
+  /* The commander stands at the head of the hand. */
   body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-dock {
     grid-row: 1;
     grid-column: 1;

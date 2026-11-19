@@ -1,6 +1,6 @@
 // The phone table (src/phone-experience.css, src/modules/phone-table.js): the
 // board is the screen. Your portrait, life and piles are one bar beside the
-// hand; the hand is a fan whose cards keep their middle in view; a prompt
+// hand; the hand is a row of large cards side by side; a prompt
 // with one action is one line; a tall phone shows the two front lines; in
 // Combat your creatures are cards. Presentation only: the pending decision
 // is the same before and after, and the table at rest stays within the
@@ -79,27 +79,34 @@ try {
     await page.screenshot({path: `${output}/mine-390.png`});
     check('390×844: your portrait, life and piles are one bar between the board and the prompt; no frame, no hand heading');
 
-    // The fan.
-    const fan = await page.evaluate(() => {
-      const hand = document.querySelector('.hand'), cards = [...hand.querySelectorAll(':scope > .hcard')], row = hand.getBoundingClientRect();
-      return {count: cards.length, row: row.toJSON(), cards: cards.map(card => {
+    // The hand: a row of cards side by side that scrolls sideways. (A fan of
+    // overlapping cards was tried and taken out.)
+    const hand = await page.evaluate(() => {
+      const row = document.querySelector('.hand'), cards = [...row.querySelectorAll(':scope > .hcard')], box = row.getBoundingClientRect();
+      return {count: cards.length, row: box.toJSON(), scrolls: row.scrollWidth > row.clientWidth, cards: cards.map(card => {
         const r = card.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
-        const inRow = x >= row.left && x <= row.right;
+        const inRow = x >= box.left && x <= box.right;
         return {left: r.left, right: r.right, top: r.top, width: r.width, height: r.height, playable: card.classList.contains('castable'), inRow,
           hit: inRow ? document.elementFromPoint(x, y)?.closest('.hcard') === card : null};
       })};
     });
-    assert.ok(fan.count >= 6, `a hand of ${fan.count}`);
-    assert.ok(fan.cards[0].width >= 84 && fan.cards[0].height >= 118, `hand cards are large: ${JSON.stringify(fan.cards[0])}`);
-    const steps = fan.cards.slice(1).map((card, index) => card.left - fan.cards[index].left);
-    assert.ok(steps.every(step => step < fan.cards[0].width), 'the cards overlap');
-    assert.ok(steps.every(step => step >= 44 && step > fan.cards[0].width / 2), `each card keeps its middle and a finger's width in view: ${steps}`);
-    assert.ok(fan.cards.filter(card => card.inRow).every(card => card.hit === true), 'a touch on the middle of a card is that card');
-    const shown = fan.cards.filter(card => card.right <= fan.row.right + 1).length;
-    assert.ok(shown >= 5, `at least five cards of the hand are whole in view: ${shown}`);
-    const playable = fan.cards.filter(card => card.playable), plain = fan.cards.filter(card => !card.playable);
-    assert.ok(playable.length && plain.length && Math.max(...playable.map(card => card.top)) < Math.min(...plain.map(card => card.top)), 'what you can play stands up');
-    // A card in the middle of the fan opens its sheet, as before.
+    assert.ok(hand.count >= 6, `a hand of ${hand.count}`);
+    assert.ok(hand.cards[0].width >= 84 && hand.cards[0].height >= 118, `hand cards are large: ${JSON.stringify(hand.cards[0])}`);
+    const steps = hand.cards.slice(1).map((card, index) => card.left - hand.cards[index].right);
+    assert.ok(steps.every(step => step >= 4 && step <= 12), `the cards stand side by side, none over another: ${steps}`);
+    assert.ok(new Set(hand.cards.map(card => Math.round(card.top))).size === 1, 'in one line: a playable card is framed, not raised');
+    assert.ok(hand.cards.some(card => card.playable) && hand.cards.some(card => !card.playable));
+    assert.ok(hand.cards.filter(card => card.inRow).every(card => card.hit === true), 'a touch on a card is that card');
+    assert.ok(hand.cards.filter(card => card.right <= hand.row.right + 1).length >= 3, 'at least three whole cards are in view');
+    assert.equal(hand.scrolls, true, 'the rest of the hand is a sideways scroll away');
+    const last = await page.evaluate(() => {
+      const row = document.querySelector('.hand'); row.scrollLeft = row.scrollWidth;
+      const r = row.lastElementChild.getBoundingClientRect(), box = row.getBoundingClientRect();
+      const reached = r.right <= box.right + 1 && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)?.closest('.hcard') === row.lastElementChild;
+      row.scrollLeft = 0; return reached;
+    });
+    assert.equal(last, true, 'the last card is reached by scrolling');
+    // A card in the middle of the row opens its sheet, as before.
     const middle = page.locator('.hand > .hcard').nth(2), name = await middle.getAttribute('data-cname');
     await middle.tap();
     assert.equal(await page.evaluate(() => _ui.sheet?.card?.name), name);
@@ -111,7 +118,7 @@ try {
     await page.locator('.handtools .handexpand').tap();
     assert.equal(await page.evaluate(() => document.querySelector('#game').dataset.mobileView), 'mine');
     assert.equal(await samePending(page), true);
-    check('390×844: the hand is a fan whose cards keep their middle in view; the Hand pile opens the whole hand');
+    check('390×844: the hand is a row of large cards side by side; the Hand pile opens the whole hand');
 
     // One action: the instruction and its button share a line.
     const prompt = await page.evaluate(() => {
