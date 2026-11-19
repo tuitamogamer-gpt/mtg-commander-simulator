@@ -449,6 +449,50 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     U.localizeTree(root);
   };
 
+  // On a desktop a board draws its cards as large as its room allows. The size
+  // the stylesheet gives is the one at which two rows of a crowded board fit;
+  // a board with four creatures drew them at that size too, in one corner of
+  // an empty lane. Here each board takes the largest size at which nothing
+  // of it has to scroll, up to MAX_CARD, and never less than the stylesheet's:
+  // a crowded board is drawn exactly as before. The size is a custom property
+  // on the board, so everything that follows a card's width follows it, and
+  // motion.js carries a card from one size to the next like any other move.
+  const roomy = window.matchMedia('(min-width: 901px)');
+  const MAX_CARD = 124;
+  const overflows = board => [board, ...board.querySelectorAll('.oppboardmain, .boardlane, .boardlanecards')]
+    .some(box => box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1);
+  function fitBoardCards(ui, host) {
+    const fits = ui._boardCardFit ||= new Map();
+    for (const board of host.querySelectorAll('.mybattlefieldmain, .oppstrip.battlefieldstrip')) {
+      const owner = board.closest('.opprow')?.dataset.playerId ?? 'me';
+      const size = px => { for (const name of ['--ct-card', '--ct-opponent-card']) px ? board.style.setProperty(name, `${px}px`) : board.style.removeProperty(name); };
+      const first = board.querySelector('.boardlanecards .mini');
+      if (!roomy.matches || !first) { size(0); fits.delete(owner); continue; }
+      // What decides the answer: the room, and what stands in each lane.
+      const signature = [board.clientWidth, board.clientHeight, ...[...board.querySelectorAll('.boardlanecards')]
+        .map(lane => [...lane.children].map(item => `${item.className}:${item.childElementCount}`).join(','))].join('|');
+      const known = fits.get(owner);
+      if (known?.signature === signature) { size(known.size); continue; }
+      size(0);
+      // An opponent's card is the property times the player's own size setting.
+      const scale = first.classList.contains('sm') ? parseFloat(getComputedStyle(first).getPropertyValue('--ct-opponent-scale')) || 1 : 1;
+      const given = first.offsetWidth / scale;
+      let most = Math.min(MAX_CARD, Math.floor((board.clientHeight - 26) / 1.48 / scale)), best = 0;
+      if (most > given + 2 && !overflows(board)) {
+        let least = given;
+        size(most);
+        if (!overflows(board)) least = most;
+        else while (most - least > 2) {
+          const middle = Math.round((least + most) / 2);
+          size(middle);
+          if (overflows(board)) most = middle; else least = middle;
+        }
+        if (least > given + 1) best = Math.floor(least);
+      }
+      size(best);
+      fits.set(owner, {signature, size: best});
+    }
+  }
   const originalFit = P.fitBattlefieldLanes;
   P.fitBattlefieldLanes = function (root) {
     const host = root || document.querySelector('#game');
@@ -457,6 +501,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const lane of host.querySelectorAll('.boardlanecards, .oppresourcecards, .manaartifactstrip')) {
       lane.style.zoom = ''; lane.style.maxHeight = '';
     }
+    fitBoardCards(this, host);
   };
   const originalRender = P.render;
   P.render = function () {

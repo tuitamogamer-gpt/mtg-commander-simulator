@@ -217,7 +217,10 @@ try {
     const label = `${width}px`;
     assert.ok(marks.charge != null && marks.charge < marks.damage, `${label}: both attackers charge before the damage: ${JSON.stringify(result)}`);
     assert.ok(marks.faded != null, `${label}: the real attackers fade while their copies charge`);
-    assert.ok(near.dragon < 70, `${label}: Shivan Dragon reaches its blocker: ${JSON.stringify(result)}`);
+    // The copy stops when its leading edge meets the blocker (action-effects.js):
+    // their centres are then under half a card apart, whatever size the board
+    // draws its cards at (a desktop board with few cards draws them large).
+    assert.ok(near.dragon < Math.max(70, result.ghost.height * .5), `${label}: Shivan Dragon reaches its blocker: ${JSON.stringify(result)}`);
     assert.ok(near.bears < 90, `${label}: Grizzly Bears reach the defending player's life total: ${JSON.stringify(result)}`);
     assert.ok(Math.abs(marks.dragonContact - marks.damage) < 450, `${label}: the hit lands with the damage: ${JSON.stringify(marks)}`);
     assert.ok(marks.chargeEnd != null && marks.chargeEnd <= marks.died, `${label}: the copies are home before the blocker dies: ${JSON.stringify(marks)}`);
