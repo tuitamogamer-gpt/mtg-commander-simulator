@@ -1675,15 +1675,6 @@ body:has(#setup) { background: #08090d; }
 #game .diplomacypanel,
 #game .diplomacylog { flex: 1; min-height: 0; overflow-y: auto; }
 #game .diplomacypanel { display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
-#game .diplomacyhero {
-  display: grid; grid-template-columns: 32px minmax(0,1fr); gap: 9px; align-items: start;
-  padding: 12px; border: 1px solid rgba(231,177,94,.26); border-radius: 10px;
-  background: linear-gradient(145deg,rgba(28,28,22,.92),rgba(8,12,12,.92));
-}
-#game .diplomacyhero > span { font-size: 24px; filter: drop-shadow(0 0 10px rgba(240,189,118,.25)); }
-#game .diplomacyhero div { display: grid; gap: 4px; }
-#game .diplomacyhero b { color: #f3ead8; font: 16px/1.1 var(--ds-font-display); }
-#game .diplomacyhero small { color: var(--ds-muted); font-size: 10px; line-height: 1.4; }
 #game .diplomacylock {
   display: grid; gap: 6px; padding: 11px; color: #b8b1a2;
   border: 1px solid rgba(145,145,135,.18); border-radius: 9px; background: rgba(12,16,16,.8);
@@ -1802,7 +1793,6 @@ body:has(#setup) { background: #08090d; }
 .dipquickstart small { grid-column: 1 / -1; color: #9fa99f; font-size: 10px; line-height: 1.4; }
 .dipquickstart:hover, .dipquickstart.selected { border-color: #c79e5d; background: #25271c; }
 .dipquickstart:focus-visible, #game .dipguide summary:focus-visible { outline: 2px solid #f4d59c; outline-offset: 3px; }
-.dipcustomhint { margin: 9px 0 13px; color: #a6a393; font-size: 11px; line-height: 1.4; }
 .dipavailability { margin-top: 10px; padding: 9px 11px; border-radius: 7px; font-size: 11px; line-height: 1.45; }
 .dipavailability.ready { color: #b5d6b8; background: rgba(99,150,109,.1); border: 1px solid rgba(99,150,109,.25); }
 .dipavailability.blocked { color: #e5bf98; background: rgba(179,115,65,.12); border: 1px solid rgba(205,154,91,.3); }

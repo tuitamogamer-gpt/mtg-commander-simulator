@@ -1,0 +1,260 @@
+/* Politics & Diplomacy: the drawer, the offer composers and the review that
+   pauses the game (ui.js renderDiplomacyPanel, renderDiplomacyModal,
+   renderDiplomacyReviewModal). One language for the three: faces for the
+   players, a short label over a title, terms headed by who promises them, and
+   actions at the foot with the main one last.
+
+   The drawer groups with spacing, headings and hairlines; only an offer that
+   waits for an answer is a raised card. Everything is scoped under
+   `.politics`, so the older rules in styles.css are outranked, not edited. */
+
+/* ---------- Faces ---------- */
+.polface {
+  display: block; flex: 0 0 auto; width: 36px; height: 36px; overflow: hidden;
+  border-radius: 50%; background: var(--ds-panel-raised);
+  box-shadow: 0 0 0 1px var(--ds-line), 0 4px 10px rgba(2, 6, 12, .5);
+}
+.polface img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+.polface.me { box-shadow: 0 0 0 1.5px var(--ds-accent), 0 4px 10px rgba(2, 6, 12, .5); }
+
+/* ---------- Drawer ---------- */
+#game .diplomacypanel.politics {
+  display: flex; flex-direction: column; gap: 22px; padding: 6px 2px 22px;
+  color: var(--ds-copy); font: 500 13px/1.45 var(--ds-font-body);
+}
+#game .diplomacypanel.politics :is(h3, p, ol, ul, dl, dd, dt) { margin: 0; padding: 0; }
+#game .diplomacypanel.politics :is(ol, ul) { list-style: none; }
+
+/* Whether deals are open, in one line and a mark. */
+#game .politics .polstatus {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: center;
+  padding: 0 0 20px; border: 0; border-bottom: 1px solid var(--ds-line-soft); border-radius: 0; background: none;
+}
+#game .politics .polstatus > div { display: grid; gap: 3px; min-width: 0; }
+#game .politics .polstatus b { color: var(--ds-text); font: 650 16px/1.2 var(--ds-font-display); letter-spacing: -.01em; }
+#game .politics .polstatus small { color: var(--ds-muted); font: 500 12.5px/1.4 var(--ds-font-body); }
+#game .politics .polstatusmark {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  color: var(--ds-good); background: rgba(127, 202, 164, .1); box-shadow: inset 0 0 0 1px rgba(127, 202, 164, .3);
+}
+#game .politics .polstatusmark svg { width: 18px; height: 18px; }
+#game .politics .polstatus.needs .polstatusmark { color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .12); box-shadow: inset 0 0 0 1px rgba(var(--ds-accent-rgb), .45); }
+#game .politics .polstatus.locked .polstatusmark { color: var(--ds-muted); background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px var(--ds-line); }
+#game .politics .polstatus.locked { align-items: start; }
+#game .politics .dipprogress { height: 4px; margin: 7px 0 3px; overflow: hidden; border-radius: 4px; background: rgba(255, 255, 255, .08); }
+#game .politics .dipprogress i { display: block; height: 100%; border-radius: 4px; background: var(--ds-accent); }
+
+/* A section: a label, an optional count, then rows. */
+#game .politics .polsection { display: grid; gap: 4px; min-width: 0; }
+#game .politics .dipsectiontitle {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 6px;
+  color: var(--ds-muted); font: 700 11px/1 var(--ds-font-display); font-stretch: 88%; letter-spacing: .14em; text-transform: uppercase;
+}
+#game .politics .dipsectiontitle i { color: var(--ds-accent-soft); font: 600 11px/1 var(--ds-font-mono); font-style: normal; letter-spacing: 0; text-transform: none; }
+#game .politics .polempty { padding: 2px 0; color: var(--ds-muted); font-size: 13px; text-align: left; border: 0; border-radius: 0; }
+
+/* An offer that waits for an answer: the one raised card. */
+#game .politics .poloffer {
+  display: grid; gap: 12px; padding: 14px;
+  border: 1px solid rgba(var(--ds-accent-rgb), .45); border-radius: var(--ds-r-md);
+  background: var(--ds-panel-raised); box-shadow: 0 10px 26px rgba(2, 6, 12, .34);
+}
+#game .politics .poloffer + .poloffer { margin-top: 8px; }
+#game .politics .poloffer.counteroffer { border-color: rgba(var(--ds-spell-rgb), .5); }
+#game .politics .poloffer.laststand { border-color: rgba(239, 139, 123, .55); }
+#game .politics .polofferhead { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 11px; align-items: center; }
+#game .politics .polofferhead > div { display: grid; gap: 2px; min-width: 0; }
+#game .politics .polofferhead b { color: var(--ds-text); font: 650 14.5px/1.25 var(--ds-font-display); }
+#game .politics .diproute { margin: 0; color: var(--ds-muted); font: 500 12px/1.4 var(--ds-font-body); }
+#game .politics .polterms { display: grid; gap: 9px; }
+#game .politics .polterms > div { display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+#game .politics .polterms dt { color: var(--ds-muted); font: 700 10.5px/1.5 var(--ds-font-display); font-stretch: 88%; letter-spacing: .12em; text-transform: uppercase; }
+#game .politics .polterms .get dt { color: var(--ds-good); }
+#game .politics .polterms .give dt { color: var(--ds-accent-bright); }
+#game .politics .polterms dd { color: var(--ds-text); font-size: 13px; line-height: 1.45; }
+#game .politics .dipvaluecheck {
+  display: grid; gap: 2px; margin: 0; padding: 10px 0 0;
+  border: 0; border-top: 1px solid var(--ds-line-soft); border-radius: 0; background: none;
+}
+#game .politics .dipvaluecheck b { color: var(--ds-muted); font: 700 10.5px/1.5 var(--ds-font-display); font-stretch: 88%; letter-spacing: .12em; }
+#game .politics .dipvaluecheck span { color: var(--ds-copy); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+#game .politics .dipvaluecheck small, #game .politics .polnote { color: var(--ds-muted); font-size: 12px; line-height: 1.4; }
+#game .politics .dipactions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+body.game-active #game .politics .dipactions .pbtn { flex: 1 1 0; min-height: 40px; padding: 0 12px; font: 650 13px/1 var(--ds-font-body); letter-spacing: 0; text-transform: none; }
+
+/* Players: a face, a name, a standing, one action. */
+#game .politics .polplayers { display: grid; }
+#game .politics .polplayer {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center;
+  padding: 10px 0; border: 0; border-top: 1px solid var(--ds-line-soft); border-radius: 0; background: none;
+}
+#game .politics .polplayer:first-child { border-top: 0; padding-top: 4px; }
+#game .politics .polplayercopy { display: grid; gap: 2px; min-width: 0; }
+#game .politics .polplayer b { overflow: hidden; color: var(--ds-text); font: 600 14px/1.25 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#game .politics .polplayer small { display: flex; align-items: center; gap: 6px; color: var(--ds-muted); font: 500 12px/1.3 var(--ds-font-body); }
+#game .politics .polplayer small::before { content: ''; flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .7; }
+#game .politics .polplayer.relation-active small { color: var(--ds-accent-bright); }
+#game .politics .polplayer.relation-reliable small { color: var(--ds-good); }
+#game .politics .polplayer.relation-wary small { color: var(--ds-danger); }
+body.game-active #game .politics .polofferbtn {
+  flex: none; min-height: 36px; padding: 0 14px; border-radius: 10px;
+  font: 650 12.5px/1 var(--ds-font-body); letter-spacing: 0; text-transform: none; white-space: nowrap;
+}
+
+/* Agreements in force, the table deal and the last stand: rows under a hairline. */
+#game .politics .polpact {
+  display: grid; gap: 6px; padding: 10px 0; border: 0; border-top: 1px solid var(--ds-line-soft); border-radius: 0; background: none;
+}
+#game .politics .dipsectiontitle + .polpact { border-top: 0; padding-top: 2px; }
+#game .politics .polpact > header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+#game .politics .polpact > header b { color: var(--ds-text); font: 650 14px/1.3 var(--ds-font-display); letter-spacing: 0; }
+#game .politics .polpact > header em { flex: none; color: var(--ds-muted); font: 500 11px/1.3 var(--ds-font-mono); font-style: normal; }
+#game .politics .polpact p { color: var(--ds-copy); font-size: 13px; line-height: 1.45; }
+#game .politics .polpact > small { color: var(--ds-muted); font-size: 12px; line-height: 1.4; }
+body.game-active #game .politics .polpact > .pbtn { justify-self: start; min-height: 40px; padding: 0 16px; font: 650 13px/1 var(--ds-font-body); letter-spacing: 0; text-transform: none; }
+#game .politics .polclauses { display: grid; gap: 6px; }
+#game .politics .polclauses li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 9px; align-items: baseline; color: var(--ds-muted); font-size: 13px; line-height: 1.45; }
+#game .politics .polclauses li i { width: 6px; height: 6px; border-radius: 50%; background: var(--ds-good); translate: 0 -2px; }
+#game .politics .polclauses li em { color: var(--ds-muted); font: 500 11px/1.3 var(--ds-font-mono); font-style: normal; white-space: nowrap; }
+#game .politics .polclauses li.state-active { color: var(--ds-text); }
+#game .politics .polclauses li.state-active i { background: var(--ds-accent); box-shadow: 0 0 0 3px rgba(var(--ds-accent-rgb), .18); }
+#game .politics .polclauses li.state-active em { color: var(--ds-accent-soft); }
+#game .politics .diplaststand > header b { color: var(--ds-danger); }
+
+/* What happened at the table, newest first. */
+#game .politics .polrecent { display: grid; gap: 0; }
+#game .politics .polrecent li {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: baseline;
+  padding: 7px 0; border-top: 1px solid var(--ds-line-soft); background: none;
+}
+#game .politics .polrecent li:first-child { border-top: 0; padding-top: 2px; }
+#game .politics .polrecent li span { color: var(--ds-muted); font: 500 11px/1.5 var(--ds-font-mono); }
+#game .politics .polrecent li p { color: var(--ds-copy); font-size: 12.5px; line-height: 1.45; }
+#game .politics .polrecent li.kind-accepted span { color: var(--ds-good); }
+#game .politics .polrecent li:is(.kind-rejected, .kind-bot-rejected) span { color: var(--ds-danger); }
+
+/* The rules, when asked for. */
+#game .politics .polguide { flex: none; margin-top: -6px; border: 0; border-top: 1px solid var(--ds-line-soft); border-radius: 0; background: none; }
+#game .politics .polguide summary { padding: 14px 0 4px; color: var(--ds-copy); font: 600 13px/1.3 var(--ds-font-body); cursor: pointer; }
+#game .politics .polguide summary:hover { color: var(--ds-text); }
+#game .politics .polguide summary:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; border-radius: 4px; }
+#game .politics .dipguidebody { display: grid; gap: 10px; padding: 8px 0 0; }
+#game .politics .dipguidebody p { color: var(--ds-muted); font-size: 12.5px; line-height: 1.5; }
+#game .politics .dipguidebody b { display: block; color: var(--ds-copy); font-weight: 650; }
+#game .politics .dipguidebody .diprules { padding: 10px 0 0; border-top: 1px solid var(--ds-line-soft); }
+#game .politics .dipguidebody small { color: var(--ds-muted); font-size: 12px; line-height: 1.45; }
+
+/* ---------- Dialogs ---------- */
+.diplomacymodal.politics {
+  width: min(620px, calc(100 * var(--vwu) - 48px)) !important; max-width: 620px !important;
+  padding: 26px 28px 24px !important;
+}
+.diplomacymodal.politics.diplomacyreviewmodal { width: min(560px, calc(100 * var(--vwu) - 48px)) !important; max-width: 560px !important; }
+.politics .polhead { display: flex; align-items: center; gap: 14px; margin: 0 0 20px; }
+.politics .polroute { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
+.politics .polroute .polface { width: 44px; height: 44px; }
+.politics .polroute i { color: var(--ds-muted); font: 500 15px/1 var(--ds-font-body); font-style: normal; }
+.politics .polheadcopy { display: grid; gap: 5px; min-width: 0; }
+.politics .polheadcopy .combatkicker { margin: 0; }
+.politics .polheadcopy .mtitle { margin: 0; font: 650 22px/1.15 var(--ds-font-display); letter-spacing: -.015em; text-align: left; }
+.politics .dippreamble { margin: -6px 0 18px; color: var(--ds-muted); font: 500 13px/1.5 var(--ds-font-body); }
+
+/* A starting point: one chip each; the chosen one says what it does. */
+.politics .dipquickstarts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.politics .dipquickstart {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; min-width: 0; padding: 0 14px 0 12px;
+  color: var(--ds-copy); background: transparent; border: 1px solid var(--ds-line); border-radius: 999px;
+  font: 600 13px/1 var(--ds-font-body); text-align: left; cursor: pointer;
+  transition: border-color var(--ds-t-fast) var(--ds-ease), background-color var(--ds-t-fast) var(--ds-ease), color var(--ds-t-fast) var(--ds-ease);
+}
+.politics .dipquickstart > span { display: inline-grid; place-items: center; color: var(--ds-accent-soft); font-size: 15px; line-height: 1; }
+.politics .dipquickstart b { font: inherit; }
+.politics .dipquickstart small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.politics .dipquickstart:hover { color: var(--ds-text); border-color: rgba(var(--ds-accent-rgb), .6); background: rgba(var(--ds-accent-rgb), .06); }
+.politics .dipquickstart.selected { color: var(--ds-text); border-color: var(--ds-accent); background: rgba(var(--ds-accent-rgb), .14); }
+.politics .dipquickstart.selected > span { color: var(--ds-accent-bright); }
+.politics .dipquickstart:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; }
+.diplomacymodal.politics .polstarthint { min-height: 20px; margin: 12px 0 20px; color: var(--ds-muted); font: 500 13px/1.5 var(--ds-font-body); }
+
+/* The exact terms: two plain fields. */
+.politics .dipfields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.politics .dipfield { display: grid; gap: 8px; min-width: 0; padding: 0; border: 0; border-radius: 0; background: none; }
+.politics .dipfield > span { color: var(--ds-text); font: 650 13px/1.3 var(--ds-font-body); letter-spacing: 0; text-transform: none; }
+.politics .dipfield > span small { display: block; margin-top: 2px; color: var(--ds-muted); font: 500 12px/1.35 var(--ds-font-body); letter-spacing: 0; }
+.politics .dipfield select { width: 100%; min-height: 44px; height: 44px; padding-block: 0; border-radius: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* The deal in words, headed by who promises what. */
+.politics .dipreview {
+  display: grid; gap: 9px; margin-top: 18px; padding: 14px 16px;
+  border: 1px solid rgba(var(--ds-accent-rgb), .3); border-radius: var(--ds-r-md); background: rgba(var(--ds-accent-rgb), .05);
+}
+.politics .dipreview > b { color: var(--ds-accent-soft); font: 700 11px/1 var(--ds-font-display); font-stretch: 88%; letter-spacing: .14em; text-transform: uppercase; }
+.politics .dipreview p { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: baseline; margin: 0; padding: 0; color: var(--ds-text); font: 500 13.5px/1.45 var(--ds-font-body); }
+.politics .dipreview p span { overflow: hidden; color: var(--ds-copy); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+.politics .dipavailability { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; font: 500 13px/1.45 var(--ds-font-body); }
+.politics .dipavailability.ready { color: var(--ds-good); background: none; border: 0; }
+.politics .dipavailability.blocked { color: var(--ds-accent-bright); background: none; border: 0; }
+.politics .dipwarning { margin: 12px 0 0; padding: 0 0 0 12px; color: var(--ds-muted); font: 500 12.5px/1.5 var(--ds-font-body); background: none; border-left: 2px solid rgba(var(--ds-accent-rgb), .5); }
+
+/* The foot: what pressing means, then the actions, the main one last. */
+.politics .polactions {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px;
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--ds-line-soft);
+}
+.politics .polactions .polfootnote { flex: 1 1 200px; margin-right: auto; color: var(--ds-muted); font: 500 12px/1.45 var(--ds-font-body); text-align: left; }
+body.game-active .politics .polactions .pbtn { flex: 0 0 auto; min-height: 44px; padding: 0 22px; font: 650 14px/1 var(--ds-font-body); letter-spacing: 0; text-transform: none; }
+
+/* The review that pauses the game. */
+.politics .dipaccordvisual { margin: 0 0 16px; }
+.diplomacymodal.politics > .combatkicker { margin: 0 0 5px; text-align: left; }
+.diplomacymodal.politics > .mtitle { margin: 0; font: 650 22px/1.15 var(--ds-font-display); letter-spacing: -.015em; text-align: left; }
+.politics .diplomacyreviewroute { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 8px; margin: 14px 0 18px; }
+.politics .diplomacyreviewroute span:not(.polface) {
+  display: inline-flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 12px 4px 4px;
+  color: var(--ds-copy); text-align: left; letter-spacing: 0; text-transform: none;
+  border: 1px solid var(--ds-line); border-radius: 999px; background: none;
+}
+.politics .diplomacyreviewroute span.human { color: var(--ds-text); border-color: rgba(var(--ds-accent-rgb), .55); background: rgba(var(--ds-accent-rgb), .08); }
+.politics .diplomacyreviewroute b { overflow: hidden; font: 600 13px/1.2 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+.politics .diplomacyreviewroute span:not(.polface) { flex: 0 1 auto; }
+.politics .diplomacyreviewroute .polface { flex: 0 0 26px; width: 26px; height: 26px; min-width: 0; padding: 0; border: 0; border-radius: 50%; }
+.politics .diplomacyreviewroute i { color: var(--ds-muted); font-size: 14px; font-style: normal; }
+.politics .diplomacyreviewterms { margin-top: 0; }
+.politics .diplomacyreviewterms p { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 0; }
+.politics .diplomacyreviewvalue { margin: 12px 0 0; padding: 12px 0 0; border: 0; border-top: 1px solid var(--ds-line-soft); border-radius: 0; background: none; }
+.politics .diplomacyreviewoutcome {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: center; margin: 14px 0 0; padding: 12px 14px;
+  border: 1px solid var(--ds-line); border-radius: var(--ds-r-md); background: rgba(255, 255, 255, .02);
+}
+.politics .diplomacyreviewoutcome > span { color: var(--ds-danger); font-size: 20px; text-align: center; }
+.politics .diplomacyreviewoutcome small { color: var(--ds-muted); font: 700 10.5px/1 var(--ds-font-display); font-stretch: 88%; letter-spacing: .14em; text-transform: uppercase; }
+.politics .diplomacyreviewoutcome b { color: var(--ds-text); font: 650 15px/1.25 var(--ds-font-display); }
+.politics .diplomacyreviewoutcome p { margin: 0; color: var(--ds-muted); font: 500 12.5px/1.45 var(--ds-font-body); }
+.politics .diplomacyreviewoutcome.accepted { border-color: rgba(127, 202, 164, .4); background: rgba(127, 202, 164, .07); }
+.politics .diplomacyreviewoutcome.accepted > span { color: var(--ds-good); }
+.politics .diplomacyreviewactions { position: static; bottom: auto; z-index: auto; padding: 16px 0 0; background: none; }
+
+/* ---------- Phones ---------- */
+@media (max-width: 900px) {
+  body.game-active #game .politics .polofferbtn { min-height: 44px; }
+  body.game-active #game .politics .dipactions .pbtn { min-height: 44px; }
+}
+@media (max-width: 520px) {
+  .diplomacymodal.politics, .diplomacymodal.politics.diplomacyreviewmodal {
+    width: calc(100 * var(--vwu) - 24px) !important; padding: 16px !important;
+  }
+  .politics .polhead { gap: 11px; margin-bottom: 16px; }
+  .politics .polroute .polface { width: 36px; height: 36px; }
+  .politics .polheadcopy .mtitle { font-size: 19px; }
+  .politics .dipquickstart { min-height: 44px; }
+  .politics .dipfields { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .politics .dipreview p, .politics .diplomacyreviewterms p { grid-template-columns: 72px minmax(0, 1fr); gap: 10px; }
+  /* The foot stays in reach while the dialog scrolls (styles.css keeps it sticky). */
+  .diplomacymodal.politics > .polactions {
+    margin: 14px -16px -16px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: var(--ds-dialog); border-top: 1px solid var(--ds-line-soft);
+  }
+  .politics .polactions .polfootnote { flex: 1 1 100%; }
+  body.game-active .politics .polactions .pbtn { flex: 1 1 0; padding: 0 12px; }
+  .politics .diplomacyreviewactions { position: sticky; bottom: -16px; z-index: 3; }
+}
