@@ -330,7 +330,8 @@ P.showBoardWipeBeat = function (event) {
   count(state, state.count);
   settle(state);
   for (const timer of state.timers.splice(0)) clearTimeout(timer);
-  later(state, () => leave(state), state.timing.settle + 200);
+  // Gone before the engine moves on: the highlight that follows is not drawn under it.
+  later(state, () => leave(state), Math.max(200, state.timing.settle - 300));
 };
 
 const render = P.render;

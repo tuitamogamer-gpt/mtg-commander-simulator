@@ -32,7 +32,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const span = Math.min(1050, 105 * (cards - 1)) * pace;
     const build = Math.round(600 * pace), lead = Math.round(140 * pace), death = Math.round(340 * pace);
     return {build, lead, stagger: cards > 1 ? Math.round(span / (cards - 1) * 100) / 100 : 0, death,
-      cascade: Math.round(lead + span + death), settle: Math.round(520 * pace)};
+      cascade: Math.round(lead + span + death), settle: Math.round(700 * pace)};
   };
   const publicAudioSource = card => !!card && !card.faceDown && !['hand', 'library'].includes(card.zone);
   const audioDeathtouch = new WeakSet();
