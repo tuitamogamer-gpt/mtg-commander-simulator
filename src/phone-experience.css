@@ -78,9 +78,15 @@
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    overflow: hidden;
+    /* The lanes scroll, the board does not: every scrolling box is a graphics
+       layer of its own, and so is whatever is drawn over it. */
+    overflow: hidden !important;
   }
   #game.command-table.ct-phone .myboard::before { content: none !important; }
+  /* At rest nothing on the table is filtered: a filtered backdrop is a layer,
+     and so is whatever lies over it. The header and the keyword marks are
+     dark enough without one. */
+  body.game-active #game.command-table.ct-phone :is(.topbar, .keywordbadge) { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
   body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain {
     flex: 1 1 auto;
     min-height: 0;
@@ -220,6 +226,8 @@
   #game.command-table.ct-phone .ct-hero .ct-player-name > small .ct-turn-badge { font-size: 10px; white-space: nowrap; }
   #game.command-table.ct-phone .ct-hero .ct-player-name > b { font-size: 12px; font-weight: 600; color: var(--ds-copy); }
   #game.command-table.ct-phone .ct-hero .ct-player-name .manapool { font-size: 12px; }
+  /* Floating mana matters more than your own name. */
+  #game.command-table.ct-phone .ct-hero .ct-player-name:has(.manapool:not(:empty)) > b { display: none; }
   #game.command-table.ct-phone .ct-hero .ct-player-status { order: 3; flex: 0 1 auto; min-width: 0; display: flex; gap: 4px; overflow: hidden; }
   #game.command-table.ct-phone .ct-hero .zbtns {
     order: 4;
@@ -539,7 +547,7 @@
     font: 500 12px/16px var(--ds-font-body);
     color: var(--ds-muted);
   }
-  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] :is(.oppswrap, .opprow, .oppstrip) { min-height: 0 !important; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] :is(.oppswrap, .opprow, .oppstrip) { min-height: 0 !important; overflow: hidden !important; }
   body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppboardmain { gap: 8px !important; }
   body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppboardmain .boardlanecards,
   body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard .boardlanecards { padding: 2px !important; gap: 4px !important; }
@@ -569,16 +577,146 @@
 }
 @media (max-width: 900px) and (max-height: 699px) {
   body.game-active #game.command-table.ct-phone { --ct-hand: 122px; }
-  body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain { align-items: flex-start; }
+  /* One row of cards and the line of lands; if they do not fit, the row scrolls up to them. */
+  body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain { align-items: flex-start; overflow-y: auto; }
+  #game.command-table.ct-phone .myboard > .mybattlefieldmain .boardlanelabel { display: none; }
 }
 @media (max-width: 900px) and (max-height: 600px) {
-  body.game-active #game.command-table.ct-phone { --ct-hand: 108px; }
+  body.game-active #game.command-table.ct-phone { --ct-hand: 108px; --ct-card: 68px; }
 }
 /* Narrow phones: the portrait's ring says whose turn it is. */
 @media (max-width: 380px) {
   body.game-active #game.command-table.ct-phone .promptbar.ct-one-action > .btnrow > .pbtn { min-width: 112px; max-width: 150px; padding-inline: 10px; font-size: 13px; }
   #game.command-table.ct-phone .ct-hero .ct-player-name > :is(b, small) { display: none; }
+  /* Floating mana takes a line of its own above the bar. */
+  body.game-active #game.command-table.ct-phone .ct-hero:has(.manapool:not(:empty)) { flex-wrap: wrap; row-gap: 0; }
+  #game.command-table.ct-phone .ct-hero .ct-player-name:has(.manapool:not(:empty)) { order: -1; flex: 0 0 100%; flex-direction: row; align-items: center; min-height: 24px; }
+  #game.command-table.ct-phone .ct-hero .ct-player-name:not(:has(.manapool:not(:empty))) { display: none; }
   #game.command-table.ct-phone .opphead .oppname { font-size: 13px; }
   /* A seat above opens the same board: the name keeps the room. */
   #game.command-table.ct-phone .ct-player-zones .ct-focus-board { display: none; }
+}
+
+/* ── Combat: your creatures are cards on a table, not rows of a list. ──
+   The same buttons (mobile-combat.js): a creature is its picture with its
+   strength and what it is doing under it; Inspect is the mark in its corner. */
+@media (max-width: 900px) {
+  #game.command-table.ct-phone .ct-mobile-combat { margin: 0; border: 0; border-radius: 0; background: rgba(8, 11, 14, .5); }
+  #game.command-table.ct-phone .ct-mobile-combat-head { padding: 8px 12px 6px; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-content: start;
+    gap: 12px 8px;
+    padding: 12px 10px 10px;
+  }
+  #game.command-table.ct-phone .ct-mobile-combat-roster > :is(.ct-mobile-combat-roster-title, .ct-mobile-combat-empty) { grid-column: 1 / -1; margin: 0; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster > .ct-mobile-combat-unit {
+    position: relative;
+    display: block;
+    min-width: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border-radius: 8px;
+    background: none;
+    text-align: center;
+    transition: transform .16s ease-out;
+  }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-art { flex: 0 0 auto; align-self: stretch; width: 100%; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-art img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 7;
+    border-radius: 6px;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .55);
+  }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-unit-copy { align-items: center; gap: 1px; min-width: 0; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-unit-copy > b { max-width: 100%; font-size: 12px; font-weight: 600; line-height: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-unit-copy strong { font-size: 17px; line-height: 20px; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-stats { justify-content: center; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-unit-copy small { font-size: 11px; line-height: 14px; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-assignment { font-size: 12px; line-height: 15px; font-weight: 600; }
+  /* Chosen: the card steps forward. */
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-unit:has(.ct-combat-selected) { border: 0; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-card.ct-combat-selected { background: none; transform: translateY(-6px); }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-card.ct-combat-selected .ct-mobile-combat-art img { box-shadow: 0 0 0 2px var(--ds-accent-bright), 0 0 14px rgba(var(--ds-accent-rgb), .6), 0 8px 14px rgba(0, 0, 0, .5); }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-card:is(.ct-attack-pending, .ct-block-pending) { background: none; transform: translateY(-6px); }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-card:is(.ct-attack-pending, .ct-block-pending) .ct-mobile-combat-art img { box-shadow: 0 0 0 2px #7fc4ee, 0 0 14px rgba(127, 196, 238, .55), 0 8px 14px rgba(0, 0, 0, .5); }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-card:disabled .ct-mobile-combat-art img { filter: grayscale(.6) brightness(.7); }
+  /* Inspect: a mark in the card's corner, with a finger's room around it. */
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-inspect {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: transparent;
+    font-size: 0;
+  }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-inspect::before {
+    content: 'i';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 50%;
+    background: rgba(8, 11, 14, .82);
+    color: #e9f0f3;
+    font: italic 700 13px/1 Georgia, 'Times New Roman', serif;
+  }
+}
+@media (max-width: 900px) {
+  /* What stands above the cards is short: the step and its instruction, the
+     defenders, and one line of who defends with what. */
+  #game.command-table.ct-phone .ct-mobile-combat .ct-combat-copy > b { display: none; }
+  #game.command-table.ct-phone .ct-mobile-combat .ct-defender-choices { padding: 2px 10px 8px; }
+  #game.command-table.ct-phone .ct-mobile-combat .ct-defender-choice { flex: 0 0 168px; min-height: 60px; padding-block: 6px; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0 6px; padding: 0 10px 6px; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense > h3 { flex: 0 0 100%; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player { flex: 1 1 0; min-width: 0; border-top: 0; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player > summary {
+    min-height: 44px;
+    padding: 5px 8px;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 10px;
+    list-style: none;
+    font-size: 12px;
+    line-height: 1.3;
+    overflow: hidden;
+  }
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player > summary::-webkit-details-marker { display: none; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player > summary b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player > summary span { font: 500 11px/1.3 var(--ds-font-body); color: var(--ds-muted); }
+  /* The open one takes the line below the others for its creatures. */
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player[open] { flex: 0 0 100%; order: 2; margin-top: 6px; }
+  #game.command-table.ct-phone .ct-mobile-combat-defense-player[open] > summary { border-color: rgba(var(--ds-accent-rgb), .45); }
+}
+@media (max-width: 900px) and (min-width: 520px) {
+  #game.command-table.ct-phone .ct-mobile-combat-roster { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+}
+/* A short phone shows a whole row of four. */
+@media (max-width: 519px) and (max-height: 640px) {
+  #game.command-table.ct-phone .ct-mobile-combat-roster { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 6px; padding-inline: 8px; }
+  #game.command-table.ct-phone .ct-mobile-combat-roster .ct-mobile-combat-unit-copy strong { font-size: 15px; line-height: 18px; }
 }

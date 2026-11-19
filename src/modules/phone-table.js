@@ -101,6 +101,13 @@ U.UI.prototype.renderCommandTable = function (game, root) {
   if (!on) return;
   const mine = this.mobileView === 'mine' && (root.dataset.mobileBoard || 'mine') === 'mine';
 
+  // The seats are drawn right after the header they stand under. Drawn last,
+  // over boards that scroll on their own, they and everything else drawn
+  // over those boards shared one graphics layer nearly the size of the
+  // screen (measured at device pixel ratio 3: 48 MB at rest, 28 MB this way).
+  const ribbon = root.querySelector(':scope > .ct-seat-ribbon'), header = root.querySelector(':scope > .topbar');
+  if (ribbon && header) header.after(ribbon);
+
   // Your portrait, life and zones: one bar between the board and the hand.
   const hero = root.querySelector('.myboard > .ct-player-head');
   if (hero) {

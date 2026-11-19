@@ -216,16 +216,30 @@ try {
   await expectFocus(3);
   await nextTurn(0);
   assert.equal(await page.locator('.myboard:visible').count(), 1, 'Your turn restores Mine on tall phones too');
-  assert.equal(await page.locator('.opprow:visible').count(), 0);
+  // A tall phone keeps the front line of the opponent across the table above
+  // your board: its creatures, without its heading, piles or lands
+  // (src/phone-experience.css).
+  assert.equal(await page.locator('.opprow:visible').count(), 1);
+  assert.equal(await page.locator('.opprow :is(.opphead, .ct-player-zones, .oppresourcelane):visible').count(), 0, 'Across the table: the front line only');
   for (const [width, height] of [[320, 568], [390, 660], [393, 724], [390, 844], [430, 932], [667, 375], [844, 390]]) {
     await page.setViewportSize({ width, height });
     await nextTurn(2);
     await expectFocus(2);
-    assert.equal(await page.locator('.myboard:visible').count(), 0, 'Phones give the active opponent the board area');
+    // The phone table has two sides. With an opponent's board open, your
+    // portrait and life stay beside the hand; a tall phone also keeps your
+    // creatures as a strip under that board. A short landscape screen keeps
+    // one board at a time.
+    const phoneTable = await page.evaluate(() => document.querySelector('#game').classList.contains('ct-phone')), tall = phoneTable && height >= 760;
+    if (phoneTable) {
+      assert.equal(await page.locator('.myboard > .ct-player-head:visible').count(), 1, 'Your portrait and life stay beside the hand');
+      assert.equal(await page.locator('.myboard > .landrow:visible').count(), 0, 'Phones give the active opponent the board area');
+      assert.equal(await page.locator('.myboard > .mybattlefieldmain:visible').count(), tall ? 1 : 0, 'A tall phone keeps your front line under the open board');
+    } else assert.equal(await page.locator('.myboard:visible').count(), 0, 'A short landscape screen gives the active opponent the board area');
     const nav = page.getByRole('navigation', { name: 'Arena view' });
     await nav.getByRole('button', { name: /^Mine/i }).tap();
     assert.equal(await page.locator('.myboard:visible').count(), 1, 'Mine gives direct access to your battlefield during another turn');
-    assert.equal(await page.locator('.opprow:visible').count(), 0);
+    assert.equal(await page.locator('.myboard > .landrow:visible').count(), 1);
+    assert.equal(await page.locator('.opprow:visible').count(), tall ? 1 : 0, 'Only a tall phone keeps a front line across the table');
     await nextTurn(3);
     await expectFocus(3);
     await shot(`mobile-compact-opponent-${width}`);
@@ -348,8 +362,14 @@ try {
   assert.equal(await page.locator('.mybattlefieldmain').evaluate(element => element.scrollLeft), boardScroll);
   await page.locator('[data-focus-player="2"]').tap();
   await swipeBoard('.opprow:visible .oppboardmain', 0, -85);
+  // The phone table shows an opponent's lands under its creatures when they
+  // fit; when they do not, the swipe reaches them.
+  const opponentResources = await page.locator('.opprow:visible .oppstrip').evaluate(strip => {
+    const box = strip.getBoundingClientRect(), resources = strip.querySelector('.oppresourcelane').getBoundingClientRect();
+    return resources.height > 0 && resources.top >= box.top - 1 && resources.bottom <= box.bottom + 1;
+  });
   const opponentScroll = await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop);
-  assert.ok(opponentScroll > 0, 'A vertical swipe over battlefield cards reaches the resources');
+  assert.ok(opponentScroll > 0 || opponentResources, 'The resources are in view, or a vertical swipe over battlefield cards reaches them');
   assert.equal(await page.evaluate(() => !!(_ui.sheet || _ui.playerSheet)), false, 'Scrolling does not open a card or player sheet');
   await page.evaluate(() => _ui.render());
   assert.equal(await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop), opponentScroll);
