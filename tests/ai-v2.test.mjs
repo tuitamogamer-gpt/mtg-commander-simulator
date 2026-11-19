@@ -235,6 +235,13 @@ function wipeDecision(botLeading) {
 
 test('board wipe se igra kad protivnici gube mnogo više, a čuva kad bot vodi', async () => {
   const behind = wipeDecision(false);
+  // Its own 1/1 would die to the sweep too and can attack: it attacks first,
+  // and the sweep is cast in the second main phase (tests/ai-attack-before-wipe.test.mjs).
+  const early = await MTG.chooseBotAction({ gameState: behind.game, botPlayerId: behind.bot.idx, seed: 19, actionWindow: behind.q });
+  assert.equal(early.action.kind, 'done');
+  assert.ok(early.consideredActions.some(row => row.scoreBreakdown.attackFirst < 0), 'the sweep is held for after combat');
+  behind.game.phase = 'main2';
+  behind.q.phase = 'main2';
   const behindDecision = await MTG.chooseBotAction({ gameState: behind.game, botPlayerId: behind.bot.idx, seed: 19, actionWindow: behind.q });
   assert.equal(behindDecision.action.kind, 'cast');
   const ahead = wipeDecision(true);

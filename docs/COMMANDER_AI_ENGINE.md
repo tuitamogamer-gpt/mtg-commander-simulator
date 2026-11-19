@@ -99,6 +99,8 @@ Threat uključuje lethal/commander damage, board/evasion, engine/combo role, han
 
 Removal se čuva bez dovoljno dobre mete. Counterspell se kažnjava bez protivničkog relevantnog stack objekta. Board wipe poredi vrijednost svih tabli, survival rizik i recovery; ne baca se samo zato što je legalan.
 
+Redoslijed oko wipea ima dva pravila. Stvorenje koje bi botov vlastiti planirani wipe uklonio čeka da wipe prođe (`wipeSequencingPenalty`). Wipe koji bi uzeo i botove napadače čeka drugu main fazu (`attackFirstPlan`, `attackersLostToSweep`): u prvoj se ne baca (`attackFirst` u score breakdownu), ništa prije njega ne smije potrošiti manu koja mu treba, a u deklaraciji napada sve što bi wipe uzeo napada kao da nema šta izgubiti (`ctx.expendable`), jer ionako gine, a šteta koja prođe ostaje. Nakon borbe se wipe procjenjuje iznova i baca u main 2. Wipe koji štedi botove napadače (jednostran, ili najjači napadači preživljavaju) i dalje ide prvi, da napadnu u praznu tablu. Stvorenje koje se tapuje za manu ne šalje se u napad nego plaća wipe. Wipe čiju cijenu tabla trenutno umanjuje (Blasphemous Act: jedna mana manje po stvorenju) čeka borbu samo ako mane ima viška za svakog napadača i po jednog blokera; inače se baca odmah dok je jeftin. Za ovaj redoslijed se tekst wipea čita šire nego za procjenu vrijednosti (`sweepReach`): pored tačnog modela pokriva `destroy/exile all` sa `nontoken`, `nonartifact`, bojom i pragom snage, izdržljivosti ili mana vrijednosti, štetu svakom stvorenju i masovni povratak u ruku. Jednostran, ciljani i modalni tekst, izbor pri razrješenju, X i wipe koji štedi tapnuta stvorenja se ne pretpostavljaju: za njih redoslijed ostaje kakav je bio. Bot plan pamti pored igre, ne u njoj: kopija za simulaciju ga nema, a save ga ne čuva.
+
 Aetherize procjenjuje samo stvorenja koja trenutno napadaju. AI ga čuva kada nema napadača ili bi vratio samo vlastita stvorenja; napadači usmjereni na drugog protivnika i dalje ulaze u procjenu. Karta ostaje legalna bez meta i bez napadača prema pravilima igre.
 
 Skullclamp koristi poseban equip plan: potrošni token sa trenutnom toughness 1 ima prednost nad commanderom radi izvlačenja dvije karte. Plan uzima u obzir countere, antheme, vrijednost stvorenja, zamjene odlaska u groblje, blokiranje dies trigera i rizik od prazne biblioteke. Ponovo se procjenjuje nakon svake rezolucije, pa AI može premjestiti Skullclamp s commandera na token i nastaviti s narednim tokenom dok ima manu.
@@ -146,7 +148,7 @@ npm run audit
 npm run certify:strict
 ```
 
-`tests/ai-v2.test.mjs` pokriva profile, legalnost, hidden-information invariance, reveal, threat/removal, wipe, FFA human/bot neutralnost, combat, commander lethal, blokere, determinizam, rules-engine simulaciju, sequencing i decision log. `tests/headless-smoke.test.mjs` izvršava po jednu determinističku četveroigračku partiju za svih 20 deckova.
+`tests/ai-v2.test.mjs` pokriva profile, legalnost, hidden-information invariance, reveal, threat/removal, wipe, FFA human/bot neutralnost, combat, commander lethal, blokere, determinizam, rules-engine simulaciju, sequencing i decision log. `tests/ai-attack-before-wipe.test.mjs` pokriva redoslijed napad pa wipe: odluku u main 1, deklaraciju napada, bacanje u main 2, cijeli potez kroz engine i slučajeve kada wipe ipak ide prvi. `tests/headless-smoke.test.mjs` izvršava po jednu determinističku četveroigračku partiju za svih 20 deckova.
 
 ## Poznata realna ograničenja
 

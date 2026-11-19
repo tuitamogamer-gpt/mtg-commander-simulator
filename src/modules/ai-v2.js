@@ -1573,7 +1573,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const hit = baseHit * (card.kw('double strike') ? 2 : 1);
     const defenderCreatures = ctx && ctx.creaturesOf ? ctx.creaturesOf(defender) : game.creatures(defender);
     const allBlockers = defenderCreatures.filter(blocker => game.canBlock(blocker, card));
-    const myValue = permanentGameValue(game, card, player);
+    // A body its controller is about to sweep away costs nothing to lose.
+    const expendable = !!(ctx && ctx.expendable && ctx.expendable(card));
+    const myValue = expendable ? 0 : permanentGameValue(game, card, player);
     const trades = ctx && ctx.blockTradesFor
       ? ctx.blockTradesFor(card, defender, allBlockers)
       : attackBlockTrades(game, player, card, defender, allBlockers);
@@ -1675,7 +1677,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // deterred less than a real threat: losing a 1/1 to a deathtouch blocker
     // is a fair price for a swarm, losing the 6/6 commander is not.
     const attractiveness = myValue >= 5 ? 1 : myValue >= 3 ? 0.7 : 0.45;
-    if (freeBlock) risk += (myValue * 1.05 + 3) * attractiveness;                // poginem, ništa ne dobijem
+    if (expendable) risk += 0;                                                  // it dies to the sweep either way
+    else if (freeBlock) risk += (myValue * 1.05 + 3) * attractiveness;           // poginem, ništa ne dobijem
     else if (bestTradeLoss > 0) risk += (bestTradeLoss * 0.8 + 1) * attractiveness; // nepovoljan trade
     else if (blockers.length) risk += 0.8;                    // chump im poklanja tempo, mala cijena
     const vigilance = card.kw('vigilance');
@@ -1692,18 +1695,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       risk += stop.defenderLifeGain * 0.6;
       if (!combatBenefit) {
         if (vigilance && !freeBlock && !bestTradeLoss && !stop.defenderLifeGain) combatBenefit = 1.2;
-        else risk += 8; // tapping into a wall creates no pressure or useful trade
+        else if (!expendable) risk += 8; // tapping into a wall creates no pressure or useful trade
       }
     }
     // Tijelo koje ne treba za pobjedu je vrjednije kod kuće nego tapnuto.
     if (alreadyLethal && !vigilance) risk += 1.2;
-    if (!dealsDamage && !combatBenefit) risk += 2.5;          // dobrovoljni napad bez štete nema combat korist
+    if (!dealsDamage && !combatBenefit && !expendable) risk += 2.5; // dobrovoljni napad bez štete nema combat korist
     const tapsForMana = !vigilance && !!(card.def.mana && (!card.def.mana.cost || card.def.mana.cost.tap));
     if (tapsForMana) risk += game.turnNo <= 12 ? 3.5 : 1.75; // čuvaj rani mana razvoj za main 2/reakcije
-    const crackback = vigilance ? 0 : defenderCreatures.filter(creature => !creature.tapped)
+    const swept = ctx && ctx.swept;
+    const crackback = vigilance ? 0 : defenderCreatures.filter(creature => !creature.tapped && !(swept && swept(creature)))
       .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
     const poisonPressure = target instanceof U.Player ? projected.poison * 2.5 : 0;
-    const score = damageValue * 1.15 + poisonPressure + lethal + commander + threat + combatBenefit - risk - crackback;
+    // A body that is about to be swept away loses nothing by attacking: when
+    // the defender lets it through, it connects, and a block spares nobody.
+    // With no damage expected anywhere it goes for the table's biggest threat.
+    const nothingToLose = expendable && baseHit > 0 ? 3 + hit * 0.2 + (dealsDamage ? 0 : defenderThreat * 0.01) : 0;
+    const score = damageValue * 1.15 + poisonPressure + lethal + commander + threat + combatBenefit + nothingToLose - risk - crackback;
     return {
       score, freeBlock, expectedDamage: expDamage, bestTradeLoss,
       stalled: !!stop, combatBenefit,
@@ -2406,7 +2414,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return best;
   }
 
-  function attackPlanSurvival(game, player, assignments) {
+  // `swept`: what a sweep held for after this combat removes. Those bodies
+  // are neither a loss, a kill, a blocker nor a counterattack.
+  function attackPlanSurvival(game, player, assignments, swept = null) {
+    const gone = card => !!(swept && swept(card));
     const opponents = player.opponents(game);
     const dead = new Set(), removed = new Set(), eliminated = new Set();
     let life = player.life;
@@ -2421,6 +2432,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const defense = survivalBlocks(game, defender, attackers, potential);
       for (const card of defense.outcome.dead) {
         dead.add(card);
+        if (gone(card)) continue;
         if (card.ctrl === player) lostValue += permanentGameValue(game, card, player);
         else killedValue += permanentGameValue(game, card, player);
       }
@@ -2431,7 +2443,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (opponents.length && eliminated.size === opponents.length && life > 0) return 1000000;
     const tradeBalance = killedValue * 0.45 - lostValue * 0.7;
-    let blockers = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock && !dead.has(card) && !removed.has(card) &&
+    let blockers = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock && !dead.has(card) && !removed.has(card) && !gone(card) &&
       !assignments.some(item => item.card === card && !card.kw('vigilance')));
     let position = { life, poison: player.poison || 0, commanderDamage: Object.assign({}, player.commanderDamage), freshTurn: true };
     let danger = 0;
@@ -2440,7 +2452,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seat = game.players.indexOf(player);
     const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
     for (const opponent of ordered.filter(row => opponents.includes(row) && !eliminated.has(row))) {
-      const attackers = game.creatures(opponent).filter(card => !dead.has(card) && canAttackNextTurn(game, card, player));
+      const attackers = game.creatures(opponent).filter(card => !dead.has(card) && !gone(card) && canAttackNextTurn(game, card, player));
       const defense = survivalBlocks(game, player, attackers, blockers, position);
       position = { life: defense.outcome.life, poison: defense.outcome.poison,
         commanderDamage: defense.outcome.commanderDamage, freshTurn: true };
@@ -2464,6 +2476,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       fodder = ranked.slice(WIDE_BOARD_ATTACKERS).sort((a, b) => a.iid - b.iid);
     }
     const ctx = attackPlanContext(game, player);
+    // A sweep held for the second main phase: what it takes attacks as if it
+    // had nothing to lose, and what it leaves is all that defends afterwards.
+    const sweep = sweepAfterCombat(game, player);
+    const swept = sweep ? card => sweep.impact.removes(card) : null;
+    if (sweep) {
+      ctx.swept = swept;
+      ctx.expendable = card => card.ctrl === player && swept(card) && !manaBody(card);
+    }
     // Legalne mete se ne mijenjaju unutar jedne deklaracije, a fodder petlja ih
     // je računala iznova za svaku kartu u svakom planu.
     const targetCache = new Map();
@@ -2482,7 +2502,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const reserveCache = new Map();
     const ownCreatures = game.creatures(player);
     const rivalThreats = new Map(player.opponents(game).map(rival => [rival,
-      game.creatures(rival).filter(card => !card.cur.cantAttack && game.canAttackAtAll(card) && game.canAttackTarget(card, player))
+      game.creatures(rival).filter(card => !(swept && swept(card)) && !card.cur.cantAttack && game.canAttackAtAll(card) && game.canAttackTarget(card, player))
         .sort((a, b) => b.power - a.power || a.iid - b.iid).slice(0, WIDE_BOARD_SHIELDS)]));
     // Beam pruning uses a cheap shield estimate. Running a complete defensive
     // search for every partial declaration multiplied the cost on wide boards.
@@ -2491,7 +2511,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const key = assignments.filter(item => !item.card.kw('vigilance')).map(item => item.card.iid).join(',');
       if (reserveCache.has(key)) return reserveCache.get(key);
       const attacking = new Set(assignments.filter(item => !item.card.kw('vigilance')).map(item => item.card));
-      const shields = ownCreatures.filter(card => !card.tapped && !card.cur.cantBlock && !attacking.has(card))
+      const shields = ownCreatures.filter(card => !card.tapped && !card.cur.cantBlock && !attacking.has(card) && !(swept && swept(card)))
         .sort((a, b) => b.toughness - a.toughness || a.iid - b.iid).slice(0, WIDE_BOARD_SHIELDS);
       let incoming = 0;
       for (const rival of player.opponents(game)) {
@@ -2515,7 +2535,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const safety = assignments => {
       const key = actionKey({ kind: 'declareAttackers', assignments });
-      if (!safetyCache.has(key)) safetyCache.set(key, attackPlanSurvival(game, player, assignments));
+      if (!safetyCache.has(key)) safetyCache.set(key, attackPlanSurvival(game, player, assignments, swept));
       return safetyCache.get(key);
     };
     let beam = [{ assignments: [], score: 0, committed: new Map() }];
@@ -4121,19 +4141,178 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function plannedBoardWipes(view, profile, q) {
     if (WIPE_PLANS.has(view)) return WIPE_PLANS.get(view);
     const plans = [];
+    // Scoring the candidates below asks for this list again: it is not ready.
+    plans.pending = true;
     WIPE_PLANS.set(view, plans);
     const { game, player } = PRIVATE_VIEWS.get(view);
-    if (q?.type !== 'main' || game.turnPlayer !== player || game.stack.length) return plans;
-    const hold = quickScoreAction(view, { kind: 'done' }, profile, q).total;
-    for (const entry of q.casts || []) {
-      const action = { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from };
-      const impact = boardWipeImpact(game, player, action);
-      if (!impact || impact.theirsLoss < 4 || impact.netBenefit < 3) continue;
-      const score = quickScoreAction(view, action, profile, q).total;
-      if (score > hold + 2) plans.push({ action, impact, score });
+    if (q?.type === 'main' && game.turnPlayer === player && !game.stack.length) {
+      const hold = quickScoreAction(view, { kind: 'done' }, profile, q).total;
+      for (const entry of q.casts || []) {
+        const action = { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from };
+        const impact = boardWipeImpact(game, player, action);
+        if (!impact || impact.theirsLoss < 4 || impact.netBenefit < 3) continue;
+        const score = quickScoreAction(view, action, profile, q).total;
+        if (score > hold + 2) plans.push({ action, impact, score });
+      }
     }
+    plans.pending = false;
     return plans;
   }
+
+  // ---- Attack before a sweep ----------------------------------------------
+  // A sweep that takes the bot's own attackers with it is cast after combat:
+  // what is about to be lost attacks first, for whatever damage it deals, and
+  // the sweep follows in the second main phase. A sweep that spares the bot's
+  // attackers (one-sided, or its hardest hitters survive it) is still cast
+  // first, so that they attack into an empty table.
+  const manaBody = card => !card.kw('vigilance') && !!(card.def.mana && (!card.def.mana.cost || card.def.mana.cost.tap));
+  const combatHit = (game, card) => Math.max(0, game.dmgAmount ? game.dmgAmount(card, 'normal') : card.power || 0) * (card.kw('double strike') ? 2 : 1);
+  function attackReadyNow(game, player, card) {
+    if (card.tapped || (card.sick && !card.kw('haste')) || card.cur.cantAttack || !game.canAttackAtAll(card)) return false;
+    return player.opponents(game).some(rival => !rival.lost && game.canAttackTarget(card, rival));
+  }
+  // The attackers a sweep would take, when attacking with them first is the
+  // better order. A body that taps for mana is not sent: it pays for the sweep.
+  function attackersLostToSweep(game, player, impact) {
+    const ready = game.creatures(player).filter(card => attackReadyNow(game, player, card));
+    const lost = ready.filter(card => impact.removes(card) && !manaBody(card) && combatHit(game, card) > 0);
+    if (!lost.length) return [];
+    const total = cards => cards.reduce((sum, card) => sum + combatHit(game, card), 0);
+    return total(ready.filter(card => !impact.removes(card))) > total(lost) ? [] : lost;
+  }
+  MTG.botAttackersLostToSweep = attackersLostToSweep;
+
+  const spendOf = cost => (cost.generic || 0) + (cost.pips || []).length;
+  function sweepCost(game, player, action) {
+    return game.spellCost(player, action.card, Object.assign({}, action.alt || {}, { from: action.from }));
+  }
+
+  // A cost that the table is reducing rises as creatures die in combat. How
+  // much more could the sweep cost after `deaths` creatures have left (every
+  // attacker and a blocker each, at worst)? "One less for each creature" only
+  // rises once fewer creatures remain than its generic cost; any other
+  // reduction is assumed to be lost in full.
+  function sweepCostRise(game, player, action, deaths) {
+    const reduced = Number(action.card.mv || 0) - spendOf(sweepCost(game, player, action));
+    if (reduced <= 0) return 0;
+    const oracle = textOf(action.card.def);
+    if (/\bcosts \{1\} less to cast for each creature on the battlefield\b/.test(oracle)) {
+      const generic = Number((/\{(\d+)\}/.exec(action.card.def.cost || '') || [])[1] || 0);
+      const creatures = game.bf().filter(card => card.is('Creature')).length;
+      return Math.min(reduced, Math.max(0, generic - (creatures - deaths)) - Math.max(0, generic - creatures));
+    }
+    return Math.min(reduced, deaths);
+  }
+
+  // Which creatures a sweep in hand takes, read more loosely than
+  // boardWipeImpact: the order of the turn only needs to know which of the
+  // bot's own attackers leave. Returns a test for one creature, or null when
+  // the text is one-sided, targeted, modal, depends on X, or spares what is
+  // tapped (an attacker is tapped by then) — then nothing is assumed.
+  const SWEEP_COLORS = { white: 'W', blue: 'U', black: 'B', red: 'R', green: 'G' };
+  function sweepReach(game, player, action) {
+    const exact = boardWipeImpact(game, player, action);
+    if (exact) return exact.removes;
+    const source = action.card;
+    if (!source || !(source.is('Instant') || source.is('Sorcery')) || source.def.modes) return null;
+    const oracle = textOf(source.def).split(/\n(?:cycling\b|when you cycle\b|flashback\b|overload\b)/)[0];
+    const bounce = /\breturn all creatures to their owners' hands\./.test(oracle);
+    if (!bounce && !inferCardSemantics(source.def).roles.includes('board-wipe')) return null;
+    if (/\byou (?:don't|do not) control\b|\bopponents? controls?\b|\btarget (?:player|opponent)\b|\b(?:un)?tapped creatures?\b|\bchosen\b/.test(oracle)) return null;
+    const stays = card => card.kw('indestructible') || card.counters?.shield > 0;
+    const all = /\b(destroy|exile) all (other |nontoken |nonartifact |non(?:white|blue|black|red|green) )?creatures(?: with (power|toughness|mana value) (\d+) or (less|greater))?(?=[.,]| and )/.exec(oracle);
+    if (all) {
+      const [, kind, qualifier = '', stat, amount, side] = all;
+      const word = qualifier.trim();
+      return card => {
+        if (!card.is('Creature') || card === source) return false;
+        if (word === 'nontoken' && card.isToken) return false;
+        if (word === 'nonartifact' && card.is('Artifact')) return false;
+        if (word.startsWith('non') && SWEEP_COLORS[word.slice(3)] && (card.colors || []).includes(SWEEP_COLORS[word.slice(3)])) return false;
+        if (stat) {
+          const value = stat === 'power' ? card.power : stat === 'toughness' ? card.toughness : Number(card.mv || 0);
+          if (side === 'less' ? value > Number(amount) : value < Number(amount)) return false;
+        }
+        return kind === 'exile' || !stays(card);
+      };
+    }
+    if (bounce) return card => card.is('Creature');
+    const damage = /\bdeals (\d+) damage to each (?:other )?creature(?: and each (?:player|planeswalker|opponent))*\./.exec(oracle);
+    if (damage) {
+      return card => card.is('Creature') && !damageProtectionSaves(card) && !game.isProtectedFrom(card, source) &&
+        card.toughness - (card.damage || 0) <= Number(damage[1]);
+    }
+    return null;
+  }
+  MTG.botSweepReach = sweepReach;
+
+  // The sweep this main phase holds until after combat, if any.
+  const ATTACK_FIRST_PLANS = new WeakMap();
+  function attackFirstPlan(view, profile, q) {
+    if (ATTACK_FIRST_PLANS.has(view)) return ATTACK_FIRST_PLANS.get(view);
+    const { game, player } = PRIVATE_VIEWS.get(view);
+    if (q?.type !== 'main' || game.phase !== 'main1' || game.turnPlayer !== player || game.stack.length) {
+      ATTACK_FIRST_PLANS.set(view, null);
+      return null;
+    }
+    // While this is worked out, the scores it asks for are the plain ones.
+    ATTACK_FIRST_PLANS.set(view, null);
+    const plans = plannedBoardWipes(view, profile, q);
+    if (plans.pending) { ATTACK_FIRST_PLANS.delete(view); return null; }
+    // Every sweep in hand that would take the attackers waits, not only the
+    // best one: with two of them the bot cast the other in its place.
+    let best = null, hold = null;
+    const held = new Set();
+    for (const entry of q.casts || []) {
+      const action = { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from };
+      const removes = sweepReach(game, player, action);
+      if (!removes) continue;
+      // The sweep has to be one the bot would cast this turn anyway: planned,
+      // or simply scored above ending the phase.
+      const planned = plans.find(plan => plan.action.card === entry.card);
+      let score = planned ? planned.score : null;
+      if (!planned) {
+        if (hold === null) hold = quickScoreAction(view, { kind: 'done' }, profile, q).total;
+        score = quickScoreAction(view, action, profile, q).total;
+        if (score <= hold + 2) continue;
+      }
+      const lost = attackersLostToSweep(game, player, { removes });
+      if (!lost.length) continue;
+      if (availableManaEstimate(game, player) - spendOf(sweepCost(game, player, action)) < sweepCostRise(game, player, action, lost.length * 2)) continue;
+      held.add(entry.card);
+      if (!best || score > best.score) best = { action, impact: { removes }, score, lost, held };
+    }
+    ATTACK_FIRST_PLANS.set(view, best);
+    return best;
+  }
+  MTG.botAttackFirstPlan = attackFirstPlan;
+  // Would this action leave less mana than the held sweep costs?
+  function eatsSweepMana(game, player, action, sweep) {
+    let spend = 0;
+    try {
+      spend = action.kind === 'cast' ? spendOf(sweepCost(game, player, action))
+        : action.kind === 'activate' ? abilityManaSpend(game, player, action.entry) : 0;
+    } catch { spend = 0; }
+    if (spend <= 0) return false;
+    return availableManaEstimate(game, player) - spend < spendOf(sweepCost(game, player, sweep));
+  }
+  // Chosen in the first main phase of a live game; read at the declaration of
+  // attackers and in combat's priority windows of the same turn. Kept beside
+  // the game, never in it: a simulation's copy has none, and a save drops it.
+  const SWEEPS_AFTER_COMBAT = new WeakMap();
+  function sweepAfterCombat(game, player) {
+    const held = SWEEPS_AFTER_COMBAT.get(game);
+    if (!held || held.turn !== game.turnNo || held.player !== player.idx || game.turnPlayer !== player) return null;
+    const action = held.action;
+    if (action.card.zone !== held.zone || action.card.owner !== player && action.card.ctrl !== player) return null;
+    let removes = null, payable = false;
+    try {
+      removes = sweepReach(game, player, action);
+      payable = !!removes && game.canPayMana(player, sweepCost(game, player, action), { card: action.card, castOpts: action.alt || {} });
+    } catch { payable = false; }
+    return payable ? { action, impact: { removes } } : null;
+  }
+  MTG.botSweepAfterCombat = sweepAfterCombat;
 
   function diesAfterGlobalPump(card, toughness) {
     if (toughness <= 0) return true;
@@ -7908,6 +8087,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const penalty = wipeSequencingPenalty(game, player, action, total, plannedBoardWipes(view, profile, q));
       if (penalty) { breakdown.sequencing = -penalty; total -= penalty; }
     }
+    if ((action.kind === 'cast' || action.kind === 'activate') && game.turnPlayer === player) {
+      // Its own attackers go first: the sweep waits for the second main phase,
+      // and nothing before it may spend the mana it needs.
+      const first = q?.type === 'main' && phase === 'main1' ? attackFirstPlan(view, profile, q) : null;
+      const held = first || (q?.type === 'priority' && phase === 'combat' ? sweepAfterCombat(game, player) : null);
+      if (first && action.kind === 'cast' && first.held.has(action.card)) {
+        breakdown.attackFirst = Math.min(0, -80 - total);
+        total = Math.min(total, -80);
+      } else if (held && action.card !== held.action.card && eatsSweepMana(game, player, action, held.action)) {
+        breakdown.attackFirst = -40;
+        total -= 40;
+      }
+    }
     // A land drop spends neither mana nor tempo, so the bonuses for holding
     // up answers (or a style's patience) never justify skipping it. Every
     // land scores at least 6.1, so the window ends only after the land.
@@ -8425,6 +8617,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       selection = { chosen: { score: -999, rootAction: safe, depth: 0, breakdown: { fallback: 1 } }, tieBreak: false };
     }
     const chosen = selection.chosen;
+    if (q?.type === 'main' && game.phase === 'main1' && !game._simulation) {
+      const first = chosen.rootAction.kind === 'done' ? attackFirstPlan(view, profile, q) : null;
+      if (first) SWEEPS_AFTER_COMBAT.set(game, { turn: game.turnNo, player: player.idx, action: first.action, zone: first.action.card.zone });
+      else if (chosen.rootAction.kind === 'done') SWEEPS_AFTER_COMBAT.delete(game);
+    }
     const elapsed = (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now()) - started;
     const threats = {};
     for (const row of view.players) threats[row.id] = MTG.assessPlayerThreat(view, player.idx, row.id).totalScore;

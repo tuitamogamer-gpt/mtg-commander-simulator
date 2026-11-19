@@ -789,6 +789,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       for (const e of q.casts) {
         let v = this.castScore(g, e);
+        // A sweep that takes this bot's own attackers waits for the second
+        // main phase: they attack first (ai-v2.js, attackersLostToSweep).
+        if (g.phase === 'main1' && wipes.some(wipe => wipe.action.card === e.card &&
+          MTG.botAttackersLostToSweep?.(g, p, wipe.impact).length)) v = -1;
         v -= MTG.botWipeSequencingPenalty?.(g, p, { kind: 'cast', card: e.card }, v, wipes) || 0;
         if (v > 0) scored.push({ act: { kind: 'cast', card: e.card, alt: e.alt, from: e.from }, v });
       }
