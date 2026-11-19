@@ -81,10 +81,12 @@ try {
       }), true, 'the last resource is reachable after scrolling');
     } else {
       assert.equal(await page.locator('#game').evaluate(element => element.classList.contains('ct-desktop-lands')), false);
-      const horizontal = await page.locator('.mybattlefieldmain').evaluate(element => {
-        element.scrollLeft = element.scrollWidth;
-        return element.scrollWidth > element.clientWidth && element.scrollLeft > 0;
-      });
+      // A phone with room for two rows scrolls each lane sideways on its own
+      // (src/phone-experience.css); a short one scrolls the board's one row.
+      const horizontal = await page.locator('.mybattlefieldmain').evaluate(element => [element, ...element.querySelectorAll(':scope > .boardlane')].some(row => {
+        row.scrollLeft = row.scrollWidth;
+        return row.scrollWidth > row.clientWidth && row.scrollLeft > 0;
+      }));
       assert.equal(horizontal, true, 'phone battlefield retains horizontal scrolling');
       assert.ok(await page.locator('.myboard .landstack').count() > 0, 'phone retains compact land groups');
     }

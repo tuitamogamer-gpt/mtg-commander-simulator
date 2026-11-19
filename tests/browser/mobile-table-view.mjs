@@ -55,7 +55,7 @@ async function captureLayout(label) {
       view: root.dataset.mobileView, mobileBoard: root.dataset.mobileBoard, gridTable: root.classList.contains('ct-grid-view'), columns: getComputedStyle(root).gridTemplateColumns,
       topbar: rect('.topbar'), turnTitle: rect('.phase'), topActions: rect('.topbtns'), tabs: rect('.mobileviewtabs'), opponents: rect('.oppsouter'),
       prompt: rect('.promptbar'), hand: rect('.handwrap'), board: rect('.myboard'), sidebar: rect('.sidebar'),
-      focusedOpponent: rect('.opprow.ct-focused'),
+      focusedOpponent: rect('.opprow.ct-focused'), hero: rect('.myboard > .ct-player-head'), lanes: rect('.myboard > .mybattlefieldmain'),
       decision: window._ui.pending?.q.type,
     };
   });
@@ -81,12 +81,29 @@ async function assertPhoneLayout(label) {
   assert.ok(layout.tabs.y + layout.tabs.height <= layout.height, 'Arena tabs remain on screen');
   assert.ok(layout.prompt.y + layout.prompt.height <= layout.height + 1, `Prompt remains on screen: ${JSON.stringify(layout)}`);
   if (layout.view === 'mine') {
+    // The two sides of the table (src/phone-experience.css). Your portrait,
+    // life and piles stay beside the hand whichever board is open. On a tall
+    // phone the other side keeps its front line: the opponent across the
+    // table above your board, your own creatures below an opponent's.
+    const tall = layout.height >= 760;
+    assertUsable(layout, 'hero');
+    assert.ok(layout.hero.y + layout.hero.height <= layout.prompt.y + 1, `Your portrait and life sit above the prompt: ${JSON.stringify(layout)}`);
     if (layout.mobileBoard === 'opponent') {
       assertUsable(layout, 'focusedOpponent');
-      assert.equal(layout.board.display, 'none', 'A focused opponent gets the entire board area');
+      assert.ok(layout.focusedOpponent.y + layout.focusedOpponent.height <= layout.hero.y + 1, 'The opponent\'s board ends above your portrait');
+      if (tall) {
+        assertUsable(layout, 'lanes');
+        assert.ok(layout.lanes.height <= 130 && layout.lanes.y >= layout.focusedOpponent.y + layout.focusedOpponent.height - 1,
+          `Your front line is a strip below the opponent's board: ${JSON.stringify(layout)}`);
+      } else assert.equal(layout.lanes.display, 'none', 'A short phone gives a focused opponent the board area');
     } else {
       assertUsable(layout, 'board');
-      assert.equal(layout.opponents.display, 'none', 'Mine gets the entire board area');
+      assertUsable(layout, 'lanes');
+      if (tall && layout.focusedOpponent) {
+        assertUsable(layout, 'opponents');
+        assert.ok(layout.opponents.height <= 130 && layout.opponents.y + layout.opponents.height <= layout.board.y + 1,
+          `The front line across the table is a strip above your board: ${JSON.stringify(layout)}`);
+      } else assert.equal(layout.opponents.display, 'none', 'A short phone gives your board the board area');
     }
     assertUsable(layout, 'hand');
     assert.ok(layout.hand.y + layout.hand.height <= layout.height + 1, `Hand remains on screen: ${JSON.stringify(layout)}`);

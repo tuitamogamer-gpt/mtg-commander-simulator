@@ -1,0 +1,584 @@
+/* The phone table. The board is the screen: the front line of the opponent
+   across the table stands above your own board, your portrait and life sit
+   beside your hand, the hand is a fan with every card in view, and the prompt
+   is one line with its action under the thumb. `phone-table.js` marks the
+   composed table (`ct-phone`, `ct-across`, `ct-hero`, `ct-one-action`); every
+   control keeps its handler. A short landscape screen keeps the side-by-side
+   layout of command-table.css.
+
+   Memory (DESIGN.md, phones): nothing here is blurred, blended, fixed over the
+   whole screen or animated as a transform of the table. Glows are box-shadows
+   of a card's size. */
+
+@media (max-width: 900px) {
+  body.game-active #game.command-table.ct-phone {
+    --ct-hand: 142px;
+    --ph-card-h: calc(var(--ct-hand) + var(--ct-hand-extra) - 24px);
+    --ph-card-w: calc(var(--ph-card-h) / 1.4);
+    /* A card of the fan keeps its middle in view: more than half of it, never less than a finger. */
+    --ph-slice: max(44px, calc(var(--ph-card-w) / 2 + 3px));
+    --ph-across-card: 58px;
+    --ph-edge: 8px;
+    --ph-top: 52px;
+    --ph-seats: 56px;
+    --ph-hand-row: calc(var(--ct-hand) + var(--ct-hand-extra));
+  }
+  /* An empty hand keeps a status rail. With a commander beside it the row
+     keeps its height, so the board does not jump when the last card is played. */
+  body.game-active #game.command-table.ct-phone.empty-hand:not(.ct-hand-command) { --ph-hand-row: 52px; }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] { grid-template-rows: var(--ph-top) var(--ph-seats) minmax(0, 1fr) auto var(--ph-hand-row) var(--ct-tabs) !important; }
+  body.game-active #game.command-table.ct-phone:is([data-mobile-view='table'], [data-mobile-view='stack'], [data-mobile-view='hand']) { grid-template-rows: var(--ph-top) var(--ph-seats) minmax(0, 1fr) auto var(--ct-tabs) !important; }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='combat'] { grid-template-rows: var(--ph-top) minmax(0, 1fr) auto var(--ct-tabs) !important; }
+
+  /* ── Opponents: three portraits with their life, the active one lit. ── */
+  #game.command-table.ct-phone .ct-seat-ribbon { padding: 4px var(--ph-edge); gap: 6px; }
+  #game.command-table.ct-phone .ct-seat {
+    position: relative;
+    padding: 3px 8px 3px 3px;
+    gap: 7px;
+    border-radius: 24px 10px 10px 24px;
+    border-color: rgba(var(--ds-line-rgb, 120, 138, 150), .34);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015));
+  }
+  #game.command-table.ct-phone .ct-seat .ct-portrait {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 22%;
+    box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .16);
+  }
+  #game.command-table.ct-phone .ct-seat.active .ct-portrait { box-shadow: 0 0 0 2px var(--ds-accent), 0 0 10px rgba(var(--ds-accent-rgb), .55); }
+  #game.command-table.ct-phone .ct-seat-copy { min-width: 0; gap: 1px; }
+  #game.command-table.ct-phone .ct-seat-copy b { font-size: 11px; font-weight: 600; color: var(--ds-copy); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #game.command-table.ct-phone .ct-seat-life { font-size: 17px; font-weight: 700; line-height: 1.1; }
+  #game.command-table.ct-phone .ct-seat-life .gameicon { width: 13px; height: 13px; }
+  /* The seat whose front line stands across the table points down at it. */
+  #game.command-table.ct-phone .ct-seat.across { border-color: rgba(var(--ds-accent-rgb), .5); }
+  #game.command-table.ct-phone .ct-seat.across::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-right: 1px solid rgba(var(--ds-accent-rgb), .5);
+    border-bottom: 1px solid rgba(var(--ds-accent-rgb), .5);
+    background: #151b21;
+    transform: rotate(45deg);
+  }
+
+  /* ── Your board: no frame, no heading; the cards are the content. ── */
+  body.game-active #game.command-table.ct-phone .myboard {
+    flex-direction: column;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden;
+  }
+  #game.command-table.ct-phone .myboard::before { content: none !important; }
+  body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 4px var(--ph-edge) 0 !important;
+    align-items: flex-end;
+  }
+  #game.command-table.ct-phone .myboard .boardlanelabel { font-size: 10px; letter-spacing: .12em; color: var(--ds-muted); padding-left: 2px; }
+  body.game-active #game.command-table.ct-phone .myboard .boardlanecards { padding: 4px 2px 5px !important; }
+  #game.command-table.ct-phone .myboard > .mybattlefieldmain > .emptyrow {
+    align-self: center;
+    margin: auto;
+    padding: 14px 18px;
+    border: 1px dashed rgba(255, 255, 255, .16);
+    border-radius: 12px;
+    color: var(--ds-muted);
+    font: 500 13px/1.4 var(--ds-font-body);
+    text-align: center;
+  }
+
+  /* Lands and mana: one line of counts by name, the mana rocks beside them. */
+  body.game-active #game.command-table.ct-phone .myboard > .landrow {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0 var(--ph-edge) 4px !important;
+    overflow: visible;
+  }
+  body.game-active #game.command-table.ct-phone .myboard .resourcezone {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 6px;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  #game.command-table.ct-phone .myboard .resourcezone > .boardlanelabel { display: none; }
+  body.game-active #game.command-table.ct-phone .myboard .landstrip {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 5px;
+    min-height: 46px;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+  body.game-active #game.command-table.ct-phone .myboard .landstack {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    align-content: center;
+    justify-content: start;
+    column-gap: 6px;
+    row-gap: 1px;
+    min-width: 58px;
+    min-height: 46px;
+    height: auto;
+    padding: 5px 9px;
+    border-radius: 10px;
+  }
+  #game.command-table.ct-phone .myboard .landstack .lname { grid-column: 1 / -1; font-size: 11px; line-height: 14px; max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #game.command-table.ct-phone .myboard .landstack .lcount { font-size: 13px; line-height: 16px; font-weight: 700; }
+  #game.command-table.ct-phone .myboard .landstack > div:not(.lname):not(.lcount) { display: flex; align-items: center; gap: 2px; min-height: 16px; }
+  body.game-active #game.command-table.ct-phone .myboard .manaartifactstrip {
+    order: -1;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 5px;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  #game.command-table.ct-phone .myboard .manaartifactstrip:empty { display: none; }
+  body.game-active #game.command-table.ct-phone .myboard .manaartifactstrip .mini { width: 44px !important; height: 62px !important; margin: 0; }
+  body.game-active #game.command-table.ct-phone .myboard .manaartifactstrip .mini > img { width: 100%; height: 100%; }
+
+  /* ── You: portrait, life, and the piles beside your hand. ── */
+  body.game-active #game.command-table.ct-phone .ct-hero {
+    order: 9;
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 52px;
+    margin: 0;
+    padding: 3px var(--ph-edge);
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    background: linear-gradient(180deg, rgba(8, 11, 14, .0), rgba(8, 11, 14, .55));
+  }
+  #game.command-table.ct-phone .ct-hero .ct-inspect-commander {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+  }
+  #game.command-table.ct-phone .ct-hero .ct-portrait {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 22%;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .2);
+  }
+  #game.command-table.ct-phone .ct-hero.is-active .ct-portrait { box-shadow: 0 0 0 2px var(--ds-accent), 0 0 12px rgba(var(--ds-accent-rgb), .6); }
+  #game.command-table.ct-phone .ct-hero .meinfo { display: contents; }
+  #game.command-table.ct-phone .ct-hero .playerlifetotals { order: 1; flex: 0 0 auto; width: auto; height: auto; }
+  #game.command-table.ct-phone .ct-hero .melife {
+    min-width: 34px;
+    min-height: 44px;
+    justify-content: flex-start;
+    font: 800 28px/1 var(--ds-font-display, var(--ds-font-body)) !important;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  #game.command-table.ct-phone .ct-hero .ct-player-name { order: 2; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  #game.command-table.ct-phone .ct-hero .ct-player-name > small { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 0; }
+  #game.command-table.ct-phone .ct-hero .ct-player-name > small .ct-turn-badge { font-size: 10px; white-space: nowrap; }
+  #game.command-table.ct-phone .ct-hero .ct-player-name > b { font-size: 12px; font-weight: 600; color: var(--ds-copy); }
+  #game.command-table.ct-phone .ct-hero .ct-player-name .manapool { font-size: 12px; }
+  #game.command-table.ct-phone .ct-hero .ct-player-status { order: 3; flex: 0 1 auto; min-width: 0; display: flex; gap: 4px; overflow: hidden; }
+  #game.command-table.ct-phone .ct-hero .zbtns {
+    order: 4;
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+  }
+  body.game-active #game.command-table.ct-phone .ct-hero .zbtns > :is(.zonecounter, .ct-hero-hand) {
+    flex: 0 0 auto;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 46px;
+    min-width: 46px;
+    min-height: 44px;
+    height: 44px;
+    padding: 2px;
+    border-radius: 10px;
+  }
+  #game.command-table.ct-phone .ct-hero .zonecounterlabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #game.command-table.ct-phone .ct-hero .zonecounter .gameicon { width: 15px; height: 15px; }
+  #game.command-table.ct-phone .ct-hero .zonecounter b { font: 700 13px/1 var(--ds-font-mono); }
+  /* The Hand pile is the way to the whole hand. */
+  #game.command-table.ct-phone .ct-hero .ct-hero-hand { margin: 0; border: 1px solid rgba(var(--ds-accent-rgb), .42); background: rgba(var(--ds-accent-rgb), .1); color: var(--ds-accent-bright); cursor: pointer; }
+  #game.command-table.ct-phone .ct-hero .ct-hero-hand > .zonecounter { display: contents; color: inherit; }
+  #game.command-table.ct-phone .ct-hero .ct-hero-hand:focus-visible { outline: 2px solid var(--ds-accent-bright); outline-offset: 2px; }
+
+  /* ── The prompt: one line, the action at the thumb. ── */
+  #game.command-table.ct-phone .ct-decision-rail { padding: 7px var(--ph-edge) 8px; border-bottom: 0; background: rgba(8, 11, 14, .55); }
+  body.game-active #game.command-table.ct-phone .ct-decision-rail .promptbar.ct-one-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 1px;
+  }
+  #game.command-table.ct-phone .promptbar.ct-one-action > .waitownership { grid-column: 1; grid-row: 1; align-self: end; margin: 0; }
+  #game.command-table.ct-phone .promptbar.ct-one-action > .ptext { grid-column: 1; grid-row: 2; align-self: start; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  #game.command-table.ct-phone .promptbar.ct-one-action > .btnrow { grid-column: 2; grid-row: 1 / -1; margin: 0; flex-wrap: nowrap; }
+  body.game-active #game.command-table.ct-phone .promptbar.ct-one-action > .btnrow > .pbtn {
+    flex: 0 0 auto;
+    min-width: 132px;
+    max-width: 190px;
+    min-height: 52px;
+    padding: 6px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+  #game.command-table.ct-phone .promptbar .waitownership strong { font-size: 12px; }
+  #game.command-table.ct-phone .promptbar > .btnrow > .pbtn { border-radius: 12px; font-size: 13px; min-height: 48px; }
+
+  /* ── The hand: a fan. Every card shows; what you can play stands up. ── */
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .handwrap {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: 6px;
+    padding: 0 var(--ph-edge) 4px !important;
+    border-top: 0;
+    background: rgba(8, 11, 14, .55);
+  }
+  body.game-active #game.command-table.ct-phone.ct-hand-command[data-mobile-view='mine'] .handwrap { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  /* The heading's count lives on the Hand pile; sorting is in the whole hand. */
+  #game.command-table.ct-phone[data-mobile-view='mine'] .handtools { display: contents; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .handtools > :is(.handtoolstitle, .handsortlabel, .handexpand) { display: none; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-hand-cards { grid-row: 1; grid-column: 2; min-width: 0; overflow: visible; }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand {
+    grid-row: 1;
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 0 !important;
+    width: 100%;
+    height: 100% !important;
+    padding: 12px 2px 6px !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: none;
+    scrollbar-width: none;
+  }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard {
+    flex: 0 0 auto;
+    width: var(--ph-card-w) !important;
+    height: var(--ph-card-h) !important;
+    margin: 0 !important;
+    border-radius: 7px;
+    box-shadow: -3px 0 8px rgba(0, 0, 0, .5);
+    scroll-snap-align: none;
+    transition: transform .16s ease-out;
+  }
+  /* Each card keeps its middle in view; a larger hand scrolls. */
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard + .hcard {
+    margin-left: clamp(calc(var(--ph-slice) - var(--ph-card-w)), calc((100% - 4px - var(--ph-hand-count) * var(--ph-card-w)) / (var(--ph-hand-count) - 1)), 6px) !important;
+  }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard:is(.castable, .targetable, .suspendready) { transform: translateY(-9px); }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard.castable { box-shadow: -3px 0 8px rgba(0, 0, 0, .5), 0 0 0 2px #7fd08a, 0 0 12px rgba(127, 208, 138, .5); }
+  /* The cost stays in view on the part of a card that the next one leaves. */
+  #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard > .hcost {
+    top: auto;
+    right: auto;
+    left: 3px;
+    bottom: 3px;
+    padding: 2px 4px;
+    border-radius: 9px;
+    background: rgba(8, 11, 14, .82);
+  }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .hand > .hcard > .hcost:empty { display: none; }
+
+  /* The commander stands at the head of the fan. */
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-dock {
+    grid-row: 1;
+    grid-column: 1;
+    align-self: end;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 0 2px;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-command-heading { display: none; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-command-slots { flex-direction: row; align-items: flex-end; gap: 4px; }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card {
+    position: relative;
+    display: block;
+    width: calc(var(--ph-card-w) * .72);
+    height: calc(var(--ph-card-h) * .72);
+    min-height: 0;
+    padding: 0;
+    border-radius: 7px;
+    overflow: visible;
+  }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card > img { display: block; width: 100%; height: 100%; border-radius: 7px; object-fit: cover; transform: none; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card .czinfo { position: absolute; left: 0; right: 0; bottom: 0; width: auto; padding: 10px 2px 2px; border-radius: 0 0 7px 7px; background: linear-gradient(180deg, rgba(8, 11, 14, 0), rgba(8, 11, 14, .9) 55%); text-align: center; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card .czname { display: none; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card .czcost { justify-content: center; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card .ct-command-location { font-size: 9px; line-height: 11px; color: #d5dee3; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    top: -7px;
+    left: 50%;
+    width: 18px;
+    height: 14px;
+    margin-left: -9px;
+    background: var(--ds-accent-bright);
+    clip-path: polygon(0 100%, 0 20%, 25% 55%, 50% 0, 75% 55%, 100% 20%, 100% 100%);
+  }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card[data-command-state='command']::after { display: none; }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card[data-command-state='away'] > img { filter: grayscale(.7) brightness(.6); }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card.castable { box-shadow: 0 0 0 2px #7fd08a, 0 0 12px rgba(127, 208, 138, .5); }
+  #game.command-table.ct-phone[data-mobile-view='mine'] .ct-commander-card .czgo { top: auto; bottom: calc(100% - 22px); right: 2px; }
+
+  /* The tabs: a quiet base under the hand. */
+  #game.command-table.ct-phone .mobileviewtabs { background: #0b0f13; border-top-color: rgba(255, 255, 255, .08); }
+
+  /* ── An opponent's board: the same table, seen from across. Its name and
+     piles share one line; the cards are the content. ── */
+  body.game-active #game.command-table.ct-phone .oppsouter { padding: 0 !important; }
+  body.game-active #game.command-table.ct-phone .opprow {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: 'head zones' 'strip strip';
+    margin: 0;
+    border-width: 0 0 1px !important;
+    border-style: solid !important;
+    border-color: rgba(255, 255, 255, .08) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  body.game-active #game.command-table.ct-phone .opphead {
+    grid-area: head;
+    min-width: 0;
+    min-height: 48px !important;
+    padding: 2px 0 2px var(--ph-edge) !important;
+    border: 0;
+    background: none !important;
+  }
+  #game.command-table.ct-phone .opphead .oppname { font-size: 14px; font-weight: 650; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #game.command-table.ct-phone .opphead .ct-turn-badge { display: none; }
+  body.game-active #game.command-table.ct-phone .ct-player-zones {
+    grid-area: zones;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 2px var(--ph-edge) 2px 4px;
+    border: 0;
+    background: none;
+  }
+  body.game-active #game.command-table.ct-phone .ct-player-zones > .zonecounter {
+    flex: 0 0 auto;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 2px;
+    border-radius: 10px;
+  }
+  #game.command-table.ct-phone .ct-player-zones .zonecounterlabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #game.command-table.ct-phone .ct-player-zones .zonecounter .gameicon { width: 15px; height: 15px; }
+  #game.command-table.ct-phone .ct-player-zones .zonecounter b { font: 700 13px/1 var(--ds-font-mono); }
+  #game.command-table.ct-phone .ct-player-zones .ct-focus-board { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 10px; }
+  /* One opponent in view: its seat is selected above, nothing to enlarge. */
+  #game.command-table.ct-phone:not(.ct-show-all)[data-mobile-view='mine'] .ct-player-zones .ct-focus-board { display: none; }
+  body.game-active #game.command-table.ct-phone .oppstrip { grid-area: strip; min-width: 0; padding: 0 var(--ph-edge) 6px !important; }
+  #game.command-table.ct-phone .opprow .boardlanelabel { font-size: 10px; letter-spacing: .12em; color: var(--ds-muted); }
+  #game.command-table.ct-phone .oppresourcelane > .boardlanelabel { display: none; }
+  body.game-active #game.command-table.ct-phone .oppresourcelane { padding: 2px 0 0; min-height: 0; }
+  body.game-active #game.command-table.ct-phone .oppresourcecards { align-items: center; gap: 5px; min-height: 0; overflow-x: auto; scrollbar-width: none; }
+  body.game-active #game.command-table.ct-phone .oppresourcecards .mini { width: 44px !important; height: 62px !important; flex: 0 0 auto; margin: 0; }
+  body.game-active #game.command-table.ct-phone .oppresourcecards .mini > img { width: 100%; height: 100%; }
+  body.game-active #game.command-table.ct-phone:is([data-mobile-view='table'], .ct-show-all) .opprow { min-height: 0; }
+
+  /* An opponent's board is open: you stay at the table. Your portrait, life
+     and piles keep their place beside the hand. */
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] {
+    grid-template-rows: var(--ph-top) var(--ph-seats) minmax(0, 1fr) auto auto var(--ph-hand-row) var(--ct-tabs) !important;
+    grid-template-areas: 'topbar' 'seats' 'opps' 'mine' 'decision' 'hand' 'tabs' !important;
+  }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard { display: flex !important; }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard > :is(.mybattlefieldmain, .landrow) { display: none !important; }
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .ct-hero { border-top-color: rgba(255, 255, 255, .12); }
+}
+
+/* Room for two rows: your creatures face the table; what supports them
+   stands behind, smaller. Each row scrolls sideways on its own. */
+@media (max-width: 900px) and (min-height: 700px) {
+  body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 0 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain > .boardlane { flex: 0 0 auto; min-width: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; }
+  #game.command-table.ct-phone .myboard > .mybattlefieldmain > .boardlane > .boardlanelabel { display: none; }
+  #game.command-table.ct-phone .myboard > .mybattlefieldmain > .supportlane { --ct-card: 64px; }
+}
+
+/* Tall phones: the two front lines face each other. With your board open,
+   the creatures of the opponent across the table stand above it; with an
+   opponent's board open, yours stand below it. A seat chooses who is across. */
+@media (max-width: 900px) and (min-height: 760px) {
+  body.game-active #game.command-table.ct-phone { --ct-hand: 150px; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] {
+    grid-template-rows: var(--ph-top) var(--ph-seats) auto minmax(0, 1fr) auto var(--ph-hand-row) var(--ct-tabs) !important;
+    grid-template-areas: 'topbar' 'seats' 'opps' 'mine' 'decision' 'hand' 'tabs' !important;
+  }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppsouter {
+    display: block !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .09);
+  }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .opprow:not(.ct-focused) { display: none !important; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .opprow.ct-focused { display: block !important; min-height: 0; padding: 0; border-width: 0 !important; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] :is(.opphead, .ct-player-zones, .oppresourcelane, .boardlanelabel) { display: none !important; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppstrip,
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard > .mybattlefieldmain {
+    --ct-opponent-card: var(--ph-across-card);
+    --ct-card: var(--ph-across-card);
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 1px !important;
+    min-height: 0;
+    padding: 4px var(--ph-edge) 5px !important;
+    overflow: hidden;
+  }
+  #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppstrip::before,
+  #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard > .mybattlefieldmain::before {
+    content: attr(data-across-name);
+    position: static;
+    inset: auto;
+    width: auto;
+    height: auto;
+    border: 0;
+    background: none;
+    opacity: 1;
+    font: 600 10px/13px var(--ds-font-body);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ds-muted);
+  }
+  /* Nothing stands across the table: one line says so. */
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppstrip[data-across-note] { flex-direction: row; align-items: baseline; gap: 8px !important; min-height: 0 !important; }
+  #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppstrip[data-across-note]::after {
+    content: attr(data-across-note);
+    position: static;
+    inset: auto;
+    width: auto;
+    height: auto;
+    border: 0;
+    background: none;
+    opacity: 1;
+    font: 500 12px/16px var(--ds-font-body);
+    color: var(--ds-muted);
+  }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] :is(.oppswrap, .opprow, .oppstrip) { min-height: 0 !important; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppboardmain { gap: 8px !important; }
+  body.game-active #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppboardmain .boardlanecards,
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard .boardlanecards { padding: 2px !important; gap: 4px !important; }
+  #game.command-table.ct-phone.ct-across[data-mobile-view='mine'][data-mobile-board='mine'] .oppstrip > .emptystrip,
+  #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard > .mybattlefieldmain > .emptyrow {
+    align-self: flex-start;
+    min-height: 26px;
+    margin: 0;
+    padding: 4px 0;
+    border: 0;
+    font: 500 12px/1.4 var(--ds-font-body);
+    color: var(--ds-muted);
+  }
+  /* Your front line is your creatures; the rest waits on your own board. */
+  body.game-active #game.command-table.ct-phone[data-mobile-view='mine'][data-mobile-board='opponent'] .myboard > .mybattlefieldmain > .supportlane { display: none; }
+}
+
+/* Short phones give the board the room. */
+@media (max-width: 900px) and (max-height: 720px) {
+  body.game-active #game.command-table.ct-phone { --ct-hand: 132px; --ph-top: 48px; --ph-seats: 52px; }
+  #game.command-table.ct-phone .ct-seat .ct-portrait { width: 36px; height: 36px; }
+  body.game-active #game.command-table.ct-phone .ct-hero { min-height: 46px; padding-block: 1px; }
+  #game.command-table.ct-phone .ct-hero .ct-inspect-commander,
+  #game.command-table.ct-phone .ct-hero .ct-portrait { width: 44px; height: 44px; flex-basis: 44px; min-width: 44px; }
+  #game.command-table.ct-phone .ct-hero .melife { font-size: 24px !important; }
+  body.game-active #game.command-table.ct-phone .promptbar.ct-one-action > .btnrow > .pbtn { min-height: 46px; }
+}
+@media (max-width: 900px) and (max-height: 699px) {
+  body.game-active #game.command-table.ct-phone { --ct-hand: 122px; }
+  body.game-active #game.command-table.ct-phone .myboard > .mybattlefieldmain { align-items: flex-start; }
+}
+@media (max-width: 900px) and (max-height: 600px) {
+  body.game-active #game.command-table.ct-phone { --ct-hand: 108px; }
+}
+/* Narrow phones: the portrait's ring says whose turn it is. */
+@media (max-width: 380px) {
+  body.game-active #game.command-table.ct-phone .promptbar.ct-one-action > .btnrow > .pbtn { min-width: 112px; max-width: 150px; padding-inline: 10px; font-size: 13px; }
+  #game.command-table.ct-phone .ct-hero .ct-player-name > :is(b, small) { display: none; }
+  #game.command-table.ct-phone .opphead .oppname { font-size: 13px; }
+  /* A seat above opens the same board: the name keeps the room. */
+  #game.command-table.ct-phone .ct-player-zones .ct-focus-board { display: none; }
+}

@@ -1,6 +1,8 @@
 // Phone table polish. Short notices float just above the prompt bar instead of
 // over the board heading with your life total, and the prompt says "tap" on
-// touch screens. Presentation only: decisions and rules state are untouched.
+// touch screens. The second half marks the composed table for the phone
+// layout (src/phone-experience.css). Presentation only: decisions and rules
+// state are untouched.
 'use strict';
 (() => {
 const U = globalThis.MTG;
@@ -21,7 +23,9 @@ function placeFloaters() {
   if (!items.length) return;
   const reset = () => items.forEach(item => { item.style.removeProperty('top'); item.style.removeProperty('bottom'); });
   if (!phone.matches || !document.body.classList.contains('game-active') || document.querySelector('#game .overlay')) return reset();
-  const anchor = ['#game .promptbar', '#game .mobileviewtabs'].map(sel => document.querySelector(sel)?.getBoundingClientRect())
+  // Your portrait and life sit on the prompt (phone-experience.css): notices
+  // stand on them, not over them. Views without them stand on the prompt.
+  const anchor = ['#game.ct-phone .myboard > .ct-hero', '#game .promptbar', '#game .mobileviewtabs'].map(sel => document.querySelector(sel)?.getBoundingClientRect())
     .find(r => r && r.height > 0 && r.top > 0 && r.top <= innerHeight);
   if (!anchor) return reset();
   const z = window._ui?.viewportZoom?.(document.body) || 1;
@@ -77,4 +81,71 @@ new MutationObserver(records => {
 }).observe(document.body, {childList: true});
 window.addEventListener('resize', placeFloaters);
 phone.addEventListener?.('change', placeFloaters);
+
+// The phone table (src/phone-experience.css). The board is the screen: the
+// front line of the opponent across the table stands above your own board,
+// your portrait and life sit beside your hand, the hand is a fan with every
+// card in view, and the prompt is one line with its action under the thumb.
+// The stylesheet does the work; this marks what it needs on the table as it
+// is composed, before it reaches the screen, so motion measures the layout
+// the player sees. Every control keeps its handler.
+const table = window.matchMedia('(max-width: 900px)');
+// A short landscape screen keeps its side-by-side layout (command-table.css).
+const shortLandscape = window.matchMedia('(min-width: 600px) and (max-width: 900px) and (max-height: 500px)');
+const say = text => U.uiText ? U.uiText(String(text)) : String(text);
+const renderCommandTable = U.UI.prototype.renderCommandTable;
+U.UI.prototype.renderCommandTable = function (game, root) {
+  renderCommandTable.call(this, game, root);
+  const on = table.matches && !shortLandscape.matches;
+  root.classList.toggle('ct-phone', on);
+  if (!on) return;
+  const mine = this.mobileView === 'mine' && (root.dataset.mobileBoard || 'mine') === 'mine';
+
+  // Your portrait, life and zones: one bar between the board and the hand.
+  const hero = root.querySelector('.myboard > .ct-player-head');
+  if (hero) {
+    hero.classList.add('ct-hero');
+    hero.classList.toggle('is-active', game.turnPlayer === this.me);
+    // The Hand counter opens the whole hand: the hand row has no heading.
+    const counter = hero.querySelector('.zbtns > .zone-hand'), expand = root.querySelector('.handwrap .handexpand');
+    if (counter && expand && this.mobileView === 'mine') {
+      counter.replaceWith(expand);
+      expand.classList.add('ct-hero-hand');
+      expand.replaceChildren(counter);
+    }
+  }
+
+  // The opponent across the table: the focused one, whose front line is shown.
+  const across = mine ? root.querySelector('.opprow.ct-focused') : null;
+  root.classList.toggle('ct-across', !!across);
+  if (across) {
+    const player = game.players.find(item => String(item.idx) === across.dataset.playerId);
+    root.querySelector(`.ct-seat[data-focus-player="${across.dataset.playerId}"]`)?.classList.add('across');
+    const strip = across.querySelector('.oppstrip');
+    if (strip && player) {
+      strip.dataset.acrossName = say(player.name);
+      // Lands and mana rocks are on the opponent's own board, a seat away.
+      if (!strip.querySelector('.oppboardmain .mini')) strip.dataset.acrossNote = say('No creatures');
+    }
+  }
+
+  // With an opponent's board open, your own front line stands below it.
+  const front = root.querySelector('.myboard > .mybattlefieldmain');
+  if (front) front.dataset.acrossName = say('You');
+
+  // The fan: how many cards share the row decides how far they overlap.
+  const hand = root.querySelector('.handwrap .hand');
+  if (hand) hand.style.setProperty('--ph-hand-count', String(Math.max(2, hand.querySelectorAll(':scope > .hcard').length)));
+
+  // One action: the instruction and its button share a line.
+  const prompt = root.querySelector('.ct-decision-rail > .promptbar');
+  if (prompt) {
+    const rows = [...prompt.querySelectorAll(':scope > .btnrow')], loose = prompt.querySelectorAll(':scope > .pbtn').length;
+    const buttons = rows.reduce((sum, row) => sum + row.querySelectorAll('.pbtn').length, 0) + loose;
+    prompt.classList.toggle('ct-one-action', rows.length === 1 && !loose && buttons === 1 && !!prompt.querySelector(':scope > .ptext'));
+    prompt.classList.toggle('ct-no-action', buttons === 0);
+  }
+};
+table.addEventListener?.('change', () => { if (document.body.classList.contains('game-active')) window._ui?.render?.(); });
+shortLandscape.addEventListener?.('change', () => { if (document.body.classList.contains('game-active')) window._ui?.render?.(); });
 })();

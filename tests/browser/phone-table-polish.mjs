@@ -83,11 +83,13 @@ try {
     assert.ok(geo.notice && geo.toast && geo.heading, JSON.stringify(geo));
     assert.equal(overlaps(geo.notice, geo.heading), false, `the activity line leaves your name and life visible: ${JSON.stringify(geo)}`);
     assert.equal(overlaps(geo.toast, geo.heading), false, 'the toast leaves the board heading visible');
-    assert.ok(geo.notice.bottom <= geo.prompt.top + 1 && geo.prompt.top - geo.notice.bottom <= 16, `the activity line sits just above the prompt: ${JSON.stringify(geo)}`);
+    // Your portrait and life sit on the prompt; the notices stand on them.
+    assert.ok(geo.notice.bottom <= geo.heading.top + 1 && geo.heading.top - geo.notice.bottom <= 16 && geo.heading.bottom <= geo.prompt.top + 1,
+      `the activity line sits just above your portrait and life, which sit above the prompt: ${JSON.stringify(geo)}`);
     assert.ok(geo.toast.bottom <= geo.notice.top + 1, 'the toast stacks above the activity line');
     assert.match(geo.toastText, /tap a target/);
     await page.screenshot({path: `${output}/notices-mine.png`});
-    console.log('PASS notices float above the prompt, clear of the board heading');
+    console.log('PASS notices float above your portrait and life, clear of them and of the prompt');
 
     // The full hand: the heading stays clear, and the commander is a compact row
     // above a hand grid of at least two columns.
@@ -150,12 +152,15 @@ try {
       const modal = document.querySelector('.recapminor .modal.resolutionrecap'), strip = modal.querySelector(':scope > .waitownership');
       const r = modal.getBoundingClientRect(), s = strip.getBoundingClientRect(), label = strip.querySelector('strong').getBoundingClientRect();
       return {left: r.left, right: r.right, bottom: r.bottom, top: r.top, width: innerWidth, height: innerHeight,
-        stripTop: s.top, labelInset: label.left - r.left, board: document.querySelector('#game .myboard .ct-player-head').getBoundingClientRect().toJSON()};
+        stripTop: s.top, labelInset: label.left - r.left, board: document.querySelector('#game .myboard .creaturelane .mini').getBoundingClientRect().toJSON(),
+        across: document.querySelector('#game .opprow.ct-focused .mini')?.getBoundingClientRect().toJSON()};
     });
     assert.ok(sheet.left <= 0.5 && sheet.right >= sheet.width - 0.5 && sheet.bottom >= sheet.height - 0.5, `full-width bottom sheet: ${JSON.stringify(sheet)}`);
     assert.ok(sheet.labelInset >= 12, `the status strip has inner padding: ${JSON.stringify(sheet)}`);
     assert.ok(Math.abs(sheet.stripTop - sheet.top) <= 2, 'the status strip is the top edge of the sheet');
-    assert.ok(sheet.top >= sheet.board.bottom, 'your board heading stays visible above the sheet');
+    // Your portrait and life sit beside the hand, under the sheet; the table stays in view above it.
+    assert.ok(sheet.top >= sheet.board.bottom, `your creatures stay visible above the sheet: ${JSON.stringify(sheet)}`);
+    assert.ok(sheet.across && sheet.across.bottom <= sheet.board.top, `so does the front line across the table: ${JSON.stringify(sheet)}`);
     await page.screenshot({path: `${output}/recap-sheet.png`});
     await page.locator('.resolutionrecapproceed').click();
     await page.waitForFunction(() => window.__recapAnswered === true);
