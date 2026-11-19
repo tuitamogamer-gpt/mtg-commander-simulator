@@ -244,6 +244,23 @@ try {
     await context.close();
   }
 
+  // ── A prompt that grows or shrinks moves the lands and your bar, never the cards on the table. ──
+  {
+    const {context, page} = await table(390, 844);
+    const place = () => page.evaluate(() => ({card: window.__box('.myboard .creaturelane .mini').top, support: window.__box('.myboard .supportlane .mini').top,
+      across: window.__box('.opprow.ct-focused .mini').top, rail: window.__box('.ct-decision-rail').height, hero: window.__box('.myboard > .ct-player-head').top,
+      buttons: document.querySelectorAll('.promptbar .pbtn').length}));
+    const before = await place();
+    await page.evaluate(() => { void _ui.me.controller.decide(_game, {type: 'manualResolve', player: _ui.me, card: _ui.me.hand[0]}); _ui.render(); });
+    const after = await place();
+    assert.ok(after.buttons >= 2 && after.rail > before.rail + 8, `a prompt with two buttons is taller: ${JSON.stringify({before, after})}`);
+    assert.ok(after.hero < before.hero, 'your bar makes room for it');
+    assert.ok(Math.abs(after.card - before.card) < 1 && Math.abs(after.support - before.support) < 1 && Math.abs(after.across - before.across) < 1,
+      `the cards on the table keep their place: ${JSON.stringify({before, after})}`);
+    check('390×844: a taller prompt moves your bar, not the cards on the table');
+    await context.close();
+  }
+
   // ── A short landscape screen keeps its side-by-side layout. ──
   {
     const {context, page} = await table(844, 390);

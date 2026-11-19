@@ -207,15 +207,19 @@ try {
   {
     const {context, page} = await open(390, 844, true);
 
-    // A card that is not on this view: the plate carries its picture.
+    // A card that is not on this view: the plate carries its picture. A tall
+    // phone shows the front line of one opponent across the table
+    // (src/phone-experience.css); the victim is another opponent's.
     await table(page);
     assert.equal(await page.evaluate(() => _ui.mobileView), 'mine');
+    const across = await page.evaluate(() => Number(document.querySelector('#game.ct-across .opprow.ct-focused')?.dataset.playerId));
+    assert.equal(across, 1, 'the first opponent stands across the table');
     let seen = await page.evaluate(async () => {
-      const victim = _game.creatures(_game.players[1])[1];
+      const victim = _game.creatures(_game.players[2])[1];
       __resolve(_ui.me, 'Swords to Plowshares', () => _game.exileCard(victim));
       return {name: victim.name, ...(await __strike(victim))};
     });
-    assert.equal(seen.before, null, 'the opposing card is not on the phone\'s Mine view');
+    assert.equal(seen.before, null, 'that opponent\'s card is not on the phone\'s Mine view');
     assert.equal(seen.strike, null);
     assert.match(seen.plate.cls, /withcard/);
     assert.equal(seen.plate.picture, true, 'the plate shows the card');
@@ -226,6 +230,20 @@ try {
     assert.equal(result.headline, 'Into exile');
     await page.locator('[data-testid="resolution-recap"] .resolutionrecapproceed').click();
     check('a phone shows a removal of a card that is on another view');
+
+    // A card across the table is on this view: the hit lands on it.
+    await table(page);
+    seen = await page.evaluate(async () => {
+      const victim = _game.creatures(_game.players[1])[1];
+      __resolve(_ui.me, 'Swords to Plowshares', () => _game.exileCard(victim));
+      return {name: victim.name, ...(await __strike(victim))};
+    });
+    assert.ok(seen.before && seen.strike, `the hit is on the card across the table: ${JSON.stringify(seen)}`);
+    assert.ok(Math.abs(seen.strike.left - seen.before.left) <= 2 && Math.abs(seen.strike.top - seen.before.top) <= 2);
+    assert.deepEqual(seen.plate.text, ['EXILED', seen.name, 'Swords to Plowshares · You']);
+    await recap(page);
+    await page.locator('[data-testid="resolution-recap"] .resolutionrecapproceed').click();
+    check('a phone marks a card across the table where it stands');
 
     // My own permanent, on screen.
     await table(page);

@@ -44,6 +44,7 @@ Run the existing browser scripts with Playwright available to Node. `PLAYWRIGHT_
 node tests/browser/oracle-import-release.mjs --output output/playwright/release-import
 node tests/browser/player-experience.mjs
 node tests/browser/mobile-table-view.mjs
+node tests/browser/phone-table.mjs
 node tests/browser/commander-live-launch.mjs --output output/playwright/release-live
 node tests/browser/commander-live-four-player.mjs --output output/playwright/release-live-four
 node tests/browser/battlefield-combat.mjs
