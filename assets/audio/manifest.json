@@ -1172,126 +1172,209 @@
       "id": "wipe-charge",
       "eventId": "wipe-charge",
       "title": "Wipe Charge",
-      "version": 1,
+      "version": 2,
       "kind": "sfx",
-      "provider": "Original local synthesis",
+      "provider": "Fish Audio sound effects",
       "model": null,
-      "source": "scripts/generate-wipe-sfx.py",
-      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "source": "scripts/master-wipe-sfx.py",
+      "sourceSha256": "f3fb796122a7040bccf5b44460135a6a8abc0fedc2a00ba0189f2c884bab6da0",
       "sourceDependencies": [
         {
           "file": "scripts/generate-polished-sfx.py",
           "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
         }
       ],
-      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
-      "description": "A slow inward draw of air over a rising low tone, with a few quickening dry ticks, cut just before it peaks.",
-      "seed": 561118,
-      "generatedAt": "2026-11-19T14:07:34.124925+00:00",
-      "file": "assets/audio/sfx/wipe-charge-v1.mp3",
-      "seconds": 1.04,
-      "bytes": 13210,
-      "sha256": "4b5bff46bd3e6086c621c07c9079397c6b84e47c8598d0527da4486cfb26fc5b",
+      "sourceRecordings": [
+        {
+          "name": "rumble",
+          "taskId": "25c791e104044d818dfe0026256e1e0a",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/25c791e104044d818dfe0026256e1e0a.wav",
+          "prompt": "Cinematic dark fantasy riser: a low ominous rumble swelling into a rising whoosh of air and crackling arcane energy, tension building steadily to its loudest point at the very end, then an abrupt stop. No impact, no explosion, no music, no voice. Clean, dry, professional trailer sound design.",
+          "requestedSeconds": 2,
+          "sha256": "c28f2ee2b5720c277ef8edb1fc109e974057508550d6210939e87d3e265b42eb"
+        },
+        {
+          "name": "low",
+          "taskId": "fa4e10362b0c40dbad6d9e1959911d9b",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/fa4e10362b0c40dbad6d9e1959911d9b.wav",
+          "prompt": "Cinematic dark fantasy riser: a low ominous rumble swelling into a rising whoosh of air and crackling arcane energy, tension building steadily to its loudest point at the very end, then an abrupt stop. No impact, no explosion, no music, no voice. Clean, dry, professional trailer sound design.",
+          "requestedSeconds": 2,
+          "sha256": "1d1c61a6c1920be3e801c8c8f454edb8b363c7c33f910c023cde919413d58c9e"
+        },
+        {
+          "name": "hit",
+          "taskId": "4959e3ec86fa49c08137edaf10ce1cf0",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/4959e3ec86fa49c08137edaf10ce1cf0.wav",
+          "prompt": "Massive cinematic impact for a devastating magic spell: a sharp cracking transient at the very start, a deep sub-bass boom and heavy shockwave, crumbling stone debris, and a dark reverb tail that fades to silence. Starts instantly, no build-up, no music, no voice. Professional film sound design.",
+          "requestedSeconds": 3,
+          "sha256": "ae82e1766ca9da2e4215d32a229121c2d1d097fa6263d3dd81fa485234feda4f"
+        },
+        {
+          "name": "crack",
+          "taskId": "eb316e34cbba4b798e297857d82ff427",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/eb316e34cbba4b798e297857d82ff427.wav",
+          "prompt": "One short dry breaking hit: a brittle crack like a stone tablet snapping with a small glassy shatter, starts instantly and ends within a third of a second. Single hit only, no reverb tail, no echo, no music, no voice. Close and punchy professional foley.",
+          "requestedSeconds": 1,
+          "sha256": "72ab4c406d87b5f5aa5227e5873abdf6a0ff9c0d20350c2e4bb350c8495ec470"
+        }
+      ],
+      "method": "Edited from Fish Audio sound effect generations: varispeed, swept filters, level envelopes and layering in NumPy/SciPy, then linear loudness mastering. Rumble played at a rising speed (0.55x to 1.7x) under a low-pass that opens from 170 Hz to 5 kHz and a level that rises over a second; the second rumble underneath; the hit's sustained noise through a band that climbs from 300 Hz to 4 kHz as the whoosh; the crack reversed into the cut.",
+      "description": "A low rumble that climbs and opens as it swells, drawn in by a reversed crack and cut just before it peaks.",
+      "generatedAt": "2026-11-19T21:48:38.053602+00:00",
+      "file": "assets/audio/sfx/wipe-charge-v2.mp3",
+      "seconds": 1.08,
+      "bytes": 13837,
+      "sha256": "a6f29ee2ea79fbceb556b640a9bb2f258cb2190f37282d228f9f0837fb297682",
       "sampleRate": 44100,
       "channels": 2,
       "bitrateKbps": 96,
       "metrics": {
-        "integratedLufs": -23.82,
+        "integratedLufs": -23.85,
         "meterPaddingSeconds": 0,
-        "truePeakDb": -11.07,
-        "samplePeakDb": -11.083,
-        "rmsDb": -27.44,
-        "energyAbove6kHzPercent": 0.00276,
-        "energyBelow45HzPercent": 0.00138,
-        "spectralCentroidHz": 987.4,
-        "last2msPeakDb": -102.634,
-        "quietTailMs": 11.07,
-        "onsetMs": 9.14,
-        "stereoCorrelation": 0.9602
+        "truePeakDb": -5.82,
+        "samplePeakDb": -5.909,
+        "rmsDb": -24.203,
+        "energyAbove6kHzPercent": 0.45791,
+        "energyBelow45HzPercent": 0.03653,
+        "spectralCentroidHz": 843.5,
+        "last2msPeakDb": -110.281,
+        "quietTailMs": 7.28,
+        "onsetMs": 2.43,
+        "stereoCorrelation": 0.9731
       }
     },
     {
       "id": "wipe-impact",
       "eventId": "wipe-impact",
       "title": "Wipe Impact",
-      "version": 1,
+      "version": 2,
       "kind": "sfx",
-      "provider": "Original local synthesis",
+      "provider": "Fish Audio sound effects",
       "model": null,
-      "source": "scripts/generate-wipe-sfx.py",
-      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "source": "scripts/master-wipe-sfx.py",
+      "sourceSha256": "f3fb796122a7040bccf5b44460135a6a8abc0fedc2a00ba0189f2c884bab6da0",
       "sourceDependencies": [
         {
           "file": "scripts/generate-polished-sfx.py",
           "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
         }
       ],
-      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
-      "description": "One broad weighted strike with a deep falling body, a wide burst of air and a long rolling tail of settling debris.",
-      "seed": 561119,
-      "generatedAt": "2026-11-19T14:07:34.549713+00:00",
-      "file": "assets/audio/sfx/wipe-impact-v1.mp3",
-      "seconds": 1.990907,
-      "bytes": 24809,
-      "sha256": "f0756cf0a8c31f8ea3222f188430864bf19ea14f4478d63f8e9c57b226619b2a",
+      "sourceRecordings": [
+        {
+          "name": "crack",
+          "taskId": "eb316e34cbba4b798e297857d82ff427",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/eb316e34cbba4b798e297857d82ff427.wav",
+          "prompt": "One short dry breaking hit: a brittle crack like a stone tablet snapping with a small glassy shatter, starts instantly and ends within a third of a second. Single hit only, no reverb tail, no echo, no music, no voice. Close and punchy professional foley.",
+          "requestedSeconds": 1,
+          "sha256": "72ab4c406d87b5f5aa5227e5873abdf6a0ff9c0d20350c2e4bb350c8495ec470"
+        },
+        {
+          "name": "hit",
+          "taskId": "4959e3ec86fa49c08137edaf10ce1cf0",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/4959e3ec86fa49c08137edaf10ce1cf0.wav",
+          "prompt": "Massive cinematic impact for a devastating magic spell: a sharp cracking transient at the very start, a deep sub-bass boom and heavy shockwave, crumbling stone debris, and a dark reverb tail that fades to silence. Starts instantly, no build-up, no music, no voice. Professional film sound design.",
+          "requestedSeconds": 3,
+          "sha256": "ae82e1766ca9da2e4215d32a229121c2d1d097fa6263d3dd81fa485234feda4f"
+        },
+        {
+          "name": "drone",
+          "taskId": "411546b0c0854fd79cc6b54d8f46c977",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/411546b0c0854fd79cc6b54d8f46c977.wav",
+          "prompt": "Massive cinematic impact for a devastating magic spell: a sharp cracking transient at the very start, a deep sub-bass boom and heavy shockwave, crumbling stone debris, and a dark reverb tail that fades to silence. Starts instantly, no build-up, no music, no voice. Professional film sound design.",
+          "requestedSeconds": 3,
+          "sha256": "6937386da8d58ce6af440fb48a8d34cfaae1eb8341ded11cdd9e976077ceb4cd"
+        }
+      ],
+      "method": "Edited from Fish Audio sound effect generations: varispeed, swept filters, level envelopes and layering in NumPy/SciPy, then linear loudness mastering. The crack as the transient, with a copy an octave down as the knock; the hit from its onset under a low-pass that closes from 5.2 kHz to 420 Hz on a 0.6 s decay; the drone slowed from 1.05x to 0.6x and low-passed at 150 Hz as the boom; the hit's ringing second half, quieter and later, as the settling.",
+      "description": "A hard crack, a heavy body that darkens as it falls away, a deep boom under it and debris that settles.",
+      "generatedAt": "2026-11-19T21:48:38.438103+00:00",
+      "file": "assets/audio/sfx/wipe-impact-v2.mp3",
+      "seconds": 1.846576,
+      "bytes": 22928,
+      "sha256": "2844af6cd775d410c0c96de2242eba091f5a59d637b7fda9cd586d6463602581",
       "sampleRate": 44100,
       "channels": 2,
       "bitrateKbps": 96,
       "metrics": {
-        "integratedLufs": -22.25,
+        "integratedLufs": -22.2,
         "meterPaddingSeconds": 0,
-        "truePeakDb": -8.14,
-        "samplePeakDb": -8.165,
-        "rmsDb": -26.905,
-        "energyAbove6kHzPercent": 0.00097,
-        "energyBelow45HzPercent": 0.00537,
-        "spectralCentroidHz": 569.8,
-        "last2msPeakDb": -131.605,
-        "quietTailMs": 39.93,
+        "truePeakDb": -6.96,
+        "samplePeakDb": -6.965,
+        "rmsDb": -24.748,
+        "energyAbove6kHzPercent": 0.21482,
+        "energyBelow45HzPercent": 0.1211,
+        "spectralCentroidHz": 491.4,
+        "last2msPeakDb": -159.16,
+        "quietTailMs": 79.91,
         "onsetMs": 0.0,
-        "stereoCorrelation": 0.9593
+        "stereoCorrelation": 0.9733
       }
     },
     {
       "id": "wipe-shatter",
       "eventId": "wipe-shatter",
       "title": "Wipe Shatter",
-      "version": 1,
+      "version": 2,
       "kind": "sfx",
-      "provider": "Original local synthesis",
+      "provider": "Fish Audio sound effects",
       "model": null,
-      "source": "scripts/generate-wipe-sfx.py",
-      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "source": "scripts/master-wipe-sfx.py",
+      "sourceSha256": "f3fb796122a7040bccf5b44460135a6a8abc0fedc2a00ba0189f2c884bab6da0",
       "sourceDependencies": [
         {
           "file": "scripts/generate-polished-sfx.py",
           "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
         }
       ],
-      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
-      "description": "A short brittle break: a dry crack, a small stone-and-glass body and two grains falling away.",
-      "seed": 561120,
-      "generatedAt": "2026-11-19T14:07:34.797603+00:00",
-      "file": "assets/audio/sfx/wipe-shatter-v1.mp3",
-      "seconds": 0.271565,
-      "bytes": 4120,
-      "sha256": "7d74e337cedc55231624af139e540341a7de7c8b88abf9808b98fe4734907491",
+      "sourceRecordings": [
+        {
+          "name": "crack",
+          "taskId": "eb316e34cbba4b798e297857d82ff427",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/eb316e34cbba4b798e297857d82ff427.wav",
+          "prompt": "One short dry breaking hit: a brittle crack like a stone tablet snapping with a small glassy shatter, starts instantly and ends within a third of a second. Single hit only, no reverb tail, no echo, no music, no voice. Close and punchy professional foley.",
+          "requestedSeconds": 1,
+          "sha256": "72ab4c406d87b5f5aa5227e5873abdf6a0ff9c0d20350c2e4bb350c8495ec470"
+        },
+        {
+          "name": "hit",
+          "taskId": "4959e3ec86fa49c08137edaf10ce1cf0",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/4959e3ec86fa49c08137edaf10ce1cf0.wav",
+          "prompt": "Massive cinematic impact for a devastating magic spell: a sharp cracking transient at the very start, a deep sub-bass boom and heavy shockwave, crumbling stone debris, and a dark reverb tail that fades to silence. Starts instantly, no build-up, no music, no voice. Professional film sound design.",
+          "requestedSeconds": 3,
+          "sha256": "ae82e1766ca9da2e4215d32a229121c2d1d097fa6263d3dd81fa485234feda4f"
+        },
+        {
+          "name": "grit",
+          "taskId": "69c501e14ed847cb9c54322a6340a36b",
+          "sourceUrl": "https://platform.r2.fish.audio/task_sound_effects/69c501e14ed847cb9c54322a6340a36b.wav",
+          "prompt": "One short dry breaking hit: a brittle crack like a stone tablet snapping with a small glassy shatter, starts instantly and ends within a third of a second. Single hit only, no reverb tail, no echo, no music, no voice. Close and punchy professional foley.",
+          "requestedSeconds": 1,
+          "sha256": "837c61df8a802499c59b13e8fb494cf31cde4e08a2a41897b3a85fb0510737b8"
+        }
+      ],
+      "method": "Edited from Fish Audio sound effect generations: varispeed, swept filters, level envelopes and layering in NumPy/SciPy, then linear loudness mastering. The crack from its loudest part; a 120 ms slice of the hit low-passed at 900 Hz as the thud; two short gated grains of the grit, band-passed 0.9-3.2 kHz. The crack is low-passed at 3.4 kHz, because the break repeats once per card.",
+      "description": "One brittle break: a dry crack on a small thud, and two grains falling away.",
+      "generatedAt": "2026-11-19T21:48:38.669995+00:00",
+      "file": "assets/audio/sfx/wipe-shatter-v2.mp3",
+      "seconds": 0.298571,
+      "bytes": 4433,
+      "sha256": "ec7e1f8c0c40d101222c7dcbc83ee561fe7cb0f01d2ad353cf5df24f4cafd8b1",
       "sampleRate": 44100,
       "channels": 2,
       "bitrateKbps": 96,
       "metrics": {
         "integratedLufs": -24.65,
-        "meterPaddingSeconds": 0.128435,
-        "truePeakDb": -7.17,
-        "samplePeakDb": -7.178,
-        "rmsDb": -26.125,
-        "energyAbove6kHzPercent": 0.00139,
-        "energyBelow45HzPercent": 0.00848,
-        "spectralCentroidHz": 838.4,
-        "last2msPeakDb": -144.134,
-        "quietTailMs": 42.38,
-        "onsetMs": 0.05,
-        "stereoCorrelation": 0.99
+        "meterPaddingSeconds": 0.101429,
+        "truePeakDb": -10.0,
+        "samplePeakDb": -10.006,
+        "rmsDb": -28.183,
+        "energyAbove6kHzPercent": 0.03304,
+        "energyBelow45HzPercent": 0.05639,
+        "spectralCentroidHz": 1833.9,
+        "last2msPeakDb": -136.53,
+        "quietTailMs": 28.44,
+        "onsetMs": 0.0,
+        "stereoCorrelation": 0.977
       }
     },
     {
@@ -1775,6 +1858,132 @@
         "loudnessRangeLu": 0.0
       },
       "eventId": "instant"
+    },
+    {
+      "id": "wipe-charge",
+      "eventId": "wipe-charge",
+      "title": "Wipe Charge",
+      "version": 1,
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-wipe-sfx.py",
+      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "sourceDependencies": [
+        {
+          "file": "scripts/generate-polished-sfx.py",
+          "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
+        }
+      ],
+      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
+      "description": "A slow inward draw of air over a rising low tone, with a few quickening dry ticks, cut just before it peaks.",
+      "seed": 561118,
+      "generatedAt": "2026-11-19T14:07:34.124925+00:00",
+      "file": "assets/audio/sfx/wipe-charge-v1.mp3",
+      "seconds": 1.04,
+      "bytes": 13210,
+      "sha256": "4b5bff46bd3e6086c621c07c9079397c6b84e47c8598d0527da4486cfb26fc5b",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -23.82,
+        "meterPaddingSeconds": 0,
+        "truePeakDb": -11.07,
+        "samplePeakDb": -11.083,
+        "rmsDb": -27.44,
+        "energyAbove6kHzPercent": 0.00276,
+        "energyBelow45HzPercent": 0.00138,
+        "spectralCentroidHz": 987.4,
+        "last2msPeakDb": -102.634,
+        "quietTailMs": 11.07,
+        "onsetMs": 9.14,
+        "stereoCorrelation": 0.9602
+      }
+    },
+    {
+      "id": "wipe-impact",
+      "eventId": "wipe-impact",
+      "title": "Wipe Impact",
+      "version": 1,
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-wipe-sfx.py",
+      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "sourceDependencies": [
+        {
+          "file": "scripts/generate-polished-sfx.py",
+          "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
+        }
+      ],
+      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
+      "description": "One broad weighted strike with a deep falling body, a wide burst of air and a long rolling tail of settling debris.",
+      "seed": 561119,
+      "generatedAt": "2026-11-19T14:07:34.549713+00:00",
+      "file": "assets/audio/sfx/wipe-impact-v1.mp3",
+      "seconds": 1.990907,
+      "bytes": 24809,
+      "sha256": "f0756cf0a8c31f8ea3222f188430864bf19ea14f4478d63f8e9c57b226619b2a",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -22.25,
+        "meterPaddingSeconds": 0,
+        "truePeakDb": -8.14,
+        "samplePeakDb": -8.165,
+        "rmsDb": -26.905,
+        "energyAbove6kHzPercent": 0.00097,
+        "energyBelow45HzPercent": 0.00537,
+        "spectralCentroidHz": 569.8,
+        "last2msPeakDb": -131.605,
+        "quietTailMs": 39.93,
+        "onsetMs": 0.0,
+        "stereoCorrelation": 0.9593
+      }
+    },
+    {
+      "id": "wipe-shatter",
+      "eventId": "wipe-shatter",
+      "title": "Wipe Shatter",
+      "version": 1,
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-wipe-sfx.py",
+      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "sourceDependencies": [
+        {
+          "file": "scripts/generate-polished-sfx.py",
+          "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
+        }
+      ],
+      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
+      "description": "A short brittle break: a dry crack, a small stone-and-glass body and two grains falling away.",
+      "seed": 561120,
+      "generatedAt": "2026-11-19T14:07:34.797603+00:00",
+      "file": "assets/audio/sfx/wipe-shatter-v1.mp3",
+      "seconds": 0.271565,
+      "bytes": 4120,
+      "sha256": "7d74e337cedc55231624af139e540341a7de7c8b88abf9808b98fe4734907491",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -24.65,
+        "meterPaddingSeconds": 0.128435,
+        "truePeakDb": -7.17,
+        "samplePeakDb": -7.178,
+        "rmsDb": -26.125,
+        "energyAbove6kHzPercent": 0.00139,
+        "energyBelow45HzPercent": 0.00848,
+        "spectralCentroidHz": 838.4,
+        "last2msPeakDb": -144.134,
+        "quietTailMs": 42.38,
+        "onsetMs": 0.05,
+        "stereoCorrelation": 0.99
+      }
     }
   ]
 }

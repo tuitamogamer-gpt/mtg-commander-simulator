@@ -24,9 +24,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     { id: 'explosion', name: 'Explosion', cooldown: 2500 },
     // A staged board wipe (board-wipe.js): the build-up, the impact, then one
     // short break per card, at the pace the table plays it.
-    { id: 'wipe-charge', name: 'Board wipe · build-up', cooldown: 1500, file: 'sfx/wipe-charge-v1.mp3' },
-    { id: 'wipe-impact', name: 'Board wipe · impact', cooldown: 1500, file: 'sfx/wipe-impact-v1.mp3' },
-    { id: 'wipe-shatter', name: 'Board wipe · cards breaking', cooldown: 0, file: 'sfx/wipe-shatter-v1.mp3' },
+    { id: 'wipe-charge', name: 'Board wipe · build-up', cooldown: 1500, file: 'sfx/wipe-charge-v2.mp3' },
+    { id: 'wipe-impact', name: 'Board wipe · impact', cooldown: 1500, file: 'sfx/wipe-impact-v2.mp3' },
+    { id: 'wipe-shatter', name: 'Board wipe · cards breaking', cooldown: 0, file: 'sfx/wipe-shatter-v2.mp3' },
     { id: 'victory', name: 'Victory', cooldown: 2500 },
     { id: 'defeat', name: 'Defeat', cooldown: 2500 },
     ...[

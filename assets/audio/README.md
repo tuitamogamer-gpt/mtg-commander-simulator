@@ -117,9 +117,9 @@ sound:
 
 | Effect | Beat | Character |
 | --- | --- | --- |
-| `wipe-charge` | The build-up: the plate and a frame on every doomed card | A slow inward draw of air over a rising low tone, with a few quickening dry ticks, cut just before it peaks |
-| `wipe-impact` | The impact | One broad weighted strike with a deep falling body, a wide burst of air and a long rolling tail |
-| `wipe-shatter` | Each card as it goes | A short brittle break, repeated at the table's own times and falling in pitch as the board empties |
+| `wipe-charge` | The build-up: the plate and a frame on every doomed card | A low rumble that climbs and opens as it swells, drawn in by a reversed crack and cut just before it peaks |
+| `wipe-impact` | The impact | A hard crack, a heavy body that darkens as it falls away, a deep boom under it and debris that settles |
+| `wipe-shatter` | Each card as it goes | One brittle break on a small thud with two grains falling away, repeated at the table's own times and falling in pitch as the board empties |
 
 The engine's events carry the beats (`MTG.boardWipeTiming`): the charge starts
 with `boardWipe`, the impact with `boardWipeImpact`, and the breaks are
@@ -129,16 +129,45 @@ are; the impact retires the charge. A wipe that is not staged (an instant
 game) keeps the single `explosion`. Muted, hidden, replayed and simulated games
 stay silent, as with every other cue.
 
-Generate the three effects with NumPy, SciPy and FFmpeg:
+### Version 2: edited from Fish Audio recordings (20 November 2026)
+
+The current files are `wipe-*-v2.mp3`. Their material is six sound effects
+generated with Fish Audio (two each from three prompts, 5,000 credits each);
+the manifest records every prompt, task id, permanent URL and SHA-256. The
+generations are textures, not finished gestures: two steady rumbles, a hit that
+begins after a second of silence and does not decay, a low drone, a bright
+crack and a quiet burst of grit. `scripts/master-wipe-sfx.py` is the edit that
+gives them their shape, the way a sound editor cuts raw recordings:
+
+- **charge**: a rumble played at a rising speed under a low-pass filter that
+  opens, on a level that rises 27 dB in a second; the second rumble under it;
+  the hit's sustained noise through a climbing band as the whoosh; the crack
+  played backwards into the cut;
+- **impact**: the crack as the transient with a copy an octave down as the
+  knock, the hit from its onset under a filter that closes, the drone slowed
+  down and kept to the low octaves as the boom, and the hit's ringing second
+  half as the settling debris;
+- **shatter**: the crack from its loudest part with its top taken off (it
+  repeats once per card), a short thud cut from the hit, and two gated grains.
 
 ```bash
-python3 scripts/generate-wipe-sfx.py --metadata output/wipe-sfx.json
+python3 scripts/master-wipe-sfx.py --metadata output/wipe-sfx/v2.json
 ```
 
-The generator reuses the helpers of `generate-polished-sfx.py` and the pack's
-checks (loudness, peak, spectrum, tail). The files are original deterministic
-synthesis; the manifest records measurements and hashes. They were measured,
-not listened to: this environment has no audio output.
+The script downloads the six sources into `output/wipe-sfx/sources` when they
+are missing and checks their hashes; they are not committed. It reuses the
+helpers of `generate-polished-sfx.py` and holds the result to the pack's
+checks (loudness, peak, a clean end, no energy below 45 Hz or harsh top).
+Measured against version 1: the charge carries 74% of its energy above 300 Hz
+(61% before) and the impact 48% (34%), which is the part a phone speaker plays.
+
+Like every sound made in this environment they were measured, not listened
+to: there is no audio output here. Their envelopes, spectra over time and
+stereo width were read from the decoded files.
+
+Version 1 (`wipe-*-v1.mp3`, `scripts/generate-wipe-sfx.py`) was original
+deterministic synthesis. Its files and manifest rows remain, under
+`legacyTracks`, for clients that cached them.
 
 ## Earlier pack provenance
 
