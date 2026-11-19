@@ -31,9 +31,12 @@ body.reduced-motion #game > .motionlayer { display: none; }
 @media (prefers-reduced-motion: reduce) { #game > .motionlayer { display: none; } }
 
 /* ---------- Turn announcement ----------
-   Your turn is said across the middle of the table; an opponent's turn is
-   said on their own lane (ui.js showBanner places it), smaller and shorter.
-   Words on a soft band, no box: nothing to read around. */
+   Your turn is said in the middle of the table; an opponent's turn is said
+   on their own lane (ui.js showBanner places it), smaller and shorter.
+   Words on a soft glow, no box: nothing to read around. The glow is as wide
+   as the words and their two rules. It was a strip across the whole screen
+   with a hairline above and below, which on a desktop covered a row of every
+   board to say two words. A phone, as wide as the words, keeps its strip. */
 body .turnbanner {
   position: fixed; left: 50%; top: 46%; z-index: 95;
   display: flex; align-items: center; gap: 22px; box-sizing: border-box;
@@ -53,12 +56,12 @@ body .turnbanner > span { display: grid; justify-items: center; gap: 8px; }
 body .turnbanner small { color: var(--ds-muted); font: 600 11px/1 var(--ds-font-mono); letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; }
 body .turnbanner b { color: var(--ds-text); font: 640 26px/1 var(--ds-font-display); letter-spacing: -.01em; }
 body .turnbanner.mine b { color: var(--ds-accent-bright); font-size: 44px; letter-spacing: -.025em; text-shadow: 0 0 34px rgba(var(--ds-accent-rgb), .42); }
-/* Your turn: one strip across the table with a hairline above and below. */
+/* Your turn: the same words, larger, on a glow of their own width. */
+body .turnbanner.mine { gap: 18px; }
+body .turnbanner.mine > i { width: 92px; }
 body .turnbanner.mine::before {
-  inset: -34px calc(-50 * var(--vwu));
-  background: linear-gradient(90deg, rgba(var(--ds-table-rgb), 0), rgba(var(--ds-table-rgb), .95) 24%, rgba(var(--ds-table-rgb), .95) 76%, rgba(var(--ds-table-rgb), 0));
-  border-block: 1px solid;
-  border-image: linear-gradient(90deg, rgba(var(--ds-accent-rgb), 0), rgba(var(--ds-accent-rgb), .5) 32%, rgba(var(--ds-accent-rgb), .5) 68%, rgba(var(--ds-accent-rgb), 0)) 1;
+  inset: -44px -104px;
+  background: radial-gradient(closest-side, rgba(var(--ds-table-rgb), .96), rgba(var(--ds-table-rgb), .84) 56%, rgba(var(--ds-table-rgb), 0));
 }
 body .turnbanner > i {
   display: block; flex: 0 0 auto; width: 132px; height: 1px; transform-origin: 100% 50%;
@@ -87,8 +90,14 @@ body .turnbanner.seat b { font-size: 22px; }
   body .turnbanner { gap: 12px; }
   body .turnbanner > i { width: 44px; }
   body .turnbanner.mine b { font-size: 34px; }
+  body .turnbanner.mine > i { width: 44px; }
   body .turnbanner::before { inset: -40px -60px; }
-  body .turnbanner.mine::before { inset: -28px calc(-50 * var(--vwu)); }
+  body .turnbanner.mine::before {
+    inset: -28px calc(-50 * var(--vwu));
+    background: linear-gradient(90deg, rgba(var(--ds-table-rgb), 0), rgba(var(--ds-table-rgb), .95) 24%, rgba(var(--ds-table-rgb), .95) 76%, rgba(var(--ds-table-rgb), 0));
+    border-block: 1px solid;
+    border-image: linear-gradient(90deg, rgba(var(--ds-accent-rgb), 0), rgba(var(--ds-accent-rgb), .5) 32%, rgba(var(--ds-accent-rgb), .5) 68%, rgba(var(--ds-accent-rgb), 0)) 1;
+  }
 }
 body.reduced-motion .turnbanner, body.reduced-motion .turnbanner > i { animation: none; }
 @media (prefers-reduced-motion: reduce) { body .turnbanner, body .turnbanner > i { animation: none; } }

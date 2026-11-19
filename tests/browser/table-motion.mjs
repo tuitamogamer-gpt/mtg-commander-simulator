@@ -235,7 +235,10 @@ try {
     // The turn announcement: words, no emoji; an opponent's is said on their lane.
     const banners = await page.evaluate(() => {
       const read = () => { const node = document.querySelector('.turnbanner'); const r = node.getBoundingClientRect();
-        return {cls: node.className, text: node.textContent.replace(/\s+/g, ' ').trim(), x: r.left + r.width / 2, y: r.top + r.height / 2}; };
+        // The glow behind the words: how much of the screen's width it takes.
+        const glow = parseFloat(getComputedStyle(node, '::before').width) * (r.width / node.offsetWidth);
+        return {cls: node.className, text: node.textContent.replace(/\s+/g, ' ').trim(), x: r.left + r.width / 2, y: r.top + r.height / 2,
+          share: glow / innerWidth, centred: Math.abs(r.left + r.width / 2 - innerWidth / 2) < 2}; };
       _ui.showBanner('YOUR TURN', true, {player: _ui.me, turn: 13});
       const mine = read();
       _ui.showBanner('Turn 13: AI Wolf', false, {player: _game.players[2], turn: 13});
@@ -248,7 +251,11 @@ try {
     assert.match(banners.seat.cls, /\bseat\b/); assert.match(banners.seat.text, /^Turn 13 AI Wolf$/);
     assert.equal(banners.count, 1, 'one announcement at a time');
     assert.equal(banners.inLane, true, "an opponent's turn is announced on their own lane");
-    check('1440px turn announcements: words only, one at a time, an opponent\'s on their lane');
+    // Your turn stands in the middle of the table, as wide as its words: it
+    // was a strip from one edge of the screen to the other.
+    assert.equal(banners.mine.centred, true);
+    assert.ok(banners.mine.share > .25 && banners.mine.share < .6, `your turn takes ${Math.round(banners.mine.share * 100)}% of the screen's width`);
+    check('1440px turn announcements: words only, one at a time, yours as wide as its words, an opponent\'s on their lane');
 
     // Prompts lead with the table's icon, not a platform emoji.
     const prompt = await page.evaluate(() => {
