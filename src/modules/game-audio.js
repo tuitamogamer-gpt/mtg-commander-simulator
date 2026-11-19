@@ -22,6 +22,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     { id: 'summon', name: 'Major arrival', cooldown: 2500 },
     { id: 'heavy-impact', name: 'Heavy impact', cooldown: 2500 },
     { id: 'explosion', name: 'Explosion', cooldown: 2500 },
+    // A staged board wipe (board-wipe.js): the build-up, the impact, then one
+    // short break per card, at the pace the table plays it.
+    { id: 'wipe-charge', name: 'Board wipe · build-up', cooldown: 1500, file: 'sfx/wipe-charge-v1.mp3' },
+    { id: 'wipe-impact', name: 'Board wipe · impact', cooldown: 1500, file: 'sfx/wipe-impact-v1.mp3' },
+    { id: 'wipe-shatter', name: 'Board wipe · cards breaking', cooldown: 0, file: 'sfx/wipe-shatter-v1.mp3' },
     { id: 'victory', name: 'Victory', cooldown: 2500 },
     { id: 'defeat', name: 'Defeat', cooldown: 2500 },
     ...[
@@ -116,8 +121,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (event.kind === 'damage' && amount >= 10) {
       return [{ id: event.combat ? 'heavy-impact' : 'explosion', priority: 3 }];
     }
-    if (event.kind === 'boardWipe' && (event.count ?? event.cards?.length ?? 0) >= 3) return [{ id: 'explosion', priority: 4 }];
+    // A staged wipe says when its beats fall (engine.js stageBoardWipe): the
+    // charge now, the impact with its own event. An unstaged one (an instant
+    // game) is the single burst it was.
+    if (event.kind === 'boardWipe' && (event.count ?? event.cards?.length ?? 0) >= 3) {
+      return [event.timing ? { id: 'wipe-charge', priority: 3.5, volume: .9 } : { id: 'explosion', priority: 4 }];
+    }
+    if (event.kind === 'boardWipeImpact' && event.count >= 3) return [{ id: 'wipe-impact', priority: 4 }];
     return [];
+  };
+  // The cards of a staged wipe go one after another; each one breaks. One
+  // sound, repeated at the table's own times and falling a little in pitch.
+  // The times come from the event, so the table and the sound agree without
+  // knowing of each other.
+  U.audioSequenceForEvent = event => {
+    if (event?.type !== 'gameEffect' || event.kind !== 'boardWipeImpact' || !(event.count >= 3)) return null;
+    const timing = event.timing;
+    if (!timing || ![timing.lead, timing.stagger, timing.death].every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0)) return null;
+    const breaks = Math.min(event.count, 18), span = timing.stagger * (event.count - 1);
+    const times = Array.from({ length: breaks }, (_, index) => Math.round(timing.lead + span * index / (breaks - 1)));
+    const rates = times.map((_, index) => Math.round((1.14 - .3 * index / (breaks - 1) + [0, .05, -.04, .03, -.02][index % 5]) * 100) / 100);
+    return { id: 'wipe-shatter', priority: 4, volume: .46, times, rates };
   };
   U.audioCuesForEvent = (event, game) => {
     const ordinary = ordinaryCuesForEvent(event, game), facts = publicAudioFacts(event);
@@ -271,6 +295,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (this.narrationId && !['victory', 'defeat'].includes(this.narrationId)) this.clearNarration();
       }
       if (this.canPlay()) for (const cue of U.audioCuesForEvent(event, game)) this.enqueue(cue);
+      const sequence = this.canPlay() && U.audioSequenceForEvent(event);
+      if (sequence) void this.play(sequence);
       if (this.canPlay('narration')) {
         const id = U.audioVoiceForEvent(event, game) || (audioListener(game) && U.audioCommentaryForEvent(event));
         if (event?.type === 'turn' && !id && this.narrationId === 'your-turn') this.clearNarration();
@@ -333,6 +359,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }
             if (!current()) return;
           }
+          if (cue.times) { this.startSequence(cue, buffer, priority, requested); return; }
           const source = this.context.createBufferSource(), gain = this.context.createGain();
           source.buffer = buffer;
           source.audioPriority = priority; source.audioGain = gain; source.audioCueId = cue.id;
@@ -351,6 +378,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!current()) return;
         this.error = 'A sound effect could not load. Use Test effects to retry.'; this.notify();
       }
+    }
+    // One sound repeated at given times (ms from the request), as one voice of
+    // the mixer: it is admitted, retired and counted once, however many times
+    // it sounds. A time that passed while the sound was loading is skipped.
+    startSequence(cue, buffer, priority, requested) {
+      const gain = this.context.createGain(), at = this.context.currentTime;
+      const late = Math.max(0, this.env.performance.now() - requested), parts = [];
+      const voice = { audioPriority: priority, audioGain: gain, audioCueId: cue.id,
+        stop(when) { for (const part of parts) { try { part.stop(when); } catch { /* Already ended. */ } } },
+        disconnect() { for (const part of parts) part.disconnect(); } };
+      gain.gain.value = cue.volume ?? 1; gain.connect(this.effectsBus);
+      let sounding = 0;
+      cue.times.forEach((time, index) => {
+        if (time - late < -40) return;
+        const part = this.context.createBufferSource();
+        part.buffer = buffer;
+        if (part.playbackRate) part.playbackRate.value = cue.rates?.[index] ?? 1;
+        part.connect(gain); parts.push(part); sounding++;
+        part.onended = () => {
+          part.disconnect();
+          if (--sounding <= 0 && this.voices.delete(voice)) gain.disconnect();
+        };
+        part.start(at + Math.max(0, time - late) / 1000);
+      });
+      if (!parts.length) { gain.disconnect(); return; }
+      this.voices.add(voice);
+      this.history.push({ id: cue.id, at: Math.round(this.env.performance.now()), count: parts.length });
+      if (this.history.length > 40) this.history.shift();
     }
     cancelPendingEffects() {
       this.effectsEpoch = (this.effectsEpoch || 0) + 1;

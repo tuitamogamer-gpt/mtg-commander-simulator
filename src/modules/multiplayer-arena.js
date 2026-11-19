@@ -170,6 +170,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const g = this.authority;
         const fields = ['type', 'p', 'card', 'src', 'source', 'target', 'targets', 'amount', 'n', 'kind', 'text', 'name', 'color', 'combat', 'player', 'winner', 'from', 'to', 'previous', 'current', 'phase', 'step', 'targetKind', 'targetCard', 'targetPlayer', 'toPlayer', 'fromZone', 'toZone', 'combatStep', 'combatIndex', 'previousLife', 'life', 'count', 'counter', 'delta', 'spellTypes', 'dungeon', 'room'];
         fields.push('attacks', 'blocks', 'pairs', 'replay', 'cause', 'fromPlayer');
+        // A staged board wipe: its cards (permanents on the battlefield), kind and beats.
+        if (event.type === 'gameEffect' && ['boardWipe', 'boardWipeImpact'].includes(event.kind)) fields.push('cards', 'mode', 'timing');
         const entry = Object.fromEntries(fields.filter(key => event[key] !== undefined).map(key => [key, event[key]]));
         const audioFacts = U.sanitizeAudioFacts(event.audioFacts);
         if (audioFacts) entry.audioFacts = audioFacts;

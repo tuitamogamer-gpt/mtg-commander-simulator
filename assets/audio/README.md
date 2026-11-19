@@ -95,7 +95,7 @@ playing or loading. Victory/defeat announcements can replace commentary. Audio
 never delays a decision; replay, AI simulations and hidden tabs stay silent.
 Solo and Live consume immutable public facts rather than mutable card traits.
 
-The current manifest contains 6 music tracks, 25 effects and 9 voice clips.
+The current manifest contains 6 music tracks, 28 effects and 9 voice clips.
 The keyword assets total about 108 KB and the six comments about 115 KB. They
 load on demand; no Fish account, provider request or key is needed for playback.
 Generate the original keyword effects with NumPy, SciPy and FFmpeg:
@@ -108,6 +108,37 @@ The generator imports helpers from `generate-polished-sfx.py`; the manifest
 records both source hashes. Keywords use `keyword-*-v1.mp3` paths and preserve
 all existing music, effects and settings. Direct Safari testing is unavailable
 in this environment; automated playback checks use Chromium.
+
+## Board wipe
+
+A wipe of three or more permanents is staged on the table in three beats
+(`src/modules/board-wipe.js`) while the engine waits, and each beat has its own
+sound:
+
+| Effect | Beat | Character |
+| --- | --- | --- |
+| `wipe-charge` | The build-up: the plate and a frame on every doomed card | A slow inward draw of air over a rising low tone, with a few quickening dry ticks, cut just before it peaks |
+| `wipe-impact` | The impact | One broad weighted strike with a deep falling body, a wide burst of air and a long rolling tail |
+| `wipe-shatter` | Each card as it goes | A short brittle break, repeated at the table's own times and falling in pitch as the board empties |
+
+The engine's events carry the beats (`MTG.boardWipeTiming`): the charge starts
+with `boardWipe`, the impact with `boardWipeImpact`, and the breaks are
+scheduled from the same event at the times the cards go, at most eighteen for
+any board. The breaks are one voice of the three-voice mixer however many they
+are; the impact retires the charge. A wipe that is not staged (an instant
+game) keeps the single `explosion`. Muted, hidden, replayed and simulated games
+stay silent, as with every other cue.
+
+Generate the three effects with NumPy, SciPy and FFmpeg:
+
+```bash
+python3 scripts/generate-wipe-sfx.py --metadata output/wipe-sfx.json
+```
+
+The generator reuses the helpers of `generate-polished-sfx.py` and the pack's
+checks (loudness, peak, spectrum, tail). The files are original deterministic
+synthesis; the manifest records measurements and hashes. They were measured,
+not listened to: this environment has no audio output.
 
 ## Earlier pack provenance
 

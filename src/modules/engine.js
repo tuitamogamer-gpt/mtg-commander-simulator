@@ -21,6 +21,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const key of audioNumbers) if (typeof value[key] === 'number' && Number.isFinite(value[key])) result[key] = value[key];
     return Object.keys(result).length ? Object.freeze(result) : undefined;
   };
+  // The beats of a staged board wipe, in real milliseconds at this game speed
+  // (Game.stageBoardWipe waits for them; board-wipe.js and game-audio.js play
+  // them). The build-up marks the cards, the impact lands, `lead` later the
+  // first card goes and the others follow `stagger` apart, each taking
+  // `death` to leave; `settle` is for reading the result. A slow game is not
+  // four times as long and a fast one still reads.
+  U.boardWipeTiming = (count, speed = 1) => {
+    const pace = Math.max(.8, Math.min(2.2, Number(speed) || 1)), cards = Math.max(1, Math.floor(count) || 1);
+    const span = Math.min(1050, 105 * (cards - 1)) * pace;
+    const build = Math.round(600 * pace), lead = Math.round(140 * pace), death = Math.round(340 * pace);
+    return {build, lead, stagger: cards > 1 ? Math.round(span / (cards - 1) * 100) / 100 : 0, death,
+      cascade: Math.round(lead + span + death), settle: Math.round(520 * pace)};
+  };
   const publicAudioSource = card => !!card && !card.faceDown && !['hand', 'library'].includes(card.zone);
   const audioDeathtouch = new WeakSet();
   const damageAudioSource = (src, opts) => opts._damageBatch?.audioSources?.get(src) ?? publicAudioSource(src);
@@ -448,6 +461,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!this.paced || this.gameOver || !ms || !(this.speedFactor > 0)) return;
       await new Promise(r => setTimeout(r, Math.round(ms * this.speedFactor)));
       await this.waitForLastResort();
+    }
+
+    // A mass removal is staged on the table (board-wipe.js): the build-up, the
+    // impact, then the cards go one after another. A paced game waits for it,
+    // as a damage step waits for the charge (engine2.js combatPace), and the
+    // cards leave together when it is over. Presentation only: simulations,
+    // tests and instant games do not wait, and no rule reads these events.
+    async stageBoardWipe(cards, mode, source) {
+      for (const card of cards) card.meta._boardWipeVisualTurn = this.turnNo;
+      const staged = this.paced && !this.gameOver && this.speedFactor > 0;
+      const timing = staged ? MTG.boardWipeTiming(cards.length, this.speedFactor) : null;
+      // `source` stays what the effect passed (bots read it); the name and the
+      // player are what the table says did it.
+      const resolving = this.c1516Resolving, by = this.resolvingSource();
+      this.note('gameEffect', {kind: 'boardWipe', mode, cards: cards.slice(), count: cards.length, source: source || null,
+        src: by || source || null, name: by?.faceDown ? 'A face-down card' : resolving?.name || by?.name || source?.name || null,
+        player: resolving?.ctrl || source?.ctrl || null, timing});
+      this._boardWipeTiming = timing;
+      if (!staged) return;
+      // pace() multiplies by the game speed; these are already real times.
+      await this.pace(timing.build / this.speedFactor);
+      this.note('gameEffect', {kind: 'boardWipeImpact', mode, count: cards.length, timing});
+      await this.pace(timing.cascade / this.speedFactor);
+    }
+    // The table reads the result before the next thing happens on it.
+    async settleBoardWipe(timing) {
+      if (timing && this.speedFactor > 0) await this.pace(timing.settle / this.speedFactor);
     }
 
     // Last Resort is an explicit recovery pause, not a rules effect. It stops
@@ -2941,13 +2981,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const audioDepartures = doomed.map(card => ({card, version: card.zoneVersion}));
       const visualBatch = doomed.length >= 3;
-      if (visualBatch) {
-        for (const card of doomed) card.meta._boardWipeVisualTurn = this.turnNo;
-        this.note('gameEffect', {
-          kind: 'boardWipe', mode: 'destroy', cards: doomed.slice(), count: doomed.length,
-          source: opts.source || null,
-        });
-      }
+      if (visualBatch) await this.stageBoardWipe(doomed, 'destroy', opts.source);
       const previous = this._simultaneousLeaveSources;
       const batch = doomed.map(card => ({ card, ctrl: card.ctrl, snap:this.snapshot(card) }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
@@ -2964,8 +2998,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         MTG.StateTriggers?.settle(this);
         await this.returnOracleExiles();
       }
-      if (visualBatch) this.note('gameEffect', {kind: 'boardWipeResolved',
-        audioFacts: {removedCount: audioDepartures.filter(({card, version}) => card.zoneVersion !== version).length}});
+      if (visualBatch) await this.resolveBoardWipe(audioDepartures);
       return doomed.length;
     }
 
@@ -2980,12 +3013,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield');
       const audioDepartures = unique.map(card => ({card, version: card.zoneVersion}));
       const visualBatch = unique.length >= 3;
-      if (visualBatch) {
-        for (const card of unique) card.meta._boardWipeVisualTurn = this.turnNo;
-        this.note('gameEffect', {
-          kind: 'boardWipe', mode: 'exile', cards: unique.slice(), count: unique.length, source: null,
-        });
-      }
+      if (visualBatch) await this.stageBoardWipe(unique, 'exile', null);
       const previous = this._simultaneousLeaveSources;
       const batch = unique.map(card => ({ card, ctrl: card.ctrl, snap:this.snapshot(card) }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
@@ -2996,8 +3024,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         MTG.StateTriggers?.settle(this);
         await this.returnOracleExiles();
       }
-      if (visualBatch) this.note('gameEffect', {kind: 'boardWipeResolved',
-        audioFacts: {removedCount: audioDepartures.filter(({card, version}) => card.zoneVersion !== version).length}});
+      if (visualBatch) await this.resolveBoardWipe(audioDepartures);
       return unique.length;
     }
 
@@ -3006,12 +3033,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Move attached Auras first so moving their hosts cannot put them in
       // the graveyard while the same return-all event also includes them.
       unique.sort((a,b)=>Number(!!b.attachedTo)-Number(!!a.attachedTo));
+      // Three or more returned at once (Cyclonic Rift, Evacuation) are staged
+      // as the wipe they are. A player returning their own cards is not.
+      const departures=unique.map(card=>({card,version:card.zoneVersion}));
+      const resolving=this.c1516Resolving;
+      const visualBatch=unique.length>=3&&!!resolving&&unique.some(card=>card.ctrl!==resolving.ctrl);
+      if(visualBatch)await this.stageBoardWipe(unique,'bounce',null);
       const previous=this._simultaneousLeaveSources;
       const batch=unique.map(card=>({card,ctrl:card.ctrl,snap:this.snapshot(card)}));
       this._simultaneousLeaveSources=previous?previous.concat(batch):batch;
-      try{for(const card of unique)if(card.zone==='battlefield')await this.move(card,'hand',{battlefieldSnapshot:batch.find(row=>row.card===card).snap});}
+      try{for(const card of unique)if(card.zone==='battlefield')await this.move(card,'hand',{battlefieldSnapshot:batch.find(row=>row.card===card).snap,suppressVisualEffect:visualBatch});}
       finally{this._simultaneousLeaveSources=previous;MTG.StateTriggers?.settle(this);await this.returnOracleExiles();}
+      if(visualBatch)await this.resolveBoardWipe(departures);
       return unique.length;
+    }
+
+    // The spell or ability that is resolving, as the table names it.
+    resolvingSource() {
+      const resolving = this.c1516Resolving;
+      return resolving && (resolving.card || resolving.srcCard || resolving.ctx?.src) || null;
+    }
+
+    // After the cards of a staged wipe have left: how many really did (a
+    // replaced move keeps its card), per controller, for the tally and the
+    // spoken comment.
+    async resolveBoardWipe(departures) {
+      const gone = departures.filter(({card, version}) => card.zoneVersion !== version);
+      const timing = this._boardWipeTiming || null;
+      this._boardWipeTiming = null;
+      this.note('gameEffect', {kind: 'boardWipeResolved', count: gone.length, audioFacts: {removedCount: gone.length}});
+      await this.settleBoardWipe(timing);
     }
 
     recordCombatDestination(attacker) {
@@ -4653,20 +4704,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (host) host.attachments = host.attachments.filter(iid => iid !== card.iid);
           card.attachedTo = null;
         }
-        const damageGroups = new Map();
+        // Three or more creatures that one source damaged, or that shrank to
+        // nothing together (Toxic Deluge), die as one staged wipe. The table
+        // plays it before they leave. Combat deaths have their own review.
+        const damageGroups = new Map(), withered = [];
         for (const [card] of moves) {
+          if (!card.is('Creature') || card.meta._boardWipeVisualTurn === this.turnNo) continue;
           const damage = card.meta._lastDamageVisual;
-          if (!card.is('Creature') || damage?.turn !== this.turnNo || card.meta._boardWipeVisualTurn === this.turnNo) continue;
+          if (damage?.turn !== this.turnNo) { if (card.toughness <= 0) withered.push(card); continue; }
           const key = damage.sourceId || 0;
           if (!damageGroups.has(key)) damageGroups.set(key, []);
           damageGroups.get(key).push(card);
         }
-        for (const [sourceId, cards] of damageGroups) if (cards.length >= 3) {
-          for (const card of cards) card.meta._boardWipeVisualTurn = this.turnNo;
-          this.note('gameEffect', {kind: 'boardWipe', mode: 'damage', cards: cards.slice(), count: cards.length,
-            source: sourceId ? this.byIid(sourceId) : null});
+        const wipeGroups = [...damageGroups].filter(([, cards]) => cards.length >= 3);
+        const witherWipe = withered.length >= 3 && !!this.c1516Resolving;
+        const wipeCards = [...wipeGroups.flatMap(([, cards]) => cards), ...(witherWipe ? withered : [])];
+        if (wipeCards.length) {
+          const sourceId = wipeGroups.length === 1 && !witherWipe ? wipeGroups[0][0] : 0;
+          await this.stageBoardWipe(wipeCards, wipeGroups.length ? 'damage' : 'wither', sourceId ? this.byIid(sourceId) : null);
         }
-        const audioDamageDepartures = new Map([...damageGroups.values()].flat().map(card => [card, card.zoneVersion]));
+        const audioDamageDepartures = new Map([...damageGroups.values()].flat().concat(witherWipe ? withered : []).map(card => [card, card.zoneVersion]));
         await this.withGraveyardEntryBatch(async () => {
           for (const {card, zone, version} of commanderMoves)
             if (card.zone === zone && card.zoneVersion === version) await this.move(card, 'command');
@@ -4683,11 +4740,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (kind === 'destroy'&&card.zoneVersion!==version) await this.emit('destroyedV74', {player: entry.ctrl, card, snap: entry.snap});
           }
         });
-        for (const cards of damageGroups.values()) if (cards.length >= 3) {
-          this.note('gameEffect', {kind: 'boardWipeResolved', audioFacts: {
-            removedCount: cards.filter(card => card.zoneVersion !== audioDamageDepartures.get(card)).length,
-          }});
-        }
+        if (wipeCards.length) await this.resolveBoardWipe(wipeCards.map(card => ({card, version: audioDamageDepartures.get(card)})));
       } finally {
         this._simultaneousLeaveSources = previous;
         MTG.StateTriggers?.settle(this);

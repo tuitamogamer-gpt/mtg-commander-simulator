@@ -1174,32 +1174,8 @@ body.game-active #game .sheet,
   60% { transform: translate(calc(var(--shake) * .35), 0); }
   80% { transform: translate(calc(var(--shake) * -.15), 0); }
 }
-.gamefx-flash {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .92), rgba(255, 255, 255, .38) 30%, transparent 64%);
-  mix-blend-mode: screen;
-  animation: dsFlash .95s ease-out both;
-}
-.mode-exile .gamefx-flash { background: radial-gradient(circle at 50% 45%, rgba(236, 214, 255, .92), rgba(190, 140, 255, .36) 30%, transparent 64%); }
-.mode-damage .gamefx-flash { background: radial-gradient(circle at 50% 45%, rgba(255, 236, 214, .95), rgba(255, 150, 90, .4) 30%, transparent 64%); }
-@keyframes dsFlash { 0% { opacity: 0; } 7% { opacity: 1; } 100% { opacity: 0; } }
-.gamefx-shock { position: absolute; left: 50%; top: 45%; width: 1px; height: 1px; pointer-events: none; }
-.gamefx-shock i {
-  position: absolute; left: 0; top: 0;
-  width: calc(56 * var(--vwu)); height: calc(56 * var(--vwu));
-  border: 3px solid rgba(255, 255, 255, .8);
-  border-radius: 50%;
-  box-shadow: 0 0 40px rgba(255, 255, 255, .35), inset 0 0 40px rgba(255, 255, 255, .2);
-  transform: translate(-50%, -50%) scale(.04);
-  animation: dsShock 1.15s cubic-bezier(.1, .8, .2, 1) both;
-}
-.gamefx-shock i:nth-child(2) { animation-delay: .14s; opacity: .7; }
-.gamefx-shock i:nth-child(3) { animation-delay: .3s; opacity: .45; }
-.mode-exile .gamefx-shock i { border-color: rgba(214, 170, 255, .85); box-shadow: 0 0 40px rgba(195, 122, 255, .4); }
-.mode-damage .gamefx-shock i { border-color: rgba(255, 150, 90, .9); box-shadow: 0 0 40px rgba(255, 110, 60, .45); }
-@keyframes dsShock { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.04); } 10% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(2.7); } }
-.gamefx-wipe.scale-large .gamefx-wiperune { animation-duration: 1.3s; }
-.gamefx-wipe.scale-large .gamefx-wipetitle b { font-size: clamp(24px, 3.6 * var(--vwu), 50px); }
+/* The impact of a board wipe shakes the table once (board-wipe.js); its own
+   parts are in motion.css. */
 #game.fx-boardwipe-camera { animation: dsWipeCamera 1.15s cubic-bezier(.2, .7, .2, 1) both; }
 @keyframes dsWipeCamera {
   0% { transform: none; }
@@ -1209,27 +1185,19 @@ body.game-active #game .sheet,
   58% { transform: scale(1.005) translate(1px, 0); }
   100% { transform: none; }
 }
-.gamefx-wipecard { animation: dsWipeCard 1.08s var(--wipe-delay, 0ms) cubic-bezier(.18, .72, .18, 1) both; }
-@keyframes dsWipeCard {
-  0% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); filter: none; }
-  20% { opacity: 1; transform: translate(0, -16px) rotate(var(--wipe-spin)) scale(1.12); filter: brightness(2.3) saturate(.15); }
-  52% { opacity: .9; transform: translate(0, 10px) rotate(var(--wipe-spin)) scale(1); filter: brightness(1.3) saturate(0) blur(1px); }
-  100% { opacity: 0; transform: translate(0, 160px) rotate(calc(var(--wipe-spin) * 2)) scale(.45); filter: brightness(.5) blur(7px); }
-}
 @media (prefers-reduced-motion: reduce) {
   #game.fx-hit-big, #game.fx-hit-huge, #game.fx-boardwipe-camera { animation: none !important; }
-  .gamefx-vignette, .gamefx-flash, .gamefx-shock i { display: none !important; }
+  .gamefx-vignette { display: none !important; }
   .gamefx-impact.tier-big > strong, .gamefx-impact.tier-huge > strong, .gamefx-impact.lethal > strong { animation: gamefxDamageNumber .92s cubic-bezier(.16, .78, .2, 1) both; }
 }
 body.reduced-motion #game.fx-hit-big, body.reduced-motion #game.fx-hit-huge, body.reduced-motion #game.fx-boardwipe-camera { animation: none !important; }
-body.reduced-motion .gamefx-vignette, body.reduced-motion .gamefx-flash, body.reduced-motion .gamefx-shock i { display: none !important; }
-/* Phones have a small graphics memory budget. At device pixel ratio 3 a board
-   wipe added about 100 MB of layers at once: the blurred cloud alone (170% of
-   the screen, filter: blur) took 47 MB, and the camera shake turned the whole
-   table into one more full-screen layer. A phone keeps the flash, shockwaves,
-   rune and title, and the falling cards, without those two. */
+body.reduced-motion .gamefx-vignette { display: none !important; }
+/* Phones have a small graphics memory budget. At device pixel ratio 3 the
+   first board wipe added about 100 MB of layers at once: its blurred cloud
+   alone (170% of the screen, filter: blur) took 47 MB, and a camera shake
+   turns the whole table into one more full-screen layer. A phone does not
+   shake the table; the staged wipe (motion.css) draws nothing blurred. */
 @media (max-width: 900px) {
-  .gamefx-wipecloud { display: none; }
   #game.fx-boardwipe-camera, #game.fx-hit-big, #game.fx-hit-huge { animation: none !important; }
 }
 

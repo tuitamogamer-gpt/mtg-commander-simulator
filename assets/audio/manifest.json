@@ -1169,6 +1169,132 @@
       }
     },
     {
+      "id": "wipe-charge",
+      "eventId": "wipe-charge",
+      "title": "Wipe Charge",
+      "version": 1,
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-wipe-sfx.py",
+      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "sourceDependencies": [
+        {
+          "file": "scripts/generate-polished-sfx.py",
+          "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
+        }
+      ],
+      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
+      "description": "A slow inward draw of air over a rising low tone, with a few quickening dry ticks, cut just before it peaks.",
+      "seed": 561118,
+      "generatedAt": "2026-11-19T14:07:34.124925+00:00",
+      "file": "assets/audio/sfx/wipe-charge-v1.mp3",
+      "seconds": 1.04,
+      "bytes": 13210,
+      "sha256": "4b5bff46bd3e6086c621c07c9079397c6b84e47c8598d0527da4486cfb26fc5b",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -23.82,
+        "meterPaddingSeconds": 0,
+        "truePeakDb": -11.07,
+        "samplePeakDb": -11.083,
+        "rmsDb": -27.44,
+        "energyAbove6kHzPercent": 0.00276,
+        "energyBelow45HzPercent": 0.00138,
+        "spectralCentroidHz": 987.4,
+        "last2msPeakDb": -102.634,
+        "quietTailMs": 11.07,
+        "onsetMs": 9.14,
+        "stereoCorrelation": 0.9602
+      }
+    },
+    {
+      "id": "wipe-impact",
+      "eventId": "wipe-impact",
+      "title": "Wipe Impact",
+      "version": 1,
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-wipe-sfx.py",
+      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "sourceDependencies": [
+        {
+          "file": "scripts/generate-polished-sfx.py",
+          "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
+        }
+      ],
+      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
+      "description": "One broad weighted strike with a deep falling body, a wide burst of air and a long rolling tail of settling debris.",
+      "seed": 561119,
+      "generatedAt": "2026-11-19T14:07:34.549713+00:00",
+      "file": "assets/audio/sfx/wipe-impact-v1.mp3",
+      "seconds": 1.990907,
+      "bytes": 24809,
+      "sha256": "f0756cf0a8c31f8ea3222f188430864bf19ea14f4478d63f8e9c57b226619b2a",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -22.25,
+        "meterPaddingSeconds": 0,
+        "truePeakDb": -8.14,
+        "samplePeakDb": -8.165,
+        "rmsDb": -26.905,
+        "energyAbove6kHzPercent": 0.00097,
+        "energyBelow45HzPercent": 0.00537,
+        "spectralCentroidHz": 569.8,
+        "last2msPeakDb": -131.605,
+        "quietTailMs": 39.93,
+        "onsetMs": 0.0,
+        "stereoCorrelation": 0.9593
+      }
+    },
+    {
+      "id": "wipe-shatter",
+      "eventId": "wipe-shatter",
+      "title": "Wipe Shatter",
+      "version": 1,
+      "kind": "sfx",
+      "provider": "Original local synthesis",
+      "model": null,
+      "source": "scripts/generate-wipe-sfx.py",
+      "sourceSha256": "fe648b8a8831c185791b5fb9165019d4abff54bf1b4abf4f001cf1e5b1295649",
+      "sourceDependencies": [
+        {
+          "file": "scripts/generate-polished-sfx.py",
+          "sha256": "2433e68c01f52c59b4a3491bbcfc9c956bf604265a7c94c5f6bc46aa9779a994"
+        }
+      ],
+      "method": "Deterministic damped modal synthesis, shaped noise gestures, stereo placement and linear loudness mastering; no external samples.",
+      "description": "A short brittle break: a dry crack, a small stone-and-glass body and two grains falling away.",
+      "seed": 561120,
+      "generatedAt": "2026-11-19T14:07:34.797603+00:00",
+      "file": "assets/audio/sfx/wipe-shatter-v1.mp3",
+      "seconds": 0.271565,
+      "bytes": 4120,
+      "sha256": "7d74e337cedc55231624af139e540341a7de7c8b88abf9808b98fe4734907491",
+      "sampleRate": 44100,
+      "channels": 2,
+      "bitrateKbps": 96,
+      "metrics": {
+        "integratedLufs": -24.65,
+        "meterPaddingSeconds": 0.128435,
+        "truePeakDb": -7.17,
+        "samplePeakDb": -7.178,
+        "rmsDb": -26.125,
+        "energyAbove6kHzPercent": 0.00139,
+        "energyBelow45HzPercent": 0.00848,
+        "spectralCentroidHz": 838.4,
+        "last2msPeakDb": -144.134,
+        "quietTailMs": 42.38,
+        "onsetMs": 0.05,
+        "stereoCorrelation": 0.99
+      }
+    },
+    {
       "id": "massive-hit",
       "kind": "voice",
       "category": "commentary",

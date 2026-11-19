@@ -7712,48 +7712,6 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1600);
     }
 
-    showBoardWipeEffect(event) {
-      const cards = (event.cards || []).filter(Boolean);
-      const layer = this.gameEffectLayer();
-      const mode = event.mode || 'destroy';
-      const storm = el('div', `gamefx-wipe mode-${mode}`,
-        `<div class="gamefx-wipecloud"></div><div class="gamefx-wiperune">${mode === 'exile' ? '◇' : mode === 'damage' ? '✹' : '✕'}</div>` +
-        `<div class="gamefx-wipetitle"><small>${mode === 'exile' ? 'VOID SWEEP' : mode === 'damage' ? 'DAMAGE STORM' : 'BOARD WIPE'}</small><b>${cards.length} PERMANENT${cards.length === 1 ? '' : 'S'}</b></div>`);
-      // A mass removal is the biggest moment on the table: a white flash,
-      // three shockwaves from the centre, a camera push and a longer hold.
-      storm.insertAdjacentHTML('afterbegin', '<div class="gamefx-flash"></div><div class="gamefx-shock"><i></i><i></i><i></i></div>');
-      storm.classList.add(cards.length >= 6 ? 'scale-large' : 'scale-small');
-      layer.appendChild(storm);
-      const wipeRoot = document.querySelector('#game');
-      wipeRoot?.classList.add('fx-boardwipe');
-      if (wipeRoot) {
-        wipeRoot.classList.remove('fx-boardwipe-camera');
-        void wipeRoot.offsetWidth;
-        wipeRoot.classList.add('fx-boardwipe-camera');
-        setTimeout(() => wipeRoot.classList.remove('fx-boardwipe-camera'), 1200);
-      }
-      cards.slice(0, 16).forEach((card, index) => {
-        const node = this.gameEffectCardAnchor(card);
-        const rect = this.fxRect(node);
-        if (!rect) return;
-        const shard = el('div', `gamefx-wipecard mode-${mode}`);
-        shard.appendChild(node.cloneNode(true));
-        shard.style.left = `${rect.left}px`; shard.style.top = `${rect.top}px`;
-        shard.style.width = `${rect.width}px`; shard.style.height = `${rect.height}px`;
-        shard.style.setProperty('--wipe-delay', `${Math.min(360, index * 42)}ms`);
-        shard.style.setProperty('--wipe-spin', `${(index % 2 ? -1 : 1) * (9 + index * 2)}deg`);
-        layer.appendChild(shard);
-        node.classList.add('fx-zone-leaving');
-      });
-      setTimeout(() => document.querySelector('#game')?.classList.remove('fx-boardwipe'), 920);
-      setTimeout(() => {
-        storm.remove();
-        layer.querySelectorAll('.gamefx-wipecard').forEach(node => node.remove());
-        document.querySelectorAll('.fx-zone-leaving').forEach(node => node.classList.remove('fx-zone-leaving'));
-      }, 1380);
-      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1460);
-    }
-
     showCounterspellEffect(event) {
       const card = event.card || event.stackObject && event.stackObject.card;
       const stackLabel = event.stackObject && event.stackObject.kind !== 'spell' ? 'ABILITY COUNTERED' : 'SPELL COUNTERED';
@@ -7876,7 +7834,9 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       if (!event || this.game && this.game.gameOver) return;
       if (event.kind === 'damage') this.showDamageEffect(event);
       else if (event.kind === 'zoneMove') this.showZoneMoveEffect(event);
-      else if (event.kind === 'boardWipe') this.showBoardWipeEffect(event);
+      // A board wipe is staged in three beats (board-wipe.js).
+      else if (event.kind === 'boardWipe') this.showBoardWipeEffect?.(event);
+      else if (event.kind === 'boardWipeImpact' || event.kind === 'boardWipeResolved') this.showBoardWipeBeat?.(event);
       else if (event.kind === 'counterspell') this.showCounterspellEffect(event);
       else if (event.kind === 'keyword') this.showKeywordGameEffect(event);
       else if (event.kind === 'counterChange') this.showCounterChangeEffect(event);

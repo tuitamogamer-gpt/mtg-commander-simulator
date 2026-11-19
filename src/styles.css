@@ -2460,9 +2460,9 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 @keyframes gamefxLifeHit { 0% { color:#ff6a55; transform:scale(1.16); text-shadow:0 0 12px rgba(255,90,70,.8); } 100% { transform:none; text-shadow:none; } }
 @keyframes gamefxLifeDelta { 0% { opacity:0; transform:translateY(-5px); } 14%,70% { opacity:1; transform:none; } 100% { opacity:0; transform:translateY(6px); } }
 
-.gamefx-cardghost,.gamefx-wipecard { position:absolute; transform-origin:center; will-change:transform,opacity,filter; }
+.gamefx-cardghost { position:absolute; transform-origin:center; will-change:transform,opacity,filter; }
 .gamefx-cardghost { animation:gamefxZoneFlight 1s cubic-bezier(.22,.68,.16,1) both; }
-.gamefx-cardghost > .mini,.gamefx-wipecard > .mini { width:100% !important; height:100% !important; margin:0 !important; transform:none !important; pointer-events:none !important; box-shadow:0 15px 36px #000c,0 0 0 2px rgba(255,255,255,.2) !important; }
+.gamefx-cardghost > .mini { width:100% !important; height:100% !important; margin:0 !important; transform:none !important; pointer-events:none !important; box-shadow:0 15px 36px #000c,0 0 0 2px rgba(255,255,255,.2) !important; }
 .gamefx-cardghost.to-hand { filter:drop-shadow(0 0 13px #6fe9ff); }
 .gamefx-cardghost.to-graveyard { filter:drop-shadow(0 0 13px #a6a49d); }
 .gamefx-cardghost.to-exile { filter:drop-shadow(0 0 17px #bd83ff); }
@@ -2474,19 +2474,6 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 .gamefx-zonebadge.to-command { color:#fff0bd; background:#352813ee; border-color:#d2ad58; }
 .fx-zone-leaving { opacity:.2 !important; filter:saturate(.1) brightness(1.45) !important; transition:opacity .24s ease,filter .24s ease; }
 
-.gamefx-wipe { position:absolute; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 45%,rgba(210,226,223,.18),rgba(9,13,14,.76) 38%,rgba(2,4,5,.93) 78%); animation:gamefxWipeFrame 1.34s ease both; }
-.gamefx-wipe.mode-exile { background:radial-gradient(circle at 50% 45%,rgba(174,119,236,.25),rgba(23,10,35,.82) 42%,rgba(3,2,7,.95) 80%); }
-.gamefx-wipe.mode-damage { background:radial-gradient(circle at 50% 45%,rgba(255,135,80,.27),rgba(65,18,11,.78) 42%,rgba(6,2,1,.94) 80%); }
-.gamefx-wipecloud { position:absolute; inset:-35%; background:conic-gradient(from 30deg,transparent,rgba(199,221,217,.32),transparent 20%,rgba(104,127,128,.22),transparent 47%,rgba(230,238,225,.2),transparent 74%); filter:blur(26px); animation:gamefxWipeCloud 1.25s cubic-bezier(.16,.7,.2,1) both; }
-.gamefx-wiperune { position:absolute; left:50%; top:45%; color:#e6eee9; transform:translate(-50%,-50%); font:900 clamp(80px,16 * var(--vwu),220px)/1 var(--tbl-serif,serif); text-shadow:0 0 25px #fff,0 0 85px #9dbbb5; animation:gamefxWipeRune 1.08s ease-out both; }
-.mode-exile .gamefx-wiperune { color:#dfbdff; text-shadow:0 0 28px #c37aff,0 0 95px #7c35aa; }
-.mode-damage .gamefx-wiperune { color:#ffd2ad; text-shadow:0 0 28px #ff8a4d,0 0 95px #b52e17; }
-.gamefx-wipetitle { position:absolute; left:50%; top:64%; transform:translateX(-50%); text-align:center; text-shadow:0 5px 25px #000; animation:gamefxWipeTitle 1.2s ease both; }
-.gamefx-wipetitle small,.gamefx-wipetitle b { display:block; }
-.gamefx-wipetitle small { color:#e3b96f; font:900 11px/1 var(--tbl-cond,inherit); letter-spacing:.34em; }
-.gamefx-wipetitle b { margin-top:8px; color:#f2eee4; font:800 clamp(20px,3 * var(--vwu),42px)/1 var(--tbl-serif,serif); }
-.gamefx-wipecard { animation:gamefxWipeCard .92s var(--wipe-delay,0ms) cubic-bezier(.18,.72,.18,1) both; }
-#game.fx-boardwipe { filter:saturate(.38) brightness(.72); transition:filter .18s ease; }
 
 .gamefx-counterspell { position:absolute; inset:0; display:grid; place-items:center; overflow:hidden; background:radial-gradient(circle,rgba(40,116,177,.22),rgba(3,8,17,.88) 48%,rgba(0,2,8,.97)); animation:fxCounterFrame 1.45s ease both; }
 .gamefx-counterspell > img { position:absolute; width:min(230px,34 * var(--vwu)); aspect-ratio:5/7; object-fit:cover; border:2px solid #77d3ff; border-radius:10px; box-shadow:0 22px 80px #000,0 0 45px #349ee4; filter:saturate(.4) brightness(.7); animation:fxCounterCard 1.35s cubic-bezier(.18,.75,.18,1) both; }
@@ -2583,11 +2570,6 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 @keyframes gamefxZoneFlight { 0% { opacity:1; transform:translate(0,0) rotate(0) scale(1); } 26% { transform:translate(calc(var(--fx-x) * .16),calc(var(--fx-y) * .08 - 42px)) rotate(-5deg) scale(1.08); } 100% { opacity:0; transform:translate(var(--fx-x),var(--fx-y)) rotate(13deg) scale(.22); filter:blur(4px) brightness(1.5); } }
 @keyframes gamefxZoneBadgeTravel { 0% { opacity:0; transform:translate(-50%,-50%) scale(.8); } 18% { opacity:1; transform:translate(-50%,-95%) scale(1); } 100% { opacity:0; transform:translate(calc(-50% + var(--fx-x) * .85),calc(-50% + var(--fx-y) * .85)) scale(.75); } }
 @keyframes gamefxZoneBadge { 0% { opacity:0; transform:translate(-50%,-30%) scale(.7); } 25%,65% { opacity:1; transform:translate(-50%,-70%) scale(1); } 100% { opacity:0; transform:translate(-50%,-120%) scale(.9); } }
-@keyframes gamefxWipeFrame { 0%,100% { opacity:0; } 12%,76% { opacity:1; } }
-@keyframes gamefxWipeCloud { 0% { opacity:0; transform:rotate(-35deg) scale(.5); } 35% { opacity:1; } 100% { opacity:0; transform:rotate(105deg) scale(1.35); } }
-@keyframes gamefxWipeRune { 0% { opacity:0; transform:translate(-50%,-50%) scale(2.8) rotate(-20deg); filter:blur(18px); } 28%,60% { opacity:.9; transform:translate(-50%,-50%) scale(1) rotate(0); filter:none; } 100% { opacity:0; transform:translate(-50%,-50%) scale(.35) rotate(12deg); filter:blur(5px); } }
-@keyframes gamefxWipeTitle { 0%,18% { opacity:0; transform:translate(-50%,20px); } 38%,74% { opacity:1; transform:translate(-50%,0); } 100% { opacity:0; transform:translate(-50%,-18px); } }
-@keyframes gamefxWipeCard { 0% { opacity:1; transform:translate(0,0) rotate(0) scale(1); filter:none; } 30% { opacity:1; transform:translate(0,-10px) rotate(var(--wipe-spin)) scale(1.08); filter:brightness(1.8) saturate(.3); } 100% { opacity:0; transform:translate(0,120px) rotate(var(--wipe-spin)) scale(.08); filter:blur(8px) brightness(2); } }
 @keyframes fxCounterFrame { 0%,100%{opacity:0} 12%,78%{opacity:1} }
 @keyframes fxCounterCard { 0%{opacity:0;transform:scale(1.3) rotate(8deg);filter:blur(12px)} 25%,58%{opacity:.72;transform:scale(1) rotate(0)} 100%{opacity:0;transform:scale(.18) rotate(-16deg);filter:blur(8px) brightness(2)} }
 @keyframes fxCounterRing { 0%{opacity:0;scale:.2;rotate:-30deg} 30%{opacity:1} 100%{opacity:0;scale:2;rotate:35deg} }
@@ -2611,7 +2593,6 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
   .votecampaignoptions { grid-template-columns:1fr; }
   .votecampaignoption { min-height:42px; }
   .gamefx-impact > span { left:-34px; top:-34px; width:68px; height:68px; }
-  .gamefx-wipetitle { top:68%; width:90%; }
   .gamefx-counterspell > img { width:170px; }
   .counterspell-seal { width:88px; height:88px; }.counterspell-seal .gameicon { width:52px; height:52px; }
   .gamefx-strike { gap:10px; padding:16px; }.gamefx-strike > span { width:58px; height:58px; }.gamefx-strike > span .gameicon { width:36px; height:36px; }.gamefx-strike > div:not(.strike-slashes) { min-width:0; }.gamefx-strike b { font-size:25px; }
@@ -2622,10 +2603,9 @@ body.reduced-motion .dipanimate, body.reduced-motion .dipanimate *, body.reduced
 @media (prefers-reduced-motion: reduce) {
   .personareaction,.personareactionflare { animation:none !important; }
   .personareaction.leaving { filter:none; transition:opacity .15s linear; }
-  .gamefx-damageline,.gamefx-combattrail,.gamefx-combatghost,.gamefx-cardghost,.gamefx-wipecard,.gamefx-wipecloud,.counterspell-rings,.strike-slashes { display:none !important; }
+  .gamefx-damageline,.gamefx-combattrail,.gamefx-combatghost,.gamefx-cardghost,.counterspell-rings,.strike-slashes { display:none !important; }
   .gamefx-impact > span,.gamefx-impact > i,.gamefx-impact > strong,.gamefx-impact > small,
-  .gamefx-zonebadge,.gamefx-wipe,.gamefx-wiperune,.gamefx-wipetitle,.gamefx-counterspell,.counterspell-seal,.counterspell-copy,.gamefx-keyword,.gamefx-minuscounter,.gamefx-strike,.gamefx-proliferatepulse,.gamefx-proliferatetitle { animation-duration:.55s !important; animation-iteration-count:1 !important; }
-  #game.fx-boardwipe { filter:none; }
+  .gamefx-zonebadge,.gamefx-counterspell,.counterspell-seal,.counterspell-copy,.gamefx-keyword,.gamefx-minuscounter,.gamefx-strike,.gamefx-proliferatepulse,.gamefx-proliferatetitle { animation-duration:.55s !important; animation-iteration-count:1 !important; }
   .fx-life-delta { display:none; }
   #game.fx-combat-camera,.fx-combat-source,.fx-damage-target,.fx-life-hit,.fx-keyword-gold,.fx-keyword-blue,.fx-keyword-violet,.fx-keyword-red,.fx-keyword-orange { animation:none !important; }
 }

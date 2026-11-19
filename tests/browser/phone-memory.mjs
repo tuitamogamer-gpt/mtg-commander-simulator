@@ -42,7 +42,28 @@ async function table(phone) {
   });
   return {context, page};
 }
-const wipeEvent = () => ({kind: 'boardWipe', mode: 'destroy', cards: _game.bf().filter(card => card.is('Creature')), source: null});
+// A staged wipe as the engine announces it (engine.js stageBoardWipe): the
+// build-up, then the impact. The cards stay on the battlefield meanwhile.
+const stageWipe = page => page.evaluate(() => {
+  _game.speedFactor = 1.5625;
+  const cards = _game.bf().filter(card => card.is('Creature')), timing = MTG.boardWipeTiming(cards.length, _game.speedFactor);
+  _ui.showGameEffect({kind: 'boardWipe', mode: 'destroy', cards, count: cards.length, source: null, timing});
+  _ui.showGameEffect({kind: 'boardWipeImpact', mode: 'destroy', count: cards.length, timing});
+  const fx = document.querySelector('.wipefx');
+  const heavy = node => { const style = getComputedStyle(node); return /blur/.test(style.filter) || style.backdropFilter !== 'none' || style.mixBlendMode !== 'normal'; };
+  return {
+    staged: !!fx, flash: !!fx?.querySelector('.wipefx-flash'), marks: fx?.querySelectorAll('.wipefx-mark').length,
+    rings: fx?.querySelectorAll('.wipefx-shock i').length, sparks: fx?.querySelectorAll('.wipefx-spark').length,
+    // No copy of a card is drawn: the real cards are marked where they stand.
+    clones: document.querySelectorAll('.gamefx-wipecard, .gamefx-cardghost, .wipefx .mini').length,
+    heavy: fx ? [fx, ...fx.querySelectorAll('*')].filter(heavy).length : -1,
+    // Parts as large as the screen: each is a layer of about 12 MB on a phone at device pixel ratio 3.
+    screens: fx ? [...fx.querySelectorAll('*')].filter(part => { const r = part.getBoundingClientRect(); return r.width >= innerWidth * .9 && r.height >= innerHeight * .9; }).length : -1,
+    pulsing: fx ? [...fx.querySelectorAll('.wipefx-frame')].filter(frame => getComputedStyle(frame).animationIterationCount.includes('infinite')).length : -1,
+    camera: getComputedStyle(document.querySelector('#game')).animationName,
+    grain: getComputedStyle(document.body, '::after').content,
+  };
+});
 
 try {
   // Phone: the closed drawer is hidden, not just slid away with its blur.
@@ -61,33 +82,28 @@ try {
     assert.equal((await drawer()).visibility, 'hidden', 'closing it hides it again after the slide');
     console.log('PASS phone: the closed drawer is hidden and has no backdrop blur');
 
-    // A wipe keeps its flash, shockwaves, title and falling cards, but not the
-    // blurred cloud, the camera shake or the page grain.
-    await page.evaluate(() => { _game.speedFactor = 1.5625; _ui.showGameEffect({...(() => ({kind: 'boardWipe', mode: 'destroy', cards: _game.bf().filter(card => card.is('Creature')), source: null}))()}); });
-    const wipe = await page.evaluate(() => ({
-      storm: !!document.querySelector('.gamefx-wipe'), flash: !!document.querySelector('.gamefx-flash'),
-      cards: document.querySelectorAll('.gamefx-wipecard').length,
-      cloud: getComputedStyle(document.querySelector('.gamefx-wipecloud')).display,
-      camera: getComputedStyle(document.querySelector('#game')).animationName,
-      grain: getComputedStyle(document.body, '::after').content,
-    }));
-    // Cards fall from the visible board (the phone's Mine view groups equal creatures).
-    assert.ok(wipe.cards >= 1, JSON.stringify(wipe));
-    assert.deepEqual({...wipe, cards: 1}, {storm: true, flash: true, cards: 1, cloud: 'none', camera: 'none', grain: 'none'}, JSON.stringify(wipe));
-    console.log('PASS phone: a wipe plays without the blurred cloud, camera shake or grain');
+    // A wipe keeps its plate, frames, flash and one shockwave. It draws no
+    // copy of a card, nothing blurred or blended, no sparks, no camera shake
+    // and no page grain.
+    const wipe = await stageWipe(page);
+    // Frames stand on the visible board (the phone's Mine view groups equal creatures).
+    assert.ok(wipe.marks >= 1, JSON.stringify(wipe));
+    assert.deepEqual({...wipe, marks: 1}, {staged: true, flash: true, marks: 1, rings: 1, sparks: 0, clones: 0, heavy: 0, screens: 0, pulsing: 0, camera: 'none', grain: 'none'}, JSON.stringify(wipe));
+    console.log('PASS phone: a staged wipe draws no card copies, screen-sized layers, blur, blend, sparks, camera shake or grain');
 
     // Restoring a saved table: effects of the replayed actions are not drawn.
-    await page.waitForTimeout(1600);
+    await page.evaluate(() => _ui.showGameEffect({kind: 'boardWipeResolved', count: 0}));
+    await page.waitForFunction(() => !document.querySelector('.wipefx') && !document.querySelector('.wipe-dead, .wipe-doomed'), undefined, {timeout: 6000});
     const restoring = await page.evaluate(event => {
-      const before = document.querySelectorAll('.gamefx-wipe, .gamefx-impact, .effectnotice').length;
+      const before = document.querySelectorAll('.wipefx, .gamefx-impact, .effectnotice').length;
       _ui.accountReplay = {current: 0, total: 3};
       _game.note('gameEffect', {kind: 'boardWipe', mode: 'destroy', cards: _game.bf().filter(card => card.is('Creature')), source: null});
       _game.note('gameEffect', {kind: 'damage', target: _ui.me, targetPlayer: _ui.me, targetKind: 'player', amount: 5, source: null});
       _game.note('effectNotice', {text: 'Restored notice', kind: 'info'});
-      const during = document.querySelectorAll('.gamefx-wipe, .gamefx-impact, .effectnotice').length - before;
+      const during = document.querySelectorAll('.wipefx, .gamefx-impact, .effectnotice').length - before;
       _ui.accountReplay = null;
       _game.note('gameEffect', {kind: 'boardWipe', mode: 'destroy', cards: _game.bf().filter(card => card.is('Creature')), source: null});
-      const live = document.querySelectorAll('.gamefx-wipe').length;
+      const live = document.querySelectorAll('.wipefx').length;
       return {during, live};
     });
     assert.equal(restoring.during, 0, 'nothing is drawn while a saved table is restored');
@@ -95,14 +111,15 @@ try {
     console.log('PASS restoring a saved table draws no effects; live play draws them again');
     await context.close();
   }
-  // Desktop keeps the full wipe.
+  // Desktop keeps the full wipe: two shockwaves, sparks and the camera.
   {
     const {context, page} = await table(false);
-    await page.evaluate(() => { _game.speedFactor = 1.5625; _ui.showGameEffect({kind: 'boardWipe', mode: 'destroy', cards: _game.bf().filter(card => card.is('Creature')), source: null}); });
-    const wipe = await page.evaluate(() => ({cloud: getComputedStyle(document.querySelector('.gamefx-wipecloud')).display,
-      camera: getComputedStyle(document.querySelector('#game')).animationName}));
-    assert.notEqual(wipe.cloud, 'none');
+    const wipe = await stageWipe(page);
+    assert.equal(wipe.rings, 2);
+    assert.ok(wipe.screens >= 2, 'the veil and the flash cover the table on a desktop');
+    assert.ok(wipe.sparks >= 5, JSON.stringify(wipe));
     assert.equal(wipe.camera, 'dsWipeCamera');
+    assert.equal(wipe.clones, 0);
     console.log('PASS desktop keeps the full wipe');
     await context.close();
   }

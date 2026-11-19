@@ -268,7 +268,7 @@ body.reduced-motion .toastmsg { animation: none; }
    whoever cast it and whoever owned the card: a beam from the one who did
    it, a frame around the card, the hit, and a plate that says what happened
    (ui.js showZoneMoveEffect). Then the card leaves as it always did. Three or
-   more cards at once are a wipe (styles.css). The parts are the size of a
+   more cards at once are a wipe (below). The parts are the size of a
    card: no screen-wide layer and no blur, for a phone's memory. */
 .removalfx, .removalfx-beam, .removalfx-plate {
   --rm: var(--ds-danger); --rm-rgb: 239, 139, 123;
@@ -387,4 +387,212 @@ body.reduced-motion .gamefx-cardghost.struck { animation: gamefxZoneFlight 1s cu
 @media (prefers-reduced-motion: reduce) {
   .removalfx, .removalfx-beam, .removalfx-art > i, .removalfx-art::after { display: none !important; }
   .removalfx-plate { animation-name: removalPlateCalm; }
+}
+
+/* ---------- Board wipe ----------
+   Three or more permanents leaving at once are played in three beats on the
+   cards themselves (board-wipe.js), while the engine waits: the plate says
+   what is happening and a frame closes on every doomed card; the impact; then
+   the cards go one after another, board by board, each with the hit of a
+   single removal (blade, closing ring, rising streak). The plate counts them
+   and each board shows its loss. Nothing is cloned and nothing is blurred:
+   the real cards fade where they stand. A phone keeps the same beats without
+   the veil, the sparks, the second shockwave and the camera. */
+.wipefx {
+  --wf: var(--ds-danger); --wf-rgb: 239, 139, 123;
+  position: absolute; inset: 0; pointer-events: none;
+  transition: opacity 240ms var(--ds-ease-in);
+}
+.wipefx.mode-damage { --wf: var(--ds-accent-bright); --wf-rgb: var(--ds-accent-bright-rgb); }
+.wipefx.mode-exile { --wf: #c3a6f5; --wf-rgb: 195, 166, 245; }
+.wipefx.mode-bounce { --wf: var(--ds-spell); --wf-rgb: var(--ds-spell-rgb); }
+.wipefx.leaving { opacity: 0; }
+.wipefx :is(i, small, strong, b, span) { font-style: normal; }
+/* The table steps back; the frames and the plate are drawn over it. */
+.wipefx-veil {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 46%, rgba(var(--ds-table-rgb), .26), rgba(var(--ds-table-rgb), .6) 80%);
+  animation: wipeVeil 280ms ease-out both; transition: opacity 460ms ease;
+}
+.wipefx.settled .wipefx-veil { opacity: 0; }
+@keyframes wipeVeil { from { opacity: 0; } }
+
+/* A frame closes on each doomed card, one after another (--wipe-mark), and
+   holds until its turn. When each card goes is a delay too (--wipe-wait, set
+   at the impact): the cards keep their order whatever the frame rate. */
+.wipefx-mark { position: absolute; }
+.wipefx-mark > i { position: absolute; display: block; }
+.wipefx-frame {
+  inset: -4px; border: 2px solid var(--wf); border-radius: 9px;
+  box-shadow: 0 0 16px rgba(var(--wf-rgb), .55), inset 0 0 12px rgba(var(--wf-rgb), .3);
+  animation: wipeFrameIn 320ms var(--ds-ease-out) var(--wipe-mark, 0ms) both,
+    wipeFrameHold 760ms ease-in-out calc(var(--wipe-mark, 0ms) + 320ms) infinite alternate;
+}
+@keyframes wipeFrameIn { 0% { opacity: 0; transform: scale(1.3); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes wipeFrameHold { from { opacity: 1; } to { opacity: .62; } }
+/* Its turn: the card flashes in the colour of what happens to it. */
+.wipefx-mark.hit .wipefx-frame { animation: wipeFrameOut var(--wipe-death, 400ms) ease-out var(--wipe-wait, 0ms) both; }
+@keyframes wipeFrameOut { 0% { opacity: 1; transform: scale(1); } 22% { opacity: 1; transform: scale(1.08); } 100% { opacity: 0; transform: scale(.94); } }
+.wipefx-mark.hit::before {
+  content: ''; position: absolute; inset: 0; border-radius: 7px; background: var(--wf);
+  animation: wipeCardFlash var(--wipe-death, 400ms) ease-out var(--wipe-wait, 0ms) both;
+}
+@keyframes wipeCardFlash { 0% { opacity: 0; } 16% { opacity: .58; } 100% { opacity: 0; } }
+/* Destroyed, died: a blade across the card. */
+.wipefx.hit-cut .wipefx-strike {
+  left: 50%; top: 50%; width: 160%; height: 3px; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, #fff 36%, var(--wf) 70%, transparent);
+  box-shadow: 0 0 10px rgba(var(--wf-rgb), .85);
+  transform: translate(-50%, -50%) rotate(38deg);
+  animation: removalSweep var(--wipe-death, 400ms) var(--ds-ease-out) var(--wipe-wait, 0ms) both;
+}
+/* Exiled: a ring that closes on it. */
+.wipefx.hit-void .wipefx-strike {
+  left: 50%; top: 50%; width: 140%; aspect-ratio: 1; border: 2px solid var(--wf); border-radius: 50%;
+  box-shadow: 0 0 14px rgba(var(--wf-rgb), .7), inset 0 0 14px rgba(var(--wf-rgb), .5);
+  animation: removalVoid var(--wipe-death, 400ms) var(--ds-ease-in) var(--wipe-wait, 0ms) both;
+}
+/* Returned: a streak that rises through it. */
+.wipefx.hit-lift .wipefx-strike {
+  left: 10%; right: 10%; top: 78%; height: 26%;
+  background: linear-gradient(0deg, transparent, rgba(var(--wf-rgb), .85) 42%, #fff 50%, rgba(var(--wf-rgb), .85) 58%, transparent);
+  animation: removalLift var(--wipe-death, 400ms) var(--ds-ease-out) var(--wipe-wait, 0ms) both;
+}
+.wipefx-spark {
+  left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 7px 1px rgba(var(--wf-rgb), .9);
+  animation: wipeSpark var(--wipe-death, 400ms) cubic-bezier(.12, .7, .3, 1) var(--wipe-wait, 0ms) both;
+}
+@keyframes wipeSpark {
+  0% { opacity: 0; transform: translate(0, 0) scale(1); }
+  14% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--spark-x, 30px), var(--spark-y, -30px)) scale(.3); }
+}
+
+/* The card itself, where it stands. The separate translate, scale and rotate
+   leave a tapped card's own transform alone. --wipe-since is how long the card
+   still waits for its turn; a card drawn again by a render goes on from where
+   the one it replaces was (a negative delay). */
+body.game-active #game :is(.mini, .ct-mobile-combat-art).wipe-dead {
+  pointer-events: none;
+  animation: wipeDeadCut var(--wipe-death, 400ms) var(--ds-ease-in) var(--wipe-since, 0ms) both !important;
+}
+body.game-active #game :is(.mini, .ct-mobile-combat-art).wipe-dead.wipe-void { animation-name: wipeDeadVoid !important; }
+body.game-active #game :is(.mini, .ct-mobile-combat-art).wipe-dead.wipe-lift { animation-name: wipeDeadLift !important; }
+@keyframes wipeDeadCut {
+  0% { opacity: 1; filter: none; scale: 1; rotate: 0deg; translate: 0 0; }
+  18% { opacity: 1; filter: brightness(2.3) saturate(.3); scale: 1.06; }
+  42% { opacity: .95; filter: brightness(1.1) saturate(.15); scale: 1; rotate: -2deg; }
+  100% { opacity: 0; filter: brightness(.45) saturate(0); scale: .84; rotate: -5deg; translate: 0 12px; }
+}
+@keyframes wipeDeadVoid {
+  0% { opacity: 1; filter: none; scale: 1; rotate: 0deg; }
+  30% { opacity: 1; filter: brightness(1.8) saturate(.4); scale: 1.03; }
+  100% { opacity: 0; filter: brightness(1.2) saturate(.2); scale: .2; rotate: 12deg; }
+}
+@keyframes wipeDeadLift {
+  0% { opacity: 1; filter: none; translate: 0 0; scale: 1; }
+  28% { opacity: 1; filter: brightness(1.7); translate: 0 3px; }
+  100% { opacity: 0; filter: brightness(1.5); translate: 0 -44px; scale: .94; }
+}
+
+/* The impact. */
+.wipefx-flash {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, .86), rgba(var(--wf-rgb), .34) 32%, transparent 66%);
+  animation: wipeFlash 640ms ease-out both;
+}
+@keyframes wipeFlash { 0% { opacity: 0; } 9% { opacity: 1; } 100% { opacity: 0; } }
+.wipefx-shock { position: absolute; left: 50%; top: 46%; width: 0; height: 0; }
+.wipefx-shock i {
+  position: absolute; left: 0; top: 0; display: block;
+  width: calc(46 * var(--vwu)); aspect-ratio: 1; margin: calc(-23 * var(--vwu));
+  border: 2px solid rgba(var(--wf-rgb), .85); border-radius: 50%;
+  box-shadow: 0 0 34px rgba(var(--wf-rgb), .4), inset 0 0 34px rgba(var(--wf-rgb), .18);
+  animation: wipeShock 940ms cubic-bezier(.1, .8, .2, 1) both;
+}
+.wipefx-shock i + i { animation-delay: 150ms; }
+@keyframes wipeShock { 0% { opacity: 0; transform: scale(.05); } 12% { opacity: 1; } 100% { opacity: 0; transform: scale(2.6); } }
+
+/* What is happening, who did it, how many are left. It is said in the middle
+   of the table during the build-up and steps under the header for the cards. */
+.wipefx-plate {
+  position: absolute; left: 50%; top: 64px; z-index: 4;
+  display: grid; grid-auto-flow: column; align-items: center; gap: 14px; box-sizing: border-box;
+  width: max-content; max-width: min(520px, calc(100 * var(--vwu) - 24px)); padding: 12px 20px 13px 12px;
+  color: var(--ds-text); background: var(--ds-dialog);
+  border: 1px solid rgba(var(--wf-rgb), .55); border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(2, 6, 12, .66), 0 0 0 1px rgba(255, 255, 255, .03), 0 0 44px rgba(var(--wf-rgb), .16);
+  transform: translate(-50%, 0); transform-origin: 50% 0;
+  transition: top 440ms var(--ds-ease-travel), transform 440ms var(--ds-ease-travel);
+  animation: wipePlateIn 300ms var(--ds-ease-out) both;
+}
+.wipefx-plate.stage { top: 44%; transform: translate(-50%, -50%) scale(1.16); }
+@keyframes wipePlateIn { from { opacity: 0; translate: 0 10px; } }
+.wipefx-art { display: block; flex: 0 0 auto; width: 58px; height: 81px; border-radius: 6px; overflow: hidden; box-shadow: 0 8px 20px rgba(2, 6, 12, .7); }
+.wipefx-art > :is(img, .tokenface) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; border: 0; border-radius: 0; }
+.wipefx-copy { display: grid; gap: 4px; min-width: 0; text-align: left; }
+.wipefx-kicker { overflow: hidden; color: var(--wf); font: 700 10px/1.2 var(--ds-font-mono); letter-spacing: .2em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.wipefx-name { overflow: hidden; color: var(--ds-text); font: 660 21px/1.12 var(--ds-font-display); letter-spacing: -.015em; text-overflow: ellipsis; white-space: nowrap; }
+.wipefx-line { color: var(--ds-copy); font: 500 13px/1.3 var(--ds-font-body); font-variant-numeric: tabular-nums; }
+.wipefx-line strong { color: var(--ds-text); font: 700 14px/1 var(--ds-font-mono); }
+.wipefx-pips { display: flex; flex-wrap: wrap; gap: 3px; max-width: 296px; margin-top: 3px; }
+.wipefx-pips > i {
+  display: block; width: 8px; height: 8px; border-radius: 2px;
+  background: var(--wf); box-shadow: 0 0 6px rgba(var(--wf-rgb), .5);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.wipefx-pips > i.gone { background: rgba(255, 255, 255, .16); box-shadow: none; transform: scale(.7); }
+.wipefx-pips.bar { display: block; width: 220px; max-width: 100%; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .14); }
+.wipefx-pips.bar > i { width: 100%; height: 100%; border-radius: 4px; transition: width 140ms linear; }
+.wipefx-losses { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 2px; color: var(--ds-muted); font: 500 12px/1.35 var(--ds-font-body); font-variant-numeric: tabular-nums; }
+.wipefx-losses b { color: var(--ds-copy); font-weight: 650; }
+.wipefx-losses .mine b { color: var(--ds-accent-bright); }
+.wipefx :is(.wipefx-pips, .wipefx-losses)[hidden] { display: none; }
+/* Each board shows what it lost, where its cards stood. */
+.wipefx-loss {
+  position: absolute; z-index: 3; padding: 7px 14px 8px; border-radius: 999px;
+  color: var(--wf); background: var(--ds-dialog); border: 1px solid rgba(var(--wf-rgb), .6);
+  box-shadow: 0 10px 26px rgba(2, 6, 12, .66), 0 0 26px rgba(var(--wf-rgb), .14);
+  font: 700 22px/1 var(--ds-font-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+  transform: translate(-50%, -50%);
+  animation: wipeLossIn 300ms var(--ds-ease-spring) both;
+}
+@keyframes wipeLossIn { from { opacity: 0; scale: .7; } }
+:is(.wipefx-mark, .wipefx-loss)[hidden] { display: none; }
+
+/* A phone's graphics memory: at device pixel ratio 3 a layer the size of the
+   screen is about 12 MB, and the table rests at 44 MB. The veil and the flash
+   were two such layers and the shockwave a third of one; with them a wipe
+   held 90 MB. A phone has no veil, a flash and one shockwave of a card's
+   reach around the middle of the table, and no sparks (board-wipe.js). */
+@keyframes wipeShockNear { 0% { opacity: 0; transform: scale(.1); } 15% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5); } }
+@media (max-width: 900px) {
+  .wipefx-veil { display: none; }
+  .wipefx-flash {
+    inset: auto; left: 50%; top: 46%; width: 260px; height: 260px; margin: -130px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, .82), rgba(var(--wf-rgb), .32) 42%, transparent 70%);
+  }
+  .wipefx-shock i { width: 150px; margin: -75px; box-shadow: 0 0 18px rgba(var(--wf-rgb), .4); animation-name: wipeShockNear; }
+  /* Every animated part of a card is a layer of the card's size for as long
+     as it waits its turn. A phone's card has its frame and its hit; the
+     flash over it and the frame's slow pulse stay on a desktop. */
+  .wipefx-mark.hit::before { content: none; }
+  .wipefx-frame { box-shadow: 0 0 8px rgba(var(--wf-rgb), .5); animation: wipeFrameIn 320ms var(--ds-ease-out) var(--wipe-mark, 0ms) both; }
+  .wipefx-plate { top: 108px; gap: 10px; padding: 9px 14px 10px 9px; }
+  .wipefx-plate.stage { top: 108px; transform: translate(-50%, 0); }
+  .wipefx-art { width: 44px; height: 61px; }
+  .wipefx-name { font-size: 17px; }
+  .wipefx-pips { max-width: 200px; }
+  .wipefx-loss { padding: 5px 11px 6px; font-size: 17px; }
+}
+/* Reduced motion: the plate, a still outline on what is leaving, and the
+   cards gone in the same order, with nothing that moves. */
+.wipefx.calm :is(.wipefx-plate, .wipefx-loss) { animation: none; transition: none; }
+.wipefx.calm .wipefx-pips > i { transition: none; }
+body.reduced-motion #game :is(.mini, .ct-mobile-combat-art).wipe-doomed { outline: 2px solid var(--ds-danger); outline-offset: 1px; }
+body.reduced-motion #game :is(.mini, .ct-mobile-combat-art).wipe-dead { animation: none !important; visibility: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  #game :is(.mini, .ct-mobile-combat-art).wipe-doomed { outline: 2px solid var(--ds-danger); outline-offset: 1px; }
+  body.game-active #game :is(.mini, .ct-mobile-combat-art).wipe-dead { animation: none !important; visibility: hidden; }
 }

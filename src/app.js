@@ -713,6 +713,7 @@ import './modules/help-experience.js';
 import './modules/command-table.js';
 import './modules/motion.js';
 import './modules/action-effects.js';
+import './modules/board-wipe.js';
 import './modules/combat-replay.js';
 import './modules/effect-anchors.js';
 import './modules/deck-sleeves.js';
