@@ -1,0 +1,9 @@
+# The only image built from this repository is the Commander Live room server
+# (deploy/hostinger/Dockerfile). It needs the server modules and the lockfile,
+# nothing else: no client, no card images, no reports, no local .env files.
+*
+!package.json
+!package-lock.json
+!logic.js
+!api/ws.js
+!server

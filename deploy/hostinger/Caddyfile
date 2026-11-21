@@ -1,0 +1,22 @@
+# HTTPS front for Commander Live. LIVE_DOMAIN comes from .env; Caddy obtains
+# and renews the certificate once the name points at this server and ports
+# 80 and 443 reach it. WebSocket upgrades pass through reverse_proxy as they are.
+{$LIVE_DOMAIN} {
+	# The room server has one path: health on GET, rooms on upgrade.
+	@live path /api/ws
+	handle @live {
+		reverse_proxy live:8787
+	}
+	handle {
+		respond "Commander Live room server" 404
+	}
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		-Server
+	}
+	log {
+		output stdout
+		format console
+	}
+}

@@ -16,3 +16,5 @@ mobile/
 capacitor.config.json
 dist/ios-web/
 dist/commander-ios-mac.zip
+deploy/
+.dockerignore

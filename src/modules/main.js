@@ -726,7 +726,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const liveStatus = page.querySelector('.mainmenu-livecheck');
     const localStaticHost = location.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
-    if (localStaticHost) {
+    // As on first arrival (public-entry.js): a room server on its own host is asked directly.
+    const liveOrigin = MTG.liveOrigin?.() || '';
+    if (localStaticHost && !liveOrigin) {
       liveStatus.dataset.liveState = 'hosted';
       liveStatus.querySelector('b').textContent = 'Solo mode ready';
       liveStatus.querySelector('small').textContent = 'Live rooms require the hosted build';
@@ -734,7 +736,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     const vercelHost = /(^|\.)vercel\.app$/i.test(location.hostname);
-    if (!vercelHost) {
+    if (!vercelHost && !liveOrigin) {
       liveStatus.dataset.liveState = 'hosted';
       liveStatus.querySelector('b').textContent = 'Solo mode ready';
       liveStatus.querySelector('small').textContent = 'Live support is checked when a room opens';
@@ -743,7 +745,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const liveController = new AbortController();
     const liveTimeout = setTimeout(() => liveController.abort(), 3500);
-    fetch('./api/ws', { cache: 'no-store', signal: liveController.signal })
+    fetch(`${liveOrigin || '.'}/api/ws`, { cache: 'no-store', signal: liveController.signal })
       .then(async response => ({ response, payload: response.ok ? await response.json() : null }))
       .then(({ response, payload }) => {
         if (!response.ok || !payload || payload.ok !== true) throw new Error('Live rooms unavailable');

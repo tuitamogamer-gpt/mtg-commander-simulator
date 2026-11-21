@@ -941,9 +941,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const base = location.pathname.replace(/\/+$/, '');
     const websocketOrigin = `${location.protocol === 'https:' ? 'wss://' : 'ws://'}${location.host}`;
     const isHiggsfield = /(^|\.)higgsfield\.(?:ai|app)$/i.test(location.hostname);
+    // Rooms are served by this page's own origin unless the build names a
+    // room server on another host (src/live-config.js). The invite link and
+    // the seat's identity stay with the page; only the socket moves.
+    const liveOrigin = MTG.liveOrigin?.() || '';
+    const roomOrigin = liveOrigin ? liveOrigin.replace(/^http/, 'ws') : websocketOrigin;
     const socketUrl = isHiggsfield
       ? `${websocketOrigin}${base}/ws/${encodeURIComponent(room)}`
-      : `${websocketOrigin}/api/ws?room=${encodeURIComponent(room)}${options.create ? `&create=1&players=${playerCount}` : ''}`;
+      : `${roomOrigin}/api/ws?room=${encodeURIComponent(room)}${options.create ? `&create=1&players=${playerCount}` : ''}`;
     const listeners = new Set();
     const queue = [];
     let socket = null;

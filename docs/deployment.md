@@ -143,9 +143,10 @@ application there, provide these three routes behind one HTTPS origin:
 3. `/api/account`, handled by the exported account handler with its REST Redis
    environment.
 
-The repository includes the server modules, not a bundled process manager,
-container, TLS terminator, or full self-host launcher. Use a supervisor and a
-reverse proxy for a public Node deployment. Preserve the original Host and trusted
+For Live alone the repository includes a launcher and a container package (see
+[Commander Live on its own host](#commander-live-on-its-own-host)). It does not
+include a full self-host launcher for the static client and the account API. Use
+a supervisor and a reverse proxy for a public Node deployment. Preserve the original Host and trusted
 `X-Forwarded-Host` / `X-Forwarded-Proto` values, support upgrade headers, and use an
 appropriate connection timeout. Origin checks compare the browser's origin with
 the request host, and secure account cookies depend on HTTPS information reaching
@@ -155,6 +156,40 @@ Keep Redis even with an always-on server: it supplies shared room data and pub/s
 across processes. Moving accounts to PostgreSQL or Supabase would require an
 account/session/storage adapter and data migration; changing an environment URL
 alone cannot perform that migration.
+
+## Commander Live on its own host
+
+The room service can run as an always-on process on another host while the
+client and the account API stay where they are. Only the socket moves: invite
+links, the page origin and seat identities are unchanged.
+
+- **Server.** `server/live-server.js` (`npm run live`) listens on `PORT`/`HOST`
+  and runs the same `api/ws.js`. It refuses to start without room storage; rooms
+  never fall back to process memory. On SIGTERM it closes every connection with
+  code 1012, stores each seat as away, then closes its storage, so a deploy
+  pauses rooms instead of leaving stale seats. Clients reconnect by themselves.
+- **Who may connect.** A page on the server's own host is always accepted. A
+  page on another origin must be listed in `LIVE_ALLOWED_ORIGINS` (exact origins,
+  comma separated; an invalid entry stops the server). The health answer carries
+  CORS headers for those origins only. `LIVE_MAX_CONNECTIONS` caps open
+  connections. Both settings are unset on Vercel, where behavior is unchanged.
+- **Liveness.** Every connection is pinged each 30 seconds; one that did not
+  answer the previous ping is ended and its seat marked away. This applies on
+  every host.
+- **Client.** `src/live-config.js` holds the room server's origin; empty means
+  the page's own origin. `npm run build` writes it from `COMMANDER_LIVE_ORIGIN`
+  and fails on anything but one plain HTTPS origin. Setting the variable and
+  redeploying moves room connections; removing it moves them back.
+- **Package.** `deploy/hostinger/` holds a Dockerfile, a Compose file (room
+  server, a private Redis with an append-only file, Caddy for HTTPS), an example
+  environment file and an update script. `.dockerignore` sends only the server
+  modules and the lockfile to the build.
+- **Check.** `npm run live:smoke -- <room server origin> --origin <page origin>`
+  exercises health, CORS, two seats in one room, a refused foreign origin and a
+  departure, from outside, without touching anything but one throwaway room.
+
+The step-by-step runbook for a Hostinger VPS, in Serbian, is
+[hostinger-live.md](hostinger-live.md).
 
 ## Commander Live behavior
 

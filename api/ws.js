@@ -34,6 +34,30 @@ function cleanPlayerCount(value) {
   return Number.isInteger(count) && count >= 2 && count <= 4 ? count : 2;
 }
 
+// A room server on its own host (LIVE_ALLOWED_ORIGINS) is reached from the
+// game's page on another origin. The list holds exact origins, never patterns:
+// a typo must stop the server instead of quietly opening or closing the door.
+export function parseAllowedOrigins(value) {
+  return String(value || '').split(',').map(item => item.trim()).filter(Boolean).map(item => {
+    let url;
+    try { url = new URL(item); } catch { throw new Error(`LIVE_ALLOWED_ORIGINS has an invalid origin: ${item}`); }
+    if (!['https:', 'http:'].includes(url.protocol) || !/^[a-z0-9.-]+$/.test(url.hostname)
+      || url.origin !== item.replace(/\/$/, '').toLowerCase()) {
+      throw new Error(`LIVE_ALLOWED_ORIGINS needs plain origins such as https://www.example.com, not: ${item}`);
+    }
+    return url.origin;
+  });
+}
+
+// A browser on the server's own host is always accepted; any other origin
+// must be listed. A client with no Origin header is not a browser page.
+export function originAllowed(origin, requestHost, allowedOrigins = []) {
+  if (!origin) return true;
+  let url;
+  try { url = new URL(origin); } catch { return false; }
+  return url.host === requestHost || allowedOrigins.includes(url.origin);
+}
+
 class MemoryRoomStore {
   constructor() {
     this.kind = 'memory';
@@ -197,13 +221,27 @@ function assignConnection(state, playerId, connectionId) {
   return seat;
 }
 
-export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } = {}) {
+export function createCommanderLiveServer({
+  store = createRoomStoreFromEnv(),
+  allowedOrigins = parseAllowedOrigins(process.env.LIVE_ALLOWED_ORIGINS),
+  maxClients = Number(process.env.LIVE_MAX_CONNECTIONS) || 0,
+  heartbeatMs = 30_000,
+} = {}) {
   const app = express();
   const server = createServer(app);
   const clients = new Set();
+  // Disconnect updates still being written; a shutdown waits for them.
+  const pending = new Set();
+  let closing = false;
 
-  app.get('/api/ws', async (_request, response) => {
+  app.get('/api/ws', async (request, response) => {
     response.set('Cache-Control', 'no-store');
+    // The landing page reads this health answer from the game's own origin.
+    const origin = request.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+      response.set('Access-Control-Allow-Origin', origin);
+      response.vary('Origin');
+    }
     try {
       await store.ping();
       response.status(200).json({ ok: true, service: 'commander-live', storage: store.kind, minPlayers: 2, maxPlayers: 4 });
@@ -216,16 +254,25 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     server,
     maxPayload: MAX_MESSAGE_BYTES,
     verifyClient({ origin, req }, done) {
-      if (!origin) return done(true);
-      try {
-        const originHost = new URL(origin).host;
-        const requestHost = String(req.headers['x-forwarded-host'] || req.headers.host || '');
-        return done(originHost === requestHost, originHost === requestHost ? 200 : 403, 'Origin not allowed');
-      } catch {
-        return done(false, 403, 'Origin not allowed');
-      }
+      if (closing) return done(false, 503, 'Live server is restarting');
+      if (maxClients > 0 && clients.size >= maxClients) return done(false, 503, 'Live server is full');
+      const requestHost = String(req.headers['x-forwarded-host'] || req.headers.host || '');
+      const allowed = originAllowed(origin, requestHost, allowedOrigins);
+      return done(allowed, allowed ? 200 : 403, 'Origin not allowed');
     },
   });
+
+  // A connection that stays open for hours can die without a close frame (a
+  // sleeping laptop, a dropped mobile link). Ping every connection; one that
+  // did not answer the previous ping is ended, and its seat is marked away.
+  let heartbeat = null;
+  const beat = () => {
+    for (const client of clients) {
+      if (client.alive === false) { client.ws.terminate(); continue; }
+      client.alive = false;
+      try { client.ws.ping(); } catch { /* the close handler follows */ }
+    }
+  };
 
   const sendState = (client, state) => {
     if (!client.playerId) return;
@@ -306,9 +353,14 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
 
     const client = {
       ws, room, mayCreate, playerId: null, connectionId: randomUUID(),
-      chain: Promise.resolve(), windowStartedAt: Date.now(), messages: 0, lastRevision: -1,
+      chain: Promise.resolve(), windowStartedAt: Date.now(), messages: 0, lastRevision: -1, alive: true,
     };
     clients.add(client);
+    ws.on('pong', () => { client.alive = true; });
+    if (heartbeatMs > 0 && !heartbeat) {
+      heartbeat = setInterval(beat, heartbeatMs);
+      heartbeat.unref();
+    }
     if (!unsubscribe) unsubscribe = store.subscribe(onRoomChanged);
 
     const handleJoin = async message => {
@@ -388,6 +440,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     };
 
     ws.on('message', data => {
+      client.alive = true;
       const now = Date.now();
       if (now - client.windowStartedAt > 60_000) {
         client.windowStartedAt = now;
@@ -428,23 +481,54 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
 
     ws.on('close', () => {
       clients.delete(client);
-      if (!clients.size) { unsubscribe?.(); unsubscribe = undefined; }
+      if (!clients.size) {
+        unsubscribe?.(); unsubscribe = undefined;
+        clearInterval(heartbeat); heartbeat = null;
+      }
       if (!client.playerId) return;
-      void commit(room, state => {
+      const update = commit(room, state => {
         if (!state) return null;
         const seat = state.seats.find(item => item.playerId === client.playerId);
         if (!seat || seat.connectionId !== client.connectionId || seat.connected === false) return null;
         const result = validateAction(state, client.playerId, { type: 'presence', connected: false });
         return result && result.ok ? applyAction(state, client.playerId, { type: 'presence', connected: false }) : null;
       }).catch(error => console.error('Commander Live disconnect update failed:', error));
+      pending.add(update);
+      void update.finally(() => pending.delete(update));
     });
   });
 
+  let storeClosed = null;
+  const closeStore = () => storeClosed ||= Promise.resolve().then(() => store.close())
+    .catch(error => console.error('Commander Live storage did not close cleanly:', error.code || error.message));
   server.on('close', () => {
     unsubscribe?.();
-    void store.close();
+    clearInterval(heartbeat);
+    void closeStore();
   });
-  server.commanderLive = { store, wss, clients };
+
+  // An always-on host stops the process to deploy. Players are told the
+  // service is restarting (1012) and reconnect by themselves; every seat is
+  // stored as away before the storage connection closes, so the room is
+  // paused, never left showing a player who is no longer there.
+  const shutdown = async ({ timeoutMs = 8000 } = {}) => {
+    closing = true;
+    const deadline = Date.now() + timeoutMs;
+    for (const client of clients) client.ws.close(1012, 'Server restarting');
+    while (clients.size && Date.now() < deadline) await delay(20);
+    for (const client of clients) client.ws.terminate();
+    while (clients.size && Date.now() < deadline + 1000) await delay(20);
+    await Promise.allSettled([...pending]);
+    await new Promise(resolve => wss.close(() => resolve()));
+    if (server.listening) {
+      await new Promise(resolve => {
+        server.close(() => resolve());
+        server.closeAllConnections?.();
+      });
+    }
+    await closeStore();
+  };
+  server.commanderLive = { store, wss, clients, shutdown, allowedOrigins };
   return server;
 }
 

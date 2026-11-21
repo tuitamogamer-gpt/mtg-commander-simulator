@@ -1,6 +1,7 @@
 // Lightweight public entry. The rules engine and complete deck lists load
 // only after a player asks to enter setup or opens a shared game URL.
 'use strict';
+import './live-config.js';
 import './account.js';
 import './catalog-summary.js';
 import './modules/player-tools.js';
@@ -264,18 +265,21 @@ page.querySelectorAll('[data-menu-action="import"]').forEach(button => {
 
 const liveStatus = page.querySelector('.mainmenu-livecheck');
 const localStaticHost = location.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
-if (localStaticHost) {
+// A room server on its own host (src/live-config.js) is asked directly, from
+// any page; otherwise only a Vercel deployment has rooms on its own origin.
+const liveOrigin = MTG.liveOrigin?.() || '';
+if (localStaticHost && !liveOrigin) {
   liveStatus.dataset.liveState = 'hosted';
   liveStatus.querySelector('b').textContent = 'Solo mode ready';
   liveStatus.querySelector('small').textContent = 'Live rooms require the hosted build';
-} else if (!/(^|\.)vercel\.app$/i.test(location.hostname)) {
+} else if (!liveOrigin && !/(^|\.)vercel\.app$/i.test(location.hostname)) {
   liveStatus.dataset.liveState = 'hosted';
   liveStatus.querySelector('b').textContent = 'Solo mode ready';
   liveStatus.querySelector('small').textContent = 'Live support is checked when a room opens';
 } else {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3500);
-  fetch('./api/ws', { cache: 'no-store', signal: controller.signal })
+  fetch(`${liveOrigin || '.'}/api/ws`, { cache: 'no-store', signal: controller.signal })
     .then(async response => ({ response, payload: response.ok ? await response.json() : null }))
     .then(({ response, payload }) => {
       if (!response.ok || !payload || payload.ok !== true) throw new Error('Live rooms unavailable');
