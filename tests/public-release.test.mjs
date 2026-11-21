@@ -140,7 +140,15 @@ test('cold and warm landing menus share public sections and the same accessibili
   assert.match(main, /U\.bindLandingPreview\(page\)/);
   assert.match(landing, /From deck to table/);
   assert.match(landing, /id="featured-decks"/);
-  assert.match(landing, /<details id="the-table" class="mainmenu-preview-disclosure">/);
+  // The table preview is an open section of the scroll, not a disclosure.
+  assert.match(landing, /<section id="the-table" class="mainmenu-showcase" aria-labelledby="table-preview-title">/);
+  assert.doesNotMatch(landing, /mainmenu-preview-disclosure/);
+  assert.match(landing, /class="mainmenu-finale"[\s\S]*?data-menu-action="solo"[\s\S]*?data-menu-action="live"/);
+  // Scroll motion tags what it animates itself and stands down for reduced motion.
+  assert.match(landing, /U\.scrollMotionAllowed = \(\) => !document\.body\.classList\.contains\('reduced-motion'\)/);
+  assert.match(landing, /prefers-reduced-motion: reduce/);
+  assert.match(landing, /element\.dataset\.reveal = kind/);
+  assert.match(landing, /addEventListener\('scroll', refresh, \{ passive: true \}\)/);
   assert.match(landing, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
   for (const source of [index, main]) {
     assert.match(source, /Your deck\.<br><em>Your legend\.<\/em>/);

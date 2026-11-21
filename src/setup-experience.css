@@ -56,8 +56,6 @@
 #setup[data-app-view="home"] .mainmenu .mainmenu-path { margin-top: 48px; padding: 34px 0; }
 #setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li > span { color: var(--ds-accent-soft); font-size: 22px; }
 #setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li p { font-size: 13px; line-height: 1.65; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure { margin-top: 28px; border-color: var(--ds-line); border-radius: 12px; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary { min-height: 74px; }
 #setup[data-app-view="home"] .mainmenu .mainmenu-footer { margin-top: 38px; }
 #setup[data-app-view="home"] .mainmenu .mainmenu-footer :is(span, p) { font-size: 12px; }
 

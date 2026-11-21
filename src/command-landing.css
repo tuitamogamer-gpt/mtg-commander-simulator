@@ -137,16 +137,6 @@
 #setup[data-app-view="home"] .mainmenu :is(.returningplayer button, .mainmenu-featured-deck):hover { border-color: var(--ds-accent); }
 #setup[data-app-view="home"] .mainmenu .mainmenu-path-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; }
 
-/* Keep the large interface preview available without making the menu longer. */
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure { width: var(--menu-width); margin: 24px auto 0; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-panel); }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 22px; list-style: none; cursor: pointer; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary::-webkit-details-marker { display: none; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary b { display: block; color: var(--ds-text); font-size: 14px; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary small { display: block; margin-top: 5px; color: var(--ds-copy); font-size: 12px; line-height: 1.5; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary i { color: var(--ds-accent-bright); font: 400 26px/1 var(--ds-font-body); }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure[open] > summary i { transform: rotate(45deg); }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary:hover { background: var(--ds-panel-raised); border-radius: 10px; }
-#setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary:focus-visible { outline: 3px solid var(--ds-accent-bright); outline-offset: 3px; border-radius: 10px; }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan .mainmenu-card.card-1:hover { transform: rotate(-10deg) translateY(-8px); z-index: 5; }
@@ -201,7 +191,6 @@
   #setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li { flex-direction: row; gap: 16px; }
   #setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li p { margin-top: 5px; }
   #setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes { flex-direction: column; gap: 20px; }
-  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-disclosure > summary { padding: 16px; }
   #setup[data-app-view="home"] .mainmenu .mainmenu-preview { padding: 8px 14px 18px; }
   #setup[data-app-view="home"] .mainmenu .mainmenu-footer { grid-template-columns: 1fr; gap: 20px; }
 }

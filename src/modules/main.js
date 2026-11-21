@@ -775,6 +775,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function renderSetup(options = {}) {
     refreshSetupFavorites = null;
     const root = $('#setup');
+    U.bindScrollMotion?.(null);
+    root.classList.remove('is-scrolled');
     root.innerHTML = '';
     root.removeAttribute('aria-busy');
     root.style.display = 'block';
@@ -796,6 +798,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="menu-mana-showcase" role="img" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
         ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}
       </div>
+      <div class="setupheroart" aria-hidden="true"><img alt="" decoding="async" hidden></div>
       <div class="setuphero">
         <div class="menu-kicker">Build your table</div>
         <h1 class="title">Choose your commander.</h1>
@@ -1637,6 +1640,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (res) { state.commanders = res; renderCmdBox(); updateStartLabel(); }
       };
       cmdBox.appendChild(btn);
+      // The pod and review headings stand on the chosen commander's art.
+      const heroArt = head.querySelector('.setupheroart img');
+      const heroArtURL = state.commanders[0] ? artURL(state.commanders[0]) : '';
+      if (heroArt && heroArt.getAttribute('src') !== heroArtURL) {
+        // Decoration only: art that does not load leaves the plain heading.
+        heroArt.onerror = () => { heroArt.hidden = true; };
+        heroArt.hidden = !heroArtURL;
+        if (heroArtURL) heroArt.src = heroArtURL;
+        else heroArt.removeAttribute('src');
+      }
       const selectedBar = root.querySelector('.setupmobilebar .mobiledeck');
       if (selectedBar) selectedBar.innerHTML = `<img src="${cardImg(state.commanders[0])}" alt="" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(state.deck)}</b></span>`;
     }
@@ -1982,6 +1995,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     podActions.append(podSummary, podBack, podNext);
     right.appendChild(podActions);
 
+    let setupMotion = null;
     const setMatchMode = mode => {
       if (state.mode === 'solo') state.soloAI = state.ai || 3;
       state.mode = mode === 'online' ? 'online' : 'solo';
@@ -2016,6 +2030,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       renderBotStyles();
       updateStartLabel();
+      setupMotion?.refresh();
     };
     matchType.querySelectorAll('.matchtypebtn').forEach(button => {
       button.setAttribute('aria-pressed', button.dataset.mode === state.mode ? 'true' : 'false');
@@ -2037,6 +2052,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     podConfiguration.append(podOpponents, podTableOptions);
     podSeatIntro.after(podConfiguration);
     advancedBody.appendChild(customSkillsButton);
+    // The pod step is one scroll of numbered chapters (scroll-experience.css):
+    // your seat, the opponents, the challenge, the house rules. The rail
+    // follows the scroll and leaves out a chapter the match type hides.
+    const podExtras = el('section', 'podextras');
+    podExtras.setAttribute('aria-label', 'House rules and table options');
+    podExtras.appendChild(el('div', 'podsectionhead', '<span class="podkicker">House rules</span><h3>Fine-tune the table</h3><p>Animation, politics, controls and support tools.</p>'));
+    podExtras.append(...[podStage.querySelector(':scope > .combatanimationsetup'), advanced, diagnostics].filter(Boolean));
+    podConfiguration.after(podExtras);
+    const podChapters = [[podSeatIntro, 'pod-seat', 'Your seat'], [podOpponents, 'pod-opponents', 'Opponents'], [podTableOptions, 'pod-challenge', 'Challenge'], [podExtras, 'pod-rules', 'House rules']];
+    const podRail = el('nav', 'podrail');
+    podRail.setAttribute('aria-label', 'Pod sections');
+    for (const [chapter, id, label] of podChapters) {
+      chapter.id = id;
+      chapter.classList.add('podchapter');
+      const link = el('a', '', `<span>${label}</span>`);
+      link.href = `#${id}`;
+      link.dataset.spy = `#${id}`;
+      podRail.appendChild(link);
+    }
+    podStage.prepend(podRail);
     const reviewStage = el('section', 'setupstagepanel reviewstage');
     reviewStage.setAttribute('aria-labelledby', 'setup-review-title');
     right.appendChild(podStage);
@@ -2132,6 +2167,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mobileBar.appendChild(mobileContinue);
     root.appendChild(mobileBar);
 
+    // What rises as each step is scrolled (landing.js, bindScrollMotion).
+    // Only blocks inside a chapter are tagged: a transform on the panel
+    // itself would carry the sticky action bar with it.
+    const bindSetupMotion = () => {
+      setupMotion = state.setupStage === 'deck' ? U.bindScrollMotion(null) : U.bindScrollMotion(root, {
+        replay: true,
+        track: ['.menuhead'],
+        spy: '.podrail a',
+        reveal: state.setupStage === 'pod' ? [
+          ['.podstage .podseatintro > *', 'rise', 110],
+          ['.podstage .podsectionhead', 'rise'],
+          ['.podstage :is(.opponentcount, .liveplayercount, .livepodinfo)', 'rise'],
+          ['.podstage .botconfig', 'rise', 120],
+          ['.podstage .podtableoptions > :not(.podsectionhead)', 'rise', 90],
+          ['.podstage .podextras > :not(.podsectionhead)', 'rise', 90],
+        ] : [
+          ['.reviewstage .ct-review-seat', 'rise', 110],
+          ['.reviewstage :is(.reviewrules, .combatanimationsetup, .savepodform)', 'rise', 90],
+        ],
+      });
+    };
     let deckBrowseScroll = 0;
     const setSetupStage = stage => {
       if (!state.deck && stage !== 'deck') return;
@@ -2164,6 +2220,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // the new step without losing the player's deck browsing position.
         const focusTarget = state.setupStage === 'deck' ? deckList : setupTitle;
         focusTarget.focus({ preventScroll: true });
+        bindSetupMotion();
       }
     };
     podNext.onclick = () => setSetupStage('review');
